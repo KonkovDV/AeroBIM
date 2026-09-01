@@ -18,6 +18,7 @@ from aerobim.domain.object_acl import (
     AuthPrincipal,
     principal_may_access_tenant_id,
 )
+from aerobim.domain.revision_diff import compare_report_revisions
 from aerobim.presentation.http.context import (
     ApiContext,
     attachment_content_disposition,
@@ -248,5 +249,20 @@ def build_reports_router(ctx: ApiContext) -> APIRouter:
                 )
             },
         )
+
+    @router.get("/v1/reports/{report_id}/revision-diff")
+    def get_revision_diff(
+        report_id: str,
+        against: str,
+        principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
+    ) -> dict[str, object]:
+        """Finding delta vs another persisted report. Not 'resolved'. Not summary.passed."""
+        ctx.validate_report_id(report_id)
+        ctx.validate_report_id(against)
+        if report_id == against:
+            raise HTTPException(status_code=400, detail=public_bad_request_detail())
+        baseline = ctx.load_authorized_report(report_id, principal)
+        head = ctx.load_authorized_report(against, principal)
+        return compare_report_revisions(baseline, head).to_dict()
 
     return router

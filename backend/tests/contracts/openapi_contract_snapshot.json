@@ -2701,6 +2701,73 @@
         "summary": "Get Review Kpi"
       }
     },
+    "/v1/reports/{report_id}/revision-diff": {
+      "get": {
+        "description": "Finding delta vs another persisted report. Not 'resolved'. Not summary.passed.",
+        "operationId": "get_revision_diff_v1_reports__report_id__revision_diff_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "report_id",
+            "required": true,
+            "schema": {
+              "title": "Report Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "against",
+            "required": true,
+            "schema": {
+              "title": "Against",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Revision Diff V1 Reports  Report Id  Revision Diff Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Revision Diff"
+      }
+    },
     "/v1/reports/{report_id}/source/ifc": {
       "get": {
         "operationId": "get_report_ifc_source_v1_reports__report_id__source_ifc_get",

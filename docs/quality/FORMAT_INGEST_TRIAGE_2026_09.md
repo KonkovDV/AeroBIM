@@ -4,7 +4,7 @@ title: "Format-ingest Red Team triage — 2026-09-01"
 date: "2026-09-01"
 last_updated: "2026-09-01"
 status: active
-version: "1.0.0"
+version: "1.0.1"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -26,7 +26,7 @@ claim_boundary: >
 
 Лицензионный пол (attributed 30.08, страница ODA жива 01.09): Sustaining 7 500 USD — DWG-контур, не Revit. BimRv / BimNv — по 6 250 USD. Пара RVT+NWD ≈ 20 000 USD в первый год. CADSoftTools CAD .NET от 765 USD. LibreDWG — GPL-3, не MIT-ядро. Stock Navisworks **не** пишет IFC (плагины требуют их рабочее место).
 
-Связанные: [`NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md`](NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md) · [`../tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md`](../tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md) · [`../architecture/ADR-003-dwg-oda-trial-kt3-2026.md`](../architecture/ADR-003-dwg-oda-trial-kt3-2026.md) · [`CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md`](CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md) · [`../demo/KT3_RVT_NWD_CV_ONEPAGER_2026_08.md`](../demo/KT3_RVT_NWD_CV_ONEPAGER_2026_08.md) · [`SPG_CONSTRUCTION_VS_FM_2026_09.md`](SPG_CONSTRUCTION_VS_FM_2026_09.md).
+Связанные: [`NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md`](NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md) · [`../tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md`](../tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md) · [`../architecture/ADR-003-dwg-oda-trial-kt3-2026.md`](../architecture/ADR-003-dwg-oda-trial-kt3-2026.md) · [`CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md`](CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md) · [`../demo/KT3_RVT_NWD_CV_ONEPAGER_2026_08.md`](../demo/KT3_RVT_NWD_CV_ONEPAGER_2026_08.md).
 
 Checkpoint **`NO_GO`**. `detected_count: 0`. `is_dwg_ready: false`.
 

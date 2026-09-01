@@ -34,6 +34,7 @@ describe("CapabilityHonestyPanel", () => {
     expect(screen.getByTestId("capability-honesty")).toBeTruthy();
     expect(screen.getByText(/1 blocking capability status/i)).toBeTruthy();
     expect(screen.getByText(/dwg dxf=failed/i)).toBeTruthy();
+    expect(screen.getByTestId("capability-skip-banner").textContent).toMatch(/Silence is never success/i);
     expect(screen.getByTestId("divergence-list").textContent).toMatch(/engine_wins/);
   });
 

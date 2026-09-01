@@ -34,6 +34,7 @@ export class IfcSceneController {
   private selectedExpressIds: number[] = [];
   private isolateSelection = false;
   private readonly expressMeshes = new Map<number, THREE.Mesh[]>();
+  private readonly reducedMotion: boolean;
 
   constructor(container: HTMLElement) {
     this.container = container;
@@ -50,7 +51,10 @@ export class IfcSceneController {
     this.container.appendChild(this.renderer.domElement);
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.controls.enableDamping = true;
+    this.reducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    this.controls.enableDamping = !this.reducedMotion;
     this.controls.target.set(0, 1.5, 0);
 
     const ambientLight = new THREE.HemisphereLight("#ffffff", "#94a3b8", 1.4);
@@ -162,6 +166,7 @@ export class IfcSceneController {
   dispose(): void {
     this.clearModel();
     this.stopRenderLoop();
+    this.controls.removeEventListener("change", this.renderOnce);
     this.resizeObserver.disconnect();
     this.controls.dispose();
     this.renderer.dispose();
@@ -263,6 +268,7 @@ export class IfcSceneController {
         mesh.visible = !this.isolateSelection || selectedIds.size === 0 || isSelected;
       }
     }
+    this.renderOnce();
   }
 
   private frameExpressIds(expressIds: readonly number[]): void {
@@ -289,9 +295,19 @@ export class IfcSceneController {
     this.camera.updateProjectionMatrix();
     this.controls.target.copy(center);
     this.controls.update();
+    this.renderOnce();
   }
 
+  private renderOnce = (): void => {
+    this.renderer.render(this.scene, this.camera);
+  };
+
   private startRenderLoop(): void {
+    if (this.reducedMotion) {
+      this.controls.addEventListener("change", this.renderOnce);
+      this.renderOnce();
+      return;
+    }
     if (this.animationHandle !== null) {
       return;
     }
@@ -317,6 +333,7 @@ export class IfcSceneController {
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height, false);
+    this.renderOnce();
   }
 
   private disposeObject(object: THREE.Object3D): void {

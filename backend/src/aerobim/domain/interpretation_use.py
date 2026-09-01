@@ -370,6 +370,32 @@ LEDGER: tuple[InferenceRow, ...] = (
         "operational_hygiene",
     ),
     _row(
+        "SPG-01",
+        "tracker",
+        "Консалтинг СПГ август 2026: речь про данные ПД/РД, не рынок FM и не SAM",
+        "8-page construction cut is attributed speech. 60-page FM/PM cut is adjacent. "
+        "PDFs stay off git. Filename stays off TIER0.",
+        "SPG figures as AeroBIM SAM or accuracy; 49% TIM as pack ready; "
+        "digital twin / FM product; HubEx percent as ours; ISUP by 21.09",
+        "docs/quality/K4_COMMERCIAL_PATH_2026_08.md",
+        "Keep the consulting pin; keep the filename off the jury map",
+        "operational_hygiene",
+    ),
+    _row(
+        "UI-01",
+        "tracker",
+        "ТЗ интерфейс: рабочее место полного цикла, не review shell как сдача",
+        "Shell inspects persisted reports. This pass wires upload, job poll, KPI, "
+        "eight-screen IA, and a dev-only git walls+IDS seed. UI does not write "
+        "summary.passed. Natives fail-closed. Jury laptop stays CLI.",
+        "Full-cycle workplace delivered; native RVT in UI; 30 min SLA measured; "
+        "10D live; XLSX export; Checkpoint GO from chrome; seed as customer pack",
+        "docs/quality/UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md",
+        "Jury laptop CLI; mentor may seed git fixture; keep NO_GO; natives fail-closed. "
+        "Demo seed stays off published OpenAPI.",
+        "operational_hygiene",
+    ),
+    _row(
         "TL-01",
         "techlab",
         "КТ#2 (до 20.08): этап МИК «доработка»",

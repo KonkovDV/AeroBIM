@@ -4,7 +4,7 @@ title: "Jury-pack Red Team triage — 2026-09-01"
 date: "2026-09-01"
 last_updated: "2026-09-01"
 status: active
-version: "1.0.0"
+version: "1.0.3"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -27,7 +27,7 @@ claim_boundary: >
 
 Checkpoint **`NO_GO`**. `detected_count: 0`. `processed: false`. Семь задач Техлаба — **Uncertain**.
 
-Связанные: [`TRACKER_EIGHT_TASKS_2026_08.md`](TRACKER_EIGHT_TASKS_2026_08.md) · [`KT3_IN_REPO_WORKPLAN_2026_08_27.md`](KT3_IN_REPO_WORKPLAN_2026_08_27.md) · [`INTERPRETATION_USE_LEDGER_2026_08.md`](INTERPRETATION_USE_LEDGER_2026_08.md) · [`FORMAT_INGEST_TRIAGE_2026_09.md`](FORMAT_INGEST_TRIAGE_2026_09.md).
+Связанные: [`TRACKER_EIGHT_TASKS_2026_08.md`](TRACKER_EIGHT_TASKS_2026_08.md) · [`KT3_IN_REPO_WORKPLAN_2026_08_27.md`](KT3_IN_REPO_WORKPLAN_2026_08_27.md) · [`INTERPRETATION_USE_LEDGER_2026_08.md`](INTERPRETATION_USE_LEDGER_2026_08.md) · [`FORMAT_INGEST_TRIAGE_2026_09.md`](FORMAT_INGEST_TRIAGE_2026_09.md) · [`UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md`](UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md).
 
 ## Этот проход (KILL / HOLD / ACCEPT)
 
@@ -55,6 +55,9 @@ Checkpoint **`NO_GO`**. `detected_count: 0`. `processed: false`. Семь зад
 | RT-JURY-TIER0-SHRINK | TIER0 всё ещё рекламирует census / family / local max-pass / SIG-01 volume | Эти файлы сняты с TIER0; intro говорит не exhibit |
 | RT-JURY-OSINT-IGNORED | OSINT-вектор сессии — отслеживаемый файл GitHub | Вектор в gitignore; unpublished-list honesty lock |
 | RT-JURY-NOT-EXHIBIT | Инженерные пины выглядят exhibit, потому что TIER0 их перечислял | Intro TIER0: census / family / local max-pass — не карта жюри |
+| RT-JURY-SPG-HOP | Клик с TIER0 / восьми задач на консалтинговый пин 49% ТИМ | Пин остаётся; имя файла снято с поверхностей жюри |
+| RT-JURY-UI-LIVE | Hop с UI-пина TIER0 на «рабочее место сдано» / Checkpoint GO | Пин: review shell; ноутбук жюри = CLI |
+| RT-JURY-TZ-UI-DONE | Строка матрицы ТЗ Web UI = done как exhibit сдачи | Строка **partial**; SSOT — UI-пин |
 
 ## Что чинить в речи и git на этом проходе
 
@@ -62,6 +65,8 @@ Checkpoint **`NO_GO`**. `detected_count: 0`. `processed: false`. Семь зад
 2. **Не цитировать census-счётчики** на карте жюри, в IUA-таблице и в DATA_STATEMENT.
 3. **Не говорить «пакет обработан»** и не подменять Tangl.
 4. **Не коммитить** локальный IFC/runtime pin как `attested_by=ci`.
+5. **Не давать hop** с карты жюри на консалтинговый пин с рыночными %. Имя файла не на TIER0 и не в связанных ссылках восьми задач.
+6. **Не читать** review shell или строку «Web UI» матрицы ТЗ как сдачу рабочего места. Показ жюри = CLI.
 
 Не добавлять фамилии в denylist без ротации CI-секрета. Не удалять инженерные пины.
 

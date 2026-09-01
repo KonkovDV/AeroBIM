@@ -1,26 +1,5 @@
 import type { CapabilityState, DivergenceRecord, ReportCapabilities } from "../lib/types";
-
-const CAPABILITY_ORDER: Array<keyof ReportCapabilities> = [
-  "ifc_schema",
-  "ifc_validation",
-  "ids",
-  "unit_scale",
-  "clash",
-  "norm_rule_packs",
-  "section_pairing",
-  "raster",
-  "dwg_dxf",
-  "cv_human_level",
-  "mep_system_clash",
-  "calculation_match",
-  "calculation_correctness",
-  "package_completeness",
-  "llm_advisory",
-  "extraction_integrity",
-  "qualified_signature",
-];
-
-const BLOCKING_STATES: ReadonlySet<CapabilityState> = new Set(["failed", "missing"]);
+import { BLOCKING_STATES, capabilityRows } from "../lib/capability-copy";
 
 function formatLabel(key: string): string {
   return key.replaceAll("_", " ");
@@ -56,13 +35,15 @@ export default function CapabilityHonestyPanel({
     );
   }
 
-  const rows = CAPABILITY_ORDER.flatMap((key) => {
-    const entry = capabilities[key];
-    if (!entry) return [];
-    return [{ key, ...entry }];
-  });
+  const rows = capabilityRows(capabilities);
 
   const blocking = rows.filter((row) => BLOCKING_STATES.has(row.status));
+  const skipped = rows.filter(
+    (row) =>
+      row.status === "skipped" ||
+      row.status === "not_verified" ||
+      row.status === "not_implemented",
+  );
 
   return (
     <section className="capability-honesty" data-testid="capability-honesty">
@@ -70,7 +51,7 @@ export default function CapabilityHonestyPanel({
         <h3>Capability honesty</h3>
         <p className="compact-copy">
           FAILED/MISSING capabilities block <code>summary.passed</code>. Advisory disagreements
-          never flip the deterministic verdict alone.
+          never flip the deterministic verdict alone. UI never writes that flag (ADR-001).
         </p>
       </div>
 
@@ -79,6 +60,14 @@ export default function CapabilityHonestyPanel({
           {blocking.length} blocking capability status
           {blocking.length === 1 ? "" : "es"}:{" "}
           {blocking.map((row) => `${formatLabel(row.key)}=${row.status}`).join("; ")}
+        </p>
+      )}
+
+      {skipped.length > 0 && (
+        <p className="capability-skip-banner" role="status" data-testid="capability-skip-banner">
+          Silence is never success. Skipped / not_verified / not_implemented:{" "}
+          {skipped.map((row) => `${formatLabel(row.key)}=${row.status}`).join("; ")}. A green
+          report from silence is forbidden.
         </p>
       )}
 

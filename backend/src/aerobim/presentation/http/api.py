@@ -100,6 +100,10 @@ def create_http_app(container: Container) -> FastAPI:
 
     # Inclusion order mirrors the historical registration order in this module.
     app.include_router(build_system_router(ctx))
+    if settings.is_dev_environment:
+        from aerobim.presentation.http.routes.demo import build_demo_router
+
+        app.include_router(build_demo_router(ctx))
     app.include_router(build_uploads_router(ctx))
     app.include_router(build_analyze_router(ctx))
     app.include_router(build_reports_router(ctx))

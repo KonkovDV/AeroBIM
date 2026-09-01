@@ -4,7 +4,7 @@ title: "SPG August 2026 — construction digitalization vs FM/PM (speech pin)"
 date: "2026-09-01"
 last_updated: "2026-09-01"
 status: active
-version: "1.0.0"
+version: "1.0.1"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -22,7 +22,11 @@ claim_boundary: >
 
 Checkpoint **`NO_GO`**. `detected_count: 0`. Не TAM. Не SAM. Не A1–A8.
 
-Связанные: [`K4_COMMERCIAL_PATH_2026_08.md`](K4_COMMERCIAL_PATH_2026_08.md) · [`FORMAT_INGEST_TRIAGE_2026_09.md`](FORMAT_INGEST_TRIAGE_2026_09.md) · [`TRACKER_EIGHT_TASKS_2026_08.md`](TRACKER_EIGHT_TASKS_2026_08.md).
+Машина: `python -c "from aerobim.domain.spg_speech_triage import spg_speech_triage_snapshot"`.
+
+Связанные: [`K4_COMMERCIAL_PATH_2026_08.md`](K4_COMMERCIAL_PATH_2026_08.md) · [`JURY_PACK_TRIAGE_2026_09.md`](JURY_PACK_TRIAGE_2026_09.md).
+
+Имя этого файла **не** на TIER0 и **не** на поверхностях жюри (клик с карточки восьми задач на 49% ТИМ запрещён).
 
 ## Два файла, два рынка
 
@@ -57,8 +61,29 @@ FM/PM: SODIS, HubEx, 1С-аренда, Домиленд, UJIN, Doma.ai и сос
 |---|---|
 | PDF в git | **Нет** (копирайт СПГ + не exhibit жюри) |
 | Код ingest / FM / digital twin | **Нет** — не пишем |
-| Речь / SSOT | Этот файл + абзац в К4 + ссылка с восьми задач |
+| Речь / SSOT | Этот файл (owner pin) + абзац в К4 без имени файла на карте жюри |
 | Карта жюри (TIER0) | **Нет** — консалтинг не exhibit |
 | Точность / SLA / GO | **Нет** |
+
+## Этот проход (KILL / HOLD / ACCEPT)
+
+| ID | Атака | Тормоз |
+|---|---|---|
+| RT-SPG-SAM | Срезы СПГ или 10,1 млрд BIM = наш SAM | К4: TAM attributed; SAM в рублях пуст |
+| RT-SPG-TIM-PACK | 49% ТИМ = комплект Самолёта измерим | Пилот ТИМ ≠ ПД+РД+IFC под IDS; RT-001 OPEN |
+| RT-SPG-GLUE-26 | Склеить ТИМ 49% и BIM 26% | Два отчёта, два конструкта |
+| RT-SPG-FM-SHIP | Корабль digital twin / FM из 60 стр. | ТЗ — верификация ПД/РД |
+| RT-SPG-FOREIGN-PCT | HubEx / WillowTwin −N% в A1–A8 | Чужой корпус; часы пустые |
+| RT-SPG-ISUP | 398-р = встроиться в ИСУП к КТ#3 | ТЗ 2.2.2 файловый обмен; BFF 501 |
+| RT-SPG-PDF-GIT | Коммит PDF СПГ в публичное дерево | Копирайт; не exhibit |
+| RT-SPG-TIER0 | Пин на TIER0 или клик с восьми задач | Имя файла снято с карты жюри |
+| RT-SPG-ACCURACY | Агрегаты СПГ как точность AeroBIM | `detected_count=0` |
+| RT-SPG-CAPEX | Падает ввод жилья = просим бюджет на ИИ | К4 — нулевой вход |
+| RT-SPG-RVT | Охват ТИМ = native Revit/Navisworks | Обмен IFC+PDF/A; native fail-closed |
+| RT-SPG-ATTR | Цитировать средние 398-р без «АО СПГ» | Vendor просит атрибуцию |
+| RT-SPG-KEEP-PIN | Удалить пин, чтобы исчез тормоз 49% | Пин оставить; с карты жюри снять |
+| RT-SPG-SPLIT | Один бренд СПГ = один рынок | 8 стр. стройка vs 60 стр. FM/PM |
+| RT-SPG-DATA | Молчание ТЗ про XML = незакрытый ИИ | Речь: сначала машиночитаемые ПД/РД |
+| RT-SPG-ZERO | Давление переделок = запрос на инновации | К4 остаётся нулевым входом |
 
 Не говорить: «СПГ посчитал рынок ИИ — мы в нём»; «49% ТИМ = пакет Самолёта готов»; «мы делаем digital twin / FM».

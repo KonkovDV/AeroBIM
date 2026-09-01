@@ -2,10 +2,11 @@ import { fireEvent, render, screen, waitFor, within } from "@testing-library/rea
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ClashResult, DrawingAsset, ValidationIssue, ValidationReport } from "./lib/types";
 
-const { fetchReportsMock, fetchReportMock, postReviewEventMock } = vi.hoisted(() => ({
+const { fetchReportsMock, fetchReportMock, postReviewEventMock, fetchReviewEventsMock } = vi.hoisted(() => ({
   fetchReportsMock: vi.fn(),
   fetchReportMock: vi.fn(),
   postReviewEventMock: vi.fn(),
+  fetchReviewEventsMock: vi.fn(),
 }));
 
 const clipboardWriteTextMock = vi.fn();
@@ -19,6 +20,7 @@ vi.mock("./lib/api", async () => {
     fetchReports: fetchReportsMock,
     fetchReport: fetchReportMock,
     postReviewEvent: postReviewEventMock,
+    fetchReviewEvents: fetchReviewEventsMock,
     getApiBaseUrl: () => "http://localhost:8080",
   };
 });
@@ -226,6 +228,8 @@ describe("App", () => {
     fetchReportMock.mockReset();
     postReviewEventMock.mockReset();
     postReviewEventMock.mockResolvedValue({ event: {} });
+    fetchReviewEventsMock.mockReset();
+    fetchReviewEventsMock.mockResolvedValue({ events: [], count: 0 });
     fetchReportsMock.mockResolvedValue({
       reports: [toReportSummary(report)],
       count: 1,
@@ -572,6 +576,8 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "HTML" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "JSON" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "BCF" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "BCF 3.0" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "PDF" })).toBeTruthy();
     const drawingEvidencePanel = container.querySelector(".drawing-evidence-panel") as HTMLElement;
     const activeIssueBlock = screen.getByTestId("provenance-active-issue");
     expect(within(drawingEvidencePanel).getAllByText("A-102 · page 2").length).toBeGreaterThanOrEqual(2);
@@ -778,5 +784,50 @@ describe("App", () => {
       );
     });
     expect(await screen.findByText("Rejected")).toBeTruthy();
+  });
+
+  it("opens the TZ coverage IA map from workplace nav", async () => {
+    render(<App />);
+    expect(await screen.findByText("Residential Tower Alpha")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Эффект" }));
+    expect(screen.getByTestId("tz-workplace-coverage")).toBeTruthy();
+    expect(screen.getByTestId("review-kpi-panel")).toBeTruthy();
+    expect(screen.getByText("SCR-DIFF")).toBeTruthy();
+    expect(screen.getByText(/no_longer_reported/)).toBeTruthy();
+  });
+
+  it("exposes eight workplace screens and a two-report version diff", async () => {
+    render(<App />);
+    expect(await screen.findByText("Residential Tower Alpha")).toBeTruthy();
+    for (const label of [
+      "Проекты",
+      "Загрузка",
+      "Прогон",
+      "Эксперт",
+      "Замечание",
+      "Экспорт",
+      "Версии",
+      "Эффект",
+    ]) {
+      expect(screen.getByRole("button", { name: label })).toBeTruthy();
+    }
+    fireEvent.click(screen.getByRole("button", { name: "Версии" }));
+    expect(screen.getByTestId("version-diff-panel")).toBeTruthy();
+    expect(screen.getByText(/no_longer_reported ≠ исправлено/)).toBeTruthy();
+  });
+
+  it("moves to the next finding with J and confirms with A", async () => {
+    render(<App />);
+    const viewer = await screen.findByTestId("viewer-stub");
+    expect(within(viewer).getByText("DRAW-001")).toBeTruthy();
+    fireEvent.keyDown(window, { key: "j" });
+    expect(await within(viewer).findByText("No spatial selection")).toBeTruthy();
+    fireEvent.keyDown(window, { key: "a" });
+    await waitFor(() => {
+      expect(postReviewEventMock).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({ event_type: "accepted", issue_rule_id: "DRAW-SECOND" }),
+      );
+    });
   });
 });

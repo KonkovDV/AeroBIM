@@ -33,7 +33,7 @@ class JuryPackTriageTests(unittest.TestCase):
             snap["kill_count"] + snap["hold_count"] + snap["accept_count"],
             len(TRIAGE_ROWS),
         )
-        self.assertGreaterEqual(snap["kill_count"], 15)
+        self.assertGreaterEqual(snap["kill_count"], 17)
         self.assertGreaterEqual(snap["hold_count"], 2)
         self.assertGreaterEqual(snap["accept_count"], 5)
         blob = json.dumps(snap)
@@ -75,6 +75,9 @@ class JuryPackTriageTests(unittest.TestCase):
             "RT-JURY-RENAME",
             "RT-JURY-TIER0-SHRINK",
             "RT-JURY-NOT-EXHIBIT",
+            "RT-JURY-SPG-HOP",
+            "RT-JURY-UI-LIVE",
+            "RT-JURY-TZ-UI-DONE",
         ):
             self.assertIn(row_id, ids)
 

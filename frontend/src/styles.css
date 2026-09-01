@@ -1,25 +1,23 @@
-@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap");
-
 :root {
   color-scheme: light;
-  --bg: #f3efe5;
-  --bg-strong: #e5dcc8;
-  --panel: rgba(255, 252, 247, 0.84);
-  --panel-border: rgba(43, 58, 79, 0.12);
-  --text: #18212e;
-  --muted: #5e6b7c;
-  --accent: #0f766e;
-  --accent-strong: #115e59;
-  --danger: #c2410c;
-  --danger-soft: #fff1eb;
-  --warning: #b45309;
-  --warning-soft: #fff7dd;
+  --bg: #eef3f8;
+  --bg-strong: #d7e4f0;
+  --panel: rgba(255, 255, 255, 0.9);
+  --panel-border: rgba(30, 74, 110, 0.14);
+  --text: #15202b;
+  --muted: #4d5d6d;
+  --accent: #1a6f9e;
+  --accent-strong: #12567c;
+  --danger: #b42318;
+  --danger-soft: #fef3f2;
+  --warning: #b54708;
+  --warning-soft: #fffaeb;
   --pass: #166534;
   --pass-soft: #ecfdf3;
-  /* Samolet 2.2.3: laconic UI. Brand book is not in git — alias until tokens arrive. */
+  /* TZ asked laconic Samolet-blue aliases. Brand book is not in git. */
   --brand-primary: var(--accent);
-  --shadow: 0 24px 70px rgba(24, 33, 46, 0.12);
-  --radius: 22px;
+  --shadow: 0 18px 48px rgba(18, 86, 124, 0.1);
+  --radius: 14px;
 }
 
 * {
@@ -30,12 +28,11 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  font-family: "Segoe UI", system-ui, sans-serif;
   color: var(--text);
   background:
-    radial-gradient(circle at top left, rgba(15, 118, 110, 0.16), transparent 30%),
-    radial-gradient(circle at bottom right, rgba(194, 65, 12, 0.14), transparent 28%),
-    linear-gradient(180deg, #f7f3ea 0%, var(--bg) 48%, #ebe4d3 100%);
+    radial-gradient(circle at top left, rgba(26, 111, 158, 0.12), transparent 32%),
+    linear-gradient(180deg, #f7fafc 0%, var(--bg) 52%, #e4edf5 100%);
 }
 
 a {
@@ -108,15 +105,28 @@ input {
   display: grid;
   gap: 8px;
   padding: 18px 20px;
-  font-family: "IBM Plex Mono", monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.85rem;
 }
 
 .workspace-grid {
   display: grid;
-  grid-template-columns: 0.95fr 1.2fr 1.15fr;
+  grid-template-columns: var(--col-left, 0.95fr) 8px var(--col-mid, 1.2fr) 8px var(--col-right, 1.15fr);
   gap: 18px;
   align-items: start;
+}
+
+.grid-resizer {
+  cursor: col-resize;
+  align-self: stretch;
+  min-height: 24px;
+  border-radius: 4px;
+  background: rgba(24, 33, 46, 0.08);
+}
+
+.grid-resizer:focus-visible {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 2px;
 }
 
 .side-stack {
@@ -186,7 +196,19 @@ input {
   background: rgba(255, 255, 255, 0.82);
   border-radius: 999px;
   padding: 10px 14px;
+  min-height: 24px;
   cursor: pointer;
+}
+
+.toolbar-button:focus-visible,
+button:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+input:focus-visible,
+.issue-card:focus-visible,
+.report-card:focus-visible {
+  outline: 2px solid var(--accent-strong, #0f766e);
+  outline-offset: 2px;
 }
 
 .report-group-toggle.active {
@@ -236,7 +258,7 @@ input {
 .preset-transfer-status {
   align-self: center;
   font-size: 0.78rem;
-  font-family: "IBM Plex Mono", monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 .preset-transfer-status-exported,
@@ -262,7 +284,7 @@ input {
   padding: 4px 8px;
   border-radius: 999px;
   font-size: 0.72rem;
-  font-family: "IBM Plex Mono", monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -293,7 +315,7 @@ input {
 .share-link-status {
   align-self: center;
   font-size: 0.78rem;
-  font-family: "IBM Plex Mono", monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 .share-link-status-copied {
@@ -543,7 +565,7 @@ input {
 .selection-badge-active {
   background: rgba(24, 33, 46, 0.08);
   color: var(--text);
-  font-family: "IBM Plex Mono", monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   text-transform: none;
   letter-spacing: 0;
 }
@@ -554,6 +576,11 @@ input {
 .collection-stack {
   display: grid;
   gap: 12px;
+}
+
+.issue-list-virtual {
+  max-height: min(70vh, 720px);
+  overflow: auto;
 }
 
 .report-card,
@@ -623,7 +650,7 @@ input {
   margin-left: auto;
   color: var(--muted);
   font-size: 0.78rem;
-  font-family: "IBM Plex Mono", monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 .remark-editor textarea {
@@ -650,7 +677,7 @@ input {
   display: block;
   margin-top: 12px;
   color: var(--muted);
-  font-family: "IBM Plex Mono", monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.78rem;
 }
 
@@ -693,7 +720,7 @@ input {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  font-family: "IBM Plex Mono", monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 .origin-pill.origin-deterministic {
@@ -727,7 +754,7 @@ input {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  font-family: "IBM Plex Mono", monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 .confidence-pill.confidence-low {
@@ -1075,7 +1102,7 @@ input {
 
 .detail-grid dd {
   margin: 6px 0 0;
-  font-family: "IBM Plex Mono", monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.88rem;
 }
 
@@ -1166,6 +1193,10 @@ input {
     grid-template-columns: 1fr;
   }
 
+  .grid-resizer {
+    display: none;
+  }
+
   .panel {
     min-height: auto;
   }
@@ -1211,4 +1242,158 @@ input {
   .detail-grid {
     grid-template-columns: 1fr;
   }
+}
+
+.workspace-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.workspace-alt {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.capability-top-banner {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.capability-top-banner-ok {
+  background: var(--pass-soft);
+  color: var(--pass);
+}
+
+.finding-group-title {
+  margin: 12px 0 8px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.remark-tz-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px 16px;
+  margin: 0 0 12px;
+}
+
+.remark-tz-fields dt {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.remark-tz-fields dd {
+  margin: 0;
+}
+
+.pack-dropzone {
+  margin: 0 0 12px;
+  padding: 18px;
+  border: 1px dashed rgba(24, 33, 46, 0.24);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.pack-dropzone.dragging {
+  border-color: var(--accent-strong, #0f766e);
+  background: rgba(15, 118, 110, 0.08);
+}
+
+.evidence-stepper,
+.analyze-stages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px;
+}
+
+.evidence-step,
+.analyze-stage {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(24, 33, 46, 0.12);
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.evidence-step.ready,
+.analyze-stage.active {
+  color: var(--text);
+  border-color: rgba(15, 118, 110, 0.5);
+  background: rgba(15, 118, 110, 0.12);
+}
+
+.role-alias {
+  display: grid;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.review-history h4 {
+  margin: 16px 0 8px;
+  font-size: 0.9rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .report-card,
+  .issue-card {
+    transition: none;
+  }
+}
+
+.upload-honesty {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.job-status {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px 16px;
+  margin: 12px 0 0;
+}
+
+.job-status dt {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.job-status dd {
+  margin: 0;
+}
+
+.kpi-list {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.triage-help {
+  position: sticky;
+  bottom: 12px;
+  margin-top: 16px;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  border: 1px solid var(--panel-border);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.demo-fixture-panel {
+  margin-bottom: 16px;
+}
+
+.header-card strong {
+  word-break: break-all;
 }

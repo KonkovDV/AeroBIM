@@ -2,7 +2,7 @@
 ---
 title: "КТ#3 — сценарий оператора (живой CLI из git)"
 date: "2026-08-25"
-last_updated: "2026-08-27"
+last_updated: "2026-09-01"
 checkpoint: NO_GO
 closes_rt001: false
 closes_rt002: false
@@ -59,7 +59,7 @@ Clash/MEP на этом профиле — честный SKIPPED, не подд
 
 P1, только если осталось время: `python -m aerobim.tools.run_demo_vertical_slice` (оверлей PDF). Не ядро вердикта.
 
-Frontend (`npm ci` / `npm run dev`) — не показ КТ#3, если время жюри <12 мин.
+Frontend (`npm ci` / `npm run dev`) — не показ КТ#3, если время жюри <12 мин. Трек ИТ-ментора: кнопка «Загрузить демонстрационный комплект» (`POST /v1/demo/seed-fixture`, только development). Не говорить «рабочее место сдано». Не сидировать в грязный `var/reports` как «объём канала».
 
 ## Две ноги (не склеивать)
 

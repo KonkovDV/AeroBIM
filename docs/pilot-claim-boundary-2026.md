@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Pilot Claim Boundary 2026"
 status: active
-version: "1.13.10"
+version: "1.13.14"
 last_updated: "2026-09-01"
 tags: [aerobim, pilot, claims, evidence]
 ---
@@ -168,7 +168,9 @@ This document separates **verified repository evidence** from **roadmap intent**
 35. Publishable CI counts come only from `docs/evidence/runtime-baseline-latest.json`. Historical blocker-file figures (SHA `019962141606`) are a prior pin, not the current SSOT.
 36. Native DWG/RVT/NWD are **not implemented**. Default IFC **SPF** cap stays **256 MiB**. 1.5 GB is ingest + RocksDB analyze, not SPF RAM and not WASM. Experiment B KR headline is **≈16.7 %** (4/24); **≈8.3 %** is the Task-3 waypoint, not the current detected share.
 37. Closed Autodesk CAD and `.lir` are **not** an ingest product. KT#3 exchange is IFC + PDF/A. Stock Navisworks does not write IFC. ODA trial is measurement, not a product ([`quality/FORMAT_INGEST_TRIAGE_2026_09.md`](quality/FORMAT_INGEST_TRIAGE_2026_09.md)).
-38. Strategy Partners / AO SPG August 2026 notes are **attributed speech**, not SAM and not a digital-twin / FM product. The 8-page construction cut supports machine-readable PD/RD; the 60-page property-IT cut is adjacent. PDFs stay off git ([`quality/SPG_CONSTRUCTION_VS_FM_2026_09.md`](quality/SPG_CONSTRUCTION_VS_FM_2026_09.md)).
+38. Strategy Partners / AO SPG August 2026 notes are **attributed speech**, not SAM and not a digital-twin / FM product. The 8-page construction cut supports machine-readable PD/RD; the 60-page property-IT cut is adjacent. PDFs stay off git. The owner pin is not a TIER0 exhibit.
+39. The browser surface is a **review shell**, not a delivered full-cycle expert workplace. UI does **not** write `summary.passed`. Native RVT/NWD/DWG stay fail-closed. 30 minutes / 5–10 packs per day are TZ goals, not measured SLA. No live 10D/Tangl connector ([`quality/UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md`](quality/UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md)).
+40. `POST /v1/demo/seed-fixture` is **development-only** and copies git `samples/` walls+IDS, not a customer pack. Two fire-rating fixture findings are **not** product accuracy. The published OpenAPI contract does **not** list the seed. UI CSS does **not** load Google Fonts. The sitting-member KT#3 laptop track stays `run_kt3_jury`. The TZ compliance matrix Web UI row is **partial**, not done.
 
 ## Reproducibility baseline
 

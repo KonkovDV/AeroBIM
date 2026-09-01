@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM — карта для жюри Техлаба и МИК"
 status: active
-version: "4.8.27"
+version: "4.8.29"
 last_updated: "2026-09-01"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
@@ -13,7 +13,7 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 
 **Формула стадии (дословно; источник — [карточка речи](demo/KT2_JURY_FAQ_2026_08_12.md)):** Мы на стадии доработки. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение ещё не начались. `NO_GO` сохраняется, пока нет независимого размеченного корпуса, двух разметчиков, профиля приёмки (публичные IDS экспертизы — измерение; подпись Самолёта — внедрение) и подтверждения импорта в СОД.
 
-**Объект КТ#3.** Речь и сценарий: [карточка КТ#3](demo/KT3_JURY_FAQ_2026_08_25.md) · [оператор](demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md) · [трекер, 6 задач](demo/KT3_TRACKER_SIX_TASKS_2026_08.md). Показ жюри = `python -m aerobim.tools.run_kt3_jury` (живой CLI из git). В репозитории нет файлов заказчика. Замечание: суть + пункт нормы (не выдуман) + этаж/ось из `IfcSpatialIndex`, если GUID попал в индекс; иначе явно «нет в индексе», не из OCR. Модель 1,5 ГБ — RocksDB, не SPF RAM; WASM 256 МиБ. Unsigned OOS: [`../samples/oos/`](../samples/oos/) — в `DATASET_MANIFEST.json`, не закрывает RT.
+**Объект КТ#3.** Речь и сценарий: [карточка КТ#3](demo/KT3_JURY_FAQ_2026_08_25.md) · [оператор](demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md) · [трекер, 6 задач](demo/KT3_TRACKER_SIX_TASKS_2026_08.md). Показ жюри = `python -m aerobim.tools.run_kt3_jury` (живой CLI из git). Review shell (`frontend/`) — трек ИТ-ментора, не чужой ноутбук жюри. В репозитории нет файлов заказчика. Замечание: суть + пункт нормы (не выдуман) + этаж/ось из `IfcSpatialIndex`, если GUID попал в индекс; иначе явно «нет в индексе», не из OCR. Модель 1,5 ГБ — RocksDB, не SPF RAM; WASM 256 МиБ. Unsigned OOS: [`../samples/oos/`](../samples/oos/) — в `DATASET_MANIFEST.json`, не закрывает RT.
 
 **Пять кресел отборочной комиссии №7** (роли, **не** ФИО; три кресла партнёра по согласованию): [брифы кресел](quality/MIK_SEAT_BRIEFS_2026_08.md). Инженерные пины инвентаря канала (census / family / local max-pass) **не** карта жюри и **не** exhibit.
 
@@ -62,6 +62,7 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 | [Сверка весов с PDF](quality/ORDER_WEIGHTS_VERIFICATION_2026_09.md) | Колонка PDF пустая; UNVERIFIED; attributed |
 | [Лицензионная вилка CAD (OSINT 30.08)](quality/NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md) | Sustaining ≠ BimRv; не продукт CAD |
 | [Триаж форматов ingest](quality/FORMAT_INGEST_TRIAGE_2026_09.md) | Обмен IFC+PDF/A; native fail-closed; trial ≠ продукт |
+| [Триаж UI рабочего места](quality/UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md) | Review shell ≠ полный цикл; UI не пишет summary.passed; показ жюри = CLI |
 | [Критический путь окна КТ#3](quality/KT3_WINDOW_CRITICAL_PATH_2026_09.md) | OIDC 501; Wilson n=6; RT-002 split; TBD confirm |
 | [Восемь задач трекера 29.08](quality/TRACKER_EIGHT_TASKS_2026_08.md) | SIG-01…08; volume≠accuracy; BFF 501 |
 | [Триаж поверхностей жюри](quality/JURY_PACK_TRIAGE_2026_09.md) | Роли не ФИО; census не карта; не exhibit |

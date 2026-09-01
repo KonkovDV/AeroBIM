@@ -78,8 +78,18 @@ export function getApiBaseUrl(): string {
   return apiBaseUrl;
 }
 
-export function buildExportUrl(reportId: string, format: "json" | "html" | "bcf"): string {
-  return `${apiBaseUrl}/v1/reports/${reportId}/export/${format}`;
+export type ExportFormat = "json" | "html" | "bcf" | "pdf";
+
+export function buildExportUrl(
+  reportId: string,
+  format: ExportFormat,
+  options?: { bcfVersion?: "2.1" | "3.0" },
+): string {
+  const url = `${apiBaseUrl}/v1/reports/${reportId}/export/${format}`;
+  if (format === "bcf" && options?.bcfVersion) {
+    return `${url}?version=${options.bcfVersion}`;
+  }
+  return url;
 }
 
 export function buildReportIfcSourceUrl(reportId: string): string {
@@ -175,8 +185,12 @@ export async function fetchDrawingAssetPreviewBlobUrl(reportId: string, assetId:
   return URL.createObjectURL(blob);
 }
 
-export async function downloadExport(reportId: string, format: "json" | "html" | "bcf"): Promise<void> {
-  const response = await fetch(buildExportUrl(reportId, format), {
+export async function downloadExport(
+  reportId: string,
+  format: ExportFormat,
+  options?: { bcfVersion?: "2.1" | "3.0" },
+): Promise<void> {
+  const response = await fetch(buildExportUrl(reportId, format, options), {
     headers: authHeaders({ Accept: "*/*" }),
     credentials: "include",
   });
@@ -206,6 +220,59 @@ export type ReviewEventType =
   | "superseded"
   | "escalated";
 
+export type ReviewEventRow = {
+  event_id: string;
+  event_type: string;
+  created_at: string;
+  issue_rule_id?: string | null;
+  finding_id?: string | null;
+  note?: string | null;
+  actor?: string | null;
+};
+
+export async function fetchReviewEvents(
+  reportId: string,
+  init?: { signal?: AbortSignal },
+): Promise<{ events: ReviewEventRow[]; count: number }> {
+  return readJson<{ events: ReviewEventRow[]; count: number }>(
+    `${apiBaseUrl}/v1/reports/${reportId}/review-events`,
+    init,
+  );
+}
+
+export type RevisionDiffPayload = {
+  artifact: string;
+  note: string;
+  old_report_id: string;
+  new_report_id: string;
+  old_revision: string | null;
+  new_revision: string | null;
+  newly_reported: string[];
+  no_longer_reported: string[];
+  still_reported: string[];
+  elements_only_in_old: string[];
+  elements_only_in_new: string[];
+  summary: {
+    newly_reported: number;
+    no_longer_reported: number;
+    still_reported: number;
+    elements_only_in_old: number;
+    elements_only_in_new: number;
+  };
+};
+
+export async function fetchRevisionDiff(
+  baselineId: string,
+  againstId: string,
+  init?: { signal?: AbortSignal },
+): Promise<RevisionDiffPayload> {
+  const query = new URLSearchParams({ against: againstId });
+  return readJson<RevisionDiffPayload>(
+    `${apiBaseUrl}/v1/reports/${baselineId}/revision-diff?${query.toString()}`,
+    init,
+  );
+}
+
 export async function postReviewEvent(
   reportId: string,
   body: {
@@ -231,7 +298,10 @@ export async function postReviewEvent(
   return (await response.json()) as { event: Record<string, unknown> };
 }
 
-export async function uploadDocument(file: File): Promise<{
+export async function uploadDocument(
+  file: File,
+  options?: { onProgress?: (percent: number) => void; signal?: AbortSignal },
+): Promise<{
   upload_id: string;
   filename: string;
   path: string;
@@ -239,27 +309,155 @@ export async function uploadDocument(file: File): Promise<{
   content_type: string | null;
   object_key: string | null;
 }> {
-  const form = new FormData();
-  form.append("file", file);
-  const headers: Record<string, string> = {};
-  if (apiBearerToken) {
-    headers.Authorization = `Bearer ${apiBearerToken}`;
+  if (!options?.onProgress && !options?.signal) {
+    const form = new FormData();
+    form.append("file", file);
+    const headers: Record<string, string> = {};
+    if (apiBearerToken) {
+      headers.Authorization = `Bearer ${apiBearerToken}`;
+    }
+    const response = await fetch(`${apiBaseUrl}/v1/uploads`, {
+      method: "POST",
+      headers,
+      credentials: "include",
+      body: form,
+    });
+    if (!response.ok) {
+      throw new Error(`Upload failed with ${response.status}: ${response.statusText}`);
+    }
+    return (await response.json()) as {
+      upload_id: string;
+      filename: string;
+      path: string;
+      size_bytes: number;
+      content_type: string | null;
+      object_key: string | null;
+    };
   }
-  const response = await fetch(`${apiBaseUrl}/v1/uploads`, {
+
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", `${apiBaseUrl}/v1/uploads`);
+    xhr.withCredentials = true;
+    if (apiBearerToken) {
+      xhr.setRequestHeader("Authorization", `Bearer ${apiBearerToken}`);
+    }
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable && options?.onProgress) {
+        options.onProgress(Math.round((event.loaded / event.total) * 100));
+      }
+    };
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve(JSON.parse(xhr.responseText) as {
+          upload_id: string;
+          filename: string;
+          path: string;
+          size_bytes: number;
+          content_type: string | null;
+          object_key: string | null;
+        });
+        return;
+      }
+      reject(new Error(`Upload failed with ${xhr.status}: ${xhr.statusText}`));
+    };
+    xhr.onerror = () => reject(new Error("Upload failed"));
+    xhr.onabort = () => reject(new Error("Upload cancelled"));
+    options?.signal?.addEventListener("abort", () => xhr.abort());
+    const form = new FormData();
+    form.append("file", file);
+    xhr.send(form);
+  });
+}
+
+export type ReviewKpiPayload = {
+  report_id: string;
+  kpi: {
+    event_count: number;
+    by_type: Record<string, number>;
+    acceptance_rate: number | null;
+    avg_latency_ms: number | null;
+    opened_count: number;
+    triaged_count: number;
+  };
+};
+
+export async function fetchReviewKpi(
+  reportId: string,
+  init?: { signal?: AbortSignal },
+): Promise<ReviewKpiPayload> {
+  return readJson<ReviewKpiPayload>(`${apiBaseUrl}/v1/reports/${reportId}/review-kpi`, init);
+}
+
+export type AnalyzeJobSnapshot = {
+  job_id: string;
+  status: string;
+  status_url?: string;
+  report_url?: string | null;
+  report_id?: string | null;
+  error_message?: string | null;
+  stage_progress?: string | null;
+  cancel_requested?: boolean;
+  request_id?: string;
+  created_at?: string;
+};
+
+export async function submitAnalyzeProjectPackage(
+  body: { ifc_path?: string; request_id?: string },
+): Promise<AnalyzeJobSnapshot> {
+  const response = await fetch(`${apiBaseUrl}/v1/analyze/project-package/submit`, {
     method: "POST",
-    headers,
+    headers: authHeaders({ "Content-Type": "application/json" }),
     credentials: "include",
-    body: form,
+    body: JSON.stringify(body),
   });
   if (!response.ok) {
-    throw new Error(`Upload failed with ${response.status}: ${response.statusText}`);
+    throwForFailedResponse(response);
   }
-  return (await response.json()) as {
-    upload_id: string;
-    filename: string;
-    path: string;
-    size_bytes: number;
-    content_type: string | null;
-    object_key: string | null;
-  };
+  return (await response.json()) as AnalyzeJobSnapshot;
+}
+
+export async function fetchAnalyzeJob(
+  jobId: string,
+  init?: { signal?: AbortSignal },
+): Promise<AnalyzeJobSnapshot> {
+  return readJson<AnalyzeJobSnapshot>(
+    `${apiBaseUrl}/v1/analyze/project-package/jobs/${jobId}`,
+    init,
+  );
+}
+
+export async function cancelAnalyzeJob(jobId: string): Promise<AnalyzeJobSnapshot> {
+  const response = await fetch(`${apiBaseUrl}/v1/analyze/project-package/jobs/${jobId}/cancel`, {
+    method: "POST",
+    headers: authHeaders(),
+    credentials: "include",
+  });
+  if (!response.ok) {
+    throwForFailedResponse(response);
+  }
+  return (await response.json()) as AnalyzeJobSnapshot;
+}
+
+export type DemoSeedFixtureResponse = {
+  fixture: boolean;
+  checkpoint: string;
+  closes_rt001: boolean;
+  closes_rt002?: boolean;
+  closes_rt003?: boolean;
+  note: string;
+  report_id: string;
+  issue_count: number;
+};
+
+export async function seedDemoFixture(): Promise<DemoSeedFixtureResponse> {
+  const response = await fetch(`${apiBaseUrl}/v1/demo/seed-fixture`, {
+    method: "POST",
+    headers: authHeaders({ "Content-Type": "application/json" }),
+    credentials: "include",
+  });
+  if (!response.ok) {
+    throwForFailedResponse(response);
+  }
+  return (await response.json()) as DemoSeedFixtureResponse;
 }

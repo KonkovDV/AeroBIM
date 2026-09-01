@@ -20,6 +20,7 @@ _RATE_LIMITED_POST_PREFIXES = (
     "/v1/analyze/",
     "/v1/validate/",
     "/v1/uploads/",
+    "/v1/demo/",
 )
 _RATE_LIMITED_GET_EXACT = (
     "/v1/auth/login",

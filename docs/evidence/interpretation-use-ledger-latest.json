@@ -42,7 +42,7 @@
   "closes_rt001": false,
   "closes_rt002": false,
   "closes_rt003": false,
-  "row_count": 87,
+  "row_count": 89,
   "rows": [
     {
       "row_id": "SAM-01",
@@ -402,6 +402,34 @@
       "blocked_inference": "DWG product; native RVT/NWD reader; parse .lir; OCR delivered; Sustaining 7500 USD = RVT; DrawingVQA as AeroBIM accuracy",
       "evidence": "docs/quality/FORMAT_INGEST_TRIAGE_2026_09.md",
       "kt3_condition": "Appointing-party IFC/PDF; readable calc notes; NWD federation as IFC or OOS",
+      "licensed_use": "operational_hygiene",
+      "closes_rt001": false,
+      "closes_rt002": false,
+      "closes_rt003": false,
+      "checkpoint": "NO_GO"
+    },
+    {
+      "row_id": "SPG-01",
+      "source": "tracker",
+      "requirement": "Консалтинг СПГ август 2026: речь про данные ПД/РД, не рынок FM и не SAM",
+      "licensed_inference": "8-page construction cut is attributed speech. 60-page FM/PM cut is adjacent. PDFs stay off git. Filename stays off TIER0.",
+      "blocked_inference": "SPG figures as AeroBIM SAM or accuracy; 49% TIM as pack ready; digital twin / FM product; HubEx percent as ours; ISUP by 21.09",
+      "evidence": "docs/quality/K4_COMMERCIAL_PATH_2026_08.md",
+      "kt3_condition": "Keep the consulting pin; keep the filename off the jury map",
+      "licensed_use": "operational_hygiene",
+      "closes_rt001": false,
+      "closes_rt002": false,
+      "closes_rt003": false,
+      "checkpoint": "NO_GO"
+    },
+    {
+      "row_id": "UI-01",
+      "source": "tracker",
+      "requirement": "ТЗ интерфейс: рабочее место полного цикла, не review shell как сдача",
+      "licensed_inference": "Shell inspects persisted reports. This pass wires upload, job poll, KPI, eight-screen IA, and a dev-only git walls+IDS seed. UI does not write summary.passed. Natives fail-closed. Jury laptop stays CLI.",
+      "blocked_inference": "Full-cycle workplace delivered; native RVT in UI; 30 min SLA measured; 10D live; XLSX export; Checkpoint GO from chrome; seed as customer pack",
+      "evidence": "docs/quality/UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md",
+      "kt3_condition": "Jury laptop CLI; mentor may seed git fixture; keep NO_GO; natives fail-closed. Demo seed stays off published OpenAPI.",
       "licensed_use": "operational_hygiene",
       "closes_rt001": false,
       "closes_rt002": false,

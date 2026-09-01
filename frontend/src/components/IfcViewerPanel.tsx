@@ -72,12 +72,14 @@ export default function IfcViewerPanel({
     };
   }, []);
 
+  const reportId = report?.report_id ?? null;
+
   useEffect(() => {
     const controller = controllerRef.current;
     if (!controllerReady || controller === null) {
       return;
     }
-    if (report === null) {
+    if (reportId === null) {
       controller.clearModel();
       setViewerStatus("idle");
       setViewerError(null);
@@ -89,7 +91,7 @@ export default function IfcViewerPanel({
     setViewerError(null);
     setIsolateSelection(false);
 
-    fetchReportIfcSource(report.report_id)
+    fetchReportIfcSource(reportId)
       .then((ifcBytes) => controller.loadModel(ifcBytes))
       .then(() => {
         if (cancelled) {
@@ -109,11 +111,11 @@ export default function IfcViewerPanel({
     return () => {
       cancelled = true;
     };
-  }, [applySelection, controllerReady, report]);
+  }, [controllerReady, reportId]);
 
   useEffect(() => {
     applySelection();
-  }, [applySelection, isolateSelection, selectedGuids]);
+  }, [isolateSelection, selectedGuids]);
 
   const canInteractWithSelection = viewerStatus === "ready" && selectedGuids.length > 0;
 
@@ -189,7 +191,7 @@ export default function IfcViewerPanel({
       </div>
 
       <p className="viewer-caption">
-        The viewer remains downstream of the persisted validation report. Selection is driven by persisted IFC GUID evidence from either a single issue or a clash pair, not by ad hoc browser-side model inspection.
+        The viewer remains downstream of the persisted validation report. Selection is driven by persisted IFC GUID evidence from either a single issue or a clash pair, not by ad hoc browser-side model inspection. `prefers-reduced-motion` disables orbit damping.
       </p>
     </section>
   );

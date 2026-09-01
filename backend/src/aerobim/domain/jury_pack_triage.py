@@ -32,6 +32,9 @@ JURY_SURFACES: Final[tuple[str, ...]] = (
     "docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md",
     "docs/quality/JURY_PACK_TRIAGE_2026_09.md",
     "docs/quality/FORMAT_INGEST_TRIAGE_2026_09.md",
+    "docs/quality/UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md",
+    "docs/quality/K4_COMMERCIAL_PATH_2026_08.md",
+    "docs/pilot-claim-boundary-2026.md",
     "docs/tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md",
     "docs/demo/KT3_RVT_NWD_CV_ONEPAGER_2026_08.md",
     "submission/README.md",
@@ -48,6 +51,7 @@ JURY_FINGERPRINT_TOKENS: Final[tuple[str, ...]] = (
     "CHANNEL_SAMOLET_MAX_PASS",
     "Team Space",
     "GigaChat",
+    "SPG_CONSTRUCTION_VS_FM",
 )
 
 TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
@@ -182,6 +186,24 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "verdict": "ACCEPT",
         "attack": "Engineering pins look like a jury exhibit because TIER0 listed them",
         "brake": "TIER0 intro: census / family / local max-pass are not the jury map",
+    },
+    {
+        "id": "RT-JURY-SPG-HOP",
+        "verdict": "KILL",
+        "attack": "Hop from TIER0 or the eight-task card to the SPG 49% TIM pin",
+        "brake": "Consulting pin stays; filename off jury surfaces and off TIER0",
+    },
+    {
+        "id": "RT-JURY-UI-LIVE",
+        "verdict": "KILL",
+        "attack": "Hop from the TIER0 UI pin to workplace delivered or Checkpoint GO",
+        "brake": "Pin says review shell; KT#3 laptop track stays CLI",
+    },
+    {
+        "id": "RT-JURY-TZ-UI-DONE",
+        "verdict": "KILL",
+        "attack": "Read TZ matrix Web UI done as a sitting-member exhibit of delivery",
+        "brake": "Matrix row is partial; UI pin is the SSOT",
     },
 )
 

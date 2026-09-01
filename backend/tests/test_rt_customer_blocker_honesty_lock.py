@@ -502,6 +502,7 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         self.assertIn("TRACKER_EIGHT_TASKS_2026_08.md", text)
         self.assertIn("JURY_PACK_TRIAGE_2026_09.md", text)
         self.assertIn("FORMAT_INGEST_TRIAGE_2026_09.md", text)
+        self.assertIn("UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md", text)
         self.assertIn("MIK_SEAT_BRIEFS_2026_08.md", text)
         self.assertIn("CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md", text)
         self.assertIn("NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md", text)

@@ -2,8 +2,8 @@
 ---
 title: "AeroBIM TZ Compliance Matrix 2026"
 status: active
-version: "1.3.4"
-last_updated: "2026-08-30"
+version: "1.3.5"
+last_updated: "2026-09-01"
 tags: [aerobim, tz, compliance, mvp]
 ---
 
@@ -109,7 +109,7 @@ Extraction integrity: [`../extraction-integrity-2026.md`](../extraction-integrit
 | NLP for TZ / remarks / anomalies | partial | Regex NLP; LLM advisory stub; EN/RU templates | MVP / P3 |
 | Clash / anomaly algorithms | partial | IfcClash `detect_between` on planted federated boxes (optional extra); `closes_rt003=false` | MVP |
 | Spec vs schedule vs BIM volumes | partial | `compare_spec_volumes` declared triples (TR-67, п. 2.1.3); not estimate QTO; not customer pack | P1 |
-| Web UI | done | `frontend/` review shell | MVP |
+| Web UI | partial | `frontend/` review shell + dev git-fixture seed; not a delivered full-cycle workplace ([`../quality/UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md`](../quality/UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md)) | MVP |
 | Drawing overlay of errors | done | `DrawingEvidencePanel` + smoke PNG [`drawing-overlay-smoke-2026-08`](../evidence/drawing-overlay-smoke-2026-08/README.md) + [KT#2 handoff](../evidence/kt2-handoff-2026-08-11/README.md) (deterministic `problem_zone` — not CV) | MVP |
 | Remarks panel: list / filter / priority / edit | done | Severity filter + remark editor → review-events | P0 |
 | Per-check coverage map (four states) | partial | `domain/check_coverage.py` (4 gap states + operator `findings`); HTML+PDF export first page; `CoverageMapPanel`; Hypothesis I-8; `GET /v1/reports/{id}/coverage` + `/export/pdf` | P0 WP-R4 |

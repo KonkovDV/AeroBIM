@@ -1,199 +1,51 @@
 import { Suspense, lazy, startTransition, useDeferredValue, useEffect, useState } from "react";
 import { downloadExport, fetchReport, fetchReports, getApiBaseUrl, postReviewEvent } from "./lib/api";
-import type { ClashResult, ParsedRequirement, ReportSummaryEntry, ValidationIssue, ValidationReport } from "./lib/types";
+import type { ParsedRequirement, ReportSummaryEntry, ValidationIssue, ValidationReport } from "./lib/types";
+import {
+  buildReportFilterShareLink,
+  initialReportFilters,
+  normalizePresetScope,
+  normalizeStatus,
+  persistFilterPresets,
+  persistReportFilters,
+  readPersistedFilterPresets,
+  readUrlReportId,
+  syncReportFiltersToUrl,
+  type PersistedReportFilters,
+  type PresetScope,
+  type ReportFilterPreset,
+} from "./lib/report-filters";
+import { buildViewerFocus, type FindingGroupBy } from "./lib/issue-triage";
 import DrawingEvidencePanel from "./components/DrawingEvidencePanel";
 import CapabilityHonestyPanel from "./components/CapabilityHonestyPanel";
 import CoverageMapPanel from "./components/CoverageMapPanel";
 import ProvenancePanel from "./components/ProvenancePanel";
+import PackUploadPanel from "./components/PackUploadPanel";
+import AnalyzeRunPanel from "./components/AnalyzeRunPanel";
+import ReviewKpiPanel from "./components/ReviewKpiPanel";
+import TzWorkplaceCoveragePanel from "./components/TzWorkplaceCoveragePanel";
+import DemoFixturePanel from "./components/DemoFixturePanel";
+import VersionDiffPanel from "./components/VersionDiffPanel";
+import WorkspaceNav, {
+  EXPERT_SHELL_VIEWS,
+  TRIAGE_KEYBOARD_VIEWS,
+  type WorkspaceView,
+} from "./components/WorkspaceNav";
 import VerticalSliceKt2, {
   formatPackageOutcome,
   outcomeClass,
 } from "./components/VerticalSliceKt2";
+import ReportListPanel, {
+  type PresetTransferState,
+  type ShareLinkState,
+} from "./features/reports/ReportListPanel";
+import FindingListPanel from "./features/findings/FindingListPanel";
+import RemarkCardPanel from "./features/findings/RemarkCardPanel";
+import CapabilityTopBanner from "./features/capabilities/CapabilityTopBanner";
+import { persistUiRoleAlias, readUiRoleAlias, type UiRoleAlias } from "./lib/ui-role";
+import ResizableWorkplace from "./features/workplace/ResizableWorkplace";
 
 const IfcViewerPanel = lazy(() => import("./components/IfcViewerPanel"));
-const REPORT_FILTERS_STORAGE_KEY = "aerobim-report-filters-v1";
-const REPORT_FILTER_PRESETS_STORAGE_KEY = "aerobim-report-filter-presets-v1";
-
-type PersistedReportFilters = {
-  project: string;
-  discipline: string;
-  status: "all" | "passed" | "failed";
-};
-
-type PresetScope = "local" | "team";
-
-type ShareLinkState = "idle" | "copied" | "failed";
-type PresetTransferState = "idle" | "exported" | "downloaded" | "imported" | "failed";
-
-type ReportFilterPreset = {
-  id: string;
-  name: string;
-  scope: PresetScope;
-  filters: PersistedReportFilters;
-};
-
-function normalizeStatus(value: string | null | undefined): "all" | "passed" | "failed" {
-  return value === "passed" || value === "failed" ? value : "all";
-}
-
-function normalizePresetScope(value: unknown, fallback: PresetScope = "local"): PresetScope {
-  return value === "team" || value === "local" ? value : fallback;
-}
-
-function readUrlReportId(): string | null {
-  if (typeof window === "undefined") {
-    return null;
-  }
-  const report = new URLSearchParams(window.location.search).get("report")?.trim();
-  return report && /^[a-f0-9]{32}$/i.test(report) ? report.toLowerCase() : null;
-}
-
-function readUrlReportFilters(): Partial<PersistedReportFilters> {
-  if (typeof window === "undefined") {
-    return {};
-  }
-
-  const params = new URLSearchParams(window.location.search);
-  const project = params.get("project")?.trim();
-  const discipline = params.get("discipline")?.trim();
-  const status = params.get("status");
-
-  return {
-    project: project && project.length > 0 ? project : undefined,
-    discipline: discipline && discipline.length > 0 ? discipline : undefined,
-    status: status ? normalizeStatus(status) : undefined,
-  };
-}
-
-function readPersistedReportFilters(): PersistedReportFilters {
-  if (typeof window === "undefined") {
-    return { project: "", discipline: "", status: "all" };
-  }
-
-  try {
-    const raw = window.localStorage.getItem(REPORT_FILTERS_STORAGE_KEY);
-    if (!raw) {
-      return { project: "", discipline: "", status: "all" };
-    }
-    const parsed = JSON.parse(raw) as Partial<PersistedReportFilters>;
-    return {
-      project: typeof parsed.project === "string" ? parsed.project : "",
-      discipline: typeof parsed.discipline === "string" ? parsed.discipline : "",
-      status: normalizeStatus(parsed.status),
-    };
-  } catch {
-    return { project: "", discipline: "", status: "all" };
-  }
-}
-
-function initialReportFilters(): PersistedReportFilters {
-  const persisted = readPersistedReportFilters();
-  const fromUrl = readUrlReportFilters();
-
-  return {
-    project: fromUrl.project ?? persisted.project,
-    discipline: fromUrl.discipline ?? persisted.discipline,
-    status: fromUrl.status ?? persisted.status,
-  };
-}
-
-function persistReportFilters(filters: PersistedReportFilters): void {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  window.localStorage.setItem(REPORT_FILTERS_STORAGE_KEY, JSON.stringify(filters));
-}
-
-function readPersistedFilterPresets(): ReportFilterPreset[] {
-  if (typeof window === "undefined") {
-    return [];
-  }
-
-  try {
-    const raw = window.localStorage.getItem(REPORT_FILTER_PRESETS_STORAGE_KEY);
-    if (!raw) {
-      return [];
-    }
-    const parsed = JSON.parse(raw) as Array<Partial<ReportFilterPreset>>;
-    return parsed
-      .filter((preset) => typeof preset.name === "string" && typeof preset.id === "string" && preset.filters)
-      .map((preset) => {
-        const filters = preset.filters as Partial<PersistedReportFilters>;
-        return {
-          id: preset.id as string,
-          name: preset.name as string,
-          scope: normalizePresetScope((preset as { scope?: unknown }).scope, "local"),
-          filters: {
-            project: typeof filters.project === "string" ? filters.project : "",
-            discipline: typeof filters.discipline === "string" ? filters.discipline : "",
-            status: normalizeStatus(filters.status),
-          },
-        };
-      });
-  } catch {
-    return [];
-  }
-}
-
-function persistFilterPresets(presets: ReportFilterPreset[]): void {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  window.localStorage.setItem(REPORT_FILTER_PRESETS_STORAGE_KEY, JSON.stringify(presets));
-}
-
-function withReportFilters(
-  url: URL,
-  filters: PersistedReportFilters,
-  reportId?: string | null,
-): URL {
-  if (filters.project.trim()) {
-    url.searchParams.set("project", filters.project.trim());
-  } else {
-    url.searchParams.delete("project");
-  }
-
-  if (filters.discipline.trim()) {
-    url.searchParams.set("discipline", filters.discipline.trim());
-  } else {
-    url.searchParams.delete("discipline");
-  }
-
-  if (filters.status !== "all") {
-    url.searchParams.set("status", filters.status);
-  } else {
-    url.searchParams.delete("status");
-  }
-
-  if (reportId) {
-    url.searchParams.set("report", reportId);
-  }
-
-  return url;
-}
-
-function syncReportFiltersToUrl(
-  filters: PersistedReportFilters,
-  reportId?: string | null,
-): void {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  const url = withReportFilters(new URL(window.location.href), filters, reportId);
-
-  window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
-}
-
-function buildReportFilterShareLink(filters: PersistedReportFilters): string {
-  if (typeof window === "undefined") {
-    return "";
-  }
-
-  return withReportFilters(new URL(window.location.href), filters).toString();
-}
 
 function ViewerPlaceholder({ message }: { message: string }) {
   return (
@@ -234,57 +86,6 @@ function findMatchingRequirements(report: ValidationReport, issue: ValidationIss
   return report.requirements.filter((requirement) => requirement.rule_id === issue.rule_id);
 }
 
-const TRIAGE_BANDS = ["critical", "major", "minor", "negligible"] as const;
-type TriageBand = (typeof TRIAGE_BANDS)[number];
-
-/** Deterministic clash triage band carried in evidence_refs (backend Wave B). */
-function triageBand(issue: ValidationIssue): TriageBand | null {
-  for (const ref of issue.evidence_refs ?? []) {
-    if (ref.startsWith("triage:band=")) {
-      const band = ref.slice("triage:band=".length);
-      if ((TRIAGE_BANDS as readonly string[]).includes(band)) {
-        return band as TriageBand;
-      }
-    }
-  }
-  return null;
-}
-
-type ViewerFocus = {
-  mode: "none" | "issue" | "clash";
-  guids: string[];
-  heading: string;
-  detail: string;
-};
-
-function buildViewerFocus(activeIssue: ValidationIssue | null, activeClash: ClashResult | null): ViewerFocus {
-  if (activeClash !== null) {
-    const guids = [...new Set([activeClash.element_a_guid, activeClash.element_b_guid].filter((guid) => guid.length > 0))];
-    return {
-      mode: "clash",
-      guids,
-      heading: `${activeClash.clash_type} clash pair`,
-      detail: `${guids.length} selected IFC elements from the active clash review pair.`,
-    };
-  }
-
-  if (activeIssue?.element_guid) {
-    return {
-      mode: "issue",
-      guids: [activeIssue.element_guid],
-      heading: activeIssue.rule_id,
-      detail: `Single-element focus from the active issue GUID ${activeIssue.element_guid}.`,
-    };
-  }
-
-  return {
-    mode: "none",
-    guids: [],
-    heading: "No spatial selection",
-    detail: "Select an issue with IFC GUID evidence or a clash pair to drive the viewer selection.",
-  };
-}
-
 export default function App() {
   const persistedFilters = initialReportFilters();
   const deepLinkReportId = readUrlReportId();
@@ -315,6 +116,12 @@ export default function App() {
   const [projectFilter, setProjectFilter] = useState(persistedFilters.project);
   const [disciplineFilter, setDisciplineFilter] = useState(persistedFilters.discipline);
   const [statusFilter, setStatusFilter] = useState<"all" | "passed" | "failed">(persistedFilters.status);
+  const [workspaceView, setWorkspaceView] = useState<WorkspaceView>("review");
+  const [uploadedIfcPath, setUploadedIfcPath] = useState<string | null>(null);
+  const [triageHelpOpen, setTriageHelpOpen] = useState(false);
+  const [reportsEpoch, setReportsEpoch] = useState(0);
+  const [findingGroupBy, setFindingGroupBy] = useState<FindingGroupBy>("none");
+  const [uiRole, setUiRole] = useState<UiRoleAlias>(readUiRoleAlias);
 
   const deferredSearch = useDeferredValue(search);
   const deferredProjectFilter = useDeferredValue(projectFilter);
@@ -391,7 +198,7 @@ export default function App() {
       cancelled = true;
       controller.abort();
     };
-  }, [deferredProjectFilter, deferredDisciplineFilter, deferredStatusFilter]);
+  }, [deferredProjectFilter, deferredDisciplineFilter, deferredStatusFilter, reportsEpoch]);
 
   useEffect(() => {
     if (selectedReportId === null) {
@@ -462,36 +269,6 @@ export default function App() {
     }
     return groups;
   }, new Map<string, ReportSummaryEntry[]>());
-
-  const renderReportCard = (report: ReportSummaryEntry) => {
-    const isActive = report.report_id === selectedReportId;
-    return (
-      <button
-        key={report.report_id}
-        type="button"
-        className={`report-card ${isActive ? "active" : ""}`}
-        onClick={() => {
-          startTransition(() => {
-            setSelectedReportId(report.report_id);
-          });
-        }}
-      >
-        <div className="report-card-row">
-          <strong>{report.report_id.slice(0, 8)}</strong>
-          <span className={`status-pill ${report.passed ? "pass" : "fail"}`}>
-            {report.passed ? "Pass" : "Fail"}
-          </span>
-        </div>
-        <div className="report-card-meta">
-          {report.project_name && <span>{report.project_name}</span>}
-          {report.discipline && <span>{report.discipline}</span>}
-          <span>Request {report.request_id}</span>
-          <span>{report.issue_count} issues</span>
-        </div>
-        <span className="report-card-time">{formatTimestamp(report.created_at)}</span>
-      </button>
-    );
-  };
 
   const saveCurrentPreset = () => {
     const name = presetNameDraft.trim();
@@ -759,6 +536,7 @@ export default function App() {
       await postReviewEvent(selectedReport.report_id, {
         event_type: "edited_remark",
         issue_rule_id: activeIssue.rule_id,
+        finding_id: activeIssue.finding_id ?? undefined,
         note: remarkDraft,
       });
       setRemarkSaveState("saved");
@@ -776,6 +554,7 @@ export default function App() {
       await postReviewEvent(selectedReport.report_id, {
         event_type: eventType,
         issue_rule_id: activeIssue.rule_id,
+        finding_id: activeIssue.finding_id ?? undefined,
         note: remarkDraft,
       });
       setHitlDecisionState(eventType);
@@ -784,20 +563,125 @@ export default function App() {
     }
   }
 
+  useEffect(() => {
+    if (!TRIAGE_KEYBOARD_VIEWS.has(workspaceView)) {
+      return;
+    }
+
+    function onKeyDown(event: KeyboardEvent): void {
+      const target = event.target as HTMLElement | null;
+      const tag = target?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target?.isContentEditable) {
+        if (event.key === "Escape") {
+          setTriageHelpOpen(false);
+        }
+        return;
+      }
+      if (event.key === "?" || (event.shiftKey && event.key === "/")) {
+        event.preventDefault();
+        setTriageHelpOpen((open) => !open);
+        return;
+      }
+      if (event.key === "Escape") {
+        setTriageHelpOpen(false);
+        return;
+      }
+      if (filteredIssues.length === 0) {
+        return;
+      }
+      const currentPos = filteredIssues.findIndex(({ index }) => index === selectedIssueIndex);
+      const pos = currentPos >= 0 ? currentPos : 0;
+      if (event.key === "j" || event.key === "J" || event.key === "ArrowDown") {
+        event.preventDefault();
+        const next = filteredIssues[Math.min(pos + 1, filteredIssues.length - 1)];
+        if (next) {
+          setSelectedIssueIndex(next.index);
+          setSelectedClashIndex(null);
+          setRemarkDraft(next.issue.remark?.body ?? "");
+        }
+        return;
+      }
+      if (event.key === "k" || event.key === "K" || event.key === "ArrowUp") {
+        event.preventDefault();
+        const prev = filteredIssues[Math.max(pos - 1, 0)];
+        if (prev) {
+          setSelectedIssueIndex(prev.index);
+          setSelectedClashIndex(null);
+          setRemarkDraft(prev.issue.remark?.body ?? "");
+        }
+        return;
+      }
+      if (event.key === "a" || event.key === "A") {
+        if (uiRole !== "expert") {
+          return;
+        }
+        event.preventDefault();
+        void decideRemark("accepted");
+        return;
+      }
+      if (event.key === "r" || event.key === "R") {
+        if (uiRole !== "expert") {
+          return;
+        }
+        event.preventDefault();
+        void decideRemark("rejected");
+        return;
+      }
+      if (event.key === "e" || event.key === "E") {
+        event.preventDefault();
+        document.getElementById("remark-editor")?.focus();
+      }
+    }
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [workspaceView, filteredIssues, selectedIssueIndex, remarkDraft, uiRole]);
+
+  useEffect(() => {
+    if (workspaceView === "remark") {
+      document.getElementById("remark-editor")?.focus();
+    }
+    if (workspaceView === "export") {
+      document.getElementById("export-actions")?.scrollIntoView({ block: "nearest" });
+    }
+  }, [workspaceView, selectedReport]);
+
+  function handleSeededReport(reportId: string): void {
+    setSelectedReportId(reportId);
+    setReportsEpoch((value) => value + 1);
+    setWorkspaceView("review");
+  }
+
   return (
     <div className="app-shell">
       <header className="app-header">
         <div>
-          <p className="eyebrow">AeroBIM review shell</p>
+          <p className="eyebrow">AeroBIM review shell · checkpoint NO_GO</p>
           <h1>Reports, issues, provenance.</h1>
           <p className="lede">
-            Minimal browser triage surface for persisted validation reports. The validation truth remains in the backend; the shell exists to inspect, filter, and export it.
+            Шов комплекта: модель ↔ чертежи ↔ ТЗ ↔ расчёты. Не замена 10D/Tangl. UI не пишет{" "}
+            <code>summary.passed</code>. Native RVT/NWD/DWG fail-closed. Не SLA 30 минут.
           </p>
         </div>
         <div className="header-card">
           <span>API</span>
-          <strong>{getApiBaseUrl()}</strong>
+          <strong>{getApiBaseUrl() || "same-origin /v1 (Vite proxy)"}</strong>
           <span>{reports.length} report(s) loaded</span>
+          <label className="role-alias">
+            Роль UI (не OIDC)
+            <select
+              aria-label="UI role alias"
+              value={uiRole}
+              onChange={(event) => {
+                const next = event.target.value === "user" ? "user" : "expert";
+                setUiRole(next);
+                persistUiRoleAlias(next);
+              }}
+            >
+              <option value="expert">Expert</option>
+              <option value="user">User</option>
+            </select>
+          </label>
         </div>
       </header>
 
@@ -807,208 +691,149 @@ export default function App() {
         </section>
       )}
 
-      <main className="workspace-grid">
-        <section className="panel report-panel">
-          <div className="panel-header">
-            <div>
-              <p className="panel-kicker">Index</p>
-              <h2>Report list</h2>
-            </div>
-          </div>
+      <WorkspaceNav workspaceView={workspaceView} onChange={setWorkspaceView} />
+      <DemoFixturePanel onSeeded={handleSeededReport} />
+      {EXPERT_SHELL_VIEWS.has(workspaceView) && selectedReport ? (
+        <CapabilityTopBanner capabilities={selectedReport.capabilities} />
+      ) : null}
 
-          <div className="report-toolbar">
-            <div className="report-filters" aria-label="Report list filters">
-              <input
-                className="search-input filter-input"
-                type="search"
-                aria-label="Project filter"
-                value={projectFilter}
-                onChange={(event) => setProjectFilter(event.target.value)}
-                placeholder="Filter by project"
-              />
-              <input
-                className="search-input filter-input"
-                type="search"
-                aria-label="Discipline filter"
-                value={disciplineFilter}
-                onChange={(event) => setDisciplineFilter(event.target.value)}
-                placeholder="Filter by discipline"
-              />
-              <select
-                className="search-input filter-select"
-                aria-label="Status filter"
-                value={statusFilter}
-                onChange={(event) => setStatusFilter(event.target.value as "all" | "passed" | "failed")}
-              >
-                <option value="all">All statuses</option>
-                <option value="passed">Passed only</option>
-                <option value="failed">Failed only</option>
-              </select>
-            </div>
-            <input
-              className="search-input report-search-input"
-              type="search"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search loaded reports"
-            />
-            <button
-              type="button"
-              className={`toolbar-button report-group-toggle ${groupByProject ? "active" : ""}`}
-              onClick={() => setGroupByProject((current) => !current)}
-            >
-              {groupByProject ? "Ungroup reports" : "Group by project"}
-            </button>
-            <button
-              type="button"
-              className="toolbar-button"
-              aria-label="Copy share link"
-              onClick={() => {
-                void copyShareLink();
-              }}
-            >
-              Copy share link
-            </button>
-            {shareLinkState !== "idle" && (
-              <span className={`share-link-status share-link-status-${shareLinkState}`}>
-                {shareLinkState === "copied" ? "Link copied" : "Copy failed"}
-              </span>
-            )}
-          </div>
+      {workspaceView === "upload" ? (
+        <div className="workspace-alt">
+          <PackUploadPanel
+            onUploadedPath={(path, filename) => {
+              if (filename.toLowerCase().endsWith(".ifc") || filename.toLowerCase().endsWith(".ifczip")) {
+                setUploadedIfcPath(path);
+              }
+            }}
+          />
+        </div>
+      ) : null}
 
-          <div className="report-presets" aria-label="Report filter presets">
-            <input
-              className="search-input preset-name-input"
-              type="text"
-              aria-label="Preset name"
-              value={presetNameDraft}
-              onChange={(event) => setPresetNameDraft(event.target.value)}
-              placeholder="Preset name"
-            />
-            <select
-              className="search-input preset-scope-select"
-              aria-label="Preset scope"
-              value={presetScopeDraft}
-              onChange={(event) => setPresetScopeDraft(event.target.value as PresetScope)}
-            >
-              <option value="local">Local scope</option>
-              <option value="team">Team scope</option>
-            </select>
-            <button
-              type="button"
-              className="toolbar-button"
-              onClick={saveCurrentPreset}
-              disabled={!presetNameDraft.trim()}
-            >
-              Save preset
-            </button>
-            <button
-              type="button"
-              className="toolbar-button"
-              aria-label="Copy presets JSON"
-              onClick={() => {
-                void copyPresetPayload();
-              }}
-              disabled={filterPresets.length === 0}
-            >
-              Copy presets JSON
-            </button>
-            <button
-              type="button"
-              className="toolbar-button"
-              aria-label="Download presets JSON"
-              onClick={downloadPresetPayload}
-              disabled={filterPresets.length === 0}
-            >
-              Download presets JSON
-            </button>
-            <label className="toolbar-button preset-file-upload" aria-label="Import presets file label">
-              Import presets file
-              <input
-                type="file"
-                accept=".json,application/json"
-                aria-label="Import presets file"
-                onChange={(event) => {
-                  void importPresetFile(event);
-                }}
-              />
-            </label>
-            <textarea
-              className="preset-import-input"
-              aria-label="Preset import payload"
-              value={presetTransferDraft}
-              onChange={(event) => {
-                setPresetTransferDraft(event.target.value);
-                setPresetTransferState("idle");
-              }}
-              placeholder='Paste preset JSON (e.g. [{"name":"Hospital","filters":{...}}])'
-            />
-            <button
-              type="button"
-              className="toolbar-button"
-              aria-label="Import presets JSON"
-              onClick={importPresetPayload}
-              disabled={!presetTransferDraft.trim()}
-            >
-              Import presets JSON
-            </button>
-            {presetTransferState !== "idle" && (
-              <span className={`preset-transfer-status preset-transfer-status-${presetTransferState}`}>
-                {presetTransferState === "exported"
-                  ? "Preset JSON copied"
-                  : presetTransferState === "downloaded"
-                    ? "Preset JSON downloaded"
-                  : presetTransferState === "imported"
-                    ? "Preset JSON imported"
-                    : "Preset transfer failed"}
-              </span>
-            )}
-            {filterPresets.map((preset) => (
-              <div key={preset.id} className="preset-chip">
-                <button
-                  type="button"
-                  className="toolbar-button preset-apply"
-                  onClick={() => applyPreset(preset)}
-                >
-                  {preset.name}
-                </button>
-                <span className={`preset-scope-badge preset-scope-${preset.scope}`}>{preset.scope}</span>
-                <button
-                  type="button"
-                  className="toolbar-button preset-remove"
-                  aria-label={`Remove preset ${preset.name}`}
-                  onClick={() => removePreset(preset.id)}
-                >
-                  x
-                </button>
-              </div>
-            ))}
-          </div>
+      {workspaceView === "run" ? (
+        <div className="workspace-alt">
+          <AnalyzeRunPanel
+            ifcPath={uploadedIfcPath}
+            onReportReady={handleSeededReport}
+            capabilities={selectedReport?.capabilities ?? null}
+          />
+        </div>
+      ) : null}
 
-          {reportsLoading ? (
-            <div className="panel-empty">Loading reports…</div>
-          ) : filteredReports.length === 0 ? (
-            <div className="panel-empty">No persisted reports match the current query.</div>
-          ) : groupByProject ? (
-            <div className="report-groups">
-              {Array.from(groupedReports.entries()).map(([projectName, projectReports]) => (
-                <section key={projectName} className="report-group">
-                  <h3 className="report-group-title">
-                    {projectName} ({projectReports.length})
-                  </h3>
-                  <div className="report-list">
-                    {projectReports.map((report) => renderReportCard(report))}
-                  </div>
-                </section>
-              ))}
-            </div>
+      {workspaceView === "diff" ? <VersionDiffPanel reports={filteredReports} /> : null}
+
+      {workspaceView === "user" ? (
+        <div className="workspace-alt">
+          <ReviewKpiPanel reportId={selectedReportId} />
+          <TzWorkplaceCoveragePanel />
+          {selectedReport ? (
+            <CoverageMapPanel
+              reportId={selectedReport.report_id}
+              onNavigateToFindings={() => {
+                setWorkspaceView("review");
+                document.querySelector(".issue-list")?.scrollIntoView({ behavior: "smooth" });
+              }}
+            />
           ) : (
-            <div className="report-list">
-              {filteredReports.map((report) => renderReportCard(report))}
-            </div>
+            <p className="panel-empty">Выберите отчёт на экране «Проекты» или «Эксперт».</p>
           )}
-        </section>
+        </div>
+      ) : null}
 
+      {EXPERT_SHELL_VIEWS.has(workspaceView) ? (
+        workspaceView === "projects" ? (
+        <main className="workspace-alt">
+        <ReportListPanel
+          reportsLoading={reportsLoading}
+          filteredReports={filteredReports}
+          groupedReports={groupedReports}
+          selectedReportId={selectedReportId}
+          search={search}
+          groupByProject={groupByProject}
+          projectFilter={projectFilter}
+          disciplineFilter={disciplineFilter}
+          statusFilter={statusFilter}
+          shareLinkState={shareLinkState}
+          presetTransferState={presetTransferState}
+          presetTransferDraft={presetTransferDraft}
+          presetNameDraft={presetNameDraft}
+          presetScopeDraft={presetScopeDraft}
+          filterPresets={filterPresets}
+          onSearchChange={setSearch}
+          onGroupByProjectToggle={() => setGroupByProject((current) => !current)}
+          onProjectFilterChange={setProjectFilter}
+          onDisciplineFilterChange={setDisciplineFilter}
+          onStatusFilterChange={setStatusFilter}
+          onSelectReport={setSelectedReportId}
+          onCopyShareLink={() => {
+            void copyShareLink();
+          }}
+          onPresetNameChange={setPresetNameDraft}
+          onPresetScopeChange={setPresetScopeDraft}
+          onSavePreset={saveCurrentPreset}
+          onCopyPresets={() => {
+            void copyPresetPayload();
+          }}
+          onDownloadPresets={downloadPresetPayload}
+          onImportPresets={importPresetPayload}
+          onImportPresetFile={(event) => {
+            void importPresetFile(event);
+          }}
+          onPresetDraftChange={(value) => {
+            setPresetTransferDraft(value);
+            setPresetTransferState("idle");
+          }}
+          onApplyPreset={applyPreset}
+          onRemovePreset={removePreset}
+        />
+        </main>
+        ) : (
+        <ResizableWorkplace
+          left={
+        <ReportListPanel
+          reportsLoading={reportsLoading}
+          filteredReports={filteredReports}
+          groupedReports={groupedReports}
+          selectedReportId={selectedReportId}
+          search={search}
+          groupByProject={groupByProject}
+          projectFilter={projectFilter}
+          disciplineFilter={disciplineFilter}
+          statusFilter={statusFilter}
+          shareLinkState={shareLinkState}
+          presetTransferState={presetTransferState}
+          presetTransferDraft={presetTransferDraft}
+          presetNameDraft={presetNameDraft}
+          presetScopeDraft={presetScopeDraft}
+          filterPresets={filterPresets}
+          onSearchChange={setSearch}
+          onGroupByProjectToggle={() => setGroupByProject((current) => !current)}
+          onProjectFilterChange={setProjectFilter}
+          onDisciplineFilterChange={setDisciplineFilter}
+          onStatusFilterChange={setStatusFilter}
+          onSelectReport={setSelectedReportId}
+          onCopyShareLink={() => {
+            void copyShareLink();
+          }}
+          onPresetNameChange={setPresetNameDraft}
+          onPresetScopeChange={setPresetScopeDraft}
+          onSavePreset={saveCurrentPreset}
+          onCopyPresets={() => {
+            void copyPresetPayload();
+          }}
+          onDownloadPresets={downloadPresetPayload}
+          onImportPresets={importPresetPayload}
+          onImportPresetFile={(event) => {
+            void importPresetFile(event);
+          }}
+          onPresetDraftChange={(value) => {
+            setPresetTransferDraft(value);
+            setPresetTransferState("idle");
+          }}
+          onApplyPreset={applyPreset}
+          onRemovePreset={removePreset}
+        />
+          }
+          center={
         <section className="panel issue-panel">
           <div className="panel-header">
             <div>
@@ -1016,10 +841,20 @@ export default function App() {
               <h2>Issue detail</h2>
             </div>
             {selectedReport && (
-              <div className="export-actions">
+              <div className="export-actions" id="export-actions">
                 <button type="button" onClick={() => void downloadExport(selectedReport.report_id, "html")}>HTML</button>
                 <button type="button" onClick={() => void downloadExport(selectedReport.report_id, "json")}>JSON</button>
                 <button type="button" onClick={() => void downloadExport(selectedReport.report_id, "bcf")}>BCF</button>
+                <button
+                  type="button"
+                  onClick={() => void downloadExport(selectedReport.report_id, "bcf", { bcfVersion: "3.0" })}
+                >
+                  BCF 3.0
+                </button>
+                <button type="button" onClick={() => void downloadExport(selectedReport.report_id, "pdf")}>PDF</button>
+                <button type="button" disabled aria-label="XLSX not on MVP">
+                  XLSX
+                </button>
               </div>
             )}
           </div>
@@ -1085,100 +920,30 @@ export default function App() {
                 }}
               />
 
-              <div className="issue-toolbar">
-                <label>
-                  Severity
-                  <select
-                    value={issueSeverityFilter}
-                    onChange={(event) =>
-                      setIssueSeverityFilter(event.target.value as "all" | "error" | "warning" | "info")
-                    }
-                  >
-                    <option value="all">All</option>
-                    <option value="error">Error</option>
-                    <option value="warning">Warning</option>
-                    <option value="info">Info</option>
-                  </select>
-                </label>
-                <label className="hitl-filter">
-                  <input
-                    type="checkbox"
-                    checked={hitlOnlyFilter}
-                    onChange={(event) => setHitlOnlyFilter(event.target.checked)}
-                  />
-                  HITL regions only
-                  {hitlRegionCount > 0 ? ` (${hitlRegionCount})` : ""}
-                </label>
-                <span className="compact-copy">
-                  {filteredIssues.length} / {selectedReport.issues.length} shown
-                </span>
-              </div>
-
-              <div className="issue-list">
-                {filteredIssues.length === 0 ? (
-                  <div className="panel-empty compact">No issues match the current severity filter.</div>
-                ) : (
-                  filteredIssues.map(({ issue, index }) => (
-                    <button
-                      key={`${issue.rule_id}-${index}`}
-                      type="button"
-                      className={`issue-card ${index === selectedIssueIndex ? "active" : ""} ${issue.origin === "advisory" ? "issue-card--advisory" : ""}`}
-                      onClick={() => {
-                        startTransition(() => {
-                          setSelectedIssueIndex(index);
-                          setSelectedClashIndex(null);
-                          setRemarkDraft(issue.remark?.body ?? "");
-                          setRemarkSaveState("idle");
-                          setHitlDecisionState("idle");
-                        });
-                      }}
-                    >
-                      <div className="issue-card-row">
-                        <span className={`severity-pill severity-${issue.severity}`}>{issue.severity}</span>
-                        {triageBand(issue) ? (
-                          <span className={`triage-band triage-band-${triageBand(issue)}`}>
-                            {triageBand(issue)}
-                          </span>
-                        ) : null}
-                        <strong>{issue.rule_id}</strong>
-                        {issue.rule_id === "AEROBIM-DRAWING-REGION-HITL" ? (
-                          <span className="issue-priority">HITL</span>
-                        ) : null}
-                        {issue.origin === "advisory" ? (
-                          <span
-                            className="origin-pill origin-advisory"
-                            title="Advisory candidate — requires human review; not a confirmed verdict"
-                          >
-                            advisory candidate
-                          </span>
-                        ) : issue.origin === "deterministic" ? (
-                          <span className="origin-pill origin-deterministic">deterministic</span>
-                        ) : null}
-                        {typeof issue.confidence === "number" && issue.confidence < 0.6 ? (
-                          <span
-                            className="confidence-pill confidence-low"
-                            title="Low self-reported (uncalibrated) confidence — requires human review"
-                          >
-                            low confidence {issue.confidence.toFixed(2)}
-                          </span>
-                        ) : null}
-                        {typeof issue.priority === "number" && issue.priority > 0 ? (
-                          <span className="issue-priority">P{issue.priority}</span>
-                        ) : null}
-                      </div>
-                      <p>{issue.message}</p>
-                      <div className="issue-card-meta">
-                        <span>{issue.category}</span>
-                        <span>{issue.target_ref ?? issue.element_guid ?? "no target"}</span>
-                      </div>
-                    </button>
-                  ))
-                )}
-              </div>
+              <FindingListPanel
+                issues={filteredIssues}
+                totalIssueCount={selectedReport.issues.length}
+                selectedIssueIndex={selectedIssueIndex}
+                issueSeverityFilter={issueSeverityFilter}
+                hitlOnlyFilter={hitlOnlyFilter}
+                hitlRegionCount={hitlRegionCount}
+                groupBy={findingGroupBy}
+                onSeverityChange={setIssueSeverityFilter}
+                onHitlOnlyChange={setHitlOnlyFilter}
+                onGroupByChange={setFindingGroupBy}
+                onSelectIssue={(index, issue) => {
+                  setSelectedIssueIndex(index);
+                  setSelectedClashIndex(null);
+                  setRemarkDraft(issue.remark?.body ?? "");
+                  setRemarkSaveState("idle");
+                  setHitlDecisionState("idle");
+                }}
+              />
             </>
           )}
         </section>
-
+          }
+          right={
         <div className="side-stack">
           <Suspense fallback={<ViewerPlaceholder message="Loading the spatial review runtime…" />}>
             {selectedReport ? (
@@ -1208,60 +973,29 @@ export default function App() {
               <div className="panel-empty">Select a report first.</div>
             ) : (
               <div className="provenance-stack">
+                <RemarkCardPanel
+                  reportId={selectedReport.report_id}
+                  activeIssue={activeIssue}
+                  remarkDraft={remarkDraft}
+                  remarkSaveState={remarkSaveState}
+                  hitlDecisionState={hitlDecisionState}
+                  hitlEnabled={uiRole === "expert"}
+                  onDraftChange={(value) => {
+                    setRemarkDraft(value);
+                    setRemarkSaveState("idle");
+                    setHitlDecisionState("idle");
+                  }}
+                  onSave={() => {
+                    void saveRemarkEdit();
+                  }}
+                  onAccept={() => {
+                    void decideRemark("accepted");
+                  }}
+                  onReject={() => {
+                    void decideRemark("rejected");
+                  }}
+                />
                 <ProvenancePanel activeIssue={activeIssue} />
-
-                <article className="detail-block">
-                  <h3>Remark</h3>
-                  {activeIssue ? (
-                    <div className="remark-editor">
-                      {activeIssue.remark?.ai_generated ? (
-                        <p className="synthetic-content-mark" role="status">
-                          Синтетический контент (ИИ) · требуется подтверждение эксперта · не влияет на
-                          summary.passed
-                        </p>
-                      ) : null}
-                      <p className="compact-copy">
-                        <strong>{activeIssue.remark?.title ?? "Generated remark"}</strong>
-                      </p>
-                      <textarea
-                        value={remarkDraft}
-                        rows={5}
-                        onChange={(event) => {
-                          setRemarkDraft(event.target.value);
-                          setRemarkSaveState("idle");
-                          setHitlDecisionState("idle");
-                        }}
-                        aria-label="Edit remark text"
-                      />
-                      <div className="remark-actions">
-                        <button type="button" onClick={() => void saveRemarkEdit()} disabled={remarkSaveState === "saving"}>
-                          {remarkSaveState === "saving" ? "Saving…" : "Save remark edit"}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => void decideRemark("accepted")}
-                          disabled={hitlDecisionState === "saving"}
-                        >
-                          Confirm remark
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => void decideRemark("rejected")}
-                          disabled={hitlDecisionState === "saving"}
-                        >
-                          Reject remark
-                        </button>
-                        {remarkSaveState === "saved" ? <span className="compact-copy">Saved to review events</span> : null}
-                        {remarkSaveState === "failed" ? <span className="compact-copy">Save failed</span> : null}
-                        {hitlDecisionState === "accepted" ? <span className="compact-copy">Confirmed</span> : null}
-                        {hitlDecisionState === "rejected" ? <span className="compact-copy">Rejected</span> : null}
-                        {hitlDecisionState === "failed" ? <span className="compact-copy">Decision failed</span> : null}
-                      </div>
-                    </div>
-                  ) : (
-                    <p className="compact-copy">Select an issue to review and edit its remark.</p>
-                  )}
-                </article>
 
                 <article className="detail-block">
                   <h3>Matching requirements</h3>
@@ -1342,7 +1076,19 @@ export default function App() {
             )}
           </section>
         </div>
-      </main>
+          }
+        />
+        )
+      ) : null}
+
+      {triageHelpOpen ? (
+        <aside className="triage-help" role="dialog" aria-label="Triage keyboard help">
+          <p>
+            J/K or arrows — next/previous finding. A — confirm. R — reject. E — focus remark. ? —
+            this help. Esc — close. Mouse-only triage fails the cognitive-load criterion.
+          </p>
+        </aside>
+      ) : null}
     </div>
   );
 }

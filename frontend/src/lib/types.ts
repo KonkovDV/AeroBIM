@@ -66,6 +66,15 @@ export interface ValidationIssue {
     claim_boundary?: string | null;
     provider?: string | null;
     model?: string | null;
+    essence?: string;
+    clause_cite?: string;
+    clause_bound?: boolean;
+    location_line?: string;
+    detail?: string;
+    storey_name?: string | null;
+    grid_axis?: string | null;
+    sheet_id?: string | null;
+    element_guid?: string | null;
   } | null;
   conflict_kind?: string | null;
   priority?: number;
@@ -86,6 +95,10 @@ export interface ValidationIssue {
   project_id?: string | null;
   origin?: "deterministic" | "advisory" | string | null;
   match_method?: string | null;
+  /** IfcBuildingStorey.Name from spatial containment. Never invented from OCR. */
+  storey_name?: string | null;
+  /** IfcGridAxis.AxisTag. Never invented from OCR. */
+  grid_axis?: string | null;
 }
 
 export interface DrawingAnnotation {
