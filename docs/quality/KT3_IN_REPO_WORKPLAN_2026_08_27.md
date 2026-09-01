@@ -4,7 +4,7 @@ title: "In-repo workplan after 25.08 customer answers"
 date: "2026-08-27"
 last_updated: "2026-09-01"
 status: active
-version: "1.8.4"
+version: "1.8.5"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -29,6 +29,7 @@ Owner-machine inventory (byte counts, file-type shares, pack hashes) stays **out
 |---|---|
 | Native RVT/NWD/DWG fail-closed | `validate_native_autodesk_toolchain`; upload/analyze/ZIP members |
 | Format-ingest Red Team (01.09) | `format_ingest_triage_snapshot`; IFC+PDF/A; stock Navisworks does not write IFC |
+| SPG Aug 2026 speech pin | [`SPG_CONSTRUCTION_VS_FM_2026_09.md`](SPG_CONSTRUCTION_VS_FM_2026_09.md); construction ≠ FM; PDF not in git |
 | Ingest caps 500 MB office / 1.5 GB model | `SAMOLET_STATED_*`; SPF/WASM **256 MiB**; RocksDB to 1.5 GB under `samolet_pilot` |
 | LIRA = compare, not solver | `calculation_compare`; `native_lir=not_implemented` |
 | xlsx/docx declared-field compare | `compare_declared_tables` + office adapter; PDF fragile; `.lir` closed |

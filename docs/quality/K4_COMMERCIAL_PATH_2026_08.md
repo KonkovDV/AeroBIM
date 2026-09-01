@@ -2,9 +2,9 @@
 ---
 title: "K4 commercial path — zero entry after 1H2026 IFRS, TAM is not SAM"
 date: "2026-08-29"
-last_updated: "2026-08-30"
+last_updated: "2026-09-01"
 status: active
-version: "1.1.0"
+version: "1.1.1"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -70,6 +70,8 @@ claim_boundary: >
 
 SAM (автопроверка ПД/РД как слой поверх СОД/BIM-данных) **в рублях не оцениваем**.
 Другой продукт МИК («упаковка инвестпроекта», рынок ≥500 млн) сюда не переносится.
+
+Срез Strategy Partners / АО СПГ, август 2026 (PDF у владельца, **не** в git): стройка (8 стр.) подкрепляет «данные ПД/РД важнее пилотов ИИ» и якорь 398-р «экспертиза ПД с инфомоделью»; рынок FM/PM (60 стр.) — **не** наш SAM и **не** digital twin. Не клеить их −N% в A1–A8. Пин: [`SPG_CONSTRUCTION_VS_FM_2026_09.md`](SPG_CONSTRUCTION_VS_FM_2026_09.md).
 
 Опубликованный аналог «−72,1% трудозатрат» на одной модели 5240 м²
 ([ИНФРА-М / Editorum](https://zh-szf.ru/ru/nauka/article/117090/view)) — **их**

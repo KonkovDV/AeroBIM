@@ -4,7 +4,7 @@ title: "Eight tracker tasks (29.08) — git SSOT for KT#3"
 date: "2026-08-30"
 last_updated: "2026-09-01"
 status: active
-version: "1.1.9"
+version: "1.1.10"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -49,6 +49,7 @@ Checkpoint **`NO_GO`**. Пакет канала **не** в git. Локатор 
 5. «Неэффективное пространство»: в git **`advisory_unsigned`** — inventory IfcSpace, пороги не подписаны, не delivered. Не оставлять строку без позиции.
 6. Fixture clash n=6 / P=1,0 **не показывать** (Wilson lower ≈ 0,61).
 7. Этот файл — SSOT восьми задач. Несинхронизированные копии чата не используем.
+8. Срезы СПГ август 2026: стройка — речь про данные/инфомодель; FM/PM — не продукт. PDF не в git. [`SPG_CONSTRUCTION_VS_FM_2026_09.md`](SPG_CONSTRUCTION_VS_FM_2026_09.md).
 
 ## Четыре спринта (окно 03–21.09; финал 29–30.09)
 
@@ -71,4 +72,4 @@ Checkpoint **`NO_GO`**. Пакет канала **не** в git. Локатор 
 
 Реестр вне git · объём находок (не %) · классификатор ≥20 · стенд двух ролей **если** BFF не 501 · записка ЛИРА · одностраничник RVT/NWD · журнал писем. Если эталона нет — **NO_GO** с работающим ядром, не перекрашивать.
 
-Связанные: [`KT3_WINDOW_CRITICAL_PATH_2026_09.md`](KT3_WINDOW_CRITICAL_PATH_2026_09.md) · [`OWNER_ACTIONS_2026_09.md`](../OWNER_ACTIONS_2026_09.md).
+Связанные: [`KT3_WINDOW_CRITICAL_PATH_2026_09.md`](KT3_WINDOW_CRITICAL_PATH_2026_09.md) · [`OWNER_ACTIONS_2026_09.md`](../OWNER_ACTIONS_2026_09.md) · [`SPG_CONSTRUCTION_VS_FM_2026_09.md`](SPG_CONSTRUCTION_VS_FM_2026_09.md).

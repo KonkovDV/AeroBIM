@@ -512,6 +512,8 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         self.assertNotIn("CHANNEL_PACK_TRIAGE", text)
         self.assertNotIn("pack-family-facts-2026-08.md", text)
         self.assertNotIn("SAMOLET_QUESTION_PACK", text)
+        self.assertIn("K4_COMMERCIAL_PATH_2026_08.md", text)
+        self.assertNotIn("SPG_CONSTRUCTION", text)
         self.assertNotIn("OWNER_ACTIONS_2026_09.md", text)
 
     def test_tracked_paths_omit_tracker_surname(self) -> None:
