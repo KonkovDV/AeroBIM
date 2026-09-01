@@ -183,7 +183,12 @@ class NativeAutodeskIngestTests(unittest.TestCase):
         self.assertEqual(payload["nwd_native"], "NOT_IMPLEMENTED")
         self.assertFalse(payload["claim_allowed"])
         self.assertFalse(payload["any_ingest_supported"])
+        self.assertFalse(payload["navisworks_stock_ifc_export"])
         self.assertEqual(payload["reason"], NATIVE_AUTODESK_CLOSED_REASON)
+        self.assertEqual(
+            payload["format_ingest"],
+            "docs/quality/FORMAT_INGEST_TRIAGE_2026_09.md",
+        )
 
 
 if __name__ == "__main__":

@@ -358,6 +358,18 @@ LEDGER: tuple[InferenceRow, ...] = (
         "operational_hygiene",
     ),
     _row(
+        "FMT-01",
+        "tracker",
+        "Восемь задач 29.08: закрытые CAD/solver как объект обмена, не как парсеры",
+        "KT#3 exchange is IFC + PDF/A. Closed Autodesk CAD and .lir stay fail-closed. "
+        "Stock Navisworks does not write IFC. ODA trial is measurement, not a product.",
+        "DWG product; native RVT/NWD reader; parse .lir; OCR delivered; "
+        "Sustaining 7500 USD = RVT; DrawingVQA as AeroBIM accuracy",
+        "docs/quality/FORMAT_INGEST_TRIAGE_2026_09.md",
+        "Appointing-party IFC/PDF; readable calc notes; NWD federation as IFC or OOS",
+        "operational_hygiene",
+    ),
+    _row(
         "TL-01",
         "techlab",
         "КТ#2 (до 20.08): этап МИК «доработка»",

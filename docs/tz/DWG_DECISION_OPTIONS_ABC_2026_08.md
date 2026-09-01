@@ -2,10 +2,12 @@
 ---
 title: "T-2 — DWG decision options A/B/C (owner chooses)"
 date: 2026-08-05
+last_updated: "2026-09-01"
 status: OWNER_DECISION_REQUIRED
 claim_boundary: >-
   Options memo with engineering numbers where known. Not a product claim of native DWG.
-  Native DWG remains fail-closed until owner picks A/B/C.
+  Native DWG remains fail-closed until owner picks A/B/C. KT#3 default remains C
+  (IFC+PDF exchange). Seven strategy classes: FORMAT_INGEST_TRIAGE_2026_09.
 ---
 
 # DWG — три варианта для защиты (решение владельца)
@@ -33,6 +35,6 @@ claim_boundary: >-
 
 ## Рекомендация инженерии (не решение)
 
-До ответа Самолёта и бюджета: держать **C** в матрице ТЗ + параллельно готовить протокол замера **B** на первом реальном DWG. **A** — только после цифры от владельца.
+До ответа Самолёта и бюджета: держать **C** в матрице ТЗ + параллельно готовить протокол замера **B** на первом реальном DWG. **A** — только после цифры от владельца. Окно КТ#3 (01.09): **C остаётся default**. Закрытые RVT/NWD/`.lir` не раскрываются вариантами A/B/C — семь классов решения: [`../quality/FORMAT_INGEST_TRIAGE_2026_09.md`](../quality/FORMAT_INGEST_TRIAGE_2026_09.md).
 
 **ТРЕБУЕТСЯ ОТ ВЛАДЕЛЬЦА:** выбрать A, B или C письменно; для A — бюджет/КП ODA.

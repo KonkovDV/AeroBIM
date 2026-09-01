@@ -4,7 +4,7 @@ title: "In-repo workplan after 25.08 customer answers"
 date: "2026-08-27"
 last_updated: "2026-09-01"
 status: active
-version: "1.8.3"
+version: "1.8.4"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -28,6 +28,7 @@ Owner-machine inventory (byte counts, file-type shares, pack hashes) stays **out
 | Item | Where |
 |---|---|
 | Native RVT/NWD/DWG fail-closed | `validate_native_autodesk_toolchain`; upload/analyze/ZIP members |
+| Format-ingest Red Team (01.09) | `format_ingest_triage_snapshot`; IFC+PDF/A; stock Navisworks does not write IFC |
 | Ingest caps 500 MB office / 1.5 GB model | `SAMOLET_STATED_*`; SPF/WASM **256 MiB**; RocksDB to 1.5 GB under `samolet_pilot` |
 | LIRA = compare, not solver | `calculation_compare`; `native_lir=not_implemented` |
 | xlsx/docx declared-field compare | `compare_declared_tables` + office adapter; PDF fragile; `.lir` closed |
@@ -61,7 +62,7 @@ Owner-machine inventory (byte counts, file-type shares, pack hashes) stays **out
 Owner-запросы (не код), редакция 28.08 после критического издания ответов 25.08:
 
 1. **Публикация двух папок из ответа 1.2.1** (стандарты компании; регламенты BIM) тем же способом, что датасет, либо одним архивом; для старта достаточно двух документов (СТО по КЖ/КР + регламент BIM). Перечень **выдан** — просим переключатель доступа, не подборку. Каждое правило вернём на подтверждение с точной цитатой. В тех же папках — база типовых узлов (п. 1.2.3, только PDF/DWG).
-2. **Выгрузка сводной NWD в IFC** штатным пакетным экспортом СОД по одному корпусу — федерация существует в NWD (п. 1.1.5); без неё критерий коллизий ТЗ неизмерим (RT-CLASH-MEASURE).
+2. **Выгрузка сводной NWD в IFC** на стороне назначающей стороны по одному корпусу (authoring tool / согласованный плагин). Stock Navisworks **не** пишет IFC. Федерация в NWD (п. 1.1.5) ≠ reader в git; без IFC-федерации критерий коллизий ТЗ неизмерим (RT-CLASH-MEASURE).
 3. **Протокол измерения двух числовых критериев** (>90% коллизии; время комплекта): эталонный перечень замечаний и кто его утверждает; репрезентативный объём; от какого момента считать время. В ответах 25.08 эти критерии не упомянуты — без протокола цифры не заявляем.
 4. DXF-выгрузка остальных чертежей тем же маршрутом, что 57 вложенных; отчёты по армированию и **нагрузкам/площадям** в xlsx/docx (источник сверки — расчётные записки, п. 2.1.1).
 5. Исполнение **п. 3.1.2 самих ответов** (RT-NDA-STATED): обезличенные комплекты в рамках NDA — что делать с файлами, которые обезличенными не являются. Это не наша осторожность, а условие заказчика.
@@ -91,7 +92,7 @@ Owner-запросы (не код), редакция 28.08 после крити
 |---|---|---|---|
 | 9b | `pack_probe` + hashed TSV **локально**; пин семейств в git (счётчики, без байт-итогов) | `pack_family_snapshot()`; live walk matched evening pin; named calc ext counted | Несжатые байт-итоги в git; «43 ГБ обработаны»; txt-stub `.local/pack` как комплект; census-цифры на карте жюри |
 | 6b | CC-2/CC-4 shortlist в `.local/` | Кандидаты локально; `is_cc2_match=false` | Токен = MATCH; разбор `.lir`; shortlist-счётчики на карте жюри |
-| — | Триаж семейств / поверхностей жюри | [`CHANNEL_PACK_TRIAGE_2026_08.md`](CHANNEL_PACK_TRIAGE_2026_08.md) · [`JURY_PACK_TRIAGE_2026_09.md`](JURY_PACK_TRIAGE_2026_09.md) | Meets/Does-not семи задач; OCR сдан; ФИО комиссии в git |
+| — | Триаж семейств / поверхностей жюри / форматов ingest | [`CHANNEL_PACK_TRIAGE_2026_08.md`](CHANNEL_PACK_TRIAGE_2026_08.md) · [`JURY_PACK_TRIAGE_2026_09.md`](JURY_PACK_TRIAGE_2026_09.md) · [`FORMAT_INGEST_TRIAGE_2026_09.md`](FORMAT_INGEST_TRIAGE_2026_09.md) | Meets/Does-not семи задач; OCR сдан; ФИО комиссии в git |
 
 ## Owner-only (not git)
 

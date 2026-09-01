@@ -4,7 +4,7 @@ title: "Eight tracker tasks (29.08) — git SSOT for KT#3"
 date: "2026-08-30"
 last_updated: "2026-09-01"
 status: active
-version: "1.1.8"
+version: "1.1.9"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -37,7 +37,7 @@ Checkpoint **`NO_GO`**. Пакет канала **не** в git. Локатор 
 | SIG-04 | Два критерия точности + классификатор | Каталог ≥20 классов; `customer_confirmed_patterns=0`; наблюдения носителей в каталоге (не confirmation) | Два разметчика; сверка с их набором | Смешать F1 фикстур с объёмом канала |
 | SIG-05 | Пакет вопросов | Черновик [`../partners/SAMOLET_QUESTION_PACK_KT3_2026_08.md`](../partners/SAMOLET_QUESTION_PACK_KT3_2026_08.md) | Отправить 31.08 через организаторов | «заполните TBD с нуля» |
 | SIG-06 | ЛИРА к КТ#3 | Четыре проверки; shortlist ≠ MATCH | Каноничная записка | «конструкции пересчитаны»; токен = MATCH |
-| SIG-07 | RVT/NWD + CV | [одностраничник](../demo/KT3_RVT_NWD_CV_ONEPAGER_2026_08.md) | Юрлицо / закупка SDK | Sustaining = BimRv; CADSoftTools 1660 $ |
+| SIG-07 | RVT/NWD + CV | [триаж форматов](FORMAT_INGEST_TRIAGE_2026_09.md) · [одностраничник](../demo/KT3_RVT_NWD_CV_ONEPAGER_2026_08.md) | Юрлицо / закупка SDK | Sustaining = BimRv; CADSoftTools 1660 $ |
 | SIG-08 | РУТ (МИИТ) | OA-10 | Письмо до 01.09 | Учебный комплект закрывает RT-001 |
 
 ## Правки к черновику вне git

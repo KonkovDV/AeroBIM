@@ -49,6 +49,7 @@ claim_boundary: >-
 | SIG-01 | tracker | Восемь задач 29.08: объём находок на канале IFC/PDF | Report phrase: объём находок на канале получен. unrestricted_eq_sample is a capped unsigned ALL+eq sample, not a defect. EI 45 vs demo REI60 is SAM-09, not SP 2.13130. | Product accuracy; pack processed; customer defect list; unsigned ALL+eq as SP; raising the mismatch cap as a defect export | `operational_hygiene` |
 | SIG-02 | tracker | Восемь задач 29.08: инвентарь канала (формат / processed / priority / legal) | pack_probe + census pin; calc binaries are the majority of unpack bytes; Office token shortlist is not CC-2 MATCH. Uncompressed byte totals stay out of git. | 43 GB processed; native .lir parse; token shortlist as CC-2 MATCH; byte totals of the NDA tree in git | `operational_hygiene` |
 | JURY-01 | mik | Отборочная комиссия №7: роли на карте жюри, не ФИО и не census NDA | Seat briefs are roles; three partner seats by agreement; unpack counts stay off TIER0; tracker paths have no personal names. | Sitting-member list in git; OSINT bios as confirmed; unpack fingerprint counts on the jury map; pack processed | `operational_hygiene` |
+| FMT-01 | tracker | Восемь задач 29.08: закрытые CAD/solver как объект обмена, не как парсеры | KT#3 exchange is IFC + PDF/A. Closed Autodesk CAD and .lir stay fail-closed. Stock Navisworks does not write IFC. ODA trial is measurement, not a product. | DWG product; native RVT/NWD reader; parse .lir; OCR delivered; Sustaining 7500 USD = RVT; DrawingVQA as AeroBIM accuracy | `operational_hygiene` |
 | TL-01 | techlab | КТ#2 (до 20.08): этап МИК «доработка» | Предварительная версия в ЛК; GitHub прототип; видео не прилагаем, показ = живой CLI | Валидация эффективности начата; внедрение начато | `fixture_demo` |
 | TL-02 | techlab | Критерии пилота 2 млн ₽ (interim ≥0.60, SLA, BCF в СОД) | Протокол измерения согласован как методика | Фактическое достижение критериев на комплекте Самолёта | `protocol_planning` |
 | TL-03 | techlab | Участие в «Техлаб Москва»: физлица или команда 1–10 (FAQ i.moscow/techlab) | ИП/ООО не условие входа; приз — платный пилот 2 млн ₽ | Без юрлица нельзя участвовать / нельзя принять приз — как факт Положения | `operational_hygiene` |
@@ -142,6 +143,7 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 | SIG-01 | Signed IDS (RT-002b) + dual raters (RT-001) before any publishable count |
 | SIG-02 | Owner pastes name-free aggregate after OA-9; hashed TSV stays .local |
 | JURY-01 | Keep FIO and NDA fingerprint counts off jury surfaces |
+| FMT-01 | Appointing-party IFC/PDF; readable calc notes; NWD federation as IFC or OOS |
 | TL-01 | КТ#3 03–21.09 — итоговое решение |
 | TL-02 | Замеры только после intake-gates |
 | TL-03 | Оплату приза уточнять только по соглашению Партнёра и Фонда |
@@ -231,6 +233,7 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 - `SIG-01`: [FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md](FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md)
 - `SIG-02`: [CHANNEL_PACK_TRIAGE_2026_08.md](CHANNEL_PACK_TRIAGE_2026_08.md)
 - `JURY-01`: [JURY_PACK_TRIAGE_2026_09.md](JURY_PACK_TRIAGE_2026_09.md)
+- `FMT-01`: [FORMAT_INGEST_TRIAGE_2026_09.md](FORMAT_INGEST_TRIAGE_2026_09.md)
 - `TL-01`: [docs.md](../docs.md)
 - `TL-02`: [PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md](../partners/PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md)
 - `TL-03`: [TECHLAB_TASK_07_READINESS_2026.md](../partners/TECHLAB_TASK_07_READINESS_2026.md)

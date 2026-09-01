@@ -2,20 +2,21 @@
 ---
 title: "КТ#3 one-pager — RVT/NWD and computer vision (SIG-07)"
 date: "2026-08-30"
-last_updated: "2026-08-30"
+last_updated: "2026-09-01"
 status: active
-version: "1.0.2"
+version: "1.0.3"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   Counted license fork plus CV scope. Not a native RVT/NWD reader.
-  DWG-ready is forbidden. CADSoftTools 1660 USD is stale. Checkpoint NO_GO.
+  CADSoftTools 1660 USD is stale. Stock Navisworks does not write IFC.
+  Checkpoint NO_GO.
 ---
 
 # RVT / NWD / CV — одна страница (защита)
 
-Пункт 1.1.5 ТЗ называет закрытые форматы. Позиция **посчитанная**, не оправдательная. Источники OSINT: [`../quality/NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md`](../quality/NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md). Retrieved **2026-08-30**. Покупка не совершена.
+Пункт 1.1.5 ТЗ называет закрытые форматы. Позиция **посчитанная**, не оправдательная. Источники OSINT: [`../quality/NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md`](../quality/NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md). Retrieved **2026-08-30** (страница ODA жива **2026-09-01**). Покупка не совершена. Карта решений: [`../quality/FORMAT_INGEST_TRIAGE_2026_09.md`](../quality/FORMAT_INGEST_TRIAGE_2026_09.md).
 
 ## Лицензии (attributed)
 
@@ -33,7 +34,7 @@ claim_boundary: >
 
 ## Обход, который уже в ТЗ обмена
 
-Штатный экспорт IFC 2x3 / IFC4 / IFC4x3 из authoring tool. Сводная NWD → IFC — на стороне назначающей стороны (вопрос SIG-05). Native ingest в MVP **fail-closed**. Локальный unpack 30.08: wrapper 27 `.rvt` / 21 Navis; unpack-дерево 75 `.rvt` / 8 Navis; unique-by-name **87** RVT (**2020** = 81, **2023** = 6; 20 workshared `RSN://`) и **3** NWD-федерации — носители, не reader.
+Штатный экспорт IFC 2x3 / IFC4 / IFC4x3 из authoring tool. Сводная NWD → IFC — на стороне назначающей стороны (вопрос SIG-05): **stock Navisworks не пишет IFC**. Native ingest в MVP **fail-closed**. Носители закрытых форматов есть на локальном unpack-дереве; presence ≠ reader; счётчики — инженерный пин, не эта страница.
 
 ## Компьютерное зрение (скоуп называем сами)
 

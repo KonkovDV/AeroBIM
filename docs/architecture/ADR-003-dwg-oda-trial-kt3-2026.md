@@ -3,8 +3,8 @@
 title: "ADR-003 — Native DWG stays FAILED; ODA 60-day trial is KT#3 fact-finding"
 status: accepted
 date: 2026-08-13
-last_updated: "2026-08-30"
-claim_boundary: "Native DWG remains FAILED. This ADR does not authorize a DWG-ready claim. ODA trial ≠ commercial license ≠ SaaS."
+last_updated: "2026-09-01"
+claim_boundary: "Native DWG remains FAILED. This ADR does not authorize a DWG product claim. ODA trial ≠ commercial license ≠ SaaS."
 ---
 
 # ADR-003: Native DWG and ODA trial
@@ -15,7 +15,7 @@ Tracker asks how we handle DWG. Runtime today: `EzdxfCadModelIngestor` returns `
 
 Russian intake for expertise is PDF/A + IFC + XML (MinStroy 783/пр, PP RF 614). DWG is a contractor working format, not the regulator's required exchange.
 
-ODA [pricing](https://www.opendesign.com/pricing): Commercial membership is **not** licensed for SaaS/web; Sustaining is the SaaS floor. A 60-day evaluation is fact-finding, not a product feature.
+ODA [pricing](https://www.opendesign.com/pricing): Commercial membership is **not** licensed for SaaS/web; Sustaining is the SaaS floor. A 60-day evaluation is fact-finding, not a product feature. Format map (seven strategy classes): [`../quality/FORMAT_INGEST_TRIAGE_2026_09.md`](../quality/FORMAT_INGEST_TRIAGE_2026_09.md).
 
 ## Decision
 
@@ -35,4 +35,4 @@ ODA [pricing](https://www.opendesign.com/pricing): Commercial membership is **no
 
 - Keep fail-closed honesty on `capabilities.dwg_dxf`.
 - Do not start ODA integration adapters before the trial protocol exists (new adapter under the existing CAD ingest port is allowed later; **no new domain port** in KT#2).
-- Trial numbers go to `artifacts/` with hashes; they do not flip this ADR to «DWG-ready».
+- Trial numbers go to `artifacts/` with hashes; they do not flip this ADR to a DWG product.

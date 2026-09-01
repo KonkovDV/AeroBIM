@@ -2,9 +2,9 @@
 ---
 title: "Native CAD license fork — OSINT (retrieved 2026-08-30)"
 date: "2026-08-30"
-last_updated: "2026-08-30"
+last_updated: "2026-09-01"
 status: active
-version: "1.0.0"
+version: "1.0.1"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -54,7 +54,7 @@ Autodesk News, 4 марта 2022: приостановка бизнеса в Р�
 
 ## 5. Обход, который уже заявлен как регламент обмена
 
-IFC 2x3 / IFC4 / IFC4x3 — штатный экспорт authoring tools (в том числе Revit). Native RVT/NWD в MVP закрывается **регламентом передачи IFC**, не SDK. Это не «мы читаем RVT». Сводная NWD → IFC — на стороне назначающей стороны (вопрос заказчику; T2 BCF в их СОД отдельно, NOT_VERIFIED).
+IFC 2x3 / IFC4 / IFC4x3 — штатный экспорт authoring tools (в том числе Revit). Native RVT/NWD в MVP закрывается **регламентом передачи IFC**, не SDK. Это не «мы читаем RVT». Сводная NWD → IFC — на стороне назначающей стороны (вопрос заказчику; T2 BCF в их СОД отдельно, NOT_VERIFIED). **Stock Navisworks не пишет IFC** (плагины требуют установленного Navisworks). Карта семи классов решения: [`FORMAT_INGEST_TRIAGE_2026_09.md`](FORMAT_INGEST_TRIAGE_2026_09.md). Retrieved прайса ODA **2026-08-30**; страница pricing жива **2026-09-01**.
 
 buildingSMART Validation Service принимает несжатый `.ifc` **не более 256 MB** ([user guide](https://buildingsmart.github.io/validate/user/index.html); UI: «256mb max»). Default `AEROBIM_MAX_IFC_BYTES` = 256 **MiB** SPF in-memory — сопоставимый порядок, **не** та же единица. До 1,5 ГБ analyze идёт через IfcOpenShell RocksDB, не через SPF RAM. WASM остаётся 256 MiB. Native DWG/RVT — not claimed.
 

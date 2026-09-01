@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM Pilot Claim Boundary 2026"
 status: active
-version: "1.13.8"
-last_updated: "2026-08-30"
+version: "1.13.9"
+last_updated: "2026-09-01"
 tags: [aerobim, pilot, claims, evidence]
 ---
 
@@ -114,7 +114,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 | LLM IDS drafting assist | Stub only — **advisory, never in sign-off path** |
 | True computer vision for drawings | Not implemented; OCR baseline ≠ CV |
 | Native DWG as product-ready CAD | Still missing / fail-closed; DXF optional `[cad]` EntityGraph never claims `dwg_dxf=OK` |
-| Native RVT / NWD | Same class as DWG; fail-closed; IFC 2x3/4/4x3 is the ingest path ([`tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md`](tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md)). ODA Sustaining ≠ BimRv ([`quality/NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md`](quality/NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md)) |
+| Native RVT / NWD | Same class as DWG; fail-closed; IFC 2x3/4/4x3 is the ingest path ([`tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md`](tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md)). Stock Navisworks does not write IFC. ODA Sustaining ≠ BimRv ([`quality/NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md`](quality/NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md) · [`quality/FORMAT_INGEST_TRIAGE_2026_09.md`](quality/FORMAT_INGEST_TRIAGE_2026_09.md)) |
 | Fixture AABB P/R = 1.0 at n=6 as a jury exhibit | Wilson 95% lower ≈ 0.61 (`wilson_interval(6, 6)`); stop-list KT#3 item 28 |
 | Space-efficiency numeric KPI | Coverage map: not implemented; owner scope OA-14 OPEN |
 | 5–10 packs/day | Customer-stated 25.08; not a measured SLA; `benchmark-thresholds.json` `publishable_sla=false` |
@@ -167,6 +167,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 34. Four catalog cards are **not** all applicants. Neighbor-task «46 teams» is a different Partner. Peer catalog claims (15 pilots, 600+ norms, live customer prototype) are **not** audited public fact.
 35. Publishable CI counts come only from `docs/evidence/runtime-baseline-latest.json`. Historical blocker-file figures (SHA `019962141606`) are a prior pin, not the current SSOT.
 36. Native DWG/RVT/NWD are **not implemented**. Default IFC **SPF** cap stays **256 MiB**. 1.5 GB is ingest + RocksDB analyze, not SPF RAM and not WASM. Experiment B KR headline is **≈16.7 %** (4/24); **≈8.3 %** is the Task-3 waypoint, not the current detected share.
+37. Closed Autodesk CAD and `.lir` are **not** an ingest product. KT#3 exchange is IFC + PDF/A. Stock Navisworks does not write IFC. ODA trial is measurement, not a product ([`quality/FORMAT_INGEST_TRIAGE_2026_09.md`](quality/FORMAT_INGEST_TRIAGE_2026_09.md)).
 
 ## Reproducibility baseline
 

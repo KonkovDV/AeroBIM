@@ -199,11 +199,13 @@ def build_four_direction_contracts() -> list[dict[str, Any]]:
             ),
             claim_boundary=(
                 "RVT/NWD same class as native DWG. Ingest IFC 2x3/4/4x3 exported by "
-                "the authoring tool; never rvt_supported / nwd_ready"
+                "the authoring tool; stock Navisworks does not write IFC; never "
+                "rvt_supported / nwd_ready"
             ),
             dependencies=["CadModelIngestor"],
             evidence_refs=[
                 "docs/tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md",
+                "docs/quality/FORMAT_INGEST_TRIAGE_2026_09.md",
             ],
         ),
         capability_contract(

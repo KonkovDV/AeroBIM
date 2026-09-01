@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM Capability Claim Matrix 2026"
 status: active
-version: "1.4.3"
+version: "1.4.4"
 last_updated: "2026-09-01"
 claim_boundary: "Sync with CLAIMS_LOCK. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
 ---
@@ -16,7 +16,7 @@ API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_
 
 | Direction | Code readiness | Fixture | Customer | Status vocabulary |
 |---|---|---|---|---|
-| Native DWG | MISSING (`Ezdxf` fail-closed; ODA stub off analyze) | — | — | never `dwg_dxf=ok` |
+| Native DWG | MISSING (`Ezdxf` fail-closed; ODA stub off analyze) | — | — | never `dwg_dxf=ok`; exchange IFC+PDF/A ([`quality/FORMAT_INGEST_TRIAGE_2026_09.md`](quality/FORMAT_INGEST_TRIAGE_2026_09.md)) |
 | DXF | PARTIAL optional `[cad]` | fixture TEXT/MTEXT | not claimed | never = DWG support |
 | DWG→PDF/IFC route | derived provenance helper | unit | external prep | `available_as_derived_input` ≠ `dwg_supported` |
 | Core PDF | `pypdfium2`+`pdfminer` (LIC-001 Option B) | unit+integration | — | PyMuPDF = optional `pdf-agpl` only |

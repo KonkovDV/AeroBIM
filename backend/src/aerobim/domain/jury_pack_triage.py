@@ -31,6 +31,9 @@ JURY_SURFACES: Final[tuple[str, ...]] = (
     "docs/demo/KT3_TRACKER_SIX_TASKS_2026_08.md",
     "docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md",
     "docs/quality/JURY_PACK_TRIAGE_2026_09.md",
+    "docs/quality/FORMAT_INGEST_TRIAGE_2026_09.md",
+    "docs/tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md",
+    "docs/demo/KT3_RVT_NWD_CV_ONEPAGER_2026_08.md",
     "submission/README.md",
 )
 

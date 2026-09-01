@@ -1,7 +1,7 @@
 {
   "artifact_type": "aerobim_interpretation_use_ledger",
   "schema_version": "1.2.1",
-  "generated_at": "2026-09-01T06:09:02.254915+00:00",
+  "generated_at": "2026-09-01T09:30:00.460914+00:00",
   "audited_head": "f9389bf",
   "checkpoint": "NO_GO",
   "claim_boundary": "Kane IUA over existing AeroBIM scores. Licensed uses stop at fixture demo, engine regression, open-bench countable subsets, gold-IDS processability, and protocol planning. Not customer precision, not TZ >90%, not customer SLA, not Checkpoint GO.",
@@ -42,7 +42,7 @@
   "closes_rt001": false,
   "closes_rt002": false,
   "closes_rt003": false,
-  "row_count": 86,
+  "row_count": 87,
   "rows": [
     {
       "row_id": "SAM-01",
@@ -388,6 +388,20 @@
       "blocked_inference": "Sitting-member list in git; OSINT bios as confirmed; unpack fingerprint counts on the jury map; pack processed",
       "evidence": "docs/quality/JURY_PACK_TRIAGE_2026_09.md",
       "kt3_condition": "Keep FIO and NDA fingerprint counts off jury surfaces",
+      "licensed_use": "operational_hygiene",
+      "closes_rt001": false,
+      "closes_rt002": false,
+      "closes_rt003": false,
+      "checkpoint": "NO_GO"
+    },
+    {
+      "row_id": "FMT-01",
+      "source": "tracker",
+      "requirement": "Восемь задач 29.08: закрытые CAD/solver как объект обмена, не как парсеры",
+      "licensed_inference": "KT#3 exchange is IFC + PDF/A. Closed Autodesk CAD and .lir stay fail-closed. Stock Navisworks does not write IFC. ODA trial is measurement, not a product.",
+      "blocked_inference": "DWG product; native RVT/NWD reader; parse .lir; OCR delivered; Sustaining 7500 USD = RVT; DrawingVQA as AeroBIM accuracy",
+      "evidence": "docs/quality/FORMAT_INGEST_TRIAGE_2026_09.md",
+      "kt3_condition": "Appointing-party IFC/PDF; readable calc notes; NWD federation as IFC or OOS",
       "licensed_use": "operational_hygiene",
       "closes_rt001": false,
       "closes_rt002": false,

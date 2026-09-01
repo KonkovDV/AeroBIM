@@ -16,6 +16,7 @@ from typing import Any
 from aerobim.domain.cad_ingest import (
     AUTODESK_NATIVE_SUFFIXES,
     NATIVE_AUTODESK_CLOSED_REASON,
+    NAVISWORKS_STOCK_IFC_EXPORT,
 )
 from aerobim.infrastructure.adapters.ezdxf_cad_model_ingestor import EzdxfCadModelIngestor
 
@@ -44,14 +45,17 @@ def probe_native_autodesk_toolchain() -> dict[str, Any]:
         "rvt_native": "NOT_IMPLEMENTED",
         "nwd_native": "NOT_IMPLEMENTED",
         "claim_allowed": False,
+        "navisworks_stock_ifc_export": NAVISWORKS_STOCK_IFC_EXPORT,
         "any_ingest_supported": any_supported,
         "suffix_probes": samples,
         "reason": NATIVE_AUTODESK_CLOSED_REASON,
         "claim_boundary": (
             "IFC 2x3/4/4x3 is the ingest path. Native RVT/NWD is the same class as "
-            "native DWG: closed format, no free reader. Never rvt_supported / nwd_ready."
+            "native DWG: closed format, no free reader. Never rvt_supported / nwd_ready. "
+            "Stock Navisworks does not write IFC."
         ),
         "ingest_route": "docs/tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md",
+        "format_ingest": "docs/quality/FORMAT_INGEST_TRIAGE_2026_09.md",
     }
 
 

@@ -16,6 +16,8 @@ NATIVE_DWG_ODA_ENABLED_NO_SDK_REASON = (
 NATIVE_AUTODESK_CLOSED_REASON = (
     "native RVT/NWD parser is not implemented; closed Autodesk format without a free reader"
 )
+# Stock Navisworks UI/API does not write IFC; plugins need their installed seat.
+NAVISWORKS_STOCK_IFC_EXPORT = False
 AUTODESK_NATIVE_SUFFIXES = frozenset({".rvt", ".rte", ".nwd", ".nwc"})
 AUTODESK_NATIVE_FORMATS = frozenset({"rvt", "rte", "nwd", "nwc"})
 REVIT_CONTAINER_ZIP_BASENAMES = frozenset({"basicfileinfo"})
@@ -104,6 +106,7 @@ __all__ = [
     "NATIVE_AUTODESK_CLOSED_REASON",
     "NATIVE_DWG_MISSING_REASON",
     "NATIVE_DWG_ODA_ENABLED_NO_SDK_REASON",
+    "NAVISWORKS_STOCK_IFC_EXPORT",
     "REVIT_CONTAINER_ZIP_BASENAMES",
     "autodesk_format_resolved",
     "default_dwg_loss_notes",

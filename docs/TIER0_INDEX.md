@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM — карта для жюри Техлаба и МИК"
 status: active
-version: "4.8.26"
+version: "4.8.27"
 last_updated: "2026-09-01"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
@@ -60,7 +60,8 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 | [План recall на инъекциях](evidence/DEFECT_INJECTION_RECALL_PLAN_2026_09.md) | Синтетика; seed 20260824; не корпус Самолёта |
 | [ADR-004 MIT vs п. 6.3](architecture/ADR-004-prize-ip-mit-fork-2026.md) | Развилка; LICENSE не меняем |
 | [Сверка весов с PDF](quality/ORDER_WEIGHTS_VERIFICATION_2026_09.md) | Колонка PDF пустая; UNVERIFIED; attributed |
-| [Лицензионная вилка CAD (OSINT 30.08)](quality/NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md) | Sustaining ≠ BimRv; не DWG-ready |
+| [Лицензионная вилка CAD (OSINT 30.08)](quality/NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md) | Sustaining ≠ BimRv; не продукт CAD |
+| [Триаж форматов ingest](quality/FORMAT_INGEST_TRIAGE_2026_09.md) | Обмен IFC+PDF/A; native fail-closed; trial ≠ продукт |
 | [Критический путь окна КТ#3](quality/KT3_WINDOW_CRITICAL_PATH_2026_09.md) | OIDC 501; Wilson n=6; RT-002 split; TBD confirm |
 | [Восемь задач трекера 29.08](quality/TRACKER_EIGHT_TASKS_2026_08.md) | SIG-01…08; volume≠accuracy; BFF 501 |
 | [Триаж поверхностей жюри](quality/JURY_PACK_TRIAGE_2026_09.md) | Роли не ФИО; census не карта; не exhibit |

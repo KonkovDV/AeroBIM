@@ -86,7 +86,7 @@ TRACKER_EIGHT: Final[tuple[dict[str, str], ...]] = (
         "title": "Position on RVT/NWD and computer vision",
         "git": "osint_onepager",
         "owner": "blocked_legal_entity_license",
-        "show": "docs/demo/KT3_RVT_NWD_CV_ONEPAGER_2026_08.md",
+        "show": "docs/quality/FORMAT_INGEST_TRIAGE_2026_09.md",
         "stop": "Sustaining 7500 USD = BimRv; stale CADSoftTools list price; DWG-ready",
     },
     {
