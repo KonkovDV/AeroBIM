@@ -244,6 +244,14 @@ class Hd2BcfTests(unittest.TestCase):
 
 
 class Hd2SettingsTests(unittest.TestCase):
+    def test_middleware_docstring_says_zero_disables_bucket(self) -> None:
+        from aerobim.presentation.http.rate_limit import add_rate_limit_middleware
+
+        doc = add_rate_limit_middleware.__doc__ or ""
+        self.assertIn("HD2-RL-02", doc)
+        self.assertIn("0", doc)
+        self.assertRegex(doc, r"disables a bucket")
+
     def test_production_rejects_zero_rate_limit(self) -> None:
         from aerobim.core.config.settings import Settings
 

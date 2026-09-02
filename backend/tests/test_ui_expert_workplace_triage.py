@@ -118,6 +118,15 @@ class UiExpertWorkplaceTriageTests(unittest.TestCase):
         self.assertIn("issue_count: number", api)
         self.assertNotIn("passed: boolean", api.split("DemoSeedFixtureResponse")[1][:400])
 
+    def test_frontend_intake_keys_match_domain(self) -> None:
+        from aerobim.domain.intake_gate_keys import INTAKE_GATE_KEYS
+
+        text = (self._repo() / "frontend" / "src" / "lib" / "intake-gates.ts").read_text(
+            encoding="utf-8"
+        )
+        for key in INTAKE_GATE_KEYS:
+            self.assertIn(f'"{key}"', text, msg=key)
+
     def test_frontend_css_does_not_load_google_fonts(self) -> None:
         css = (self._repo() / "frontend" / "src" / "styles.css").read_text(encoding="utf-8")
         self.assertNotIn("fonts.googleapis.com", css)

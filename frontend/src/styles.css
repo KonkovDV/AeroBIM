@@ -18,6 +18,15 @@
   --brand-primary: var(--accent);
   --shadow: 0 18px 48px rgba(18, 86, 124, 0.1);
   --radius: 14px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 18px;
+  --space-5: 24px;
+  --target-min: 24px;
+  --z-help: 40;
+  --font-ui: "Segoe UI", system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 * {
@@ -28,7 +37,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  font-family: "Segoe UI", system-ui, sans-serif;
+  font-family: var(--font-ui);
   color: var(--text);
   background:
     radial-gradient(circle at top left, rgba(26, 111, 158, 0.12), transparent 32%),
@@ -116,6 +125,52 @@ input {
   align-items: start;
 }
 
+.expert-workplace {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.expert-pack-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pack-switcher {
+  display: grid;
+  gap: var(--space-1);
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.machine-human-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.machine-gateway,
+.expert-hitl {
+  padding: var(--space-4);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+
+.machine-gateway {
+  border: 2px solid var(--panel-border);
+}
+
+.expert-hitl {
+  border: 2px dashed var(--accent-strong);
+}
+
+.export-preview {
+  display: grid;
+  gap: var(--space-4);
+}
+
 .grid-resizer {
   cursor: col-resize;
   align-self: stretch;
@@ -196,7 +251,7 @@ input {
   background: rgba(255, 255, 255, 0.82);
   border-radius: 999px;
   padding: 10px 14px;
-  min-height: 24px;
+  min-height: var(--target-min);
   cursor: pointer;
 }
 
@@ -1193,6 +1248,10 @@ input:focus-visible,
     grid-template-columns: 1fr;
   }
 
+  .machine-human-split {
+    grid-template-columns: 1fr;
+  }
+
   .grid-resizer {
     display: none;
   }
@@ -1203,6 +1262,10 @@ input:focus-visible,
 }
 
 @media (max-width: 780px) {
+  .analyze-engines {
+    grid-template-columns: 1fr 1fr;
+  }
+
   .app-shell {
     width: min(100vw - 18px, 100%);
     padding-top: 18px;
@@ -1248,7 +1311,64 @@ input:focus-visible,
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
+}
+
+.pack-cycle-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px;
+}
+
+.pack-cycle-step-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pack-cycle-arrow {
+  color: var(--muted);
+}
+
+.pack-cycle-step {
+  min-height: var(--target-min);
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--panel-border);
+  background: var(--panel);
+}
+
+.pack-cycle-step-current {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent-strong);
+}
+
+.pack-cycle-step-ready {
+  color: var(--accent-strong);
+}
+
+.pack-cycle-step:disabled {
+  opacity: 0.45;
+}
+
+.pack-cycle-caption {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+button.linkish {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--accent-strong);
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
 }
 
 .workspace-alt {
@@ -1331,6 +1451,42 @@ input:focus-visible,
   background: rgba(15, 118, 110, 0.12);
 }
 
+.analyze-engines {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-2);
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px;
+}
+
+.analyze-engine {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 2px solid var(--panel-border);
+  font-size: 0.8rem;
+}
+
+.analyze-engine-failed,
+.analyze-engine-missing {
+  border-style: solid;
+  border-color: var(--danger);
+}
+
+.analyze-engine-skipped,
+.analyze-engine-not_verified,
+.analyze-engine-not_implemented {
+  border-style: dashed;
+}
+
+.analyze-engine-ok {
+  border-style: solid;
+}
+
+.analyze-engine-pending {
+  border-style: dotted;
+}
+
 .role-alias {
   display: grid;
   gap: 4px;
@@ -1356,6 +1512,14 @@ input:focus-visible,
   border-radius: 8px;
   background: var(--danger-soft);
   color: var(--danger);
+}
+
+.pack-draft-apply-note {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--warning-soft);
+  color: var(--warning);
 }
 
 .job-status {
@@ -1388,6 +1552,7 @@ input:focus-visible,
   border: 1px solid var(--panel-border);
   background: var(--panel);
   box-shadow: var(--shadow);
+  z-index: var(--z-help);
 }
 
 .demo-fixture-panel {

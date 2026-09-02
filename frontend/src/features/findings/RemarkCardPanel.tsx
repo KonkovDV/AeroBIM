@@ -73,13 +73,13 @@ export default function RemarkCardPanel({
 
   return (
     <article className="detail-block" data-testid="remark-card">
-      <h3>Замечание</h3>
+      <h3>Remark</h3>
       {activeIssue ? (
         <div className="remark-editor">
           <EvidenceStepper issue={activeIssue} />
           {activeIssue.remark?.ai_generated ? (
             <p className="synthetic-content-mark" role="status">
-              Синтетический контент (ИИ) · черновик, требует проверки эксперта · не влияет на
+              Synthetic content (AI) · draft, requires expert review · does not affect
               summary.passed
             </p>
           ) : null}
@@ -111,6 +111,16 @@ export default function RemarkCardPanel({
               <dd>
                 <code>{dash(activeIssue.finding_id)}</code>
               </dd>
+            </div>
+            <div>
+              <dt>source_id</dt>
+              <dd>
+                <code>{dash(activeIssue.source_id)}</code>
+              </dd>
+            </div>
+            <div>
+              <dt>evidence_refs</dt>
+              <dd>{activeIssue.evidence_refs?.length ? activeIssue.evidence_refs.join(" · ") : "—"}</dd>
             </div>
           </dl>
           <p className="compact-copy">
@@ -149,14 +159,14 @@ export default function RemarkCardPanel({
           </div>
           {!hitlEnabled ? (
             <p className="compact-copy">
-              Роль User на этом экране — алиас UI, не OIDC. Confirm/Reject доступны роли Expert.
+              User on this screen is a UI alias, not OIDC. Confirm/Reject are available to Expert.
             </p>
           ) : null}
           <div className="review-history" data-testid="review-history">
-            <h4>История HITL</h4>
+            <h4>HITL history</h4>
             {historyError ? <p className="compact-copy">{historyError}</p> : null}
             {history.length === 0 ? (
-              <p className="compact-copy">Нет событий по этой находке.</p>
+              <p className="compact-copy">No events for this finding.</p>
             ) : (
               <ol className="kpi-list">
                 {history.map((event) => (

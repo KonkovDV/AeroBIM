@@ -4,7 +4,7 @@ export type TzUiScreenGit = "partial" | "missing";
 
 export type TzUiScreen = {
   id: string;
-  titleRu: string;
+  title: string;
   git: TzUiScreenGit;
   note: string;
 };
@@ -12,50 +12,50 @@ export type TzUiScreen = {
 export const TZ_UI_SCREENS: TzUiScreen[] = [
   {
     id: "SCR-PROJECTS",
-    titleRu: "Проекты и комплекты",
+    title: "Projects and packs",
     git: "partial",
-    note: "Persisted report list, not a pack workspace with last-run verdict owner",
+    note: "Persisted report list; picking a pack opens the expert three-pane",
   },
   {
     id: "SCR-UPLOAD",
-    titleRu: "Загрузка комплекта",
+    title: "Pack upload",
     git: "partial",
-    note: "POST /v1/uploads dropzone + progress; natives fail-closed in copy",
+    note: "POST /v1/uploads dropzone + progress + cancel; natives fail-closed in copy",
   },
   {
     id: "SCR-RUN",
-    titleRu: "Прогон анализа",
+    title: "Analyze run",
     git: "partial",
-    note: "jobs/{job_id} poll; coarse stages; SSE not shipped; 30 min is TZ goal",
+    note: "jobs/{job_id} poll; engine groups from capabilities; SSE not shipped",
   },
   {
     id: "SCR-EXPERT",
-    titleRu: "Рабочее место эксперта",
+    title: "Expert workplace",
     git: "partial",
-    note: "Resizable three panels; keyboard J/K/A/R/E; windowed list above 40 findings",
+    note: "TZ three-pane: findings | 2D/3D | remark; report index is SCR-PROJECTS",
   },
   {
     id: "SCR-REMARK",
-    titleRu: "Карточка замечания",
+    title: "Remark card",
     git: "partial",
     note: "HITL remark + review-events history; storey/axis or «нет в индексе»",
   },
   {
     id: "SCR-EXPORT",
-    titleRu: "Отчёт и экспорт",
+    title: "Report and export",
     git: "partial",
     note: "HTML JSON BCF 2.1/3.0 PDF; XLSX not an API; do not ship a fake 200",
   },
   {
     id: "SCR-DIFF",
-    titleRu: "Сравнение версий комплекта",
+    title: "Pack version compare",
     git: "partial",
-    note: "HTTP finding delta; no_longer_reported does not claim resolved",
+    note: "HTTP finding delta; no_longer_reported ≠ исправлено; two reports, not CDE",
   },
   {
     id: "SCR-USER",
-    titleRu: "Дашборд роли «Пользователь»",
+    title: "User-role dashboard",
     git: "partial",
-    note: "review-kpi API exists; TZ-coverage screen this pass; OIDC BFF stays 501",
+    note: "TZ map + intake snapshot + review-kpi; OIDC BFF stays 501",
   },
 ];

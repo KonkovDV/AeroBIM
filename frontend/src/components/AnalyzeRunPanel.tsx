@@ -6,17 +6,25 @@ import {
   type AnalyzeJobSnapshot,
 } from "../lib/api";
 import type { ReportCapabilities } from "../lib/types";
-import { capabilityRows, humanCapabilityLine } from "../lib/capability-copy";
+import { capabilityRows, engineGroupStatus, humanCapabilityLine, RUN_ENGINE_GROUPS } from "../lib/capability-copy";
+import {
+  packDraftFromIfc,
+  packDraftHasAny,
+  toAnalyzeSubmitBody,
+  type PackDraft,
+} from "../lib/pack-draft";
 
 export type AnalyzeRunPanelProps = {
   ifcPath: string | null;
+  packDraft?: PackDraft;
   onReportReady?: (reportId: string) => void;
+  onNeedUpload?: () => void;
   capabilities?: ReportCapabilities | null;
 };
 
 const TERMINAL = new Set(["succeeded", "failed", "cancelled", "dead_letter"]);
 
-const COARSE_STAGES = ["принят", "выполняется", "отчёт"] as const;
+const COARSE_STAGES = ["accepted", "running", "report"] as const;
 
 function stageIndex(status: string | undefined): number {
   const value = (status ?? "").toLowerCase();
@@ -34,9 +42,12 @@ function stageIndex(status: string | undefined): number {
 
 export default function AnalyzeRunPanel({
   ifcPath,
+  packDraft,
   onReportReady,
+  onNeedUpload,
   capabilities,
 }: AnalyzeRunPanelProps) {
+  const draft = packDraft ?? packDraftFromIfc(ifcPath);
   const [job, setJob] = useState<AnalyzeJobSnapshot | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -86,14 +97,14 @@ export default function AnalyzeRunPanel({
   }, [job?.job_id, job?.status]);
 
   async function start(): Promise<void> {
-    if (!ifcPath) {
-      setError("Upload an IFC first. Other natives stay fail-closed.");
+    if (!packDraftHasAny(draft)) {
+      setError("Сначала загрузите IFC или документы. Нативные RVT/NWD/DWG — fail-closed.");
       return;
     }
     setBusy(true);
     setError(null);
     try {
-      const next = await submitAnalyzeProjectPackage({ ifc_path: ifcPath });
+      const next = await submitAnalyzeProjectPackage(toAnalyzeSubmitBody(draft));
       setJob(next);
       startedAt.current = Date.now();
       setElapsedSec(0);
@@ -122,28 +133,36 @@ export default function AnalyzeRunPanel({
     <section className="panel run-panel" data-testid="analyze-run-panel">
       <div className="panel-header">
         <div>
-          <p className="panel-kicker">Прогон</p>
+          <p className="panel-kicker">Run</p>
           <h2>Analyze job</h2>
         </div>
       </div>
       <p className="compact-copy">
         Цель ТЗ 30:00 на комплект — не измеренный SLA. Поллинг{" "}
-        <code>jobs/{"{job_id}"}</code>, не SSE. Тишина движка ≠ успех.
+        <code>jobs/{"{job_id}"}</code>, не SSE. Тишина ≠ успех.
       </p>
-      <p className="compact-copy">IFC path: {ifcPath ?? "—"}</p>
+      <p className="compact-copy">
+        IFC: {draft.ifcPath ?? "—"}. IDS: {draft.idsPath ?? "—"}. Листы: {draft.drawings.length}. ТЗ:{" "}
+        {draft.requirementPath ?? "—"}. Расчёт: {draft.calculationPath ?? "—"}.
+      </p>
       {job ? (
         <p className="compact-copy" data-testid="analyze-elapsed">
-          Таймер прогона: {String(Math.floor(elapsedSec / 60)).padStart(2, "0")}:
-          {String(elapsedSec % 60).padStart(2, "0")} / цель ТЗ 30:00 (не измеренный SLA)
+          Run timer: {String(Math.floor(elapsedSec / 60)).padStart(2, "0")}:
+          {String(elapsedSec % 60).padStart(2, "0")} / TZ goal 30:00 (not a measured SLA)
         </p>
       ) : null}
       <div className="remark-actions">
-        <button type="button" onClick={() => void start()} disabled={busy || !ifcPath}>
-          {busy ? "Starting…" : "Start analyze"}
+        <button type="button" onClick={() => void start()} disabled={busy || !packDraftHasAny(draft)}>
+          {busy ? "Запускаем…" : "Запустить анализ"}
         </button>
         <button type="button" onClick={() => void cancel()} disabled={busy || !job?.job_id}>
-          Cancel
+          Отменить
         </button>
+        {onNeedUpload ? (
+          <button type="button" onClick={onNeedUpload}>
+            К загрузке
+          </button>
+        ) : null}
       </div>
       {job ? (
         <dl className="job-status" data-testid="analyze-job-status">
@@ -188,6 +207,16 @@ export default function AnalyzeRunPanel({
           ))}
         </ol>
       ) : null}
+      <ol className="analyze-engines" data-testid="analyze-engine-groups">
+        {RUN_ENGINE_GROUPS.map((group) => {
+          const status = engineGroupStatus(capabilities, group.keys);
+          return (
+            <li key={group.id} className={`analyze-engine analyze-engine-${status}`}>
+              {group.title}: {status === "pending" ? "ожидание" : status}
+            </li>
+          );
+        })}
+      </ol>
       {job?.status.toLowerCase() === "succeeded" && capabilities ? (
         <ul className="kpi-list" data-testid="analyze-capability-map">
           {capabilityRows(capabilities).map((row) => (
@@ -195,7 +224,7 @@ export default function AnalyzeRunPanel({
           ))}
         </ul>
       ) : null}
-      <p className="compact-copy">Стадии — грубый статус поллинга, не SSE по движкам.</p>
+      <p className="compact-copy">Stages are coarse poll status, not per-engine SSE.</p>
       {error ? (
         <p className="compact-copy" role="alert">
           {error}

@@ -6,12 +6,12 @@ export type EvidenceStepperProps = {
 
 export default function EvidenceStepper({ issue }: EvidenceStepperProps) {
   const steps = [
-    { id: "essence", label: "1 суть", ready: Boolean(issue) },
-    { id: "sheet", label: "2 лист", ready: Boolean(issue?.problem_zone?.sheet_id) },
+    { id: "essence", label: "1 essence", ready: Boolean(issue) },
+    { id: "sheet", label: "2 sheet", ready: Boolean(issue?.problem_zone?.sheet_id) },
     { id: "spatial", label: "3 3D", ready: Boolean(issue?.element_guid) },
     {
       id: "raw",
-      label: "4 сырое",
+      label: "4 raw",
       ready: Boolean((issue?.evidence_refs?.length ?? 0) > 0),
     },
   ];
@@ -21,7 +21,7 @@ export default function EvidenceStepper({ issue }: EvidenceStepperProps) {
       {steps.map((step) => (
         <li key={step.id} className={step.ready ? "evidence-step ready" : "evidence-step"}>
           {step.label}
-          {step.ready ? " · есть" : " · нет"}
+          {step.ready ? " · present" : " · missing"}
         </li>
       ))}
     </ol>

@@ -23,25 +23,25 @@ SCREEN_ROWS: Final[tuple[dict[str, str], ...]] = (
         "id": "SCR-PROJECTS",
         "title": "Projects and packs",
         "git": "partial",
-        "note": "Persisted report list, not a pack workspace with last-run verdict owner",
+        "note": "Persisted report list; picking a pack opens the expert three-pane",
     },
     {
         "id": "SCR-UPLOAD",
         "title": "Pack upload",
         "git": "partial",
-        "note": "POST /v1/uploads dropzone + progress; natives fail-closed in copy",
+        "note": "POST /v1/uploads dropzone + progress + cancel; natives fail-closed in copy",
     },
     {
         "id": "SCR-RUN",
         "title": "Analyze run",
         "git": "partial",
-        "note": "jobs/{job_id} poll; coarse stages; SSE not shipped; 30 min is TZ goal",
+        "note": "jobs/{job_id} poll; engine groups from capabilities; SSE not shipped",
     },
     {
         "id": "SCR-EXPERT",
         "title": "Expert workplace",
         "git": "partial",
-        "note": "Resizable three panels; keyboard J/K/A/R/E; windowed list above 40 findings",
+        "note": "TZ three-pane: findings | 2D/3D | remark; report index is SCR-PROJECTS",
     },
     {
         "id": "SCR-REMARK",
@@ -65,7 +65,9 @@ SCREEN_ROWS: Final[tuple[dict[str, str], ...]] = (
         "id": "SCR-USER",
         "title": "User-role dashboard",
         "git": "partial",
-        "note": "review-kpi API exists; TZ-coverage screen this pass; OIDC BFF stays 501",
+        "note": (
+            "TZ map + intake snapshot + review-kpi; OIDC BFF stays 501"
+        ),
     },
 )
 
@@ -303,6 +305,24 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "verdict": "ACCEPT",
         "attack": "Reload IFC bytes on every report object identity change",
         "brake": "Viewer fetch keys on report_id after the 01.09 loop",
+    },
+    {
+        "id": "RT-UI-EXPERT-PANE",
+        "verdict": "ACCEPT",
+        "attack": "Leave the report index as the left pane of the expert seat",
+        "brake": "TZ three-pane is findings | 2D/3D | remark; report index is SCR-PROJECTS",
+    },
+    {
+        "id": "RT-UI-INTAKE-WIRE",
+        "verdict": "ACCEPT",
+        "attack": "User dashboard hides RT-001/002/003 behind a green shell",
+        "brake": "GET /v1/system/capabilities intake snapshot; UI does not flip gates",
+    },
+    {
+        "id": "RT-UI-INTAKE-GREEN",
+        "verdict": "KILL",
+        "attack": "Treat true_gates or this screen as RT CLOSED / Checkpoint GO",
+        "brake": "NO_GO; PrecisionClaim.publishable remains the gate",
     },
 )
 

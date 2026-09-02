@@ -6,6 +6,7 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
+from aerobim.domain.ifc_globalid import is_valid_ifc_global_id
 from aerobim.domain.models import (
     ComparisonOperator,
     FindingCategory,
@@ -21,6 +22,7 @@ from aerobim.domain.target_ref import (
     UNRESTRICTED_ELEMENT_MISMATCH_CAP,
     element_matches_named_target_ref,
     is_unrestricted_target_ref,
+    named_target_ref_cache_key,
     unrestricted_mismatch_suppressor_message,
 )
 
@@ -198,6 +200,9 @@ class IfcOpenShellValidator:
                 observed_value = None
                 if isinstance(property_group, dict):
                     observed_value = property_group.get(requirement.property_name)
+                # HD14-IFC-01: None is both "pset/property absent" and "key present
+                # with a null value". EXISTS treats both as missing. ifcopenshell
+                # get_psets typically omits nulls; this is not a pass hatch.
                 if observed_value is None:
                     missing_count += 1
                     continue
@@ -207,6 +212,10 @@ class IfcOpenShellValidator:
                 if self._matches_requirement(observed_value, requirement, unit_scales):
                     continue
                 mismatch_count += 1
+                # HD14-IFC-02: the 50-row cap applies only to unrestricted (ALL)
+                # rules. A named target_ref with many hits still emits one ERROR
+                # per mismatch — intentional; named scope is not an unsigned
+                # universal template. The missing cap is not a verdict hatch.
                 if mismatch_count <= UNRESTRICTED_ELEMENT_MISMATCH_CAP or not is_unrestricted:
                     reported_observed = self._normalize_observed_for_report(
                         observed_value, requirement.unit, unit_scales
@@ -293,11 +302,12 @@ class IfcOpenShellValidator:
             elements = tuple(model.by_type(ifc_entity))
             entity_cache[entity_key] = elements
 
+        # Empty / ALL / * / ANY = every instance of the type, not a named miss.
         if is_unrestricted_target_ref(target_ref):
             return list(elements)
 
         named_ref = (target_ref or "").strip()
-        target_key = (entity_key, named_ref.lower())
+        target_key = (entity_key, named_target_ref_cache_key(named_ref))
         filtered_elements = target_cache.get(target_key)
         if filtered_elements is None:
             fast = self._fast_guid_lookup(
@@ -328,7 +338,7 @@ class IfcOpenShellValidator:
         if spatial_index is None:
             return None
         guid = target_ref.strip()
-        if len(guid) != 22:
+        if not is_valid_ifc_global_id(guid):
             return None
         hit = spatial_index.lookup(guid)
         if hit is None or hit.ifc_type.upper() != entity_key:

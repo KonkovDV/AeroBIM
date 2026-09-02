@@ -1,12 +1,19 @@
-import { useState, type DragEvent } from "react";
+import { useRef, useState, type DragEvent } from "react";
 import { uploadDocument } from "../lib/api";
 import { detectPackKind, packKindHonesty, packKindVerdict } from "../lib/pack-kind";
 
 export type PackUploadPanelProps = {
   onUploadedPath?: (path: string, filename: string) => void;
+  onContinueToRun?: () => void;
+  /** HD14-FE-01: slot replacement / not-in-draft. Not a pack-processed claim. */
+  draftApplyNote?: string | null;
 };
 
-export default function PackUploadPanel({ onUploadedPath }: PackUploadPanelProps) {
+export default function PackUploadPanel({
+  onUploadedPath,
+  onContinueToRun,
+  draftApplyNote,
+}: PackUploadPanelProps) {
   const [honesty, setHonesty] = useState<string | null>(null);
   const [status, setStatus] = useState<"idle" | "blocked" | "uploading" | "ok" | "failed">(
     "idle",
@@ -14,6 +21,7 @@ export default function PackUploadPanel({ onUploadedPath }: PackUploadPanelProps
   const [detail, setDetail] = useState<string | null>(null);
   const [progress, setProgress] = useState<number | null>(null);
   const [dragging, setDragging] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
 
   async function onFile(file: File | undefined): Promise<void> {
     if (!file) {
@@ -31,9 +39,12 @@ export default function PackUploadPanel({ onUploadedPath }: PackUploadPanelProps
     setStatus("uploading");
     setDetail(null);
     setProgress(0);
+    const controller = new AbortController();
+    abortRef.current = controller;
     try {
       const result = await uploadDocument(file, {
         onProgress: (percent) => setProgress(percent),
+        signal: controller.signal,
       });
       setStatus("ok");
       setProgress(100);
@@ -43,7 +54,13 @@ export default function PackUploadPanel({ onUploadedPath }: PackUploadPanelProps
       setStatus("failed");
       setProgress(null);
       setDetail(error instanceof Error ? error.message : "Upload failed");
+    } finally {
+      abortRef.current = null;
     }
+  }
+
+  function cancelUpload(): void {
+    abortRef.current?.abort();
   }
 
   function onDrop(event: DragEvent<HTMLDivElement>): void {
@@ -56,13 +73,13 @@ export default function PackUploadPanel({ onUploadedPath }: PackUploadPanelProps
     <section className="panel upload-panel" data-testid="pack-upload-panel">
       <div className="panel-header">
         <div>
-          <p className="panel-kicker">Загрузка комплекта</p>
+          <p className="panel-kicker">Pack upload</p>
           <h2>Dropzone</h2>
         </div>
       </div>
       <p className="compact-copy">
-        Обмен КТ#3: IFC + PDF/A. Office — declared fields. Native RVT/NWD/DWG/.lir — fail-closed,
-        не тихий пропуск. 1,5 ГБ в браузере не разбираем. Checkpoint NO_GO.
+        KT#3 exchange: IFC + PDF/A. Office — declared fields. Native RVT/NWD/DWG/.lir — fail-closed,
+        not a silent skip. We do not parse 1.5 GB models in the browser. Checkpoint NO_GO.
       </p>
       <div
         className={`pack-dropzone ${dragging ? "dragging" : ""}`}
@@ -81,9 +98,9 @@ export default function PackUploadPanel({ onUploadedPath }: PackUploadPanelProps
         }}
         onDrop={onDrop}
       >
-        <p>Перетащите IFC/PDF/Office сюда или выберите файл. Native RVT/NWD/DWG не уйдут на сервер.</p>
+        <p>Drop IFC/PDF/Office here or choose a file. Native RVT/NWD/DWG never reach the server.</p>
         <label className="toolbar-button preset-file-upload">
-          Выбрать файл
+          Choose file
           <input
             type="file"
             aria-label="Pack file upload"
@@ -100,6 +117,9 @@ export default function PackUploadPanel({ onUploadedPath }: PackUploadPanelProps
           <progress max={100} value={progress} aria-label="Upload progress">
             {progress}%
           </progress>
+          <button type="button" className="toolbar-button" aria-label="Cancel upload" onClick={cancelUpload}>
+            Cancel upload
+          </button>
         </p>
       ) : null}
       {honesty ? (
@@ -107,8 +127,25 @@ export default function PackUploadPanel({ onUploadedPath }: PackUploadPanelProps
           {honesty}
         </p>
       ) : null}
+      {draftApplyNote ? (
+        <p className="pack-draft-apply-note" role="status" data-testid="pack-draft-apply-note">
+          {draftApplyNote}
+        </p>
+      ) : null}
       {status === "uploading" && progress === null ? <p className="compact-copy">Uploading…</p> : null}
-      {status === "ok" ? <p className="compact-copy">Uploaded. Path is for analyze, not a pack-processed claim.</p> : null}
+      {status === "ok" ? (
+        <p className="compact-copy">
+          Файл принят. Путь для анализа, не «пакет обработан».
+          {onContinueToRun ? (
+            <>
+              {" "}
+              <button type="button" className="toolbar-button" onClick={onContinueToRun}>
+                К прогону
+              </button>
+            </>
+          ) : null}
+        </p>
+      ) : null}
       {detail ? <p className="compact-copy">{detail}</p> : null}
     </section>
   );

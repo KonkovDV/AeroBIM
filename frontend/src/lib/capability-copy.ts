@@ -22,20 +22,20 @@ export const CAPABILITY_ORDER: Array<keyof ReportCapabilities> = [
 
 export const BLOCKING_STATES: ReadonlySet<CapabilityState> = new Set(["failed", "missing"]);
 
-const LABEL_RU: Record<string, string> = {
+const LABEL_EN: Record<string, string> = {
   ifc_schema: "схема IFC",
-  ifc_validation: "валидация IFC",
+  ifc_validation: "проверка IFC",
   ids: "IDS",
   unit_scale: "единицы",
   clash: "коллизии",
   norm_rule_packs: "нормативные пакеты",
-  section_pairing: "пары ПД/РД",
-  raster: "растр чертежей",
+  section_pairing: "сшивка ПД/РД",
+  raster: "растр чертежа",
   dwg_dxf: "DWG",
   cv_human_level: "CV human-level",
-  mep_system_clash: "MEP-коллизии",
-  calculation_match: "сравнение расчётов",
-  calculation_correctness: "пересчёт расчётов",
+  mep_system_clash: "коллизии MEP",
+  calculation_match: "сверка расчёта",
+  calculation_correctness: "пересчёт расчёта",
   package_completeness: "комплектность",
   llm_advisory: "советующий ИИ",
   extraction_integrity: "целостность извлечения",
@@ -57,7 +57,7 @@ export function capabilityRows(capabilities: ReportCapabilities): CapabilityRow[
 }
 
 export function formatCapabilityLabel(key: string): string {
-  return LABEL_RU[key] ?? key.replaceAll("_", " ");
+  return LABEL_EN[key] ?? key.replaceAll("_", " ");
 }
 
 export function humanCapabilityLine(row: CapabilityRow): string {
@@ -66,7 +66,52 @@ export function humanCapabilityLine(row: CapabilityRow): string {
     return `Проверка «${label}» пропущена (${row.status}) → тишина ≠ успех`;
   }
   if (BLOCKING_STATES.has(row.status)) {
-    return `Проверка «${label}» = ${row.status} → summary.passed на сервере не зелёный из-за тишины`;
+    return `Проверка «${label}» = ${row.status} → тишина ≠ успех; серверный summary.passed не зелёный`;
   }
   return `Проверка «${label}» = ${row.status}`;
+}
+
+export const RUN_ENGINE_GROUPS: Array<{
+  id: string;
+  title: string;
+  keys: Array<keyof ReportCapabilities>;
+}> = [
+  { id: "model", title: "модель", keys: ["ifc_schema", "ifc_validation", "unit_scale"] },
+  { id: "rules", title: "правила", keys: ["ids", "norm_rule_packs", "clash"] },
+  { id: "docs", title: "документы", keys: ["raster", "section_pairing", "calculation_match"] },
+  { id: "report", title: "отчёт", keys: ["package_completeness", "extraction_integrity"] },
+];
+
+const ENGINE_RANK: Record<CapabilityState, number> = {
+  failed: 50,
+  missing: 40,
+  not_implemented: 30,
+  not_verified: 25,
+  skipped: 20,
+  ok: 10,
+};
+
+export type EngineGroupStatus = CapabilityState | "pending";
+
+export function engineGroupStatus(
+  capabilities: ReportCapabilities | null | undefined,
+  keys: ReadonlyArray<keyof ReportCapabilities>,
+): EngineGroupStatus {
+  if (!capabilities) {
+    return "pending";
+  }
+  let worst: CapabilityState | null = null;
+  let worstRank = -1;
+  for (const key of keys) {
+    const entry = capabilities[key];
+    if (!entry) {
+      continue;
+    }
+    const rank = ENGINE_RANK[entry.status] ?? 0;
+    if (rank > worstRank) {
+      worst = entry.status;
+      worstRank = rank;
+    }
+  }
+  return worst ?? "pending";
 }

@@ -2,6 +2,7 @@
 
 export type PackKind =
   | "ifc"
+  | "ids"
   | "pdf"
   | "office"
   | "dxf"
@@ -21,6 +22,7 @@ export function detectPackKind(filename: string): PackKind {
   const dot = lower.lastIndexOf(".");
   const ext = dot >= 0 ? lower.slice(dot) : "";
   if (ext === ".ifc" || ext === ".ifczip") return "ifc";
+  if (ext === ".ids") return "ids";
   if (ext === ".pdf") return "pdf";
   if (ext === ".xlsx" || ext === ".xlsm" || ext === ".docx" || ext === ".doc") return "office";
   if (ext === ".dxf") return "dxf";
@@ -48,6 +50,8 @@ export function packKindHonesty(kind: PackKind): string {
       return "Native .lir is not parsed. Upload a readable calculation note (PDF/Excel).";
     case "zip":
       return "ZIP is inspected on the server. Autodesk natives inside stay fail-closed.";
+    case "ids":
+      return "IDS 1.0 rule set. A requested set that cannot load fails closed.";
     case "ifc":
       return "IFC is the shared-gate model format.";
     case "pdf":

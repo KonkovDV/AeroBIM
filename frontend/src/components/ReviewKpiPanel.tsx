@@ -7,9 +7,9 @@ export type ReviewKpiPanelProps = {
 
 function formatRate(value: number | null): string {
   if (value === null || Number.isNaN(value)) {
-    return "нет решений";
+    return "no decisions";
   }
-  return `${Math.round(value * 100)} % подтверждённых среди принятых/отклонённых`;
+  return `${Math.round(value * 100)} % confirmed among accepted/rejected`;
 }
 
 export default function ReviewKpiPanel({ reportId }: ReviewKpiPanelProps) {
@@ -48,31 +48,32 @@ export default function ReviewKpiPanel({ reportId }: ReviewKpiPanelProps) {
     <section className="panel kpi-panel" data-testid="review-kpi-panel">
       <div className="panel-header">
         <div>
-          <p className="panel-kicker">Дашборд эффекта</p>
+          <p className="panel-kicker">Effect dashboard</p>
           <h2>review-kpi</h2>
         </div>
       </div>
       <p className="compact-copy">
-        Журнал HITL, не точность продукта и не часы A1–A8. Пустой журнал — пустой экран, не «0 %
-        ошибок». Checkpoint NO_GO.
+        HITL journal, not product accuracy and not A1–A8 hours. UI-event latency is not an SLA for
+        “time to first valid remark”. An empty journal is an empty screen, not “0 % errors”.
+        Checkpoint NO_GO.
       </p>
       {!reportId ? (
-        <p className="panel-empty">Выберите отчёт в списке, затем откройте этот экран.</p>
+        <p className="panel-empty">Select a report in the list, then open this screen.</p>
       ) : loading ? (
-        <p className="compact-copy">Загрузка KPI…</p>
+        <p className="compact-copy">Loading KPI…</p>
       ) : error ? (
         <p className="compact-copy">{error}</p>
       ) : payload ? (
         <ul className="kpi-list">
-          <li>Событий: {payload.kpi.event_count}</li>
-          <li>Открыто: {payload.kpi.opened_count}</li>
-          <li>Триаж: {payload.kpi.triaged_count}</li>
+          <li>Events: {payload.kpi.event_count}</li>
+          <li>Opened: {payload.kpi.opened_count}</li>
+          <li>Triage: {payload.kpi.triaged_count}</li>
           <li>{formatRate(payload.kpi.acceptance_rate)}</li>
           <li>
-            Средняя latency:{" "}
+            Average latency:{" "}
             {payload.kpi.avg_latency_ms === null
-              ? "нет замеров UI-событий (ТР-65: третья метрика missing)"
-              : `${Math.round(payload.kpi.avg_latency_ms)} мс`}
+              ? "no UI-event timings (TR-65: third metric missing)"
+              : `${Math.round(payload.kpi.avg_latency_ms)} ms`}
           </li>
         </ul>
       ) : null}

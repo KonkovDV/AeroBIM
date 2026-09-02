@@ -95,7 +95,7 @@ export default function ResizableWorkplace({ left, center, right }: ResizableWor
         className="grid-resizer"
         role="separator"
         aria-orientation="vertical"
-        aria-label="Resize reports and findings columns"
+        aria-label="Resize findings and spatial columns"
         onPointerDown={(event) => onResize("left", event)}
       />
       {center}
@@ -103,7 +103,7 @@ export default function ResizableWorkplace({ left, center, right }: ResizableWor
         className="grid-resizer"
         role="separator"
         aria-orientation="vertical"
-        aria-label="Resize findings and evidence columns"
+        aria-label="Resize spatial and remark columns"
         onPointerDown={(event) => onResize("right", event)}
       />
       {right}

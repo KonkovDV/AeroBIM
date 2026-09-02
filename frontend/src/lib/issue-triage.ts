@@ -65,7 +65,7 @@ export function priorityCaption(issue: ValidationIssue): string | null {
   if (typeof issue.priority !== "number" || issue.priority <= 0) {
     return null;
   }
-  return `P${issue.priority} · AEROBIM_PRIORITY_PROFILE (критичность × дисциплина × стадия), не точность продукта`;
+  return `P${issue.priority} · AEROBIM_PRIORITY_PROFILE (severity × discipline × stage), not product accuracy`;
 }
 
 export function clauseLine(issue: ValidationIssue): string {
@@ -79,7 +79,7 @@ export function clauseLine(issue: ValidationIssue): string {
   if (parts.length > 0) {
     return parts.join(" · ");
   }
-  return "нет пункта нормы в записи — обязательное поле ТЗ, не украшение";
+  return "в записи нет пункта нормы — обязательное поле ТЗ, не украшение";
 }
 
 export function essenceLine(issue: ValidationIssue): string {
@@ -93,7 +93,7 @@ export function essenceLine(issue: ValidationIssue): string {
   }
   const message = issue.message.trim();
   const sentence = message.split(/(?<=[.!?])\s+/)[0];
-  return sentence || "нет краткой сути";
+  return sentence || "no one-sentence essence";
 }
 
 export type ViewerFocus = {

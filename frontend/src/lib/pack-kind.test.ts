@@ -11,4 +11,10 @@ describe("pack-kind", () => {
     expect(packKindVerdict("ifc")).toBe("upload_ok");
     expect(packKindHonesty("ifc")).not.toMatch(/DWG-ready/);
   });
+
+  it("treats .ifczip as the IFC slot kind", () => {
+    expect(detectPackKind("model.ifczip")).toBe("ifc");
+    expect(detectPackKind("MODEL.IFCZIP")).toBe("ifc");
+    expect(packKindVerdict("ifc")).toBe("upload_ok");
+  });
 });

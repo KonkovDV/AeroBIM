@@ -71,7 +71,7 @@ function ReportCard({
       <div className="report-card-row">
         <strong>{report.report_id.slice(0, 8)}</strong>
         <span className={`status-pill ${report.passed ? "pass" : "fail"}`}>
-          {report.passed ? "Pass" : "Fail"}
+          {report.passed ? "Engine Pass" : "Engine Fail"}
         </span>
       </div>
       <div className="report-card-meta">

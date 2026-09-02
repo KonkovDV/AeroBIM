@@ -20,7 +20,6 @@ export const WORKSPACE_NAV: readonly { id: WorkspaceView; label: string }[] = [
 ];
 
 export const EXPERT_SHELL_VIEWS: ReadonlySet<WorkspaceView> = new Set([
-  "projects",
   "review",
   "remark",
   "export",

@@ -43,6 +43,7 @@ def _requirement_matches_annotation(
     requirement: ParsedRequirement,
     annotation: DrawingAnnotation,
 ) -> bool:
+    """Empty / ALL requirement.target_ref is unrestricted (matches any annotation ref)."""
     if not target_ref_matches(requirement.target_ref, annotation.target_ref):
         return False
     if (

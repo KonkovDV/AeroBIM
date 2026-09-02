@@ -100,6 +100,8 @@ describe("KT#2 vertical-slice UI contract", () => {
     expect(formatPackageOutcome(undefined, true)).not.toMatch(/Published/i);
   });
 
+  // Tree-wide assignment scan: src/summary-passed-source-scan.test.ts (HD13-FE-01).
+
   it("places the bbox from problem_zone on the fixture letter page", () => {
     const style = overlayRectStyle(stampFinding.problem_zone);
     expect(style).not.toBeNull();

@@ -126,6 +126,7 @@ class DrawingAnnotationValidator:
     def matches_annotation(
         self, requirement: ParsedRequirement, annotation: DrawingAnnotation
     ) -> bool:
+        """Empty / ALL target_ref is unrestricted (matches any annotation ref)."""
         if not target_ref_matches(requirement.target_ref, annotation.target_ref):
             return False
         if (

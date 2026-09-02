@@ -20,6 +20,8 @@ const baseIssue: ValidationIssue = {
   problem_zone: null,
   remark: { title: "Стена", body: "REI" },
   finding_id: "fid-1",
+  source_id: "ids:FIRE-1",
+  evidence_refs: ["ids:FIRE-1#wall"],
   storey_name: null,
   grid_axis: null,
   norm_source: "СП 2.13130",
@@ -43,6 +45,8 @@ describe("RemarkCardPanel", () => {
     expect(screen.getByText("СП 2.13130 · 5.4")).toBeTruthy();
     expect(screen.getAllByText("нет в индексе")).toHaveLength(2);
     expect(screen.getByText("1XYVUKGoDDbREfVxRKsHkl")).toBeTruthy();
+    expect(screen.getByText("fid-1")).toBeTruthy();
+    expect(screen.getByText("ids:FIRE-1")).toBeTruthy();
     expect(screen.getByTestId("evidence-stepper")).toBeTruthy();
     expect(screen.getByTestId("review-history")).toBeTruthy();
   });

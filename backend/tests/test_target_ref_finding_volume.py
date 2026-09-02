@@ -23,6 +23,7 @@ from aerobim.domain.finding_volume import (
     volume_from_issues,
 )
 from aerobim.domain.ifc_globalid import (
+    is_valid_ifc_global_id,
     spf_entity_first_attr_is_global_id,
     spf_line_rooted_global_id,
 )
@@ -42,6 +43,7 @@ from aerobim.domain.target_ref import (
     UNRESTRICTED_MISMATCH_SUPPRESSOR_MARKER,
     element_matches_named_target_ref,
     is_unrestricted_target_ref,
+    named_target_ref_cache_key,
     target_ref_matches,
 )
 from aerobim.infrastructure.adapters.basic_ifc_schema_validator import BasicIfcSchemaValidator
@@ -68,6 +70,10 @@ DATA;
 _SPF_FOOTER = """ENDSEC;
 END-ISO-10303-21;
 """
+
+# Two valid compressed GUIDs that differ only by case (HD12-TR-01).
+_GUID_MIXED = "0aBcDeFgHiJkLmNoPqRsTu"
+_GUID_FLIPPED = _GUID_MIXED.swapcase()
 
 
 class _FakeElement:
@@ -114,6 +120,27 @@ class TargetRefWildcardTests(unittest.TestCase):
         self.assertTrue(element_matches_named_target_ref(wall, "OUTER WALL"))
         self.assertTrue(element_matches_named_target_ref(wall, "ALL"))
         self.assertFalse(element_matches_named_target_ref(wall, "Wall-99"))
+        self.assertTrue(element_matches_named_target_ref(wall, ""))
+        self.assertTrue(element_matches_named_target_ref(wall, None))
+
+    def test_global_id_match_is_case_sensitive(self) -> None:
+        self.assertTrue(is_valid_ifc_global_id(_GUID_MIXED))
+        self.assertTrue(is_valid_ifc_global_id(_GUID_FLIPPED))
+        self.assertNotEqual(_GUID_MIXED, _GUID_FLIPPED)
+        wall = _FakeElement(1, _GUID_MIXED, "Fixture")
+        self.assertTrue(element_matches_named_target_ref(wall, _GUID_MIXED))
+        self.assertFalse(element_matches_named_target_ref(wall, _GUID_FLIPPED))
+        self.assertFalse(element_matches_named_target_ref(wall, _GUID_MIXED.lower()))
+        self.assertNotEqual(
+            named_target_ref_cache_key(_GUID_MIXED),
+            named_target_ref_cache_key(_GUID_FLIPPED),
+        )
+
+    def test_named_ref_uses_casefold_not_lower(self) -> None:
+        wall = _FakeElement(1, "guid-1", "Straße", tag="W-ß")
+        self.assertTrue(element_matches_named_target_ref(wall, "STRASSE"))
+        self.assertTrue(element_matches_named_target_ref(wall, "w-ss"))
+        self.assertTrue(target_ref_matches("Straße", "STRASSE"))
 
     def test_samolet_fire_pack_parses_all_as_unrestricted(self) -> None:
         requirements = StructuredRequirementExtractor().extract(
@@ -236,6 +263,53 @@ class AllTargetRefValidatorTests(unittest.TestCase):
         with tempfile.NamedTemporaryFile(suffix=".ifc") as tmp_file, modules_patch:
             issues = IfcOpenShellValidator().validate(Path(tmp_file.name), [requirement])
         self.assertEqual(issues, [])
+
+    def test_guid_target_ref_does_not_match_case_variant(self) -> None:
+        wall_1 = _FakeElement(1, _GUID_MIXED, "Fixture A")
+        wall_2 = _FakeElement(2, _GUID_FLIPPED, "Fixture B")
+        model = _FakeModel({"IFCWALL": [wall_1, wall_2]})
+        modules_patch = self._install_fake_ifcopenshell(
+            model,
+            {
+                1: {"Pset_WallCommon": {"FireRating": "REI60"}},
+                2: {"Pset_WallCommon": {"FireRating": "REI30"}},
+            },
+        )
+        req_mixed = ParsedRequirement(
+            rule_id="R-GUID-MIXED",
+            ifc_entity="IFCWALL",
+            target_ref=_GUID_MIXED,
+            property_set="Pset_WallCommon",
+            property_name="FireRating",
+            expected_value="REI60",
+        )
+        req_flipped = ParsedRequirement(
+            rule_id="R-GUID-FLIPPED",
+            ifc_entity="IFCWALL",
+            target_ref=_GUID_FLIPPED,
+            property_set="Pset_WallCommon",
+            property_name="FireRating",
+            expected_value="REI60",
+        )
+        req_folded = ParsedRequirement(
+            rule_id="R-GUID-LOWER",
+            ifc_entity="IFCWALL",
+            target_ref=_GUID_MIXED.lower(),
+            property_set="Pset_WallCommon",
+            property_name="FireRating",
+            expected_value="REI60",
+        )
+        with tempfile.NamedTemporaryFile(suffix=".ifc") as tmp_file, modules_patch:
+            issues = IfcOpenShellValidator().validate(
+                Path(tmp_file.name),
+                [req_mixed, req_flipped, req_folded],
+            )
+        self.assertEqual(len(issues), 2)
+        by_rule = {issue.rule_id: issue for issue in issues}
+        self.assertNotIn("R-GUID-MIXED", by_rule)
+        self.assertIn("does not match", by_rule["R-GUID-FLIPPED"].message)
+        self.assertEqual(by_rule["R-GUID-FLIPPED"].element_guid, _GUID_FLIPPED)
+        self.assertIn("No elements found for entity", by_rule["R-GUID-LOWER"].message)
 
     def test_exists_all_partial_coverage_is_one_row_not_a_pass(self) -> None:
         wall_1 = _FakeElement(1, "wall-guid-1", "Wall-01")

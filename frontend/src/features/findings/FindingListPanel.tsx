@@ -161,11 +161,11 @@ export default function FindingListPanel({
             value={groupBy}
             onChange={(event) => onGroupByChange(event.target.value as FindingGroupBy)}
           >
-            <option value="none">Без группировки</option>
-            <option value="rule">По правилу</option>
-            <option value="storey">По этажу</option>
-            <option value="axis">По оси</option>
-            <option value="discipline">По категории</option>
+            <option value="none">No grouping</option>
+            <option value="rule">By rule</option>
+            <option value="storey">By storey</option>
+            <option value="axis">By axis</option>
+            <option value="discipline">By category</option>
           </select>
         </label>
         <label className="hitl-filter">
@@ -186,8 +186,8 @@ export default function FindingListPanel({
       <div className={`issue-list ${virtualize ? "issue-list-virtual" : ""}`} ref={listRef}>
         {issues.length === 0 ? (
           <div className="panel-empty compact">
-            Нет находок по фильтру. Если нет расчётной записки, проверка армирования не выполняется
-            — загрузите PDF/Excel из ЛИРА на экране «Загрузка».
+            No findings for this filter. If there is no calculation note, reinforcement is not
+            checked — upload LIRA PDF/Excel on Upload.
           </div>
         ) : virtualize ? (
           <div style={{ paddingTop: padTop, paddingBottom: padBottom }}>

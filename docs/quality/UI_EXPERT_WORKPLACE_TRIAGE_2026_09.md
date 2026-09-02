@@ -4,7 +4,7 @@ title: "UI expert-workplace Red Team triage — 2026-09-01"
 date: "2026-09-01"
 last_updated: "2026-09-01"
 status: active
-version: "1.0.3"
+version: "1.0.5"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -32,14 +32,14 @@ Checkpoint **`NO_GO`**. `detected_count: 0`. UI **не** закрывает RT-0
 
 | ID | Экран | git | Заметка |
 |---|---|---|---|
-| SCR-PROJECTS | Проекты и комплекты | partial | Список отчётов, не workspace комплекта |
-| SCR-UPLOAD | Загрузка комплекта | partial | Dropzone + progress; native fail-closed в копирайте |
-| SCR-RUN | Прогон анализа | partial | `jobs/{job_id}`; SSE нет; 30 мин — цель ТЗ, не SLA |
-| SCR-EXPERT | Рабочее место эксперта | partial | Resizable 3 панели; клавиатура J/K/A/R/E; windowed list >40 |
+| SCR-PROJECTS | Проекты и комплекты | partial | Список отчётов; выбор комплекта открывает трёхпанельный эксперт |
+| SCR-UPLOAD | Загрузка комплекта | partial | Dropzone + progress + cancel; native fail-closed в копирайте |
+| SCR-RUN | Прогон анализа | partial | `jobs/{job_id}`; группы движков из capabilities; SSE нет |
+| SCR-EXPERT | Рабочее место эксперта | partial | Три панели ТЗ: находки / 2D-3D / замечание; индекс — SCR-PROJECTS |
 | SCR-REMARK | Карточка замечания | partial | HITL + история review-events; этаж/ось или «нет в индексе» |
 | SCR-EXPORT | Отчёт и экспорт | partial | HTML JSON BCF 2.1/3.0 PDF; XLSX нет в API |
 | SCR-DIFF | Сравнение версий | partial | HTTP finding delta; no_longer_reported ≠ исправлено |
-| SCR-USER | Дашборд «Пользователь» | partial | `review-kpi` + карта ТЗ; OIDC BFF 501 |
+| SCR-USER | Дашборд «Пользователь» | partial | Карта ТЗ + снимок ворот + `review-kpi`; OIDC BFF 501 |
 
 Стек TanStack Router / Query / Zustand / Radix / Tailwind v4 / Storybook / Playwright / axe-core — **план спринта 0**, не факт git. Не обещать Fragments как продукт: не грузить федерацию ~1 ГБ в вкладку.
 
@@ -86,6 +86,9 @@ Checkpoint **`NO_GO`**. `detected_count: 0`. UI **не** закрывает RT-0
 | RT-UI-ANON-BIND | Anonymous + не loopback = LAN-сид | Хост по умолчанию 127.0.0.1; anonymous — opt-in |
 | RT-UI-DEMO-SEED | Пустой список отчётов = shell нельзя показать | Dev-only git-seed копирует samples под storage |
 | RT-UI-VIEWER-ID | Перезагрузка IFC на каждую смену объекта report | Fetch ключ — `report_id` |
+| RT-UI-EXPERT-PANE | Индекс отчётов как левая панель эксперта | Три панели ТЗ: находки / 2D-3D / замечание |
+| RT-UI-INTAKE-WIRE | Эффект прячет RT-001/002/003 | GET /v1/system/capabilities; UI ворота не пишет |
+| RT-UI-INTAKE-GREEN | true_gates как RT CLOSED / GO | NO_GO; PrecisionClaim.publishable |
 
 ## Что UI не закроет
 

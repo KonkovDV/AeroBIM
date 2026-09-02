@@ -21,7 +21,7 @@ function Bucket({
         {title} ({keys.length})
       </h3>
       {keys.length === 0 ? (
-        <p className="compact-copy">Пусто.</p>
+        <p className="compact-copy">Empty.</p>
       ) : (
         <ul className="kpi-list">
           {keys.map((key) => (
@@ -90,13 +90,13 @@ export default function VersionDiffPanel({ reports }: VersionDiffPanelProps) {
       <div className="panel-header">
         <div>
           <p className="panel-kicker">SCR-DIFF</p>
-          <h2>Сравнение версий комплекта</h2>
+          <h2>Pack version compare</h2>
         </div>
       </div>
       <p className="compact-copy">
         Дельта находок между двумя сохранёнными отчётами.{" "}
-        <strong>no_longer_reported ≠ исправлено</strong> — проверка могла не выполниться повторно.
-        «Вернулись» требует трёх ревизий; этот экран сравнивает две. Не пишет{" "}
+        <strong>no_longer_reported ≠ исправлено</strong> — проверка могла не запуститься снова.
+        «Вернувшиеся» требуют три ревизии; этот экран сравнивает две. Не пишет{" "}
         <code>summary.passed</code>. Checkpoint NO_GO.
       </p>
       {sorted.length < 2 ? (
@@ -104,7 +104,7 @@ export default function VersionDiffPanel({ reports }: VersionDiffPanelProps) {
       ) : (
         <div className="report-filters">
           <label>
-            База
+            Baseline
             <select
               aria-label="Baseline report"
               value={effectiveBaseline}
@@ -118,7 +118,7 @@ export default function VersionDiffPanel({ reports }: VersionDiffPanelProps) {
             </select>
           </label>
           <label>
-            Сравнение
+            Compare
             <select
               aria-label="Head report"
               value={effectiveHead}
@@ -133,7 +133,7 @@ export default function VersionDiffPanel({ reports }: VersionDiffPanelProps) {
           </label>
         </div>
       )}
-      {loading ? <p className="compact-copy">Считаем дельту…</p> : null}
+      {loading ? <p className="compact-copy">Computing delta…</p> : null}
       {error ? (
         <p className="compact-copy" role="alert">
           {error}
@@ -144,21 +144,21 @@ export default function VersionDiffPanel({ reports }: VersionDiffPanelProps) {
           <p className="compact-copy">{diff.note}</p>
           <div className="summary-grid">
             <article className="summary-tile">
-              <span>Новые</span>
+              <span>New</span>
               <strong>{diff.summary.newly_reported}</strong>
             </article>
             <article className="summary-tile">
-              <span>Исчезли</span>
+              <span>Gone</span>
               <strong>{diff.summary.no_longer_reported}</strong>
             </article>
             <article className="summary-tile">
-              <span>Сохранились</span>
+              <span>Still present</span>
               <strong>{diff.summary.still_reported}</strong>
             </article>
           </div>
-          <Bucket title="Новые" keys={diff.newly_reported} testId="diff-newly-reported" />
-          <Bucket title="Исчезли (≠ исправлено)" keys={diff.no_longer_reported} testId="diff-no-longer-reported" />
-          <Bucket title="Сохранились" keys={diff.still_reported} testId="diff-still-reported" />
+          <Bucket title="New" keys={diff.newly_reported} testId="diff-newly-reported" />
+          <Bucket title="Gone (≠ resolved)" keys={diff.no_longer_reported} testId="diff-no-longer-reported" />
+          <Bucket title="Still present" keys={diff.still_reported} testId="diff-still-reported" />
         </>
       ) : null}
     </section>

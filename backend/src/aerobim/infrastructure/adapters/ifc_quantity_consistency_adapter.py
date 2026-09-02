@@ -128,6 +128,7 @@ class IfcQuantityConsistencyAdapter:
 
         want = claim.quantity_name.strip().casefold()
         found: list[QuantityValue] = []
+        # Empty / ALL target_ref matches every instance of the type.
         for element in entities:
             if not element_matches_named_target_ref(element, claim.target_ref):
                 continue

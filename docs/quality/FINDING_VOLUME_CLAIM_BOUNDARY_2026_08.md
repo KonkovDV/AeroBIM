@@ -2,9 +2,9 @@
 ---
 title: "Finding volume claim boundary — SIG-01 taxonomy and engine fixes"
 date: "2026-08-31"
-last_updated: "2026-08-31"
+last_updated: "2026-09-02"
 status: active
-version: "1.3.0"
+version: "1.4.1"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -53,9 +53,9 @@ claim_boundary: >
 
 До исправления валидатор искал элемент с именем `all` (`_matches_target_ref`) и на живой модели со стенами выдавал `No elements found for entity IFCWALL`. Это артефакт шаблона×движка, не «стен нет».
 
-После исправления: `aerobim.domain.target_ref.is_unrestricted_target_ref`. Именованный `target_ref` сверяется без учёта регистра по GlobalId / Name / LongName / Tag / ObjectType / Description (`element_matches_named_target_ref`) — и в IFC-валидаторе, и в Qto-сверке. Элемент, у которого Name буквально `ALL`, адресуется через GlobalId.
+После исправления: `aerobim.domain.target_ref.is_unrestricted_target_ref`. Именованный `target_ref`, который является валидным IfcRoot.GlobalId (22 символа, ISO 10303-21), сверяется **точно** (регистр значим). Name / LongName / Tag / ObjectType / Description — `str.casefold`, точный токен, не подстрока (`element_matches_named_target_ref`) — и в IFC-валидаторе, и в Qto-сверке. Элемент, у которого Name буквально `ALL`, адресуется через GlobalId. Пустой `target_ref` = ALL-правило.
 
-`eq REI60` на **всех** стенах в unsigned-пакете остаётся заведомо слишком широким правилом. После фикса ALL оно проверяет свойства. Если свойства нет ни на одном — одна запись покрытия. Если нет на части — одна запись `is missing on N of M`, не N ошибок. Несовпадения значения режутся потолком `UNRESTRICTED_ELEMENT_MISMATCH_CAP` (50) плюс одна строка «suppressed» (класс `coverage_unsigned`). Поэлементные образцы до потолка — класс `unrestricted_eq_sample`, даже при GUID. Текст mismatch на ALL: `unsigned pack; observed … expected …; not a statutory claim`. Тот же потолок — на чертежных правилах с `target_ref=ALL`. Qto на ALL не берёт первое совпадение: одна строка `mismatch on N of M`. Подписанный IDS должен сузить applicability.
+`eq REI60` на **всех** стенах в unsigned-пакете остаётся заведомо слишком широким правилом. После фикса ALL оно проверяет свойства. Если свойства нет ни на одном — одна запись покрытия. Если нет на части — одна запись `is missing on N of M`, не N ошибок. Несовпадения значения режутся потолком `UNRESTRICTED_ELEMENT_MISMATCH_CAP` (50) плюс одна строка «suppressed» (класс `coverage_unsigned`). Поэлементные образцы до потолка — класс `unrestricted_eq_sample`, даже при GUID. Текст mismatch на ALL: `unsigned pack; observed … expected …; not a statutory claim`. Тот же потолок — на чертежных правилах с `target_ref=ALL`. Qto на ALL не берёт первое совпадение: одна строка `mismatch on N of M`. Подписанный IDS должен сузить applicability. Потолок **не** действует на именованный `target_ref`: широкое имя даст поэлементный поток ERROR (HD14-IFC-02, осознанно). `observed_value is None` для EXISTS — и отсутствие свойства, и null в pset (HD14-IFC-01).
 
 `exists` на ALL — это покрытие «у скольких экземпляров есть свойство», а не «хотя бы у одного». Иначе один заполненный `IfcSpace` из 16 000 закрывал бы правило.
 

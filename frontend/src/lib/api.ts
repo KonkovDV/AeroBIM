@@ -1,4 +1,5 @@
 import type { ReportListResponse, ValidationReport } from "./types";
+import type { AnalyzeSubmitBody } from "./pack-draft";
 
 export type ReportListFilters = {
   project?: string;
@@ -403,7 +404,7 @@ export type AnalyzeJobSnapshot = {
 };
 
 export async function submitAnalyzeProjectPackage(
-  body: { ifc_path?: string; request_id?: string },
+  body: AnalyzeSubmitBody & { request_id?: string },
 ): Promise<AnalyzeJobSnapshot> {
   const response = await fetch(`${apiBaseUrl}/v1/analyze/project-package/submit`, {
     method: "POST",
@@ -449,6 +450,34 @@ export type DemoSeedFixtureResponse = {
   report_id: string;
   issue_count: number;
 };
+
+export type SystemCapabilitiesPayload = {
+  artifact_type: string;
+  schema_version: string;
+  customer_intake_gate: {
+    status: string;
+    claim_level: string;
+    true_gates: string[];
+    checkpoint: string;
+    source: string | null;
+  };
+  auth_bff?: { status: string };
+  bcf_t2?: { status: string; claim_allowed: boolean; raw_status?: string };
+  honesty?: Record<string, { status: string; reason?: string | null }>;
+  samolet_mvp_answers?: {
+    closes_rt001: boolean;
+    closes_rt002: boolean;
+    closes_rt003: boolean;
+    checkpoint: string;
+    cde_integration_mvp?: boolean;
+  };
+};
+
+export async function fetchSystemCapabilities(
+  init?: { signal?: AbortSignal },
+): Promise<SystemCapabilitiesPayload> {
+  return readJson<SystemCapabilitiesPayload>(`${apiBaseUrl}/v1/system/capabilities`, init);
+}
 
 export async function seedDemoFixture(): Promise<DemoSeedFixtureResponse> {
   const response = await fetch(`${apiBaseUrl}/v1/demo/seed-fixture`, {

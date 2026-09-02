@@ -50,6 +50,10 @@ import App from "./App";
 const REPORT_FILTERS_STORAGE_KEY = "aerobim-report-filters-v1";
 const REPORT_FILTER_PRESETS_STORAGE_KEY = "aerobim-report-filter-presets-v1";
 
+function openProjectsIndex(): void {
+  fireEvent.click(screen.getByRole("button", { name: "Проекты" }));
+}
+
 type MockReportSummary = {
   report_id: string;
   request_id: string;
@@ -252,6 +256,7 @@ describe("App", () => {
     render(<App />);
 
     expect(await screen.findByText("Residential Tower Alpha")).toBeTruthy();
+    openProjectsIndex();
     fireEvent.change(screen.getByPlaceholderText("Search loaded reports"), { target: { value: "req-001" } });
     expect(await screen.findByText("Residential Tower Alpha")).toBeTruthy();
 
@@ -284,6 +289,7 @@ describe("App", () => {
     render(<App />);
 
     expect(await screen.findByText("Residential Tower Alpha")).toBeTruthy();
+    openProjectsIndex();
     expect(screen.getByText("Hospital Beta")).toBeTruthy();
 
     fireEvent.change(screen.getByLabelText("Project filter"), { target: { value: "hospital" } });
@@ -324,6 +330,7 @@ describe("App", () => {
     });
 
     render(<App />);
+    openProjectsIndex();
     fireEvent.change(screen.getByLabelText("Project filter"), { target: { value: "hospital" } });
 
     await waitFor(() => {
@@ -350,6 +357,7 @@ describe("App", () => {
     render(<App />);
 
     expect(await screen.findByText("Residential Tower Alpha")).toBeTruthy();
+    openProjectsIndex();
     expect(screen.getByText("Hospital Beta")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Group by project" }));
@@ -371,6 +379,7 @@ describe("App", () => {
 
     render(<App />);
 
+    openProjectsIndex();
     expect(await screen.findByText("No persisted reports match the current query.")).toBeTruthy();
     expect(fetchReportsMock).toHaveBeenCalledWith(
       {
@@ -395,6 +404,7 @@ describe("App", () => {
 
     render(<App />);
 
+    openProjectsIndex();
     expect(await screen.findByText("No persisted reports match the current query.")).toBeTruthy();
     expect(fetchReportsMock).toHaveBeenCalledWith(
       {
@@ -418,6 +428,7 @@ describe("App", () => {
     render(<App />);
 
     expect(await screen.findByText("Residential Tower Alpha")).toBeTruthy();
+    openProjectsIndex();
     fireEvent.change(screen.getByLabelText("Project filter"), { target: { value: "hospital" } });
     fireEvent.change(screen.getByLabelText("Discipline filter"), { target: { value: "mech" } });
     fireEvent.change(screen.getByLabelText("Status filter"), { target: { value: "passed" } });
@@ -446,6 +457,7 @@ describe("App", () => {
 
     render(<App />);
 
+    openProjectsIndex();
     expect(await screen.findByRole("button", { name: "Hospital Passed" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Hospital Passed" }));
 
@@ -486,6 +498,7 @@ describe("App", () => {
 
     render(<App />);
 
+    openProjectsIndex();
     expect(await screen.findByRole("button", { name: "Hospital Passed" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Copy presets JSON" }));
 
@@ -534,6 +547,7 @@ describe("App", () => {
 
     render(<App />);
 
+    openProjectsIndex();
     expect(await screen.findByRole("button", { name: "Hospital Passed" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Download presets JSON" }));
 
@@ -792,13 +806,15 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Эффект" }));
     expect(screen.getByTestId("tz-workplace-coverage")).toBeTruthy();
     expect(screen.getByTestId("review-kpi-panel")).toBeTruthy();
+    expect(screen.getByTestId("blocker-honesty-panel")).toBeTruthy();
     expect(screen.getByText("SCR-DIFF")).toBeTruthy();
-    expect(screen.getByText(/no_longer_reported/)).toBeTruthy();
+    expect(screen.getAllByText(/no_longer_reported/).length).toBeGreaterThan(0);
   });
 
   it("exposes eight workplace screens and a two-report version diff", async () => {
     render(<App />);
     expect(await screen.findByText("Residential Tower Alpha")).toBeTruthy();
+    expect(screen.getByTestId("pack-cycle-strip")).toBeTruthy();
     for (const label of [
       "Проекты",
       "Загрузка",
@@ -814,6 +830,22 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Версии" }));
     expect(screen.getByTestId("version-diff-panel")).toBeTruthy();
     expect(screen.getByText(/no_longer_reported ≠ исправлено/)).toBeTruthy();
+  });
+
+  it("keeps the report index on Проекты and the TZ three-pane on Эксперт", async () => {
+    render(<App />);
+
+    expect(await screen.findByTestId("expert-workplace")).toBeTruthy();
+    expect(await screen.findByTestId("machine-human-split")).toBeTruthy();
+    expect(screen.getByTestId("expert-findings-pane")).toBeTruthy();
+    expect(screen.getByTestId("expert-spatial-pane")).toBeTruthy();
+    expect(screen.getByTestId("expert-remark-pane")).toBeTruthy();
+    expect(screen.queryByPlaceholderText("Search loaded reports")).toBeNull();
+
+    openProjectsIndex();
+    expect(await screen.findByPlaceholderText("Search loaded reports")).toBeTruthy();
+    expect(screen.queryByTestId("expert-workplace")).toBeNull();
+    expect(screen.getByTestId("projects-index")).toBeTruthy();
   });
 
   it("moves to the next finding with J and confirms with A", async () => {
