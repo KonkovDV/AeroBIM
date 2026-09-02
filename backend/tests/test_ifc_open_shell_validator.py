@@ -7,8 +7,11 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from aerobim.domain.models import ComparisonOperator, ParsedRequirement
-from aerobim.infrastructure.adapters.ifc_open_shell_validator import IfcOpenShellValidator
+from aerobim.domain.models import ComparisonOperator, ParsedRequirement, Severity
+from aerobim.infrastructure.adapters.ifc_open_shell_validator import (
+    UNRECOGNIZED_UNIT_RAW_COMPARE,
+    IfcOpenShellValidator,
+)
 
 
 class _FakeElement:
@@ -367,6 +370,148 @@ class IfcOpenShellNumericParseTests(unittest.TestCase):
         validator = IfcOpenShellValidator()
         self.assertEqual(validator._to_float("1 254,30"), 1254.30)
         self.assertTrue(validator._matches_requirement(1254.30, requirement, {}))
+
+
+class UnrecognizedUnitRawCompareTests(unittest.TestCase):
+    """HD16-IFC-03: unregistered unit tokens compare raw and emit one WARNING."""
+
+    def _install_fake_ifcopenshell(
+        self,
+        model: _FakeModel,
+        psets_by_element_id: dict[int, dict[str, dict[str, object]]],
+        unit_scales: dict[str, float],
+    ):
+        def get_psets(element: _FakeElement) -> dict[str, dict[str, object]]:
+            return psets_by_element_id[element.id()]
+
+        ifcopenshell_module = types.ModuleType("ifcopenshell")
+        ifcopenshell_module.open = lambda _path: model
+
+        util_module = types.ModuleType("ifcopenshell.util")
+        element_module = types.ModuleType("ifcopenshell.util.element")
+        element_module.get_psets = get_psets
+
+        unit_module = types.ModuleType("ifcopenshell.util.unit")
+        unit_module.calculate_unit_scale = lambda _model, unit_type="LENGTHUNIT": unit_scales.get(
+            unit_type, 1.0
+        )
+
+        patched_modules = {
+            "ifcopenshell": ifcopenshell_module,
+            "ifcopenshell.util": util_module,
+            "ifcopenshell.util.element": element_module,
+            "ifcopenshell.util.unit": unit_module,
+        }
+        return patch.dict(sys.modules, patched_modules)
+
+    def test_unknown_unit_warns_once_and_compares_raw_equal(self) -> None:
+        walls = [_FakeElement(1, "g1", "W1"), _FakeElement(2, "g2", "W2")]
+        model = _FakeModel({"IFCWALL": walls})
+        modules_patch = self._install_fake_ifcopenshell(
+            model,
+            {
+                1: {"Qto_WallBaseQuantities": {"Width": 200.0}},
+                2: {"Qto_WallBaseQuantities": {"Width": 200.0}},
+            },
+            unit_scales={"LENGTHUNIT": 0.001, "AREAUNIT": 1e-6, "VOLUMEUNIT": 1e-9},
+        )
+        requirements = [
+            ParsedRequirement(
+                rule_id="R-unknown-unit",
+                ifc_entity="IFCWALL",
+                property_set="Qto_WallBaseQuantities",
+                property_name="Width",
+                operator=ComparisonOperator.EQUALS,
+                expected_value="200",
+                unit="м2/мес",
+            ),
+        ]
+        with tempfile.NamedTemporaryFile(suffix=".ifc") as f, modules_patch:
+            issues = IfcOpenShellValidator().validate(Path(f.name), requirements)
+
+        warnings = [issue for issue in issues if issue.severity is Severity.WARNING]
+        errors = [issue for issue in issues if issue.severity is Severity.ERROR]
+        self.assertEqual(len(warnings), 1)
+        self.assertEqual(len(errors), 0)
+        self.assertIn(UNRECOGNIZED_UNIT_RAW_COMPARE, warnings[0].message)
+
+    def test_unknown_unit_still_emits_raw_mismatch(self) -> None:
+        wall = _FakeElement(1, "g1", "W1")
+        model = _FakeModel({"IFCWALL": [wall]})
+        modules_patch = self._install_fake_ifcopenshell(
+            model,
+            {1: {"Qto_WallBaseQuantities": {"Width": 200.0}}},
+            unit_scales={"LENGTHUNIT": 0.001, "AREAUNIT": 1e-6, "VOLUMEUNIT": 1e-9},
+        )
+        requirements = [
+            ParsedRequirement(
+                rule_id="R-unknown-mismatch",
+                ifc_entity="IFCWALL",
+                property_set="Qto_WallBaseQuantities",
+                property_name="Width",
+                operator=ComparisonOperator.EQUALS,
+                expected_value="1",
+                unit="м2/мес",
+            ),
+        ]
+        with tempfile.NamedTemporaryFile(suffix=".ifc") as f, modules_patch:
+            issues = IfcOpenShellValidator().validate(Path(f.name), requirements)
+
+        self.assertTrue(any(UNRECOGNIZED_UNIT_RAW_COMPARE in issue.message for issue in issues))
+        self.assertTrue(
+            any(
+                issue.severity is Severity.ERROR and "does not match" in issue.message
+                for issue in issues
+            )
+        )
+
+    def test_registered_unit_does_not_emit_unrecognized_warning(self) -> None:
+        wall = _FakeElement(1, "g1", "W1")
+        model = _FakeModel({"IFCWALL": [wall]})
+        modules_patch = self._install_fake_ifcopenshell(
+            model,
+            {1: {"Qto_WallBaseQuantities": {"Width": 200.0}}},
+            unit_scales={"LENGTHUNIT": 0.001, "AREAUNIT": 1e-6, "VOLUMEUNIT": 1e-9},
+        )
+        requirements = [
+            ParsedRequirement(
+                rule_id="R-mm",
+                ifc_entity="IFCWALL",
+                property_set="Qto_WallBaseQuantities",
+                property_name="Width",
+                operator=ComparisonOperator.LESS_OR_EQUAL,
+                expected_value="0.25",
+                unit="m",
+            ),
+        ]
+        with tempfile.NamedTemporaryFile(suffix=".ifc") as f, modules_patch:
+            issues = IfcOpenShellValidator().validate(Path(f.name), requirements)
+
+        self.assertFalse(any(UNRECOGNIZED_UNIT_RAW_COMPARE in issue.message for issue in issues))
+
+    def test_exists_operator_skips_unrecognized_unit_warning(self) -> None:
+        wall = _FakeElement(1, "g1", "W1")
+        model = _FakeModel({"IFCWALL": [wall]})
+        modules_patch = self._install_fake_ifcopenshell(
+            model,
+            {1: {"Qto_WallBaseQuantities": {"Width": 200.0}}},
+            unit_scales={"LENGTHUNIT": 1.0, "AREAUNIT": 1.0, "VOLUMEUNIT": 1.0},
+        )
+        requirements = [
+            ParsedRequirement(
+                rule_id="R-exists",
+                ifc_entity="IFCWALL",
+                property_set="Qto_WallBaseQuantities",
+                property_name="Width",
+                operator=ComparisonOperator.EXISTS,
+                unit="м2/мес",
+            ),
+        ]
+        with tempfile.NamedTemporaryFile(suffix=".ifc") as f, modules_patch:
+            issues = IfcOpenShellValidator().validate(Path(f.name), requirements)
+
+        self.assertFalse(any(UNRECOGNIZED_UNIT_RAW_COMPARE in issue.message for issue in issues))
+        self.assertEqual(issues, [])
 
 
 if __name__ == "__main__":

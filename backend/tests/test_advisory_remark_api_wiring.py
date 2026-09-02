@@ -70,6 +70,57 @@ class AdvisoryRemarkApiWiringTests(unittest.TestCase):
         self.assertEqual(issues[0].severity, issue.severity)
         self.assertEqual(issues[0].origin, issue.origin)
 
+    def test_overlay_does_not_enrich_advisory_origin(self) -> None:
+        """Re-Audit #7: overlay must not rewrite engine-owned advisory findings."""
+
+        from aerobim.application.services.advisory_remark_overlay import overlay_llm_remarks
+        from aerobim.domain.llm_advisory import MockLlmProvider
+        from aerobim.domain.models import (
+            CapabilityState,
+            FindingCategory,
+            GeneratedRemark,
+            Severity,
+            ValidationIssue,
+        )
+
+        class _JsonMock(MockLlmProvider):
+            def generate(self, request):  # type: ignore[override]
+                base = super().generate(request)
+                draft = {
+                    "title": "must-not-attach",
+                    "body": "advisory origin is engine-owned.",
+                    "locale": "ru",
+                    "evidence_refs": list(request.evidence_refs or ()),
+                }
+                return replace(
+                    base,
+                    remark_draft=json.dumps(draft, ensure_ascii=False),
+                    schema_valid=True,
+                    status="advisory",
+                )
+
+        owned = GeneratedRemark(title="engine-owned", body="do not overlay")
+        issue = ValidationIssue(
+            rule_id="R-ADV-OWN",
+            category=FindingCategory.IFC_VALIDATION,
+            severity=Severity.INFO,
+            message="advisory finding",
+            finding_id="fid-adv-own",
+            origin="advisory",
+            remark=owned,
+        )
+        issues, capability = overlay_llm_remarks(
+            (issue,),
+            provider=_JsonMock(provider="mock", model="mock-model"),
+            request_id="skip-advisory-origin",
+            allow_synthetic_public=True,
+        )
+        self.assertEqual(capability.status, CapabilityState.SKIPPED)
+        self.assertEqual(len(issues), 1)
+        self.assertIs(issues[0].remark, owned)
+        self.assertEqual(issues[0].severity, Severity.INFO)
+        self.assertEqual(issues[0].origin, "advisory")
+
     def test_overlay_capability_reason_includes_total_findings(self) -> None:
         from aerobim.application.services.advisory_remark_overlay import overlay_llm_remarks
         from aerobim.domain.llm_advisory import MockLlmProvider

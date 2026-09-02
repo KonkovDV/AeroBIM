@@ -1,4 +1,15 @@
-"""Advisory LLM provider contract (verdict-neutral; no secrets in domain)."""
+"""Advisory LLM provider contract (verdict-neutral; no secrets in domain).
+
+2026 ACC literature (Iversen & Huang, AuC 182; Fuchs, Hellin & Borrmann, EC3)
+puts the LLM *on the check route*: the model selects tools or generates
+checking functions, so the pass/fail of a run depends on that choice.
+
+AeroBIM keeps those acts off Shared-gate. The model may draft a remark or an
+IDS fragment. ``summary.passed`` is a function of the deterministic engine and
+a hashed/approved pack only (ADR-001). ``call_tool`` and ``change_verdict``
+are forbidden provider actions. Agent tools exist, but every registry contract
+has ``can_change_verdict=False``.
+"""
 
 from __future__ import annotations
 
@@ -23,6 +34,11 @@ FORBIDDEN_LLM_ACTIONS = frozenset(
         "modify_source",
     }
 )
+
+# Product split vs Iversen (LLM selects which check to run) and Fuchs (LLM
+# writes the checking function). Drafts yes; Shared-gate no.
+LLM_SELECTS_CHECK_ON_VERDICT_PATH = False
+LLM_GENERATED_FUNCTION_WRITES_SUMMARY_PASSED = False
 
 
 @dataclass(frozen=True)
@@ -204,6 +220,8 @@ def llm_advisory_capability_status(
 __all__ = [
     "DisabledLlmProvider",
     "FORBIDDEN_LLM_ACTIONS",
+    "LLM_GENERATED_FUNCTION_WRITES_SUMMARY_PASSED",
+    "LLM_SELECTS_CHECK_ON_VERDICT_PATH",
     "LLMRunManifest",
     "LlmAdvisoryStatus",
     "LlmAuditRecord",

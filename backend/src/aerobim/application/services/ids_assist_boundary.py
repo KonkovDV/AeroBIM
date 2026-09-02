@@ -2,6 +2,10 @@
 
 Never wire into AnalyzeProjectPackageUseCase or any sign-off path.
 Human review of generated IDS is mandatory before use as EIR/acceptance criteria.
+
+Fuchs et al. (EC3 2026) generate reusable checking functions from IDS-validated
+requirements and run them. This port stops at a draft: ``advisory_only=True``,
+empty XML in the stub, and no path into ``summary.passed``.
 """
 
 from __future__ import annotations
@@ -39,7 +43,8 @@ class StubIdsAssistDraftAdapter:
             suggested_ids_xml="",
             rationale=(
                 "IDS assist is advisory-only. Generated drafts must be reviewed by a "
-                "human before use; they never affect summary.passed or pilot sign-off."
+                "human and enter sign-off only as a hashed pack with approval_ref; "
+                "they never affect summary.passed or pilot sign-off."
             ),
             confidence=0.0,
             advisory_only=True,

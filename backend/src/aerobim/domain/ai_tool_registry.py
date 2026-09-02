@@ -1,4 +1,10 @@
-"""Typed advisory tool registry — AI cannot change verdict (ADR-001)."""
+"""Typed advisory tool registry — AI cannot change verdict (ADR-001).
+
+``ids_assist_draft`` / ``compile_ids_draft`` is the Fuchs-shaped act (generate
+a checker/IDS). ``requirement_interpret`` is the Iversen-shaped act (choose how
+to read a clause). Both stay on the advisory contour: ``can_change_verdict``
+defaults to False and ``validate_invocation`` rejects a True flag.
+"""
 
 from __future__ import annotations
 

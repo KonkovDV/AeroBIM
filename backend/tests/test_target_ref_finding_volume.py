@@ -137,7 +137,7 @@ class TargetRefWildcardTests(unittest.TestCase):
         )
 
     def test_guid_needle_does_not_cross_match_name_case_collision(self) -> None:
-        """HD15-TEST-01: valid GlobalId needle must not hit Name that is the same token, other case."""
+        """HD15-TEST-01: GlobalId needle must not hit Name with the same token, other case."""
         other_guid = "1XYVUKGoDDbREfVxRKsHkl"
         self.assertTrue(is_valid_ifc_global_id(_GUID_MIXED))
         self.assertTrue(is_valid_ifc_global_id(_GUID_FLIPPED))

@@ -55,6 +55,16 @@ _UNIT_TO_SI_FACTOR: dict[str, tuple[str, float]] = {
     "м³": ("VOLUMEUNIT", 1.0),
 }
 
+# HD16-IFC-03: unknown unit tokens stay raw; emit this phrase once per requirement.
+UNRECOGNIZED_UNIT_RAW_COMPARE = "unit not recognized; raw comparison"
+
+
+def requirement_unit_is_unregistered(unit: str | None) -> bool:
+    """True when a non-empty unit token is absent from ``_UNIT_TO_SI_FACTOR``."""
+
+    token = normalize_unit_token(unit)
+    return bool(token) and token not in _UNIT_TO_SI_FACTOR
+
 
 class IfcOpenShellValidator:
     def __init__(self, tolerance: ToleranceConfig | None = None) -> None:
@@ -190,6 +200,22 @@ class IfcOpenShellValidator:
                     )
                 )
                 continue
+
+            if (
+                requirement.operator is not ComparisonOperator.EXISTS
+                and requirement_unit_is_unregistered(requirement.unit)
+            ):
+                issues.append(
+                    issue_from_requirement(
+                        requirement,
+                        severity=Severity.WARNING,
+                        message=(
+                            f"Property {requirement.property_set}.{requirement.property_name} "
+                            f"{UNRECOGNIZED_UNIT_RAW_COMPARE}"
+                        ),
+                        category=FindingCategory.IFC_VALIDATION,
+                    )
+                )
 
             is_unrestricted = is_unrestricted_target_ref(requirement.target_ref)
             missing_count = 0
@@ -401,7 +427,12 @@ class IfcOpenShellValidator:
         unit: str | None,
         unit_scales: dict[str, float],
     ) -> tuple[float, float]:
-        """Convert *observed* (IFC project units) and *expected* to SI."""
+        """Convert *observed* (IFC project units) and *expected* to SI.
+
+        HD16-IFC-03: an unregistered token is returned unchanged. The caller
+        emits ``UNRECOGNIZED_UNIT_RAW_COMPARE`` once per requirement; this
+        helper does not invent a conversion factor.
+        """
         if unit is None:
             return observed, expected
         mapping = _UNIT_TO_SI_FACTOR.get(normalize_unit_token(unit))

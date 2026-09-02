@@ -104,6 +104,19 @@ class VlmGroundingTests(unittest.TestCase):
             self.assertEqual(result.regions, ())
             self.assertIsNotNone(result.reason)
 
+    def test_one_invalid_region_fails_whole_drawing_response(self) -> None:
+        """Re-Audit #8 wording: drawing-schema fail is whole-response, not per-region."""
+
+        raw = {
+            "regions": [
+                {"bbox": [10, 20, 100, 60], "confidence": 0.91},
+                {"bbox": [1, 2, 3], "confidence": 0.9},
+            ]
+        }
+        result = ground_vlm_drawing_response(raw, sheet_id="S1", model_id="kimi-k3")
+        self.assertFalse(result.parse_ok)
+        self.assertEqual(result.regions, ())
+
     def test_nan_confidence_abstains_not_high(self) -> None:
         # Red Team: NaN must not slip past the abstention gate as high confidence.
         raw = {"regions": [{"bbox": [1, 1, 2, 2], "confidence": float("nan")}]}

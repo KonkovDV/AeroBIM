@@ -30,7 +30,8 @@ metric → pair key; see ``domain.clash_triage``) with ``Priority`` from the
 triage band.
 
 The exporter is intentionally minimal and experimental.  It is not a full BCF 3.0
-implementation (BCF API, extensions.xml, document references are out of scope).
+implementation (BCF API and document references are out of scope). Root
+``extensions.xml`` is emitted from topic vocabularies in use. Not CDE-ready BCF.
 
 Public API:
     export_bcf3(report: ValidationReport) -> bytes

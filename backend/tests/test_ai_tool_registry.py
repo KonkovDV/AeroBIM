@@ -17,6 +17,13 @@ class AdvisoryToolRegistryTests(unittest.TestCase):
         for contract in DEFAULT_ADVISORY_TOOL_REGISTRY:
             self.assertFalse(contract.can_change_verdict)
 
+    def test_fuchs_shaped_ids_draft_stays_advisory(self) -> None:
+        contract = lookup_advisory_tool("ids_assist_draft")
+        self.assertIsNotNone(contract)
+        assert contract is not None
+        self.assertFalse(contract.can_change_verdict)
+        self.assertEqual(contract.contour, "ai_advisory")
+
     def test_agent_allowlist_derived_from_registry(self) -> None:
         names = allowed_agent_tool_names()
         self.assertIn("detect_system_clash", names)

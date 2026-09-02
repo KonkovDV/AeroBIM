@@ -53,7 +53,9 @@ SCREEN_ROWS: Final[tuple[dict[str, str], ...]] = (
         "id": "SCR-EXPORT",
         "title": "Report and export",
         "git": "partial",
-        "note": "HTML JSON BCF 2.1/3.0; PDF = coverage draft; XLSX not an API; do not ship a fake 200",
+        "note": (
+            "HTML JSON BCF 2.1/3.0; PDF = coverage draft; XLSX not an API; do not ship a fake 200"
+        ),
     },
     {
         "id": "SCR-DIFF",
@@ -65,9 +67,7 @@ SCREEN_ROWS: Final[tuple[dict[str, str], ...]] = (
         "id": "SCR-USER",
         "title": "User-role dashboard",
         "git": "partial",
-        "note": (
-            "TZ map + intake snapshot + review-kpi; OIDC BFF stays 501"
-        ),
+        "note": ("TZ map + intake snapshot + review-kpi; OIDC BFF stays 501"),
     },
 )
 
@@ -136,7 +136,10 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "id": "RT-UI-XLSX-FAKE",
         "verdict": "KILL",
         "attack": "Export XLSX button that 404s labeled as delivered",
-        "brake": "HTML JSON BCF 2.1/3.0; PDF is a coverage draft (simple PDF), not GOST; XLSX stays disabled",
+        "brake": (
+            "HTML JSON BCF 2.1/3.0; PDF is a coverage draft (simple PDF), not GOST; "
+            "XLSX stays disabled"
+        ),
     },
     {
         "id": "RT-UI-OIDC-LIVE",

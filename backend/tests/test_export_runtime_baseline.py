@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -12,6 +13,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from aerobim.tools.export_runtime_baseline import (
+    _REQUIRED_GATES_ATTESTED,
     _check_architecture_inventory,
     _check_code_env_documented,
     _check_documented_env_sets,
@@ -298,6 +300,41 @@ class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
             baseline = export_runtime_baseline(backend_root=_REPO / "backend")
         self.assertEqual(baseline["attestation"]["attested_by"], "local")
         self.assertEqual(baseline["attestation"]["gates_attested"], [])
+
+    def test_hd20_ci01_readme_extras_need_is_not_attested_metric_source(self) -> None:
+        """HD20-CI-01: extras is a need (jury clone) but not a baseline artifact source."""
+        workflow = (_REPO / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+        start = workflow.find("\n  baseline-integrity:")
+        end = workflow.find("\n  frontend:", start)
+        self.assertGreater(start, 0)
+        self.assertGreater(end, start)
+        job = workflow[start:end]
+        needs_start = job.find("needs:")
+        defaults_start = job.find("defaults:")
+        self.assertGreater(needs_start, 0)
+        self.assertGreater(defaults_start, needs_start)
+        needs_block = job[needs_start:defaults_start]
+        self.assertIn("- pytest-readme-extras", needs_block)
+        for gate in sorted(_REQUIRED_GATES_ATTESTED):
+            self.assertIn(f"- {gate}", needs_block, gate)
+        self.assertNotIn("pytest-readme-extras", _REQUIRED_GATES_ATTESTED)
+
+        attested = re.findall(
+            r"AEROBIM_GATES_ATTESTED:\s*>-\s*\n\s+([^\n]+)",
+            workflow,
+        )
+        self.assertEqual(len(attested), 2)
+        expected = set(_REQUIRED_GATES_ATTESTED)
+        for csv in attested:
+            names = {part.strip() for part in csv.split(",") if part.strip()}
+            self.assertEqual(names, expected)
+            self.assertNotIn("pytest-readme-extras", names)
+
+        extras_start = workflow.find("\n  pytest-readme-extras:")
+        extras_end = workflow.find("\n  test:", extras_start)
+        extras = workflow[extras_start:extras_end]
+        self.assertIn("skips allowed", extras)
+        self.assertIn("HD20-CI-01", job)
 
     def test_committed_baseline_is_ci_attested(self) -> None:
         from aerobim.tools.export_runtime_baseline import committed_baseline_attestation_errors

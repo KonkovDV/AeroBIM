@@ -55,6 +55,18 @@ class LlmAdvisoryInvarianceTests(unittest.TestCase):
         )
         self.assertEqual(response.status, "blocked_by_policy")
 
+    def test_iversen_fuchs_shaped_acts_stay_off_verdict_path(self) -> None:
+        from aerobim.domain.llm_advisory import (
+            FORBIDDEN_LLM_ACTIONS,
+            LLM_GENERATED_FUNCTION_WRITES_SUMMARY_PASSED,
+            LLM_SELECTS_CHECK_ON_VERDICT_PATH,
+        )
+
+        self.assertIn("call_tool", FORBIDDEN_LLM_ACTIONS)
+        self.assertIn("change_verdict", FORBIDDEN_LLM_ACTIONS)
+        self.assertFalse(LLM_SELECTS_CHECK_ON_VERDICT_PATH)
+        self.assertFalse(LLM_GENERATED_FUNCTION_WRITES_SUMMARY_PASSED)
+
 
 if __name__ == "__main__":
     unittest.main()

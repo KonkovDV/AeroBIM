@@ -94,18 +94,10 @@ class UiExpertWorkplaceTriageTests(unittest.TestCase):
         assign_field = re.compile(
             r"(?:^|[;\n{}()])\s*(?:[A-Za-z_$][\w$]*\.)*summary\s*\.\s*(?:passed|outcome)\s*=(?!=)"
         )
-        assign_object = re.compile(
-            r"(?:^|[;\n{}()])\s*(?:[A-Za-z_$][\w$]*\.)+summary\s*=(?!=)"
-        )
-        literal_passed = re.compile(
-            r"\bsummary\s*:\s*\{(?:[^{}]*)\bpassed\s*:\s*(?:true|false)"
-        )
-        literal_outcome = re.compile(
-            r"\bsummary\s*:\s*\{(?:[^{}]*)\boutcome\s*:\s*[\"'`]"
-        )
-        bracket_assign = re.compile(
-            r"summary\s*\[\s*[\"'](?:passed|outcome)[\"']\s*\]\s*=(?!=)"
-        )
+        assign_object = re.compile(r"(?:^|[;\n{}()])\s*(?:[A-Za-z_$][\w$]*\.)+summary\s*=(?!=)")
+        literal_passed = re.compile(r"\bsummary\s*:\s*\{(?:[^{}]*)\bpassed\s*:\s*(?:true|false)")
+        literal_outcome = re.compile(r"\bsummary\s*:\s*\{(?:[^{}]*)\boutcome\s*:\s*[\"'`]")
+        bracket_assign = re.compile(r"summary\s*\[\s*[\"'](?:passed|outcome)[\"']\s*\]\s*=(?!=)")
         scanned = 0
         assigned: list[str] = []
         for path in root.rglob("*"):

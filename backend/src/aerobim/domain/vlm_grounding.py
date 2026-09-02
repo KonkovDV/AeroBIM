@@ -99,8 +99,10 @@ def ground_vlm_drawing_response(
 
     Any structural deviation (not an object, missing/!list ``regions``, a region
     without a valid 4-number bbox) yields ``parse_ok=False`` with no regions and a
-    reason. Regions with confidence below ``min_confidence`` are kept but flagged
-    ``hitl_required`` (abstention), never dropped silently.
+    reason — the whole response, not a per-region result object. One invalid
+    region discards siblings already parsed. Regions with confidence below
+    ``min_confidence`` are kept but flagged ``hitl_required`` (abstention), never
+    dropped silently.
     """
 
     if not isinstance(raw, dict):

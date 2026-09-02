@@ -59,6 +59,19 @@
 | Target | Replace with real IFC system-assignment provider after RT-003 evidence |
 | Honesty | Never DI default; never `mep_system_clash=OK`; template JSON stays template |
 
+## Tracked residuals (not stubs)
+
+### HD19-S3-01 — presigned GET bypasses stream cap
+
+| Field | Value |
+|-------|-------|
+| ID | `HD19-S3-01` |
+| Adapter | `backend/src/aerobim/infrastructure/adapters/s3_object_store.py` (`presign_get`) |
+| Severity | **INFO** |
+| Effect | Presigned GET URL does not go through this store's `max_get_bytes` streaming cap. Direct `get()` is capped. |
+| Honesty | Self-documented in the method comment. **No `presign_get` callers in `backend/src` as of 02.09.2026** (port + two stores only). If a caller is wired later, it must enforce its own size limit. Also noted in `SECURITY.md`. Does not sit on the `summary.passed` path. |
+| Status | Residual; not a stub. Checkpoint **NO_GO**. |
+
 ## Closed / N/A
 
 - Cad / OCR multimodal / MEP unconfigured adapters are real fail-closed or degrade paths (not `@sota-stub`).

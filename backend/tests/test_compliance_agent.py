@@ -160,6 +160,22 @@ class ComplianceAgentTests(unittest.TestCase):
             all(row.get("can_change_verdict") is not True for row in result.tool_traces)
         )
 
+    def test_hd18_orchestrator_source_writes_info_issues_only(self) -> None:
+        """Re-Audit #8: agent file must not construct ERROR/WARNING ValidationIssue."""
+
+        src = (
+            Path(__file__).resolve().parents[1]
+            / "src"
+            / "aerobim"
+            / "application"
+            / "services"
+            / "compliance_agent_orchestrator.py"
+        )
+        text = src.read_text(encoding="utf-8")
+        self.assertNotRegex(text, r"severity\s*=\s*Severity\.(ERROR|WARNING)")
+        self.assertIn("severity=Severity.INFO", text)
+        self.assertIn('can_change_verdict": False', text)
+
     def test_agent_advisory_never_blocks_via_determinism_gate(self) -> None:
         gate = DeterminismGate()
         engine = [

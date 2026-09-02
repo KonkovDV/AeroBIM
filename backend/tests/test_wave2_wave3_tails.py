@@ -178,6 +178,7 @@ class IdsAssistBoundaryTests(unittest.TestCase):
         draft = StubIdsAssistDraftAdapter().draft_from_narrative("Walls shall have FireRating")
         self.assertTrue(draft.advisory_only)
         self.assertEqual(draft.suggested_ids_xml, "")
+        self.assertIn("approval_ref", draft.rationale)
 
 
 if __name__ == "__main__":

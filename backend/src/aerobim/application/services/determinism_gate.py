@@ -3,6 +3,12 @@
 See Mirhosseini et al. (BRI 2026) Accuracy–Flexibility trade-off and
 AeroBIM Contour.DETERMINISTIC_VALIDATION ownership of summary.passed.
 
+Iversen & Huang (AuC 182, 2026) and Fuchs et al. (EC3 2026) put the LLM on
+the check route (select tools / generate functions). This gate is the opposite
+product choice: advisory-only findings are demoted to INFO and cannot flip
+``summary.passed``. Generated IDS or functions enter sign-off only after a
+human-approved hashed pack — never from this merge.
+
 Wave J (2026-07-25) — atomic evidence grounding: advisory-only findings are
 checked against the deterministic evidence universe (known element GUIDs /
 target refs from engine issues, requirements, clash pairs, drawing

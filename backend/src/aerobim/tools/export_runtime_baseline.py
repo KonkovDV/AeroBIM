@@ -26,6 +26,11 @@ _SCHEMA_VERSION = "1.4.0"
 _QUALITY_GATE_KEYS = ("ruff", "mypy", "pytest", "vitest", "build")
 _ALLOWED_GATE_VALUES = frozenset({"PASS", "FAIL", "SKIPPED", "UNKNOWN", "NOT_RUN"})
 _COMPLETE_GATE_VALUE = "PASS"
+# Jobs whose *artifacts* mint the runtime baseline (JUnit from ``test``,
+# vitest from ``frontend``, plus the other listed gates).
+# ``pytest-readme-extras`` is a *need* of baseline-integrity (jury-clone
+# install path) but is not attested here — it produces no JUnit/vitest pin.
+# HD20-CI-01: keep this set and ci.yml AEROBIM_GATES_ATTESTED in lockstep.
 _REQUIRED_GATES_ATTESTED = frozenset(
     {
         "test",

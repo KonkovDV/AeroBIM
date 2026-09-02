@@ -262,6 +262,11 @@ jobs:
 
   baseline-integrity:
     runs-on: ubuntu-latest
+    # HD20-CI-01: pytest-readme-extras must pass (jury clone / README extras)
+    # before this job runs, but it is not in AEROBIM_GATES_ATTESTED below.
+    # Attested names are the jobs whose artifacts mint the baseline
+    # (JUnit from `test`, vitest from `frontend`). Extras allows skips;
+    # `test` is the coverage/JUnit pin.
     needs:
       - test
       - pytest-readme-extras
@@ -296,6 +301,8 @@ jobs:
           pip install -e . --no-deps
       - name: Generate CI runtime baseline
         env:
+          # HD20-CI-01: do not add pytest-readme-extras. That job is a need
+          # (jury clone) but mints no JUnit/vitest for this artifact.
           AEROBIM_GATES_ATTESTED: >-
             test,frontend,supply-chain-audit,sprint-2-1-gates,security-regression,offline-bundle-smoke,openapi-contract
         run: |
@@ -343,6 +350,7 @@ jobs:
           if-no-files-found: warn
       - name: Compare committed vs CI baseline (WP-A11) + publishable (N-22)
         env:
+          # HD20-CI-01: same CSV as generate; extras is a need, not a metric source.
           AEROBIM_GATES_ATTESTED: >-
             test,frontend,supply-chain-audit,sprint-2-1-gates,security-regression,offline-bundle-smoke,openapi-contract
         run: |

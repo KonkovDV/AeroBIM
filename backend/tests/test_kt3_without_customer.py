@@ -132,3 +132,7 @@ class Kt3WithoutCustomerTests(unittest.TestCase):
         self.assertIn("IDS-Wall Fire Rating", runbook)
         self.assertIn("nda_corpus_in_git=false", runbook)
         self.assertIn("samolet_pilot", runbook)
+        self.assertIn("лучше Iversen", faq)
+        self.assertIn("Iversen", faq)
+        self.assertIn("Fuchs", faq)
+        self.assertIn("approval_ref", faq)
