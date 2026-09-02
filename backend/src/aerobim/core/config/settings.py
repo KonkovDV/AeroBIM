@@ -139,6 +139,15 @@ _DEFAULT_LLM_ALLOWED_HOSTS: frozenset[str] = frozenset(
         "llm.api.cloud.yandex.net",
     }
 )
+_EMPTY_LLM_HOST_TOKENS: frozenset[str] = frozenset({"-", "none", "empty", "deny"})
+_PILOT_LIKE_SIGNOFF: frozenset[str] = frozenset(
+    {
+        "samolet_pilot",
+        "samolet_pilot_demo",
+        "moscow_agr_2026",
+        "production",
+    }
+)
 _FORBIDDEN_LLM_HOST_MARKERS: tuple[str, ...] = (
     "aliyuncs.com",
     "dashscope",
@@ -149,6 +158,14 @@ _FORBIDDEN_LLM_HOST_MARKERS: tuple[str, ...] = (
 
 
 def _parse_llm_allowed_hosts(raw: str | None) -> frozenset[str]:
+    """Built-in hosts plus extras.
+
+    ``AEROBIM_LLM_ALLOWED_HOSTS`` equal to ``-`` / ``none`` / ``empty`` / ``deny``
+    replaces the set with empty (customer-pack egress deny preset).
+    """
+
+    if raw is not None and raw.strip().lower() in _EMPTY_LLM_HOST_TOKENS:
+        return frozenset()
     hosts = set(_DEFAULT_LLM_ALLOWED_HOSTS)
     if raw:
         for part in raw.split(","):
@@ -156,6 +173,15 @@ def _parse_llm_allowed_hosts(raw: str | None) -> frozenset[str]:
             if host:
                 hosts.add(host)
     return frozenset(hosts)
+
+
+def _customer_pack_llm_egress_mode(signoff_profile: str) -> str:
+    raw = (os.getenv("AEROBIM_CUSTOMER_PACK_LLM_EGRESS") or "").strip().lower()
+    if not raw:
+        return "deny" if signoff_profile in _PILOT_LIKE_SIGNOFF else "allow"
+    if raw not in {"deny", "allow"}:
+        raise RuntimeError("AEROBIM_CUSTOMER_PACK_LLM_EGRESS must be 'deny' or 'allow'")
+    return raw
 
 
 def assert_llm_base_host_allowed(url: str, allowed_hosts: frozenset[str]) -> None:
@@ -503,6 +529,13 @@ class Settings:
     """
     llm_allowed_hosts: tuple[str, ...] = tuple(sorted(_DEFAULT_LLM_ALLOWED_HOSTS))
     """Hostname allowlist for AEROBIM_LLM_BASE_URL (fail-closed beyond SSRF)."""
+    customer_pack_llm_egress: str = "allow"
+    """``deny`` empties the LLM/VLM host allowlist (customer pack).
+
+    ``allow`` needs a consent ref under pilot/production.
+    """
+    customer_pack_llm_egress_consent_ref: str | None = None
+    """Written-consent identifier required to set egress=allow under pilot-like profiles."""
     llm_folder_id: str | None = None
     """Yandex Cloud folder ID (x-folder-id + gpt:// URI composition)."""
     llm_auth_scheme: str = "Bearer"
@@ -541,6 +574,8 @@ class Settings:
         """
         if not self.vlm_enabled:
             return False
+        if self.customer_pack_llm_egress_denied:
+            return False
         if self.signoff_profile in {
             "samolet_pilot",
             "samolet_pilot_demo",
@@ -572,6 +607,8 @@ class Settings:
 
         if not self.llm_local_enabled:
             return False
+        if self.customer_pack_llm_egress_denied:
+            return False
         if self.signoff_profile in {
             "samolet_pilot",
             "samolet_pilot_demo",
@@ -599,6 +636,17 @@ class Settings:
         """Canonical name for the advisory-LLM enable flag (alias of llm_local_enabled)."""
 
         return self.llm_local_enabled
+
+    @property
+    def customer_pack_llm_egress_denied(self) -> bool:
+        """True when customer-pack LLM/VLM hosts must be empty (no written consent)."""
+
+        mode = (self.customer_pack_llm_egress or "deny").strip().lower()
+        if mode != "allow":
+            return True
+        if self.signoff_profile in _PILOT_LIKE_SIGNOFF:
+            return not bool((self.customer_pack_llm_egress_consent_ref or "").strip())
+        return False
 
     @property
     def is_dev_environment(self) -> bool:
@@ -1001,6 +1049,10 @@ class Settings:
             llm_allowed_hosts=tuple(
                 sorted(_parse_llm_allowed_hosts(os.getenv("AEROBIM_LLM_ALLOWED_HOSTS")))
             ),
+            customer_pack_llm_egress=_customer_pack_llm_egress_mode(signoff_profile),
+            customer_pack_llm_egress_consent_ref=(
+                (os.getenv("AEROBIM_CUSTOMER_PACK_LLM_EGRESS_CONSENT_REF") or "").strip() or None
+            ),
             llm_folder_id=(os.getenv("AEROBIM_LLM_FOLDER_ID") or "").strip() or None,
             llm_auth_scheme=(os.getenv("AEROBIM_LLM_AUTH_SCHEME") or "Bearer").strip() or "Bearer",
             llm_send_seed=_read_bool("AEROBIM_LLM_SEND_SEED", True),
@@ -1020,8 +1072,25 @@ class Settings:
                 else None
             ),
         )
+        if (
+            settings.customer_pack_llm_egress == "allow"
+            and settings.signoff_profile in _PILOT_LIKE_SIGNOFF
+            and not (settings.customer_pack_llm_egress_consent_ref or "").strip()
+        ):
+            raise RuntimeError(
+                "AEROBIM_CUSTOMER_PACK_LLM_EGRESS=allow under "
+                f"{settings.signoff_profile} requires "
+                "AEROBIM_CUSTOMER_PACK_LLM_EGRESS_CONSENT_REF (written consent). "
+                "Default remains deny: empty LLM/VLM host allowlist."
+            )
+        if settings.customer_pack_llm_egress_denied:
+            settings = replace(settings, llm_allowed_hosts=())
         # Yandex AI Studio defaults when provider is selected (operator may still override).
-        if settings.llm_provider.strip().lower() == "yandex-ai-studio":
+        # Do not inject the public Studio URL when customer-pack egress is denied.
+        if (
+            settings.llm_provider.strip().lower() == "yandex-ai-studio"
+            and not settings.customer_pack_llm_egress_denied
+        ):
             settings = replace(
                 settings,
                 llm_send_seed=_read_bool("AEROBIM_LLM_SEND_SEED", False),
@@ -1038,13 +1107,18 @@ class Settings:
                     "under samolet_pilot/production (POST-05)"
                 )
         if settings.llm_local_enabled and not settings.llm_local_ready():
-            if settings.signoff_profile in {
-                "samolet_pilot",
-                "samolet_pilot_demo",
-                "moscow_agr_2026",
-                "production",
-            }:
-                # Profile hard-disables advisory egress; do not fail boot if flag left on.
+            if (
+                settings.signoff_profile
+                in {
+                    "samolet_pilot",
+                    "samolet_pilot_demo",
+                    "moscow_agr_2026",
+                    "production",
+                }
+                or settings.customer_pack_llm_egress_denied
+            ):
+                # Profile / customer-pack deny hard-disables advisory egress;
+                # do not fail boot if the enable flag was left on.
                 pass
             else:
                 raise RuntimeError(
@@ -1113,7 +1187,7 @@ class Settings:
                 )
             except UnsafeOutboundUrlError as exc:
                 raise RuntimeError(f"{label} failed SSRF gate: {exc}") from exc
-            if label == "AEROBIM_VLM_API_BASE_URL":
+            if label == "AEROBIM_VLM_API_BASE_URL" and not settings.customer_pack_llm_egress_denied:
                 try:
                     assert_llm_base_host_allowed(
                         candidate,
@@ -1122,7 +1196,7 @@ class Settings:
                 except RuntimeError as exc:
                     raise RuntimeError(f"{label} failed LLM host allowlist: {exc}") from exc
 
-        if settings.llm_base_url:
+        if settings.llm_base_url and not settings.customer_pack_llm_egress_denied:
             try:
                 from urllib.parse import urlparse as _urlparse
 

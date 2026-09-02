@@ -31,6 +31,70 @@ class PilotProfileBlocksExternalLlmEgressTests(unittest.TestCase):
                 settings.llm_local_ready(),
                 "samolet_pilot must hard-disable external advisory egress",
             )
+            self.assertTrue(settings.customer_pack_llm_egress_denied)
+            self.assertEqual(settings.llm_allowed_hosts, ())
+
+    def test_pilot_allow_without_consent_ref_fails_closed(self) -> None:
+        with mock.patch.dict(
+            os.environ,
+            {
+                "AEROBIM_ENV": "development",
+                "AEROBIM_SIGNOFF_PROFILE": "samolet_pilot",
+                "AEROBIM_CUSTOMER_PACK_LLM_EGRESS": "allow",
+            },
+            clear=False,
+        ):
+            os.environ.pop("AEROBIM_CUSTOMER_PACK_LLM_EGRESS_CONSENT_REF", None)
+            with self.assertRaisesRegex(RuntimeError, "CONSENT_REF"):
+                Settings.from_env()
+
+    def test_pilot_allow_with_consent_ref_keeps_hosts(self) -> None:
+        with mock.patch.dict(
+            os.environ,
+            {
+                "AEROBIM_ENV": "development",
+                "AEROBIM_SIGNOFF_PROFILE": "samolet_pilot",
+                "AEROBIM_CUSTOMER_PACK_LLM_EGRESS": "allow",
+                "AEROBIM_CUSTOMER_PACK_LLM_EGRESS_CONSENT_REF": "letter-oa-2026-09",
+            },
+            clear=False,
+        ):
+            settings = Settings.from_env()
+            self.assertFalse(settings.customer_pack_llm_egress_denied)
+            self.assertIn("llm.api.cloud.yandex.net", settings.llm_allowed_hosts)
+
+    def test_explicit_none_host_token_empties_allowlist(self) -> None:
+        with mock.patch.dict(
+            os.environ,
+            {
+                "AEROBIM_ENV": "development",
+                "AEROBIM_SIGNOFF_PROFILE": "development",
+                "AEROBIM_LLM_ALLOWED_HOSTS": "none",
+                "AEROBIM_CUSTOMER_PACK_LLM_EGRESS": "allow",
+            },
+            clear=False,
+        ):
+            settings = Settings.from_env()
+            self.assertEqual(settings.llm_allowed_hosts, ())
+
+    def test_development_deny_preset_is_not_llm_ready(self) -> None:
+        with mock.patch.dict(
+            os.environ,
+            {
+                "AEROBIM_ENV": "development",
+                "AEROBIM_SIGNOFF_PROFILE": "development",
+                "AEROBIM_CUSTOMER_PACK_LLM_EGRESS": "deny",
+                "AEROBIM_LLM_ADVISORY_ENABLED": "true",
+                "AEROBIM_LLM_BASE_URL": "http://127.0.0.1:8000/v1",
+                "AEROBIM_LLM_MODEL_REVISION": "1",
+                "AEROBIM_LLM_BUDGET_LEDGER": "var/llm-budget-test.jsonl",
+            },
+            clear=False,
+        ):
+            settings = Settings.from_env()
+            self.assertTrue(settings.customer_pack_llm_egress_denied)
+            self.assertEqual(settings.llm_allowed_hosts, ())
+            self.assertFalse(settings.llm_local_ready())
 
     def test_pilot_profile_blocks_kimi_alias_vlm(self) -> None:
         with mock.patch.dict(

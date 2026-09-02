@@ -272,7 +272,9 @@ A local clone runs on defaults. The collapsed table is the operator-facing confi
 | `AEROBIM_LLM_MAX_CONCURRENT` | `4` | Semaphore for parallel advisory calls |
 | `AEROBIM_LLM_ADVISORY_MAX_ISSUES` | `32` | Max findings to overlay with AI remark drafts per analyze |
 | `AEROBIM_LLM_429_RETRIES` | `3` | Linear backoff retries on HTTP 429 before SKIPPED |
-| `AEROBIM_LLM_ALLOWED_HOSTS` | *(built-in)* | Extra allowlisted hostnames (comma-separated); Alibaba/OpenAI always forbidden |
+| `AEROBIM_LLM_ALLOWED_HOSTS` | *(built-in)* | Extra allowlisted hostnames (comma-separated); `-`/`none` replaces the set with empty. Alibaba/OpenAI always forbidden |
+| `AEROBIM_CUSTOMER_PACK_LLM_EGRESS` | `deny` under pilot/production; `allow` in development | Customer-pack LLM/VLM host preset. `deny` empties the allowlist. `allow` under pilot/production requires written consent ref |
+| `AEROBIM_CUSTOMER_PACK_LLM_EGRESS_CONSENT_REF` | *(unset)* | Required when egress=`allow` under `samolet_pilot`/`production`. Letter/id of written consent; not a GO claim |
 | `AEROBIM_HYBRID_PROVIDER_CONFIG` | *(unset)* | Path to hybrid provider JSON (`schema_version` ≥1.1 requires `model_revision`) |
 | `AEROBIM_API_TENANT_ID` | *(unset)* | Optional tenant id for multi-tenant API auth |
 | `AEROBIM_APP_NAME` | `aerobim` | Application name for logs / OpenAPI title |
@@ -331,6 +333,8 @@ AEROBIM_CLASH_MIN_AABB_VOLUME_M3
 AEROBIM_CLASH_SKIP_TINY
 AEROBIM_CORS_ORIGINS
 AEROBIM_CROSS_DOC_SEVERITY
+AEROBIM_CUSTOMER_PACK_LLM_EGRESS
+AEROBIM_CUSTOMER_PACK_LLM_EGRESS_CONSENT_REF
 AEROBIM_DB_URL
 AEROBIM_DEBUG
 AEROBIM_ENV
