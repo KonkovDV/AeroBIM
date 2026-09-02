@@ -8,6 +8,7 @@ vi.mock("../lib/api", () => ({
 }));
 
 import PackUploadPanel from "./PackUploadPanel";
+import { UI_COPY } from "../lib/ui-copy";
 
 describe("PackUploadPanel", () => {
   beforeEach(() => {
@@ -16,7 +17,7 @@ describe("PackUploadPanel", () => {
 
   it("does not upload native RVT and shows fail-closed copy", async () => {
     render(<PackUploadPanel />);
-    const input = screen.getByLabelText("Pack file upload") as HTMLInputElement;
+    const input = screen.getByLabelText(UI_COPY.packFileUpload) as HTMLInputElement;
     const file = new File(["x"], "tower.rvt", { type: "application/octet-stream" });
     fireEvent.change(input, { target: { files: [file] } });
     const honesty = await screen.findByTestId("pack-kind-honesty");
@@ -37,10 +38,10 @@ describe("PackUploadPanel", () => {
         }),
     );
     render(<PackUploadPanel />);
-    const input = screen.getByLabelText("Pack file upload") as HTMLInputElement;
+    const input = screen.getByLabelText(UI_COPY.packFileUpload) as HTMLInputElement;
     const file = new File(["IFC"], "walls.ifc", { type: "application/octet-stream" });
     fireEvent.change(input, { target: { files: [file] } });
-    const cancel = await screen.findByRole("button", { name: "Cancel upload" });
+    const cancel = await screen.findByRole("button", { name: UI_COPY.cancelUpload });
     fireEvent.click(cancel);
     expect(capturedSignal?.aborted).toBe(true);
     expect(await screen.findByText("Upload cancelled")).toBeTruthy();

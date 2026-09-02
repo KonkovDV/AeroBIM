@@ -1,4 +1,5 @@
 import type { ValidationIssue } from "../lib/types";
+import { UI_COPY } from "../lib/ui-copy";
 
 export function isFindingAuditReady(issue: ValidationIssue): boolean {
   return Boolean(
@@ -22,8 +23,8 @@ export default function ProvenancePanel({ activeIssue }: ProvenancePanelProps) {
   if (!activeIssue) {
     return (
       <article className="detail-block" data-testid="provenance-active-issue">
-        <h3>Active issue</h3>
-        <p className="compact-copy">No active issue. Use the report detail panel to choose one.</p>
+        <h3>{UI_COPY.activeIssue}</h3>
+        <p className="compact-copy">{UI_COPY.noActiveIssue}</p>
       </article>
     );
   }
@@ -37,16 +38,15 @@ export default function ProvenancePanel({ activeIssue }: ProvenancePanelProps) {
 
   return (
     <article className="detail-block" data-testid="provenance-active-issue">
-      <h3>Active issue</h3>
+      <h3>{UI_COPY.activeIssue}</h3>
       {!auditReady && (
         <p className="provenance-gap-banner" role="status">
-          Incomplete provenance: sign-off requires <code>finding_id</code>, <code>source_id</code>, and
-          non-empty <code>evidence_refs</code>. This finding is not audit-ready.
+          {UI_COPY.provenanceGap}
         </p>
       )}
       {auditReady && (
         <p className="provenance-ok-banner" role="status">
-          Audit-ready provenance present (finding / source / evidence refs).
+          {UI_COPY.provenanceOk}
         </p>
       )}
       <dl className="detail-grid">

@@ -73,7 +73,7 @@ def add_rate_limit_middleware(
 ) -> None:
     """Attach per-client limiter for expensive routes (shared when Redis is configured).
 
-    HD2-RL-02: ``0`` disables a bucket. ``requests_per_minute <= 0`` skips POST and
+    HD2-RL-02: ``0 = off`` — ``0`` disables a bucket. ``requests_per_minute <= 0`` skips POST and
     auth-GET limiting; ``job_poll_per_minute <= 0`` skips job-poll limiting. If both
     are ``<= 0``, this function returns without attaching middleware. ``0`` is
     by-design in development only; ``samolet_pilot`` / ``production`` reject

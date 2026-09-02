@@ -136,6 +136,21 @@ class TargetRefWildcardTests(unittest.TestCase):
             named_target_ref_cache_key(_GUID_FLIPPED),
         )
 
+    def test_guid_needle_does_not_cross_match_name_case_collision(self) -> None:
+        """HD15-TEST-01: valid GlobalId needle must not hit Name that is the same token, other case."""
+        other_guid = "1XYVUKGoDDbREfVxRKsHkl"
+        self.assertTrue(is_valid_ifc_global_id(_GUID_MIXED))
+        self.assertTrue(is_valid_ifc_global_id(_GUID_FLIPPED))
+        self.assertTrue(is_valid_ifc_global_id(other_guid))
+        self.assertNotEqual(_GUID_MIXED.casefold(), other_guid.casefold())
+        wall = _FakeElement(1, other_guid, _GUID_FLIPPED)
+        self.assertFalse(element_matches_named_target_ref(wall, _GUID_MIXED))
+        self.assertFalse(element_matches_named_target_ref(wall, _GUID_FLIPPED))
+        tagged = _FakeElement(2, other_guid, "Fixture", tag=_GUID_FLIPPED)
+        self.assertFalse(element_matches_named_target_ref(tagged, _GUID_MIXED))
+        named = _FakeElement(3, other_guid, "Fixture Wall")
+        self.assertTrue(element_matches_named_target_ref(named, "fixture wall"))
+
     def test_named_ref_uses_casefold_not_lower(self) -> None:
         wall = _FakeElement(1, "guid-1", "Straße", tag="W-ß")
         self.assertTrue(element_matches_named_target_ref(wall, "STRASSE"))
@@ -310,6 +325,29 @@ class AllTargetRefValidatorTests(unittest.TestCase):
         self.assertIn("does not match", by_rule["R-GUID-FLIPPED"].message)
         self.assertEqual(by_rule["R-GUID-FLIPPED"].element_guid, _GUID_FLIPPED)
         self.assertIn("No elements found for entity", by_rule["R-GUID-LOWER"].message)
+
+    def test_guid_target_ref_does_not_cross_match_name_case_collision(self) -> None:
+        """HD15-TEST-01 through the validator: Name holding a case-variant GUID is out of scope."""
+        other_guid = "1XYVUKGoDDbREfVxRKsHkl"
+        wall = _FakeElement(1, other_guid, _GUID_FLIPPED)
+        model = _FakeModel({"IFCWALL": [wall]})
+        modules_patch = self._install_fake_ifcopenshell(
+            model,
+            {1: {"Pset_WallCommon": {"FireRating": "REI30"}}},
+        )
+        requirement = ParsedRequirement(
+            rule_id="R-GUID-NAME-COLLISION",
+            ifc_entity="IFCWALL",
+            target_ref=_GUID_MIXED,
+            property_set="Pset_WallCommon",
+            property_name="FireRating",
+            expected_value="REI60",
+        )
+        with tempfile.NamedTemporaryFile(suffix=".ifc") as tmp_file, modules_patch:
+            issues = IfcOpenShellValidator().validate(Path(tmp_file.name), [requirement])
+        self.assertEqual(len(issues), 1)
+        self.assertIn("No elements found for entity", issues[0].message)
+        self.assertNotIn("does not match", issues[0].message)
 
     def test_exists_all_partial_coverage_is_one_row_not_a_pass(self) -> None:
         wall_1 = _FakeElement(1, "wall-guid-1", "Wall-01")

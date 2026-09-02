@@ -7,7 +7,7 @@ export type PersistedReportFilters = {
   status: "all" | "passed" | "failed";
 };
 
-export type PresetScope = "local" | "team";
+export type PresetScope = "browser" | "file";
 
 export type ReportFilterPreset = {
   id: string;
@@ -20,8 +20,14 @@ export function normalizeStatus(value: string | null | undefined): "all" | "pass
   return value === "passed" || value === "failed" ? value : "all";
 }
 
-export function normalizePresetScope(value: unknown, fallback: PresetScope = "local"): PresetScope {
-  return value === "team" || value === "local" ? value : fallback;
+export function normalizePresetScope(value: unknown, fallback: PresetScope = "browser"): PresetScope {
+  if (value === "file" || value === "team") {
+    return "file";
+  }
+  if (value === "browser" || value === "local") {
+    return "browser";
+  }
+  return fallback;
 }
 
 export function readUrlReportId(): string | null {
@@ -107,7 +113,7 @@ export function readPersistedFilterPresets(): ReportFilterPreset[] {
         return {
           id: preset.id as string,
           name: preset.name as string,
-          scope: normalizePresetScope((preset as { scope?: unknown }).scope, "local"),
+          scope: normalizePresetScope((preset as { scope?: unknown }).scope, "browser"),
           filters: {
             project: typeof filters.project === "string" ? filters.project : "",
             discipline: typeof filters.discipline === "string" ? filters.discipline : "",

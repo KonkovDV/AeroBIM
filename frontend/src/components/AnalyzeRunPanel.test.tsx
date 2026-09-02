@@ -4,6 +4,13 @@ import AnalyzeRunPanel from "./AnalyzeRunPanel";
 import type { ReportCapabilities } from "../lib/types";
 
 describe("AnalyzeRunPanel", () => {
+  it("shows elapsed-timer copy without claiming SLA", () => {
+    render(<AnalyzeRunPanel ifcPath="walls.ifc" />);
+    const timer = screen.getByTestId("analyze-elapsed");
+    expect(timer.textContent).toMatch(/30:00/);
+    expect(timer.textContent).toMatch(/не измеренный SLA|не SLA/);
+  });
+
   it("shows engine groups as pending until capabilities exist", () => {
     render(<AnalyzeRunPanel ifcPath={null} />);
     const list = screen.getByTestId("analyze-engine-groups");

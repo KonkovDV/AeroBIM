@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import DrawingEvidencePanel from "./DrawingEvidencePanel";
+import { UI_COPY } from "../lib/ui-copy";
 import type { DrawingAsset, ValidationIssue, ValidationReport } from "../lib/types";
 
 function buildDrawingAsset(overrides: Partial<DrawingAsset>): DrawingAsset {
@@ -72,8 +73,8 @@ describe("DrawingEvidencePanel", () => {
   it("selects the exact matching asset for the active issue by default", () => {
     render(<DrawingEvidencePanel report={buildReport()} activeIssue={buildIssue({})} />);
 
-    expect(screen.getByRole("img", { name: /drawing evidence preview for a-102/i })).toBeTruthy();
-    expect(screen.getByText(/issue match/i)).toBeTruthy();
+    expect(screen.getByRole("img", { name: /Превью чертежа a-102/i })).toBeTruthy();
+    expect(screen.getByText(UI_COPY.issueMatch)).toBeTruthy();
   });
 
   it("allows browsing another persisted asset while hiding the issue overlay message", () => {
@@ -81,20 +82,20 @@ describe("DrawingEvidencePanel", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /a-101/i }));
 
-    expect(screen.getByRole("img", { name: /drawing evidence preview for a-101/i })).toBeTruthy();
+    expect(screen.getByRole("img", { name: /Превью чертежа a-101/i })).toBeTruthy();
     expect(screen.getByText(/you are browsing a-101/i)).toBeTruthy();
   });
 
   it("stays usable in plain preview mode when no active issue is selected", () => {
     render(<DrawingEvidencePanel report={buildReport()} activeIssue={null} />);
 
-    expect(screen.getByRole("img", { name: /drawing evidence preview for a-101/i })).toBeTruthy();
+    expect(screen.getByRole("img", { name: /Превью чертежа a-101/i })).toBeTruthy();
     expect(screen.getByText(/plain drawing-preview mode/i)).toBeTruthy();
   });
 
   it("renders a problem-zone overlay rectangle after the preview image loads", async () => {
     const { container } = render(<DrawingEvidencePanel report={buildReport()} activeIssue={buildIssue({})} />);
-    const image = screen.getByRole("img", { name: /drawing evidence preview for a-102/i });
+    const image = screen.getByRole("img", { name: /Превью чертежа a-102/i });
 
     Object.defineProperty(image, "naturalWidth", { configurable: true, value: 320 });
     Object.defineProperty(image, "naturalHeight", { configurable: true, value: 200 });
@@ -131,14 +132,14 @@ describe("DrawingEvidencePanel", () => {
 
   it("asks the operator to select a report when report is null", () => {
     render(<DrawingEvidencePanel report={null} activeIssue={null} />);
-    expect(screen.getByText(/select a report to inspect drawing evidence/i)).toBeTruthy();
+    expect(screen.getByText(UI_COPY.selectReportDrawing)).toBeTruthy();
   });
 
   it("explains when no drawing assets were materialized", () => {
     const report = buildReport();
     report.drawing_assets = [];
     render(<DrawingEvidencePanel report={report} activeIssue={buildIssue({})} />);
-    expect(screen.getByText(/no persisted drawing preview assets were materialized/i)).toBeTruthy();
+    expect(screen.getByText(UI_COPY.noDrawingAssets)).toBeTruthy();
   });
 
   it("keeps browsing usable when the issue sheet has no matching asset", () => {
@@ -158,7 +159,7 @@ describe("DrawingEvidencePanel", () => {
         })}
       />,
     );
-    expect(screen.getByText(/no persisted preview asset matches that sheet\/page exactly/i)).toBeTruthy();
+    expect(screen.getByText(/точного превью/i)).toBeTruthy();
   });
 
   it("lists HITL regions that require expert review", () => {
@@ -174,9 +175,9 @@ describe("DrawingEvidencePanel", () => {
       },
     ];
     render(<DrawingEvidencePanel report={report} activeIssue={null} />);
-    expect(screen.getByLabelText(/regions requiring expert review/i)).toBeTruthy();
+    expect(screen.getByLabelText(UI_COPY.hitlRegionsAria)).toBeTruthy();
     expect(screen.getByText(/low_confidence_ocr/i)).toBeTruthy();
-    expect(screen.getByText(/1 HITL region/i)).toBeTruthy();
+    expect(screen.getByText(UI_COPY.hitlRegions(1))).toBeTruthy();
   });
 
   it("draws DrawingRegionRef overlays for the selected sheet including stamp priors", async () => {
@@ -200,7 +201,7 @@ describe("DrawingEvidencePanel", () => {
       },
     ];
     const { container } = render(<DrawingEvidencePanel report={report} activeIssue={null} />);
-    const image = screen.getByRole("img", { name: /drawing evidence preview for a-101/i });
+    const image = screen.getByRole("img", { name: /Превью чертежа a-101/i });
     Object.defineProperty(image, "naturalWidth", { configurable: true, value: 320 });
     Object.defineProperty(image, "naturalHeight", { configurable: true, value: 200 });
     fireEvent.load(image);
@@ -208,25 +209,25 @@ describe("DrawingEvidencePanel", () => {
     await waitFor(() => {
       expect(container.querySelectorAll(".drawing-evidence-rect-region").length).toBe(1);
       expect(container.querySelectorAll(".drawing-evidence-rect-stamp").length).toBe(1);
-      expect(screen.getByText(/2 region overlay/i)).toBeTruthy();
+      expect(screen.getByText(UI_COPY.regionOverlays(2))).toBeTruthy();
     });
   });
 
   it("shows overlay target meta when the matched asset is selected", () => {
     render(<DrawingEvidencePanel report={buildReport()} activeIssue={buildIssue({})} />);
-    expect(screen.getByText(/overlay target/i)).toBeTruthy();
+    expect(screen.getByText(UI_COPY.overlayTarget)).toBeTruthy();
     expect(screen.getByText("DRAW-001")).toBeTruthy();
   });
 
   it("shows browse mode meta after switching away from the matched asset", () => {
     render(<DrawingEvidencePanel report={buildReport()} activeIssue={buildIssue({})} />);
     fireEvent.click(screen.getByRole("button", { name: /a-101/i }));
-    expect(screen.getByText(/browse mode/i)).toBeTruthy();
+    expect(screen.getByText(UI_COPY.browseMode)).toBeTruthy();
   });
 
   it("surfaces image load failures without claiming overlay success", async () => {
     render(<DrawingEvidencePanel report={buildReport()} activeIssue={buildIssue({})} />);
-    const image = screen.getByRole("img", { name: /drawing evidence preview for a-102/i });
+    const image = screen.getByRole("img", { name: /Превью чертежа a-102/i });
     fireEvent.error(image);
     await waitFor(() => {
       expect(screen.getByText(/failed to load the persisted drawing preview/i)).toBeTruthy();

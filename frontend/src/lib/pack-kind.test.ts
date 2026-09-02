@@ -6,8 +6,8 @@ describe("pack-kind", () => {
     expect(detectPackKind("model.rvt")).toBe("rvt");
     expect(packKindVerdict("rvt")).toBe("fail_closed");
     expect(packKindHonesty("rvt")).toMatch(/Fail-closed/i);
-    expect(packKindHonesty("dwg")).toMatch(/not a silent skip/i);
-    expect(packKindHonesty("nwd")).toMatch(/does not write IFC/i);
+    expect(packKindHonesty("dwg")).toMatch(/не тихий skip/i);
+    expect(packKindHonesty("nwd")).toMatch(/не пишет IFC/i);
     expect(packKindVerdict("ifc")).toBe("upload_ok");
     expect(packKindHonesty("ifc")).not.toMatch(/DWG-ready/);
   });

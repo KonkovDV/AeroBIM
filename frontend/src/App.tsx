@@ -1,20 +1,8 @@
-import { Suspense, lazy, useCallback, useDeferredValue, useEffect, useRef, useState } from "react";
+import { Suspense, lazy, useCallback, useDeferredValue, useEffect, useState } from "react";
 import { fetchReport, fetchReports, getApiBaseUrl, postReviewEvent } from "./lib/api";
 import type { ParsedRequirement, ReportSummaryEntry, ValidationIssue, ValidationReport } from "./lib/types";
-import {
-  buildReportFilterShareLink,
-  initialReportFilters,
-  persistReportFilters,
-  readUrlReportId,
-  syncReportFiltersToUrl,
-  type ReportFilterPreset,
-} from "./lib/report-filters";
+import { readUrlReportId } from "./lib/report-filters";
 import { buildViewerFocus, type FindingGroupBy } from "./lib/issue-triage";
-import {
-  applyUploadedFileResult,
-  describePackDraftApplyNote,
-  EMPTY_PACK_DRAFT,
-} from "./lib/pack-draft";
 import CoverageMapPanel from "./components/CoverageMapPanel";
 import PackUploadPanel from "./components/PackUploadPanel";
 import AnalyzeRunPanel from "./components/AnalyzeRunPanel";
@@ -28,36 +16,20 @@ import WorkspaceNav, {
   TRIAGE_KEYBOARD_VIEWS,
   type WorkspaceView,
 } from "./components/WorkspaceNav";
-import ReportListPanel, { type ShareLinkState } from "./features/reports/ReportListPanel";
+import ReportListPanel from "./features/reports/ReportListPanel";
 import CapabilityTopBanner from "./features/capabilities/CapabilityTopBanner";
 import ExpertWorkplace from "./features/workplace/ExpertWorkplace";
 import PackCycleStrip from "./features/workplace/PackCycleStrip";
+import ShellHeader from "./features/shell/ShellHeader";
 import { persistUiRoleAlias, readUiRoleAlias, type UiRoleAlias } from "./lib/ui-role";
+import { UI_COPY } from "./lib/ui-copy";
 import { useFilterPresets } from "./hooks/useFilterPresets";
+import { usePackDraft } from "./hooks/usePackDraft";
+import { useReportFilters } from "./hooks/useReportFilters";
 import { useTriageKeyboard } from "./hooks/useTriageKeyboard";
+import ViewerPlaceholder from "./features/shell/ViewerPlaceholder";
 
 const IfcViewerPanel = lazy(() => import("./components/IfcViewerPanel"));
-
-function ViewerPlaceholder({ message }: { message: string }) {
-  return (
-    <section className="panel viewer-panel viewer-panel-placeholder">
-      <div className="panel-header viewer-header">
-        <div>
-          <p className="panel-kicker">Spatial Review</p>
-          <h2>IFC viewer</h2>
-        </div>
-      </div>
-      <div className="viewer-stage">
-        <div className="viewer-overlay">
-          <p>{message}</p>
-        </div>
-      </div>
-      <p className="viewer-caption">
-        The heavy `web-ifc` viewer runtime is loaded on demand so the report shell remains lightweight until spatial review is actually needed.
-      </p>
-    </section>
-  );
-}
 
 function reportSortWeight(report: ReportSummaryEntry): [number, string] {
   const timestamp = Number.isNaN(Date.parse(report.created_at)) ? 0 : Date.parse(report.created_at);
@@ -73,7 +45,6 @@ function findMatchingRequirements(report: ValidationReport, issue: ValidationIss
 }
 
 export default function App() {
-  const persistedFilters = initialReportFilters();
   const deepLinkReportId = readUrlReportId();
   const [reports, setReports] = useState<ReportSummaryEntry[]>([]);
   const [reportsLoading, setReportsLoading] = useState(true);
@@ -91,9 +62,6 @@ export default function App() {
   const [hitlDecisionState, setHitlDecisionState] = useState<"idle" | "saving" | "accepted" | "rejected" | "failed">(
     "idle",
   );
-  const [search, setSearch] = useState("");
-  const [groupByProject, setGroupByProject] = useState(false);
-  const [shareLinkState, setShareLinkState] = useState<ShareLinkState>("idle");
   const {
     filterPresets,
     presetTransferState,
@@ -111,17 +79,26 @@ export default function App() {
     importPresetPayload,
     importPresetFile,
   } = useFilterPresets();
-  const [projectFilter, setProjectFilter] = useState(persistedFilters.project);
-  const [disciplineFilter, setDisciplineFilter] = useState(persistedFilters.discipline);
-  const [statusFilter, setStatusFilter] = useState<"all" | "passed" | "failed">(persistedFilters.status);
+  const {
+    search,
+    setSearch,
+    groupByProject,
+    setGroupByProject,
+    shareLinkState,
+    projectFilter,
+    setProjectFilter,
+    disciplineFilter,
+    setDisciplineFilter,
+    statusFilter,
+    setStatusFilter,
+    applyPreset,
+    copyShareLink,
+  } = useReportFilters(selectedReportId);
   const [uiRole, setUiRole] = useState<UiRoleAlias>(readUiRoleAlias);
   const [workspaceView, setWorkspaceView] = useState<WorkspaceView>(() =>
     readUiRoleAlias() === "user" ? "user" : "review",
   );
-  const [packDraft, setPackDraft] = useState(EMPTY_PACK_DRAFT);
-  const packDraftRef = useRef(packDraft);
-  packDraftRef.current = packDraft;
-  const [draftApplyNote, setDraftApplyNote] = useState<string | null>(null);
+  const { packDraft, draftApplyNote, applyUpload } = usePackDraft();
   const [triageHelpOpen, setTriageHelpOpen] = useState(false);
   const [reportsEpoch, setReportsEpoch] = useState(0);
   const [findingGroupBy, setFindingGroupBy] = useState<FindingGroupBy>("none");
@@ -130,17 +107,6 @@ export default function App() {
   const deferredProjectFilter = useDeferredValue(projectFilter);
   const deferredDisciplineFilter = useDeferredValue(disciplineFilter);
   const deferredStatusFilter = useDeferredValue(statusFilter);
-
-  useEffect(() => {
-    const currentFilters = {
-      project: projectFilter,
-      discipline: disciplineFilter,
-      status: statusFilter,
-    };
-    persistReportFilters(currentFilters);
-    syncReportFiltersToUrl(currentFilters, selectedReportId);
-    setShareLinkState("idle");
-  }, [projectFilter, disciplineFilter, statusFilter, selectedReportId]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -185,7 +151,7 @@ export default function App() {
         if (cancelled || controller.signal.aborted) {
           return;
         }
-        setReportsError(error instanceof Error ? error.message : "Failed to load reports.");
+        setReportsError(error instanceof Error ? error.message : UI_COPY.loadReportsFailed);
       })
       .finally(() => {
         if (!cancelled && !controller.signal.aborted) {
@@ -225,7 +191,7 @@ export default function App() {
         if (cancelled || controller.signal.aborted) {
           return;
         }
-        setReportError(error instanceof Error ? error.message : "Failed to load the report.");
+        setReportError(error instanceof Error ? error.message : UI_COPY.loadReportFailed);
         setSelectedReport(null);
       })
       .finally(() => {
@@ -259,7 +225,7 @@ export default function App() {
   });
 
   const groupedReports = filteredReports.reduce((groups, report) => {
-    const key = report.project_name?.trim() || "Unspecified project";
+    const key = report.project_name?.trim() || UI_COPY.unspecifiedProject;
     const existing = groups.get(key);
     if (existing) {
       existing.push(report);
@@ -268,32 +234,6 @@ export default function App() {
     }
     return groups;
   }, new Map<string, ReportSummaryEntry[]>());
-
-  const applyPreset = (preset: ReportFilterPreset) => {
-    setProjectFilter(preset.filters.project);
-    setDisciplineFilter(preset.filters.discipline);
-    setStatusFilter(preset.filters.status);
-  };
-
-  const copyShareLink = async () => {
-    if (typeof window === "undefined" || !window.navigator.clipboard) {
-      setShareLinkState("failed");
-      return;
-    }
-
-    const link = buildReportFilterShareLink({
-      project: projectFilter,
-      discipline: disciplineFilter,
-      status: statusFilter,
-    });
-
-    try {
-      await window.navigator.clipboard.writeText(link);
-      setShareLinkState("copied");
-    } catch {
-      setShareLinkState("failed");
-    }
-  };
 
   const activeIssue =
     selectedReport && selectedReport.issues.length > 0
@@ -397,38 +337,16 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <header className="app-header">
-        <div>
-          <p className="eyebrow">AeroBIM review shell · checkpoint NO_GO</p>
-          <h1>Reports, issues, provenance.</h1>
-          <p className="lede">
-            Pack seam: model ↔ sheets ↔ TZ ↔ calculations. Not a 10D/Tangl replacement. UI does not
-            write <code>summary.passed</code>. Native RVT/NWD/DWG fail-closed. Not a measured 30:00
-            SLA.
-          </p>
-        </div>
-        <div className="header-card">
-          <span>API</span>
-          <strong>{getApiBaseUrl() || "same-origin /v1 (Vite proxy)"}</strong>
-          <span>{reports.length} report(s) loaded</span>
-          <label className="role-alias">
-            UI role (not OIDC)
-            <select
-              aria-label="UI role alias"
-              value={uiRole}
-              onChange={(event) => {
-                const next = event.target.value === "user" ? "user" : "expert";
-                setUiRole(next);
-                persistUiRoleAlias(next);
-                setWorkspaceView(next === "user" ? "user" : "review");
-              }}
-            >
-              <option value="expert">Expert</option>
-              <option value="user">User</option>
-            </select>
-          </label>
-        </div>
-      </header>
+      <ShellHeader
+        apiBase={getApiBaseUrl()}
+        reportCount={reports.length}
+        uiRole={uiRole}
+        onRoleChange={(next) => {
+          setUiRole(next);
+          persistUiRoleAlias(next);
+          setWorkspaceView(next === "user" ? "user" : "review");
+        }}
+      />
 
       {(reportsError || reportError) && (
         <section className="error-banner">
@@ -453,14 +371,7 @@ export default function App() {
           <PackUploadPanel
             draftApplyNote={draftApplyNote}
             onUploadedPath={(path, filename) => {
-              const { draft, note } = applyUploadedFileResult(packDraftRef.current, path, filename);
-              packDraftRef.current = draft;
-              setPackDraft(draft);
-              if (note.kind === "replaced" || note.kind === "not_in_draft") {
-                setDraftApplyNote(describePackDraftApplyNote(note));
-              } else {
-                setDraftApplyNote(null);
-              }
+              const note = applyUpload(path, filename);
               if (note.kind === "filled" && note.slot === "ifc") {
                 setWorkspaceView("run");
               }
@@ -477,6 +388,7 @@ export default function App() {
             packDraft={packDraft}
             onReportReady={handleSeededReport}
             onNeedUpload={() => setWorkspaceView("upload")}
+            onContinueToExpert={() => setWorkspaceView("review")}
             capabilities={selectedReport?.capabilities ?? null}
           />
         </div>
@@ -498,7 +410,7 @@ export default function App() {
               }}
             />
           ) : (
-            <p className="panel-empty">Select a report on Projects or Expert.</p>
+            <p className="panel-empty">{UI_COPY.selectReport}</p>
           )}
         </div>
       ) : null}
@@ -581,7 +493,7 @@ export default function App() {
           hitlDecisionState={hitlDecisionState}
           hitlEnabled={uiRole === "expert"}
           spatialViewer={
-            <Suspense fallback={<ViewerPlaceholder message="Loading the spatial review runtime…" />}>
+            <Suspense fallback={<ViewerPlaceholder message={UI_COPY.viewerLoading} />}>
               {selectedReport ? (
                 <IfcViewerPanel
                   report={selectedReport}
@@ -591,7 +503,7 @@ export default function App() {
                   selectionDetail={viewerFocus.detail}
                 />
               ) : (
-                <ViewerPlaceholder message="Select a persisted report to load its IFC source into the browser viewer." />
+                <ViewerPlaceholder message={UI_COPY.viewerNeedReport} />
               )}
             </Suspense>
           }
@@ -629,11 +541,8 @@ export default function App() {
       ) : null}
 
       {triageHelpOpen ? (
-        <aside className="triage-help" role="dialog" aria-label="Triage keyboard help">
-          <p>
-            J/K or arrows — next/previous finding. A — confirm. R — reject. E — focus remark. ? —
-            this help. Esc — close. Mouse-only triage fails the cognitive-load criterion.
-          </p>
+        <aside className="triage-help" role="dialog" aria-label="Справка клавиатуры триажа">
+          <p>{UI_COPY.keyboardHelp}</p>
         </aside>
       ) : null}
     </div>

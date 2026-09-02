@@ -2,9 +2,9 @@
 ---
 title: "UI expert-workplace Red Team triage — 2026-09-01"
 date: "2026-09-01"
-last_updated: "2026-09-01"
+last_updated: "2026-09-02"
 status: active
-version: "1.0.5"
+version: "1.0.7"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -37,7 +37,7 @@ Checkpoint **`NO_GO`**. `detected_count: 0`. UI **не** закрывает RT-0
 | SCR-RUN | Прогон анализа | partial | `jobs/{job_id}`; группы движков из capabilities; SSE нет |
 | SCR-EXPERT | Рабочее место эксперта | partial | Три панели ТЗ: находки / 2D-3D / замечание; индекс — SCR-PROJECTS |
 | SCR-REMARK | Карточка замечания | partial | HITL + история review-events; этаж/ось или «нет в индексе» |
-| SCR-EXPORT | Отчёт и экспорт | partial | HTML JSON BCF 2.1/3.0 PDF; XLSX нет в API |
+| SCR-EXPORT | Отчёт и экспорт | partial | HTML JSON BCF 2.1/3.0; PDF = черновик покрытия; XLSX нет в API |
 | SCR-DIFF | Сравнение версий | partial | HTTP finding delta; no_longer_reported ≠ исправлено |
 | SCR-USER | Дашборд «Пользователь» | partial | Карта ТЗ + снимок ворот + `review-kpi`; OIDC BFF 501 |
 
@@ -57,8 +57,14 @@ Checkpoint **`NO_GO`**. `detected_count: 0`. UI **не** закрывает RT-0
 | RT-UI-SLA | 5–10 комплектов/день или 30 мин как SLA | Цель ТЗ, не замер |
 | RT-UI-FRAG-FED | Федерация ~1 ГБ .frag во вьюер | Стриминг по этажу или не ship |
 | RT-UI-FIO | ФИО сидящих в UI или в этом пине | Брифы — роли |
-| RT-UI-XLSX-FAKE | Кнопка XLSX с 404 как «сдано» | Пока HTML/JSON/BCF/PDF |
-| RT-UI-OIDC-LIVE | Production SSO при BFF 501 | Две роли — алиасы API |
+| RT-UI-XLSX-FAKE | Кнопка XLSX с 404 как «сдано» | HTML/JSON/BCF; PDF — черновик покрытия; XLSX disabled |
+| RT-UI-OIDC-LIVE | Production SSO при BFF 501 | Лаб-cookie не IdP; две роли — макет экрана |
+| RT-UI-ROLE-LS | Переключатель шапки = серверный RBAC | localStorage; HITL 403 на общий Bearer и viewer |
+| RT-UI-TEAM-CLAIM | localStorage-пресет как team/CDE | Браузер vs файл JSON, не сервер команды |
+| RT-UI-PDF-TOY | export/pdf как ГОСТ/СОД | Маршрут есть; simple PDF; подпись «черновик» |
+| RT-UI-I18N | Английский хром на пути эксперта | `ui-copy.ts` — один проход RU |
+| RT-UI-CLICK-PATH | Разрозненные панели без маршрута | Цикл + таймер + к эксперту + BCF |
+| RT-UI-HITL-BEARER | Общий Bearer + макет Эксперт = HITL | POST review-events 403 на service token |
 | RT-UI-NOGO-MASK | Хром UI = Checkpoint GO | Баннер NO_GO |
 | RT-UI-STACK-CLAIM | TanStack/Storybook как shipped | Vite + React + vitest |
 | RT-UI-SPLIT | Навсегда один App.tsx | Резать по фичам, тесты зелёные |
@@ -106,3 +112,15 @@ RT-001 (корпус + два оценщика), RT-002b (подпись Сам�
 Ожидаемый IDS-пример на обоих треках — учебные стены: FireRating REI60 vs REI30. Это сценарий фикстуры, не RT-001 CLOSED.
 
 Checkpoint **`NO_GO`**.
+
+## План до 15.09 (не delivery)
+
+Один сквозной маршрут для комиссии: загрузка → прогон с таймером → список по критичности → карточка Суть/Норма/Ось-Этаж → лист и 3D → BCF. Не SLA. Не OIDC live (KILL).
+
+| Когда | Что | Статус в этом проходе |
+|---|---|---|
+| Сейчас | Честная шапка ролей; HITL 403-тест на общий Bearer; RU chrome; team→файл JSON; PDF как черновик (маршрут есть, не снимать); таймер без SLA; шапка и фильтры вынесены | этот проход |
+| До 15.09 | Негативные HTTP RBAC при живом OIDC (viewer 403) — когда BFF не 501 | HOLD, не маскировать 501 |
+| После фриза | Дожать App <300 строк; хвосты i18n (provenance/KPI); серверные пресеты | не разворачивать стек |
+
+Не говорить: «роли сданы»; «PDF ГОСТ»; «team presets»; «SLA 30 минут измерен».

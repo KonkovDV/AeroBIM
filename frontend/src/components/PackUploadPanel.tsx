@@ -1,5 +1,6 @@
 import { useRef, useState, type DragEvent } from "react";
 import { uploadDocument } from "../lib/api";
+import { UI_COPY } from "../lib/ui-copy";
 import { detectPackKind, packKindHonesty, packKindVerdict } from "../lib/pack-kind";
 
 export type PackUploadPanelProps = {
@@ -32,7 +33,7 @@ export default function PackUploadPanel({
     setHonesty(message);
     if (packKindVerdict(kind) === "fail_closed") {
       setStatus("blocked");
-      setDetail(`${file.name}: fail-closed before upload.`);
+      setDetail(UI_COPY.failClosedBefore(file.name));
       setProgress(null);
       return;
     }
@@ -53,7 +54,7 @@ export default function PackUploadPanel({
     } catch (error: unknown) {
       setStatus("failed");
       setProgress(null);
-      setDetail(error instanceof Error ? error.message : "Upload failed");
+      setDetail(error instanceof Error ? error.message : UI_COPY.uploadFailed);
     } finally {
       abortRef.current = null;
     }
@@ -73,14 +74,11 @@ export default function PackUploadPanel({
     <section className="panel upload-panel" data-testid="pack-upload-panel">
       <div className="panel-header">
         <div>
-          <p className="panel-kicker">Pack upload</p>
-          <h2>Dropzone</h2>
+          <p className="panel-kicker">{UI_COPY.uploadKicker}</p>
+          <h2>{UI_COPY.uploadTitle}</h2>
         </div>
       </div>
-      <p className="compact-copy">
-        KT#3 exchange: IFC + PDF/A. Office — declared fields. Native RVT/NWD/DWG/.lir — fail-closed,
-        not a silent skip. We do not parse 1.5 GB models in the browser. Checkpoint NO_GO.
-      </p>
+      <p className="compact-copy">{UI_COPY.uploadHint}</p>
       <div
         className={`pack-dropzone ${dragging ? "dragging" : ""}`}
         data-testid="pack-dropzone"
@@ -98,12 +96,12 @@ export default function PackUploadPanel({
         }}
         onDrop={onDrop}
       >
-        <p>Drop IFC/PDF/Office here or choose a file. Native RVT/NWD/DWG never reach the server.</p>
+        <p>{UI_COPY.dropHint}</p>
         <label className="toolbar-button preset-file-upload">
-          Choose file
+          {UI_COPY.chooseFile}
           <input
             type="file"
-            aria-label="Pack file upload"
+            aria-label={UI_COPY.packFileUpload}
             onChange={(event) => {
               void onFile(event.target.files?.[0]);
               event.target.value = "";
@@ -113,12 +111,12 @@ export default function PackUploadPanel({
       </div>
       {status === "uploading" && progress !== null ? (
         <p className="compact-copy" data-testid="upload-progress" role="status">
-          Uploading… {progress}%
-          <progress max={100} value={progress} aria-label="Upload progress">
+          {UI_COPY.uploading} {progress}%
+          <progress max={100} value={progress} aria-label={UI_COPY.uploadProgress}>
             {progress}%
           </progress>
-          <button type="button" className="toolbar-button" aria-label="Cancel upload" onClick={cancelUpload}>
-            Cancel upload
+          <button type="button" className="toolbar-button" aria-label={UI_COPY.cancelUpload} onClick={cancelUpload}>
+            {UI_COPY.cancelUpload}
           </button>
         </p>
       ) : null}
@@ -132,7 +130,7 @@ export default function PackUploadPanel({
           {draftApplyNote}
         </p>
       ) : null}
-      {status === "uploading" && progress === null ? <p className="compact-copy">Uploading…</p> : null}
+      {status === "uploading" && progress === null ? <p className="compact-copy">{UI_COPY.uploading}</p> : null}
       {status === "ok" ? (
         <p className="compact-copy">
           Файл принят. Путь для анализа, не «пакет обработан».

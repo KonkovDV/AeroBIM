@@ -344,11 +344,13 @@ input:focus-visible,
   letter-spacing: 0.04em;
 }
 
+.preset-scope-browser,
 .preset-scope-local {
   background: rgba(24, 33, 46, 0.08);
   color: var(--text);
 }
 
+.preset-scope-file,
 .preset-scope-team {
   background: rgba(15, 118, 110, 0.14);
   color: var(--accent-strong);
@@ -1492,6 +1494,21 @@ button.linkish {
   gap: 4px;
   font-size: 0.75rem;
   color: var(--muted);
+}
+
+.role-honesty-banner {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--warning-soft);
+  color: var(--warning);
+  font-size: 0.85rem;
+  max-width: 52rem;
+}
+
+.run-timer {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
 }
 
 .review-history h4 {

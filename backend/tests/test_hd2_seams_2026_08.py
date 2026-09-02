@@ -249,7 +249,7 @@ class Hd2SettingsTests(unittest.TestCase):
 
         doc = add_rate_limit_middleware.__doc__ or ""
         self.assertIn("HD2-RL-02", doc)
-        self.assertIn("0", doc)
+        self.assertIn("0 = off", doc)
         self.assertRegex(doc, r"disables a bucket")
 
     def test_production_rejects_zero_rate_limit(self) -> None:

@@ -21,7 +21,9 @@ const ASSIGN_FIELD =
 /** Replacing the whole summary object (``report.summary = { ... }``). */
 const ASSIGN_OBJECT = /(?:^|[;\n{}()])\s*(?:[A-Za-z_$][\w$]*\.)+summary\s*=(?!=)/g;
 
-/** Inventing a summary blob with a boolean passed / quoted outcome. */
+/** Bracket assignment: summary["passed"] = / summary['outcome'] = */
+const ASSIGN_BRACKET =
+  /summary\s*\[\s*['"](?:passed|outcome)['"]\s*\]\s*=(?!=)/g;
 const LITERAL_SUMMARY_PASSED =
   /\bsummary\s*:\s*\{(?:[^{}]*)\bpassed\s*:\s*(?:true|false)/g;
 const LITERAL_SUMMARY_OUTCOME =
@@ -71,6 +73,9 @@ describe("HD13-FE-01 summary.passed source-scan", () => {
     expect(rel).toContain("components/VerticalSliceKt2.tsx");
     expect(rel).toContain("features/workplace/MachineGatewayStrip.tsx");
     expect(rel).toContain("features/workplace/PackCycleStrip.tsx");
+    expect(rel).toContain("features/honesty/RoleHonestyBanner.tsx");
+    expect(rel).toContain("lib/ui-copy.ts");
+    expect(rel).toContain("hooks/usePackDraft.ts");
     expect(rel.every((path) => !path.includes(".test."))).toBe(true);
   });
 
@@ -84,6 +89,7 @@ describe("HD13-FE-01 summary.passed source-scan", () => {
         ["summary object replacement", ASSIGN_OBJECT],
         ["literal summary.passed", LITERAL_SUMMARY_PASSED],
         ["literal summary.outcome", LITERAL_SUMMARY_OUTCOME],
+        ["bracket assignment", ASSIGN_BRACKET],
       ] as const) {
         for (const index of collectMatches(source, pattern)) {
           violations.push(`${rel}:${lineOf(source, index)} ${label}`);

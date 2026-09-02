@@ -7,6 +7,7 @@ import {
 } from "../lib/api";
 import type { ReportCapabilities } from "../lib/types";
 import { capabilityRows, engineGroupStatus, humanCapabilityLine, RUN_ENGINE_GROUPS } from "../lib/capability-copy";
+import { UI_COPY } from "../lib/ui-copy";
 import {
   packDraftFromIfc,
   packDraftHasAny,
@@ -19,12 +20,19 @@ export type AnalyzeRunPanelProps = {
   packDraft?: PackDraft;
   onReportReady?: (reportId: string) => void;
   onNeedUpload?: () => void;
+  onContinueToExpert?: () => void;
   capabilities?: ReportCapabilities | null;
 };
 
 const TERMINAL = new Set(["succeeded", "failed", "cancelled", "dead_letter"]);
 
-const COARSE_STAGES = ["accepted", "running", "report"] as const;
+const COARSE_STAGES = ["принято", "идёт", "отчёт"] as const;
+
+function formatMmss(totalSec: number): string {
+  const minutes = String(Math.floor(totalSec / 60)).padStart(2, "0");
+  const seconds = String(totalSec % 60).padStart(2, "0");
+  return `${minutes}:${seconds}`;
+}
 
 function stageIndex(status: string | undefined): number {
   const value = (status ?? "").toLowerCase();
@@ -45,6 +53,7 @@ export default function AnalyzeRunPanel({
   packDraft,
   onReportReady,
   onNeedUpload,
+  onContinueToExpert,
   capabilities,
 }: AnalyzeRunPanelProps) {
   const draft = packDraft ?? packDraftFromIfc(ifcPath);
@@ -90,7 +99,7 @@ export default function AnalyzeRunPanel({
       void fetchAnalyzeJob(job.job_id)
         .then(setJob)
         .catch((err: unknown) => {
-          setError(err instanceof Error ? err.message : "Job poll failed");
+          setError(err instanceof Error ? err.message : "Не удалось опросить задание");
         });
     }, 2000);
     return () => window.clearInterval(handle);
@@ -109,7 +118,7 @@ export default function AnalyzeRunPanel({
       startedAt.current = Date.now();
       setElapsedSec(0);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Submit failed");
+      setError(err instanceof Error ? err.message : "Не удалось отправить задание");
     } finally {
       setBusy(false);
     }
@@ -123,7 +132,7 @@ export default function AnalyzeRunPanel({
     try {
       setJob(await cancelAnalyzeJob(job.job_id));
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Cancel failed");
+      setError(err instanceof Error ? err.message : "Не удалось отменить задание");
     } finally {
       setBusy(false);
     }
@@ -133,8 +142,8 @@ export default function AnalyzeRunPanel({
     <section className="panel run-panel" data-testid="analyze-run-panel">
       <div className="panel-header">
         <div>
-          <p className="panel-kicker">Run</p>
-          <h2>Analyze job</h2>
+          <p className="panel-kicker">{UI_COPY.runKicker}</p>
+          <h2>{UI_COPY.runTitle}</h2>
         </div>
       </div>
       <p className="compact-copy">
@@ -145,12 +154,9 @@ export default function AnalyzeRunPanel({
         IFC: {draft.ifcPath ?? "—"}. IDS: {draft.idsPath ?? "—"}. Листы: {draft.drawings.length}. ТЗ:{" "}
         {draft.requirementPath ?? "—"}. Расчёт: {draft.calculationPath ?? "—"}.
       </p>
-      {job ? (
-        <p className="compact-copy" data-testid="analyze-elapsed">
-          Run timer: {String(Math.floor(elapsedSec / 60)).padStart(2, "0")}:
-          {String(elapsedSec % 60).padStart(2, "0")} / TZ goal 30:00 (not a measured SLA)
-        </p>
-      ) : null}
+      <p className="run-timer compact-copy" data-testid="analyze-elapsed">
+        {job ? UI_COPY.runTimer(formatMmss(elapsedSec)) : UI_COPY.runTimerIdle}
+      </p>
       <div className="remark-actions">
         <button type="button" onClick={() => void start()} disabled={busy || !packDraftHasAny(draft)}>
           {busy ? "Запускаем…" : "Запустить анализ"}
@@ -161,6 +167,11 @@ export default function AnalyzeRunPanel({
         {onNeedUpload ? (
           <button type="button" onClick={onNeedUpload}>
             К загрузке
+          </button>
+        ) : null}
+        {onContinueToExpert && job?.status.toLowerCase() === "succeeded" ? (
+          <button type="button" onClick={onContinueToExpert}>
+            {UI_COPY.toExpert}
           </button>
         ) : null}
       </div>
@@ -224,7 +235,7 @@ export default function AnalyzeRunPanel({
           ))}
         </ul>
       ) : null}
-      <p className="compact-copy">Stages are coarse poll status, not per-engine SSE.</p>
+      <p className="compact-copy">Стадии — грубый статус поллинга, не SSE по движкам.</p>
       {error ? (
         <p className="compact-copy" role="alert">
           {error}

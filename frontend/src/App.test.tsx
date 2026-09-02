@@ -47,6 +47,7 @@ vi.mock("./components/IfcViewerPanel", () => ({
 }));
 
 import App from "./App";
+import { UI_COPY } from "./lib/ui-copy";
 const REPORT_FILTERS_STORAGE_KEY = "aerobim-report-filters-v1";
 const REPORT_FILTER_PRESETS_STORAGE_KEY = "aerobim-report-filter-presets-v1";
 
@@ -244,12 +245,13 @@ describe("App", () => {
   it("loads the first report and focuses the viewer on the active issue guid", async () => {
     render(<App />);
 
-    expect(await screen.findByRole("img", { name: /drawing evidence preview for a-102/i })).toBeTruthy();
+    expect(await screen.findByRole("img", { name: /Превью чертежа a-102/i })).toBeTruthy();
+    expect(screen.getByTestId("role-honesty-banner").textContent).toMatch(/не разграничение доступа/);
     expect(screen.getAllByText(/BLOCKED/).length).toBeGreaterThan(0);
     const viewer = await screen.findByTestId("viewer-stub");
     expect(within(viewer).getByText("DRAW-001")).toBeTruthy();
     expect(within(viewer).getByText("issue")).toBeTruthy();
-    expect(within(viewer).getByText(/Single-element focus from the active issue GUID guid-issue-1/i)).toBeTruthy();
+    expect(within(viewer).getByText(/Фокус на одном элементе по GUID guid-issue-1/i)).toBeTruthy();
   });
 
   it("searches the loaded report set by report and request id", async () => {
@@ -257,11 +259,11 @@ describe("App", () => {
 
     expect(await screen.findByText("Residential Tower Alpha")).toBeTruthy();
     openProjectsIndex();
-    fireEvent.change(screen.getByPlaceholderText("Search loaded reports"), { target: { value: "req-001" } });
+    fireEvent.change(screen.getByPlaceholderText(UI_COPY.searchReports), { target: { value: "req-001" } });
     expect(await screen.findByText("Residential Tower Alpha")).toBeTruthy();
 
-    fireEvent.change(screen.getByPlaceholderText("Search loaded reports"), { target: { value: "req-999" } });
-    expect(await screen.findByText("No persisted reports match the current query.")).toBeTruthy();
+    fireEvent.change(screen.getByPlaceholderText(UI_COPY.searchReports), { target: { value: "req-999" } });
+    expect(await screen.findByText("Нет сохранённых отчётов по текущему запросу.")).toBeTruthy();
   });
 
   it("forwards project, discipline, and status filters to the backend list API", async () => {
@@ -292,9 +294,9 @@ describe("App", () => {
     openProjectsIndex();
     expect(screen.getByText("Hospital Beta")).toBeTruthy();
 
-    fireEvent.change(screen.getByLabelText("Project filter"), { target: { value: "hospital" } });
-    fireEvent.change(screen.getByLabelText("Discipline filter"), { target: { value: "mech" } });
-    fireEvent.change(screen.getByLabelText("Status filter"), { target: { value: "passed" } });
+    fireEvent.change(screen.getByLabelText(UI_COPY.filterProject), { target: { value: "hospital" } });
+    fireEvent.change(screen.getByLabelText(UI_COPY.filterDiscipline), { target: { value: "mech" } });
+    fireEvent.change(screen.getByLabelText(UI_COPY.filterStatus), { target: { value: "passed" } });
 
     expect(await screen.findByText("Hospital Beta")).toBeTruthy();
     expect(screen.queryByText("Residential Tower Alpha")).toBeNull();
@@ -331,7 +333,7 @@ describe("App", () => {
 
     render(<App />);
     openProjectsIndex();
-    fireEvent.change(screen.getByLabelText("Project filter"), { target: { value: "hospital" } });
+    fireEvent.change(screen.getByLabelText(UI_COPY.filterProject), { target: { value: "hospital" } });
 
     await waitFor(() => {
       expect(fetchReportsMock.mock.calls.length).toBeGreaterThanOrEqual(2);
@@ -360,11 +362,11 @@ describe("App", () => {
     openProjectsIndex();
     expect(screen.getByText("Hospital Beta")).toBeTruthy();
 
-    fireEvent.click(screen.getByRole("button", { name: "Group by project" }));
+    fireEvent.click(screen.getByRole("button", { name: UI_COPY.groupByProject }));
 
     expect(await screen.findByText("Residential Tower Alpha (1)")).toBeTruthy();
     expect(screen.getByText("Hospital Beta (1)")).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Ungroup reports" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: UI_COPY.ungroupReports })).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: /bbbbbbbb/i }));
     expect((await screen.findAllByText("Hospital beta issue")).length).toBeGreaterThan(0);
@@ -380,7 +382,7 @@ describe("App", () => {
     render(<App />);
 
     openProjectsIndex();
-    expect(await screen.findByText("No persisted reports match the current query.")).toBeTruthy();
+    expect(await screen.findByText("Нет сохранённых отчётов по текущему запросу.")).toBeTruthy();
     expect(fetchReportsMock).toHaveBeenCalledWith(
       {
         project: "hospital",
@@ -389,9 +391,9 @@ describe("App", () => {
       },
       expect.objectContaining({ signal: expect.any(AbortSignal) }),
     );
-    expect((screen.getByLabelText("Project filter") as HTMLInputElement).value).toBe("hospital");
-    expect((screen.getByLabelText("Discipline filter") as HTMLInputElement).value).toBe("mech");
-    expect((screen.getByLabelText("Status filter") as HTMLSelectElement).value).toBe("passed");
+    expect((screen.getByLabelText(UI_COPY.filterProject) as HTMLInputElement).value).toBe("hospital");
+    expect((screen.getByLabelText(UI_COPY.filterDiscipline) as HTMLInputElement).value).toBe("mech");
+    expect((screen.getByLabelText(UI_COPY.filterStatus) as HTMLSelectElement).value).toBe("passed");
   });
 
   it("prefers URL filters over localStorage and keeps URL in sync", async () => {
@@ -405,7 +407,7 @@ describe("App", () => {
     render(<App />);
 
     openProjectsIndex();
-    expect(await screen.findByText("No persisted reports match the current query.")).toBeTruthy();
+    expect(await screen.findByText("Нет сохранённых отчётов по текущему запросу.")).toBeTruthy();
     expect(fetchReportsMock).toHaveBeenCalledWith(
       {
         project: "hospital",
@@ -415,9 +417,9 @@ describe("App", () => {
       expect.objectContaining({ signal: expect.any(AbortSignal) }),
     );
 
-    fireEvent.change(screen.getByLabelText("Project filter"), { target: { value: "tower" } });
-    fireEvent.change(screen.getByLabelText("Discipline filter"), { target: { value: "arch" } });
-    fireEvent.change(screen.getByLabelText("Status filter"), { target: { value: "failed" } });
+    fireEvent.change(screen.getByLabelText(UI_COPY.filterProject), { target: { value: "tower" } });
+    fireEvent.change(screen.getByLabelText(UI_COPY.filterDiscipline), { target: { value: "arch" } });
+    fireEvent.change(screen.getByLabelText(UI_COPY.filterStatus), { target: { value: "failed" } });
 
     expect(window.location.search).toContain("project=tower");
     expect(window.location.search).toContain("discipline=arch");
@@ -429,13 +431,13 @@ describe("App", () => {
 
     expect(await screen.findByText("Residential Tower Alpha")).toBeTruthy();
     openProjectsIndex();
-    fireEvent.change(screen.getByLabelText("Project filter"), { target: { value: "hospital" } });
-    fireEvent.change(screen.getByLabelText("Discipline filter"), { target: { value: "mech" } });
-    fireEvent.change(screen.getByLabelText("Status filter"), { target: { value: "passed" } });
+    fireEvent.change(screen.getByLabelText(UI_COPY.filterProject), { target: { value: "hospital" } });
+    fireEvent.change(screen.getByLabelText(UI_COPY.filterDiscipline), { target: { value: "mech" } });
+    fireEvent.change(screen.getByLabelText(UI_COPY.filterStatus), { target: { value: "passed" } });
 
-    fireEvent.click(screen.getByRole("button", { name: "Copy share link" }));
+    fireEvent.click(screen.getByRole("button", { name: UI_COPY.copyShareLink }));
 
-    expect(await screen.findByText("Link copied")).toBeTruthy();
+    expect(await screen.findByText(UI_COPY.linkCopied)).toBeTruthy();
     expect(clipboardWriteTextMock).toHaveBeenCalledTimes(1);
     const copiedLink = String(clipboardWriteTextMock.mock.calls[0][0]);
     expect(copiedLink).toContain("project=hospital");
@@ -461,26 +463,26 @@ describe("App", () => {
     expect(await screen.findByRole("button", { name: "Hospital Passed" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Hospital Passed" }));
 
-    expect((screen.getByLabelText("Project filter") as HTMLInputElement).value).toBe("hospital");
-    expect((screen.getByLabelText("Discipline filter") as HTMLInputElement).value).toBe("mech");
-    expect((screen.getByLabelText("Status filter") as HTMLSelectElement).value).toBe("passed");
+    expect((screen.getByLabelText(UI_COPY.filterProject) as HTMLInputElement).value).toBe("hospital");
+    expect((screen.getByLabelText(UI_COPY.filterDiscipline) as HTMLInputElement).value).toBe("mech");
+    expect((screen.getByLabelText(UI_COPY.filterStatus) as HTMLSelectElement).value).toBe("passed");
 
-    fireEvent.change(screen.getByLabelText("Preset name"), { target: { value: "Tower Failed" } });
-    fireEvent.change(screen.getByLabelText("Preset scope"), { target: { value: "team" } });
-    fireEvent.change(screen.getByLabelText("Project filter"), { target: { value: "tower" } });
-    fireEvent.change(screen.getByLabelText("Discipline filter"), { target: { value: "arch" } });
-    fireEvent.change(screen.getByLabelText("Status filter"), { target: { value: "failed" } });
-    fireEvent.click(screen.getByRole("button", { name: "Save preset" }));
+    fireEvent.change(screen.getByLabelText("Имя пресета"), { target: { value: "Tower Failed" } });
+    fireEvent.change(screen.getByLabelText("Область пресета"), { target: { value: "file" } });
+    fireEvent.change(screen.getByLabelText(UI_COPY.filterProject), { target: { value: "tower" } });
+    fireEvent.change(screen.getByLabelText(UI_COPY.filterDiscipline), { target: { value: "arch" } });
+    fireEvent.change(screen.getByLabelText(UI_COPY.filterStatus), { target: { value: "failed" } });
+    fireEvent.click(screen.getByRole("button", { name: "Сохранить пресет" }));
 
     expect(screen.getByRole("button", { name: "Tower Failed" })).toBeTruthy();
-    expect(screen.getByText("team")).toBeTruthy();
+    expect(screen.getAllByText("Файл JSON").length).toBeGreaterThan(0);
     const savedPresetsRaw = window.localStorage.getItem(REPORT_FILTER_PRESETS_STORAGE_KEY);
     expect(savedPresetsRaw).not.toBeNull();
     const savedPresets = JSON.parse(savedPresetsRaw ?? "[]") as Array<{ name: string; scope?: string }>;
     expect(savedPresets.some((preset) => preset.name === "Tower Failed")).toBe(true);
-    expect(savedPresets.some((preset) => preset.name === "Tower Failed" && preset.scope === "team")).toBe(true);
+    expect(savedPresets.some((preset) => preset.name === "Tower Failed" && preset.scope === "file")).toBe(true);
 
-    fireEvent.click(screen.getByRole("button", { name: "Remove preset Tower Failed" }));
+    fireEvent.click(screen.getByRole("button", { name: UI_COPY.removePreset("Tower Failed") }));
     expect(screen.queryByRole("button", { name: "Tower Failed" })).toBeNull();
   });
 
@@ -500,14 +502,14 @@ describe("App", () => {
 
     openProjectsIndex();
     expect(await screen.findByRole("button", { name: "Hospital Passed" })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Copy presets JSON" }));
+    fireEvent.click(screen.getByRole("button", { name: UI_COPY.copyPresets }));
 
-    expect(await screen.findByText("Preset JSON copied")).toBeTruthy();
+    expect(await screen.findByText(UI_COPY.presetCopied)).toBeTruthy();
     expect(clipboardWriteTextMock).toHaveBeenCalledTimes(1);
     const exportedPayload = String(clipboardWriteTextMock.mock.calls[0][0]);
     expect(exportedPayload).toContain("Hospital Passed");
 
-    fireEvent.change(screen.getByLabelText("Preset import payload"), {
+    fireEvent.change(screen.getByLabelText(UI_COPY.presetImportPayload), {
       target: {
         value: JSON.stringify([
           {
@@ -521,16 +523,16 @@ describe("App", () => {
         ]),
       },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Import presets JSON" }));
+    fireEvent.click(screen.getByRole("button", { name: UI_COPY.importPresetsJson }));
 
-    expect(await screen.findByText("Preset JSON imported")).toBeTruthy();
+    expect(await screen.findByText(UI_COPY.presetImported)).toBeTruthy();
     expect(screen.getByRole("button", { name: "Tower Failed" })).toBeTruthy();
-    expect(screen.getByText("team")).toBeTruthy();
+    expect(screen.getAllByText("Этот браузер").length).toBeGreaterThan(0);
 
     fireEvent.click(screen.getByRole("button", { name: "Tower Failed" }));
-    expect((screen.getByLabelText("Project filter") as HTMLInputElement).value).toBe("tower");
-    expect((screen.getByLabelText("Discipline filter") as HTMLInputElement).value).toBe("arch");
-    expect((screen.getByLabelText("Status filter") as HTMLSelectElement).value).toBe("failed");
+    expect((screen.getByLabelText(UI_COPY.filterProject) as HTMLInputElement).value).toBe("tower");
+    expect((screen.getByLabelText(UI_COPY.filterDiscipline) as HTMLInputElement).value).toBe("arch");
+    expect((screen.getByLabelText(UI_COPY.filterStatus) as HTMLSelectElement).value).toBe("failed");
   });
 
   it("downloads and imports presets through JSON file flow", async () => {
@@ -549,13 +551,13 @@ describe("App", () => {
 
     openProjectsIndex();
     expect(await screen.findByRole("button", { name: "Hospital Passed" })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Download presets JSON" }));
+    fireEvent.click(screen.getByRole("button", { name: UI_COPY.downloadPresets }));
 
-    expect(await screen.findByText("Preset JSON downloaded")).toBeTruthy();
+    expect(await screen.findByText(UI_COPY.presetDownloaded)).toBeTruthy();
     expect(createObjectURLMock).toHaveBeenCalledTimes(1);
     expect(revokeObjectURLMock).toHaveBeenCalledTimes(1);
 
-    const upload = screen.getByLabelText("Import presets file") as HTMLInputElement;
+    const upload = screen.getByLabelText(UI_COPY.importPresetsFile) as HTMLInputElement;
     const file = new File(
       [
         JSON.stringify([
@@ -570,19 +572,19 @@ describe("App", () => {
     );
     fireEvent.change(upload, { target: { files: [file] } });
 
-    expect(await screen.findByText("Preset JSON imported")).toBeTruthy();
+    expect(await screen.findByText(UI_COPY.presetImported)).toBeTruthy();
     expect(screen.getByRole("button", { name: "Campus Passed" })).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Campus Passed" }));
-    expect((screen.getByLabelText("Project filter") as HTMLInputElement).value).toBe("campus");
-    expect((screen.getByLabelText("Discipline filter") as HTMLInputElement).value).toBe("structure");
-    expect((screen.getByLabelText("Status filter") as HTMLSelectElement).value).toBe("passed");
+    expect((screen.getByLabelText(UI_COPY.filterProject) as HTMLInputElement).value).toBe("campus");
+    expect((screen.getByLabelText(UI_COPY.filterDiscipline) as HTMLInputElement).value).toBe("structure");
+    expect((screen.getByLabelText(UI_COPY.filterStatus) as HTMLSelectElement).value).toBe("passed");
   });
 
   it("covers the review-shell smoke path across export, provenance, 2d overlay, and clash focus", async () => {
     const { container } = render(<App />);
 
-    const firstImage = await screen.findByRole("img", { name: /drawing evidence preview for a-102/i });
+    const firstImage = await screen.findByRole("img", { name: /Превью чертежа a-102/i });
     Object.defineProperty(firstImage, "naturalWidth", { configurable: true, value: 640 });
     Object.defineProperty(firstImage, "naturalHeight", { configurable: true, value: 400 });
     fireEvent.load(firstImage);
@@ -591,56 +593,56 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "JSON" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "BCF" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "BCF 3.0" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "PDF" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "PDF (черновик покрытия)" })).toBeTruthy();
     const drawingEvidencePanel = container.querySelector(".drawing-evidence-panel") as HTMLElement;
     const activeIssueBlock = screen.getByTestId("provenance-active-issue");
-    expect(within(drawingEvidencePanel).getAllByText("A-102 · page 2").length).toBeGreaterThanOrEqual(2);
+    expect(within(drawingEvidencePanel).getAllByText("A-102 · стр. 2").length).toBeGreaterThanOrEqual(2);
     await waitFor(() => {
       expect(container.querySelector(".drawing-evidence-rect")).toBeTruthy();
     });
     expect(within(activeIssueBlock).getByText("WALL-01")).toBeTruthy();
-    expect(within(activeIssueBlock).getByText(/Audit-ready provenance present/i)).toBeTruthy();
+    expect(within(activeIssueBlock).getByText(UI_COPY.provenanceOk)).toBeTruthy();
     expect(within(activeIssueBlock).getByText("fid-draw-001")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: /DRAW-SECOND/i }));
-    const secondImage = await screen.findByRole("img", { name: /drawing evidence preview for a-101/i });
+    const secondImage = await screen.findByRole("img", { name: /Превью чертежа a-101/i });
     Object.defineProperty(secondImage, "naturalWidth", { configurable: true, value: 640 });
     Object.defineProperty(secondImage, "naturalHeight", { configurable: true, value: 400 });
     fireEvent.load(secondImage);
 
     const viewerAfterIssueSwitch = await screen.findByTestId("viewer-stub");
     const activeIssueBlockAfterSwitch = screen.getByTestId("provenance-active-issue");
-    expect(within(viewerAfterIssueSwitch).getByText("No spatial selection")).toBeTruthy();
+    expect(within(viewerAfterIssueSwitch).getByText(UI_COPY.spatialNone)).toBeTruthy();
     expect(within(activeIssueBlockAfterSwitch).getByText("SLAB-02")).toBeTruthy();
     expect(container.querySelector(".drawing-evidence-rect")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: /Hard clash between pipe and beam/i }));
 
     const viewerAfterClashSwitch = await screen.findByTestId("viewer-stub");
-    expect(within(viewerAfterClashSwitch).getByText(/hard clash pair/i)).toBeTruthy();
+    expect(within(viewerAfterClashSwitch).getByText(/пара клэша/)).toBeTruthy();
     expect(within(viewerAfterClashSwitch).getByText(/pipe-guid-a,beam-guid-b/i)).toBeTruthy();
   });
 
   it("switches the 2d evidence panel when another issue is selected", async () => {
     render(<App />);
 
-    await screen.findByRole("img", { name: /drawing evidence preview for a-102/i });
+    await screen.findByRole("img", { name: /Превью чертежа a-102/i });
     fireEvent.click(screen.getByRole("button", { name: /DRAW-SECOND/i }));
 
-    expect(await screen.findByRole("img", { name: /drawing evidence preview for a-101/i })).toBeTruthy();
+    expect(await screen.findByRole("img", { name: /Превью чертежа a-101/i })).toBeTruthy();
     expect(screen.getAllByText("DRAW-SECOND").length).toBeGreaterThan(0);
     const viewer = await screen.findByTestId("viewer-stub");
-    expect(await within(viewer).findByText("No spatial selection")).toBeTruthy();
+    expect(await within(viewer).findByText(UI_COPY.spatialNone)).toBeTruthy();
   });
 
   it("switches the viewer focus to a clash pair when a clash card is selected", async () => {
     render(<App />);
 
-    await screen.findByRole("img", { name: /drawing evidence preview for a-102/i });
+    await screen.findByRole("img", { name: /Превью чертежа a-102/i });
     fireEvent.click(screen.getByRole("button", { name: /Hard clash between pipe and beam/i }));
 
     const viewer = await screen.findByTestId("viewer-stub");
-    expect(await within(viewer).findByText(/hard clash pair/i)).toBeTruthy();
+    expect(await within(viewer).findByText(/пара клэша/)).toBeTruthy();
     expect(within(viewer).getByText("clash")).toBeTruthy();
     expect(within(viewer).getByText(/pipe-guid-a,beam-guid-b/i)).toBeTruthy();
   });
@@ -700,12 +702,12 @@ describe("App", () => {
     // Advisory observation is visually marked as a candidate needing review — §12:
     // it must not read as a confirmed verdict/error.
     expect(advisoryCard.className).toContain("issue-card--advisory");
-    expect(within(advisoryCard).getByText(/advisory candidate/i)).toBeTruthy();
+    expect(within(advisoryCard).getByText(UI_COPY.advisory)).toBeTruthy();
     expect(within(advisoryCard).getByTitle(/not a confirmed verdict/i)).toBeTruthy();
 
     // A deterministic finding carries no advisory-candidate cue.
     expect(deterministicCard.className).not.toContain("issue-card--advisory");
-    expect(within(deterministicCard).queryByText(/advisory candidate/i)).toBeNull();
+    expect(within(deterministicCard).queryByText(UI_COPY.advisory)).toBeNull();
     expect(within(deterministicCard).getByText("deterministic")).toBeTruthy();
   });
 
@@ -726,11 +728,11 @@ describe("App", () => {
 
     // Low self-reported confidence is surfaced as a review cue (§12), labelled
     // uncalibrated so it is not read as a calibrated probability.
-    expect(within(lowCard).getByText(/low confidence/i)).toBeTruthy();
+    expect(within(lowCard).getByText(/низкая уверенность/i)).toBeTruthy();
     expect(within(lowCard).getByTitle(/uncalibrated/i)).toBeTruthy();
     // High or absent confidence carries no low-confidence warning.
-    expect(within(highCard).queryByText(/low confidence/i)).toBeNull();
-    expect(within(noneCard).queryByText(/low confidence/i)).toBeNull();
+    expect(within(highCard).queryByText(/низкая уверенность/i)).toBeNull();
+    expect(within(noneCard).queryByText(/низкая уверенность/i)).toBeNull();
   });
 
   it("renders REVIEW_REQUIRED as a distinct outcome badge, not a pass/verdict", async () => {
@@ -779,7 +781,7 @@ describe("App", () => {
   it("lets an expert confirm or reject a remark before export", async () => {
     render(<App />);
 
-    const confirm = await screen.findByRole("button", { name: /confirm remark/i });
+    const confirm = await screen.findByRole("button", { name: /подтвердить замечание/i });
     fireEvent.click(confirm);
     await waitFor(() => {
       expect(postReviewEventMock).toHaveBeenCalledWith(
@@ -787,9 +789,9 @@ describe("App", () => {
         expect.objectContaining({ event_type: "accepted" }),
       );
     });
-    expect(await screen.findByText("Confirmed")).toBeTruthy();
+    expect(await screen.findByText("Подтверждено")).toBeTruthy();
 
-    const reject = screen.getByRole("button", { name: /reject remark/i });
+    const reject = screen.getByRole("button", { name: /отклонить замечание/i });
     fireEvent.click(reject);
     await waitFor(() => {
       expect(postReviewEventMock).toHaveBeenCalledWith(
@@ -797,7 +799,7 @@ describe("App", () => {
         expect.objectContaining({ event_type: "rejected" }),
       );
     });
-    expect(await screen.findByText("Rejected")).toBeTruthy();
+    expect(await screen.findByText("Отклонено")).toBeTruthy();
   });
 
   it("opens the TZ coverage IA map from workplace nav", async () => {
@@ -840,10 +842,10 @@ describe("App", () => {
     expect(screen.getByTestId("expert-findings-pane")).toBeTruthy();
     expect(screen.getByTestId("expert-spatial-pane")).toBeTruthy();
     expect(screen.getByTestId("expert-remark-pane")).toBeTruthy();
-    expect(screen.queryByPlaceholderText("Search loaded reports")).toBeNull();
+    expect(screen.queryByPlaceholderText(UI_COPY.searchReports)).toBeNull();
 
     openProjectsIndex();
-    expect(await screen.findByPlaceholderText("Search loaded reports")).toBeTruthy();
+    expect(await screen.findByPlaceholderText(UI_COPY.searchReports)).toBeTruthy();
     expect(screen.queryByTestId("expert-workplace")).toBeNull();
     expect(screen.getByTestId("projects-index")).toBeTruthy();
   });
@@ -853,7 +855,7 @@ describe("App", () => {
     const viewer = await screen.findByTestId("viewer-stub");
     expect(within(viewer).getByText("DRAW-001")).toBeTruthy();
     fireEvent.keyDown(window, { key: "j" });
-    expect(await within(viewer).findByText("No spatial selection")).toBeTruthy();
+    expect(await within(viewer).findByText(UI_COPY.spatialNone)).toBeTruthy();
     fireEvent.keyDown(window, { key: "a" });
     await waitFor(() => {
       expect(postReviewEventMock).toHaveBeenCalledWith(
@@ -861,5 +863,37 @@ describe("App", () => {
         expect.objectContaining({ event_type: "accepted", issue_rule_id: "DRAW-SECOND" }),
       );
     });
+  });
+
+  it("treats the header role switch as a screen mock, not HITL access", async () => {
+    render(<App />);
+    expect(await screen.findByRole("button", { name: /подтвердить замечание/i })).toBeTruthy();
+    expect(screen.getByTestId("role-honesty-banner").textContent).toMatch(/не разграничение доступа/);
+    fireEvent.change(screen.getByLabelText(UI_COPY.roleSelectLabel), { target: { value: "user" } });
+    fireEvent.click(screen.getByRole("button", { name: "Эксперт" }));
+    expect(await screen.findByText(UI_COPY.hitlUserAlias)).toBeTruthy();
+    expect((screen.getByRole("button", { name: /подтвердить замечание/i }) as HTMLButtonElement).disabled).toBe(
+      true,
+    );
+  });
+
+  it("migrates a legacy team preset chip to JSON file exchange", async () => {
+    window.localStorage.setItem(
+      REPORT_FILTER_PRESETS_STORAGE_KEY,
+      JSON.stringify([
+        {
+          id: "preset-team",
+          name: "Legacy Team",
+          scope: "team",
+          filters: { project: "hospital", discipline: "mech", status: "passed" },
+        },
+      ]),
+    );
+    render(<App />);
+    expect(await screen.findByText("Residential Tower Alpha")).toBeTruthy();
+    openProjectsIndex();
+    expect(screen.getByRole("button", { name: "Legacy Team" })).toBeTruthy();
+    expect(screen.getAllByText(UI_COPY.presetFile).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/^team$/i)).toBeNull();
   });
 });

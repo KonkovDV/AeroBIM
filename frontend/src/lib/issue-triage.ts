@@ -1,4 +1,5 @@
 import type { ClashResult, ValidationIssue } from "./types";
+import { UI_COPY } from "./ui-copy";
 
 export const TRIAGE_BANDS = ["critical", "major", "minor", "negligible"] as const;
 export type TriageBand = (typeof TRIAGE_BANDS)[number];
@@ -116,8 +117,8 @@ export function buildViewerFocus(
     return {
       mode: "clash",
       guids,
-      heading: `${activeClash.clash_type} clash pair`,
-      detail: `${guids.length} selected IFC elements from the active clash review pair.`,
+      heading: UI_COPY.spatialClashHeading(activeClash.clash_type),
+      detail: UI_COPY.spatialClashDetail(guids.length),
     };
   }
 
@@ -126,14 +127,14 @@ export function buildViewerFocus(
       mode: "issue",
       guids: [activeIssue.element_guid],
       heading: activeIssue.rule_id,
-      detail: `Single-element focus from the active issue GUID ${activeIssue.element_guid}.`,
+      detail: UI_COPY.spatialIssueDetail(activeIssue.element_guid),
     };
   }
 
   return {
     mode: "none",
     guids: [],
-    heading: "No spatial selection",
-    detail: "Select an issue with IFC GUID evidence or a clash pair to drive the viewer selection.",
+    heading: UI_COPY.spatialNone,
+    detail: UI_COPY.spatialNoneDetail,
   };
 }

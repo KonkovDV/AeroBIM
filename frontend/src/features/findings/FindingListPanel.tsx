@@ -7,6 +7,7 @@ import {
   type FindingGroupBy,
   type IndexedIssue,
 } from "../../lib/issue-triage";
+import { UI_COPY } from "../../lib/ui-copy";
 
 export const VIRTUALIZE_AFTER = 40;
 const ITEM_HEIGHT = 120;
@@ -61,17 +62,17 @@ function IssueCard({
             className="origin-pill origin-advisory"
             title="Advisory candidate — requires human review; not a confirmed verdict"
           >
-            advisory candidate
+            {UI_COPY.advisory}
           </span>
         ) : issue.origin === "deterministic" ? (
-          <span className="origin-pill origin-deterministic">deterministic</span>
+          <span className="origin-pill origin-deterministic">{UI_COPY.deterministic}</span>
         ) : null}
         {typeof issue.confidence === "number" && issue.confidence < 0.6 ? (
           <span
             className="confidence-pill confidence-low"
             title="Low self-reported (uncalibrated) confidence — requires human review"
           >
-            low confidence {issue.confidence.toFixed(2)}
+            {UI_COPY.lowConfidence(issue.confidence.toFixed(2))}
           </span>
         ) : null}
         {typeof issue.priority === "number" && issue.priority > 0 ? (
@@ -81,7 +82,7 @@ function IssueCard({
       <p>{issue.message}</p>
       <div className="issue-card-meta">
         <span>{issue.category}</span>
-        <span>{issue.target_ref ?? issue.element_guid ?? "no target"}</span>
+        <span>{issue.target_ref ?? issue.element_guid ?? UI_COPY.noTarget}</span>
       </div>
       {caption ? <p className="compact-copy">{caption}</p> : null}
     </button>
@@ -141,31 +142,31 @@ export default function FindingListPanel({
     <>
       <div className="issue-toolbar">
         <label>
-          Severity
+          {UI_COPY.severity}
           <select
             value={issueSeverityFilter}
             onChange={(event) =>
               onSeverityChange(event.target.value as "all" | "error" | "warning" | "info")
             }
           >
-            <option value="all">All</option>
-            <option value="error">Error</option>
-            <option value="warning">Warning</option>
-            <option value="info">Info</option>
+            <option value="all">{UI_COPY.severityAll}</option>
+            <option value="error">error</option>
+            <option value="warning">warning</option>
+            <option value="info">info</option>
           </select>
         </label>
         <label>
-          Group findings
+          {UI_COPY.groupFindings}
           <select
-            aria-label="Group findings"
+            aria-label={UI_COPY.groupFindings}
             value={groupBy}
             onChange={(event) => onGroupByChange(event.target.value as FindingGroupBy)}
           >
-            <option value="none">No grouping</option>
-            <option value="rule">By rule</option>
-            <option value="storey">By storey</option>
-            <option value="axis">By axis</option>
-            <option value="discipline">By category</option>
+            <option value="none">{UI_COPY.groupNone}</option>
+            <option value="rule">{UI_COPY.groupRule}</option>
+            <option value="storey">{UI_COPY.groupStorey}</option>
+            <option value="axis">{UI_COPY.groupAxis}</option>
+            <option value="discipline">{UI_COPY.groupCategory}</option>
           </select>
         </label>
         <label className="hitl-filter">
@@ -174,20 +175,18 @@ export default function FindingListPanel({
             checked={hitlOnlyFilter}
             onChange={(event) => onHitlOnlyChange(event.target.checked)}
           />
-          HITL regions only
+          {UI_COPY.hitlOnly}
           {hitlRegionCount > 0 ? ` (${hitlRegionCount})` : ""}
         </label>
         <span className="compact-copy">
-          {issues.length} / {totalIssueCount} shown
-          {virtualize ? " · windowed list" : ""}
+          {UI_COPY.shownCount(issues.length, totalIssueCount, virtualize)}
         </span>
       </div>
 
       <div className={`issue-list ${virtualize ? "issue-list-virtual" : ""}`} ref={listRef}>
         {issues.length === 0 ? (
           <div className="panel-empty compact">
-            No findings for this filter. If there is no calculation note, reinforcement is not
-            checked — upload LIRA PDF/Excel on Upload.
+            {UI_COPY.noFindings}
           </div>
         ) : virtualize ? (
           <div style={{ paddingTop: padTop, paddingBottom: padBottom }}>

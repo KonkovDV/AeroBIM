@@ -2,6 +2,7 @@ import { startTransition, type ReactNode } from "react";
 import type { ParsedRequirement, ReportSummaryEntry, ValidationIssue, ValidationReport } from "../../lib/types";
 import type { FindingGroupBy, IndexedIssue } from "../../lib/issue-triage";
 import type { WorkspaceView } from "../../components/WorkspaceNav";
+import { UI_COPY } from "../../lib/ui-copy";
 import CoverageMapPanel from "../../components/CoverageMapPanel";
 import CapabilityHonestyPanel from "../../components/CapabilityHonestyPanel";
 import ProvenancePanel from "../../components/ProvenancePanel";
@@ -86,9 +87,9 @@ export default function ExpertWorkplace({
         <>
           <div className="expert-pack-bar">
             <label className="pack-switcher">
-              Pack
+              {UI_COPY.packSwitcher}
               <select
-                aria-label="Selected pack report"
+                aria-label={UI_COPY.selectedPack}
                 value={selectedReportId ?? ""}
                 onChange={(event) => onSelectReport(event.target.value)}
               >
@@ -110,16 +111,14 @@ export default function ExpertWorkplace({
           <section className="panel issue-panel" data-testid="expert-findings-pane">
             <div className="panel-header">
               <div>
-                <p className="panel-kicker">Findings</p>
-                <h2>Remark list</h2>
+                <p className="panel-kicker">{UI_COPY.findingsKicker}</p>
+                <h2>{UI_COPY.findingsTitle}</h2>
               </div>
             </div>
             {reportLoading ? (
-              <div className="panel-empty">Loading report detail…</div>
+              <div className="panel-empty">{UI_COPY.loadingReport}</div>
             ) : selectedReport === null ? (
-              <div className="panel-empty">
-                No report selected. Open Projects or load the git fixture (not a customer pack).
-              </div>
+              <div className="panel-empty">{UI_COPY.noReportSelected}</div>
             ) : (
               <FindingListPanel
                 issues={filteredIssues}
@@ -144,14 +143,14 @@ export default function ExpertWorkplace({
             <section className="panel">
               <div className="panel-header">
                 <div>
-                  <p className="panel-kicker">2D / 3D</p>
-                  <h2>Clashes as viewer focus</h2>
+                  <p className="panel-kicker">{UI_COPY.clashKicker}</p>
+                  <h2>{UI_COPY.clashTitle}</h2>
                 </div>
               </div>
               {selectedReport === null ? (
-                <p className="compact-copy">Select a persisted report to inspect clash pairs.</p>
+                <p className="compact-copy">{UI_COPY.selectReportClash}</p>
               ) : selectedReport.clash_results.length === 0 ? (
-                <p className="compact-copy">No clash payloads were attached to this report.</p>
+                <p className="compact-copy">{UI_COPY.noClash}</p>
               ) : (
                 <div className="collection-stack">
                   {selectedReport.clash_results.map((clash, index) => (
@@ -168,7 +167,7 @@ export default function ExpertWorkplace({
                       <div className="collection-card-row">
                         <strong>{clash.clash_type}</strong>
                         <span className="selection-badge">
-                          {index === selectedClashIndex ? "viewer focus" : "focus clash"}
+                          {index === selectedClashIndex ? UI_COPY.viewerFocusOn : UI_COPY.focusClash}
                         </span>
                       </div>
                       <p>{clash.description}</p>
@@ -188,12 +187,12 @@ export default function ExpertWorkplace({
           <section className="panel provenance-panel" data-testid="expert-remark-pane">
             <div className="panel-header">
               <div>
-                <p className="panel-kicker">Remark</p>
-                <h2>Card and evidence</h2>
+                <p className="panel-kicker">{UI_COPY.remarkKicker}</p>
+                <h2>{UI_COPY.remarkCardTitle}</h2>
               </div>
             </div>
             {selectedReport === null ? (
-              <div className="panel-empty">Select a report first.</div>
+              <div className="panel-empty">{UI_COPY.selectReportFirst}</div>
             ) : (
               <div className="provenance-stack">
                 <RemarkCardPanel
@@ -210,12 +209,9 @@ export default function ExpertWorkplace({
                 />
                 <ProvenancePanel activeIssue={activeIssue} />
                 <article className="detail-block">
-                  <h3>Matching requirements</h3>
+                  <h3>{UI_COPY.matchingReqs}</h3>
                   {matchingRequirements.length === 0 ? (
-                    <p className="compact-copy">
-                      No exact requirement match by rule id. The report may be driven by synthesized
-                      or aggregate logic.
-                    </p>
+                    <p className="compact-copy">{UI_COPY.noReqMatch}</p>
                   ) : (
                     <div className="collection-stack">
                       {matchingRequirements.map((requirement) => (
@@ -228,12 +224,12 @@ export default function ExpertWorkplace({
                           <p>
                             {requirement.property_set ??
                               requirement.ifc_entity ??
-                              "Requirement without entity scope"}
+                              UI_COPY.noEntity}
                           </p>
                           <div className="collection-meta">
-                            <span>{requirement.property_name ?? "no property"}</span>
-                            <span>{requirement.expected_value ?? "no expected value"}</span>
-                            <span>{requirement.unit ?? "no unit"}</span>
+                            <span>{requirement.property_name ?? UI_COPY.noProperty}</span>
+                            <span>{requirement.expected_value ?? UI_COPY.noExpected}</span>
+                            <span>{requirement.unit ?? UI_COPY.noUnit}</span>
                           </div>
                         </div>
                       ))}

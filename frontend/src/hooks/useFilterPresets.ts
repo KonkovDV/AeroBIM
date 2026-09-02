@@ -15,7 +15,7 @@ export function useFilterPresets() {
   const [presetTransferState, setPresetTransferState] = useState<PresetTransferState>("idle");
   const [presetTransferDraft, setPresetTransferDraft] = useState("");
   const [presetNameDraft, setPresetNameDraft] = useState("");
-  const [presetScopeDraft, setPresetScopeDraft] = useState<PresetScope>("local");
+  const [presetScopeDraft, setPresetScopeDraft] = useState<PresetScope>("browser");
 
   useEffect(() => {
     persistFilterPresets(filterPresets);
@@ -44,7 +44,7 @@ export function useFilterPresets() {
           const filters = entry.filters as Partial<PersistedReportFilters>;
           return {
             name: (entry.name as string).trim(),
-            scope: normalizePresetScope(entry.scope, "team"),
+            scope: normalizePresetScope(entry.scope, "browser"),
             filters: {
               project: typeof filters.project === "string" ? filters.project : "",
               discipline: typeof filters.discipline === "string" ? filters.discipline : "",

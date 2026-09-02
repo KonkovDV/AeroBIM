@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { ValidationIssue } from "../../lib/types";
 import { fetchReviewEvents, type ReviewEventRow } from "../../lib/api";
 import { clauseLine, essenceLine, spatialOrMissing } from "../../lib/issue-triage";
+import { UI_COPY } from "../../lib/ui-copy";
 import EvidenceStepper from "./EvidenceStepper";
 
 function dash(value: string | null | undefined): string {
@@ -65,7 +66,7 @@ export default function RemarkCardPanel({
       .catch((error: unknown) => {
         if (!controller.signal.aborted) {
           setHistory([]);
-          setHistoryError(error instanceof Error ? error.message : "Review history failed");
+          setHistoryError(error instanceof Error ? error.message : UI_COPY.historyFailed);
         }
       });
     return () => controller.abort();
@@ -73,14 +74,13 @@ export default function RemarkCardPanel({
 
   return (
     <article className="detail-block" data-testid="remark-card">
-      <h3>Remark</h3>
+      <h3>{UI_COPY.remarkHeading}</h3>
       {activeIssue ? (
         <div className="remark-editor">
           <EvidenceStepper issue={activeIssue} />
           {activeIssue.remark?.ai_generated ? (
             <p className="synthetic-content-mark" role="status">
-              Synthetic content (AI) · draft, requires expert review · does not affect
-              summary.passed
+              {UI_COPY.syntheticMark}
             </p>
           ) : null}
           <dl className="remark-tz-fields">
@@ -124,49 +124,49 @@ export default function RemarkCardPanel({
             </div>
           </dl>
           <p className="compact-copy">
-            <strong>{activeIssue.remark?.title ?? "Generated remark"}</strong>
+            <strong>{activeIssue.remark?.title ?? UI_COPY.generatedRemark}</strong>
           </p>
           <textarea
             id="remark-editor"
             value={remarkDraft}
             rows={5}
             onChange={(event) => onDraftChange(event.target.value)}
-            aria-label="Edit remark text"
+            aria-label={UI_COPY.editRemark}
           />
           <div className="remark-actions">
             <button type="button" onClick={onSave} disabled={remarkSaveState === "saving"}>
-              {remarkSaveState === "saving" ? "Saving…" : "Save remark edit"}
+              {remarkSaveState === "saving" ? UI_COPY.savingRemark : UI_COPY.saveRemark}
             </button>
             <button
               type="button"
               onClick={onAccept}
               disabled={!hitlEnabled || hitlDecisionState === "saving"}
             >
-              Confirm remark
+              {UI_COPY.confirmRemark}
             </button>
             <button
               type="button"
               onClick={onReject}
               disabled={!hitlEnabled || hitlDecisionState === "saving"}
             >
-              Reject remark
+              {UI_COPY.rejectRemark}
             </button>
-            {remarkSaveState === "saved" ? <span className="compact-copy">Saved to review events</span> : null}
-            {remarkSaveState === "failed" ? <span className="compact-copy">Save failed</span> : null}
-            {hitlDecisionState === "accepted" ? <span className="compact-copy">Confirmed</span> : null}
-            {hitlDecisionState === "rejected" ? <span className="compact-copy">Rejected</span> : null}
-            {hitlDecisionState === "failed" ? <span className="compact-copy">Decision failed</span> : null}
+            {remarkSaveState === "saved" ? <span className="compact-copy">{UI_COPY.remarkSaved}</span> : null}
+            {remarkSaveState === "failed" ? <span className="compact-copy">{UI_COPY.remarkSaveFailed}</span> : null}
+            {hitlDecisionState === "accepted" ? <span className="compact-copy">{UI_COPY.confirmed}</span> : null}
+            {hitlDecisionState === "rejected" ? <span className="compact-copy">{UI_COPY.rejected}</span> : null}
+            {hitlDecisionState === "failed" ? <span className="compact-copy">{UI_COPY.remarkDecisionFailed}</span> : null}
           </div>
           {!hitlEnabled ? (
             <p className="compact-copy">
-              User on this screen is a UI alias, not OIDC. Confirm/Reject are available to Expert.
+              {UI_COPY.hitlUserAlias}
             </p>
           ) : null}
           <div className="review-history" data-testid="review-history">
-            <h4>HITL history</h4>
+            <h4>{UI_COPY.hitlHistory}</h4>
             {historyError ? <p className="compact-copy">{historyError}</p> : null}
             {history.length === 0 ? (
-              <p className="compact-copy">No events for this finding.</p>
+              <p className="compact-copy">{UI_COPY.noEvents}</p>
             ) : (
               <ol className="kpi-list">
                 {history.map((event) => (
@@ -181,7 +181,7 @@ export default function RemarkCardPanel({
           </div>
         </div>
       ) : (
-        <p className="compact-copy">Select an issue to review and edit its remark.</p>
+        <p className="compact-copy">{UI_COPY.selectIssue}</p>
       )}
     </article>
   );

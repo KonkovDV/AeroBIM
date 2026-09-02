@@ -41,26 +41,26 @@ export function packKindVerdict(kind: PackKind): PackKindVerdict {
 export function packKindHonesty(kind: PackKind): string {
   switch (kind) {
     case "dwg":
-      return "Closed .dwg ingest is fail-closed on MVP. Same mark as vector PDF or DXF. Not a silent skip.";
+      return "Закрытый .dwg на MVP — fail-closed. Та же отметка, что у векторного PDF/DXF. Не тихий skip.";
     case "rvt":
-      return "Native RVT is not an ingest product. Export IFC from the authoring tool. Fail-closed.";
+      return "Нативный RVT не продукт приёма. Выгрузите IFC из САПР. Fail-closed.";
     case "nwd":
-      return "Native NWD is not an ingest product. Ask the appointing party for a federation IFC. Stock Navisworks does not write IFC.";
+      return "Нативный NWD не продукт приёма. Федерация — IFC. Stock Navisworks не пишет IFC.";
     case "lir":
-      return "Native .lir is not parsed. Upload a readable calculation note (PDF/Excel).";
+      return "Нативный .lir не разбираем. Загрузите читаемую записку (PDF/Excel).";
     case "zip":
-      return "ZIP is inspected on the server. Autodesk natives inside stay fail-closed.";
+      return "ZIP смотрит сервер. Autodesk natives внутри остаются fail-closed.";
     case "ids":
-      return "IDS 1.0 rule set. A requested set that cannot load fails closed.";
+      return "Набор правил IDS 1.0. Запрошенный набор, который не грузится, — fail-closed.";
     case "ifc":
-      return "IFC is the shared-gate model format.";
+      return "IFC — формат модели на общем шлюзе.";
     case "pdf":
-      return "PDF/A and vector PDF are the drawing/note exchange.";
+      return "PDF/A и векторный PDF — обмен чертежами и записками.";
     case "office":
-      return "Office files compare declared fields; MATCH is not calculation correctness.";
+      return "Office сравнивает заявленные поля; MATCH не есть верность расчёта.";
     case "dxf":
-      return "DXF is optional ingest, not a closed .dwg reader.";
+      return "DXF — опциональный приём, не чтение закрытого .dwg.";
     default:
-      return "Unknown type. The server validates magic bytes. Do not assume success from a 200 on another file.";
+      return "Неизвестный тип. Сервер проверяет magic bytes. 200 на другом файле не значит успех.";
   }
 }

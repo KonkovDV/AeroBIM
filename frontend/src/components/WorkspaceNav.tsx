@@ -1,3 +1,5 @@
+import { UI_COPY } from "../lib/ui-copy";
+
 export type WorkspaceView =
   | "projects"
   | "upload"
@@ -38,7 +40,7 @@ export type WorkspaceNavProps = {
 
 export default function WorkspaceNav({ workspaceView, onChange }: WorkspaceNavProps) {
   return (
-    <nav className="workspace-nav" aria-label="Workplace screens" data-testid="workspace-nav">
+    <nav className="workspace-nav" aria-label={UI_COPY.navAria} data-testid="workspace-nav">
       {WORKSPACE_NAV.map(({ id, label }) => (
         <button
           key={id}

@@ -6,6 +6,7 @@ import type {
   ValidationIssue,
   ValidationReport,
 } from "../lib/types";
+import { UI_COPY } from "../lib/ui-copy";
 
 interface DrawingEvidencePanelProps {
   report: ValidationReport | null;
@@ -38,7 +39,7 @@ function findMatchingAsset(report: ValidationReport, issue: ValidationIssue | nu
 }
 
 function describeAsset(asset: DrawingAsset): string {
-  return `${asset.sheet_id}${asset.page_number ? ` · page ${asset.page_number}` : ""}`;
+  return UI_COPY.drawingPage(asset.sheet_id, asset.page_number);
 }
 
 function isNormalizedBBox(region: DrawingRegionRef): boolean {
@@ -239,31 +240,31 @@ export default function DrawingEvidencePanel({ report, activeIssue }: DrawingEvi
     <section className="panel drawing-evidence-panel">
       <div className="panel-header">
         <div>
-          <p className="panel-kicker">2D Evidence</p>
-          <h2>Problem zone overlay</h2>
+          <p className="panel-kicker">{UI_COPY.drawingKicker}</p>
+          <h2>{UI_COPY.drawingTitle}</h2>
         </div>
       </div>
 
       {report === null ? (
-        <div className="panel-empty compact">Select a report to inspect drawing evidence.</div>
+        <div className="panel-empty compact">{UI_COPY.selectReportDrawing}</div>
       ) : drawingAssets.length === 0 ? (
-        <div className="panel-empty compact">No persisted drawing preview assets were materialized for this report.</div>
+        <div className="panel-empty compact">{UI_COPY.noDrawingAssets}</div>
       ) : (
         <>
           <div className="drawing-evidence-meta">
-            <span>{selectedAsset ? describeAsset(selectedAsset) : "asset n/a"}</span>
-            <span>{selectedAsset?.media_type ?? "preview n/a"}</span>
-            <span>{isOverlayTarget ? "overlay target" : "browse mode"}</span>
+            <span>{selectedAsset ? describeAsset(selectedAsset) : UI_COPY.assetNa}</span>
+            <span>{selectedAsset?.media_type ?? UI_COPY.previewNa}</span>
+            <span>{isOverlayTarget ? UI_COPY.overlayTarget : UI_COPY.browseMode}</span>
             {regionOverlays.length > 0 ? (
-              <span className="selection-badge">{regionOverlays.length} region overlay(s)</span>
+              <span className="selection-badge">{UI_COPY.regionOverlays(regionOverlays.length)}</span>
             ) : null}
             {hitlRegions.length > 0 ? (
-              <span className="selection-badge">{hitlRegions.length} HITL region(s)</span>
+              <span className="selection-badge">{UI_COPY.hitlRegions(hitlRegions.length)}</span>
             ) : null}
           </div>
 
           {hitlRegions.length > 0 && (
-            <ul className="drawing-hitl-list" aria-label="Regions requiring expert review">
+            <ul className="drawing-hitl-list" aria-label={UI_COPY.hitlRegionsAria}>
               {hitlRegions.map((region, index) => (
                 <li key={`${region.sheet_id}-${index}`}>
                   <strong>{region.sheet_id}</strong>
@@ -276,7 +277,7 @@ export default function DrawingEvidencePanel({ report, activeIssue }: DrawingEvi
           )}
 
           {drawingAssets.length > 1 && (
-            <div className="drawing-evidence-selector" role="tablist" aria-label="Persisted drawing assets">
+            <div className="drawing-evidence-selector" role="tablist" aria-label={UI_COPY.drawingAssetsAria}>
               {drawingAssets.map((asset) => {
                 const isActive = selectedAsset?.asset_id === asset.asset_id;
                 const isMatch = matchedAsset?.asset_id === asset.asset_id;
@@ -290,7 +291,7 @@ export default function DrawingEvidencePanel({ report, activeIssue }: DrawingEvi
                     }}
                   >
                     <span>{describeAsset(asset)}</span>
-                    {isMatch && <span className="selection-badge">issue match</span>}
+                    {isMatch && <span className="selection-badge">{UI_COPY.issueMatch}</span>}
                   </button>
                 );
               })}
@@ -300,7 +301,7 @@ export default function DrawingEvidencePanel({ report, activeIssue }: DrawingEvi
           <div className="drawing-evidence-stage">
             <img
               src={previewUrl ?? undefined}
-              alt={`Drawing evidence preview for ${selectedAsset?.sheet_id ?? "drawing asset"}`}
+              alt={UI_COPY.drawingAlt(selectedAsset?.sheet_id ?? "drawing")}
               className="drawing-evidence-image"
               onLoad={(event) => {
                 setImageMetrics({
@@ -342,7 +343,7 @@ export default function DrawingEvidencePanel({ report, activeIssue }: DrawingEvi
             )}
             {problemZone !== null && matchedAsset === null && selectedAsset !== null && (
               <p>
-                The active issue points to {problemZone.sheet_id ?? "an unknown sheet"}, but no persisted preview asset matches that sheet/page exactly. You can still browse the available report assets here.
+                {UI_COPY.unmatchedSheet(problemZone.sheet_id ?? "лист")}
               </p>
             )}
             {!isOverlayTarget && selectedAsset !== null && matchedAsset !== null && (

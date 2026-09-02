@@ -1,4 +1,4 @@
-/** Local UI role alias. Not OIDC. GET /v1/auth/bff stays 501. */
+/** Local UI screen mock. Not OIDC. GET /v1/auth/bff stays 501. Does not grant HITL. */
 
 export type UiRoleAlias = "expert" | "user";
 

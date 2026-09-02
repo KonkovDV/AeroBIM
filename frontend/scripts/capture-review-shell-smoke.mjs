@@ -94,7 +94,7 @@ async function assertIssueReviewState(page) {
 
   const activeIssueBlock = page
     .locator(".provenance-panel .detail-block")
-    .filter({ has: page.getByRole("heading", { name: "Active issue" }) })
+    .filter({ has: page.getByRole("heading", { name: "Активная находка" }) })
     .first();
   await activeIssueBlock.waitFor({ state: "visible", timeout: 30_000 });
 
@@ -106,11 +106,11 @@ async function assertIssueReviewState(page) {
 }
 
 async function assertPresetScopeState(page) {
-  const presetName = "Smoke Team Preset";
+  const presetName = "Smoke JSON Preset";
 
-  await page.getByLabel("Preset name").fill(presetName);
-  await page.getByLabel("Preset scope").selectOption("team");
-  await page.getByRole("button", { name: "Save preset" }).click();
+  await page.getByLabel("Имя пресета").fill(presetName);
+  await page.getByLabel("Область пресета").selectOption("file");
+  await page.getByRole("button", { name: "Сохранить пресет" }).click();
 
   const presetChip = page
     .locator(".preset-chip")
@@ -120,8 +120,8 @@ async function assertPresetScopeState(page) {
 
   const scopeBadge = presetChip.locator(".preset-scope-badge").first();
   const scopeText = (await scopeBadge.textContent())?.trim().toLowerCase();
-  if (scopeText !== "team") {
-    throw new Error(`Expected preset scope badge to be team, got: ${scopeText ?? "<empty>"}`);
+  if (!scopeText?.includes("json") && !scopeText?.includes("файл")) {
+    throw new Error(`Expected preset scope badge to be JSON file exchange, got: ${scopeText ?? "<empty>"}`);
   }
 
   return {

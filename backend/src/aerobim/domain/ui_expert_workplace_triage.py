@@ -53,7 +53,7 @@ SCREEN_ROWS: Final[tuple[dict[str, str], ...]] = (
         "id": "SCR-EXPORT",
         "title": "Report and export",
         "git": "partial",
-        "note": "HTML JSON BCF 2.1/3.0 PDF; XLSX not an API; do not ship a fake 200",
+        "note": "HTML JSON BCF 2.1/3.0; PDF = coverage draft; XLSX not an API; do not ship a fake 200",
     },
     {
         "id": "SCR-DIFF",
@@ -136,7 +136,7 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "id": "RT-UI-XLSX-FAKE",
         "verdict": "KILL",
         "attack": "Export XLSX button that 404s labeled as delivered",
-        "brake": "HTML JSON BCF PDF only until an export route exists",
+        "brake": "HTML JSON BCF 2.1/3.0; PDF is a coverage draft (simple PDF), not GOST; XLSX stays disabled",
     },
     {
         "id": "RT-UI-OIDC-LIVE",
@@ -178,7 +178,7 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "id": "RT-UI-JOBS",
         "verdict": "HOLD",
         "attack": "Pretend SSE and 30-minute first-class timer are already product",
-        "brake": "Poll jobs/{job_id}; timer is a TZ goal caption",
+        "brake": "Poll jobs/{job_id}; elapsed MM:SS is a TZ-goal caption, not a measured SLA",
     },
     {
         "id": "RT-UI-KEEP-SHELL",
@@ -323,6 +323,42 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "verdict": "KILL",
         "attack": "Treat true_gates or this screen as RT CLOSED / Checkpoint GO",
         "brake": "NO_GO; PrecisionClaim.publishable remains the gate",
+    },
+    {
+        "id": "RT-UI-ROLE-LS",
+        "verdict": "KILL",
+        "attack": "Treat the header Expert/User switch as server RBAC",
+        "brake": "localStorage is a screen mock; BFF 501; HITL 403 for shared bearer and viewer",
+    },
+    {
+        "id": "RT-UI-TEAM-CLAIM",
+        "verdict": "KILL",
+        "attack": "Call a localStorage filter blob a team/CDE shared preset",
+        "brake": "Scopes are browser vs JSON file exchange, not a team server",
+    },
+    {
+        "id": "RT-UI-PDF-TOY",
+        "verdict": "HOLD",
+        "attack": "Pitch export/pdf as a signed GOST/CDE report",
+        "brake": "Route exists; simple coverage PDF; label says draft; XLSX still disabled",
+    },
+    {
+        "id": "RT-UI-I18N",
+        "verdict": "HOLD",
+        "attack": "Leave English chrome on the expert path as if the seat is finished",
+        "brake": "ui-copy.ts is the Russian chrome pass; not a locale product",
+    },
+    {
+        "id": "RT-UI-CLICK-PATH",
+        "verdict": "ACCEPT",
+        "attack": "Demo as disconnected panels with no pack→run→card→BCF path",
+        "brake": "Cycle strip + first IFC to Run + timer + to-expert + BCF export",
+    },
+    {
+        "id": "RT-UI-HITL-BEARER",
+        "verdict": "ACCEPT",
+        "attack": "Vite shared bearer plus header Expert mock confirms remarks",
+        "brake": "POST review-events 403 when is_service_token; localStorage is not ACL",
     },
 )
 

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import unittest
 from pathlib import Path
 
@@ -83,22 +84,47 @@ class UiExpertWorkplaceTriageTests(unittest.TestCase):
         self.assertIn("| Web UI | partial |", text)
         self.assertNotIn("| Web UI | done |", text)
 
-    def test_frontend_does_not_assign_summary_passed(self) -> None:
+    def test_hd13_fe01_frontend_source_scan_does_not_assign_summary_passed(self) -> None:
+        """HD13-FE-01: walk production frontend/src; UI must not assign summary.passed."""
         root = self._repo() / "frontend" / "src"
-        assigned = []
+        vitest_guard = root / "summary-passed-source-scan.test.ts"
+        self.assertTrue(vitest_guard.is_file(), vitest_guard)
+        self.assertIn("HD13-FE-01", vitest_guard.read_text(encoding="utf-8"))
+
+        assign_field = re.compile(
+            r"(?:^|[;\n{}()])\s*(?:[A-Za-z_$][\w$]*\.)*summary\s*\.\s*(?:passed|outcome)\s*=(?!=)"
+        )
+        assign_object = re.compile(
+            r"(?:^|[;\n{}()])\s*(?:[A-Za-z_$][\w$]*\.)+summary\s*=(?!=)"
+        )
+        literal_passed = re.compile(
+            r"\bsummary\s*:\s*\{(?:[^{}]*)\bpassed\s*:\s*(?:true|false)"
+        )
+        literal_outcome = re.compile(
+            r"\bsummary\s*:\s*\{(?:[^{}]*)\boutcome\s*:\s*[\"'`]"
+        )
+        bracket_assign = re.compile(
+            r"summary\s*\[\s*[\"'](?:passed|outcome)[\"']\s*\]\s*=(?!=)"
+        )
+        scanned = 0
+        assigned: list[str] = []
         for path in root.rglob("*"):
             if path.suffix not in {".ts", ".tsx"}:
                 continue
             if path.name.endswith(".test.ts") or path.name.endswith(".test.tsx"):
                 continue
+            scanned += 1
             text = path.read_text(encoding="utf-8")
-            display = (
-                text.replace("<code>summary.passed=false</code>", "")
-                .replace("summary.passed=false", "")
-                .replace("summary.passed=true", "")
-            )
-            if "summary.passed =" in display or "summary.passed=" in display:
-                assigned.append(path.as_posix())
+            rel = path.as_posix()
+            if assign_field.search(text) or assign_object.search(text):
+                assigned.append(rel)
+                continue
+            if literal_passed.search(text) or literal_outcome.search(text):
+                assigned.append(rel)
+                continue
+            if bracket_assign.search(text):
+                assigned.append(rel)
+        self.assertGreaterEqual(scanned, 20)
         self.assertEqual(assigned, [])
 
     def test_seed_json_contract_omits_passed(self) -> None:

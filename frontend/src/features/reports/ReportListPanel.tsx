@@ -5,6 +5,7 @@ import type {
   PresetScope,
   ReportFilterPreset,
 } from "../../lib/report-filters";
+import { UI_COPY } from "../../lib/ui-copy";
 
 export type ShareLinkState = "idle" | "copied" | "failed";
 export type PresetTransferState = "idle" | "exported" | "downloaded" | "imported" | "failed";
@@ -71,18 +72,31 @@ function ReportCard({
       <div className="report-card-row">
         <strong>{report.report_id.slice(0, 8)}</strong>
         <span className={`status-pill ${report.passed ? "pass" : "fail"}`}>
-          {report.passed ? "Engine Pass" : "Engine Fail"}
+          {report.passed ? UI_COPY.enginePass : UI_COPY.engineFail}
         </span>
       </div>
       <div className="report-card-meta">
         {report.project_name && <span>{report.project_name}</span>}
         {report.discipline && <span>{report.discipline}</span>}
-        <span>Request {report.request_id}</span>
-        <span>{report.issue_count} issues</span>
+        <span>{UI_COPY.requestLabel(report.request_id)}</span>
+        <span>{UI_COPY.issueCount(report.issue_count)}</span>
       </div>
       <span className="report-card-time">{formatTimestamp(report.created_at)}</span>
     </button>
   );
+}
+
+function presetTransferLabel(state: PresetTransferState): string {
+  if (state === "exported") {
+    return UI_COPY.presetCopied;
+  }
+  if (state === "downloaded") {
+    return UI_COPY.presetDownloaded;
+  }
+  if (state === "imported") {
+    return UI_COPY.presetImported;
+  }
+  return UI_COPY.presetFailed;
 }
 
 export default function ReportListPanel({
@@ -132,40 +146,40 @@ export default function ReportListPanel({
     <section className="panel report-panel">
       <div className="panel-header">
         <div>
-          <p className="panel-kicker">Index</p>
-          <h2>Report list</h2>
+          <p className="panel-kicker">{UI_COPY.reportListKicker}</p>
+          <h2>{UI_COPY.reportListTitle}</h2>
         </div>
       </div>
 
       <div className="report-toolbar">
-        <div className="report-filters" aria-label="Report list filters">
+        <div className="report-filters" aria-label={UI_COPY.reportFilters}>
           <input
             className="search-input filter-input"
             type="search"
-            aria-label="Project filter"
+            aria-label={UI_COPY.filterProject}
             value={projectFilter}
             onChange={(event) => onProjectFilterChange(event.target.value)}
-            placeholder="Filter by project"
+            placeholder={UI_COPY.filterProjectPh}
           />
           <input
             className="search-input filter-input"
             type="search"
-            aria-label="Discipline filter"
+            aria-label={UI_COPY.filterDiscipline}
             value={disciplineFilter}
             onChange={(event) => onDisciplineFilterChange(event.target.value)}
-            placeholder="Filter by discipline"
+            placeholder={UI_COPY.filterDisciplinePh}
           />
           <select
             className="search-input filter-select"
-            aria-label="Status filter"
+            aria-label={UI_COPY.filterStatus}
             value={statusFilter}
             onChange={(event) =>
               onStatusFilterChange(event.target.value as PersistedReportFilters["status"])
             }
           >
-            <option value="all">All statuses</option>
-            <option value="passed">Passed only</option>
-            <option value="failed">Failed only</option>
+            <option value="all">{UI_COPY.statusAll}</option>
+            <option value="passed">{UI_COPY.statusPassed}</option>
+            <option value="failed">{UI_COPY.statusFailed}</option>
           </select>
         </div>
         <input
@@ -173,47 +187,47 @@ export default function ReportListPanel({
           type="search"
           value={search}
           onChange={(event) => onSearchChange(event.target.value)}
-          placeholder="Search loaded reports"
+          placeholder={UI_COPY.searchReports}
         />
         <button
           type="button"
           className={`toolbar-button report-group-toggle ${groupByProject ? "active" : ""}`}
           onClick={onGroupByProjectToggle}
         >
-          {groupByProject ? "Ungroup reports" : "Group by project"}
+          {groupByProject ? UI_COPY.ungroupReports : UI_COPY.groupByProject}
         </button>
         <button
           type="button"
           className="toolbar-button"
-          aria-label="Copy share link"
+          aria-label={UI_COPY.copyShareLink}
           onClick={onCopyShareLink}
         >
-          Copy share link
+          {UI_COPY.copyShareLink}
         </button>
         {shareLinkState !== "idle" && (
           <span className={`share-link-status share-link-status-${shareLinkState}`}>
-            {shareLinkState === "copied" ? "Link copied" : "Copy failed"}
+            {shareLinkState === "copied" ? UI_COPY.linkCopied : UI_COPY.copyFailed}
           </span>
         )}
       </div>
 
-      <div className="report-presets" aria-label="Report filter presets">
+      <div className="report-presets" aria-label={UI_COPY.presetsAria}>
         <input
           className="search-input preset-name-input"
           type="text"
-          aria-label="Preset name"
+          aria-label={UI_COPY.presetName}
           value={presetNameDraft}
           onChange={(event) => onPresetNameChange(event.target.value)}
-          placeholder="Preset name"
+          placeholder={UI_COPY.presetName}
         />
         <select
           className="search-input preset-scope-select"
-          aria-label="Preset scope"
+          aria-label={UI_COPY.presetScope}
           value={presetScopeDraft}
           onChange={(event) => onPresetScopeChange(event.target.value as PresetScope)}
         >
-          <option value="local">Local scope</option>
-          <option value="team">Team scope</option>
+          <option value="browser">{UI_COPY.presetBrowser}</option>
+          <option value="file">{UI_COPY.presetFile}</option>
         </select>
         <button
           type="button"
@@ -221,32 +235,32 @@ export default function ReportListPanel({
           onClick={onSavePreset}
           disabled={!presetNameDraft.trim()}
         >
-          Save preset
+          {UI_COPY.savePreset}
         </button>
         <button
           type="button"
           className="toolbar-button"
-          aria-label="Copy presets JSON"
+          aria-label={UI_COPY.copyPresets}
           onClick={onCopyPresets}
           disabled={filterPresets.length === 0}
         >
-          Copy presets JSON
+          {UI_COPY.copyPresets}
         </button>
         <button
           type="button"
           className="toolbar-button"
-          aria-label="Download presets JSON"
+          aria-label={UI_COPY.downloadPresets}
           onClick={onDownloadPresets}
           disabled={filterPresets.length === 0}
         >
-          Download presets JSON
+          {UI_COPY.downloadPresets}
         </button>
-        <label className="toolbar-button preset-file-upload" aria-label="Import presets file label">
-          Import presets file
+        <label className="toolbar-button preset-file-upload">
+          {UI_COPY.importPresetsFile}
           <input
             type="file"
             accept=".json,application/json"
-            aria-label="Import presets file"
+            aria-label={UI_COPY.importPresetsFile}
             onChange={(event) => {
               void onImportPresetFile(event);
             }}
@@ -254,29 +268,23 @@ export default function ReportListPanel({
         </label>
         <textarea
           className="preset-import-input"
-          aria-label="Preset import payload"
+          aria-label={UI_COPY.presetImportPayload}
           value={presetTransferDraft}
           onChange={(event) => onPresetDraftChange(event.target.value)}
-          placeholder='Paste preset JSON (e.g. [{"name":"Hospital","filters":{...}}])'
+          placeholder={UI_COPY.presetImportPh}
         />
         <button
           type="button"
           className="toolbar-button"
-          aria-label="Import presets JSON"
+          aria-label={UI_COPY.importPresetsJson}
           onClick={onImportPresets}
           disabled={!presetTransferDraft.trim()}
         >
-          Import presets JSON
+          {UI_COPY.importPresetsJson}
         </button>
         {presetTransferState !== "idle" && (
           <span className={`preset-transfer-status preset-transfer-status-${presetTransferState}`}>
-            {presetTransferState === "exported"
-              ? "Preset JSON copied"
-              : presetTransferState === "downloaded"
-                ? "Preset JSON downloaded"
-                : presetTransferState === "imported"
-                  ? "Preset JSON imported"
-                  : "Preset transfer failed"}
+            {presetTransferLabel(presetTransferState)}
           </span>
         )}
         {filterPresets.map((preset) => (
@@ -288,11 +296,13 @@ export default function ReportListPanel({
             >
               {preset.name}
             </button>
-            <span className={`preset-scope-badge preset-scope-${preset.scope}`}>{preset.scope}</span>
+            <span className={`preset-scope-badge preset-scope-${preset.scope}`}>
+              {preset.scope === "file" ? UI_COPY.presetFile : UI_COPY.presetBrowser}
+            </span>
             <button
               type="button"
               className="toolbar-button preset-remove"
-              aria-label={`Remove preset ${preset.name}`}
+              aria-label={UI_COPY.removePreset(preset.name)}
               onClick={() => onRemovePreset(preset.id)}
             >
               x
@@ -302,9 +312,9 @@ export default function ReportListPanel({
       </div>
 
       {reportsLoading ? (
-        <div className="panel-empty">Loading reports…</div>
+        <div className="panel-empty">{UI_COPY.loadingReports}</div>
       ) : filteredReports.length === 0 ? (
-        <div className="panel-empty">No persisted reports match the current query.</div>
+        <div className="panel-empty">{UI_COPY.emptyReports}</div>
       ) : groupByProject ? (
         <div className="report-groups">
           {Array.from(groupedReports.entries()).map(([projectName, projectReports]) => (

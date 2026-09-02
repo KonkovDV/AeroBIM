@@ -1,3 +1,4 @@
+import { UI_COPY } from "../../lib/ui-copy";
 import {
   formatPackageOutcome,
   outcomeClass,
@@ -13,18 +14,18 @@ export type MachineGatewayStripProps = {
 
 function hitlLabel(state: HitlDecisionState): string {
   if (state === "accepted") {
-    return "Confirmed by expert";
+    return UI_COPY.hitlConfirmed;
   }
   if (state === "rejected") {
-    return "Rejected by expert";
+    return UI_COPY.hitlRejected;
   }
   if (state === "saving") {
-    return "Recording HITL…";
+    return UI_COPY.hitlRecording;
   }
   if (state === "failed") {
-    return "HITL not recorded";
+    return UI_COPY.hitlNotRecorded;
   }
-  return "No expert decision";
+  return UI_COPY.hitlNone;
 }
 
 export default function MachineGatewayStrip({
@@ -35,20 +36,20 @@ export default function MachineGatewayStrip({
   return (
     <div className="machine-human-split" data-testid="machine-human-split">
       <article className="machine-gateway">
-        <p className="panel-kicker">Engine gateway</p>
+        <p className="panel-kicker">{UI_COPY.engineGateway}</p>
         <strong className={`outcome-badge ${outcomeClass(report.summary.outcome, report.summary.passed)}`}>
           {formatPackageOutcome(report.summary.outcome, report.summary.passed)}
         </strong>
         <p className="compact-copy">
           {project ? `${project}. ` : ""}
-          Technical flag from the server. Not an expert signature. UI does not write{" "}
+          {UI_COPY.engineFlag}{" "}
           <code>summary.passed</code>.
         </p>
       </article>
       <article className="expert-hitl">
-        <p className="panel-kicker">HITL verdict</p>
+        <p className="panel-kicker">{UI_COPY.hitlVerdict}</p>
         <strong>{hitlLabel(hitlDecisionState)}</strong>
-        <p className="compact-copy">Separate entity. ADR-001. UI role is not OIDC.</p>
+        <p className="compact-copy">{UI_COPY.hitlSeparate}</p>
       </article>
     </div>
   );

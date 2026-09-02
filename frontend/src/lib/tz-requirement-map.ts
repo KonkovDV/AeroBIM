@@ -22,7 +22,7 @@ export const TZ_REQUIREMENT_ROWS: TzRequirementRow[] = [
     id: "TZ-RUN",
     tz: "Automatic analysis; TZ 30:00 goal per pack",
     fn: "POST submit + poll jobs/{job_id}",
-    evidence: "AnalyzeRunPanel; timer is TZ goal; SSE not shipped",
+    evidence: "AnalyzeRunPanel elapsed MM:SS; TZ goal 30:00; not SLA; SSE not shipped",
     git: "partial",
   },
   {
@@ -42,14 +42,14 @@ export const TZ_REQUIREMENT_ROWS: TzRequirementRow[] = [
   {
     id: "TZ-ROLES",
     tz: "Expert and User",
-    fn: "UI role alias",
-    evidence: "localStorage alias; GET /v1/auth/bff stays 501; not OIDC",
+    fn: "Макет экрана + серверный HITL 403",
+    evidence: "RoleHonestyBanner; GET /v1/auth/bff stays 501; not OIDC",
     git: "partial",
   },
   {
     id: "TZ-EXPORT",
     tz: "Report + file import/export",
-    fn: "HTML JSON BCF 2.1/3.0 PDF",
+    fn: "HTML JSON BCF 2.1/3.0; PDF черновик покрытия",
     evidence: "XLSX button disabled; no 10D/Tangl connector",
     git: "partial",
   },

@@ -2,6 +2,7 @@ import { useEffect, useEffectEvent, useRef, useState } from "react";
 import type { ValidationReport } from "../lib/types";
 import { fetchReportIfcSource } from "../lib/api";
 import { IfcSceneController } from "../lib/ifc-scene";
+import { UI_COPY } from "../lib/ui-copy";
 
 type ViewerStatus = "idle" | "initializing" | "loading" | "ready" | "error";
 
@@ -123,8 +124,8 @@ export default function IfcViewerPanel({
     <section className="panel viewer-panel">
       <div className="panel-header viewer-header">
         <div>
-          <p className="panel-kicker">Spatial Review</p>
-          <h2>IFC viewer</h2>
+          <p className="panel-kicker">{UI_COPY.viewerKicker}</p>
+          <h2>{UI_COPY.viewerTitle}</h2>
         </div>
         <div className="viewer-toolbar">
           <button
@@ -133,7 +134,7 @@ export default function IfcViewerPanel({
             disabled={viewerStatus !== "ready"}
             onClick={() => controllerRef.current?.resetView()}
           >
-            Reset view
+            {UI_COPY.resetView}
           </button>
           <button
             type="button"
@@ -141,15 +142,21 @@ export default function IfcViewerPanel({
             disabled={!canInteractWithSelection}
             onClick={() => setIsolateSelection((current) => !current)}
           >
-            {isolateSelection ? "Show all" : "Isolate selected"}
+            {isolateSelection ? UI_COPY.showAll : UI_COPY.isolateSelected}
           </button>
         </div>
       </div>
 
       <div className="viewer-meta">
         <span className={`viewer-status viewer-status-${viewerStatus}`}>{viewerStatus}</span>
-        <span>{report ? `Report ${report.report_id.slice(0, 8)}` : "No report selected"}</span>
-        <span>{selectionMode === "clash" ? "clash pair" : selectionMode === "issue" ? "issue focus" : "no selection"}</span>
+        <span>{report ? `Report ${report.report_id.slice(0, 8)}` : UI_COPY.noReportShort}</span>
+        <span>
+          {selectionMode === "clash"
+            ? UI_COPY.clashPairMode
+            : selectionMode === "issue"
+              ? UI_COPY.issueFocusMode
+              : UI_COPY.noSelectionMode}
+        </span>
       </div>
 
       <div className="viewer-selection-card">
@@ -159,7 +166,7 @@ export default function IfcViewerPanel({
           <div className="viewer-selection-list">
             {selectedGuids.map((guid, index) => (
               <span key={guid} className="selection-badge selection-badge-active">
-                {selectionMode === "clash" ? `element ${index + 1}` : "element"} · {guid}
+                {selectionMode === "clash" ? UI_COPY.elementN(index + 1) : UI_COPY.element} · {guid}
               </span>
             ))}
           </div>
@@ -170,28 +177,28 @@ export default function IfcViewerPanel({
         <div ref={viewportRef} className="viewer-viewport" />
         {viewerStatus === "idle" && (
           <div className="viewer-overlay">
-            <p>Select a persisted report to load its IFC source into the browser viewer.</p>
+            <p>{UI_COPY.viewerNeedReport}</p>
           </div>
         )}
         {viewerStatus === "initializing" && (
           <div className="viewer-overlay">
-            <p>Initializing `web-ifc` and the scene runtime…</p>
+            <p>{UI_COPY.viewerInit}</p>
           </div>
         )}
         {viewerStatus === "loading" && (
           <div className="viewer-overlay">
-            <p>Loading IFC bytes and streaming geometry for the selected report…</p>
+            <p>{UI_COPY.viewerLoad}</p>
           </div>
         )}
         {viewerStatus === "error" && (
           <div className="viewer-overlay viewer-overlay-error">
-            <p>{viewerError ?? "The viewer failed to load the selected IFC source."}</p>
+            <p>{viewerError ?? UI_COPY.viewerError}</p>
           </div>
         )}
       </div>
 
       <p className="viewer-caption">
-        The viewer remains downstream of the persisted validation report. Selection is driven by persisted IFC GUID evidence from either a single issue or a clash pair, not by ad hoc browser-side model inspection. `prefers-reduced-motion` disables orbit damping.
+        {UI_COPY.viewerFooter}
       </p>
     </section>
   );

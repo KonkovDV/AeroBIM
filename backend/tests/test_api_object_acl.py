@@ -280,6 +280,23 @@ class ApiObjectAclTests(unittest.TestCase):
             )
             self.assertEqual(response.status_code, 200, response.text)
 
+    def test_shared_bearer_cannot_append_expert_hitl(self) -> None:
+        """Vite injects the shared API token; expert HITL must 403 (not localStorage role)."""
+        try:
+            from fastapi.testclient import TestClient  # noqa: F401
+        except ModuleNotFoundError as exc:
+            raise unittest.SkipTest("FastAPI/httpx not installed") from exc
+
+        with tempfile.TemporaryDirectory() as tmp:
+            client, container = self._client(storage=Path(tmp), tenant="tenant-a")
+            report_id = self._seed_report(container, tenant_id="tenant-a")
+            response = client.post(
+                f"/v1/reports/{report_id}/review-events",
+                headers={"Authorization": "Bearer secret-token"},
+                json={"event_type": "accepted", "note": "localStorage expert"},
+            )
+            self.assertEqual(response.status_code, 403, response.text)
+
 
 if __name__ == "__main__":
     unittest.main()
