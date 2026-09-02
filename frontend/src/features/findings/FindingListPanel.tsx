@@ -60,7 +60,7 @@ function IssueCard({
         {issue.origin === "advisory" ? (
           <span
             className="origin-pill origin-advisory"
-            title="Advisory candidate — requires human review; not a confirmed verdict"
+            title="Кандидат ИИ — на проверку эксперту; not a confirmed verdict"
           >
             {UI_COPY.advisory}
           </span>

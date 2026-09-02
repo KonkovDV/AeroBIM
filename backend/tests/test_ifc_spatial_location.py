@@ -92,6 +92,41 @@ class SpatialIndexLocationTests(unittest.TestCase):
         self.assertIsNone(miss_axis.grid_axis)
         self.assertIsNone(miss_axis.storey_name)
 
+    def test_two_grids_in_storey_does_not_guess_nearest_axis(self) -> None:
+        """A2 HOLD: nearest IfcGrid intersection is not implemented (live_tree_triage)."""
+        storey = _Entity(
+            "IfcBuildingStorey",
+            GlobalId="st-1",
+            Name="5 этаж",
+            ContainsElements=[],
+        )
+        axis_a = _Entity("IfcGridAxis", GlobalId="ax-a", AxisTag="А", Name=None)
+        axis_1 = _Entity("IfcGridAxis", GlobalId="ax-1", AxisTag="1", Name=None)
+        grid_a = _Entity("IfcGrid", GlobalId="grid-a", Name="Grid A", UAxes=[axis_a])
+        grid_1 = _Entity("IfcGrid", GlobalId="grid-1", Name="Grid 1", UAxes=[axis_1])
+        contain = _Entity(
+            "IfcRelContainedInSpatialStructure",
+            RelatingStructure=storey,
+            RelatedElements=[grid_a, grid_1],
+        )
+        storey.ContainsElements = [contain]
+        wall_rel = _Entity("IfcRelContainedInSpatialStructure", RelatingStructure=storey)
+        wall = _Entity(
+            "IfcWall",
+            GlobalId="wall-house5",
+            Name="W",
+            ContainedInStructure=[wall_rel],
+            ReferencedInStructures=[],
+            Decomposes=[],
+        )
+        model = _Model({"IfcSystem": [], "IfcRoot": [wall, storey, grid_a, grid_1, axis_a, axis_1]})
+        index = IfcSpatialIndex.from_model(model)
+        hit = index.lookup("wall-house5")
+        self.assertIsNotNone(hit)
+        assert hit is not None
+        self.assertEqual(hit.storey_name, "5 этаж")
+        self.assertIsNone(hit.grid_axis)
+
     def test_from_model_uses_unique_storey_grid_u_axis(self) -> None:
         storey = _Entity(
             "IfcBuildingStorey",

@@ -33,6 +33,9 @@ class CustomerBlockerHonestyLockTests(unittest.TestCase):
         payload = build_auth_bff_capability()
         self.assertEqual(payload["status"], "NOT_IMPLEMENTED")
         self.assertIn("phase_2_5_pkce", payload)
+        hitl = payload["hitl_write"]
+        self.assertIsInstance(hitl, dict)
+        self.assertFalse(hitl["ui_role_is_acl"])
 
     def test_system_capabilities_forbid_mep_ok_and_native_dwg(self) -> None:
         caps = build_system_capabilities_payload()

@@ -165,6 +165,17 @@ def build_auth_bff_capability() -> dict[str, object]:
             "Code-landed behind oidc_bff_phase3_ready (token URL + client secret + "
             "cookie secret + redirect allowlist). Default remains NOT_IMPLEMENTED."
         ),
+        "hitl_write": {
+            "ui_role_is_acl": False,
+            "service_bearer": "forbidden",
+            "viewer_oidc_under_pilot": "forbidden",
+            "lab_cookie_is_not_rbac": True,
+            "note": (
+                "Header role switch is a screen mock. POST /review-events 403 for "
+                "shared bearer and for viewer/user OIDC roles under pilot/production. "
+                "Not production SSO (auth_bff=501)."
+            ),
+        },
     }
 
 

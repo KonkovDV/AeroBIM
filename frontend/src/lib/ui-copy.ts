@@ -5,6 +5,12 @@ export const UI_COPY = {
   headerTitle: "Комплект: модель ↔ листы ↔ ТЗ ↔ расчёты",
   headerLede:
     "Шов комплекта, не замена 10D/Tangl. UI не пишет summary.passed. Native RVT/NWD/DWG — fail-closed. 30:00 — цель ТЗ, не измеренный SLA.",
+  trainingRulesBanner:
+    "Находки на учебном наборе правил (публичный IDS экспертизы). Не профиль Самолёта, пока нет подписи RT-002b. Checkpoint NO_GO.",
+  capabilityMissing:
+    "Матрица capabilities отсутствует в этом отчёте. Тишина ≠ успех. Checkpoint NO_GO. UI не пишет summary.passed.",
+  capabilityOkBanner:
+    "FAILED/MISSING на сервере блокируют summary.passed. UI флаг не пишет (ADR-001). Checkpoint NO_GO.",
   roleBanner:
     "Переключатель в шапке — макет экрана, не разграничение доступа. GET /v1/auth/bff = 501 (не OIDC). HITL на сервере: expert/reviewer; user/viewer и общий Bearer → 403.",
   roleSelectLabel: "Макет экрана (не доступ)",
@@ -79,7 +85,7 @@ export const UI_COPY = {
   engineFail: "Fail движка",
   requestLabel: (id: string) => `Запрос ${id}`,
   issueCount: (n: number) => `${n} находок`,
-  syntheticMark: "Синтетический контент (ИИ), не влияет на summary.passed",
+  syntheticMark: "Кандидат ИИ, не вердикт; не влияет на summary.passed",
   remarkHeading: "Замечание",
   generatedRemark: "Сгенерированное замечание",
   selectIssue: "Выберите находку, чтобы править замечание.",
@@ -120,7 +126,7 @@ export const UI_COPY = {
   noFindings:
     "Нет находок по фильтру. Нет расчётной записки — арматура не проверялась. Загрузите PDF/Excel ЛИРА на Загрузке.",
   noTarget: "нет цели",
-  advisory: "кандидат, advisory",
+  advisory: "кандидат ИИ, не вердикт",
   deterministic: "deterministic",
   lowConfidence: (n: string) => `низкая уверенность ${n}`,
   uploadKicker: "Загрузка",

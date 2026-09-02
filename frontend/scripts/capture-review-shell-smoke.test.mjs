@@ -23,6 +23,7 @@ describe("capture-review-shell-smoke helpers", () => {
       html: "http://127.0.0.1:8080/v1/reports/99999999999999999999999999999999/export/html",
       json: "http://127.0.0.1:8080/v1/reports/99999999999999999999999999999999/export/json",
       bcf: "http://127.0.0.1:8080/v1/reports/99999999999999999999999999999999/export/bcf",
+      pdf: "http://127.0.0.1:8080/v1/reports/99999999999999999999999999999999/export/pdf",
     });
 
     expect(result.reportId).toBe("99999999999999999999999999999999");
@@ -34,6 +35,7 @@ describe("capture-review-shell-smoke helpers", () => {
         html: "http://127.0.0.1:8080/v1/reports/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/export/html",
         json: "http://127.0.0.1:8080/v1/reports/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/export/json",
         bcf: "http://127.0.0.1:8080/v1/reports/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/export/bcf",
+        pdf: "http://127.0.0.1:8080/v1/reports/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/export/pdf",
       }),
     ).toThrow(/one report/i);
   });

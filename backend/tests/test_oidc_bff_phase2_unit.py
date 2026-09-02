@@ -19,6 +19,10 @@ class OidcBffPhase2UnitTests(unittest.TestCase):
         self.assertEqual(payload["status"], "NOT_IMPLEMENTED")
         self.assertIn("phase_2_stubs", payload)
         self.assertIn("phase_2_5_pkce", payload)
+        hitl = payload["hitl_write"]
+        self.assertIsInstance(hitl, dict)
+        self.assertFalse(hitl["ui_role_is_acl"])
+        self.assertEqual(hitl["service_bearer"], "forbidden")
 
     def test_state_one_time_and_payload_honesty(self) -> None:
         store = InMemoryOidcBffStateStore()

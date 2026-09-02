@@ -4,6 +4,7 @@ import {
   capabilityRows,
   humanCapabilityLine,
 } from "../../lib/capability-copy";
+import { UI_COPY } from "../../lib/ui-copy";
 
 export default function CapabilityTopBanner({
   capabilities,
@@ -13,8 +14,7 @@ export default function CapabilityTopBanner({
   if (!capabilities) {
     return (
       <p className="capability-top-banner" role="status" data-testid="capability-top-banner">
-        Capabilities matrix is missing on this report. Silence is never success. Checkpoint NO_GO. UI
-        does not write <code>summary.passed</code>.
+        {UI_COPY.capabilityMissing}
       </p>
     );
   }
@@ -31,8 +31,7 @@ export default function CapabilityTopBanner({
   if (blocking.length === 0 && skipped.length === 0) {
     return (
       <p className="capability-top-banner capability-top-banner-ok" role="status" data-testid="capability-top-banner">
-        FAILED/MISSING on the server block <code>summary.passed</code>. The UI does not write the
-        flag (ADR-001). Checkpoint NO_GO.
+        {UI_COPY.capabilityOkBanner}
       </p>
     );
   }

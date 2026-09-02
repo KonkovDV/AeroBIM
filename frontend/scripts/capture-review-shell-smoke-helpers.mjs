@@ -40,6 +40,7 @@ export function validateExportLinks(exportLinks) {
     html: "html",
     json: "json",
     bcf: "bcf",
+    pdf: "pdf",
   };
 
   const reportIds = new Set();
@@ -48,7 +49,7 @@ export function validateExportLinks(exportLinks) {
     if (typeof href !== "string" || href.length === 0) {
       throw new Error(`Missing export link for ${format}`);
     }
-    const match = href.match(/\/v1\/reports\/([a-f0-9]{32})\/export\/(html|json|bcf)$/i);
+    const match = href.match(/\/v1\/reports\/([a-f0-9]{32})\/export\/(html|json|bcf|pdf)(?:\?.*)?$/i);
     if (!match) {
       throw new Error(`Unexpected export href for ${format}: ${href}`);
     }

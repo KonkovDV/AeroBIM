@@ -80,12 +80,19 @@ async function getLocatorText(locator, description) {
 }
 
 async function assertIssueReviewState(page) {
-  const exportLinks = {
-    html: await page.getByRole("link", { name: "HTML" }).getAttribute("href"),
-    json: await page.getByRole("link", { name: "JSON" }).getAttribute("href"),
-    bcf: await page.getByRole("link", { name: "BCF" }).getAttribute("href"),
-  };
-  const validatedExports = validateExportLinks(exportLinks);
+  const exportBar = page.getByTestId("export-actions");
+  await exportBar.waitFor({ state: "visible", timeout: 30_000 });
+  for (const name of ["HTML", "JSON", "BCF"]) {
+    await exportBar.getByRole("button", { name, exact: true }).waitFor({ state: "visible" });
+  }
+  await exportBar.getByRole("button", { name: /PDF/ }).waitFor({ state: "visible" });
+  const xlsx = exportBar.getByRole("button", { name: /XLSX/ });
+  if (await xlsx.count()) {
+    const disabled = await xlsx.first().isDisabled();
+    if (!disabled) {
+      throw new Error("XLSX must stay disabled (not MVP)");
+    }
+  }
 
   await page.locator(".drawing-evidence-panel .drawing-evidence-rect").waitFor({
     state: "visible",
@@ -99,7 +106,7 @@ async function assertIssueReviewState(page) {
   await activeIssueBlock.waitFor({ state: "visible", timeout: 30_000 });
 
   return {
-    exportReportId: validatedExports.reportId,
+    exportButtons: ["html", "json", "bcf", "pdf"],
     overlayVisible: true,
     activeIssueRuleId: await getLocatorText(page.locator(".drawing-evidence-caption strong").first(), "active issue rule id"),
   };

@@ -102,6 +102,9 @@ export default function ExpertWorkplace({
             </label>
             <ExportActionsBar reportId={selectedReport.report_id} />
           </div>
+          <p className="compact-copy" data-testid="training-rules-banner" role="note">
+            {UI_COPY.trainingRulesBanner}
+          </p>
           <MachineGatewayStrip report={selectedReport} hitlDecisionState={hitlDecisionState} />
         </>
       ) : null}

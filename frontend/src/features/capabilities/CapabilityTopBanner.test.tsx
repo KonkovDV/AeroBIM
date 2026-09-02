@@ -18,7 +18,7 @@ describe("CapabilityTopBanner", () => {
     render(<CapabilityTopBanner capabilities={capabilities} />);
     const text = screen.getByTestId("capability-top-banner").textContent ?? "";
     expect(text).toMatch(/коллизии/);
-    expect(text).toMatch(/тишина ≠ успех/);
+    expect(text).toMatch(/тишина ≠ успех/i);
     expect(text).toMatch(/DWG/);
   });
 });

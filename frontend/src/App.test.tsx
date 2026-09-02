@@ -247,6 +247,7 @@ describe("App", () => {
 
     expect(await screen.findByRole("img", { name: /Превью чертежа a-102/i })).toBeTruthy();
     expect(screen.getByTestId("role-honesty-banner").textContent).toMatch(/не разграничение доступа/);
+    expect(screen.getByTestId("training-rules-banner").textContent).toMatch(/учебном наборе правил/);
     expect(screen.getAllByText(/BLOCKED/).length).toBeGreaterThan(0);
     const viewer = await screen.findByTestId("viewer-stub");
     expect(within(viewer).getByText("DRAW-001")).toBeTruthy();
