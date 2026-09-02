@@ -124,6 +124,8 @@ backend/cache/
 docs/quality/RED_TEAM_ATOMIC*.md
 docs/quality/RED_TEAM_HYPERDEEP*.md
 docs/quality/RED_TEAM_HD_REMAINING*.md
+docs/quality/RED_TEAM_GRAND*
+docs/quality/DOCUMENTS_CROSS_AUDIT*
 docs/quality/RT_RUN_*.md
 docs/quality/PLAIN_LANGUAGE_SESSION*.md
 docs/quality/*_WAVE_*.md

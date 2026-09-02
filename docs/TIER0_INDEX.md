@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM — карта для жюри Техлаба и МИК"
 status: active
-version: "4.8.29"
-last_updated: "2026-09-01"
+version: "4.8.31"
+last_updated: "2026-09-02"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
 ---
@@ -42,7 +42,7 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 | [Карточка речи КТ#3](demo/KT3_JURY_FAQ_2026_08_25.md) | 30 с + 8–12 мин; стоп-лист |
 | [Сценарий оператора КТ#3](demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md) | Живой CLI из git |
 | [Трекер КТ#3 (6 задач)](demo/KT3_TRACKER_SIX_TASKS_2026_08.md) | Live CLI; не KPI демо в git |
-| [ADR-001](architecture/ADR-001-verdict-ownership-2026.md) | Кто пишет `summary.passed` |
+| [ADR-001](architecture/ADR-001-verdict-ownership-2026.md) | Кто пишет `summary.passed`; Iversen/Fuchs — LLM на маршруте, у нас черновик |
 | [Заявление о данных](evidence/DATA_STATEMENT_2026_08.md) | Что есть; открытые бенчи ≠ RT-001 |
 | [Глоссарий жюри](partners/GLOSSARY_JURY_RU_2026_08.md) | Термины для нетехнического члена жюри |
 | [Арифметика комиссии МИК](quality/MIK_COMMISSION_SCORING_2026_08.md) | Отбор — среднее; финал — сумма; Приложение 3 Положения не в git |
@@ -56,7 +56,8 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 | [УГТ ГОСТ Р 58048](quality/TRL_GOST_R_58048_SELF_ASSESS_2026.md) | Самооценка 4; не 5; не независимая ОГТ |
 | [Лист К3](quality/K3_PARTNER_FIT_TICKSHEET_2026_08.md) | Посадка на карточку партнёра; не метрики Б2 |
 | [Лист системы B Б1–Б5](quality/B_FINAL_SCORING_TICKSHEET_2026_09.md) | Полосы, не прогноз; Приложение 3 Положения не в git |
-| [Лабораторный до/после](partners/BEFORE_AFTER_MEASUREMENT_PROTOCOL_2026_09.md) | Не часы партнёра; A1–A8 пустые |
+| [Лабораторный до/после](partners/BEFORE_AFTER_MEASUREMENT_PROTOCOL_2026_09.md) | Не часы партнёра; A1–A8 пустые; journal только `t_tool_ms` |
+| [Related-work preprint](RELATED_WORK_PREPRINT_2026_09.md) | Цитаты 2026; чужой объём не наш; ADR-001 |
 | [План recall на инъекциях](evidence/DEFECT_INJECTION_RECALL_PLAN_2026_09.md) | Синтетика; seed 20260824; не корпус Самолёта |
 | [ADR-004 MIT vs п. 6.3](architecture/ADR-004-prize-ip-mit-fork-2026.md) | Развилка; LICENSE не меняем |
 | [Сверка весов с PDF](quality/ORDER_WEIGHTS_VERIFICATION_2026_09.md) | Колонка PDF пустая; UNVERIFIED; attributed |

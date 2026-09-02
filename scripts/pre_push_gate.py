@@ -5,7 +5,7 @@ Mirrors the quick jobs in .github/workflows/ci.yml:
 - ruff check + ruff format --check
 - lint_claims (default, --full-docs, --matrix-guard, --claim-boundary-guard)
 - runtime baseline README + committed-artifact drift (--check-readme --check-complete)
-- docs metadata integrity, markdown links, ruff S-band inventory
+- docs metadata integrity, markdown links, ai-trace meta/chat, ruff S-band inventory
 - KT#2 handoff self-check
 
 Usage from the repo root with the backend venv python:
@@ -67,6 +67,7 @@ _STEPS_BASE: list[tuple[str, list[str], Path]] = [
         REPO,
     ),
     ("markdown links", [PY, "-m", "aerobim.tools.check_markdown_links"], REPO),
+    ("ai-trace meta/chat", [PY, str(REPO / "scripts" / "lint_ai_trace.py")], REPO),
     (
         "ruff S-band inventory",
         [PY, "scripts/verify_ruff_s_band_inventory.py"],

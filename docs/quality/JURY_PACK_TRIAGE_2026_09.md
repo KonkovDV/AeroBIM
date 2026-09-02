@@ -56,7 +56,7 @@ Checkpoint **`NO_GO`**. `detected_count: 0`. `processed: false`. Семь зад
 | RT-JURY-OSINT-IGNORED | OSINT-вектор сессии — отслеживаемый файл GitHub | Вектор в gitignore; unpublished-list honesty lock |
 | RT-JURY-NOT-EXHIBIT | Инженерные пины выглядят exhibit, потому что TIER0 их перечислял | Intro TIER0: census / family / local max-pass — не карта жюри |
 | RT-JURY-SPG-HOP | Клик с TIER0 / восьми задач на консалтинговый пин 49% ТИМ | Пин остаётся; имя файла снято с поверхностей жюри |
-| RT-JURY-UI-LIVE | Hop с UI-пина TIER0 на «рабочее место сдано» / Checkpoint GO | Пин: review shell; ноутбук жюри = CLI |
+| RT-JURY-UI-LIVE | Hop с UI-пина TIER0 на «рабочее место сдано» / Checkpoint GO — нельзя | Пин: review shell; ноутбук жюри = CLI |
 | RT-JURY-TZ-UI-DONE | Строка матрицы ТЗ Web UI = done как exhibit сдачи | Строка **partial**; SSOT — UI-пин |
 
 ## Что чинить в речи и git на этом проходе

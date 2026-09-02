@@ -2,9 +2,9 @@
 ---
 title: "System B final scoring ticksheet — bands, not a prize forecast"
 date: "2026-08-30"
-last_updated: "2026-08-30"
+last_updated: "2026-09-02"
 status: active
-version: "1.0.0"
+version: "1.0.1"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -32,7 +32,7 @@ claim_boundary: >
 | Б1 | 30 | Посадка на карточку: ассистент ПД/РД, HITL, fail-closed native CAD, cap 256 МиБ | Подписанные KPI партнёра | Соответствуем запросу openBIM; native RVT/NWD/DWG закрыты явно | [`K3_PARTNER_FIT_TICKSHEET_2026_08.md`](K3_PARTNER_FIT_TICKSHEET_2026_08.md) · TIER0 | Письмо с KPI; «коллизии >90% сданы» |
 | Б2 | 20 | Обложка фикстуры; протокол 0,60; CI pin; план инъекций | Dual-rater и метрики на комплекте партнёра | Pytest — регрессия движка, не валидация партнёра | [`KT3_FIXTURE_VALIDATION_COVER_2026_08.md`](KT3_FIXTURE_VALIDATION_COVER_2026_08.md) · [`DEFECT_INJECTION_RECALL_PLAN_2026_09.md`](../evidence/DEFECT_INJECTION_RECALL_PLAN_2026_09.md) | `confirmed_partner_validation_metrics` |
 | Б3 | 20 | Загрузка + BCF ZIP; п. 2.2.2 файловый обмен; RocksDB analyze до 1,5 ГБ | SSO; импорт в СОД | MVP без интеграции в контур | TIER0 · BCF ladder · [`IFC_ANALYZE_VS_INGEST_CAP_2026_08.md`](IFC_ANALYZE_VS_INGEST_CAP_2026_08.md) | CDE-ready; OIDC 501; SPF/WASM остаются 256 МиБ |
-| Б4 | 20 | Пустые A1–A8; методика лабораторного замера | Часы партнёра; подписанный до/после | Лабораторный замер ≠ часы Самолёта; −72,1% не наш | [`BEFORE_AFTER_MEASUREMENT_PROTOCOL_2026_09.md`](../partners/BEFORE_AFTER_MEASUREMENT_PROTOCOL_2026_09.md) · [`ECONOMIC_MODEL_LABELED_ASSUMPTIONS_2026_08.md`](../partners/ECONOMIC_MODEL_LABELED_ASSUMPTIONS_2026_08.md) | Эффект для партнёра |
+| Б4 | 20 | Пустые A1–A8; методика; journal только `t_tool_ms` на git-стенке | Часы партнёра; `t_manual_s`; подписанный до/после | Лабораторный замер ≠ часы Самолёта; −72,1% не наш | [`BEFORE_AFTER_MEASUREMENT_PROTOCOL_2026_09.md`](../partners/BEFORE_AFTER_MEASUREMENT_PROTOCOL_2026_09.md) · [`ECONOMIC_MODEL_LABELED_ASSUMPTIONS_2026_08.md`](../partners/ECONOMIC_MODEL_LABELED_ASSUMPTIONS_2026_08.md) · [`lab-before-after-fixture-tool-only-latest.json`](../evidence/lab-before-after-fixture-tool-only-latest.json) | Эффект для партнёра |
 | Б5 | 10 | BOM; LICENSE MIT; карта прозрачности | Соглашение о правах по п. 6.3 | MIT сейчас; развилка прав — вопрос организаторам, не обещание | [`KT3_DELIVERY_BOM_2026_08.md`](KT3_DELIVERY_BOM_2026_08.md) · [`ADR-004-prize-ip-mit-fork-2026.md`](../architecture/ADR-004-prize-ip-mit-fork-2026.md) | Передача исключительных прав |
 
 Шкала процентов — та же, что у отбора (0–20 очень низкий … 81–100 очень высокий).

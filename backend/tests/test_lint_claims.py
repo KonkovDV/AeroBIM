@@ -226,6 +226,39 @@ class LintClaimsTests(unittest.TestCase):
                     sys.path.pop(0)
             self.assertTrue(any("elsevier_year_twin" in h or "fabricated_doi" in h for h in hits))
 
+    def test_operator_local_coordinate_is_not_a_doi(self) -> None:
+        sys.path.insert(0, str(_REPO / "scripts"))
+        try:
+            from lint_claims import (  # type: ignore[import-not-found]
+                is_citation_doi_candidate,
+                lint_citation_twins,
+            )
+        finally:
+            if sys.path and sys.path[0] == str(_REPO / "scripts"):
+                sys.path.pop(0)
+        coord_line = "узел 10.3049/47868 на схеме"
+        path_line = "замечания от 19.09 файл 10.2025/лк-цнэ-3419"
+        self.assertFalse(is_citation_doi_candidate("10.3049/47868", line=coord_line))
+        self.assertFalse(is_citation_doi_candidate("10.2025/лк-цнэ-3419", line=path_line))
+        live = "IDS workflow https://doi.org/10.1016/j.autcon.2026.107043"
+        self.assertTrue(is_citation_doi_candidate("10.1016/j.autcon.2026.107043", line=live))
+        self.assertTrue(
+            is_citation_doi_candidate(
+                "10.1109/icdmw69685.2025.00203",
+                line="Perov ICDMW 10.1109/icdmw69685.2025.00203",
+            )
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            local = Path(tmp) / ".local" / "pack-out"
+            local.mkdir(parents=True)
+            path = local / "schema.md"
+            path.write_text(
+                "узел 10.3049/47868; also doi:10.1016/j.aei.2026.103676\n",
+                encoding="utf-8",
+            )
+            hits = lint_citation_twins(roots=[path])
+        self.assertEqual(hits, [])
+
     def test_partners_speech_docs_are_not_directory_blind(self) -> None:
         """HDX-LINT-01: docs/partners/ is a scan root and must actually be linted."""
         sys.path.insert(0, str(_REPO / "scripts"))

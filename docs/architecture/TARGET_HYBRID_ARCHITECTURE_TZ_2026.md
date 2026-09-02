@@ -2,8 +2,8 @@
 ---
 title: "AeroBIM Target Hybrid Architecture for Samolet TechLab TZ"
 status: active
-version: "1.1.1"
-last_updated: "2026-08-29"
+version: "1.1.4"
+last_updated: "2026-09-02"
 tags: [aerobim, architecture, openbim, tz, sota-2026, hybrid-ai]
 claim_boundary: "Design proposal only. Checkpoint remains NO_GO until RT-001/002/003 evidenced. ADR-001 owns summary.passed wording."
 ---
@@ -29,7 +29,9 @@ Complementary anchors:
 |--------|-------------------------|
 | Buildings 2026 HITL KG rule-base | Expert confirm/edit → versioned norm pack (already: `NormRulePackVersionStore` + HITL UC) |
 | ArchCAD-400k / DPSS (Luo et al., arXiv:2503.22346) | Foreign bench: **semantic F1 87.8%** and **panoptic PQ 70.6%** (instance mAP 40.7%). PQ is not comparable across FloorPlanCAD papers. Not AeroBIM. Native DWG spotting is not in the product. |
-| TUM / Iversen & Huang 2026 agentic ACC | ReAct + tool-calling over IFC/measurement tools; LLM selects tools, engines execute |
+| TUM / Iversen & Huang 2026 agentic ACC | ReAct + tool-calling over IFC; LLM selects tools. Contrast: AeroBIM keeps the LLM off `summary.passed` (ADR-001) |
+| Xiao 2026 AuC 189 geometry-intensive ACC | Graph semantics for fire/geometry rules — roadmap for RT-003 `NOT_VERIFIED`, not a delivery claim |
+| Fuchs TUM/EC3 2026 generated checkers | Agents write IDS-validated functions; AeroBIM ships hashed/approved packs instead |
 | MCP4IFC / MCP agent pipelines | Tool registry over deterministic IFC APIs outperforms pure RAG for compliance verdicts |
 | Claims Lock 2026-07-17 | Forbidden wording until evidence: DWG-ready, MEP-done, calc correctness, >90%, CDE-ready BCF |
 
@@ -157,6 +159,8 @@ for each finding_id:
 ```
 
 Policy already partially present via `signoff_policy.py` (FAILED capabilities block pass) and `IdsAssistDraftPort` boundary. Target: elevate to an explicit application service with persisted `DivergenceRecord` on the report.
+
+**Product decision (Samolet / expertise, 2026-09-02):** hybrid, not “LLM on the check route”. Iversen & Huang (AuC 182) select tools; Fuchs et al. (EC3) generate functions. AeroBIM may draft remarks/IDS; `DeterminismGate` demotes advisory-only findings to INFO and never flips `summary.passed`. Generated checkers enter sign-off only after a human journal + hashed/`approval_ref` pack. Do not claim higher accuracy than Iversen.
 
 ---
 
@@ -406,12 +410,21 @@ Customer SLA remains **unproven** until measured on customer packages (`measure_
 1. Mirhosseini N., Shojaei D., Sabri S. (2026). *A systematic review of methods for interpreting building code regulations in automated compliance systems.* Building Research & Information. https://doi.org/10.1080/09613218.2026.2637965  
 2. Human-in-the-Loop Semantic Rule Base… Knowledge Graph Approach. *Buildings* 2026, 16(4), 719. https://doi.org/10.3390/buildings16040719  
 3. Luo et al. ArchCAD-400K / DPSS — panoptic symbol spotting baseline (arXiv:2503.22346).  
-4. Iversen & Huang (2026) / TUM agentic ACC tool-calling lineage (cited in EC3 multimodal ReAct distance-tool work).  
-5. MCP4IFC (2025): MCP + IfcOpenShell tool registry for LLM–BIM interaction.  
-6. Seefried et al. (2026). *Blueprint — Multimodal Retrieval for Complex Engineering Drawings* (arXiv:2602.13345) — region-detect → VLM OCR.  
-7. Lamsal et al. (2026). *IfcLLM — NL querying of IFC via relational + graph backends* (arXiv:2605.13236).  
-8. AeroBIM architecture SSOT: [`TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](TARGET_HYBRID_ARCHITECTURE_TZ_2026.md); verdict ownership: [`ADR-001-verdict-ownership-2026.md`](ADR-001-verdict-ownership-2026.md).  
-9. AeroBIM SSOT: `domain/architecture.py`, `audit/reports/CLAIMS_LOCK_2026_07_17.md`, `GET /v1/system/capabilities`.
+4. Iversen & Huang (2026), Automation in Construction 182:106707 — LLM BIM ACC / tool-calling. Contrast: AeroBIM deterministic verdict (ADR-001). https://www.sciencedirect.com/science/article/pii/S0926580525007472  
+5. Xiao et al. (2026), Automation in Construction 189:107038 — geometry-intensive compliance. RT-003 roadmap, not shipped. https://doi.org/10.1016/j.autcon.2026.107038  
+6. Fuchs, Hellin & Borrmann (2026), EC3 — generated checking functions with IDS-validated requirements. https://mediatum.ub.tum.de/doc/1854862  
+7. Zentgraf et al. (2026), Advanced Engineering Informatics 74C 104735. https://doi.org/10.1016/j.aei.2026.104735  
+8. BIM-Edit (arXiv:2606.20146) — IFC editing bench, adjacent, not pack checking.  
+9. MCP4IFC (2025): MCP + IfcOpenShell tool registry for LLM–BIM interaction.  
+10. Seefried et al. (2026). *Blueprint — Multimodal Retrieval for Complex Engineering Drawings* (arXiv:2602.13345) — region-detect → VLM OCR.  
+11. Lamsal et al. (2026). *IfcLLM — NL querying of IFC via relational + graph backends* (arXiv:2605.13236).  
+12. Related-work pin: [`../RELATED_WORK_PREPRINT_2026_09.md`](../RELATED_WORK_PREPRINT_2026_09.md).  
+13. Perov et al. (2025), ICDMW — regulations → IDS via tool-augmented LLM. Adjacent to Fuchs; not Shared-gate. https://doi.org/10.1109/icdmw69685.2025.00203  
+14. Dias, Miceli Junior & Pellanda (2026), AuC 189:107043 — IDS as information requirements for cost QTO. Analog only. https://doi.org/10.1016/j.autcon.2026.107043  
+15. Wang, Hwang, Han & Gupta (2026), JCEM 152(8) — generative AI-assisted compliance checking. Contrast: ADR-001. https://doi.org/10.1061/jcemd4.coeng-18122  
+16. Hettiarachchi et al. (2026), MLWA 24:100911 — SNOWTEC requirement IE. Adjacent extraction. https://doi.org/10.1016/j.mlwa.2026.100911  
+17. AeroBIM architecture SSOT: [`TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](TARGET_HYBRID_ARCHITECTURE_TZ_2026.md); verdict ownership: [`ADR-001-verdict-ownership-2026.md`](ADR-001-verdict-ownership-2026.md).  
+18. AeroBIM SSOT: `domain/architecture.py`, `audit/reports/CLAIMS_LOCK_2026_07_17.md`, `GET /v1/system/capabilities`.
 
 ---
 

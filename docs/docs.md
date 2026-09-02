@@ -3,8 +3,8 @@
 ## Техническое обоснование проекта для жюри программы «Техлаб Москва»
 ### задаче Самолёта по верификации ПД/РД, ГК «Самолёт»
 
-**Версия:** 1.2.11  
-**Дата:** 1 сентября 2026 года  
+**Версия:** 1.2.14  
+**Дата:** 2 сентября 2026 года  
 **Команда разработчиков AeroBIM**  
 **Репозиторий:** https://github.com/KonkovDV/AeroBIM  
 **Измерения (авг):** [`evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md`](evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md) · [`evidence/baseline-2026-08.pdf`](evidence/baseline-2026-08.pdf)
@@ -268,7 +268,7 @@ Solibri и Navisworks сильнее AeroBIM по зрелости model checkin
 
 Метки: `[Ф]` = с карточки МИК · `[П]` = открытый источник · `[Н]` = публично не подтверждается · `[О]` = противоречие. Дата разведки: **09.08.2026**; RU-девелоперы / Tangl / 10D — **14.08.2026**.
 
-Потенциальное отличие AeroBIM — не отдельная функция, а **проверяемость**: advisory не меняет `summary.passed` (OFF==ON), непройденная проверка не притворяется «нарушений нет», замечание уходит машиночитаемо (BCF), контур развёртывания доказуем.
+Потенциальное отличие AeroBIM — не отдельная функция и **не** «мы точнее Iversen», а **проверяемость**: advisory не меняет `summary.passed` (OFF==ON), непройденная проверка не притворяется «нарушений нет», замечание уходит машиночитаемо (BCF), контур развёртывания доказуем. Гибрид: LLM может набросать замечание или IDS; на Shared-gate не выбирает tool и не ставит generated checker, пока нет journal и hashed/`approval_ref` pack (ADR-001). Iversen/Fuchs закрывают оцифровку нормы моделью; мы — кто имеет право сказать pass.
 
 ---
 
@@ -468,12 +468,21 @@ AeroBIM решает конкретную задачу: уменьшает об�
 - IFC-Bench-v1 (Hellin et al.): https://github.com/sylvainHellin/ifc-bench · HF V2: https://huggingface.co/datasets/sylvainhellin/ifc-bench
 - Arch-Eval (Wu et al., Sci Rep 2025): https://www.nature.com/articles/s41598-025-98236-0
 - Perov et al., From Regulations to IDS (ICDMW DOI): https://doi.org/10.1109/icdmw69685.2025.00203 — внешние индексы также показывают *Buildings* 15 (2025) art. 2927 с тем же названием; **не склеивать** с ICDMW DOI как одну работу до ручной сверки (`lint_citation_twins`)
+- Dias, Miceli Junior & Pellanda, Automation in Construction 189 (2026) 107043 (IDS как information requirements для сметы/QTO; analog, не продукт AeroBIM): https://doi.org/10.1016/j.autcon.2026.107043
 - IFC-QA: https://openreview.net/pdf?id=H6vTDjJMZ9
 - Zentgraf et al., Advanced Engineering Informatics, 2026: https://doi.org/10.1016/j.aei.2026.104735
-- Madireddy et al., Electronics, 2025: https://doi.org/10.3390/electronics14112146
-- Wang et al., JCEM, 2026: https://doi.org/10.1061/jcemd4.coeng-18122
+- Iversen & Huang, Automation in Construction 182 (2026) 106707 (LLM BIM ACC; контраст: у AeroBIM LLM не пишет `summary.passed`): https://www.sciencedirect.com/science/article/pii/S0926580525007472
+- Xiao et al., Automation in Construction 189 (2026) 107038 (geometry-intensive ACC; дорожная карта RT-003, не поставка): https://doi.org/10.1016/j.autcon.2026.107038
+- Fuchs, Hellin & Borrmann, EC3 2026 (генерируемые checking-функции vs hashed rule pack): https://mediatum.ub.tum.de/doc/1854862
+- BIM-Edit (NL edit IFC, не проверка комплекта): https://arxiv.org/abs/2606.20146
+- Ishigaki-IDS-Bench: https://arxiv.org/abs/2605.22079
+- Обзор related-work + китайский прецедент (не наш объём): [`RELATED_WORK_PREPRINT_2026_09.md`](RELATED_WORK_PREPRINT_2026_09.md)
+- Cheung et al., Building Research & Information, 2026 (institutionalizing ACC): https://doi.org/10.1080/09613218.2026.2686293
+- Simbola et al., Machine Learning, 2026 (LLM-CC над data-product дескрипторами, **не** строительные нормы): https://doi.org/10.1007/s10994-026-07038-6
+- Wang et al., JCEM 152(8) 2026: https://doi.org/10.1061/jcemd4.coeng-18122
 - Mirhosseini et al., Building Research & Information, 2026: https://doi.org/10.1080/09613218.2026.2637965
-- Human-in-the-Loop rule generation: https://www.mdpi.com/2075-5309/16/4/719
+- Zhang et al., Human-in-the-Loop semantic rule base (*Buildings* 16(4) 719; их eval не наш): https://doi.org/10.3390/buildings16040719
+- SNOWTEC (Hettiarachchi et al., MLWA 24 art. 100911; IE норм, не вердикт): https://doi.org/10.1016/j.mlwa.2026.100911
 - AI in BIM clash management: https://www.mdpi.com/2075-5309/16/13/2623
 
 **Уровни чисел (не смешивать):** L1 open-bench (`claim_level=open_bench_only`) — AECV live: **`macro_extended=0.4325`** (5 полей = метрика Table 1 / upstream `mean_accuracy`) / `macro_bench_protocol=0.5064` (4 класса, **справочно**, не против Table 1); см. `research/AECV_BASELINE_COMPARE_2_1_2026_08_04.md` · [`evidence/aecv-bench-eval-latest.json`](evidence/aecv-bench-eval-latest.json) · [`evidence/aecv-scorer-validation-2026-08-04.md`](evidence/aecv-scorer-validation-2026-08-04.md) · IFC-Bench smoke · L2 fixture · L3 RT-001. Source audit: `research/SOURCE_VERIFICATION_REPORT_2026_08_04.md`.

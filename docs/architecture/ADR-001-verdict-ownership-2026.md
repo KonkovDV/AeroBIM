@@ -1,8 +1,9 @@
+<!-- claims-lint: allow-file reason="ADR-001 verdict ownership; Iversen/Fuchs contrast as non-claim; NO_GO" -->
 ---
 title: "ADR-001 — Contour ownership of summary.passed"
 status: accepted
 date: 2026-07-18
-last_updated: "2026-08-13"
+last_updated: "2026-09-02"
 ---
 
 # ADR-001: Contour ownership of `summary.passed`
@@ -29,9 +30,22 @@ Jury-facing language must not say “no automatic verdict” without this distin
 5. Human-in-the-loop confirms/rejects **findings** for handoff; HITL review events do not redefine the Shared-gate boolean by themselves.
 6. Public wording: “deterministic Shared-gate applied at evidence assembly” — not “AI contour sets pass” and not “no automatic status”.
 
+## Product split vs 2026 ACC literature
+
+Iversen & Huang (AuC 182, 2026) put the LLM on the check route: interpret a clause, select a tool, execute, report. Fuchs, Hellin & Borrmann (EC3, 2026) generate reusable checking functions from IDS-validated requirements and run them. Those papers close **encoding a clause into an executable check**. They do not close **who is allowed to say pass**.
+
+AeroBIM’s product choice for Samolet / expertise is the opposite of that route:
+
+1. **Drafts yes.** The model may compose a remark, an IDS fragment, or a candidate function.
+2. **Shared-gate no.** `call_tool` and `change_verdict` are forbidden provider actions. Generated checkers do not enter sign-off until a human-approved hashed pack with `approval_ref`.
+3. **Hybrid, not “more accurate”.** Do not say «мы лучше Iversen». Their F1 stays theirs. Jury line: they close digitising a norm with a model; we close who may emit `summary.passed`.
+
+Runtime pins: `FORBIDDEN_LLM_ACTIONS`, `LLM_SELECTS_CHECK_ON_VERDICT_PATH=False`, `LLM_GENERATED_FUNCTION_WRITES_SUMMARY_PASSED=False`, `DeterminismGate`, `IdsAssistDraftPort` unwired from Analyze.
+
 ## Consequences
 
 - Keep writing `passed` in EvidenceAssembler.
 - Pilot/production sign-off profiles fail-closed on required clash / MEP / unit_scale / calc-qty SKIPPED.
 - Jury memo (`docs/docs.md`) and Claims Lock must stay aligned with this ADR.
 - Do not move AI outputs into signoff inputs.
+- Do not wire generated IDS/functions onto the verdict path without journal + pack hash.

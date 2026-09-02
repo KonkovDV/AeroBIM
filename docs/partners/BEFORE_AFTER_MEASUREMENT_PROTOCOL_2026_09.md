@@ -2,9 +2,9 @@
 ---
 title: "Before/after measurement protocol — lab pack, not partner B4"
 date: "2026-08-30"
-last_updated: "2026-08-30"
+last_updated: "2026-09-02"
 status: active
-version: "1.0.0"
+version: "1.1.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -61,6 +61,14 @@ claim_boundary: >
 | `claim_level` | `fixture_only` или `synthetic_only` |
 
 Расхождения фиксировать **по finding_id**, не «в целом быстрее».
+
+## Мост-артефакт (только машинное время)
+
+CLI `python -m aerobim.tools.run_lab_before_after_fixture --also-docs-evidence`
+пишет [`../evidence/lab-before-after-fixture-tool-only-latest.json`](../evidence/lab-before-after-fixture-tool-only-latest.json):
+`t_tool_ms` на git-стенке + IDS, `claim_level=fixture_only`.
+`t_manual_s`, `n_remarks_manual`, HITL-подтверждение и `discrepancy` — **null**.
+Формула доли **не** считается. Это не заполнение A1–A8 и не Б4 партнёра.
 
 ## Ограничения
 

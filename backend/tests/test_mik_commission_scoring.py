@@ -419,6 +419,8 @@ class Kt3CommissionPackTests(unittest.TestCase):
         self.assertIn("не измерялось", faq)
         self.assertIn("B_FINAL_SCORING_TICKSHEET_2026_09.md", tier0)
         self.assertIn("BEFORE_AFTER_MEASUREMENT_PROTOCOL_2026_09.md", tier0)
+        self.assertIn("RELATED_WORK_PREPRINT_2026_09.md", tier0)
+        self.assertIn("lab-before-after-fixture-tool-only-latest.json", lab)
         self.assertIn("DEFECT_INJECTION_RECALL_PLAN_2026_09.md", tier0)
         self.assertIn("ADR-004-prize-ip-mit-fork-2026.md", tier0)
         self.assertIn("ORDER_WEIGHTS_VERIFICATION_2026_09.md", tier0)

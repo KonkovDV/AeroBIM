@@ -2,9 +2,9 @@
 ---
 title: "K2 novelty vs peers — methodology is the wedge, not 90%"
 date: "2026-08-29"
-last_updated: "2026-08-30"
+last_updated: "2026-09-02"
 status: active
-version: "1.1.0"
+version: "1.1.4"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -59,6 +59,16 @@ A0 IDS-only → A2 кросс-док. Это вклад модальностей
 Честный проигрыш остаётся в силе: корпус норм и живой DWG у части сверстников
 сильнее **заявлены**. Мы не «лучше Solibri глобально». Клин — измеримость и
 openBIM-шов, не магия скана.
+
+Сентябрь 2026 (поле ACC): Iversen & Huang ставят LLM в маршрут проверки
+(интерпретация → tool → отчёт); Fuchs et al. генерируют checking-функции.
+AeroBIM оставляет LLM вне `summary.passed`: черновик — да, Shared-gate — hashed/
+`approval_ref` pack. Это не заявление «мы лучше Iversen» и не перенос их F1.
+Геометрическую волну (Xiao AuC 189) не заявляем закрытой — RT-003 `NOT_VERIFIED`.
+Мандат CORENET X с 01.10.2026 — новые проекты GFA ≥ 5 000 м², не «все проекты».
+Обзор: [`../RELATED_WORK_PREPRINT_2026_09.md`](../RELATED_WORK_PREPRINT_2026_09.md).
+Смежный prior art (Crossref 02.09): Perov ICDMW и Fuchs генерируют IDS/функции;
+Dias AuC 107043 — IDS для сметы, не наш gate. Их цифры не переносить.
 
 GNI BIM Dataset (224 IFC, CC BY 4.0) — опция владельца: dual-rater с меткой
 `open_bench_only`. Это не RT-001 и не Б2 «метрики партнёра».

@@ -322,7 +322,7 @@ def _iter_scan_files() -> list[Path]:
                 continue
             if path.suffix.lower() not in {".md", ".tsx", ".ts", ".jsx", ".js", ".html", ".json"}:
                 continue
-            if any(part in {".git", "node_modules", "__pycache__"} for part in path.parts):
+            if any(part in {".git", "node_modules", "__pycache__", ".venv", ".local"} for part in path.parts):
                 continue
             files.append(path)
     return sorted(set(files))
@@ -598,6 +598,25 @@ _ELSEVIER_DOI_RE = re.compile(
     r"10\.1016/j\.(?P<journal>[a-z]+)\.(?P<year>20\d{2})\.(?P<article>\d+)",
     re.IGNORECASE,
 )
+_GENERIC_DOI_RE = re.compile(r"\b(10\.\d{4,9}/[^\s\]\)\"'<>]+)")
+_DOI_CONTEXT_RE = re.compile(
+    r"(?i)(?:doi\.org|/doi/|doi:\s*|https://doi\.org|datacite|crossref)",
+)
+_CYRILLIC_RE = re.compile(r"[А-Яа-яЁё]")
+_SCHOLARLY_DOI_PREFIXES = (
+    "10.1016/",
+    "10.1109/",
+    "10.1061/",
+    "10.3390/",
+    "10.1007/",
+    "10.1080/",
+    "10.1145/",
+    "10.1038/",
+    "10.5281/",
+    "10.48550/",
+    "10.35490/",
+)
+_OPERATOR_PATH_PARTS = frozenset({".local", ".venv", "node_modules", "site-packages"})
 _CITATION_AUDIT_TRAIL_FRAGMENTS = (
     "CITATION_ERRATA",
     "SOURCE_VERIFICATION_REPORT",
@@ -605,6 +624,32 @@ _CITATION_AUDIT_TRAIL_FRAGMENTS = (
     "RED_TEAM",
 )
 _CITATION_SCAN_SUFFIXES = {".md", ".rst", ".txt"}
+
+
+def _is_operator_or_vendor_path(rel: str) -> bool:
+    """Skip gitignored operator dumps and vendor trees (fact-check 2026-09-02)."""
+    return any(part in _OPERATOR_PATH_PARTS for part in rel.replace("\\", "/").split("/"))
+
+
+def is_citation_doi_candidate(token: str, *, line: str) -> bool:
+    """True only for a scholarly DOI in citation context.
+
+    Bare ``10.3049/47868`` from calc sheets and ``10.2025/лк-цнэ-3419`` path
+    fragments are not DOIs. Require ``doi.org`` / ``doi:`` nearby, or a known
+    publisher prefix without Cyrillic.
+    """
+    cleaned = token.strip().rstrip(").,;]")
+    if not cleaned.startswith("10."):
+        found = _GENERIC_DOI_RE.search(cleaned)
+        if not found:
+            return False
+        cleaned = found.group(1).rstrip(").,;]")
+    if _CYRILLIC_RE.search(cleaned):
+        return False
+    if _DOI_CONTEXT_RE.search(line):
+        return True
+    lowered = cleaned.lower()
+    return any(lowered.startswith(prefix) for prefix in _SCHOLARLY_DOI_PREFIXES)
 
 
 def _is_citation_audit_trail(rel: str) -> bool:
@@ -627,14 +672,18 @@ def lint_citation_twins(*, roots: list[Path] | None = None) -> list[str]:
     for path in sorted(set(files)):
         if path.suffix.lower() not in _CITATION_SCAN_SUFFIXES:
             continue
-        try:
-            text = path.read_text(encoding="utf-8", errors="ignore")
-        except OSError:
+        if any(part in _OPERATOR_PATH_PARTS for part in path.parts):
             continue
         try:
             rel = path.relative_to(_repo_root()).as_posix()
         except ValueError:
             rel = path.as_posix()
+        if _is_operator_or_vendor_path(rel):
+            continue
+        try:
+            text = path.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            continue
         trail = _is_citation_audit_trail(rel)
         for lineno, line in enumerate(text.splitlines(), start=1):
             lowered = line.lower()

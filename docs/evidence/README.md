@@ -2,8 +2,8 @@
 ---
 title: "Citeable evidence (jury / FAIR)"
 status: active
-version: "2.5.16"
-last_updated: "2026-08-31"
+version: "2.5.17"
+last_updated: "2026-09-02"
 ---
 
 # Evidence fixtures
@@ -48,6 +48,7 @@ Only **citeable** snapshots for TechLab review and reproducibility. Working dump
 | [`checkpoint2-evidence-bundle-latest.json`](checkpoint2-evidence-bundle-latest.json) | P2-04 wall-guid demo bundle pin (fixture GO) |
 | [`runtime-baseline-latest.json`](runtime-baseline-latest.json) | Runtime LOC / tests / gates (schema 1.2.0; completeness checked in CI) |
 | [`samolet-sla-fixture-p95-2026-08-04.json`](samolet-sla-fixture-p95-2026-08-04.json) | Fixture SLA schema **1.4.0**, gate=**p95**; not customer; advisory on/off dual-run is still manual. Speech sheet: [`../demo/KT2_FIXTURE_TIMING_2026_08_16.md`](../demo/KT2_FIXTURE_TIMING_2026_08_16.md) |
+| [`lab-before-after-fixture-tool-only-latest.json`](lab-before-after-fixture-tool-only-latest.json) | Lab before/after journal: `t_tool_ms` on git wall+IDS; `t_manual_s` null; not partner B4; not A1–A8 |
 | [`tracker-baseline-2026-08-07.md`](tracker-baseline-2026-08-07.md) · [`.pdf`](tracker-baseline-2026-08-07.pdf) | К0 tracker baseline (NO_GO; open-bench + fixture + synthetic); commercial counts local-only |
 | [`sprint2-synthetic-baseline-2026-08-04.json`](sprint2-synthetic-baseline-2026-08-04.json) | Synthetic detection twin (`synthetic_only`) |
 | [`samolet-sla-pilot-moscow-2026-05-21.json`](samolet-sla-pilot-moscow-2026-05-21.json) | Legacy fixture SLA snapshot |

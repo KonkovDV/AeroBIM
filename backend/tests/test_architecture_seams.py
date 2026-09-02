@@ -96,6 +96,31 @@ class ArchitectureSeamTests(unittest.TestCase):
         self.assertIn("@sota-stub", adapter_src)
         self.assertIn("StubIdsAssistDraftAdapter", adapter_src)
 
+    def test_hd19_s3_presign_residual_is_tracked_and_unwired(self) -> None:
+        """Re-Audit #9: presign GET cap bypass stays in KNOWN_BUGS; no src callers."""
+
+        root = Path(__file__).resolve().parents[2]
+        known = (root / "KNOWN_BUGS.md").read_text(encoding="utf-8")
+        self.assertIn("HD19-S3-01", known)
+        self.assertIn("presign_get", known)
+        src = root / "backend" / "src"
+        callers: list[str] = []
+        for path in src.rglob("*.py"):
+            text = path.read_text(encoding="utf-8")
+            if ".presign_get(" in text:
+                callers.append(path.relative_to(src).as_posix())
+        self.assertEqual(callers, [])
+        factories = (src / "aerobim" / "infrastructure" / "di" / "_di_factories.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("RegionRestrictedVlmPipeline", factories)
+        self.assertIn("def _build_advisory_vlm_pipeline", factories)
+        build_fn = factories.split("def _build_advisory_vlm_pipeline", 1)[1].split(
+            "\ndef _build_", 1
+        )[0]
+        self.assertNotIn("VlmDrawingPipeline", build_fn)
+        self.assertIn("return RegionRestrictedVlmPipeline", build_fn)
+
     def test_advisory_off_equals_advisory_on_for_summary_passed(self) -> None:
         """AI advisory contour must not mutate deterministic summary.passed."""
 
@@ -150,6 +175,53 @@ class ArchitectureSeamTests(unittest.TestCase):
         on = _build().execute(request)
         self.assertEqual(off.summary.passed, on.summary.passed)
         self.assertEqual(Contour.AI_ADVISORY.value, "ai_advisory")
+
+    def test_product_split_vs_2026_acc_literature(self) -> None:
+        from aerobim.domain.llm_advisory import (
+            FORBIDDEN_LLM_ACTIONS,
+            LLM_GENERATED_FUNCTION_WRITES_SUMMARY_PASSED,
+            LLM_SELECTS_CHECK_ON_VERDICT_PATH,
+        )
+
+        self.assertIn("call_tool", FORBIDDEN_LLM_ACTIONS)
+        self.assertIn("change_verdict", FORBIDDEN_LLM_ACTIONS)
+        self.assertFalse(LLM_SELECTS_CHECK_ON_VERDICT_PATH)
+        self.assertFalse(LLM_GENERATED_FUNCTION_WRITES_SUMMARY_PASSED)
+
+        repo = Path(__file__).resolve().parents[2]
+        analyze_src = (
+            repo
+            / "backend"
+            / "src"
+            / "aerobim"
+            / "application"
+            / "use_cases"
+            / "analyze_project_package.py"
+        ).read_text(encoding="utf-8")
+        self.assertNotIn("ids_assist", analyze_src)
+        self.assertNotIn("IdsAssist", analyze_src)
+
+        ids_assist = (
+            repo
+            / "backend"
+            / "src"
+            / "aerobim"
+            / "application"
+            / "services"
+            / "ids_assist_boundary.py"
+        ).read_text(encoding="utf-8")
+        self.assertIn("Never wire into AnalyzeProjectPackageUseCase", ids_assist)
+        self.assertIn("approval_ref", ids_assist)
+
+        adr = (repo / "docs" / "architecture" / "ADR-001-verdict-ownership-2026.md").read_text(
+            encoding="utf-8"
+        )
+        faq = (repo / "docs" / "demo" / "KT3_JURY_FAQ_2026_08_25.md").read_text(encoding="utf-8")
+        related = (repo / "docs" / "RELATED_WORK_PREPRINT_2026_09.md").read_text(encoding="utf-8")
+        for text in (adr, faq, related):
+            self.assertIn("Iversen", text)
+            self.assertIn("Fuchs", text)
+            self.assertIn("лучше Iversen", text)
 
 
 class ExportRuntimeBaselineTests(unittest.TestCase):
