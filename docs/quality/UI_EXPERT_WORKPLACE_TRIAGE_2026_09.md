@@ -26,7 +26,7 @@ Checkpoint **`NO_GO`**. `detected_count: 0`. UI **не** закрывает RT-0
 
 Позиционирование (не модель-чекер против Tangl/10D): согласованность **комплекта** (модель ↔ чертежи ↔ ТЗ ↔ расчёты ↔ смежные разделы) и файловый выход BCF/HTML/JSON. Импорт в СОД заказчика — **NOT_VERIFIED**.
 
-Связанные: [`FORMAT_INGEST_TRIAGE_2026_09.md`](FORMAT_INGEST_TRIAGE_2026_09.md) · [`../architecture/ADR-001-verdict-ownership-2026.md`](../architecture/ADR-001-verdict-ownership-2026.md) · [`../tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md`](../tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md) · [`TRACKER_EIGHT_TASKS_2026_08.md`](TRACKER_EIGHT_TASKS_2026_08.md).
+Связанные: [`FORMAT_INGEST_TRIAGE_2026_09.md`](FORMAT_INGEST_TRIAGE_2026_09.md) · [`../architecture/ADR-001-verdict-ownership-2026.md`](../architecture/ADR-001-verdict-ownership-2026.md) · [`../tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md`](../tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md) · [`TRACKER_EIGHT_TASKS_2026_08.md`](TRACKER_EIGHT_TASKS_2026_08.md) · [`FRONTEND_DEVELOPMENT_PLAN_2026_09.md`](FRONTEND_DEVELOPMENT_PLAN_2026_09.md) (исполняемый план WP-FE для ИИ).
 
 ## Восемь экранов (IA, не delivery)
 
