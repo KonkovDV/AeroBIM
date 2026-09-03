@@ -46,7 +46,7 @@ Checkpoint **`NO_GO`**. `predicted_aerobim_total() is None`.
 
 | # | Адресат | Содержание | Шаблон |
 |---|---|---|---|
-| 1 | Самолёт (через организаторов) | A–G grounded; **не** формы Фонда | [`SAMOLET_QUESTIONS_GROUNDED_2026_09_03.md`](../partners/SAMOLET_QUESTIONS_GROUNDED_2026_09_03.md) |
+| 1 | Самолёт (через организаторов) | Шесть блокеров ТЗ; **не** формы Фонда | [`SAMOLET_QUESTIONS_GROUNDED_2026_09_03.md`](../partners/SAMOLET_QUESTIONS_GROUNDED_2026_09_03.md) |
 | 2 | Организаторы Техлаб | Пять TBD-разделов брифа | §3 grounded |
 | 3 | Менеджер МИК | M2, M8, форма M7, программа испытаний | [`MIK_OPERATOR_LETTER_REQUEST_2026_09.md`](../partners/MIK_OPERATOR_LETTER_REQUEST_2026_09.md) |
 
