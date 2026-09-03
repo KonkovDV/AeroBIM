@@ -14,9 +14,7 @@ From 2 April 2026, Moscow requires AGR CIM in IFC under DGP order № ДГП-Р-
 
 IFC + IDS + sheets + specification texts go in. Findings you can follow to a sheet and a GUID come out — HTML, JSON, BCF. The reviewer still decides. AeroBIM is not a CDE, not a model viewer, and not a replacement for the expert.
 
-> **Checkpoint #2 (20 Aug 2026), Moscow TechLab task on automated verification of design and working documentation, customer Samolet Group.** Intake pack: [`submission/README.md`](submission/README.md). We are in *refinement*. One command shows a fail-closed finding on a fixture. Effectiveness validation and deployment have not started. Checkpoint `NO_GO` until an independent labeled pack, two raters, an acceptance profile (public examination IDS for measurement; Samolet signature for deployment), and CDE proof.
->
-> Мы на стадии доработки. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение ещё не начались. `NO_GO` сохраняется, пока нет независимого размеченного корпуса, двух разметчиков, профиля приёмки (публичные IDS экспертизы — измерение; подпись Самолёта — внедрение) и подтверждения импорта в СОД.
+> **KT#3 window (3–21 Sep 2026), feature freeze 18 Sep, delivery pack 19–21 Sep. Moscow TechLab task on automated verification of design and working documentation, customer Samolet Group.** Historical KT#2 intake (20 Aug): [`submission/README.md`](submission/README.md). We are in *refinement*. One command shows a fail-closed finding on a fixture. Effectiveness validation and deployment have not started. Checkpoint `NO_GO` until an independent labeled pack, two raters, an acceptance profile (public examination IDS for measurement; Samolet signature for deployment), and CDE proof.
 
 ## The seam where packs break
 
