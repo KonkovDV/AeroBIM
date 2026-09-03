@@ -66,7 +66,7 @@ export function priorityCaption(issue: ValidationIssue): string | null {
   if (typeof issue.priority !== "number" || issue.priority <= 0) {
     return null;
   }
-  return `P${issue.priority} · AEROBIM_PRIORITY_PROFILE (severity × discipline × stage), not product accuracy`;
+  return `P${issue.priority} · профиль AEROBIM_PRIORITY_PROFILE (серьёзность × раздел × стадия), не точность продукта`;
 }
 
 export function clauseLine(issue: ValidationIssue): string {
@@ -94,7 +94,7 @@ export function essenceLine(issue: ValidationIssue): string {
   }
   const message = issue.message.trim();
   const sentence = message.split(/(?<=[.!?])\s+/)[0];
-  return sentence || "no one-sentence essence";
+  return sentence || "нет одной фразы сути";
 }
 
 export type ViewerFocus = {

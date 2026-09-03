@@ -2,8 +2,8 @@
 ---
 title: "Citeable evidence (jury / FAIR)"
 status: active
-version: "2.5.17"
-last_updated: "2026-09-02"
+version: "2.5.18"
+last_updated: "2026-09-03"
 ---
 
 # Evidence fixtures
@@ -49,6 +49,8 @@ Only **citeable** snapshots for TechLab review and reproducibility. Working dump
 | [`runtime-baseline-latest.json`](runtime-baseline-latest.json) | Runtime LOC / tests / gates (schema 1.2.0; completeness checked in CI) |
 | [`samolet-sla-fixture-p95-2026-08-04.json`](samolet-sla-fixture-p95-2026-08-04.json) | Fixture SLA schema **1.4.0**, gate=**p95**; not customer; advisory on/off dual-run is still manual. Speech sheet: [`../demo/KT2_FIXTURE_TIMING_2026_08_16.md`](../demo/KT2_FIXTURE_TIMING_2026_08_16.md) |
 | [`lab-before-after-fixture-tool-only-latest.json`](lab-before-after-fixture-tool-only-latest.json) | Lab before/after journal: `t_tool_ms` on git wall+IDS; `t_manual_s` null; not partner B4; not A1–A8 |
+| [`DEFECT_INJECTION_RECALL_PLAN_2026_09.md`](DEFECT_INJECTION_RECALL_PLAN_2026_09.md) | План mutation-test recall; seed 20260824; не партнёр |
+| [`DEFECT_INJECTION_RECALL_RUN_2026_09.md`](DEFECT_INJECTION_RECALL_RUN_2026_09.md) · [`defect-injection-recall-run-latest.json`](defect-injection-recall-run-latest.json) · [`defect-injection-recall-run-fixture-latest.json`](defect-injection-recall-run-fixture-latest.json) | E2 03.09: mutation-kill 0/6 дом-5 AR, 0/6 KR, 1/8 mini-IFC; Wilson lower 0.000 / 0.022; `synthetic_only`; NO_GO |
 | [`tracker-baseline-2026-08-07.md`](tracker-baseline-2026-08-07.md) · [`.pdf`](tracker-baseline-2026-08-07.pdf) | К0 tracker baseline (NO_GO; open-bench + fixture + synthetic); commercial counts local-only |
 | [`sprint2-synthetic-baseline-2026-08-04.json`](sprint2-synthetic-baseline-2026-08-04.json) | Synthetic detection twin (`synthetic_only`) |
 | [`samolet-sla-pilot-moscow-2026-05-21.json`](samolet-sla-pilot-moscow-2026-05-21.json) | Legacy fixture SLA snapshot |

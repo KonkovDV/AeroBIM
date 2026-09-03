@@ -35,16 +35,16 @@ function throwForFailedResponse(response: Response): never {
   if (response.status === 401) {
     throw new Error(
       import.meta.env.PROD || useDevProxy
-        ? "Unauthorized (401): terminate TLS at a reverse proxy / OIDC BFF session cookie (client bearer inject is disabled)."
-        : "Unauthorized (401): use the Vite dev proxy (same-origin) so Authorization is injected server-side."
+        ? "Нет авторизации (401): сессия через OIDC BFF или обратный прокси с TLS (клиентский Bearer отключён)."
+        : "Нет авторизации (401): используйте dev-прокси Vite (тот же источник), чтобы Authorization подставлялся на сервере."
     );
   }
   if (response.status === 503) {
     throw new Error(
-      "API unavailable (503): backend auth/config misconfigured outside development."
+      "API недоступен (503): авторизация или конфигурация бэкенда не настроены вне режима разработки."
     );
   }
-  throw new Error(`Request failed with ${response.status}: ${response.statusText}`);
+  throw new Error(`Запрос завершился ошибкой ${response.status}: ${response.statusText}`);
 }
 
 async function readJson<T>(url: string, init?: { signal?: AbortSignal }): Promise<T> {
@@ -196,7 +196,7 @@ export async function downloadExport(
     credentials: "include",
   });
   if (!response.ok) {
-    throw new Error(`Export failed with ${response.status}: ${response.statusText}`);
+    throw new Error(`Экспорт завершился ошибкой ${response.status}: ${response.statusText}`);
   }
   const blob = await response.blob();
   const extension = format === "bcf" ? "bcfzip" : format;
@@ -294,7 +294,7 @@ export async function postReviewEvent(
     body: JSON.stringify(body),
   });
   if (!response.ok) {
-    throw new Error(`Review event failed with ${response.status}: ${response.statusText}`);
+    throw new Error(`Событие ревью завершилось ошибкой ${response.status}: ${response.statusText}`);
   }
   return (await response.json()) as { event: Record<string, unknown> };
 }
@@ -324,7 +324,7 @@ export async function uploadDocument(
       body: form,
     });
     if (!response.ok) {
-      throw new Error(`Upload failed with ${response.status}: ${response.statusText}`);
+      throw new Error(`Загрузка завершилась ошибкой ${response.status}: ${response.statusText}`);
     }
     return (await response.json()) as {
       upload_id: string;
@@ -360,10 +360,10 @@ export async function uploadDocument(
         });
         return;
       }
-      reject(new Error(`Upload failed with ${xhr.status}: ${xhr.statusText}`));
+      reject(new Error(`Загрузка завершилась ошибкой ${xhr.status}: ${xhr.statusText}`));
     };
-    xhr.onerror = () => reject(new Error("Upload failed"));
-    xhr.onabort = () => reject(new Error("Upload cancelled"));
+    xhr.onerror = () => reject(new Error("Загрузка не удалась"));
+    xhr.onabort = () => reject(new Error("Загрузка отменена"));
     options?.signal?.addEventListener("abort", () => xhr.abort());
     const form = new FormData();
     form.append("file", file);

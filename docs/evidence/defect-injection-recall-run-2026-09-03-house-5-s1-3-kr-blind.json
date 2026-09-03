@@ -1,0 +1,122 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "defect_injection_recall_run",
+  "claim_level": "synthetic_only",
+  "claim_boundary": "Mutation-kill recall on injected synthetics. Output-sensitivity proxy, not semantic defect confirmation. Not Samolet accuracy. Not product accuracy. Does not close RT-001/002/003. Checkpoint NO_GO.",
+  "checkpoint": "NO_GO",
+  "closes_rt001": false,
+  "closes_rt002": false,
+  "closes_rt003": false,
+  "generated_at": "2026-09-03T05:54:59.958493+00:00",
+  "git_commit": "929a787a8972daffc9d39638163fa5338f62543b",
+  "seed": 20260824,
+  "source_label": "house_5_s1_3_kr",
+  "source_path_sha256": "436b1580ee875242ed603a316b6bec462d3a466af468f9859dda6b1752942ae5",
+  "source_content_hashed": false,
+  "manifest_sha256": "0b12485e7e74185d106ca8eea8836ce69e6bf8501c2fe4b207f4f8bfdf46eba2",
+  "frozen_formula": "On the frozen source house_5_s1_3_kr (path-string hash only; IFC bytes not in git) at commit 929a787a8972daffc9d39638163fa5338f62543b with seed 20260824 the mutation-kill recall below was obtained.",
+  "detection_proxy": "killed = issue multiset of the mutated variant differs from the unmutated CONTROL variant (novel or vanished findings). Direction is reported per class; a vanished alarm is recorded as a hide, not as confirmation of the intended defect.",
+  "plan_deviation": "DEFECT_INJECTION_RECALL_PLAN_2026_09 (2026-08-30) gated recall on a seam-clean pack passing summary.passed=true. Attribution in this CLI uses the CONTROL baseline issue-multiset diff instead, because the 2026-09-03 E2 command runs on packs that are not seam-clean.",
+  "determinism_check": {
+    "status": "pass",
+    "source_issue_count": 6,
+    "control_issue_count": 6,
+    "method": "analyze(source) multiset == analyze(CONTROL) multiset"
+  },
+  "per_class": [
+    {
+      "class": "AREA_MISMATCH",
+      "applied": true,
+      "injector_note": "numeric 5.02->8.520",
+      "novel_issues": 0,
+      "vanished_issues": 0,
+      "killed": false,
+      "analyze_error": null
+    },
+    {
+      "class": "LEVEL_MISMATCH",
+      "applied": true,
+      "injector_note": "storey -3300->-3298.345",
+      "novel_issues": 0,
+      "vanished_issues": 0,
+      "killed": false,
+      "analyze_error": null
+    },
+    {
+      "class": "PD_RD_DIVERGENCE",
+      "applied": true,
+      "injector_note": "2->6.000",
+      "novel_issues": 0,
+      "vanished_issues": 0,
+      "killed": false,
+      "analyze_error": null
+    },
+    {
+      "class": "TZ_UNSATISFIED",
+      "applied": true,
+      "injector_note": "2->4.000",
+      "novel_issues": 0,
+      "vanished_issues": 0,
+      "killed": false,
+      "analyze_error": null
+    },
+    {
+      "class": "MISSING_ELEMENT",
+      "applied": false,
+      "injector_note": "no-element-token",
+      "novel_issues": 0,
+      "vanished_issues": 0,
+      "killed": false,
+      "analyze_error": null
+    },
+    {
+      "class": "UNIT_MISMATCH",
+      "applied": true,
+      "injector_note": "si-prefix-milli-removed",
+      "novel_issues": 0,
+      "vanished_issues": 0,
+      "killed": false,
+      "analyze_error": null
+    },
+    {
+      "class": "CALC_INCONSISTENCY",
+      "applied": true,
+      "injector_note": "2->7.000",
+      "novel_issues": 0,
+      "vanished_issues": 0,
+      "killed": false,
+      "analyze_error": null
+    },
+    {
+      "class": "IDS_VIOLATION",
+      "applied": false,
+      "injector_note": "no-ids-token",
+      "novel_issues": 0,
+      "vanished_issues": 0,
+      "killed": false,
+      "analyze_error": null
+    }
+  ],
+  "not_applied_classes": [
+    "MISSING_ELEMENT",
+    "IDS_VIOLATION"
+  ],
+  "control_issue_count": 6,
+  "aggregate": {
+    "killed": 0,
+    "trials": 6,
+    "recall_point": 0.0,
+    "wilson_95": {
+      "defined": true,
+      "successes": 0,
+      "trials": 6,
+      "alpha": 0.05,
+      "point": 0.0,
+      "lower": 0.0,
+      "upper": 0.390334,
+      "half_width": 0.195167,
+      "method": "wilson_score"
+    },
+    "denominator_note": "CONTROL excluded; classes with applied=false excluded (no defect was injected there)."
+  }
+}

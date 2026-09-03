@@ -73,18 +73,18 @@ describe("KT#2 vertical-slice UI contract", () => {
     expect(screen.getByText("fid-slice-wall-01")).toBeTruthy();
     expect(screen.getByText("sheet:A-101")).toBeTruthy();
     expect(screen.getByText(/Checkpoint NO_GO/i)).toBeTruthy();
-    expect(screen.getByText(/file ingest only/i)).toBeTruthy();
+    expect(screen.getByText(/только приём файла/i)).toBeTruthy();
     expect(screen.getByText("pdf:techlab-a101-wall-thickness#page1")).toBeTruthy();
     expect(screen.getByText(/Quote: WALL-01 thickness 150 mm/)).toBeTruthy();
-    expect(screen.getByText(/Sheet A-101/)).toBeTruthy();
+    expect(screen.getByText(/Лист A-101/)).toBeTruthy();
     expect(screen.getByTestId("kt2-overlay")).toBeTruthy();
     expect(screen.getByTestId("kt2-overlay-bbox")).toBeTruthy();
-    expect(screen.getByText(/deterministic bbox, not CV/i)).toBeTruthy();
+    expect(screen.getByText(/детерминированный bbox, не CV/i)).toBeTruthy();
     const badge = screen.getByTestId("kt2-outcome");
     expect(badge.textContent).toMatch(/FAILED/);
     expect(badge.className).toContain("outcome-fail");
     expect(badge.className).not.toContain("outcome-pass");
-    expect(screen.getByText(/Verdict is not PASS/i)).toBeTruthy();
+    expect(screen.getByText(/Вердикт не PASS/i)).toBeTruthy();
   });
 
   it("keeps FAILED visually distinct from BLOCKED", () => {
@@ -96,7 +96,7 @@ describe("KT#2 vertical-slice UI contract", () => {
   it("does not treat summary.passed as Published authorization", () => {
     expect(formatPackageOutcome("pass", true)).not.toMatch(/Published/i);
     expect(formatPackageOutcome("blocked", true)).not.toMatch(/Published/i);
-    expect(formatPackageOutcome(undefined, true)).toBe("Passed (legacy)");
+    expect(formatPackageOutcome(undefined, true)).toBe("Гейт: pass (устаревший отчёт)");
     expect(formatPackageOutcome(undefined, true)).not.toMatch(/Published/i);
   });
 
@@ -119,7 +119,7 @@ describe("KT#2 vertical-slice UI contract", () => {
         overlaySrc="overlay-problem-zone.png"
       />,
     );
-    const img = screen.getByRole("img", { name: /problem-zone overlay/i });
+    const img = screen.getByRole("img", { name: /Наложение зоны/i });
     expect(img.getAttribute("src")).toBe("overlay-problem-zone.png");
     expect(screen.queryByTestId("kt2-overlay-bbox")).toBeNull();
   });

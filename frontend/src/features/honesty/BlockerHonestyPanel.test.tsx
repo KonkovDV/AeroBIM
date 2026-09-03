@@ -38,9 +38,9 @@ describe("BlockerHonestyPanel", () => {
   it("lists intake gates as false and does not close RT", async () => {
     render(<BlockerHonestyPanel />);
     expect(await screen.findByTestId("blocker-honesty-panel")).toBeTruthy();
-    expect(screen.getByTestId("rt-blocker-list").textContent).toMatch(/RT-001 OPEN/);
-    expect(screen.getByText(/RT-002 OPEN/)).toBeTruthy();
-    expect(screen.getByText(/RT-003 OPEN/)).toBeTruthy();
+    expect(screen.getByTestId("rt-blocker-list").textContent).toMatch(/RT-001 ОТКРЫТ/);
+    expect(screen.getByText(/RT-002 ОТКРЫТ/)).toBeTruthy();
+    expect(screen.getByText(/RT-003 ОТКРЫТ/)).toBeTruthy();
     await waitFor(() => {
       expect(screen.getByTestId("intake-gate-table").querySelectorAll("tbody tr")).toHaveLength(
         INTAKE_GATE_KEYS.length,

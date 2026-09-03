@@ -2,7 +2,7 @@
 ---
 title: "Deep-study carrier facts — packs A/B/C (30.08.2026 evening)"
 date: "2026-08-30"
-last_updated: "2026-08-30"
+last_updated: "2026-09-03"
 status: active
 version: "1.0.0"
 closes_rt001: false
@@ -73,5 +73,15 @@ EIR v4.0 workbook + BIM-standard v4.0 are present as **text**. That is not `cust
 | SIG-05 | Evidence for questions 5 (regs in an «unsupported» folder), 12 (RVT 2020/2023 + RSN), 13 (three NWD federations), 14 (readable rebar note still missing) | «пакет вопросов отправлен» (git does not send mail) |
 | SIG-06 | `.lir` present on A and C; CC-2 tokens in KR IFC; CC-1/CC-3 still need a readable note | «конструкции пересчитаны»; native `.lir` parsed |
 | SIG-07 | Counted RVT years and NWD federations | Native reader; DWG-ready |
+
+## Дополнения 31.08–03.09
+
+- **SIG-01 channel rerun EXECUTED** (`pack_volume_not_accuracy`): finding volume and type breakdown obtained on the local pack copy after the ALL/GUID/Qto engine fixes. Not accuracy, not pack-processed, not a customer defect list.
+- **docx context probe** (pass3): 193 docx read; concrete-class tokens found in **6** files, all adjacent to a load context; **274** candidate lines inside the ±160-char «бетон/класс» window — shortlist feeding `calculation_table_compare` declared-field rows (C1-substitute track).
+- **Full docx text inventory**: 106 office documents extracted with paragraphs + tables (ЦНЭ remark books, ОЕП/РМС registries, letters) — carrier text now machine-readable for remark clustering.
+- **Lab before/after journal** opened: tool-side elapsed measured; **`t_manual_s` is null** — the manual «before» pass is pending a human run per the counterbalanced protocol.
+- **VLM confidence tuning protocol** published (grounding abstention thresholds) — calibration, not accuracy.
+
+Named trees stay in `.local/`; the local delta study is `.local/pack-out/deep-study-2026-08-31/DEEP_STUDY_DELTA_2026_09_03.md`.
 
 Related: [`unpack-census-2026-08.md`](unpack-census-2026-08.md) · [`../quality/TZ_SEAM_COVERAGE_MAP_2026_08.md`](../quality/TZ_SEAM_COVERAGE_MAP_2026_08.md) · [`../quality/TRACKER_EIGHT_TASKS_2026_08.md`](../quality/TRACKER_EIGHT_TASKS_2026_08.md).

@@ -8,8 +8,8 @@ describe("TzWorkplaceCoveragePanel", () => {
     expect(screen.getByTestId("tz-workplace-coverage")).toBeTruthy();
     expect(screen.getByText("SCR-DIFF")).toBeTruthy();
     expect(screen.getAllByText("partial").length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/no_longer_reported/).length).toBeGreaterThan(0);
-    expect(screen.getByText(/не delivery/i)).toBeTruthy();
+    expect(screen.getAllByText(/«не воспроизведено» ≠ исправлено/).length).toBeGreaterThan(0);
+    expect(screen.getByText(/не поставка/i)).toBeTruthy();
     expect(screen.getByTestId("tz-requirement-map")).toBeTruthy();
     expect(screen.getByText("TZ-BLOCKERS")).toBeTruthy();
   });

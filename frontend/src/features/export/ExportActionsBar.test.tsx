@@ -8,17 +8,16 @@ vi.mock("../../lib/api", () => ({
 }));
 
 describe("ExportActionsBar", () => {
-  it("exposes html json bcf and pdf without enabling xlsx", () => {
+  it("exposes html json bcf and pdf; xlsx is not rendered at all", () => {
     render(<ExportActionsBar reportId="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" />);
     const bar = screen.getByTestId("export-actions");
     expect(bar.querySelector("button")?.textContent).toBeTruthy();
     expect(screen.getByRole("button", { name: "HTML" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "JSON" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "BCF", exact: true })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "BCF 3.0", exact: true })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "BCF" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "BCF 3.0" })).toBeTruthy();
     expect(screen.getByRole("button", { name: UI_COPY.exportPdf })).toBeTruthy();
-    expect((screen.getByRole("button", { name: UI_COPY.xlsxNotMvp }) as HTMLButtonElement).disabled).toBe(
-      true,
-    );
+    // UI3 P0.2: XLSX не рендерим вовсе — эндпоинта нет, фальшивый успех хуже отсутствия.
+    expect(screen.queryByRole("button", { name: /XLSX/i })).toBeNull();
   });
 });

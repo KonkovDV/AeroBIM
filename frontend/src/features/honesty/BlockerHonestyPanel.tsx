@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { fetchSystemCapabilities, type SystemCapabilitiesPayload } from "../../lib/api";
 import { INTAKE_GATE_KEYS, intakeGateLabel, isIntakeGateTrue } from "../../lib/intake-gates";
+import { UI_COPY } from "../../lib/ui-copy";
 
 function intakeStatusLabel(status: string): string {
   if (status === "BLOCKED_NO_CUSTOMER_DATA") {
-    return "gates closed (channel received, pack not in git)";
+    return UI_COPY.blockersGateClosed;
   }
   return status;
 }
@@ -24,7 +25,7 @@ export default function BlockerHonestyPanel() {
       .catch((err: unknown) => {
         if (!controller.signal.aborted) {
           setPayload(null);
-          setError(err instanceof Error ? err.message : "capabilities unavailable");
+          setError(err instanceof Error ? err.message : UI_COPY.kpiUnavailable);
         }
       })
       .finally(() => {
@@ -45,52 +46,45 @@ export default function BlockerHonestyPanel() {
     <section className="panel blocker-honesty-panel" data-testid="blocker-honesty-panel">
       <div className="panel-header">
         <div>
-          <p className="panel-kicker">Acceptance blockers</p>
+          <p className="panel-kicker">{UI_COPY.blockersKicker}</p>
           <h2>RT-001 / RT-002 / RT-003</h2>
         </div>
       </div>
-      <p className="compact-copy">
-        This screen helps the pilot; it does not hide the checkpoint. The UI does not flip gates.
-        Two adjudicators and a signed profile sit outside this shell. κ/α is computed on the backend
-        once a corpus exists. Checkpoint NO_GO.
-      </p>
+      <p className="compact-copy">{UI_COPY.blockersBody}</p>
       <ul className="kpi-list" data-testid="rt-blocker-list">
         <li>
-          RT-001 {rt001 ? "cannot be treated as CLOSED from this screen" : "OPEN"}: no labeled
-          Russian PD pack and two independent adjudicators.
+          RT-001 {rt001 ? UI_COPY.blockerNotClosable : UI_COPY.blockerRt001Open}.
         </li>
         <li>
-          RT-002 {rt002 ? "cannot be treated as CLOSED from this screen" : "OPEN"}: no Samolet-signed
-          acceptance profile.
+          RT-002 {rt002 ? UI_COPY.blockerNotClosable : UI_COPY.blockerRt002Open}.
         </li>
         <li>
-          RT-003 {rt003 ? "cannot be treated as CLOSED from this screen" : "OPEN"}: federated MEP
-          clashes remain NOT_VERIFIED.
+          RT-003 {rt003 ? UI_COPY.blockerNotClosable : UI_COPY.blockerRt003Open}.
         </li>
       </ul>
-      {loading ? <p className="compact-copy">Loading GET /v1/system/capabilities…</p> : null}
+      {loading ? <p className="compact-copy">{UI_COPY.blockersLoading}</p> : null}
       {error ? (
         <p className="compact-copy" role="status">
-          Live gate snapshot unavailable ({error}). The static list below stays OPEN.
+          {UI_COPY.blockersSnapshotFailed(error)}
         </p>
       ) : null}
       {payload ? (
         <p className="compact-copy">
-          Intake: <code>{intakeStatusLabel(payload.customer_intake_gate.status)}</code> · claim_level{" "}
-          <code>{payload.customer_intake_gate.claim_level}</code> · checkpoint{" "}
-          <code>{payload.customer_intake_gate.checkpoint}</code>
+          {UI_COPY.blockersIntake}: <code>{intakeStatusLabel(payload.customer_intake_gate.status)}</code> ·{" "}
+          {UI_COPY.blockersClaimLevel} <code>{payload.customer_intake_gate.claim_level}</code> ·{" "}
+          {UI_COPY.blockersCheckpoint} <code>{payload.customer_intake_gate.checkpoint}</code>
           {payload.auth_bff?.status ? ` · auth_bff ${payload.auth_bff.status}` : ""}
           {payload.bcf_t2
-            ? ` · BCF T2 ${payload.bcf_t2.status}${payload.bcf_t2.claim_allowed ? "" : " (not VERIFIED)"}`
+            ? ` · BCF T2 ${payload.bcf_t2.status}${payload.bcf_t2.claim_allowed ? "" : ` (${UI_COPY.blockersNotVerified})`}`
             : ""}
         </p>
       ) : null}
       <table className="coverage-table" data-testid="intake-gate-table">
         <thead>
           <tr>
-            <th scope="col">Gate</th>
-            <th scope="col">In file</th>
-            <th scope="col">Meaning</th>
+            <th scope="col">{UI_COPY.blockersGateCol}</th>
+            <th scope="col">{UI_COPY.blockersInFileCol}</th>
+            <th scope="col">{UI_COPY.blockersMeaningCol}</th>
           </tr>
         </thead>
         <tbody>
@@ -107,10 +101,7 @@ export default function BlockerHonestyPanel() {
           ))}
         </tbody>
       </table>
-      <p className="compact-copy">
-        true in the gate JSON ≠ RT CLOSED and ≠ product accuracy. PrecisionClaim.publishable stays
-        the gateway. BCF import into a CDE and OIDC are not evidenced.
-      </p>
+      <p className="compact-copy">{UI_COPY.blockersFooter}</p>
     </section>
   );
 }

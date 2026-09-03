@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { fetchRevisionDiff, type RevisionDiffPayload } from "../lib/api";
 import type { ReportSummaryEntry } from "../lib/types";
+import { UI_COPY } from "../lib/ui-copy";
 
 export type VersionDiffPanelProps = {
   reports: ReportSummaryEntry[];
@@ -21,7 +22,7 @@ function Bucket({
         {title} ({keys.length})
       </h3>
       {keys.length === 0 ? (
-        <p className="compact-copy">Empty.</p>
+        <p className="compact-copy">{UI_COPY.diffEmpty}</p>
       ) : (
         <ul className="kpi-list">
           {keys.map((key) => (
@@ -73,7 +74,7 @@ export default function VersionDiffPanel({ reports }: VersionDiffPanelProps) {
       })
       .catch((err: unknown) => {
         if (!controller.signal.aborted) {
-          setError(err instanceof Error ? err.message : "Revision diff failed");
+          setError(err instanceof Error ? err.message : UI_COPY.diffFailed);
           setDiff(null);
         }
       })
@@ -89,24 +90,19 @@ export default function VersionDiffPanel({ reports }: VersionDiffPanelProps) {
     <section className="panel" data-testid="version-diff-panel">
       <div className="panel-header">
         <div>
-          <p className="panel-kicker">SCR-DIFF</p>
-          <h2>Pack version compare</h2>
+          <p className="panel-kicker">{UI_COPY.diffKicker}</p>
+          <h2>{UI_COPY.diffTitle}</h2>
         </div>
       </div>
-      <p className="compact-copy">
-        Дельта находок между двумя сохранёнными отчётами.{" "}
-        <strong>no_longer_reported ≠ исправлено</strong> — проверка могла не запуститься снова.
-        «Вернувшиеся» требуют три ревизии; этот экран сравнивает две. Не пишет{" "}
-        <code>summary.passed</code>. Checkpoint NO_GO.
-      </p>
+      <p className="compact-copy">{UI_COPY.diffNote}</p>
       {sorted.length < 2 ? (
-        <p className="compact-copy">Нужны два сохранённых отчёта. Загрузите и прогоните комплект дважды.</p>
+        <p className="compact-copy">{UI_COPY.diffNeedTwo}</p>
       ) : (
         <div className="report-filters">
           <label>
-            Baseline
+            {UI_COPY.diffBaseline}
             <select
-              aria-label="Baseline report"
+              aria-label={UI_COPY.diffBaseline}
               value={effectiveBaseline}
               onChange={(event) => setBaselineId(event.target.value)}
             >
@@ -118,9 +114,9 @@ export default function VersionDiffPanel({ reports }: VersionDiffPanelProps) {
             </select>
           </label>
           <label>
-            Compare
+            {UI_COPY.diffHead}
             <select
-              aria-label="Head report"
+              aria-label={UI_COPY.diffHead}
               value={effectiveHead}
               onChange={(event) => setHeadId(event.target.value)}
             >
@@ -133,7 +129,7 @@ export default function VersionDiffPanel({ reports }: VersionDiffPanelProps) {
           </label>
         </div>
       )}
-      {loading ? <p className="compact-copy">Computing delta…</p> : null}
+      {loading ? <p className="compact-copy">{UI_COPY.diffComputing}</p> : null}
       {error ? (
         <p className="compact-copy" role="alert">
           {error}
@@ -144,21 +140,21 @@ export default function VersionDiffPanel({ reports }: VersionDiffPanelProps) {
           <p className="compact-copy">{diff.note}</p>
           <div className="summary-grid">
             <article className="summary-tile">
-              <span>New</span>
+              <span>{UI_COPY.diffNew}</span>
               <strong>{diff.summary.newly_reported}</strong>
             </article>
             <article className="summary-tile">
-              <span>Gone</span>
+              <span>{UI_COPY.diffGone}</span>
               <strong>{diff.summary.no_longer_reported}</strong>
             </article>
             <article className="summary-tile">
-              <span>Still present</span>
+              <span>{UI_COPY.diffStill}</span>
               <strong>{diff.summary.still_reported}</strong>
             </article>
           </div>
-          <Bucket title="New" keys={diff.newly_reported} testId="diff-newly-reported" />
-          <Bucket title="Gone (≠ resolved)" keys={diff.no_longer_reported} testId="diff-no-longer-reported" />
-          <Bucket title="Still present" keys={diff.still_reported} testId="diff-still-reported" />
+          <Bucket title={UI_COPY.diffNew} keys={diff.newly_reported} testId="diff-newly-reported" />
+          <Bucket title={UI_COPY.diffGoneNote} keys={diff.no_longer_reported} testId="diff-no-longer-reported" />
+          <Bucket title={UI_COPY.diffStill} keys={diff.still_reported} testId="diff-still-reported" />
         </>
       ) : null}
     </section>

@@ -87,11 +87,8 @@ async function assertIssueReviewState(page) {
   }
   await exportBar.getByRole("button", { name: /PDF/ }).waitFor({ state: "visible" });
   const xlsx = exportBar.getByRole("button", { name: /XLSX/ });
-  if (await xlsx.count()) {
-    const disabled = await xlsx.first().isDisabled();
-    if (!disabled) {
-      throw new Error("XLSX must stay disabled (not MVP)");
-    }
+  if ((await xlsx.count()) !== 0) {
+    throw new Error("XLSX must not render at all (no endpoint, not MVP)");
   }
 
   await page.locator(".drawing-evidence-panel .drawing-evidence-rect").waitFor({
@@ -149,7 +146,7 @@ async function assertClashReviewState(page, clashCard) {
     state: "visible",
     timeout: 30_000,
   });
-  await page.locator(".viewer-meta").getByText("clash pair").waitFor({
+  await page.locator(".viewer-meta").getByText("пара клэша").waitFor({
     state: "visible",
     timeout: 30_000,
   });
@@ -178,7 +175,11 @@ async function main() {
 
   try {
     await page.goto(options.baseUrl, { waitUntil: "domcontentloaded", timeout: 30_000 });
+    // Shell opens on the expert workplace; the report index lives on «Проекты».
+    await page.getByRole("button", { name: "Проекты" }).click();
     await page.locator(".report-card").first().waitFor({ state: "visible", timeout: 30_000 });
+
+    const presetChecks = await assertPresetScopeState(page);
 
     const seededReport = page.locator(".report-card").filter({ hasText: options.reportPrefix });
     if (await seededReport.count()) {
@@ -194,7 +195,6 @@ async function main() {
       timeout: 30_000,
     });
     const issueChecks = await assertIssueReviewState(page);
-    const presetChecks = await assertPresetScopeState(page);
     await page.screenshot({ path: issueScreenshotPath, fullPage: true });
 
     const clashCard = page.locator(".collection-card-button").first();

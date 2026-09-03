@@ -476,7 +476,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Сохранить пресет" }));
 
     expect(screen.getByRole("button", { name: "Tower Failed" })).toBeTruthy();
-    expect(screen.getAllByText("Файл JSON").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Обмен через JSON").length).toBeGreaterThan(0);
     const savedPresetsRaw = window.localStorage.getItem(REPORT_FILTER_PRESETS_STORAGE_KEY);
     expect(savedPresetsRaw).not.toBeNull();
     const savedPresets = JSON.parse(savedPresetsRaw ?? "[]") as Array<{ name: string; scope?: string }>;
@@ -676,9 +676,9 @@ describe("App", () => {
 
     render(<App />);
 
-    const criticalChip = await screen.findByText("critical", { selector: ".triage-band" });
+    const criticalChip = await screen.findByText("критично", { selector: ".triage-band" });
     expect(criticalChip.className).toContain("triage-band-critical");
-    const negligibleChip = screen.getByText("negligible", { selector: ".triage-band" });
+    const negligibleChip = screen.getByText("незначительная", { selector: ".triage-band" });
     expect(negligibleChip.className).toContain("triage-band-negligible");
 
     // Priority-desc reviewer order: critical card must precede negligible card.
@@ -704,12 +704,12 @@ describe("App", () => {
     // it must not read as a confirmed verdict/error.
     expect(advisoryCard.className).toContain("issue-card--advisory");
     expect(within(advisoryCard).getByText(UI_COPY.advisory)).toBeTruthy();
-    expect(within(advisoryCard).getByTitle(/not a confirmed verdict/i)).toBeTruthy();
+    expect(within(advisoryCard).getByTitle(/не подтверждённый вердикт/i)).toBeTruthy();
 
     // A deterministic finding carries no advisory-candidate cue.
     expect(deterministicCard.className).not.toContain("issue-card--advisory");
     expect(within(deterministicCard).queryByText(UI_COPY.advisory)).toBeNull();
-    expect(within(deterministicCard).getByText("deterministic")).toBeTruthy();
+    expect(within(deterministicCard).getByText(UI_COPY.deterministic)).toBeTruthy();
   });
 
   it("flags low self-reported confidence on the issue card, not when high or absent", async () => {
@@ -730,7 +730,7 @@ describe("App", () => {
     // Low self-reported confidence is surfaced as a review cue (§12), labelled
     // uncalibrated so it is not read as a calibrated probability.
     expect(within(lowCard).getByText(/низкая уверенность/i)).toBeTruthy();
-    expect(within(lowCard).getByTitle(/uncalibrated/i)).toBeTruthy();
+    expect(within(lowCard).getByTitle(/без калибровки/i)).toBeTruthy();
     // High or absent confidence carries no low-confidence warning.
     expect(within(highCard).queryByText(/низкая уверенность/i)).toBeNull();
     expect(within(noneCard).queryByText(/низкая уверенность/i)).toBeNull();
@@ -811,7 +811,7 @@ describe("App", () => {
     expect(screen.getByTestId("review-kpi-panel")).toBeTruthy();
     expect(screen.getByTestId("blocker-honesty-panel")).toBeTruthy();
     expect(screen.getByText("SCR-DIFF")).toBeTruthy();
-    expect(screen.getAllByText(/no_longer_reported/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/«не воспроизведено» ≠ исправлено/).length).toBeGreaterThan(0);
   });
 
   it("exposes eight workplace screens and a two-report version diff", async () => {
@@ -832,7 +832,7 @@ describe("App", () => {
     }
     fireEvent.click(screen.getByRole("button", { name: "Версии" }));
     expect(screen.getByTestId("version-diff-panel")).toBeTruthy();
-    expect(screen.getByText(/no_longer_reported ≠ исправлено/)).toBeTruthy();
+    expect(screen.getByText(/«Не воспроизведено» ≠ исправлено/)).toBeTruthy();
   });
 
   it("keeps the report index on Проекты and the TZ three-pane on Эксперт", async () => {
@@ -869,13 +869,15 @@ describe("App", () => {
   it("treats the header role switch as a screen mock, not HITL access", async () => {
     render(<App />);
     expect(await screen.findByRole("button", { name: /подтвердить замечание/i })).toBeTruthy();
-    expect(screen.getByTestId("role-honesty-banner").textContent).toMatch(/не разграничение доступа/);
+    expect(screen.getByTestId("role-honesty-banner").textContent).toMatch(/не проверяется сервером/);
     fireEvent.change(screen.getByLabelText(UI_COPY.roleSelectLabel), { target: { value: "user" } });
     fireEvent.click(screen.getByRole("button", { name: "Эксперт" }));
-    expect(await screen.findByText(UI_COPY.hitlUserAlias)).toBeTruthy();
-    expect((screen.getByRole("button", { name: /подтвердить замечание/i }) as HTMLButtonElement).disabled).toBe(
-      true,
-    );
+    // UI3 P0.4: роль «Пользователь» не видит и не может вызвать правку/подтверждение/отклонение.
+    expect(await screen.findByTestId("hitl-readonly-note")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /подтвердить замечание/i })).toBeNull();
+    expect(screen.queryByRole("button", { name: /отклонить замечание/i })).toBeNull();
+    expect(screen.queryByRole("button", { name: /сохранить правку/i })).toBeNull();
+    expect(screen.queryByLabelText(UI_COPY.editRemark)).toBeNull();
   });
 
   it("migrates a legacy team preset chip to JSON file exchange", async () => {

@@ -2,9 +2,9 @@
 ---
 title: "Defect-injection recall plan — published seed, not partner metrics"
 date: "2026-08-30"
-last_updated: "2026-08-30"
+last_updated: "2026-09-03"
 status: active
-version: "1.0.0"
+version: "1.1.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -31,7 +31,7 @@ analyze API и не пишет `summary.passed`.
 владельца вне NDA-корней (`samples/customer` и `files/` генератор отвергает).
 Городские примеры АГР **запрещены** как source.
 
-## Recall (план; CLI склейки нет)
+## Recall (план; CLI склейки: EXECUTED 2026-09-03)
 
 1. Получить шовно-чистый мини-ПД (не эталон АГР).
 2. `inject_defects --source <pack> --output var/injected --seed 20260824`.
@@ -43,9 +43,10 @@ analyze API и не пишет `summary.passed`.
 6. Интервал: Wilson (`python -m aerobim.tools.compute_quality_protocol_stats`
    / WP-07). Публиковать **нижнюю** границу, `claim_level=synthetic_only`.
 
-**TODO (код не написан):**
-`backend/src/aerobim/tools/evaluate_injection_recall.py` — склейка манифеста
-с выходом analyze. Не добавлять, пока нет чистого пакета. Не закрывает RT-001.
+Склейка (03.09.2026): `python -m aerobim.tools.evaluate_injection_recall` —
+манифест с выходом analyze через CONTROL-дифф мультимножеств. Прогон:
+[`DEFECT_INJECTION_RECALL_RUN_2026_09.md`](DEFECT_INJECTION_RECALL_RUN_2026_09.md).
+Не закрывает RT-001. Не шовно-чистый `summary.passed=true`.
 
 Граница: recall на синтетике **не** переносится на комплект Самолёта.
 `confirmed_partner_validation_metrics() == False`.

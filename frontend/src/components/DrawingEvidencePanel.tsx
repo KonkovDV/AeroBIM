@@ -144,7 +144,7 @@ export default function DrawingEvidencePanel({ report, activeIssue }: DrawingEvi
       .catch(() => {
         if (!cancelled) {
           setPreviewUrl(null);
-          setImageError("Failed to load the persisted drawing preview for this issue.");
+          setImageError(UI_COPY.drawingLoadFailed);
         }
       });
 
@@ -310,7 +310,7 @@ export default function DrawingEvidencePanel({ report, activeIssue }: DrawingEvi
                 });
               }}
               onError={() => {
-                setImageError("Failed to load the persisted drawing preview for this issue.");
+                setImageError(UI_COPY.drawingLoadFailed);
               }}
             />
             {regionOverlays.map((overlay) => (
@@ -332,14 +332,10 @@ export default function DrawingEvidencePanel({ report, activeIssue }: DrawingEvi
           </div>
 
           <div className="drawing-evidence-caption">
-            <strong>{activeIssue?.rule_id ?? "Report drawing evidence"}</strong>
-            <p>
-              Finding rectangle comes from persisted `problem_zone`. Sheet regions (`DrawingRegionRef`, including stamp/title priors) are drawn for the selected asset when coordinates are present — layout priors are not a product literacy claim.
-            </p>
+            <strong>{activeIssue?.rule_id ?? UI_COPY.drawingCaptionDefault}</strong>
+            <p>{UI_COPY.drawingCaptionBody}</p>
             {problemZone === null && (
-              <p>
-                No active issue with `problem_zone` evidence is selected, so the panel is currently in plain drawing-preview mode.
-              </p>
+              <p>{UI_COPY.drawingNoZone}</p>
             )}
             {problemZone !== null && matchedAsset === null && selectedAsset !== null && (
               <p>
@@ -348,13 +344,11 @@ export default function DrawingEvidencePanel({ report, activeIssue }: DrawingEvi
             )}
             {!isOverlayTarget && selectedAsset !== null && matchedAsset !== null && (
               <p>
-                You are browsing {describeAsset(selectedAsset)}. The active issue overlay belongs to {describeAsset(matchedAsset)}, so the rectangle is intentionally hidden until you switch back to the matching asset.
+                {UI_COPY.drawingBrowsingOther(describeAsset(selectedAsset), describeAsset(matchedAsset))}
               </p>
             )}
             {problemZone !== null && matchedAsset !== null && !canDrawOverlay && !imageError && (
-              <p>
-                Preview loaded, but the current issue does not yet have a complete rectangle payload for x/y/width/height on the selected asset.
-              </p>
+              <p>{UI_COPY.drawingIncompleteZone}</p>
             )}
           </div>
         </>

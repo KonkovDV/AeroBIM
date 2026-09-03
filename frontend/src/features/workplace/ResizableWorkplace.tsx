@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type PointerEvent, type ReactNode } from "react";
+import { UI_COPY } from "../../lib/ui-copy";
 
 const STORAGE_KEY = "aerobim-workspace-cols-v1";
 const MIN_PCT = 16;
@@ -95,7 +96,7 @@ export default function ResizableWorkplace({ left, center, right }: ResizableWor
         className="grid-resizer"
         role="separator"
         aria-orientation="vertical"
-        aria-label="Resize findings and spatial columns"
+        aria-label={UI_COPY.resizeLeftAria}
         onPointerDown={(event) => onResize("left", event)}
       />
       {center}
@@ -103,7 +104,7 @@ export default function ResizableWorkplace({ left, center, right }: ResizableWor
         className="grid-resizer"
         role="separator"
         aria-orientation="vertical"
-        aria-label="Resize spatial and remark columns"
+        aria-label={UI_COPY.resizeRightAria}
         onPointerDown={(event) => onResize("right", event)}
       />
       {right}

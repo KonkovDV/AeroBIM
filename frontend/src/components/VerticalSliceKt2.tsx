@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import type { PackageOutcome, ProblemZone, ValidationIssue, ValidationReport } from "../lib/types";
+import { UI_COPY } from "../lib/ui-copy";
 
 export function formatPackageOutcome(
   outcome: PackageOutcome | null | undefined,
@@ -7,17 +8,17 @@ export function formatPackageOutcome(
 ): string {
   switch (outcome) {
     case "pass":
-      return "PASS — нарушений не найдено (проверки выполнены)";
+      return UI_COPY.outcomePass;
     case "pass_with_warnings":
-      return "PASS_WITH_WARNINGS — есть предупреждения";
+      return UI_COPY.outcomePassWarnings;
     case "review_required":
-      return "REVIEW_REQUIRED — требуется эксперт";
+      return UI_COPY.outcomeReview;
     case "blocked":
-      return "BLOCKED — проверка не завершена / данных недостаточно";
+      return UI_COPY.outcomeBlocked;
     case "failed":
-      return "FAILED — ошибки или fail-closed";
+      return UI_COPY.outcomeFailed;
     default:
-      return passed ? "Passed (legacy)" : "Failed (legacy)";
+      return passed ? UI_COPY.outcomeLegacyPass : UI_COPY.outcomeLegacyFail;
   }
 }
 
@@ -77,19 +78,19 @@ function fragmentQuote(issue: ValidationIssue | null): string {
   if (fromRemark) {
     return fromRemark;
   }
-  return (issue?.message ?? "").trim() || "No fragment selected.";
+  return (issue?.message ?? "").trim() || UI_COPY.kt2NoFragment;
 }
 
 function overlayHint(issue: ValidationIssue | null): string {
   const zone = issue?.problem_zone;
   if (!zone || zone.sheet_id == null) {
-    return "No sheet overlay for this finding.";
+    return UI_COPY.kt2NoOverlay;
   }
-  const page = zone.page_number ?? "?";
+  const page = String(zone.page_number ?? "?");
   const hasBox =
     zone.x != null && zone.y != null && zone.width != null && zone.height != null;
   const box = hasBox ? ` · bbox (${zone.x}, ${zone.y}) ${zone.width}×${zone.height}` : "";
-  return `Sheet ${zone.sheet_id} · page ${page}${box}`;
+  return UI_COPY.kt2SheetPage(zone.sheet_id, page, box);
 }
 
 /**
@@ -108,15 +109,11 @@ export default function VerticalSliceKt2({
 
   return (
     <article className="kt2-slice" data-testid="kt2-vertical-slice">
-      <p className="panel-kicker">KT#2 vertical slice (fixture)</p>
-      <h3>Fragment → finding → evidence → verdict</h3>
-      <p className="compact-copy">
-        PDF text-layer / stamp-title path. Not trained CV. Not customer accuracy.
-        Checkpoint NO_GO. Structural BCF ZIP is file ingest only. CDE import is
-        NOT_VERIFIED.
-      </p>
+      <p className="panel-kicker">{UI_COPY.kt2Kicker}</p>
+      <h3>{UI_COPY.kt2Title}</h3>
+      <p className="compact-copy">{UI_COPY.kt2Body}</p>
       <p>
-        <span>Package outcome</span>
+        <span>{UI_COPY.kt2Outcome}</span>
         <strong
           className={`outcome-badge ${outcomeClass(outcome, passed)}`}
           data-testid="kt2-outcome"
@@ -126,22 +123,22 @@ export default function VerticalSliceKt2({
       </p>
       {looksLikePass ? (
         <p className="compact-copy" role="status">
-          Unexpected pass on this demo fixture — treat as a gate failure.
+          {UI_COPY.kt2UnexpectedPass}
         </p>
       ) : (
         <p className="compact-copy" role="status">
-          Verdict is not PASS. Shared-gate stays fail-closed.
+          {UI_COPY.kt2NotPass}
         </p>
       )}
       <dl className="detail-grid">
         <div>
-          <dt>Original fragment</dt>
+          <dt>{UI_COPY.kt2Fragment}</dt>
           <dd>
             <blockquote className="kt2-slice-quote">{fragmentQuote(issue)}</blockquote>
           </dd>
         </div>
         <div>
-          <dt>Finding</dt>
+          <dt>{UI_COPY.kt2Finding}</dt>
           <dd>
             <code>{issue?.finding_id?.trim() || "—"}</code>
             {issue?.source_id?.trim() ? (
@@ -154,7 +151,7 @@ export default function VerticalSliceKt2({
           </dd>
         </div>
         <div>
-          <dt>Evidence</dt>
+          <dt>{UI_COPY.kt2Evidence}</dt>
           <dd>
             {(issue?.evidence_refs?.length ?? 0) > 0 ? (
               <ul className="evidence-ref-list">
@@ -170,20 +167,20 @@ export default function VerticalSliceKt2({
           </dd>
         </div>
         <div>
-          <dt>Overlay</dt>
+          <dt>{UI_COPY.kt2Overlay}</dt>
           <dd>
             <figure className="kt2-overlay" data-testid="kt2-overlay">
               {overlaySrc ? (
                 <img
                   src={overlaySrc}
-                  alt="Problem-zone overlay on sheet (deterministic bbox, not CV)"
+                  alt={UI_COPY.kt2Alt}
                 />
               ) : rectStyle ? (
                 <div className="kt2-overlay-sheet" data-testid="kt2-overlay-bbox">
                   <div className="kt2-overlay-rect" style={rectStyle} />
                 </div>
               ) : null}
-              <figcaption>{overlayHint(issue)} · deterministic bbox, not CV</figcaption>
+              <figcaption>{overlayHint(issue)} · {UI_COPY.kt2Deterministic}</figcaption>
             </figure>
           </dd>
         </div>

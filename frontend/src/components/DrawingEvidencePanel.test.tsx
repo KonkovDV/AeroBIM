@@ -83,14 +83,14 @@ describe("DrawingEvidencePanel", () => {
     fireEvent.click(screen.getByRole("button", { name: /a-101/i }));
 
     expect(screen.getByRole("img", { name: /Превью чертежа a-101/i })).toBeTruthy();
-    expect(screen.getByText(/you are browsing a-101/i)).toBeTruthy();
+    expect(screen.getByText(/Открыт A-101/i)).toBeTruthy();
   });
 
   it("stays usable in plain preview mode when no active issue is selected", () => {
     render(<DrawingEvidencePanel report={buildReport()} activeIssue={null} />);
 
     expect(screen.getByRole("img", { name: /Превью чертежа a-101/i })).toBeTruthy();
-    expect(screen.getByText(/plain drawing-preview mode/i)).toBeTruthy();
+    expect(screen.getByText(/простого просмотра листа/i)).toBeTruthy();
   });
 
   it("renders a problem-zone overlay rectangle after the preview image loads", async () => {
@@ -127,7 +127,7 @@ describe("DrawingEvidencePanel", () => {
       />,
     );
 
-    expect(screen.getByText(/does not yet have a complete rectangle payload/i)).toBeTruthy();
+    expect(screen.getByText(/нет полного прямоугольника координат/i)).toBeTruthy();
   });
 
   it("asks the operator to select a report when report is null", () => {
@@ -230,7 +230,7 @@ describe("DrawingEvidencePanel", () => {
     const image = screen.getByRole("img", { name: /Превью чертежа a-102/i });
     fireEvent.error(image);
     await waitFor(() => {
-      expect(screen.getByText(/failed to load the persisted drawing preview/i)).toBeTruthy();
+      expect(screen.getByText(/Не удалось загрузить сохранённое превью/i)).toBeTruthy();
     });
   });
 });

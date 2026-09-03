@@ -22,6 +22,18 @@ class AcademicLitPromptHomeTests(unittest.TestCase):
         self.assertIn("ACADEMIC_LIT_REVIEW_2026_09.md", prompt)
 
 
+class AcademicCoauthorPromptHomeTests(unittest.TestCase):
+    def test_roadmap_does_not_embed_operator_prompt(self) -> None:
+        roadmap = (_REPO / "docs" / "quality" / "ACADEMIC_ROADMAP_2026_09.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("Ты — научный со-автор", roadmap)
+        self.assertIn("ACADEMIC_COAUTHOR.md", roadmap)
+        prompt = (_REPO / "docs" / "ai" / "ACADEMIC_COAUTHOR.md").read_text(encoding="utf-8")
+        self.assertIn("Ты — научный со-автор", prompt)
+        self.assertIn("ACADEMIC_ROADMAP_2026_09.md", prompt)
+
+
 class LintAiTraceTests(unittest.TestCase):
     def test_public_tree_has_no_meta_or_chat_filler(self) -> None:
         sys.path.insert(0, str(_REPO / "scripts"))

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { seedDemoFixture } from "../lib/api";
+import { UI_COPY } from "../lib/ui-copy";
 
 export type DemoFixturePanelProps = {
   onSeeded: (reportId: string) => void;
@@ -21,7 +22,7 @@ export default function DemoFixturePanel({ onSeeded }: DemoFixturePanelProps) {
       onSeeded(result.report_id);
     } catch (error: unknown) {
       setStatus("failed");
-      setDetail(error instanceof Error ? error.message : "Demo seed failed");
+      setDetail(error instanceof Error ? error.message : UI_COPY.demoSeedFailed);
     }
   }
 

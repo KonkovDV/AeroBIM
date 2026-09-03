@@ -7,8 +7,13 @@ describe("AnalyzeRunPanel", () => {
   it("shows elapsed-timer copy without claiming SLA", () => {
     render(<AnalyzeRunPanel ifcPath="walls.ifc" />);
     const timer = screen.getByTestId("analyze-elapsed");
-    expect(timer.textContent).toMatch(/30:00/);
-    expect(timer.textContent).toMatch(/не измеренный SLA|не SLA/);
+    expect(timer.textContent).toMatch(/Цель ТЗ записана как 30:00/);
+    expect(timer.textContent).toMatch(/SLA не заявляем/);
+  });
+
+  it("offers a repeat run only after a terminal state", () => {
+    render(<AnalyzeRunPanel ifcPath="walls.ifc" />);
+    expect(screen.queryByRole("button", { name: "Повторный прогон" })).toBeNull();
   });
 
   it("shows engine groups as pending until capabilities exist", () => {

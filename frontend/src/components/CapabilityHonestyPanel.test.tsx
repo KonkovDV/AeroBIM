@@ -32,14 +32,14 @@ describe("CapabilityHonestyPanel", () => {
     );
 
     expect(screen.getByTestId("capability-honesty")).toBeTruthy();
-    expect(screen.getByText(/1 blocking capability status/i)).toBeTruthy();
-    expect(screen.getByText(/dwg dxf=failed/i)).toBeTruthy();
-    expect(screen.getByTestId("capability-skip-banner").textContent).toMatch(/Silence is never success/i);
+    expect(screen.getByText(/Блокирующие статусы \(1\)/i)).toBeTruthy();
+    expect(screen.getByText(/DWG=failed/i)).toBeTruthy();
+    expect(screen.getByTestId("capability-skip-banner").textContent).toMatch(/Тишина ≠ успех/i);
     expect(screen.getByTestId("divergence-list").textContent).toMatch(/engine_wins/);
   });
 
   it("shows incomplete-evidence message when capabilities missing", () => {
     render(<CapabilityHonestyPanel capabilities={null} />);
-    expect(screen.getByText(/No capability matrix/i)).toBeTruthy();
+    expect(screen.getByText(/Матрицы возможностей в этом отчёте нет/i)).toBeTruthy();
   });
 });

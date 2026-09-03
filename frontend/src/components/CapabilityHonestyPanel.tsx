@@ -1,9 +1,6 @@
 import type { CapabilityState, DivergenceRecord, ReportCapabilities } from "../lib/types";
-import { BLOCKING_STATES, capabilityRows } from "../lib/capability-copy";
-
-function formatLabel(key: string): string {
-  return key.replaceAll("_", " ");
-}
+import { BLOCKING_STATES, capabilityRows, formatCapabilityLabel } from "../lib/capability-copy";
+import { UI_COPY } from "../lib/ui-copy";
 
 function statusClass(status: CapabilityState): string {
   if (status === "ok") return "cap-ok";
@@ -26,11 +23,8 @@ export default function CapabilityHonestyPanel({
   if (!capabilities) {
     return (
       <section className="capability-honesty" data-testid="capability-honesty">
-        <h3>Capability honesty</h3>
-        <p className="compact-copy">
-          No capability matrix on this report. Sign-off operators should treat missing matrix as
-          incomplete evidence — not as OK.
-        </p>
+        <h3>{UI_COPY.capHonestyTitle}</h3>
+        <p className="compact-copy">{UI_COPY.capHonestyMissing}</p>
       </section>
     );
   }
@@ -48,41 +42,39 @@ export default function CapabilityHonestyPanel({
   return (
     <section className="capability-honesty" data-testid="capability-honesty">
       <div className="capability-honesty-header">
-        <h3>Capability honesty</h3>
-        <p className="compact-copy">
-          FAILED/MISSING capabilities block <code>summary.passed</code>. Advisory disagreements
-          never flip the deterministic verdict alone. UI never writes that flag (ADR-001).
-        </p>
+        <h3>{UI_COPY.capHonestyTitle}</h3>
+        <p className="compact-copy">{UI_COPY.capHonestyBody}</p>
       </div>
 
       {blocking.length > 0 && (
         <p className="capability-block-banner" role="status">
-          {blocking.length} blocking capability status
-          {blocking.length === 1 ? "" : "es"}:{" "}
-          {blocking.map((row) => `${formatLabel(row.key)}=${row.status}`).join("; ")}
+          {UI_COPY.capBlocking(
+            blocking.length,
+            blocking.map((row) => `${formatCapabilityLabel(row.key)}=${row.status}`).join("; "),
+          )}
         </p>
       )}
 
       {skipped.length > 0 && (
         <p className="capability-skip-banner" role="status" data-testid="capability-skip-banner">
-          Silence is never success. Skipped / not_verified / not_implemented:{" "}
-          {skipped.map((row) => `${formatLabel(row.key)}=${row.status}`).join("; ")}. A green
-          report from silence is forbidden.
+          {UI_COPY.capSkipped(
+            skipped.map((row) => `${formatCapabilityLabel(row.key)}=${row.status}`).join("; "),
+          )}
         </p>
       )}
 
       <table className="capability-table">
         <thead>
           <tr>
-            <th scope="col">Capability</th>
-            <th scope="col">Status</th>
-            <th scope="col">Reason</th>
+            <th scope="col">{UI_COPY.capColCapability}</th>
+            <th scope="col">{UI_COPY.capColStatus}</th>
+            <th scope="col">{UI_COPY.capColReason}</th>
           </tr>
         </thead>
         <tbody>
           {rows.map((row) => (
             <tr key={row.key} className={statusClass(row.status)}>
-              <td>{formatLabel(row.key)}</td>
+              <td>{formatCapabilityLabel(row.key)}</td>
               <td>
                 <code>{row.status}</code>
               </td>
@@ -93,15 +85,15 @@ export default function CapabilityHonestyPanel({
       </table>
 
       <div className="divergence-block" data-testid="divergence-list">
-        <h4>AI ↔ engine divergences</h4>
+        <h4>{UI_COPY.capDivergencesTitle}</h4>
         {divergences.length === 0 ? (
-          <p className="compact-copy">No recorded divergences for this report.</p>
+          <p className="compact-copy">{UI_COPY.capNoDivergences}</p>
         ) : (
           <ul>
             {divergences.map((item) => (
               <li key={`${item.finding_key}-${item.engine_verdict}-${item.advisory_verdict}`}>
-                <strong>{item.finding_key}</strong>: engine <code>{item.engine_verdict}</code> vs
-                advisory <code>{item.advisory_verdict}</code>
+                <strong>{item.finding_key}</strong>:{" "}
+                {UI_COPY.capEngineVs(item.engine_verdict, item.advisory_verdict)}
                 {item.resolution ? ` → ${item.resolution}` : ""}
               </li>
             ))}

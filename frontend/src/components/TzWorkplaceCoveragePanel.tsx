@@ -27,8 +27,8 @@ export default function TzWorkplaceCoveragePanel({ onOpenScreen }: TzWorkplaceCo
         </div>
       </div>
       <p className="compact-copy">
-        Карта тай-брейка, не delivery. Колонка git — честный статус. Не закрывает RT. Не SLA. Не
-        native RVT. Машина: <code>ui_expert_workplace_triage_snapshot</code>.
+        Карта тай-брейка, не поставка. Колонка git — честный статус. Не закрывает RT. Не SLA. Не
+        нативный RVT. Машина: <code>ui_expert_workplace_triage_snapshot</code>.
       </p>
       <table className="coverage-table" data-testid="tz-requirement-map">
         <thead>

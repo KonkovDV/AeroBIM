@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM — карта для жюри Техлаба и МИК"
 status: active
-version: "4.8.32"
+version: "4.8.33"
 last_updated: "2026-09-03"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
@@ -59,6 +59,7 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 | [Лабораторный до/после](partners/BEFORE_AFTER_MEASUREMENT_PROTOCOL_2026_09.md) | Не часы партнёра; A1–A8 пустые; journal только `t_tool_ms` |
 | [Related-work preprint](RELATED_WORK_PREPRINT_2026_09.md) | Цитаты 2026; чужой объём не наш; ADR-001 |
 | [План recall на инъекциях](evidence/DEFECT_INJECTION_RECALL_PLAN_2026_09.md) | Синтетика; seed 20260824; не корпус Самолёта |
+| [Прогон E2 03.09](evidence/DEFECT_INJECTION_RECALL_RUN_2026_09.md) | Mutation-kill 0/6 дом-5, 1/8 mini-IFC; Wilson lower 0.000 / 0.022; `synthetic_only`; NO_GO |
 | [ADR-004 MIT vs п. 6.3](architecture/ADR-004-prize-ip-mit-fork-2026.md) | Развилка; LICENSE не меняем |
 | [Сверка весов с PDF](quality/ORDER_WEIGHTS_VERIFICATION_2026_09.md) | Колонка PDF пустая; UNVERIFIED; attributed |
 | [Лицензионная вилка CAD (OSINT 30.08)](quality/NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md) | Sustaining ≠ BimRv; не продукт CAD |

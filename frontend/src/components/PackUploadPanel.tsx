@@ -1,7 +1,6 @@
-import { useRef, useState, type DragEvent } from "react";
-import { uploadDocument } from "../lib/api";
+import { useState, type DragEvent } from "react";
 import { UI_COPY } from "../lib/ui-copy";
-import { detectPackKind, packKindHonesty, packKindVerdict } from "../lib/pack-kind";
+import { useUploads } from "../hooks/useUploads";
 
 export type PackUploadPanelProps = {
   onUploadedPath?: (path: string, filename: string) => void;
@@ -15,59 +14,13 @@ export default function PackUploadPanel({
   onContinueToRun,
   draftApplyNote,
 }: PackUploadPanelProps) {
-  const [honesty, setHonesty] = useState<string | null>(null);
-  const [status, setStatus] = useState<"idle" | "blocked" | "uploading" | "ok" | "failed">(
-    "idle",
-  );
-  const [detail, setDetail] = useState<string | null>(null);
-  const [progress, setProgress] = useState<number | null>(null);
+  const { status, detail, progress, honesty, startFile, cancel } = useUploads({ onUploadedPath });
   const [dragging, setDragging] = useState(false);
-  const abortRef = useRef<AbortController | null>(null);
-
-  async function onFile(file: File | undefined): Promise<void> {
-    if (!file) {
-      return;
-    }
-    const kind = detectPackKind(file.name);
-    const message = packKindHonesty(kind);
-    setHonesty(message);
-    if (packKindVerdict(kind) === "fail_closed") {
-      setStatus("blocked");
-      setDetail(UI_COPY.failClosedBefore(file.name));
-      setProgress(null);
-      return;
-    }
-    setStatus("uploading");
-    setDetail(null);
-    setProgress(0);
-    const controller = new AbortController();
-    abortRef.current = controller;
-    try {
-      const result = await uploadDocument(file, {
-        onProgress: (percent) => setProgress(percent),
-        signal: controller.signal,
-      });
-      setStatus("ok");
-      setProgress(100);
-      setDetail(`${result.filename} → ${result.path}`);
-      onUploadedPath?.(result.path, result.filename);
-    } catch (error: unknown) {
-      setStatus("failed");
-      setProgress(null);
-      setDetail(error instanceof Error ? error.message : UI_COPY.uploadFailed);
-    } finally {
-      abortRef.current = null;
-    }
-  }
-
-  function cancelUpload(): void {
-    abortRef.current?.abort();
-  }
 
   function onDrop(event: DragEvent<HTMLDivElement>): void {
     event.preventDefault();
     setDragging(false);
-    void onFile(event.dataTransfer.files?.[0]);
+    void startFile(event.dataTransfer.files?.[0]);
   }
 
   return (
@@ -103,7 +56,7 @@ export default function PackUploadPanel({
             type="file"
             aria-label={UI_COPY.packFileUpload}
             onChange={(event) => {
-              void onFile(event.target.files?.[0]);
+              void startFile(event.target.files?.[0]);
               event.target.value = "";
             }}
           />
@@ -115,7 +68,7 @@ export default function PackUploadPanel({
           <progress max={100} value={progress} aria-label={UI_COPY.uploadProgress}>
             {progress}%
           </progress>
-          <button type="button" className="toolbar-button" aria-label={UI_COPY.cancelUpload} onClick={cancelUpload}>
+          <button type="button" className="toolbar-button" aria-label={UI_COPY.cancelUpload} onClick={cancel}>
             {UI_COPY.cancelUpload}
           </button>
         </p>

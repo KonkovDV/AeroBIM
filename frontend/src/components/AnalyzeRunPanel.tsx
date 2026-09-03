@@ -1,12 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import {
   cancelAnalyzeJob,
-  fetchAnalyzeJob,
   submitAnalyzeProjectPackage,
-  type AnalyzeJobSnapshot,
 } from "../lib/api";
 import type { ReportCapabilities } from "../lib/types";
-import { capabilityRows, engineGroupStatus, humanCapabilityLine, RUN_ENGINE_GROUPS } from "../lib/capability-copy";
+import { BLOCKING_STATES, capabilityRows, engineGroupStatus, humanCapabilityLine, RUN_ENGINE_GROUPS } from "../lib/capability-copy";
 import { UI_COPY } from "../lib/ui-copy";
 import {
   packDraftFromIfc,
@@ -14,6 +12,7 @@ import {
   toAnalyzeSubmitBody,
   type PackDraft,
 } from "../lib/pack-draft";
+import { formatMmss, useRunPolling } from "../hooks/useRunPolling";
 
 export type AnalyzeRunPanelProps = {
   ifcPath: string | null;
@@ -24,15 +23,7 @@ export type AnalyzeRunPanelProps = {
   capabilities?: ReportCapabilities | null;
 };
 
-const TERMINAL = new Set(["succeeded", "failed", "cancelled", "dead_letter"]);
-
 const COARSE_STAGES = ["принято", "идёт", "отчёт"] as const;
-
-function formatMmss(totalSec: number): string {
-  const minutes = String(Math.floor(totalSec / 60)).padStart(2, "0");
-  const seconds = String(totalSec % 60).padStart(2, "0");
-  return `${minutes}:${seconds}`;
-}
 
 function stageIndex(status: string | undefined): number {
   const value = (status ?? "").toLowerCase();
@@ -48,6 +39,72 @@ function stageIndex(status: string | undefined): number {
   return 0;
 }
 
+function packCompositionLine(draft: PackDraft): string {
+  const parts = [
+    `IFC ${draft.ifcPath ? "✓" : "—"}`,
+    `IDS ${draft.idsPath ? "✓" : "—"}`,
+    `листы ${draft.drawings.length}`,
+    `ТЗ ${draft.requirementPath ? "✓" : "—"}`,
+    `расчёт ${draft.calculationPath ? "✓" : "—"}`,
+  ];
+  return parts.join(" · ");
+}
+
+/** Полоса состояния прогона: время, гейт, состав пакета, доказательность. */
+function RunStatusStrip({
+  jobStatus,
+  elapsedSec,
+  terminal,
+  draft,
+  capabilities,
+}: {
+  jobStatus: string | null;
+  elapsedSec: number;
+  terminal: boolean;
+  draft: PackDraft;
+  capabilities: ReportCapabilities | null | undefined;
+}) {
+  const timerCell = jobStatus
+    ? terminal
+      ? UI_COPY.runFinalTime(formatMmss(elapsedSec))
+      : UI_COPY.runTimer(formatMmss(elapsedSec))
+    : UI_COPY.runTimerIdle;
+  const rows = capabilities ? capabilityRows(capabilities) : [];
+  const blocking = rows.filter((row) => BLOCKING_STATES.has(row.status)).length;
+  const skipped = rows.filter(
+    (row) =>
+      row.status === "skipped" || row.status === "not_verified" || row.status === "not_implemented",
+  ).length;
+  return (
+    <div className="run-status-strip" data-testid="run-status-strip">
+      <div className="run-status-cell">
+        <span className="run-status-kicker">{UI_COPY.runCellCurrent}</span>
+        <strong className="run-status-value" data-testid="analyze-elapsed">
+          {timerCell}
+        </strong>
+      </div>
+      <div className="run-status-cell">
+        <span className="run-status-kicker">{UI_COPY.runCellGate}</span>
+        <strong className="run-status-value">
+          {jobStatus ? <code>{jobStatus}</code> : UI_COPY.runGateNone}
+        </strong>
+      </div>
+      <div className="run-status-cell">
+        <span className="run-status-kicker">{UI_COPY.runCellPack}</span>
+        <strong className="run-status-value">
+          {packDraftHasAny(draft) ? packCompositionLine(draft) : UI_COPY.runPackEmpty}
+        </strong>
+      </div>
+      <div className="run-status-cell">
+        <span className="run-status-kicker">{UI_COPY.runCellEvidence}</span>
+        <strong className="run-status-value">
+          {capabilities ? UI_COPY.runEvidenceSummary(blocking, skipped) : UI_COPY.runEvidenceNone}
+        </strong>
+      </div>
+    </div>
+  );
+}
+
 export default function AnalyzeRunPanel({
   ifcPath,
   packDraft,
@@ -57,66 +114,21 @@ export default function AnalyzeRunPanel({
   capabilities,
 }: AnalyzeRunPanelProps) {
   const draft = packDraft ?? packDraftFromIfc(ifcPath);
-  const [job, setJob] = useState<AnalyzeJobSnapshot | null>(null);
+  const { job, trackJob, pollError, setPollError, elapsedSec, terminal } = useRunPolling(onReportReady);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [elapsedSec, setElapsedSec] = useState(0);
-  const startedAt = useRef<number | null>(null);
-  const notifiedReportId = useRef<string | null>(null);
-
-  useEffect(() => {
-    if (!job?.job_id || TERMINAL.has(job.status.toLowerCase())) {
-      return;
-    }
-    if (startedAt.current === null) {
-      startedAt.current = Date.now();
-    }
-    const handle = window.setInterval(() => {
-      if (startedAt.current !== null) {
-        setElapsedSec(Math.floor((Date.now() - startedAt.current) / 1000));
-      }
-    }, 1000);
-    return () => window.clearInterval(handle);
-  }, [job?.job_id, job?.status]);
-
-  useEffect(() => {
-    const reportId = job?.report_id;
-    if (!reportId || job?.status.toLowerCase() !== "succeeded") {
-      return;
-    }
-    if (notifiedReportId.current === reportId) {
-      return;
-    }
-    notifiedReportId.current = reportId;
-    onReportReady?.(reportId);
-  }, [job?.report_id, job?.status, onReportReady]);
-
-  useEffect(() => {
-    if (!job?.job_id || TERMINAL.has(job.status.toLowerCase())) {
-      return;
-    }
-    const handle = window.setInterval(() => {
-      void fetchAnalyzeJob(job.job_id)
-        .then(setJob)
-        .catch((err: unknown) => {
-          setError(err instanceof Error ? err.message : "Не удалось опросить задание");
-        });
-    }, 2000);
-    return () => window.clearInterval(handle);
-  }, [job?.job_id, job?.status]);
 
   async function start(): Promise<void> {
     if (!packDraftHasAny(draft)) {
-      setError("Сначала загрузите IFC или документы. Нативные RVT/NWD/DWG — fail-closed.");
+      setError("Сначала загрузите IFC или документы. Нативные RVT/NWD/DWG — жёсткий отказ.");
       return;
     }
     setBusy(true);
     setError(null);
+    setPollError(null);
     try {
       const next = await submitAnalyzeProjectPackage(toAnalyzeSubmitBody(draft));
-      setJob(next);
-      startedAt.current = Date.now();
-      setElapsedSec(0);
+      trackJob(next, { restartClock: true });
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Не удалось отправить задание");
     } finally {
@@ -130,7 +142,7 @@ export default function AnalyzeRunPanel({
     }
     setBusy(true);
     try {
-      setJob(await cancelAnalyzeJob(job.job_id));
+      trackJob(await cancelAnalyzeJob(job.job_id));
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Не удалось отменить задание");
     } finally {
@@ -146,24 +158,26 @@ export default function AnalyzeRunPanel({
           <h2>{UI_COPY.runTitle}</h2>
         </div>
       </div>
-      <p className="compact-copy">
-        Цель ТЗ 30:00 на комплект — не измеренный SLA. Поллинг{" "}
-        <code>jobs/{"{job_id}"}</code>, не SSE. Тишина ≠ успех.
-      </p>
-      <p className="compact-copy">
-        IFC: {draft.ifcPath ?? "—"}. IDS: {draft.idsPath ?? "—"}. Листы: {draft.drawings.length}. ТЗ:{" "}
-        {draft.requirementPath ?? "—"}. Расчёт: {draft.calculationPath ?? "—"}.
-      </p>
-      <p className="run-timer compact-copy" data-testid="analyze-elapsed">
-        {job ? UI_COPY.runTimer(formatMmss(elapsedSec)) : UI_COPY.runTimerIdle}
-      </p>
+      <p className="compact-copy">{UI_COPY.runHonesty}</p>
+      <RunStatusStrip
+        jobStatus={job?.status ?? null}
+        elapsedSec={elapsedSec}
+        terminal={terminal}
+        draft={draft}
+        capabilities={capabilities}
+      />
       <div className="remark-actions">
         <button type="button" onClick={() => void start()} disabled={busy || !packDraftHasAny(draft)}>
           {busy ? "Запускаем…" : "Запустить анализ"}
         </button>
-        <button type="button" onClick={() => void cancel()} disabled={busy || !job?.job_id}>
+        <button type="button" onClick={() => void cancel()} disabled={busy || !job?.job_id || terminal}>
           Отменить
         </button>
+        {terminal ? (
+          <button type="button" onClick={() => void start()} disabled={busy || !packDraftHasAny(draft)}>
+            {UI_COPY.repeatRun}
+          </button>
+        ) : null}
         {onNeedUpload ? (
           <button type="button" onClick={onNeedUpload}>
             К загрузке
@@ -190,17 +204,17 @@ export default function AnalyzeRunPanel({
             </dd>
           </div>
           <div>
-            <dt>status</dt>
+            <dt>{UI_COPY.runStatusLabel}</dt>
             <dd>
               <code>{job.status}</code>
             </dd>
           </div>
           <div>
-            <dt>stage</dt>
+            <dt>{UI_COPY.runStageLabel}</dt>
             <dd>{job.stage_progress ?? "—"}</dd>
           </div>
           <div>
-            <dt>report</dt>
+            <dt>{UI_COPY.runReportLabel}</dt>
             <dd>{job.report_id ?? "—"}</dd>
           </div>
         </dl>
@@ -235,10 +249,10 @@ export default function AnalyzeRunPanel({
           ))}
         </ul>
       ) : null}
-      <p className="compact-copy">Стадии — грубый статус поллинга, не SSE по движкам.</p>
-      {error ? (
+      <p className="compact-copy">Стадии — грубый статус опроса, не SSE по движкам.</p>
+      {error || pollError ? (
         <p className="compact-copy" role="alert">
-          {error}
+          {error ?? pollError}
         </p>
       ) : null}
     </section>

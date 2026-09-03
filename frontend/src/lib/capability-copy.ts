@@ -22,7 +22,7 @@ export const CAPABILITY_ORDER: Array<keyof ReportCapabilities> = [
 
 export const BLOCKING_STATES: ReadonlySet<CapabilityState> = new Set(["failed", "missing"]);
 
-const LABEL_EN: Record<string, string> = {
+const LABEL_RU: Record<string, string> = {
   ifc_schema: "схема IFC",
   ifc_validation: "проверка IFC",
   ids: "IDS",
@@ -32,7 +32,7 @@ const LABEL_EN: Record<string, string> = {
   section_pairing: "сшивка ПД/РД",
   raster: "растр чертежа",
   dwg_dxf: "DWG",
-  cv_human_level: "CV human-level",
+  cv_human_level: "CV на уровне человека",
   mep_system_clash: "коллизии MEP",
   calculation_match: "сверка расчёта",
   calculation_correctness: "пересчёт расчёта",
@@ -57,7 +57,7 @@ export function capabilityRows(capabilities: ReportCapabilities): CapabilityRow[
 }
 
 export function formatCapabilityLabel(key: string): string {
-  return LABEL_EN[key] ?? key.replaceAll("_", " ");
+  return LABEL_RU[key] ?? key.replaceAll("_", " ");
 }
 
 export function humanCapabilityLine(row: CapabilityRow): string {

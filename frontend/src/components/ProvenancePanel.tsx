@@ -51,19 +51,19 @@ export default function ProvenancePanel({ activeIssue }: ProvenancePanelProps) {
       )}
       <dl className="detail-grid">
         <div>
-          <dt>Finding ID</dt>
+          <dt>{UI_COPY.provFindingId}</dt>
           <dd>
             <code>{dash(activeIssue.finding_id)}</code>
           </dd>
         </div>
         <div>
-          <dt>Source ID</dt>
+          <dt>{UI_COPY.provSourceId}</dt>
           <dd>
             <code>{dash(activeIssue.source_id)}</code>
           </dd>
         </div>
         <div>
-          <dt>Evidence refs</dt>
+          <dt>{UI_COPY.provEvidenceRefs}</dt>
           <dd>
             {(activeIssue.evidence_refs?.length ?? 0) > 0 ? (
               <ul className="evidence-ref-list">
@@ -79,23 +79,23 @@ export default function ProvenancePanel({ activeIssue }: ProvenancePanelProps) {
           </dd>
         </div>
         <div>
-          <dt>Rule</dt>
+          <dt>{UI_COPY.provRule}</dt>
           <dd>{activeIssue.rule_id}</dd>
         </div>
         <div>
-          <dt>Category</dt>
+          <dt>{UI_COPY.provCategory}</dt>
           <dd>{activeIssue.category}</dd>
         </div>
         <div>
-          <dt>Priority</dt>
+          <dt>{UI_COPY.provPriority}</dt>
           <dd>{dash(activeIssue.priority)}</dd>
         </div>
         <div>
-          <dt>Conflict kind</dt>
+          <dt>{UI_COPY.provConflictKind}</dt>
           <dd>{dash(activeIssue.conflict_kind)}</dd>
         </div>
         <div>
-          <dt>Entity</dt>
+          <dt>{UI_COPY.provEntity}</dt>
           <dd>{dash(activeIssue.ifc_entity)}</dd>
         </div>
         <div>
@@ -105,11 +105,11 @@ export default function ProvenancePanel({ activeIssue }: ProvenancePanelProps) {
           </dd>
         </div>
         <div>
-          <dt>Target</dt>
+          <dt>{UI_COPY.provTarget}</dt>
           <dd>{dash(activeIssue.target_ref)}</dd>
         </div>
         <div>
-          <dt>Property</dt>
+          <dt>{UI_COPY.provProperty}</dt>
           <dd>
             {dash(activeIssue.property_set)}
             {activeIssue.property_name ? ` · ${activeIssue.property_name}` : ""}
@@ -117,29 +117,29 @@ export default function ProvenancePanel({ activeIssue }: ProvenancePanelProps) {
           </dd>
         </div>
         <div>
-          <dt>Expected</dt>
+          <dt>{UI_COPY.provExpected}</dt>
           <dd>{dash(activeIssue.expected_value)}</dd>
         </div>
         <div>
-          <dt>Observed</dt>
+          <dt>{UI_COPY.provObserved}</dt>
           <dd>{dash(activeIssue.observed_value)}</dd>
         </div>
         <div>
-          <dt>Unit</dt>
+          <dt>{UI_COPY.provUnit}</dt>
           <dd>{dash(activeIssue.unit)}</dd>
         </div>
         <div>
-          <dt>Evidence modality</dt>
+          <dt>{UI_COPY.provEvidenceModality}</dt>
           <dd>{dash(activeIssue.evidence_modality)}</dd>
         </div>
         <div>
-          <dt>Confidence</dt>
+          <dt>{UI_COPY.provConfidence}</dt>
           <dd>
             {activeIssue.confidence == null ? "—" : activeIssue.confidence.toFixed(3)}
           </dd>
         </div>
         <div>
-          <dt>Norm</dt>
+          <dt>{UI_COPY.provNorm}</dt>
           <dd>
             {[activeIssue.norm_source, activeIssue.norm_edition, activeIssue.norm_clause]
               .filter(Boolean)
@@ -147,7 +147,7 @@ export default function ProvenancePanel({ activeIssue }: ProvenancePanelProps) {
           </dd>
         </div>
         <div>
-          <dt>Approval</dt>
+          <dt>{UI_COPY.provApproval}</dt>
           <dd>
             {dash(activeIssue.approval_status)}
             {activeIssue.approval_ref ? ` · ${activeIssue.approval_ref}` : ""}
@@ -162,16 +162,16 @@ export default function ProvenancePanel({ activeIssue }: ProvenancePanelProps) {
           </dd>
         </div>
         <div>
-          <dt>Tenant / project</dt>
+          <dt>{UI_COPY.provTenantProject}</dt>
           <dd>
             {dash(activeIssue.tenant_id)} / {dash(activeIssue.project_id)}
           </dd>
         </div>
         <div>
-          <dt>Problem zone</dt>
+          <dt>{UI_COPY.provProblemZone}</dt>
           <dd>
             {zone
-              ? `${zone.sheet_id ?? "sheet?"} · page ${zone.page_number ?? "?"}${
+              ? `${zone.sheet_id ?? "лист?"} · стр. ${zone.page_number ?? "?"}${
                   bbox ? ` · bbox ${bbox}` : ""
                 }`
               : "—"}

@@ -85,23 +85,27 @@ export default function RemarkCardPanel({
           ) : null}
           <dl className="remark-tz-fields">
             <div>
-              <dt>Суть</dt>
+              <dt>{UI_COPY.remarkEssence}</dt>
               <dd>{essenceLine(activeIssue)}</dd>
             </div>
             <div>
-              <dt>Норма / СТО / СП</dt>
+              <dt>{UI_COPY.remarkClause}</dt>
               <dd>{clauseLine(activeIssue)}</dd>
             </div>
             <div>
-              <dt>Этаж</dt>
+              <dt>{UI_COPY.remarkLocation}</dt>
+              <dd>{spatialOrMissing(activeIssue.remark?.location_line)}</dd>
+            </div>
+            <div>
+              <dt>{UI_COPY.remarkStorey}</dt>
               <dd>{spatialOrMissing(activeIssue.storey_name ?? activeIssue.remark?.storey_name)}</dd>
             </div>
             <div>
-              <dt>Ось</dt>
+              <dt>{UI_COPY.remarkAxis}</dt>
               <dd>{spatialOrMissing(activeIssue.grid_axis ?? activeIssue.remark?.grid_axis)}</dd>
             </div>
             <div>
-              <dt>Элемент / GUID</dt>
+              <dt>{UI_COPY.remarkElement}</dt>
               <dd>
                 <code>{dash(activeIssue.element_guid)}</code>
               </dd>
@@ -126,42 +130,45 @@ export default function RemarkCardPanel({
           <p className="compact-copy">
             <strong>{activeIssue.remark?.title ?? UI_COPY.generatedRemark}</strong>
           </p>
-          <textarea
-            id="remark-editor"
-            value={remarkDraft}
-            rows={5}
-            onChange={(event) => onDraftChange(event.target.value)}
-            aria-label={UI_COPY.editRemark}
-          />
-          <div className="remark-actions">
-            <button type="button" onClick={onSave} disabled={remarkSaveState === "saving"}>
-              {remarkSaveState === "saving" ? UI_COPY.savingRemark : UI_COPY.saveRemark}
-            </button>
-            <button
-              type="button"
-              onClick={onAccept}
-              disabled={!hitlEnabled || hitlDecisionState === "saving"}
-            >
-              {UI_COPY.confirmRemark}
-            </button>
-            <button
-              type="button"
-              onClick={onReject}
-              disabled={!hitlEnabled || hitlDecisionState === "saving"}
-            >
-              {UI_COPY.rejectRemark}
-            </button>
-            {remarkSaveState === "saved" ? <span className="compact-copy">{UI_COPY.remarkSaved}</span> : null}
-            {remarkSaveState === "failed" ? <span className="compact-copy">{UI_COPY.remarkSaveFailed}</span> : null}
-            {hitlDecisionState === "accepted" ? <span className="compact-copy">{UI_COPY.confirmed}</span> : null}
-            {hitlDecisionState === "rejected" ? <span className="compact-copy">{UI_COPY.rejected}</span> : null}
-            {hitlDecisionState === "failed" ? <span className="compact-copy">{UI_COPY.remarkDecisionFailed}</span> : null}
-          </div>
-          {!hitlEnabled ? (
-            <p className="compact-copy">
+          {hitlEnabled ? (
+            <>
+              <textarea
+                id="remark-editor"
+                value={remarkDraft}
+                rows={5}
+                onChange={(event) => onDraftChange(event.target.value)}
+                aria-label={UI_COPY.editRemark}
+              />
+              <div className="remark-actions">
+                <button type="button" onClick={onSave} disabled={remarkSaveState === "saving"}>
+                  {remarkSaveState === "saving" ? UI_COPY.savingRemark : UI_COPY.saveRemark}
+                </button>
+                <button
+                  type="button"
+                  onClick={onAccept}
+                  disabled={hitlDecisionState === "saving"}
+                >
+                  {UI_COPY.confirmRemark}
+                </button>
+                <button
+                  type="button"
+                  onClick={onReject}
+                  disabled={hitlDecisionState === "saving"}
+                >
+                  {UI_COPY.rejectRemark}
+                </button>
+                {remarkSaveState === "saved" ? <span className="compact-copy">{UI_COPY.remarkSaved}</span> : null}
+                {remarkSaveState === "failed" ? <span className="compact-copy">{UI_COPY.remarkSaveFailed}</span> : null}
+                {hitlDecisionState === "accepted" ? <span className="compact-copy">{UI_COPY.confirmed}</span> : null}
+                {hitlDecisionState === "rejected" ? <span className="compact-copy">{UI_COPY.rejected}</span> : null}
+                {hitlDecisionState === "failed" ? <span className="compact-copy">{UI_COPY.remarkDecisionFailed}</span> : null}
+              </div>
+            </>
+          ) : (
+            <p className="compact-copy" data-testid="hitl-readonly-note">
               {UI_COPY.hitlUserAlias}
             </p>
-          ) : null}
+          )}
           <div className="review-history" data-testid="review-history">
             <h4>{UI_COPY.hitlHistory}</h4>
             {historyError ? <p className="compact-copy">{historyError}</p> : null}

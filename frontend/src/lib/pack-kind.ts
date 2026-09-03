@@ -41,17 +41,17 @@ export function packKindVerdict(kind: PackKind): PackKindVerdict {
 export function packKindHonesty(kind: PackKind): string {
   switch (kind) {
     case "dwg":
-      return "Закрытый .dwg на MVP — fail-closed. Та же отметка, что у векторного PDF/DXF. Не тихий skip.";
+      return "Закрытый .dwg на MVP — жёсткий отказ. Та же отметка, что у векторного PDF/DXF. Не тихий пропуск.";
     case "rvt":
-      return "Нативный RVT не продукт приёма. Выгрузите IFC из САПР. Fail-closed.";
+      return "Нативный RVT не продукт приёма. Выгрузите IFC из САПР. Жёсткий отказ.";
     case "nwd":
-      return "Нативный NWD не продукт приёма. Федерация — IFC. Stock Navisworks не пишет IFC.";
+      return "Нативный NWD не продукт приёма. Федерация — IFC. Штатный Navisworks не пишет IFC.";
     case "lir":
       return "Нативный .lir не разбираем. Загрузите читаемую записку (PDF/Excel).";
     case "zip":
-      return "ZIP смотрит сервер. Autodesk natives внутри остаются fail-closed.";
+      return "ZIP смотрит сервер. Нативные Autodesk-файлы внутри остаются жёстким отказом.";
     case "ids":
-      return "Набор правил IDS 1.0. Запрошенный набор, который не грузится, — fail-closed.";
+      return "Набор правил IDS 1.0. Запрошенный набор, который не грузится, — жёсткий отказ.";
     case "ifc":
       return "IFC — формат модели на общем шлюзе.";
     case "pdf":
@@ -61,6 +61,6 @@ export function packKindHonesty(kind: PackKind): string {
     case "dxf":
       return "DXF — опциональный приём, не чтение закрытого .dwg.";
     default:
-      return "Неизвестный тип. Сервер проверяет magic bytes. 200 на другом файле не значит успех.";
+      return "Неизвестный тип. Сервер проверяет сигнатуру байтов. 200 на другом файле не значит успех.";
   }
 }

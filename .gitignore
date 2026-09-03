@@ -21,6 +21,7 @@ node_modules/
 dist/
 coverage/
 frontend/artifacts/
+frontend/vitest-out.txt
 
 # Runtime
 .env
@@ -189,6 +190,7 @@ docs/customer-demo/severity-taxonomy-draft.md
 docs/ai/LLM_COMPARATIVE_BENCHMARK.md
 docs/pilot/HARNESS_AND_DEMO_RUNBOOK*
 docs/partners/LETTER_OF_INTEREST_SAMOLET_TEMPLATE*
+docs/partners/REQUESTS_MASTER_LIST*
 audit/sprint-2-1-*
 scripts/rewrite-author*
 scripts/git_commit.ps1

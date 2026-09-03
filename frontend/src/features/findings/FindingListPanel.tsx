@@ -6,12 +6,37 @@ import {
   triageBand,
   type FindingGroupBy,
   type IndexedIssue,
+  type TriageBand,
 } from "../../lib/issue-triage";
 import { UI_COPY } from "../../lib/ui-copy";
 
 export const VIRTUALIZE_AFTER = 40;
 const ITEM_HEIGHT = 120;
 const OVERSCAN = 4;
+
+/** UI3: severity по-русски — Блокирующее / Существенное / Информация. */
+export function severityLabel(severity: ValidationIssue["severity"]): string {
+  if (severity === "error") {
+    return UI_COPY.severityError;
+  }
+  if (severity === "warning") {
+    return UI_COPY.severityWarning;
+  }
+  return UI_COPY.severityInfo;
+}
+
+function triageBandLabel(band: TriageBand): string {
+  if (band === "critical") {
+    return UI_COPY.triageBandCritical;
+  }
+  if (band === "major") {
+    return UI_COPY.triageBandMajor;
+  }
+  if (band === "minor") {
+    return UI_COPY.triageBandMinor;
+  }
+  return UI_COPY.triageBandNegligible;
+}
 
 export type FindingListPanelProps = {
   issues: IndexedIssue[];
@@ -51,8 +76,8 @@ function IssueCard({
       }}
     >
       <div className="issue-card-row">
-        <span className={`severity-pill severity-${issue.severity}`}>{issue.severity}</span>
-        {band ? <span className={`triage-band triage-band-${band}`}>{band}</span> : null}
+        <span className={`severity-pill severity-${issue.severity}`}>{severityLabel(issue.severity)}</span>
+        {band ? <span className={`triage-band triage-band-${band}`}>{triageBandLabel(band)}</span> : null}
         <strong>{issue.rule_id}</strong>
         {issue.rule_id === "AEROBIM-DRAWING-REGION-HITL" ? (
           <span className="issue-priority">HITL</span>
@@ -60,7 +85,7 @@ function IssueCard({
         {issue.origin === "advisory" ? (
           <span
             className="origin-pill origin-advisory"
-            title="Кандидат ИИ — на проверку эксперту; not a confirmed verdict"
+            title={UI_COPY.advisoryTitle}
           >
             {UI_COPY.advisory}
           </span>
@@ -70,7 +95,7 @@ function IssueCard({
         {typeof issue.confidence === "number" && issue.confidence < 0.6 ? (
           <span
             className="confidence-pill confidence-low"
-            title="Low self-reported (uncalibrated) confidence — requires human review"
+            title={UI_COPY.lowConfidenceTitle}
           >
             {UI_COPY.lowConfidence(issue.confidence.toFixed(2))}
           </span>
@@ -150,9 +175,9 @@ export default function FindingListPanel({
             }
           >
             <option value="all">{UI_COPY.severityAll}</option>
-            <option value="error">error</option>
-            <option value="warning">warning</option>
-            <option value="info">info</option>
+            <option value="error">{UI_COPY.severityError}</option>
+            <option value="warning">{UI_COPY.severityWarning}</option>
+            <option value="info">{UI_COPY.severityInfo}</option>
           </select>
         </label>
         <label>

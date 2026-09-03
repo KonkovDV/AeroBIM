@@ -1,22 +1,23 @@
 :root {
   color-scheme: light;
-  --bg: #eef3f8;
-  --bg-strong: #d7e4f0;
-  --panel: rgba(255, 255, 255, 0.9);
-  --panel-border: rgba(30, 74, 110, 0.14);
-  --text: #15202b;
-  --muted: #4d5d6d;
-  --accent: #1a6f9e;
-  --accent-strong: #12567c;
-  --danger: #b42318;
-  --danger-soft: #fef3f2;
-  --warning: #b54708;
-  --warning-soft: #fffaeb;
-  --pass: #166534;
-  --pass-soft: #ecfdf3;
-  /* TZ asked laconic Samolet-blue aliases. Brand book is not in git. */
+  /* OKLCH-палитра рабочего места. Акцент — оранж Самолёта (amber), не синий. */
+  --bg: oklch(96% .012 92);
+  --bg-strong: oklch(92% .02 90);
+  --panel: oklch(100% .004 92 / 0.9);
+  --panel-border: oklch(80% .025 215 / 0.55);
+  --text: oklch(24% .025 215);
+  --muted: oklch(53% .025 215);
+  --accent: oklch(73% .14 70);
+  --accent-strong: oklch(48% .11 63);
+  --danger: oklch(52% .19 25);
+  --danger-soft: oklch(95% .02 25);
+  --warning: oklch(48% .11 63);
+  --warning-soft: oklch(96% .03 92);
+  --pass: oklch(41% .09 165);
+  --pass-soft: oklch(95% .03 165);
+  /* TZ asked laconic Samolet-orange aliases. Brand book is not in git. */
   --brand-primary: var(--accent);
-  --shadow: 0 18px 48px rgba(18, 86, 124, 0.1);
+  --shadow: 0 18px 48px oklch(30% .025 215 / .1);
   --radius: 14px;
   --space-1: 4px;
   --space-2: 8px;
@@ -40,8 +41,8 @@ body {
   font-family: var(--font-ui);
   color: var(--text);
   background:
-    radial-gradient(circle at top left, rgba(26, 111, 158, 0.12), transparent 32%),
-    linear-gradient(180deg, #f7fafc 0%, var(--bg) 52%, #e4edf5 100%);
+    radial-gradient(circle at top left, oklch(73% .14 70 / .12), transparent 32%),
+    linear-gradient(180deg, oklch(98% .008 92) 0%, var(--bg) 52%, oklch(93% .018 85) 100%);
 }
 
 a {
@@ -765,7 +766,7 @@ input:focus-visible,
 }
 
 .severity-pill.severity-info {
-  background: rgba(15, 118, 110, 0.12);
+  background: oklch(95% .035 85);
   color: var(--accent-strong);
 }
 
@@ -1007,19 +1008,19 @@ input:focus-visible,
 }
 
 .triage-band.triage-band-critical {
-  background: #b42318;
+  background: oklch(52% .19 25);
 }
 
 .triage-band.triage-band-major {
-  background: #9a6700;
+  background: oklch(52% .11 75);
 }
 
 .triage-band.triage-band-minor {
-  background: #5b7fa6;
+  background: oklch(58% .07 240);
 }
 
 .triage-band.triage-band-negligible {
-  background: #8a8f98;
+  background: oklch(62% .01 240);
 }
 
 .summary-grid {
@@ -1217,7 +1218,7 @@ input:focus-visible,
   border-radius: 999px;
   text-decoration: none;
   background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-  color: white;
+  color: var(--text);
   font-weight: 700;
   font-size: 0.82rem;
   letter-spacing: 0.05em;
@@ -1264,6 +1265,11 @@ input:focus-visible,
 }
 
 @media (max-width: 780px) {
+  /* Мобильная раскладка: сенсорные цели 44px (WCAG 2.5.8). */
+  :root {
+    --target-min: 44px;
+  }
+
   .analyze-engines {
     grid-template-columns: 1fr 1fr;
   }
@@ -1292,6 +1298,17 @@ input:focus-visible,
   .report-search-input,
   .toolbar-button {
     width: 100%;
+  }
+
+  .filter-input,
+  .filter-select,
+  .report-search-input,
+  .toolbar-button,
+  .workspace-nav button,
+  .report-card,
+  .issue-card,
+  .preset-file-upload {
+    min-height: 44px;
   }
 
   .preset-import-input {
@@ -1344,7 +1361,7 @@ input:focus-visible,
 
 .pack-cycle-step-current {
   background: var(--accent);
-  color: #fff;
+  color: var(--text);
   border-color: var(--accent-strong);
 }
 
@@ -1574,6 +1591,25 @@ button.linkish {
 
 .demo-fixture-panel {
   margin-bottom: 16px;
+}
+
+.hotkeys-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px 16px;
+  margin-top: 16px;
+  padding: 10px 14px;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.hotkeys-footer .hotkeys-note {
+  color: var(--accent-strong);
 }
 
 .header-card strong {

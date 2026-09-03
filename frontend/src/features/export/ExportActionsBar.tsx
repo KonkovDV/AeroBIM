@@ -31,9 +31,6 @@ export default function ExportActionsBar({ reportId }: ExportActionsBarProps) {
       >
         {UI_COPY.exportPdf}
       </button>
-      <button type="button" disabled aria-label={UI_COPY.xlsxNotMvp}>
-        XLSX
-      </button>
       <p className="compact-copy">{UI_COPY.exportPdfHint}</p>
     </div>
   );

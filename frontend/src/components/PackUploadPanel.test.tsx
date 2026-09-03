@@ -21,7 +21,7 @@ describe("PackUploadPanel", () => {
     const file = new File(["x"], "tower.rvt", { type: "application/octet-stream" });
     fireEvent.change(input, { target: { files: [file] } });
     const honesty = await screen.findByTestId("pack-kind-honesty");
-    expect(honesty.textContent).toMatch(/Fail-closed/i);
+    expect(honesty.textContent).toMatch(/жёсткий отказ/i);
     expect(uploadDocumentMock).not.toHaveBeenCalled();
     expect(screen.getByTestId("pack-dropzone")).toBeTruthy();
   });

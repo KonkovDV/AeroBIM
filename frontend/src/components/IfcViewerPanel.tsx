@@ -6,6 +6,21 @@ import { UI_COPY } from "../lib/ui-copy";
 
 type ViewerStatus = "idle" | "initializing" | "loading" | "ready" | "error";
 
+function viewerStatusLabel(status: ViewerStatus): string {
+  switch (status) {
+    case "initializing":
+      return UI_COPY.viewerStatusInitializing;
+    case "loading":
+      return UI_COPY.viewerStatusLoading;
+    case "ready":
+      return UI_COPY.viewerStatusReady;
+    case "error":
+      return UI_COPY.viewerStatusError;
+    default:
+      return UI_COPY.viewerStatusIdle;
+  }
+}
+
 interface IfcViewerPanelProps {
   report: ValidationReport | null;
   selectedGuids: string[];
@@ -62,7 +77,7 @@ export default function IfcViewerPanel({
           return;
         }
         setViewerStatus("error");
-        setViewerError(error instanceof Error ? error.message : "Failed to initialize IFC viewer.");
+        setViewerError(error instanceof Error ? error.message : UI_COPY.viewerInitFailed);
       });
 
     return () => {
@@ -106,7 +121,7 @@ export default function IfcViewerPanel({
           return;
         }
         setViewerStatus("error");
-        setViewerError(error instanceof Error ? error.message : "Failed to load IFC source for the report.");
+        setViewerError(error instanceof Error ? error.message : UI_COPY.viewerLoadFailed);
       });
 
     return () => {
@@ -148,8 +163,8 @@ export default function IfcViewerPanel({
       </div>
 
       <div className="viewer-meta">
-        <span className={`viewer-status viewer-status-${viewerStatus}`}>{viewerStatus}</span>
-        <span>{report ? `Report ${report.report_id.slice(0, 8)}` : UI_COPY.noReportShort}</span>
+        <span className={`viewer-status viewer-status-${viewerStatus}`}>{viewerStatusLabel(viewerStatus)}</span>
+        <span>{report ? UI_COPY.viewerReport(report.report_id.slice(0, 8)) : UI_COPY.noReportShort}</span>
         <span>
           {selectionMode === "clash"
             ? UI_COPY.clashPairMode
