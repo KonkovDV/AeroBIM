@@ -71,4 +71,27 @@ describe("RemarkCardPanel", () => {
     fireEvent.keyDown(editor, { key: "Enter", ctrlKey: true });
     expect(onSave).toHaveBeenCalledTimes(1);
   });
+
+  it("copies the element GUID from the remark card", async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(window.navigator, "clipboard", {
+      configurable: true,
+      value: { writeText },
+    });
+    render(
+      <RemarkCardPanel
+        activeIssue={baseIssue}
+        remarkDraft="REI"
+        remarkSaveState="idle"
+        hitlDecisionState="idle"
+        onDraftChange={() => undefined}
+        onSave={() => undefined}
+        onAccept={() => undefined}
+        onReject={() => undefined}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Копировать GUID" }));
+    expect(writeText).toHaveBeenCalledWith("1XYVUKGoDDbREfVxRKsHkl");
+    expect(await screen.findByText("GUID скопирован")).toBeTruthy();
+  });
 });

@@ -1,36 +1,12 @@
 import { useEffect, useState } from "react";
 import { fetchReviewKpi, type ReviewKpiPayload } from "../lib/api";
+import { hitlEventTypeLabel } from "../lib/hitl-event-copy";
 import { kpiBarRows } from "../lib/kpi-bars";
 import { UI_COPY } from "../lib/ui-copy";
 
 export type ReviewKpiPanelProps = {
   reportId: string | null;
 };
-
-function eventTypeLabel(key: string): string {
-  switch (key) {
-    case "opened":
-      return UI_COPY.kpiTypeOpened;
-    case "accepted":
-      return UI_COPY.kpiTypeAccepted;
-    case "rejected":
-      return UI_COPY.kpiTypeRejected;
-    case "edited":
-      return UI_COPY.kpiTypeEdited;
-    case "edited_remark":
-      return UI_COPY.kpiTypeEditedRemark;
-    case "triaged":
-      return UI_COPY.kpiTypeTriaged;
-    case "waived":
-      return UI_COPY.kpiTypeWaived;
-    case "superseded":
-      return UI_COPY.kpiTypeSuperseded;
-    case "escalated":
-      return UI_COPY.kpiTypeEscalated;
-    default:
-      return key;
-  }
-}
 
 function KpiTypeBars({
   eventCount,
@@ -52,14 +28,14 @@ function KpiTypeBars({
       <h3>{UI_COPY.kpiByType}</h3>
       {bars.map((row) => (
         <div key={row.key} className="kpi-bar-row">
-          <span className="kpi-bar-label">{eventTypeLabel(row.key)}</span>
+          <span className="kpi-bar-label">{hitlEventTypeLabel(row.key)}</span>
           <div className="kpi-bar-track">
             <div
               className="kpi-bar-fill"
               style={{ width: `${row.percent}%` }}
               role="img"
               aria-label={UI_COPY.kpiBarAria(
-                eventTypeLabel(row.key),
+                hitlEventTypeLabel(row.key),
                 String(row.count),
                 String(row.percent),
               )}

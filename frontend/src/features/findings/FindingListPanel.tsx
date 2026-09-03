@@ -4,6 +4,7 @@ import { computeScrollTopToReveal } from "../../lib/finding-scroll";
 import {
   groupFindings,
   priorityCaption,
+  spatialOrMissing,
   triageBand,
   type FindingGroupBy,
   type IndexedIssue,
@@ -12,7 +13,7 @@ import {
 import { UI_COPY } from "../../lib/ui-copy";
 
 export const VIRTUALIZE_AFTER = 40;
-const ITEM_HEIGHT = 120;
+const ITEM_HEIGHT = 148;
 const OVERSCAN = 4;
 
 /** UI3: severity по-русски — Блокирующее / Существенное / Информация. */
@@ -68,6 +69,8 @@ function IssueCard({
 }) {
   const band = triageBand(issue);
   const caption = priorityCaption(issue);
+  const storey = spatialOrMissing(issue.storey_name ?? issue.remark?.storey_name);
+  const axis = spatialOrMissing(issue.grid_axis ?? issue.remark?.grid_axis);
   return (
     <button
       type="button"
@@ -112,6 +115,14 @@ function IssueCard({
       <div className="issue-card-meta">
         <span>{issue.category}</span>
         <span>{issue.target_ref ?? issue.element_guid ?? UI_COPY.noTarget}</span>
+      </div>
+      <div className="issue-card-meta issue-card-location" data-testid="issue-location">
+        <span className={storey === UI_COPY.spatialMissing ? "issue-location-missing" : undefined}>
+          {UI_COPY.findingStorey(storey)}
+        </span>
+        <span className={axis === UI_COPY.spatialMissing ? "issue-location-missing" : undefined}>
+          {UI_COPY.findingAxis(axis)}
+        </span>
       </div>
       {caption ? <p className="compact-copy">{caption}</p> : null}
     </button>

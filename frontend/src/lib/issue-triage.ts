@@ -106,7 +106,24 @@ export function triageBand(issue: ValidationIssue): TriageBand | null {
 
 export function spatialOrMissing(value: string | null | undefined): string {
   const text = value?.trim();
-  return text ? text : "нет в индексе";
+  return text ? text : UI_COPY.spatialMissing;
+}
+
+/**
+ * Если выбранная находка скрыта фильтром — перейти на первую видимую.
+ * Пустой список не сдвигает выбор (карточка замечания остаётся).
+ */
+export function snapIssueIndexToVisible(
+  filtered: IndexedIssue[],
+  selectedIndex: number,
+): number | null {
+  if (filtered.length === 0) {
+    return null;
+  }
+  if (filtered.some((row) => row.index === selectedIndex)) {
+    return selectedIndex;
+  }
+  return filtered[0]?.index ?? null;
 }
 
 export function findingGroupKey(issue: ValidationIssue, groupBy: FindingGroupBy): string {

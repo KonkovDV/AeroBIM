@@ -50,4 +50,37 @@ describe("FindingListPanel", () => {
     expect(cards[1]?.tabIndex).toBe(0);
     expect(cards[1]?.className).toMatch(/active/);
   });
+
+  it("shows storey and axis on the card or нет в индексе", () => {
+    render(
+      <FindingListPanel
+        issues={[
+          {
+            ...issue("R1", 0),
+            issue: {
+              ...issue("R1", 0).issue,
+              storey_name: "3 этаж",
+              grid_axis: "А",
+            },
+          },
+          issue("R2", 1),
+        ]}
+        totalIssueCount={2}
+        selectedIssueIndex={0}
+        issueSeverityFilter="all"
+        hitlOnlyFilter={false}
+        hitlRegionCount={0}
+        groupBy="none"
+        onSeverityChange={() => undefined}
+        onHitlOnlyChange={() => undefined}
+        onGroupByChange={() => undefined}
+        onSelectIssue={() => undefined}
+      />,
+    );
+    const locations = screen.getAllByTestId("issue-location");
+    expect(locations[0]?.textContent).toMatch(/эт\. 3 этаж/);
+    expect(locations[0]?.textContent).toMatch(/ос\. А/);
+    expect(locations[1]?.textContent).toMatch(/эт\. нет в индексе/);
+    expect(locations[1]?.textContent).toMatch(/ос\. нет в индексе/);
+  });
 });

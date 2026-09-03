@@ -732,6 +732,21 @@ input:focus-visible,
   font-size: 0.86rem;
 }
 
+.issue-card-location {
+  margin-top: 6px;
+}
+
+.issue-location-missing {
+  font-style: italic;
+}
+
+.guid-copy-row {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
 .issue-toolbar {
   display: flex;
   align-items: center;

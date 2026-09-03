@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { ValidationIssue } from "../../lib/types";
 import { fetchReviewEvents, type ReviewEventRow } from "../../lib/api";
+import { hitlEventTypeLabel } from "../../lib/hitl-event-copy";
 import { clauseLine, essenceLine, spatialOrMissing } from "../../lib/issue-triage";
 import { UI_COPY } from "../../lib/ui-copy";
 import EvidenceStepper from "./EvidenceStepper";
@@ -18,6 +19,34 @@ function eventMatchesIssue(event: ReviewEventRow, issue: ValidationIssue): boole
     return event.issue_rule_id === issue.rule_id;
   }
   return false;
+}
+
+function GuidCopyRow({ guid }: { guid: string | null | undefined }) {
+  const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle");
+  const text = guid?.trim() ?? "";
+  if (!text) {
+    return <code>—</code>;
+  }
+
+  async function copyGuid(): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopyState("copied");
+    } catch {
+      setCopyState("failed");
+    }
+  }
+
+  return (
+    <span className="guid-copy-row">
+      <code>{text}</code>
+      <button type="button" className="toolbar-button" onClick={() => void copyGuid()}>
+        {UI_COPY.copyGuid}
+      </button>
+      {copyState === "copied" ? <span className="compact-copy">{UI_COPY.guidCopied}</span> : null}
+      {copyState === "failed" ? <span className="compact-copy">{UI_COPY.guidCopyFailed}</span> : null}
+    </span>
+  );
 }
 
 export type RemarkCardPanelProps = {
@@ -107,7 +136,7 @@ export default function RemarkCardPanel({
             <div>
               <dt>{UI_COPY.remarkElement}</dt>
               <dd>
-                <code>{dash(activeIssue.element_guid)}</code>
+                <GuidCopyRow guid={activeIssue.element_guid} />
               </dd>
             </div>
             <div>
@@ -189,7 +218,7 @@ export default function RemarkCardPanel({
               <ol className="kpi-list">
                 {history.map((event) => (
                   <li key={event.event_id}>
-                    <code>{event.event_type}</code>
+                    <code>{hitlEventTypeLabel(event.event_type)}</code>
                     {event.created_at ? ` · ${event.created_at}` : ""}
                     {event.actor ? ` · ${event.actor}` : ""}
                   </li>

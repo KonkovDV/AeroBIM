@@ -25,6 +25,7 @@ import { useReportFilters } from "./hooks/useReportFilters";
 import { useReports } from "./hooks/useReports";
 import { useSelectedReport } from "./hooks/useSelectedReport";
 import { useTriageKeyboard } from "./hooks/useTriageKeyboard";
+import { useSnapSelectionToFilter } from "./hooks/useSnapSelectionToFilter";
 
 const IfcViewerPanel = lazy(() => import("./components/IfcViewerPanel"));
 
@@ -125,6 +126,7 @@ export default function App() {
     setRemarkDraft,
     decideRemark: decideActiveRemark,
   });
+  useSnapSelectionToFilter(filteredIssues, selectedIssueIndex, selectIssue);
 
   useEffect(() => {
     if (workspaceView === "remark") {

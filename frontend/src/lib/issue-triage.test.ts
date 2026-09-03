@@ -8,6 +8,7 @@ import {
   HITL_RULE_ID,
   isHitlClickableRegion,
   issueMatchesSearch,
+  snapIssueIndexToVisible,
   spatialOrMissing,
 } from "./issue-triage";
 import type { ValidationIssue, ValidationReport } from "./types";
@@ -74,6 +75,16 @@ describe("issue-triage", () => {
   it("never invents storey from empty string", () => {
     expect(spatialOrMissing("")).toBe("нет в индексе");
     expect(spatialOrMissing("  1 этаж ")).toBe("1 этаж");
+  });
+
+  it("snaps hidden selection to the first visible row and leaves empty lists alone", () => {
+    const rows = [
+      { issue: issue({ rule_id: "R2" }), index: 1 },
+      { issue: issue({ rule_id: "R3" }), index: 2 },
+    ];
+    expect(snapIssueIndexToVisible(rows, 1)).toBe(1);
+    expect(snapIssueIndexToVisible(rows, 0)).toBe(1);
+    expect(snapIssueIndexToVisible([], 0)).toBeNull();
   });
 
   it("matches search across rule, message, guid, storey and axis", () => {

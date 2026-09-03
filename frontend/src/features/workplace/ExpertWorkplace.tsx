@@ -188,7 +188,7 @@ export default function ExpertWorkplace({
                       <div className="collection-meta">
                         <span>{clash.element_a_guid}</span>
                         <span>{clash.element_b_guid}</span>
-                        <span>{clash.distance.toFixed(3)} m</span>
+                        <span>{UI_COPY.clashDistance(clash.distance.toFixed(3))}</span>
                       </div>
                     </button>
                   ))}

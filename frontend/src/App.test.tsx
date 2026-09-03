@@ -268,6 +268,21 @@ describe("App", () => {
     expect(within(viewer).getByText(/Фокус на одном элементе по GUID guid-issue-1/i)).toBeTruthy();
   });
 
+  it("snaps the selected finding to the first visible row when search hides it", async () => {
+    render(<App />);
+    expect(await screen.findByLabelText(UI_COPY.searchFindings)).toBeTruthy();
+    fireEvent.change(screen.getByLabelText(UI_COPY.searchFindings), { target: { value: "Second" } });
+    await waitFor(() => {
+      expect(screen.queryByText("Drawing issue")).toBeNull();
+    });
+    const cards = screen
+      .getAllByRole("button")
+      .filter((button) => button.className.includes("issue-card"));
+    expect(cards).toHaveLength(1);
+    expect(cards[0]?.className).toMatch(/active/);
+    expect(cards[0]?.textContent).toMatch(/DRAW-SECOND/);
+  });
+
   it("searches the loaded report set by report and request id", async () => {
     render(<App />);
 
