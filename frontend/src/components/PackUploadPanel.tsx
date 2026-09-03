@@ -1,5 +1,6 @@
 import { useState, type DragEvent } from "react";
 import { UI_COPY } from "../lib/ui-copy";
+import { packCompositionLine, packDraftHasAny, type PackDraft } from "../lib/pack-draft";
 import { useUploads } from "../hooks/useUploads";
 
 export type PackUploadPanelProps = {
@@ -7,12 +8,15 @@ export type PackUploadPanelProps = {
   onContinueToRun?: () => void;
   /** HD14-FE-01: slot replacement / not-in-draft. Not a pack-processed claim. */
   draftApplyNote?: string | null;
+  /** Текущий draft комплекта: состав виден до перехода к прогону. */
+  packDraft?: PackDraft;
 };
 
 export default function PackUploadPanel({
   onUploadedPath,
   onContinueToRun,
   draftApplyNote,
+  packDraft,
 }: PackUploadPanelProps) {
   const { status, detail, progress, honesty, startFile, cancel } = useUploads({ onUploadedPath });
   const [dragging, setDragging] = useState(false);
@@ -81,6 +85,11 @@ export default function PackUploadPanel({
       {draftApplyNote ? (
         <p className="pack-draft-apply-note" role="status" data-testid="pack-draft-apply-note">
           {draftApplyNote}
+        </p>
+      ) : null}
+      {packDraft && packDraftHasAny(packDraft) ? (
+        <p className="compact-copy" data-testid="pack-composition">
+          {UI_COPY.packComposition}: {packCompositionLine(packDraft)}
         </p>
       ) : null}
       {status === "uploading" && progress === null ? <p className="compact-copy">{UI_COPY.uploading}</p> : null}

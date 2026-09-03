@@ -1,4 +1,4 @@
-import type { ClashResult, ValidationIssue } from "./types";
+import type { ClashResult, ValidationIssue, ValidationReport } from "./types";
 import { UI_COPY } from "./ui-copy";
 
 export const TRIAGE_BANDS = ["critical", "major", "minor", "negligible"] as const;
@@ -7,6 +7,63 @@ export type TriageBand = (typeof TRIAGE_BANDS)[number];
 export type FindingGroupBy = "none" | "rule" | "storey" | "axis" | "discipline";
 
 export type IndexedIssue = { issue: ValidationIssue; index: number };
+
+/** Правило региона листа, требующего эксперта (HITL). Машинный идентификатор API. */
+export const HITL_RULE_ID = "AEROBIM-DRAWING-REGION-HITL";
+
+export type TriageSeverityFilter = "all" | "error" | "warning" | "info";
+
+export type TriageFilter = {
+  severity: TriageSeverityFilter;
+  hitlOnly: boolean;
+  search: string;
+};
+
+/** Текстовый поиск по находке: правило, суть, GUID, цель, этаж, ось, категория. */
+export function issueMatchesSearch(issue: ValidationIssue, query: string): boolean {
+  const needle = query.trim().toLowerCase();
+  if (!needle) {
+    return true;
+  }
+  const haystack = [
+    issue.rule_id,
+    issue.message,
+    issue.category,
+    issue.element_guid,
+    issue.target_ref,
+    issue.storey_name,
+    issue.grid_axis,
+    issue.finding_id,
+    issue.remark?.title,
+  ]
+    .filter((part): part is string => Boolean(part && part.trim()))
+    .join("\n")
+    .toLowerCase();
+  return haystack.includes(needle);
+}
+
+/**
+ * Единая воронка триажа списка находок: серьёзность → HITL → поиск →
+ * стабильная сортировка по приоритету (ничьи держат порядок отчёта).
+ * Чистая функция: App.tsx только передаёт состояние фильтров.
+ */
+export function filterTriageIssues(
+  report: ValidationReport,
+  filter: TriageFilter,
+): IndexedIssue[] {
+  return report.issues
+    .map((issue, index) => ({ issue, index }))
+    .filter(({ issue }) => {
+      if (filter.severity !== "all" && issue.severity !== filter.severity) {
+        return false;
+      }
+      if (filter.hitlOnly && issue.rule_id !== HITL_RULE_ID) {
+        return false;
+      }
+      return issueMatchesSearch(issue, filter.search);
+    })
+    .sort((a, b) => (b.issue.priority ?? 0) - (a.issue.priority ?? 0));
+}
 
 /** Deterministic clash triage band carried in evidence_refs (backend Wave B). */
 export function triageBand(issue: ValidationIssue): TriageBand | null {

@@ -25,6 +25,7 @@ export type ExpertWorkplaceProps = {
   issueSeverityFilter: "all" | "error" | "warning" | "info";
   hitlOnlyFilter: boolean;
   hitlRegionCount: number;
+  issueSearch: string;
   findingGroupBy: FindingGroupBy;
   activeIssue: ValidationIssue | null;
   matchingRequirements: ParsedRequirement[];
@@ -37,6 +38,7 @@ export type ExpertWorkplaceProps = {
   onSelectReport: (reportId: string) => void;
   onSeverityChange: (value: "all" | "error" | "warning" | "info") => void;
   onHitlOnlyChange: (value: boolean) => void;
+  onSearchChange: (value: string) => void;
   onGroupByChange: (value: FindingGroupBy) => void;
   onSelectIssue: (index: number, issue: ValidationIssue) => void;
   onSelectClash: (index: number | null) => void;
@@ -58,6 +60,7 @@ export default function ExpertWorkplace({
   issueSeverityFilter,
   hitlOnlyFilter,
   hitlRegionCount,
+  issueSearch,
   findingGroupBy,
   activeIssue,
   matchingRequirements,
@@ -70,6 +73,7 @@ export default function ExpertWorkplace({
   onSelectReport,
   onSeverityChange,
   onHitlOnlyChange,
+  onSearchChange,
   onGroupByChange,
   onSelectIssue,
   onSelectClash,
@@ -130,9 +134,11 @@ export default function ExpertWorkplace({
                 issueSeverityFilter={issueSeverityFilter}
                 hitlOnlyFilter={hitlOnlyFilter}
                 hitlRegionCount={hitlRegionCount}
+                searchQuery={issueSearch}
                 groupBy={findingGroupBy}
                 onSeverityChange={onSeverityChange}
                 onHitlOnlyChange={onHitlOnlyChange}
+                onSearchChange={onSearchChange}
                 onGroupByChange={onGroupByChange}
                 onSelectIssue={onSelectIssue}
               />

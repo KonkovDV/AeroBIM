@@ -45,9 +45,11 @@ export type FindingListPanelProps = {
   issueSeverityFilter: "all" | "error" | "warning" | "info";
   hitlOnlyFilter: boolean;
   hitlRegionCount: number;
+  searchQuery?: string;
   groupBy: FindingGroupBy;
   onSeverityChange: (value: "all" | "error" | "warning" | "info") => void;
   onHitlOnlyChange: (value: boolean) => void;
+  onSearchChange?: (value: string) => void;
   onGroupByChange: (value: FindingGroupBy) => void;
   onSelectIssue: (index: number, issue: ValidationIssue) => void;
 };
@@ -121,9 +123,11 @@ export default function FindingListPanel({
   issueSeverityFilter,
   hitlOnlyFilter,
   hitlRegionCount,
+  searchQuery,
   groupBy,
   onSeverityChange,
   onHitlOnlyChange,
+  onSearchChange,
   onGroupByChange,
   onSelectIssue,
 }: FindingListPanelProps) {
@@ -166,6 +170,18 @@ export default function FindingListPanel({
   return (
     <>
       <div className="issue-toolbar">
+        {onSearchChange ? (
+          <label className="issue-search">
+            {UI_COPY.searchFindings}
+            <input
+              type="search"
+              value={searchQuery ?? ""}
+              placeholder={UI_COPY.searchFindingsPh}
+              aria-label={UI_COPY.searchFindings}
+              onChange={(event) => onSearchChange(event.target.value)}
+            />
+          </label>
+        ) : null}
         <label>
           {UI_COPY.severity}
           <select
@@ -203,7 +219,7 @@ export default function FindingListPanel({
           {UI_COPY.hitlOnly}
           {hitlRegionCount > 0 ? ` (${hitlRegionCount})` : ""}
         </label>
-        <span className="compact-copy">
+        <span className="compact-copy" role="status" aria-live="polite">
           {UI_COPY.shownCount(issues.length, totalIssueCount, virtualize)}
         </span>
       </div>

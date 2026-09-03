@@ -23,6 +23,8 @@ export const ALLOWED_WORDS = new Set([
   "vite", "aerobim", "navisworks", "autodesk", "tangl", "office", "excel",
   // протокольные и доменные термины проекта
   "bearer", "authorization", "accept", "checkpoint", "bbox",
+  // клавиши клавиатуры в подсказках хоткеев (как enum-токены)
+  "ctrl", "enter",
   // enum-статусы карты покрытия (машинные значения API)
   "findings",
 ]);

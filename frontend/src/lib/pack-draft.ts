@@ -130,6 +130,18 @@ export function packDraftHasAny(draft: PackDraft): boolean {
   );
 }
 
+/** Однострочный состав пакета для экранов загрузки и прогона. Не «пакет обработан». */
+export function packCompositionLine(draft: PackDraft): string {
+  const parts = [
+    `IFC ${draft.ifcPath ? "✓" : "—"}`,
+    `IDS ${draft.idsPath ? "✓" : "—"}`,
+    `листы ${draft.drawings.length}`,
+    `ТЗ ${draft.requirementPath ? "✓" : "—"}`,
+    `расчёт ${draft.calculationPath ? "✓" : "—"}`,
+  ];
+  return parts.join(" · ");
+}
+
 export function toAnalyzeSubmitBody(draft: PackDraft): AnalyzeSubmitBody {
   const body: AnalyzeSubmitBody = {};
   if (draft.ifcPath) {

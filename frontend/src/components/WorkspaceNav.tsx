@@ -36,9 +36,15 @@ export const TRIAGE_KEYBOARD_VIEWS: ReadonlySet<WorkspaceView> = new Set([
 export type WorkspaceNavProps = {
   workspaceView: WorkspaceView;
   onChange: (view: WorkspaceView) => void;
+  /** Число находок выбранного отчёта на кнопке «Эксперт». Не точность продукта. */
+  reviewFindingsCount?: number | null;
 };
 
-export default function WorkspaceNav({ workspaceView, onChange }: WorkspaceNavProps) {
+export default function WorkspaceNav({
+  workspaceView,
+  onChange,
+  reviewFindingsCount = null,
+}: WorkspaceNavProps) {
   return (
     <nav className="workspace-nav" aria-label={UI_COPY.navAria} data-testid="workspace-nav">
       {WORKSPACE_NAV.map(({ id, label }) => (
@@ -50,6 +56,16 @@ export default function WorkspaceNav({ workspaceView, onChange }: WorkspaceNavPr
           onClick={() => onChange(id)}
         >
           {label}
+          {id === "review" && reviewFindingsCount !== null ? (
+            <span
+              className="nav-badge"
+              data-testid="nav-review-badge"
+              title={UI_COPY.navReviewCount(reviewFindingsCount)}
+              aria-hidden="true"
+            >
+              {reviewFindingsCount}
+            </span>
+          ) : null}
         </button>
       ))}
     </nav>

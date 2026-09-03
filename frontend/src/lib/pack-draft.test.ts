@@ -4,6 +4,7 @@ import {
   applyUploadedFileResult,
   describePackDraftApplyNote,
   EMPTY_PACK_DRAFT,
+  packCompositionLine,
   packDraftHasAny,
   toAnalyzeSubmitBody,
 } from "./pack-draft";
@@ -29,6 +30,14 @@ describe("pack-draft", () => {
     const draft = applyUploadedFile(EMPTY_PACK_DRAFT, "closed/tower.rvt", "tower.rvt");
     expect(toAnalyzeSubmitBody(draft)).toEqual({});
     expect(packDraftHasAny(draft)).toBe(false);
+  });
+
+  it("renders the pack composition line without claiming a processed pack", () => {
+    expect(packCompositionLine(EMPTY_PACK_DRAFT)).toBe("IFC — · IDS — · листы 0 · ТЗ — · расчёт —");
+    let draft = applyUploadedFile(EMPTY_PACK_DRAFT, "models/walls.ifc", "walls.ifc");
+    draft = applyUploadedFile(draft, "sheets/a101.pdf", "A-101.pdf");
+    draft = applyUploadedFile(draft, "sheets/a102.pdf", "A-102.pdf");
+    expect(packCompositionLine(draft)).toBe("IFC ✓ · IDS — · листы 2 · ТЗ — · расчёт —");
   });
 
   it("routes .ifczip into the IFC slot", () => {

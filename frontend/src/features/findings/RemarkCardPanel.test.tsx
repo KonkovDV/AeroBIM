@@ -1,5 +1,5 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import RemarkCardPanel from "./RemarkCardPanel";
 import type { ValidationIssue } from "../../lib/types";
 
@@ -49,5 +49,26 @@ describe("RemarkCardPanel", () => {
     expect(screen.getByText("ids:FIRE-1")).toBeTruthy();
     expect(screen.getByTestId("evidence-stepper")).toBeTruthy();
     expect(screen.getByTestId("review-history")).toBeTruthy();
+  });
+
+  it("saves the remark draft on Ctrl+Enter from the editor", () => {
+    const onSave = vi.fn();
+    render(
+      <RemarkCardPanel
+        activeIssue={baseIssue}
+        remarkDraft="REI"
+        remarkSaveState="idle"
+        hitlDecisionState="idle"
+        onDraftChange={() => undefined}
+        onSave={onSave}
+        onAccept={() => undefined}
+        onReject={() => undefined}
+      />,
+    );
+    const editor = screen.getByLabelText("Текст замечания");
+    fireEvent.keyDown(editor, { key: "Enter" });
+    expect(onSave).not.toHaveBeenCalled();
+    fireEvent.keyDown(editor, { key: "Enter", ctrlKey: true });
+    expect(onSave).toHaveBeenCalledTimes(1);
   });
 });

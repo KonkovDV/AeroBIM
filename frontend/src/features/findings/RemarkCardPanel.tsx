@@ -137,10 +137,21 @@ export default function RemarkCardPanel({
                 value={remarkDraft}
                 rows={5}
                 onChange={(event) => onDraftChange(event.target.value)}
+                onKeyDown={(event) => {
+                  if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+                    event.preventDefault();
+                    onSave();
+                  }
+                }}
                 aria-label={UI_COPY.editRemark}
               />
               <div className="remark-actions">
-                <button type="button" onClick={onSave} disabled={remarkSaveState === "saving"}>
+                <button
+                  type="button"
+                  onClick={onSave}
+                  disabled={remarkSaveState === "saving"}
+                  title={UI_COPY.remarkSaveHotkey}
+                >
                   {remarkSaveState === "saving" ? UI_COPY.savingRemark : UI_COPY.saveRemark}
                 </button>
                 <button

@@ -1,6 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { clauseLine, essenceLine, groupFindings, spatialOrMissing } from "./issue-triage";
-import type { ValidationIssue } from "./types";
+import {
+  clauseLine,
+  essenceLine,
+  filterTriageIssues,
+  groupFindings,
+  HITL_RULE_ID,
+  issueMatchesSearch,
+  spatialOrMissing,
+} from "./issue-triage";
+import type { ValidationIssue, ValidationReport } from "./types";
 
 function issue(overrides: Partial<ValidationIssue>): ValidationIssue {
   return {
@@ -64,5 +72,43 @@ describe("issue-triage", () => {
   it("never invents storey from empty string", () => {
     expect(spatialOrMissing("")).toBe("нет в индексе");
     expect(spatialOrMissing("  1 этаж ")).toBe("1 этаж");
+  });
+
+  it("matches search across rule, message, guid, storey and axis", () => {
+    const row = issue({
+      rule_id: "FIRE-1",
+      message: "FireRating REI30 вместо REI60",
+      element_guid: "1XYVUKGoDDbREfVxRKsHkl",
+      storey_name: "3 этаж",
+      grid_axis: "А-2",
+    });
+    expect(issueMatchesSearch(row, "")).toBe(true);
+    expect(issueMatchesSearch(row, "  ")).toBe(true);
+    expect(issueMatchesSearch(row, "fire-1")).toBe(true);
+    expect(issueMatchesSearch(row, "rei60")).toBe(true);
+    expect(issueMatchesSearch(row, "1xyvuk")).toBe(true);
+    expect(issueMatchesSearch(row, "3 этаж")).toBe(true);
+    expect(issueMatchesSearch(row, "а-2")).toBe(true);
+    expect(issueMatchesSearch(row, "колонна")).toBe(false);
+  });
+
+  it("filterTriageIssues applies severity, hitl and search, then sorts by priority", () => {
+    const report = {
+      issues: [
+        issue({ rule_id: "R1", severity: "warning", priority: 1 }),
+        issue({ rule_id: HITL_RULE_ID, severity: "error", priority: 9, message: "Регион листа" }),
+        issue({ rule_id: "R3", severity: "error", priority: 5, message: "Стена REI" }),
+      ],
+    } as unknown as ValidationReport;
+    const all = filterTriageIssues(report, { severity: "all", hitlOnly: false, search: "" });
+    expect(all.map((row) => row.issue.rule_id)).toEqual([HITL_RULE_ID, "R3", "R1"]);
+    const errors = filterTriageIssues(report, { severity: "error", hitlOnly: false, search: "" });
+    expect(errors.map((row) => row.issue.rule_id)).toEqual([HITL_RULE_ID, "R3"]);
+    const hitl = filterTriageIssues(report, { severity: "all", hitlOnly: true, search: "" });
+    expect(hitl.map((row) => row.issue.rule_id)).toEqual([HITL_RULE_ID]);
+    const found = filterTriageIssues(report, { severity: "all", hitlOnly: false, search: "rei" });
+    expect(found.map((row) => row.issue.rule_id)).toEqual(["R3"]);
+    // Исходные индексы отчёта сохраняются — карточка и клавиатура работают по ним.
+    expect(all[0]?.index).toBe(1);
   });
 });

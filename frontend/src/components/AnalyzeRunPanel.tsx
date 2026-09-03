@@ -7,6 +7,7 @@ import type { ReportCapabilities } from "../lib/types";
 import { BLOCKING_STATES, capabilityRows, engineGroupStatus, humanCapabilityLine, RUN_ENGINE_GROUPS } from "../lib/capability-copy";
 import { UI_COPY } from "../lib/ui-copy";
 import {
+  packCompositionLine,
   packDraftFromIfc,
   packDraftHasAny,
   toAnalyzeSubmitBody,
@@ -37,17 +38,6 @@ function stageIndex(status: string | undefined): number {
     return 1;
   }
   return 0;
-}
-
-function packCompositionLine(draft: PackDraft): string {
-  const parts = [
-    `IFC ${draft.ifcPath ? "✓" : "—"}`,
-    `IDS ${draft.idsPath ? "✓" : "—"}`,
-    `листы ${draft.drawings.length}`,
-    `ТЗ ${draft.requirementPath ? "✓" : "—"}`,
-    `расчёт ${draft.calculationPath ? "✓" : "—"}`,
-  ];
-  return parts.join(" · ");
 }
 
 /** Полоса состояния прогона: время, гейт, состав пакета, доказательность. */

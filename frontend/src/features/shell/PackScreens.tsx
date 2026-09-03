@@ -27,6 +27,7 @@ export default function PackScreens({
       <div className="workspace-alt">
         <PackUploadPanel
           draftApplyNote={draftApplyNote}
+          packDraft={packDraft}
           onUploadedPath={(path, filename) => {
             const note = applyUpload(path, filename);
             if (note.kind === "filled" && note.slot === "ifc") {

@@ -2,7 +2,7 @@ import { Suspense, lazy, useCallback, useEffect, useState } from "react";
 import { getApiBaseUrl } from "./lib/api";
 import type { ParsedRequirement, ValidationIssue, ValidationReport } from "./lib/types";
 import { readUrlReportId } from "./lib/report-filters";
-import { buildViewerFocus, type FindingGroupBy } from "./lib/issue-triage";
+import { buildViewerFocus, filterTriageIssues, type FindingGroupBy } from "./lib/issue-triage";
 import DemoFixturePanel from "./components/DemoFixturePanel";
 import VersionDiffPanel from "./components/VersionDiffPanel";
 import WorkspaceNav, {
@@ -50,6 +50,7 @@ export default function App() {
     "all" | "error" | "warning" | "info"
   >("all");
   const [hitlOnlyFilter, setHitlOnlyFilter] = useState(false);
+  const [issueSearch, setIssueSearch] = useState("");
   const [selectedReportId, setSelectedReportId] = useState<string | null>(readUrlReportId);
 
   const reportFilters = useReportFilters(selectedReportId);
@@ -88,24 +89,11 @@ export default function App() {
   const filteredIssues =
     selectedReport === null
       ? []
-      : selectedReport.issues
-          .map((issue, index) => ({ issue, index }))
-          .filter(({ issue }) => {
-            if (issueSeverityFilter !== "all" && issue.severity !== issueSeverityFilter) {
-              return false;
-            }
-            if (hitlOnlyFilter) {
-              const isHitlIssue = issue.rule_id === "AEROBIM-DRAWING-REGION-HITL";
-              const hasHitlRegion =
-                (selectedReport.drawing_regions ?? []).some(
-                  (region) => region.hitl_required === true,
-                ) && isHitlIssue;
-              return isHitlIssue || hasHitlRegion;
-            }
-            return true;
-          })
-          // Reviewer triage order: priority desc (stable — ties keep report order).
-          .sort((a, b) => (b.issue.priority ?? 0) - (a.issue.priority ?? 0));
+      : filterTriageIssues(selectedReport, {
+          severity: issueSeverityFilter,
+          hitlOnly: hitlOnlyFilter,
+          search: issueSearch,
+        });
   const hitlRegionCount = selectedReport
     ? (selectedReport.drawing_regions ?? []).filter((region) => region.hitl_required === true)
         .length
@@ -175,7 +163,11 @@ export default function App() {
         <section className="error-banner">{reportsError ?? reportError}</section>
       ) : null}
 
-      <WorkspaceNav workspaceView={workspaceView} onChange={setWorkspaceView} />
+      <WorkspaceNav
+        workspaceView={workspaceView}
+        onChange={setWorkspaceView}
+        reviewFindingsCount={selectedReport ? selectedReport.issues.length : null}
+      />
       <PackCycleStrip
         workspaceView={workspaceView}
         packDraft={pack.packDraft}
@@ -234,6 +226,7 @@ export default function App() {
           issueSeverityFilter={issueSeverityFilter}
           hitlOnlyFilter={hitlOnlyFilter}
           hitlRegionCount={hitlRegionCount}
+          issueSearch={issueSearch}
           findingGroupBy={findingGroupBy}
           activeIssue={activeIssue}
           matchingRequirements={matchingRequirements}
@@ -260,6 +253,7 @@ export default function App() {
           onSelectReport={setSelectedReportId}
           onSeverityChange={setIssueSeverityFilter}
           onHitlOnlyChange={setHitlOnlyFilter}
+          onSearchChange={setIssueSearch}
           onGroupByChange={setFindingGroupBy}
           onSelectIssue={selectIssue}
           onSelectClash={setSelectedClashIndex}
