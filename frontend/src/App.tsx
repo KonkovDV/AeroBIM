@@ -16,6 +16,7 @@ import PackCycleStrip from "./features/workplace/PackCycleStrip";
 import ProjectsScreen from "./features/reports/ProjectsScreen";
 import PackScreens from "./features/shell/PackScreens";
 import ShellHeader from "./features/shell/ShellHeader";
+import ErrorBanner from "./features/shell/ErrorBanner";
 import UserScreen from "./features/shell/UserScreen";
 import ViewerPlaceholder from "./features/shell/ViewerPlaceholder";
 import { persistUiRoleAlias, readUiRoleAlias, type UiRoleAlias } from "./lib/ui-role";
@@ -80,7 +81,7 @@ export default function App() {
     selectIssue,
     saveRemarkEdit,
     decideRemark,
-  } = useSelectedReport(selectedReportId);
+  } = useSelectedReport(selectedReportId, reportsEpoch);
   const pack = usePackDraft();
 
   const activeIssue =
@@ -162,7 +163,10 @@ export default function App() {
       />
 
       {reportsError || reportError ? (
-        <section className="error-banner">{reportsError ?? reportError}</section>
+        <ErrorBanner
+          message={reportsError ?? reportError ?? ""}
+          onRetry={() => setReportsEpoch((value) => value + 1)}
+        />
       ) : null}
 
       <WorkspaceNav
@@ -274,6 +278,7 @@ export default function App() {
             void decideActiveRemark("rejected");
           }}
           onNavigateToFindings={navigateToFindings}
+          onOpenScreen={setWorkspaceView}
         />
       ) : null}
 
@@ -285,7 +290,7 @@ export default function App() {
       ) : null}
 
       {triageHelpOpen ? (
-        <aside className="triage-help" role="dialog" aria-label="Справка клавиатуры триажа">
+        <aside className="triage-help" role="dialog" aria-label={UI_COPY.keyboardHelpAria}>
           <p>{UI_COPY.keyboardHelp}</p>
         </aside>
       ) : null}

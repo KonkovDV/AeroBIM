@@ -47,6 +47,7 @@ export type ExpertWorkplaceProps = {
   onAccept: () => void;
   onReject: () => void;
   onNavigateToFindings: () => void;
+  onOpenScreen?: (view: WorkspaceView) => void;
 };
 
 export default function ExpertWorkplace({
@@ -82,6 +83,7 @@ export default function ExpertWorkplace({
   onAccept,
   onReject,
   onNavigateToFindings,
+  onOpenScreen,
 }: ExpertWorkplaceProps) {
   const showExportExtras = workspaceView === "export";
 
@@ -125,7 +127,27 @@ export default function ExpertWorkplace({
             {reportLoading ? (
               <div className="panel-empty">{UI_COPY.loadingReport}</div>
             ) : selectedReport === null ? (
-              <div className="panel-empty">{UI_COPY.noReportSelected}</div>
+              <div className="panel-empty">
+                <p>{UI_COPY.noReportSelected}</p>
+                {onOpenScreen ? (
+                  <div className="empty-actions">
+                    <button
+                      type="button"
+                      className="toolbar-button"
+                      onClick={() => onOpenScreen("projects")}
+                    >
+                      {UI_COPY.openProjects}
+                    </button>
+                    <button
+                      type="button"
+                      className="toolbar-button"
+                      onClick={() => onOpenScreen("upload")}
+                    >
+                      {UI_COPY.toUpload}
+                    </button>
+                  </div>
+                ) : null}
+              </div>
             ) : (
               <FindingListPanel
                 issues={filteredIssues}

@@ -1302,6 +1302,19 @@ input:focus-visible,
   margin-bottom: 18px;
   color: var(--danger);
   background: rgba(255, 245, 242, 0.86);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 12px;
 }
 
 @media (max-width: 1200px) {

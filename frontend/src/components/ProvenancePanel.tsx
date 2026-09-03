@@ -99,7 +99,7 @@ export default function ProvenancePanel({ activeIssue }: ProvenancePanelProps) {
           <dd>{dash(activeIssue.ifc_entity)}</dd>
         </div>
         <div>
-          <dt>GlobalId</dt>
+          <dt>{UI_COPY.provGlobalId}</dt>
           <dd>
             <code>{dash(activeIssue.element_guid)}</code>
           </dd>
@@ -154,7 +154,7 @@ export default function ProvenancePanel({ activeIssue }: ProvenancePanelProps) {
           </dd>
         </div>
         <div>
-          <dt>RASE</dt>
+          <dt>{UI_COPY.provRase}</dt>
           <dd>
             {(activeIssue.rase_elements?.length ?? 0) > 0
               ? activeIssue.rase_elements!.join(", ")
@@ -171,9 +171,13 @@ export default function ProvenancePanel({ activeIssue }: ProvenancePanelProps) {
           <dt>{UI_COPY.provProblemZone}</dt>
           <dd>
             {zone
-              ? `${zone.sheet_id ?? "лист?"} · стр. ${zone.page_number ?? "?"}${
-                  bbox ? ` · bbox ${bbox}` : ""
-                }`
+              ? UI_COPY.provProblemZoneLine(
+                  zone.sheet_id?.trim() || UI_COPY.provProblemZoneUnknownSheet,
+                  zone.page_number == null
+                    ? UI_COPY.provProblemZoneUnknownPage
+                    : String(zone.page_number),
+                  bbox,
+                )
               : "—"}
           </dd>
         </div>

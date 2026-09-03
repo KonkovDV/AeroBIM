@@ -283,6 +283,27 @@ describe("App", () => {
     expect(cards[0]?.textContent).toMatch(/DRAW-SECOND/);
   });
 
+  it("retries the report list after a failed fetch", async () => {
+    fetchReportsMock.mockRejectedValueOnce(new Error("API down"));
+    fetchReportsMock.mockResolvedValue({
+      reports: [toReportSummary(buildReport())],
+      count: 1,
+    });
+    render(<App />);
+    expect(await screen.findByTestId("error-banner")).toBeTruthy();
+    expect(screen.getByTestId("error-banner").textContent).toMatch(/API down/);
+    fireEvent.click(screen.getByRole("button", { name: UI_COPY.retry }));
+    expect(await screen.findByLabelText(UI_COPY.searchFindings)).toBeTruthy();
+  });
+
+  it("offers projects and upload from an empty expert pane", async () => {
+    fetchReportsMock.mockResolvedValue({ reports: [], count: 0 });
+    render(<App />);
+    expect(await screen.findByRole("button", { name: UI_COPY.openProjects })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: UI_COPY.openProjects }));
+    expect(await screen.findByTestId("projects-index")).toBeTruthy();
+  });
+
   it("searches the loaded report set by report and request id", async () => {
     render(<App />);
 

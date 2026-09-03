@@ -47,7 +47,7 @@ export default function BlockerHonestyPanel() {
       <div className="panel-header">
         <div>
           <p className="panel-kicker">{UI_COPY.blockersKicker}</p>
-          <h2>RT-001 / RT-002 / RT-003</h2>
+          <h2>{UI_COPY.blockersTitle}</h2>
         </div>
       </div>
       <p className="compact-copy">{UI_COPY.blockersBody}</p>

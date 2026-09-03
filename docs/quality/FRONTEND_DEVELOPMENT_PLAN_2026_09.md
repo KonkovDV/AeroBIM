@@ -4,7 +4,7 @@ title: "План развития фронтенда (для ИИ-исполни
 date: "2026-09-03"
 last_updated: "2026-09-03"
 status: active
-version: "1.2.0"
+version: "1.3.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -231,13 +231,25 @@ python scripts/lint_claims.py --full-docs        # полный скан док�
   в ожидаемом порядке; `npm run smoke:browser` остаётся зелёным при живом
   бэкенде.
 
-### WP-FE-14. Хвосты i18n и provenance (после фриза)
+### WP-FE-14. Хвосты i18n и provenance
+
+**Статус: done, 03.09.** Provenance/KPI/демо/карта покрытия/прогон/навигация — через `RU_COPY`. Английские отказы карты покрытия убраны.
 
 Цель: добить оставшиеся динамические строки provenance/KPI в `RU_COPY`;
 проверить, что `lint-ui-strings` покрывает новые панели.
 
 - Файлы: `components/ProvenancePanel.tsx`, `components/ReviewKpiPanel.tsx`,
+  `components/CoverageMapPanel.tsx`, `components/DemoFixturePanel.tsx`,
+  `components/TzWorkplaceCoveragePanel.tsx`, `components/AnalyzeRunPanel.tsx`,
   `features/honesty/BlockerHonestyPanel.tsx`, `lib/i18n/ru.ts`.
+
+### WP-FE-17. Рабочий цикл оболочки: повтор API и пустые экраны
+
+**Статус: done, 03.09.** Отказ списка/отчёта — баннер с «Повторить» (тот же epoch перезапрашивает GET списка и GET отчёта). Пустой эксперт — кнопки «Открыть проекты» / «К загрузке». Не маскирует BFF 501.
+
+- Файлы: `features/shell/ErrorBanner.tsx`, `hooks/useSelectedReport.ts`,
+  `App.tsx`, `features/workplace/ExpertWorkplace.tsx`.
+- Запреты: не имитировать OIDC; не снимать баннер ролей.
 
 ### WP-FE-15. HOLD до живого OIDC (не маскировать 501)
 
@@ -251,12 +263,13 @@ python scripts/lint_claims.py --full-docs        # полный скан док�
 |---|---|---|
 | Сделано 03.09 утро | FE-01…FE-06 | done |
 | До демо ИТ-ментору | WP-FE-07, WP-FE-08, WP-FE-09, WP-FE-16 | done |
-| До 15.09 | WP-FE-10, WP-FE-11, WP-FE-12, WP-FE-13 | done |
-| После фриза | WP-FE-14 | HOLD |
+| До 15.09 | WP-FE-10, WP-FE-11, WP-FE-12, WP-FE-13, WP-FE-14, WP-FE-17 | done |
 | Пока BFF = 501 | WP-FE-15 | HOLD |
 
-Гейты после WP-FE-16: `npm test` — 36 файлов / 139 тестов; `npm run lint` — чисто;
-`npm run build` — чисто. `App.tsx` = 294 строки. Новая рантайм-зависимость не добавлялась.
+Гейты после WP-FE-14/17: `npm test` — 37 файлов / 142 теста; `npm run lint` — чисто;
+`npm run build` — чисто. `App.tsx` = 300 строк. Новая рантайм-зависимость не добавлялась.
+Живая оболочка 03.09 вечер: `127.0.0.1:5173` против API `127.0.0.1:8080`; учебный отчёт
+открывается, баннер `GET /v1/auth/bff = 501` остаётся. WP-FE-15 не имитировать.
 `axe-core` — только `devDependencies`, jsdom, правило color-contrast выключено.
 Это внутренний проход, не сертификат WCAG.
 
@@ -272,7 +285,8 @@ python scripts/lint_claims.py --full-docs        # полный скан док�
 | WP-FE-12 | ACCEPT | Roving `tabIndex`; axe без critical/serious; не заявлять WCAG |
 | WP-FE-13 | ACCEPT | Маршрут на замоканном API; успешный job сам открывает эксперта через `onReportReady` |
 | WP-FE-16 | ACCEPT | Этаж/ось с карточки; пустое = «нет в индексе»; снэп фильтра; GUID copy; HITL-типы через `hitlEventTypeLabel` |
-| WP-FE-14 | HOLD | После фриза, как в плане |
+| WP-FE-14 | ACCEPT | Хвосты копирайта в `RU_COPY`; английский отказ coverage убран |
+| WP-FE-17 | ACCEPT | Повтор GET; пустой эксперт с переходами; epoch перезапрашивает отчёт |
 | WP-FE-15 | HOLD | BFF остаётся 501; негативный RBAC не имитировать |
 | Fragments / федерация | KILL | Не грузить ~1 ГБ во вкладку |
 | XLSX / OIDC live / SLA | KILL | Без изменений рамок триажа |

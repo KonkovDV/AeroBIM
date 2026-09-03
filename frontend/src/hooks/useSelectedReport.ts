@@ -26,7 +26,10 @@ export type SelectedReportState = {
 };
 
 /** Выбранный отчёт: загрузка, выбор замечания/клэша, черновик HITL-замечания и решения. */
-export function useSelectedReport(selectedReportId: string | null): SelectedReportState {
+export function useSelectedReport(
+  selectedReportId: string | null,
+  reloadEpoch = 0,
+): SelectedReportState {
   const [selectedReport, setSelectedReport] = useState<ValidationReport | null>(null);
   const [reportLoading, setReportLoading] = useState(false);
   const [reportError, setReportError] = useState<string | null>(null);
@@ -75,7 +78,7 @@ export function useSelectedReport(selectedReportId: string | null): SelectedRepo
       cancelled = true;
       controller.abort();
     };
-  }, [selectedReportId]);
+  }, [selectedReportId, reloadEpoch]);
 
   const selectIssue = useCallback((index: number, issue: ValidationIssue) => {
     setSelectedIssueIndex(index);

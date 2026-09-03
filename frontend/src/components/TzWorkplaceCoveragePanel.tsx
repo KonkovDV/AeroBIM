@@ -1,5 +1,6 @@
 import { TZ_UI_SCREENS } from "../lib/tz-ui-screens";
 import { TZ_REQUIREMENT_ROWS, tzRequirementView } from "../lib/tz-requirement-map";
+import { UI_COPY } from "../lib/ui-copy";
 import type { WorkspaceView } from "./WorkspaceNav";
 
 export type TzWorkplaceCoveragePanelProps = {
@@ -22,22 +23,19 @@ export default function TzWorkplaceCoveragePanel({ onOpenScreen }: TzWorkplaceCo
     <section className="panel tz-coverage-panel" data-testid="tz-workplace-coverage">
       <div className="panel-header">
         <div>
-          <p className="panel-kicker">Покрытие ТЗ</p>
-          <h2>Пункт → функция → доказательство</h2>
+          <p className="panel-kicker">{UI_COPY.tzCoverageKicker}</p>
+          <h2>{UI_COPY.tzCoverageTitle}</h2>
         </div>
       </div>
-      <p className="compact-copy">
-        Карта тай-брейка, не поставка. Колонка git — честный статус. Не закрывает RT. Не SLA. Не
-        нативный RVT. Машина: <code>ui_expert_workplace_triage_snapshot</code>.
-      </p>
+      <p className="compact-copy">{UI_COPY.tzCoverageBody}</p>
       <table className="coverage-table" data-testid="tz-requirement-map">
         <thead>
           <tr>
-            <th scope="col">ID</th>
-            <th scope="col">Пункт ТЗ</th>
-            <th scope="col">Функция</th>
-            <th scope="col">Доказательство в git</th>
-            <th scope="col">git</th>
+            <th scope="col">{UI_COPY.tzColId}</th>
+            <th scope="col">{UI_COPY.tzColPoint}</th>
+            <th scope="col">{UI_COPY.tzColFn}</th>
+            <th scope="col">{UI_COPY.tzColEvidence}</th>
+            <th scope="col">{UI_COPY.tzColGit}</th>
           </tr>
         </thead>
         <tbody>
@@ -65,14 +63,14 @@ export default function TzWorkplaceCoveragePanel({ onOpenScreen }: TzWorkplaceCo
           })}
         </tbody>
       </table>
-      <h3>Восемь экранов IA</h3>
+      <h3>{UI_COPY.tzEightScreens}</h3>
       <table className="coverage-table">
         <thead>
           <tr>
-            <th scope="col">ID</th>
-            <th scope="col">Экран</th>
-            <th scope="col">git</th>
-            <th scope="col">Заметка</th>
+            <th scope="col">{UI_COPY.tzColId}</th>
+            <th scope="col">{UI_COPY.tzColScreen}</th>
+            <th scope="col">{UI_COPY.tzColGit}</th>
+            <th scope="col">{UI_COPY.tzColNote}</th>
           </tr>
         </thead>
         <tbody>

@@ -269,7 +269,7 @@ export default function IfcViewerPanel({
               <dd>{elementProps.storeyName ?? UI_COPY.spatialNone}</dd>
             </div>
             <div>
-              <dt>GUID</dt>
+              <dt>{UI_COPY.provGlobalId}</dt>
               <dd>
                 <code>{elementProps.guid}</code>
               </dd>

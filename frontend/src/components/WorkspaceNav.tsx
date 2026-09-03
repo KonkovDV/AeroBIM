@@ -11,14 +11,14 @@ export type WorkspaceView =
   | "user";
 
 export const WORKSPACE_NAV: readonly { id: WorkspaceView; label: string }[] = [
-  { id: "projects", label: "Проекты" },
-  { id: "upload", label: "Загрузка" },
-  { id: "run", label: "Прогон" },
-  { id: "review", label: "Эксперт" },
-  { id: "remark", label: "Замечание" },
-  { id: "export", label: "Экспорт" },
-  { id: "diff", label: "Версии" },
-  { id: "user", label: "Эффект" },
+  { id: "projects", label: UI_COPY.navProjects },
+  { id: "upload", label: UI_COPY.navUpload },
+  { id: "run", label: UI_COPY.navRun },
+  { id: "review", label: UI_COPY.navReview },
+  { id: "remark", label: UI_COPY.navRemark },
+  { id: "export", label: UI_COPY.navExport },
+  { id: "diff", label: UI_COPY.navDiff },
+  { id: "user", label: UI_COPY.navUser },
 ];
 
 export const EXPERT_SHELL_VIEWS: ReadonlySet<WorkspaceView> = new Set([

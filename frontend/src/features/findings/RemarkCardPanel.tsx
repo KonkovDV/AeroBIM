@@ -140,19 +140,19 @@ export default function RemarkCardPanel({
               </dd>
             </div>
             <div>
-              <dt>finding_id</dt>
+              <dt>{UI_COPY.provFindingId}</dt>
               <dd>
                 <code>{dash(activeIssue.finding_id)}</code>
               </dd>
             </div>
             <div>
-              <dt>source_id</dt>
+              <dt>{UI_COPY.provSourceId}</dt>
               <dd>
                 <code>{dash(activeIssue.source_id)}</code>
               </dd>
             </div>
             <div>
-              <dt>evidence_refs</dt>
+              <dt>{UI_COPY.provEvidenceRefs}</dt>
               <dd>{activeIssue.evidence_refs?.length ? activeIssue.evidence_refs.join(" · ") : "—"}</dd>
             </div>
           </dl>

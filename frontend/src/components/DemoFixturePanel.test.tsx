@@ -10,6 +10,7 @@ vi.mock("../lib/api", () => ({
 }));
 
 import DemoFixturePanel from "./DemoFixturePanel";
+import { UI_COPY } from "../lib/ui-copy";
 
 describe("DemoFixturePanel", () => {
   beforeEach(() => {
@@ -27,7 +28,7 @@ describe("DemoFixturePanel", () => {
   it("seeds the git fixture and returns the server report id", async () => {
     const onSeeded = vi.fn();
     render(<DemoFixturePanel onSeeded={onSeeded} />);
-    fireEvent.click(screen.getByRole("button", { name: /Загрузить демонстрационный комплект/ }));
+    fireEvent.click(screen.getByRole("button", { name: UI_COPY.demoSeed }));
     await waitFor(() => {
       expect(seedDemoFixtureMock).toHaveBeenCalledTimes(1);
       expect(onSeeded).toHaveBeenCalledWith("c".repeat(32));

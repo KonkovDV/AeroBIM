@@ -95,12 +95,12 @@ export default function PackUploadPanel({
       {status === "uploading" && progress === null ? <p className="compact-copy">{UI_COPY.uploading}</p> : null}
       {status === "ok" ? (
         <p className="compact-copy">
-          Файл принят. Путь для анализа, не «пакет обработан».
+          {UI_COPY.uploadAccepted}
           {onContinueToRun ? (
             <>
               {" "}
               <button type="button" className="toolbar-button" onClick={onContinueToRun}>
-                К прогону
+                {UI_COPY.toRun}
               </button>
             </>
           ) : null}

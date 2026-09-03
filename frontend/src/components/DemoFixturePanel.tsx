@@ -16,9 +16,7 @@ export default function DemoFixturePanel({ onSeeded }: DemoFixturePanelProps) {
     try {
       const result = await seedDemoFixture();
       setStatus("ok");
-      setDetail(
-        `${result.issue_count} находок · checkpoint ${result.checkpoint}. Фикстура git, не заказчик.`,
-      );
+      setDetail(UI_COPY.demoSeeded(result.issue_count, result.checkpoint));
       onSeeded(result.report_id);
     } catch (error: unknown) {
       setStatus("failed");
@@ -30,21 +28,18 @@ export default function DemoFixturePanel({ onSeeded }: DemoFixturePanelProps) {
     <section className="panel demo-fixture-panel" data-testid="demo-fixture-panel">
       <div className="panel-header">
         <div>
-          <p className="panel-kicker">Демо для ментора</p>
-          <h2>Учебный комплект</h2>
+          <p className="panel-kicker">{UI_COPY.demoKicker}</p>
+          <h2>{UI_COPY.demoTitle}</h2>
         </div>
       </div>
-      <p className="compact-copy">
-        Одна кнопка: git IFC+IDS (стены, огнестойкость). Не пакет заказчика. Не точность продукта.
-        Ожидаемый исход — находки, <code>summary.passed=false</code> с сервера. Checkpoint NO_GO.
-      </p>
+      <p className="compact-copy">{UI_COPY.demoBody}</p>
       <button
         type="button"
         className="toolbar-button"
         onClick={() => void seed()}
         disabled={status === "loading"}
       >
-        {status === "loading" ? "Готовим фикстуру…" : "Загрузить демонстрационный комплект"}
+        {status === "loading" ? UI_COPY.demoSeeding : UI_COPY.demoSeed}
       </button>
       {detail ? (
         <p className="compact-copy" role="status">

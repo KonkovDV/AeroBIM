@@ -35,7 +35,7 @@ export default function ShellHeader({
         <RoleHonestyBanner />
       </div>
       <div className="header-card">
-        <span>API</span>
+        <span>{UI_COPY.apiLabel}</span>
         <strong>{apiBase || UI_COPY.sameOriginApi}</strong>
         <span>{UI_COPY.reportsLoaded(reportCount)}</span>
         <label className="role-alias">

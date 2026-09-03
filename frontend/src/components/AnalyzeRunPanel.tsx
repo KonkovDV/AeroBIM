@@ -25,7 +25,11 @@ export type AnalyzeRunPanelProps = {
   capabilities?: ReportCapabilities | null;
 };
 
-const COARSE_STAGES = ["принято", "идёт", "отчёт"] as const;
+const COARSE_STAGES = [
+  UI_COPY.runStageAccepted,
+  UI_COPY.runStageRunning,
+  UI_COPY.runStageReport,
+] as const;
 
 function stageIndex(status: string | undefined): number {
   const value = (status ?? "").toLowerCase();
@@ -167,7 +171,7 @@ export default function AnalyzeRunPanel({
     try {
       trackJob(await cancelAnalyzeJob(job.job_id));
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Не удалось отменить задание");
+      setError(err instanceof Error ? err.message : UI_COPY.runCancelFailed);
     } finally {
       setBusy(false);
     }
@@ -191,10 +195,10 @@ export default function AnalyzeRunPanel({
       />
       <div className="remark-actions">
         <button type="button" onClick={() => void start()} disabled={busy || !packDraftHasAny(draft)}>
-          {busy ? "Запускаем…" : "Запустить анализ"}
+          {busy ? UI_COPY.runStarting : UI_COPY.runStart}
         </button>
         <button type="button" onClick={() => void cancel()} disabled={busy || !job?.job_id || terminal}>
-          Отменить
+            {UI_COPY.runCancel}
         </button>
         {terminal ? (
           <button type="button" onClick={() => void start()} disabled={busy || !packDraftHasAny(draft)}>
@@ -203,7 +207,7 @@ export default function AnalyzeRunPanel({
         ) : null}
         {onNeedUpload ? (
           <button type="button" onClick={onNeedUpload}>
-            К загрузке
+            {UI_COPY.runToUpload}
           </button>
         ) : null}
         {onContinueToExpert && job?.status.toLowerCase() === "succeeded" ? (
@@ -260,7 +264,7 @@ export default function AnalyzeRunPanel({
           const status = engineGroupStatus(capabilities, group.keys);
           return (
             <li key={group.id} className={`analyze-engine analyze-engine-${status}`}>
-              {group.title}: {status === "pending" ? "ожидание" : status}
+              {group.title}: {status === "pending" ? UI_COPY.enginePending : status}
             </li>
           );
         })}
@@ -272,7 +276,7 @@ export default function AnalyzeRunPanel({
           ))}
         </ul>
       ) : null}
-      <p className="compact-copy">Стадии — грубый статус опроса, не SSE по движкам.</p>
+      <p className="compact-copy">{UI_COPY.runStagesHonesty}</p>
       {error || pollError ? (
         <p className="compact-copy" role="alert">
           {error ?? pollError}

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { fetchReportCoverage, type CheckCoverageMap } from "../lib/api";
+import { UI_COPY } from "../lib/ui-copy";
 
 const STATUS_CLASS: Record<string, string> = {
   no_findings: "cov-no-findings",
@@ -15,12 +16,12 @@ const STATUS_CLASS: Record<string, string> = {
 };
 
 const FILTER_OPTIONS = [
-  { value: "all", label: "Все состояния" },
-  { value: "no_findings", label: "Нарушений не найдено" },
-  { value: "findings", label: "Есть находки" },
-  { value: "not_checked", label: "Не проверялось" },
-  { value: "insufficient_data", label: "Недостаточно данных" },
-  { value: "expert_required", label: "Нужен эксперт" },
+  { value: "all", label: UI_COPY.covFilterAll },
+  { value: "no_findings", label: UI_COPY.covFilterNoFindings },
+  { value: "findings", label: UI_COPY.covFilterFindings },
+  { value: "not_checked", label: UI_COPY.covFilterNotChecked },
+  { value: "insufficient_data", label: UI_COPY.covFilterInsufficient },
+  { value: "expert_required", label: UI_COPY.covFilterExpert },
 ] as const;
 
 type FilterValue = (typeof FILTER_OPTIONS)[number]["value"];
@@ -65,7 +66,7 @@ export default function CoverageMapPanel({
       .catch((err: unknown) => {
         if (!cancelled) {
           setMap(null);
-          setError(err instanceof Error ? err.message : "Failed to load coverage");
+          setError(err instanceof Error ? err.message : UI_COPY.covUnavailableGeneric);
         }
       })
       .finally(() => {
@@ -98,8 +99,8 @@ export default function CoverageMapPanel({
   if (loading) {
     return (
       <section className="coverage-map" data-testid="coverage-map">
-        <h3>Карта покрытия проверок</h3>
-        <p className="compact-copy">Загрузка…</p>
+        <h3>{UI_COPY.covTitle}</h3>
+        <p className="compact-copy">{UI_COPY.covLoading}</p>
       </section>
     );
   }
@@ -107,9 +108,9 @@ export default function CoverageMapPanel({
   if (error || !map) {
     return (
       <section className="coverage-map" data-testid="coverage-map">
-        <h3>Карта покрытия проверок</h3>
+        <h3>{UI_COPY.covTitle}</h3>
         <p className="compact-copy">
-          {error ?? "Coverage unavailable"} — «нет карты» ≠ «всё проверено».
+          {UI_COPY.covUnavailable(error ?? UI_COPY.covUnavailableGeneric)}
         </p>
       </section>
     );
@@ -118,13 +119,10 @@ export default function CoverageMapPanel({
   return (
     <section className="coverage-map" data-testid="coverage-map">
       <div className="coverage-map-header">
-        <h3>Карта покрытия проверок</h3>
-        <p className="compact-copy">
-          По каждому файлу и семейству: no_findings / findings / not_checked /
-          insufficient_data / expert_required. Не смешивать с <code>summary.passed</code>.
-        </p>
+        <h3>{UI_COPY.covTitle}</h3>
+        <p className="compact-copy">{UI_COPY.covBody}</p>
         <label className="coverage-filter">
-          Состояние
+          {UI_COPY.covFilter}
           <select
             data-testid="coverage-status-filter"
             value={statusFilter}
@@ -141,12 +139,12 @@ export default function CoverageMapPanel({
 
       {map.tz_gaps && map.tz_gaps.length > 0 && (
         <table className="coverage-table coverage-tz-gaps" data-testid="coverage-tz-gaps">
-          <caption className="compact-copy">Пробелы матрицы ТЗ (всегда честные not_checked)</caption>
+          <caption className="compact-copy">{UI_COPY.covTzGaps}</caption>
           <thead>
             <tr>
-              <th scope="col">Раздел</th>
-              <th scope="col">Статус</th>
-              <th scope="col">Причина</th>
+              <th scope="col">{UI_COPY.covColSection}</th>
+              <th scope="col">{UI_COPY.covColStatus}</th>
+              <th scope="col">{UI_COPY.covColReason}</th>
             </tr>
           </thead>
           <tbody>
@@ -174,12 +172,12 @@ export default function CoverageMapPanel({
       )}
 
       {filteredSources.length === 0 ? (
-        <p className="compact-copy">Нет строк для выбранного фильтра.</p>
+        <p className="compact-copy">{UI_COPY.covEmptyFilter}</p>
       ) : (
         <table className="coverage-table">
           <thead>
             <tr>
-              <th scope="col">Источник</th>
+              <th scope="col">{UI_COPY.covColSource}</th>
               {familyKeys.map((fam) => (
                 <th key={fam} scope="col">
                   {formatFamily(fam)}
@@ -209,7 +207,7 @@ export default function CoverageMapPanel({
                           className="coverage-findings-link"
                           onClick={onNavigateToFindings}
                         >
-                          <code>{op}</code> → находки
+                          {UI_COPY.covFindingsLink(op)}
                         </button>
                       ) : (
                         <code>{op}</code>
