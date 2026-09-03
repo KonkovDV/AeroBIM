@@ -295,7 +295,7 @@ def render_markdown(artifact: Mapping[str, Any]) -> str:
     aggregate = artifact["aggregate"]
     wilson = aggregate.get("wilson_95") or {}
     lines = [
-        "<!-- claims-lint: allow-file reason=\"Injection recall run; synthetic mutation test; NO_GO\" -->",
+        '<!-- claims-lint: allow-file reason="Injection recall run; synthetic mutation test; NO_GO" -->',
         "---",
         'title: "Defect-injection recall run — mutation-kill, synthetic-only"',
         'date: "2026-09-03"',
