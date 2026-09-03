@@ -2,9 +2,9 @@
 ---
 title: "Owner actions — what git does not close (September 2026)"
 date: "2026-08-30"
-last_updated: "2026-08-31"
+last_updated: "2026-09-03"
 status: active
-version: "1.3.1"
+version: "1.3.2"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -35,6 +35,8 @@ claim_boundary: >
 | OA-13 | Трек-встречи по пятницам 08:00 (04.09, 11.09, 18.09, 25.09) + письменный отчёт по каждой задаче в командный чат после встречи | КТ#3 ритм | каждая пятница окна | Отчёт текстом в чате после каждой встречи; переносы согласованы заранее |
 | OA-14 | Решение по «неэффективному использованию пространства» (заказчик назвал 25.08: норматив продаваемой площади, МОП, коридоры). **Git default 30.08:** `advisory_unsigned` (IfcSpace INFO, пороги не подписаны, не delivered). Сменить на «вне MVP» можно только явной речью до 22.09 | задача трекера 1/4; К3 | до репетиции **22.09** | Позиция в `check_coverage` tz_gaps и карточке речи; ни «реализовано», ни «не нужно» |
 | OA-16 | Замер RSS на локальном IFC **больше** 256 МиБ (файл не в git): `python -m aerobim.tools.measure_ifc_open_rss --ifc <local>` **без** `--write-docs-evidence` (RocksDB path; не поднимать SPF default) | подтвердить диск vs SPF; git default 256 МиБ SPF не менять | до любого PR, который меняет default `AEROBIM_MAX_IFC_BYTES` | JSON в `.local/`; в git только фикстурный probe; SPF кап не поднят |
+| OA-17 | Исходящие вопросы партнёру: Telegram (4 шага, шифр эталона вне git) + пакет через организаторов ([`partners/SAMOLET_QUESTIONS_GROUNDED_2026_09_03.md`](partners/SAMOLET_QUESTIONS_GROUNDED_2026_09_03.md)); ответ к **08.09** | К3; SIG-05; гиперплан [`quality/KT3_HYPERPLAN_TRIAGE_RT_WH_2026_09.md`](quality/KT3_HYPERPLAN_TRIAGE_RT_WH_2026_09.md) | отправка **03–04.09**, ответ **08.09** | Исходящее с датой; git не отправляет |
+| OA-18 | Слот научного консультанта: 5 простых вопросов гиперплана §8; фиксация в лабораторном журнале владельца | протокол измерения; не подпись «точности» | **03.09** | Заметки владельца; не выдавать за подписанный протокол без его текста |
 
 Обложка письма: [`partners/PARTNER_PROTOCOL_SIGNREADY_COVER_2026_08.md`](partners/PARTNER_PROTOCOL_SIGNREADY_COVER_2026_08.md).
 Шаблон К1: [`partners/K1_ROLE_MATRIX_TEMPLATE_2026_08.md`](partners/K1_ROLE_MATRIX_TEMPLATE_2026_08.md).

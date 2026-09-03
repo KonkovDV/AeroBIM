@@ -72,4 +72,4 @@ Checkpoint **`NO_GO`**. Пакет канала **не** в git. Локатор 
 
 Реестр вне git · объём находок (не %) · классификатор ≥20 · стенд двух ролей **если** BFF не 501 · записка ЛИРА · одностраничник RVT/NWD · журнал писем. Если эталона нет — **NO_GO** с работающим ядром, не перекрашивать.
 
-Связанные: [`KT3_WINDOW_CRITICAL_PATH_2026_09.md`](KT3_WINDOW_CRITICAL_PATH_2026_09.md) · [`OWNER_ACTIONS_2026_09.md`](../OWNER_ACTIONS_2026_09.md).
+Связанные: [`KT3_WINDOW_CRITICAL_PATH_2026_09.md`](KT3_WINDOW_CRITICAL_PATH_2026_09.md) · [`OWNER_ACTIONS_2026_09.md`](../OWNER_ACTIONS_2026_09.md) · [`KT3_HYPERPLAN_TRIAGE_RT_WH_2026_09.md`](KT3_HYPERPLAN_TRIAGE_RT_WH_2026_09.md).

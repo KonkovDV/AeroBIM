@@ -44,4 +44,4 @@ SSOT восьми задач: [`TRACKER_EIGHT_TASKS_2026_08.md`](TRACKER_EIGHT_T
 
 Реестр (вне git до OA-9) · отчёты прогонов · классификатор ≥ 20 типов · протокол измерения · стенд двух ролей **если** OIDC не 501 · записка ЛИРА (четыре проверки) · позиция RVT/NWD+CV · журнал запросов. Если замера на размеченном комплекте нет — нести **NO_GO** с работающим ядром, не перекрашивать.
 
-Связанные: [`KT3_IN_REPO_WORKPLAN_2026_08_27.md`](KT3_IN_REPO_WORKPLAN_2026_08_27.md) · [`TZ_LIVE_TREE_TRIAGE_2026_08_27.md`](TZ_LIVE_TREE_TRIAGE_2026_08_27.md) · [`OWNER_ACTIONS_2026_09.md`](../OWNER_ACTIONS_2026_09.md) · [`CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md`](CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md).
+Связанные: [`KT3_IN_REPO_WORKPLAN_2026_08_27.md`](KT3_IN_REPO_WORKPLAN_2026_08_27.md) · [`TZ_LIVE_TREE_TRIAGE_2026_08_27.md`](TZ_LIVE_TREE_TRIAGE_2026_08_27.md) · [`OWNER_ACTIONS_2026_09.md`](../OWNER_ACTIONS_2026_09.md) · [`CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md`](CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md) · [`KT3_HYPERPLAN_TRIAGE_RT_WH_2026_09.md`](KT3_HYPERPLAN_TRIAGE_RT_WH_2026_09.md).

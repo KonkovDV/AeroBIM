@@ -2,7 +2,7 @@
 ---
 title: "Question pack to Samolet via TechLab organizers (draft)"
 date: "2026-08-30"
-last_updated: "2026-08-30"
+last_updated: "2026-09-03"
 status: active
 version: "1.0.1"
 closes_rt001: false
@@ -15,6 +15,8 @@ claim_boundary: >
 ---
 
 # Пакет вопросов Самолёту (черновик, SIG-05)
+
+**03.09 grounded supersede:** исходящий список — [`SAMOLET_QUESTIONS_GROUNDED_2026_09_03.md`](SAMOLET_QUESTIONS_GROUNDED_2026_09_03.md). Операционный гиперплан (что в чат, что в письмо, что KILL): [`../quality/KT3_HYPERPLAN_TRIAGE_RT_WH_2026_09.md`](../quality/KT3_HYPERPLAN_TRIAGE_RT_WH_2026_09.md). Этот файл остаётся историческим каркасом SIG-05.
 
 Отправляет **владелец** через организаторов (OA-8). Срок ответа в письме: **08.09.2026**. Без ответа вопрос уходит из скоупа КТ#3. Этот файл — не исходящее письмо.
 
