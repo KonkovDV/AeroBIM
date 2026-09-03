@@ -1,4 +1,4 @@
-import type { ClashResult, ValidationIssue, ValidationReport } from "./types";
+import type { ClashResult, DrawingRegionRef, ValidationIssue, ValidationReport } from "./types";
 import { UI_COPY } from "./ui-copy";
 
 export const TRIAGE_BANDS = ["critical", "major", "minor", "negligible"] as const;
@@ -63,6 +63,32 @@ export function filterTriageIssues(
       return issueMatchesSearch(issue, filter.search);
     })
     .sort((a, b) => (b.issue.priority ?? 0) - (a.issue.priority ?? 0));
+}
+
+/** HITL-регион кликабелен; штамп и титул — только разметка, не выбор находки. */
+export function isHitlClickableRegion(region: DrawingRegionRef): boolean {
+  if (region.hitl_required !== true) {
+    return false;
+  }
+  const role = (region.layout_role ?? "content").toLowerCase();
+  return role !== "stamp" && role !== "title_block" && role !== "title";
+}
+
+/**
+ * Связь регион → находка только по листу. DrawingRegionRef не несёт finding_id —
+ * не выдумываем GUID и не матчим по bbox.
+ */
+export function findIssueForDrawingRegion(
+  issues: IndexedIssue[],
+  region: DrawingRegionRef,
+): IndexedIssue | null {
+  const sheet = region.sheet_id.trim();
+  if (!sheet) {
+    return null;
+  }
+  const onSheet = issues.filter(({ issue }) => issue.problem_zone?.sheet_id === sheet);
+  const hitl = onSheet.find(({ issue }) => issue.rule_id === HITL_RULE_ID);
+  return hitl ?? onSheet[0] ?? null;
 }
 
 /** Deterministic clash triage band carried in evidence_refs (backend Wave B). */

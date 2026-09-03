@@ -2,11 +2,20 @@ import { fireEvent, render, screen, waitFor, within } from "@testing-library/rea
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ClashResult, DrawingAsset, ValidationIssue, ValidationReport } from "./lib/types";
 
-const { fetchReportsMock, fetchReportMock, postReviewEventMock, fetchReviewEventsMock } = vi.hoisted(() => ({
+const {
+  fetchReportsMock,
+  fetchReportMock,
+  postReviewEventMock,
+  fetchReviewEventsMock,
+  uploadDocumentMock,
+  submitAnalyzeProjectPackageMock,
+} = vi.hoisted(() => ({
   fetchReportsMock: vi.fn(),
   fetchReportMock: vi.fn(),
   postReviewEventMock: vi.fn(),
   fetchReviewEventsMock: vi.fn(),
+  uploadDocumentMock: vi.fn(),
+  submitAnalyzeProjectPackageMock: vi.fn(),
 }));
 
 const clipboardWriteTextMock = vi.fn();
@@ -21,6 +30,8 @@ vi.mock("./lib/api", async () => {
     fetchReport: fetchReportMock,
     postReviewEvent: postReviewEventMock,
     fetchReviewEvents: fetchReviewEventsMock,
+    uploadDocument: uploadDocumentMock,
+    submitAnalyzeProjectPackage: submitAnalyzeProjectPackageMock,
     getApiBaseUrl: () => "http://localhost:8080",
   };
 });
@@ -235,6 +246,8 @@ describe("App", () => {
     postReviewEventMock.mockResolvedValue({ event: {} });
     fetchReviewEventsMock.mockReset();
     fetchReviewEventsMock.mockResolvedValue({ events: [], count: 0 });
+    uploadDocumentMock.mockReset();
+    submitAnalyzeProjectPackageMock.mockReset();
     fetchReportsMock.mockResolvedValue({
       reports: [toReportSummary(report)],
       count: 1,
@@ -898,5 +911,38 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Legacy Team" })).toBeTruthy();
     expect(screen.getAllByText(UI_COPY.presetFile).length).toBeGreaterThan(0);
     expect(screen.queryByText(/^team$/i)).toBeNull();
+  });
+
+  it("walks the commission route upload → run → expert → remark → export on mocked API", async () => {
+    const packed = buildReport();
+    uploadDocumentMock.mockResolvedValue({
+      upload_id: "up-1",
+      filename: "walls.ifc",
+      path: "uploads/walls.ifc",
+      size_bytes: 12,
+      content_type: null,
+      object_key: null,
+    });
+    submitAnalyzeProjectPackageMock.mockResolvedValue({
+      job_id: "job-kt3",
+      status: "succeeded",
+      report_id: packed.report_id,
+    });
+    render(<App />);
+    expect(await screen.findByTestId("expert-workplace")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Загрузка" }));
+    const input = screen.getByLabelText(UI_COPY.packFileUpload) as HTMLInputElement;
+    fireEvent.change(input, {
+      target: { files: [new File(["IFC"], "walls.ifc", { type: "application/octet-stream" })] },
+    });
+    expect(await screen.findByTestId("analyze-run-panel")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Запустить анализ" }));
+    // Succeeded job notifies onReportReady and opens the expert shell; do not require the run-panel button.
+    expect(await screen.findByTestId("expert-workplace")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Замечание" }));
+    expect(screen.getByTestId("remark-card")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Экспорт" }));
+    expect(screen.getByTestId("export-actions")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "BCF" })).toBeTruthy();
   });
 });

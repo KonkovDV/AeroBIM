@@ -206,6 +206,18 @@ export const RU_COPY = {
   viewerStatusError: "ошибка",
   viewerFooter:
     "Вьюер ниже сохранённого отчёта. Выбор — по GUID находки или пары клэша, не произвольный осмотр модели. Системная настройка уменьшения движения отключает демпфирование орбиты.",
+  elementPropsTitle: "Свойства элемента IFC",
+  elementPropsHonesty:
+    "Имя, тип и этаж из уже загруженной модели. Не объём, не смета, не произвольный осмотр.",
+  elementName: "Имя",
+  elementType: "Тип IFC",
+  elementStorey: "Этаж в модели",
+  elementNoProps: "Нет выбранного GUID или у элемента нет записи в этой модели.",
+  storeyFilter: "Фильтр этажа",
+  storeyFilterAll: "Все этажи",
+  storeyFilterHonesty:
+    "Видимость по IfcRelContainedInSpatialStructure, не полное дерево агрегации. Сцена не пересоздаётся.",
+  storeyUnnamed: (id: string) => `этаж без имени · ${id}`,
   engineGateway: "Шлюз движка",
   engineFlag: "Технический флаг с сервера. Не подпись эксперта. UI не пишет",
   hitlVerdict: "Вердикт HITL",
@@ -254,6 +266,11 @@ export const RU_COPY = {
     `Открыт ${selected}. Наложение активной находки относится к ${matched}, поэтому прямоугольник скрыт, пока вы не вернётесь к совпадающему активу.`,
   drawingIncompleteZone:
     "Превью загружено, но у текущей находки пока нет полного прямоугольника координат для выбранного актива.",
+  drawingResetZoom: "Сбросить масштаб",
+  drawingZoomHint:
+    "Масштаб и сдвиг листа. Прямоугольники едут вместе с картинкой — координаты не пересчитываются. Не CV.",
+  regionNoFinding: "Для этого региона нет находки с тем же листом.",
+  regionSelectFinding: (sheet: string) => `Выбрать находку листа ${sheet}`,
   unmatchedSheet: (sheet: string) =>
     `Находка ссылается на ${sheet}, но точного превью листа/страницы нет. Можно листать сохранённые активы отчёта.`,
   activeIssue: "Активная находка",
@@ -376,6 +393,24 @@ export const RU_COPY = {
   runStatusLabel: "статус",
   runStageLabel: "стадия",
   runReportLabel: "отчёт",
+  runJournalTitle: "Прогоны этой вкладки",
+  runJournalHonesty: "Только эта вкладка браузера. Не журнал СОД и не аудит компании.",
+  runJournalEmpty: "В этой вкладке ещё не было завершённых прогонов.",
+  runCancelConfirm:
+    "Отменить текущий опрос задания? Уже сохранённый отчёт не удаляется.",
+  kpiByType: "События по типу",
+  kpiBarsEmpty: "Журнал HITL пуст — диаграммы нет, это не «0 % ошибок».",
+  kpiBarAria: (label: string, count: string, percent: string) =>
+    `${label}: ${count}, ${percent} % журнала HITL, не точность продукта`,
+  kpiTypeOpened: "открыто",
+  kpiTypeAccepted: "подтверждено",
+  kpiTypeRejected: "отклонено",
+  kpiTypeEdited: "правка",
+  kpiTypeEditedRemark: "правка замечания",
+  kpiTypeTriaged: "разобрано",
+  kpiTypeWaived: "исключено",
+  kpiTypeSuperseded: "заменено",
+  kpiTypeEscalated: "эскалация",
 } as const;
 
 export type UiCopyKey = keyof typeof RU_COPY;

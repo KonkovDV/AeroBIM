@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   cancelAnalyzeJob,
   submitAnalyzeProjectPackage,
@@ -13,7 +13,8 @@ import {
   toAnalyzeSubmitBody,
   type PackDraft,
 } from "../lib/pack-draft";
-import { formatMmss, useRunPolling } from "../hooks/useRunPolling";
+import { appendRunJournal, readRunJournal, type RunJournalEntry } from "../lib/run-journal";
+import { formatMmss, TERMINAL_JOB_STATUSES, useRunPolling } from "../hooks/useRunPolling";
 
 export type AnalyzeRunPanelProps = {
   ifcPath: string | null;
@@ -107,6 +108,34 @@ export default function AnalyzeRunPanel({
   const { job, trackJob, pollError, setPollError, elapsedSec, terminal } = useRunPolling(onReportReady);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [journal, setJournal] = useState<RunJournalEntry[]>(() =>
+    typeof sessionStorage === "undefined" ? [] : readRunJournal(sessionStorage),
+  );
+
+  function recordJournal(snapshot: { job_id: string; status: string }, elapsed: number): void {
+    if (!TERMINAL_JOB_STATUSES.has(snapshot.status.toLowerCase())) {
+      return;
+    }
+    const storage = typeof sessionStorage === "undefined" ? null : sessionStorage;
+    setJournal(
+      appendRunJournal(
+        {
+          job_id: snapshot.job_id,
+          status: snapshot.status,
+          elapsed_sec: elapsed,
+          recorded_at: new Date().toISOString(),
+        },
+        storage,
+      ),
+    );
+  }
+
+  useEffect(() => {
+    if (!job || !terminal) {
+      return;
+    }
+    recordJournal(job, elapsedSec);
+  }, [job, terminal, elapsedSec]);
 
   async function start(): Promise<void> {
     if (!packDraftHasAny(draft)) {
@@ -119,6 +148,7 @@ export default function AnalyzeRunPanel({
     try {
       const next = await submitAnalyzeProjectPackage(toAnalyzeSubmitBody(draft));
       trackJob(next, { restartClock: true });
+      recordJournal(next, 0);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Не удалось отправить задание");
     } finally {
@@ -128,6 +158,9 @@ export default function AnalyzeRunPanel({
 
   async function cancel(): Promise<void> {
     if (!job?.job_id) {
+      return;
+    }
+    if (typeof window !== "undefined" && !window.confirm(UI_COPY.runCancelConfirm)) {
       return;
     }
     setBusy(true);
@@ -245,6 +278,22 @@ export default function AnalyzeRunPanel({
           {error ?? pollError}
         </p>
       ) : null}
+      <section className="run-journal" data-testid="run-journal">
+        <h3>{UI_COPY.runJournalTitle}</h3>
+        <p className="compact-copy">{UI_COPY.runJournalHonesty}</p>
+        {journal.length === 0 ? (
+          <p className="compact-copy">{UI_COPY.runJournalEmpty}</p>
+        ) : (
+          <ol className="kpi-list">
+            {journal.map((row) => (
+              <li key={row.job_id}>
+                <code>{row.job_id}</code>
+                {` · ${row.status} · ${formatMmss(row.elapsed_sec)}`}
+              </li>
+            ))}
+          </ol>
+        )}
+      </section>
     </section>
   );
 }

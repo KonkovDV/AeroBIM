@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import DrawingEvidencePanel from "./DrawingEvidencePanel";
+import { HITL_RULE_ID } from "../lib/issue-triage";
 import { UI_COPY } from "../lib/ui-copy";
 import type { DrawingAsset, ValidationIssue, ValidationReport } from "../lib/types";
 
@@ -223,6 +224,59 @@ describe("DrawingEvidencePanel", () => {
     render(<DrawingEvidencePanel report={buildReport()} activeIssue={buildIssue({})} />);
     fireEvent.click(screen.getByRole("button", { name: /a-101/i }));
     expect(screen.getByText(UI_COPY.browseMode)).toBeTruthy();
+  });
+
+  it("selects the sheet finding when a HITL region is clicked", async () => {
+    const onSelectIssue = vi.fn();
+    const report = buildReport();
+    report.drawing_regions = [
+      {
+        sheet_id: "A-101",
+        modality: "raster",
+        hitl_required: true,
+        hitl_reason: "low_confidence_ocr",
+        confidence: 0.41,
+        bbox_xyxy: [0, 0, 0.5, 0.5],
+        coordinate_system: "normalized-0-1",
+      },
+    ];
+    const hitlIssue = buildIssue({
+      rule_id: HITL_RULE_ID,
+      problem_zone: {
+        sheet_id: "A-101",
+        page_number: 1,
+        x: 10,
+        y: 10,
+        width: 20,
+        height: 20,
+        element_guid: null,
+      },
+    });
+    render(
+      <DrawingEvidencePanel
+        report={report}
+        activeIssue={null}
+        issues={[{ issue: hitlIssue, index: 4 }]}
+        onSelectIssue={onSelectIssue}
+      />,
+    );
+    const image = screen.getByRole("img", { name: /Превью чертежа a-101/i });
+    Object.defineProperty(image, "naturalWidth", { configurable: true, value: 320 });
+    Object.defineProperty(image, "naturalHeight", { configurable: true, value: 200 });
+    fireEvent.load(image);
+    const region = await screen.findByTestId("drawing-hitl-region");
+    fireEvent.click(region);
+    expect(onSelectIssue).toHaveBeenCalledWith(4, hitlIssue);
+  });
+
+  it("resets CSS scale to 1 without recomputing bbox", async () => {
+    render(<DrawingEvidencePanel report={buildReport()} activeIssue={null} />);
+    const viewport = screen.getByTestId("drawing-evidence-viewport");
+    fireEvent.wheel(viewport, { deltaY: -120 });
+    const zoom = screen.getByTestId("drawing-evidence-zoom");
+    expect(zoom.getAttribute("style")).toMatch(/scale\(1\.2\)/);
+    fireEvent.click(screen.getByTestId("drawing-reset-zoom"));
+    expect(zoom.getAttribute("style")).toMatch(/scale\(1\)/);
   });
 
   it("surfaces image load failures without claiming overlay success", async () => {

@@ -1,5 +1,17 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { fetchDrawingAssetPreviewBlobUrl } from "../lib/api";
+import {
+  applyDrawingPan,
+  applyDrawingWheel,
+  IDENTITY_DRAWING_VIEW,
+  prefersReducedMotion,
+  type DrawingViewTransform,
+} from "../lib/drawing-zoom";
+import {
+  findIssueForDrawingRegion,
+  isHitlClickableRegion,
+  type IndexedIssue,
+} from "../lib/issue-triage";
 import type {
   DrawingAsset,
   DrawingRegionRef,
@@ -11,6 +23,8 @@ import { UI_COPY } from "../lib/ui-copy";
 interface DrawingEvidencePanelProps {
   report: ValidationReport | null;
   activeIssue: ValidationIssue | null;
+  issues?: IndexedIssue[];
+  onSelectIssue?: (index: number, issue: ValidationIssue) => void;
 }
 
 type OverlayRect = {
@@ -18,6 +32,8 @@ type OverlayRect = {
   className: string;
   style: { left: string; top: string; width: string; height: string };
   label: string;
+  region?: DrawingRegionRef;
+  clickable?: boolean;
 };
 
 function findMatchingAsset(report: ValidationReport, issue: ValidationIssue | null): DrawingAsset | null {
@@ -96,11 +112,21 @@ function regionClassName(region: DrawingRegionRef): string {
   return "drawing-evidence-rect drawing-evidence-rect-region";
 }
 
-export default function DrawingEvidencePanel({ report, activeIssue }: DrawingEvidencePanelProps) {
+export default function DrawingEvidencePanel({
+  report,
+  activeIssue,
+  issues = [],
+  onSelectIssue,
+}: DrawingEvidencePanelProps) {
   const [imageMetrics, setImageMetrics] = useState<{ width: number; height: number } | null>(null);
   const [imageError, setImageError] = useState<string | null>(null);
   const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [view, setView] = useState<DrawingViewTransform>(IDENTITY_DRAWING_VIEW);
+  const [regionNote, setRegionNote] = useState<string | null>(null);
+  const panningRef = useRef(false);
+  const lastPointRef = useRef<{ x: number; y: number } | null>(null);
+  const reducedMotion = prefersReducedMotion();
 
   const problemZone = activeIssue?.problem_zone ?? null;
   const matchedAsset = report ? findMatchingAsset(report, activeIssue) : null;
@@ -161,6 +187,8 @@ export default function DrawingEvidencePanel({ report, activeIssue }: DrawingEvi
   useEffect(() => {
     setImageMetrics(null);
     setImageError(null);
+    setView(IDENTITY_DRAWING_VIEW);
+    setRegionNote(null);
   }, [previewUrl]);
 
   const coordinateWidth = selectedAsset?.coordinate_width ?? imageMetrics?.width ?? null;
@@ -220,6 +248,8 @@ export default function DrawingEvidencePanel({ report, activeIssue }: DrawingEvi
         key: `region-${region.sheet_id}-${index}`,
         className: regionClassName(region),
         label: region.layout_role ?? region.modality,
+        region,
+        clickable: isHitlClickableRegion(region),
         style: {
           left: `${box.left}px`,
           top: `${box.top}px`,
@@ -298,37 +328,114 @@ export default function DrawingEvidencePanel({ report, activeIssue }: DrawingEvi
             </div>
           )}
 
-          <div className="drawing-evidence-stage">
-            <img
-              src={previewUrl ?? undefined}
-              alt={UI_COPY.drawingAlt(selectedAsset?.sheet_id ?? "drawing")}
-              className="drawing-evidence-image"
-              onLoad={(event) => {
-                setImageMetrics({
-                  width: event.currentTarget.naturalWidth,
-                  height: event.currentTarget.naturalHeight,
-                });
-              }}
-              onError={() => {
-                setImageError(UI_COPY.drawingLoadFailed);
-              }}
-            />
-            {regionOverlays.map((overlay) => (
-              <div
-                key={overlay.key}
-                className={overlay.className}
-                style={overlay.style}
-                data-region-label={overlay.label}
-              />
-            ))}
-            {issueOverlay && (
-              <div className={issueOverlay.className} style={issueOverlay.style} data-testid="problem-zone-overlay" />
-            )}
-            {imageError && (
-              <div className="viewer-overlay viewer-overlay-error">
-                <p>{imageError}</p>
+          <div className="drawing-zoom-toolbar">
+            <button
+              type="button"
+              className="toolbar-button"
+              data-testid="drawing-reset-zoom"
+              onClick={() => setView(IDENTITY_DRAWING_VIEW)}
+            >
+              {UI_COPY.drawingResetZoom}
+            </button>
+            <p className="compact-copy">{UI_COPY.drawingZoomHint}</p>
+          </div>
+          {regionNote ? (
+            <p className="compact-copy" role="status" data-testid="drawing-region-note">
+              {regionNote}
+            </p>
+          ) : null}
+
+          <div
+            className="drawing-evidence-viewport"
+            data-testid="drawing-evidence-viewport"
+            onWheel={(event) => {
+              if (event.cancelable) {
+                event.preventDefault();
+              }
+              setView((current) => applyDrawingWheel(current, event.deltaY, reducedMotion));
+            }}
+            onPointerDown={(event) => {
+              if ((event.target as HTMLElement).closest("[data-region-button]")) {
+                return;
+              }
+              panningRef.current = true;
+              lastPointRef.current = { x: event.clientX, y: event.clientY };
+              event.currentTarget.setPointerCapture(event.pointerId);
+            }}
+            onPointerMove={(event) => {
+              if (!panningRef.current || !lastPointRef.current) {
+                return;
+              }
+              const dx = event.clientX - lastPointRef.current.x;
+              const dy = event.clientY - lastPointRef.current.y;
+              lastPointRef.current = { x: event.clientX, y: event.clientY };
+              setView((current) => applyDrawingPan(current, dx, dy));
+            }}
+            onPointerUp={() => {
+              panningRef.current = false;
+              lastPointRef.current = null;
+            }}
+          >
+            <div
+              className={`drawing-evidence-zoom ${reducedMotion ? "reduced" : ""}`}
+              style={{ transform: `translate(${view.x}px, ${view.y}px) scale(${view.scale})` }}
+              data-testid="drawing-evidence-zoom"
+            >
+              <div className="drawing-evidence-stage">
+                <img
+                  src={previewUrl ?? undefined}
+                  alt={UI_COPY.drawingAlt(selectedAsset?.sheet_id ?? "drawing")}
+                  className="drawing-evidence-image"
+                  onLoad={(event) => {
+                    setImageMetrics({
+                      width: event.currentTarget.naturalWidth,
+                      height: event.currentTarget.naturalHeight,
+                    });
+                  }}
+                  onError={() => {
+                    setImageError(UI_COPY.drawingLoadFailed);
+                  }}
+                />
+                {regionOverlays.map((overlay) =>
+                  overlay.clickable && overlay.region ? (
+                    <button
+                      key={overlay.key}
+                      type="button"
+                      className={`${overlay.className} drawing-region-button`}
+                      style={overlay.style}
+                      data-region-label={overlay.label}
+                      data-region-button="true"
+                      data-testid="drawing-hitl-region"
+                      aria-label={UI_COPY.regionSelectFinding(overlay.region.sheet_id)}
+                      onClick={() => {
+                        const match = findIssueForDrawingRegion(issues, overlay.region!);
+                        if (!match || !onSelectIssue) {
+                          setRegionNote(UI_COPY.regionNoFinding);
+                          return;
+                        }
+                        setRegionNote(null);
+                        onSelectIssue(match.index, match.issue);
+                      }}
+                    />
+                  ) : (
+                    <div
+                      key={overlay.key}
+                      className={overlay.className}
+                      style={overlay.style}
+                      data-region-label={overlay.label}
+                    />
+                  ),
+                )}
+                {issueOverlay && (
+                  <div className={issueOverlay.className} style={issueOverlay.style} data-testid="problem-zone-overlay" />
+                )}
+                {imageError && (
+                  <div className="viewer-overlay viewer-overlay-error">
+                    <p>{imageError}</p>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
 
           <div className="drawing-evidence-caption">

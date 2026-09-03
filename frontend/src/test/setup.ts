@@ -11,6 +11,10 @@ HTMLAnchorElement.prototype.click = function click(this: HTMLAnchorElement) {
   return originalAnchorClick.call(this);
 };
 
+HTMLElement.prototype.scrollIntoView = function scrollIntoView() {
+  // jsdom has no layout. Production uses nearest-block scroll for export/findings.
+};
+
 afterEach(() => {
   cleanup();
 });

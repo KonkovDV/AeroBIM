@@ -25,6 +25,7 @@
     "@types/react-dom": "^19.2.2",
     "@types/three": "^0.183.1",
     "@vitejs/plugin-react": "^5.1.0",
+    "axe-core": "^4.13.0",
     "jsdom": "^29.0.2",
     "playwright": "^1.62.1",
     "typescript": "^5.9.3",

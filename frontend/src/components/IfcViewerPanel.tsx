@@ -2,6 +2,7 @@ import { useEffect, useEffectEvent, useRef, useState } from "react";
 import type { ValidationReport } from "../lib/types";
 import { fetchReportIfcSource } from "../lib/api";
 import { IfcSceneController } from "../lib/ifc-scene";
+import type { IfcElementProps, IfcStoreyOption } from "../lib/ifc-element-props";
 import { UI_COPY } from "../lib/ui-copy";
 
 type ViewerStatus = "idle" | "initializing" | "loading" | "ready" | "error";
@@ -42,6 +43,9 @@ export default function IfcViewerPanel({
   const [viewerError, setViewerError] = useState<string | null>(null);
   const [controllerReady, setControllerReady] = useState(false);
   const [isolateSelection, setIsolateSelection] = useState(false);
+  const [elementProps, setElementProps] = useState<IfcElementProps | null>(null);
+  const [storeys, setStoreys] = useState<IfcStoreyOption[]>([]);
+  const [storeyFilter, setStoreyFilter] = useState("");
 
   const applySelection = useEffectEvent(() => {
     const controller = controllerRef.current;
@@ -50,6 +54,7 @@ export default function IfcViewerPanel({
     }
     controller.setSelectedGuids(selectedGuids);
     controller.setIsolateSelection(isolateSelection);
+    setElementProps(controller.getElementProps(selectedGuids[0] ?? null));
   });
 
   useEffect(() => {
@@ -99,6 +104,9 @@ export default function IfcViewerPanel({
       controller.clearModel();
       setViewerStatus("idle");
       setViewerError(null);
+      setStoreys([]);
+      setStoreyFilter("");
+      setElementProps(null);
       return;
     }
 
@@ -106,6 +114,7 @@ export default function IfcViewerPanel({
     setViewerStatus("loading");
     setViewerError(null);
     setIsolateSelection(false);
+    setStoreyFilter("");
 
     fetchReportIfcSource(reportId)
       .then((ifcBytes) => controller.loadModel(ifcBytes))
@@ -113,6 +122,7 @@ export default function IfcViewerPanel({
         if (cancelled) {
           return;
         }
+        setStoreys(controller.listStoreys());
         setViewerStatus("ready");
         applySelection();
       })
@@ -161,6 +171,33 @@ export default function IfcViewerPanel({
           </button>
         </div>
       </div>
+
+      {storeys.length > 0 ? (
+        <label className="viewer-storey-filter">
+          {UI_COPY.storeyFilter}
+          <select
+            aria-label={UI_COPY.storeyFilter}
+            value={storeyFilter}
+            disabled={viewerStatus !== "ready"}
+            onChange={(event) => {
+              const value = event.target.value;
+              setStoreyFilter(value);
+              const expressId = value === "" ? null : Number(value);
+              controllerRef.current?.setStoreyFilter(
+                expressId !== null && Number.isInteger(expressId) ? expressId : null,
+              );
+            }}
+          >
+            <option value="">{UI_COPY.storeyFilterAll}</option>
+            {storeys.map((storey) => (
+              <option key={storey.expressId} value={String(storey.expressId)}>
+                {storey.name ?? UI_COPY.storeyUnnamed(String(storey.expressId))}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : null}
+      <p className="compact-copy">{UI_COPY.storeyFilterHonesty}</p>
 
       <div className="viewer-meta">
         <span className={`viewer-status viewer-status-${viewerStatus}`}>{viewerStatusLabel(viewerStatus)}</span>
@@ -211,6 +248,37 @@ export default function IfcViewerPanel({
           </div>
         )}
       </div>
+
+      <section className="viewer-element-props" data-testid="viewer-element-props">
+        <h3>{UI_COPY.elementPropsTitle}</h3>
+        <p className="compact-copy">{UI_COPY.elementPropsHonesty}</p>
+        {elementProps ? (
+          <dl>
+            <div>
+              <dt>{UI_COPY.elementName}</dt>
+              <dd>{elementProps.name ?? "—"}</dd>
+            </div>
+            <div>
+              <dt>{UI_COPY.elementType}</dt>
+              <dd>
+                <code>{elementProps.typeName}</code>
+              </dd>
+            </div>
+            <div>
+              <dt>{UI_COPY.elementStorey}</dt>
+              <dd>{elementProps.storeyName ?? UI_COPY.spatialNone}</dd>
+            </div>
+            <div>
+              <dt>GUID</dt>
+              <dd>
+                <code>{elementProps.guid}</code>
+              </dd>
+            </div>
+          </dl>
+        ) : (
+          <p className="compact-copy">{UI_COPY.elementNoProps}</p>
+        )}
+      </section>
 
       <p className="viewer-caption">
         {UI_COPY.viewerFooter}

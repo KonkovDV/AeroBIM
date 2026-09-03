@@ -148,7 +148,12 @@ export default function ExpertWorkplace({
         center={
           <div className="side-stack" data-testid="expert-spatial-pane">
             {spatialViewer}
-            <DrawingEvidencePanel report={selectedReport} activeIssue={activeIssue} />
+            <DrawingEvidencePanel
+              report={selectedReport}
+              activeIssue={activeIssue}
+              issues={filteredIssues}
+              onSelectIssue={onSelectIssue}
+            />
             <section className="panel">
               <div className="panel-header">
                 <div>

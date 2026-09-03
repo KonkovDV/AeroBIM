@@ -1,7 +1,15 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { IfcAPI, type FlatMesh, type PlacedGeometry } from "web-ifc";
+import { IfcAPI, IFCBUILDINGSTOREY, IFCRELCONTAINEDINSPATIALSTRUCTURE, type FlatMesh, type PlacedGeometry } from "web-ifc";
 import webIfcWasmUrl from "web-ifc/web-ifc.wasm?url";
+import {
+  indexContainedInStorey,
+  iterateIdVector,
+  unwrapString,
+  type IfcElementProps,
+  type IfcStoreyOption,
+  type SpatialRelationLine,
+} from "./ifc-element-props";
 
 function getVertexStride(vertices: Float32Array, indices: Uint32Array): number {
   if (indices.length === 0) {
@@ -35,6 +43,9 @@ export class IfcSceneController {
   private isolateSelection = false;
   private readonly expressMeshes = new Map<number, THREE.Mesh[]>();
   private readonly reducedMotion: boolean;
+  private storeyVisibleIds: Set<number> | null = null;
+  private storeys: IfcStoreyOption[] = [];
+  private elementToStorey = new Map<number, number>();
 
   constructor(container: HTMLElement) {
     this.container = container;
@@ -108,6 +119,7 @@ export class IfcSceneController {
       flatMesh.delete();
     });
 
+    this.rebuildSpatialIndex();
     this.fitCameraToBox(new THREE.Box3().setFromObject(this.modelRoot));
   }
 
@@ -119,6 +131,9 @@ export class IfcSceneController {
     this.selectedExpressIds = [];
     this.isolateSelection = false;
     this.expressMeshes.clear();
+    this.storeyVisibleIds = null;
+    this.storeys = [];
+    this.elementToStorey.clear();
 
     for (const child of [...this.modelRoot.children]) {
       this.disposeObject(child);
@@ -153,6 +168,54 @@ export class IfcSceneController {
   setIsolateSelection(isolate: boolean): void {
     this.isolateSelection = isolate;
     this.applySelectionState();
+  }
+
+  listStoreys(): IfcStoreyOption[] {
+    return this.storeys;
+  }
+
+  setStoreyFilter(expressId: number | null): void {
+    if (expressId === null) {
+      this.storeyVisibleIds = null;
+    } else {
+      const visible = new Set<number>([expressId]);
+      for (const [elementId, storeyId] of this.elementToStorey) {
+        if (storeyId === expressId) {
+          visible.add(elementId);
+        }
+      }
+      this.storeyVisibleIds = visible;
+    }
+    this.applySelectionState();
+  }
+
+  getElementProps(guid: string | null | undefined): IfcElementProps | null {
+    if (!guid || this.ifcApi === null || this.modelId === null) {
+      return null;
+    }
+    const expressId = this.ifcApi.GetExpressIdFromGuid(this.modelId, guid);
+    if (typeof expressId !== "number" || expressId < 0) {
+      return null;
+    }
+    let typeName = "";
+    let name: string | null = null;
+    try {
+      const typeCode = this.ifcApi.GetLineType(this.modelId, expressId);
+      typeName = this.ifcApi.GetNameFromTypeCode(typeCode) || "";
+      const line = this.ifcApi.GetLine(this.modelId, expressId) as { Name?: unknown };
+      name = unwrapString(line?.Name);
+    } catch {
+      typeName = "";
+    }
+    const storeyId = this.elementToStorey.get(expressId) ?? null;
+    const storey = storeyId === null ? null : (this.storeys.find((row) => row.expressId === storeyId) ?? null);
+    return {
+      guid,
+      expressId,
+      typeName: typeName || "IFC",
+      name,
+      storeyName: storey?.name ?? null,
+    };
   }
 
   resetView(): void {
@@ -253,7 +316,6 @@ export class IfcSceneController {
   }
 
   private applySelectionState(): void {
-    const selectedIds = new Set(this.selectedExpressIds);
     const selectionPalette = ["#f59e0b", "#0f766e", "#2563eb", "#db2777"];
 
     for (const [expressId, meshes] of this.expressMeshes) {
@@ -265,10 +327,54 @@ export class IfcSceneController {
         material.color.copy(baseColor);
         material.emissive.set(isSelected ? selectionPalette[selectionIndex % selectionPalette.length] : "#000000");
         material.emissiveIntensity = isSelected ? 0.6 : 0;
-        mesh.visible = !this.isolateSelection || selectedIds.size === 0 || isSelected;
+        mesh.visible = this.isMeshVisible(expressId, isSelected);
       }
     }
     this.renderOnce();
+  }
+
+  private isMeshVisible(expressId: number, isSelected: boolean): boolean {
+    if (this.isolateSelection && this.selectedExpressIds.length > 0 && !isSelected) {
+      return false;
+    }
+    if (this.storeyVisibleIds === null) {
+      return true;
+    }
+    return this.storeyVisibleIds.has(expressId);
+  }
+
+  private rebuildSpatialIndex(): void {
+    this.storeys = [];
+    this.elementToStorey.clear();
+    this.storeyVisibleIds = null;
+    if (this.ifcApi === null || this.modelId === null) {
+      return;
+    }
+    const storeyIds = iterateIdVector(this.ifcApi.GetLineIDsWithType(this.modelId, IFCBUILDINGSTOREY));
+    const storeySet = new Set(storeyIds);
+    for (const expressId of storeyIds) {
+      let name: string | null = null;
+      let guid: string | null = null;
+      try {
+        const line = this.ifcApi.GetLine(this.modelId, expressId) as { Name?: unknown; GlobalId?: unknown };
+        name = unwrapString(line?.Name);
+        guid = unwrapString(line?.GlobalId);
+      } catch {
+        name = null;
+      }
+      this.storeys.push({ expressId, name, guid });
+    }
+    const relationIds = iterateIdVector(
+      this.ifcApi.GetLineIDsWithType(this.modelId, IFCRELCONTAINEDINSPATIALSTRUCTURE),
+    );
+    const relations: SpatialRelationLine[] = relationIds.map((id) => {
+      try {
+        return this.ifcApi!.GetLine(this.modelId!, id) as SpatialRelationLine;
+      } catch {
+        return {};
+      }
+    });
+    this.elementToStorey = indexContainedInStorey(relations, storeySet);
   }
 
   private frameExpressIds(expressIds: readonly number[]): void {

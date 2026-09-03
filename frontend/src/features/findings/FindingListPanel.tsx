@@ -1,5 +1,6 @@
 import { startTransition, useEffect, useMemo, useRef, useState } from "react";
 import type { ValidationIssue } from "../../lib/types";
+import { computeScrollTopToReveal } from "../../lib/finding-scroll";
 import {
   groupFindings,
   priorityCaption,
@@ -70,6 +71,7 @@ function IssueCard({
   return (
     <button
       type="button"
+      tabIndex={selected ? 0 : -1}
       className={`issue-card ${selected ? "active" : ""} ${issue.origin === "advisory" ? "issue-card--advisory" : ""}`}
       onClick={() => {
         startTransition(() => {
@@ -135,6 +137,8 @@ export default function FindingListPanel({
   const flat = useMemo(() => groups.flatMap((group) => group.rows), [groups]);
   const virtualize = flat.length > VIRTUALIZE_AFTER;
   const listRef = useRef<HTMLDivElement | null>(null);
+  const skipScrollRef = useRef(false);
+  const prevSelectedRef = useRef(selectedIssueIndex);
   const [scrollTop, setScrollTop] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(720);
 
@@ -148,6 +152,35 @@ export default function FindingListPanel({
     setViewportHeight(node.clientHeight || 720);
     return () => node.removeEventListener("scroll", onScroll);
   }, [virtualize]);
+
+  useEffect(() => {
+    const indexChanged = prevSelectedRef.current !== selectedIssueIndex;
+    prevSelectedRef.current = selectedIssueIndex;
+    const node = listRef.current;
+    if (!node || !indexChanged) {
+      return;
+    }
+    const selectedPos = flat.findIndex((row) => row.index === selectedIssueIndex);
+    if (skipScrollRef.current) {
+      skipScrollRef.current = false;
+      return;
+    }
+    if (virtualize) {
+      const nextTop = computeScrollTopToReveal(
+        selectedPos,
+        ITEM_HEIGHT,
+        node.clientHeight || viewportHeight,
+        node.scrollTop,
+      );
+      if (nextTop !== node.scrollTop) {
+        node.scrollTop = nextTop;
+      }
+    } else {
+      const activeCard = node.querySelector<HTMLElement>(".issue-card.active");
+      activeCard?.scrollIntoView?.({ block: "nearest" });
+    }
+    node.querySelector<HTMLElement>(".issue-card.active")?.focus?.();
+  }, [selectedIssueIndex, virtualize, flat, viewportHeight]);
 
   let visible = flat;
   let padTop = 0;
@@ -237,7 +270,12 @@ export default function FindingListPanel({
                 issue={issue}
                 index={index}
                 selected={index === selectedIssueIndex}
-                onSelect={onSelectIssue}
+                onSelect={(nextIndex, nextIssue) => {
+                  if (nextIndex !== selectedIssueIndex) {
+                    skipScrollRef.current = true;
+                  }
+                  onSelectIssue(nextIndex, nextIssue);
+                }}
               />
             ))}
           </div>
@@ -255,7 +293,12 @@ export default function FindingListPanel({
                   issue={issue}
                   index={index}
                   selected={index === selectedIssueIndex}
-                  onSelect={onSelectIssue}
+                  onSelect={(nextIndex, nextIssue) => {
+                    if (nextIndex !== selectedIssueIndex) {
+                      skipScrollRef.current = true;
+                    }
+                    onSelectIssue(nextIndex, nextIssue);
+                  }}
                 />
               ))}
             </section>

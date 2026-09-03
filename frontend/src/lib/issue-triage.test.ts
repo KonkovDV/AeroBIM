@@ -3,8 +3,10 @@ import {
   clauseLine,
   essenceLine,
   filterTriageIssues,
+  findIssueForDrawingRegion,
   groupFindings,
   HITL_RULE_ID,
+  isHitlClickableRegion,
   issueMatchesSearch,
   spatialOrMissing,
 } from "./issue-triage";
@@ -110,5 +112,49 @@ describe("issue-triage", () => {
     expect(found.map((row) => row.issue.rule_id)).toEqual(["R3"]);
     // Исходные индексы отчёта сохраняются — карточка и клавиатура работают по ним.
     expect(all[0]?.index).toBe(1);
+  });
+
+  it("matches a HITL region to a finding on the same sheet and ignores stamp priors", () => {
+    const hitl = {
+      issue: issue({
+        rule_id: HITL_RULE_ID,
+        problem_zone: {
+          sheet_id: "A-101",
+          page_number: 1,
+          x: 1,
+          y: 1,
+          width: 2,
+          height: 2,
+          element_guid: null,
+        },
+      }),
+      index: 0,
+    };
+    const other = {
+      issue: issue({
+        rule_id: "DRAW-001",
+        problem_zone: {
+          sheet_id: "A-102",
+          page_number: 1,
+          x: 1,
+          y: 1,
+          width: 2,
+          height: 2,
+          element_guid: null,
+        },
+      }),
+      index: 1,
+    };
+    const region = {
+      sheet_id: "A-101",
+      bbox_xyxy: [0, 0, 1, 1] as [number, number, number, number],
+      confidence: 0.4,
+      modality: "raster",
+      hitl_required: true,
+    };
+    expect(isHitlClickableRegion(region)).toBe(true);
+    expect(isHitlClickableRegion({ ...region, layout_role: "stamp" })).toBe(false);
+    expect(findIssueForDrawingRegion([hitl, other], region)?.index).toBe(0);
+    expect(findIssueForDrawingRegion([other], region)).toBeNull();
   });
 });
