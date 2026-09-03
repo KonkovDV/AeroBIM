@@ -4,7 +4,7 @@ title: "Deep-study carrier facts — packs A/B/C (30.08.2026 evening)"
 date: "2026-08-30"
 last_updated: "2026-09-03"
 status: active
-version: "1.0.0"
+version: "1.0.2"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -67,7 +67,7 @@ EIR v4.0 workbook + BIM-standard v4.0 are present as **text**. That is not `cust
 
 | SIG | What this pass supplies | Forbidden speech |
 |---|---|---|
-| SIG-01 | Substrates: 15 IFC + 1 440 PDF (91 % with text) | Finding count = product accuracy |
+| SIG-01 | Substrates: 15 IFC + 1 440 PDF (**91 % unique files** with a text layer; page-level coverage is lower because of scans) | Finding count = product accuracy |
 | SIG-02 | Evening recensus + this pin | «43 ГБ обработаны»; commit names |
 | SIG-04 | Observed classes (empty QTO, wall FireRating EI 45, grid-less plugin export, incomplete LIRA block, zero-page PDF). Catalog still unsigned | `customer_confirmed_patterns>0` |
 | SIG-05 | Evidence for questions 5 (regs in an «unsupported» folder), 12 (RVT 2020/2023 + RSN), 13 (three NWD federations), 14 (readable rebar note still missing) | «пакет вопросов отправлен» (git does not send mail) |
@@ -78,9 +78,10 @@ EIR v4.0 workbook + BIM-standard v4.0 are present as **text**. That is not `cust
 
 - **SIG-01 channel rerun EXECUTED** (`pack_volume_not_accuracy`): finding volume and type breakdown obtained on the local pack copy after the ALL/GUID/Qto engine fixes. Not accuracy, not pack-processed, not a customer defect list.
 - **docx context probe** (pass3): 193 docx read; concrete-class tokens found in **6** files, all adjacent to a load context; **274** candidate lines inside the ±160-char «бетон/класс» window — shortlist feeding `calculation_table_compare` declared-field rows (C1-substitute track).
-- **Full docx text inventory**: 106 office documents extracted with paragraphs + tables (ЦНЭ remark books, ОЕП/РМС registries, letters) — carrier text now machine-readable for remark clustering.
+- **Full docx text inventory**: 106 office documents extracted with paragraphs + tables (ЦНЭ remark books, ОЕП/РМС registries, letters) — carrier text now machine-readable for remark clustering. **03.09 fact-check:** ЦНЭ remark books plus the «ПД после экспертизы» set for the etalon **are in the archive**. That is a weak-reference, not dual-rater gold and not RT-001 closed, until the customer names the canonical edition in writing (grounded question 2).
 - **Lab before/after journal** opened: tool-side elapsed measured; **`t_manual_s` is null** — the manual «before» pass is pending a human run per the counterbalanced protocol.
 - **VLM confidence tuning protocol** published (grounding abstention thresholds) — calibration, not accuracy.
+- **03.09:** расширенная детализация задач трекера 1–2 (объём SIG-01, тайминги, реестр SIG-02) собрана в `.local/pack/TASK1_TASK2_DETAILED_DIGEST_2026_09_03.md`; тоталы и пофайловые числа — локально до OA-9.
 
 Named trees stay in `.local/`; the local delta study is `.local/pack-out/deep-study-2026-08-31/DEEP_STUDY_DELTA_2026_09_03.md`.
 
