@@ -110,6 +110,7 @@ class OidcBffPhase3Tests(unittest.TestCase):
         cookie = response.cookies.get("aerobim_bff_session")
         self.assertTrue(cookie)
         self.assertIn(".", cookie)
+        self.assertIsNone(response.cookies.get("aerobim_bff_lab_authz"))
         session = self.client.get("/v1/auth/session")
         self.assertEqual(session.status_code, 200)
         self.assertEqual(session.json()["sub"], "user-1")
@@ -140,12 +141,13 @@ class OidcBffPhase3Tests(unittest.TestCase):
     def test_jwt_payload_helper(self) -> None:
         token = _unsigned_jwt({"sub": "abc", "nonce": "n1"})
         self.assertEqual(decode_jwt_payload_unverified(token)["sub"], "abc")
-        subject, _email, verified = session_from_token_payload(
+        identity = session_from_token_payload(
             {"id_token": token},
             expected_nonce="n1",
         )
-        self.assertEqual(subject, "abc")
-        self.assertFalse(verified)
+        self.assertEqual(identity.subject, "abc")
+        self.assertFalse(identity.identity_verified)
+        self.assertEqual(identity.roles, frozenset())
         with self.assertRaises(OidcValidationError):
             session_from_token_payload({"id_token": token}, expected_nonce="other")
 

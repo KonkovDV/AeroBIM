@@ -18,10 +18,11 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from aerobim.core.security.outbound_url import UnsafeOutboundUrlError, safe_urlopen
+from aerobim.domain.auth_roles import extract_oidc_roles
 from aerobim.infrastructure.auth.oidc_bff_stubs import OidcBffStubState
 from aerobim.infrastructure.security.oidc_token_validator import (
     OidcTokenValidator,
@@ -31,6 +32,18 @@ from aerobim.infrastructure.security.oidc_token_validator import (
 _SESSION_TTL_SECONDS = 3600
 SESSION_COOKIE_NAME = "aerobim_bff_session"
 HOST_SESSION_COOKIE_NAME = "__Host-aerobim-session"
+LAB_AUTHZ_COOKIE_NAME = "aerobim_bff_lab_authz"
+
+
+@dataclass(frozen=True)
+class OidcBffIdentity:
+    """Claims extracted from a token-endpoint payload. Not a production SSO claim."""
+
+    subject: str
+    email: str | None
+    identity_verified: bool
+    roles: frozenset[str] = field(default_factory=frozenset)
+    tenant_id: str | None = None
 
 
 @dataclass(frozen=True)
@@ -42,6 +55,8 @@ class OidcBffSession:
     id_token: str | None = None
     email: str | None = None
     identity_verified: bool = False
+    roles: frozenset[str] = field(default_factory=frozenset)
+    tenant_id: str | None = None
 
 
 class InMemoryOidcBffSessionStore:
@@ -59,6 +74,8 @@ class InMemoryOidcBffSessionStore:
         id_token: str | None = None,
         email: str | None = None,
         identity_verified: bool = False,
+        roles: frozenset[str] | None = None,
+        tenant_id: str | None = None,
     ) -> OidcBffSession:
         self._purge_expired()
         session = OidcBffSession(
@@ -69,6 +86,8 @@ class InMemoryOidcBffSessionStore:
             id_token=id_token,
             email=email,
             identity_verified=identity_verified,
+            roles=roles if roles is not None else frozenset(),
+            tenant_id=tenant_id,
         )
         self._sessions[session.session_id] = session
         return session
@@ -208,7 +227,9 @@ def session_from_token_payload(
     *,
     validator: OidcTokenValidator | None = None,
     expected_nonce: str | None = None,
-) -> tuple[str, str | None, bool]:
+    roles_claim: str = "roles",
+    tenant_claim: str = "tenant_id",
+) -> OidcBffIdentity:
     """Extract subject + optional email from token-endpoint JSON.
 
     When ``validator`` is set (issuer/audience/JWKS configured), ``id_token``
@@ -228,22 +249,38 @@ def session_from_token_payload(
         _require_nonce(claims, expected_nonce, require=True)
         subject = str(claims.get("sub") or "unknown")
         email = claims.get("email")
-        return subject, str(email) if email else None, True
+        tenant_raw = claims.get(tenant_claim)
+        if isinstance(tenant_raw, str) and tenant_raw.strip():
+            tenant_id = tenant_raw.strip()
+        else:
+            tenant_id = None
+        return OidcBffIdentity(
+            subject=subject,
+            email=str(email) if email else None,
+            identity_verified=True,
+            roles=extract_oidc_roles(claims, roles_claim=roles_claim),
+            tenant_id=tenant_id,
+        )
     claims = decode_jwt_payload_unverified(str(id_token)) if id_token else {}
     if id_token:
         _require_nonce(claims, expected_nonce, require=True)
     subject = str(payload.get("sub") or claims.get("sub") or "unknown")
     email = claims.get("email") or payload.get("email")
     email_str = str(email) if email else None
-    return subject, email_str, False
+    return OidcBffIdentity(
+        subject=subject,
+        email=email_str,
+        identity_verified=False,
+        roles=frozenset(),
+        tenant_id=None,
+    )
 
 
 def require_verified_bff_session(session: OidcBffSession | None) -> OidcBffSession:
     """Authz gate: lab sessions with ``identity_verified=False`` must not authorize.
 
-    HTTP API auth uses ``require_bearer_auth`` (static bearer / signed OIDC JWT).
-    BFF cookies are never an AuthPrincipal. This helper exists so any future
-    cookie-to-principal path cannot skip the signature check (HD3-BFF-01).
+    HTTP API auth may bind a verified BFF cookie to ``AuthPrincipal``. Unverified
+    lab sessions still cannot authorize (HD3-BFF-01). Not production SSO.
     """
 
     if session is None or not session.identity_verified:
@@ -296,7 +333,10 @@ def build_phase3_session_payload(session: OidcBffSession) -> dict[str, Any]:
         "access_token": None,
         "id_token": None,
         "identity_verified": session.identity_verified,
+        "roles": sorted(session.roles),
+        "tenant_id": session.tenant_id,
         "phase": 3,
+        "production_sso": False,
     }
 
 
@@ -307,6 +347,8 @@ __all__ = [
     "DEFAULT_BFF_SESSION_STORE",
     "HOST_SESSION_COOKIE_NAME",
     "InMemoryOidcBffSessionStore",
+    "LAB_AUTHZ_COOKIE_NAME",
+    "OidcBffIdentity",
     "OidcBffSession",
     "SESSION_COOKIE_NAME",
     "build_phase3_login_payload",

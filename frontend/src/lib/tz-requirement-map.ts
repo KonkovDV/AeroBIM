@@ -43,7 +43,7 @@ export const TZ_REQUIREMENT_ROWS: TzRequirementRow[] = [
     id: "TZ-ROLES",
     tz: "Эксперт и Пользователь",
     fn: "Макет экрана + серверный HITL 403",
-    evidence: "RoleHonestyBanner; GET /v1/auth/bff остаётся 501; не OIDC",
+    evidence: "RoleHonestyBanner; GET /v1/auth/bff по умолчанию 501, LAB не SSO",
     git: "partial",
   },
   {

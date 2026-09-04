@@ -171,9 +171,10 @@ def build_auth_bff_capability() -> dict[str, object]:
             "viewer_oidc_under_pilot": "forbidden",
             "lab_cookie_is_not_rbac": True,
             "note": (
-                "Header role switch is a screen mock. POST /review-events 403 for "
-                "shared bearer and for viewer/user OIDC roles under pilot/production. "
-                "Not production SSO (auth_bff=501)."
+                "Header role switch is a screen mock. Default GET /v1/auth/bff = 501. "
+                "Lab 200 LAB is not customer SSO. Unverified BFF cookies never authorize "
+                "(HD3-BFF-01). A verified lab cookie may bind AuthPrincipal; viewer/user "
+                "expert HITL writes stay 403. Shared bearer forbidden."
             ),
         },
     }

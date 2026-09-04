@@ -1,5 +1,11 @@
 import type { ReportListResponse, ValidationReport } from "./types";
 import type { AnalyzeSubmitBody } from "./pack-draft";
+import {
+  parseAuthBffResponse,
+  parseAuthBffSession,
+  type AuthBffDiscovery,
+  type AuthBffSession,
+} from "./auth-bff";
 
 export type ReportListFilters = {
   project?: string;
@@ -77,6 +83,44 @@ async function readBytes(url: string): Promise<{ bytes: Uint8Array; contentType:
 
 export function getApiBaseUrl(): string {
   return apiBaseUrl;
+}
+
+export type { AuthBffDiscovery, AuthBffSession };
+
+export async function fetchAuthBff(): Promise<AuthBffDiscovery> {
+  try {
+    const response = await fetch(`${apiBaseUrl}/v1/auth/bff`, {
+      headers: authHeaders(),
+      credentials: "include",
+    });
+    let body: unknown = null;
+    try {
+      body = await response.json();
+    } catch {
+      body = null;
+    }
+    return parseAuthBffResponse(response.status, body);
+  } catch {
+    return { httpStatus: 0, status: "UNKNOWN" };
+  }
+}
+
+export async function fetchAuthSession(): Promise<AuthBffSession | null> {
+  try {
+    const response = await fetch(`${apiBaseUrl}/v1/auth/session`, {
+      headers: authHeaders(),
+      credentials: "include",
+    });
+    let body: unknown = null;
+    try {
+      body = await response.json();
+    } catch {
+      body = null;
+    }
+    return parseAuthBffSession(response.status, body);
+  } catch {
+    return null;
+  }
 }
 
 export type ExportFormat = "json" | "html" | "bcf" | "pdf";

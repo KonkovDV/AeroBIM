@@ -16,7 +16,7 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Annotated, Any
 
-from fastapi import Header, HTTPException
+from fastapi import Header, HTTPException, Request
 
 from aerobim.application.services.iso19650_metadata import enrich_iso19650_metadata
 from aerobim.application.services.loin_metadata_resolver import LoinMetadataResolver
@@ -45,6 +45,12 @@ from aerobim.domain.object_acl import (
     principal_may_access_norm_pack,
     principal_may_access_report,
     principal_may_access_tenant_id,
+)
+from aerobim.infrastructure.auth.oidc_bff_phase3 import (
+    DEFAULT_BFF_SESSION_STORE,
+    parse_session_cookie,
+    require_verified_bff_session,
+    session_cookie_name,
 )
 from aerobim.infrastructure.security.oidc_token_validator import OidcValidationError
 from aerobim.presentation.http.errors import (
@@ -141,15 +147,58 @@ class ApiContext:
 
     # -- Auth -------------------------------------------------------------
 
+    def _principal_from_verified_bff_cookie(self, request: Request) -> AuthPrincipal | None:
+        """Bind a Phase-3 lab cookie only when identity_verified (HD3-BFF-01).
+
+        Unverified lab sessions never become AuthPrincipal. Not production SSO.
+        """
+
+        settings = self.settings
+        if not settings.oidc_bff_phase3_ready:
+            return None
+        secret = settings.oidc_bff_cookie_secret or ""
+        if not secret:
+            return None
+        secure = not settings.debug and not settings.is_dev_environment
+        raw = request.cookies.get(session_cookie_name(secure=secure))
+        session_id = parse_session_cookie(raw, secret)
+        if session_id is None:
+            return None
+        try:
+            session = require_verified_bff_session(DEFAULT_BFF_SESSION_STORE.get(session_id))
+        except PermissionError:
+            return None
+        tenant = (session.tenant_id or "").strip()
+        if not tenant:
+            return None
+        return AuthPrincipal(
+            tenant_id=tenant,
+            subject=session.subject,
+            roles=session.roles,
+            auth_scheme="oidc",
+        )
+
     def require_bearer_auth(
         self,
+        request: Request,
         authorization: Annotated[str | None, Header()] = None,
     ) -> AuthPrincipal:
         settings = self.settings
         configured_token = settings.api_bearer_token
         oidc_ready = self.oidc_validator is not None
 
+        if not authorization:
+            cookie_principal = self._principal_from_verified_bff_cookie(request)
+            if cookie_principal is not None:
+                return cookie_principal
+
         if configured_token is None and not oidc_ready:
+            if settings.oidc_bff_phase3_ready:
+                raise HTTPException(
+                    status_code=401,
+                    detail="Missing Authorization header",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
             if settings.is_dev_environment and settings.allow_anonymous_dev:
                 return AuthPrincipal(
                     tenant_id=settings.api_tenant_id,
@@ -179,8 +228,8 @@ class ApiContext:
                 detail="Missing Authorization header",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-        # BFF lab cookies are never accepted here. Unverified Phase-3 sessions
-        # (identity_verified=False) cannot become AuthPrincipal (HD3-BFF-01).
+        # Unverified BFF lab cookies are never accepted (HD3-BFF-01).
+        # Verified Phase-3 cookies bind above, before this Bearer path.
 
         scheme, _, token = authorization.partition(" ")
         if scheme.lower() != "bearer" or not token:

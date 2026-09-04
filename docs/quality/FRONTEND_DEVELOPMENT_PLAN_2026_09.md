@@ -2,7 +2,7 @@
 ---
 title: "План развития фронтенда (для ИИ-исполнителя) — 2026-09-03"
 date: "2026-09-03"
-last_updated: "2026-09-03"
+last_updated: "2026-09-04"
 status: active
 version: "1.3.0"
 closes_rt001: false
@@ -251,10 +251,21 @@ python scripts/lint_claims.py --full-docs        # полный скан док�
   `App.tsx`, `features/workplace/ExpertWorkplace.tsx`.
 - Запреты: не имитировать OIDC; не снимать баннер ролей.
 
-### WP-FE-15. HOLD до живого OIDC (не маскировать 501)
+### WP-FE-15. HOLD: живой OIDC заказчика (не маскировать 501 по умолчанию)
 
-Негативные HTTP RBAC-тесты (viewer → 403 на POST review-events) — только
-когда BFF перестанет отвечать 501. До этого — ничего не имитировать.
+**Статус: HOLD, 04.09.** Не закрывает RT-001 / RT-002 / RT-003. Не промышленный SSO.
+
+Лаборатория (только `oidc_bff_phase3_ready`, не `samolet_pilot` / `production`):
+`GET /v1/auth/bff` = 200 `LAB`; проверенная cookie может стать `AuthPrincipal`;
+viewer/user → 403 на expert HITL. Это HTTP RBAC лаборатории, не SSO заказчика.
+
+По умолчанию и на жёстких профилях: `GET /v1/auth/bff` = 501 `NOT_IMPLEMENTED`.
+Баннер оболочки читает discovery, не хардкодит 501. localStorage — макет экрана.
+
+- Файлы: `oidc_bff_phase3.py`, `context.py`, `hooks/useAuthBff.ts`,
+  `features/honesty/RoleHonestyBanner.tsx`.
+- Запреты: не писать «OIDC live»; не считать 200 LAB закрытием WP как SSO.
+
 Серверные пресеты фильтров — после фриза, отдельным решением.
 
 ## 6. Очередность
@@ -264,12 +275,11 @@ python scripts/lint_claims.py --full-docs        # полный скан док�
 | Сделано 03.09 утро | FE-01…FE-06 | done |
 | До демо ИТ-ментору | WP-FE-07, WP-FE-08, WP-FE-09, WP-FE-16 | done |
 | До 15.09 | WP-FE-10, WP-FE-11, WP-FE-12, WP-FE-13, WP-FE-14, WP-FE-17 | done |
-| Пока BFF = 501 | WP-FE-15 | HOLD |
+| Пока нет IdP заказчика | WP-FE-15 | HOLD |
 
-Гейты после WP-FE-14/17: `npm test` — 37 файлов / 142 теста; `npm run lint` — чисто;
-`npm run build` — чисто. `App.tsx` = 300 строк. Новая рантайм-зависимость не добавлялась.
-Живая оболочка 03.09 вечер: `127.0.0.1:5173` против API `127.0.0.1:8080`; учебный отчёт
-открывается, баннер `GET /v1/auth/bff = 501` остаётся. WP-FE-15 не имитировать.
+Гейты: `npm test` — 41 файл / 160 тестов; `npm run lint` — чисто; `npm run build` — чисто.
+`App.tsx` = 300 строк. Новая рантайм-зависимость не добавлялась. По умолчанию баннер
+читает `GET /v1/auth/bff` (501); 200 LAB не SSO заказчика. WP-FE-15 остаётся HOLD.
 `axe-core` — только `devDependencies`, jsdom, правило color-contrast выключено.
 Это внутренний проход, не сертификат WCAG.
 
@@ -287,7 +297,7 @@ python scripts/lint_claims.py --full-docs        # полный скан док�
 | WP-FE-16 | ACCEPT | Этаж/ось с карточки; пустое = «нет в индексе»; снэп фильтра; GUID copy; HITL-типы через `hitlEventTypeLabel` |
 | WP-FE-14 | ACCEPT | Хвосты копирайта в `RU_COPY`; английский отказ coverage убран |
 | WP-FE-17 | ACCEPT | Повтор GET; пустой эксперт с переходами; epoch перезапрашивает отчёт |
-| WP-FE-15 | HOLD | BFF остаётся 501; негативный RBAC не имитировать |
+| WP-FE-15 | HOLD | По умолчанию BFF = 501; 200 LAB ≠ SSO заказчика; viewer 403 только в лаборатории |
 | Fragments / федерация | KILL | Не грузить ~1 ГБ во вкладку |
 | XLSX / OIDC live / SLA | KILL | Без изменений рамок триажа |
 

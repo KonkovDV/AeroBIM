@@ -1,12 +1,11 @@
 import { useEffect, type Dispatch, type SetStateAction } from "react";
 import type { IndexedIssue } from "../lib/issue-triage";
-import type { UiRoleAlias } from "../lib/ui-role";
 
 export function useTriageKeyboard({
   enabled,
   filteredIssues,
   selectedIssueIndex,
-  uiRole,
+  hitlEnabled,
   setTriageHelpOpen,
   setSelectedIssueIndex,
   setSelectedClashIndex,
@@ -16,7 +15,7 @@ export function useTriageKeyboard({
   enabled: boolean;
   filteredIssues: IndexedIssue[];
   selectedIssueIndex: number;
-  uiRole: UiRoleAlias;
+  hitlEnabled: boolean;
   setTriageHelpOpen: Dispatch<SetStateAction<boolean>>;
   setSelectedIssueIndex: Dispatch<SetStateAction<number>>;
   setSelectedClashIndex: Dispatch<SetStateAction<number | null>>;
@@ -72,7 +71,7 @@ export function useTriageKeyboard({
         return;
       }
       if (event.key === "a" || event.key === "A") {
-        if (uiRole !== "expert") {
+        if (!hitlEnabled) {
           return;
         }
         event.preventDefault();
@@ -80,7 +79,7 @@ export function useTriageKeyboard({
         return;
       }
       if (event.key === "r" || event.key === "R") {
-        if (uiRole !== "expert") {
+        if (!hitlEnabled) {
           return;
         }
         event.preventDefault();
@@ -88,6 +87,9 @@ export function useTriageKeyboard({
         return;
       }
       if (event.key === "e" || event.key === "E") {
+        if (!hitlEnabled) {
+          return;
+        }
         event.preventDefault();
         document.getElementById("remark-editor")?.focus();
       }
@@ -99,7 +101,7 @@ export function useTriageKeyboard({
     enabled,
     filteredIssues,
     selectedIssueIndex,
-    uiRole,
+    hitlEnabled,
     setTriageHelpOpen,
     setSelectedIssueIndex,
     setSelectedClashIndex,

@@ -18,6 +18,8 @@ export const RU_COPY = {
     "FAILED/MISSING на сервере блокируют summary.passed. UI флаг не пишет (ADR-001). Checkpoint NO_GO.",
   roleBanner:
     "Демо-режим: роль не проверяется сервером. Переключатель в шапке — макет экрана, не разграничение доступа. GET /v1/auth/bff = 501 (не OIDC). HITL на сервере: expert/reviewer; user/viewer и общий Bearer → 403.",
+  roleBannerLab:
+    "Лабораторный BFF: GET /v1/auth/bff = LAB, не промышленный SSO. HITL только при проверенной сессии эксперта. user/viewer → 403. Переключатель шапки — макет, пока сессия не зафиксировала роль.",
   roleSelectLabel: "Макет экрана (не доступ)",
   roleExpert: "Эксперт",
   roleUser: "Пользователь",

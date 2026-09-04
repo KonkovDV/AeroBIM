@@ -1,4 +1,10 @@
-import type { ClashResult, DrawingRegionRef, ValidationIssue, ValidationReport } from "./types";
+import type {
+  ClashResult,
+  DrawingRegionRef,
+  ParsedRequirement,
+  ValidationIssue,
+  ValidationReport,
+} from "./types";
 import { UI_COPY } from "./ui-copy";
 
 export const TRIAGE_BANDS = ["critical", "major", "minor", "negligible"] as const;
@@ -237,4 +243,15 @@ export function buildViewerFocus(
     heading: UI_COPY.spatialNone,
     detail: UI_COPY.spatialNoneDetail,
   };
+}
+
+/** Требования, связанные с выбранной находкой по rule_id. */
+export function findMatchingRequirements(
+  report: ValidationReport,
+  issue: ValidationIssue | null,
+): ParsedRequirement[] {
+  if (issue === null) {
+    return [...report.requirements];
+  }
+  return report.requirements.filter((requirement) => requirement.rule_id === issue.rule_id);
 }

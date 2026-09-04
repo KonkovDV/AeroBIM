@@ -27,6 +27,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from fastapi import HTTPException
+from starlette.requests import Request
 
 from aerobim.core.config.settings import Settings
 from aerobim.core.di.container import Container
@@ -160,12 +161,38 @@ def _report(
     )
 
 
+def _http_request() -> Request:
+    return Request(
+        {
+            "type": "http",
+            "asgi": {"version": "3.0"},
+            "http_version": "1.1",
+            "method": "GET",
+            "scheme": "http",
+            "path": "/",
+            "raw_path": b"/",
+            "query_string": b"",
+            "headers": [],
+            "client": ("testclient", 50000),
+            "server": ("test", 80),
+        }
+    )
+
+
 def _status(callable_, *args, **kwargs) -> HTTPException:
     try:
         callable_(*args, **kwargs)
     except HTTPException as exc:
         return exc
     raise AssertionError("expected HTTPException")
+
+
+def _auth(ctx, authorization: str | None):
+    return ctx.require_bearer_auth(_http_request(), authorization)
+
+
+def _status_auth(ctx, authorization: str | None) -> HTTPException:
+    return _status(ctx.require_bearer_auth, _http_request(), authorization)
 
 
 class UploadConstantContractTests(unittest.TestCase):
@@ -186,14 +213,14 @@ class AuthFallbackBranchTests(unittest.TestCase):
         # and NumberReplacer on 401 (L122).
         with tempfile.TemporaryDirectory() as tmp:
             ctx = _make_ctx(Path(tmp), environment="development", allow_anonymous_dev=False)
-            exc = _status(ctx.require_bearer_auth, None)
+            exc = _status_auth(ctx, None)
             self.assertEqual(exc.status_code, 401)
 
     def test_nondev_without_config_is_503(self) -> None:
         # Kills AddNot on `if settings.is_dev_environment` (L120) and 503 (L130).
         with tempfile.TemporaryDirectory() as tmp:
             ctx = _make_ctx(Path(tmp), environment="production", allow_anonymous_dev=True)
-            exc = _status(ctx.require_bearer_auth, None)
+            exc = _status_auth(ctx, None)
             self.assertEqual(exc.status_code, 503)
 
     def test_dev_anonymous_enabled_returns_dev_principal(self) -> None:
@@ -204,7 +231,7 @@ class AuthFallbackBranchTests(unittest.TestCase):
                 allow_anonymous_dev=True,
                 api_tenant_id="tenant-dev",
             )
-            principal = ctx.require_bearer_auth(None)
+            principal = _auth(ctx, None)
             self.assertEqual(principal.subject, "anonymous-dev")
             self.assertEqual(principal.tenant_id, "tenant-dev")
 
@@ -218,21 +245,21 @@ class AuthSchemeParsingTests(unittest.TestCase):
     def test_correct_token_with_basic_scheme_rejected(self) -> None:
         # Kills NotEq_Gt: "basic" > "bearer" is False, so the mutant accepts it.
         with tempfile.TemporaryDirectory() as tmp:
-            exc = _status(self._ctx(Path(tmp)).require_bearer_auth, "Basic secret-token")
+            exc = _status_auth(self._ctx(Path(tmp)), "Basic secret-token")
             self.assertEqual(exc.status_code, 401)
             self.assertEqual(exc.detail, "Invalid Authorization header format")
 
     def test_correct_token_with_token_scheme_rejected(self) -> None:
         # Kills NotEq_Lt: "token" < "bearer" is False, so the mutant accepts it.
         with tempfile.TemporaryDirectory() as tmp:
-            exc = _status(self._ctx(Path(tmp)).require_bearer_auth, "Token secret-token")
+            exc = _status_auth(self._ctx(Path(tmp)), "Token secret-token")
             self.assertEqual(exc.status_code, 401)
 
     def test_scheme_without_token_gets_format_detail(self) -> None:
         # Kills ReplaceOrWithAnd on `!= "bearer" or not token` (L145): the
         # mutant falls through to the generic "Invalid API token" 401 instead.
         with tempfile.TemporaryDirectory() as tmp:
-            exc = _status(self._ctx(Path(tmp)).require_bearer_auth, "Bearer")
+            exc = _status_auth(self._ctx(Path(tmp)), "Bearer")
             self.assertEqual(exc.status_code, 401)
             self.assertEqual(exc.detail, "Invalid Authorization header format")
 
@@ -240,7 +267,7 @@ class AuthSchemeParsingTests(unittest.TestCase):
         # Kills NotEq_Is: the partitioned scheme is a fresh string object, so
         # identity comparison against the literal rejects a valid header.
         with tempfile.TemporaryDirectory() as tmp:
-            principal = self._ctx(Path(tmp)).require_bearer_auth("BEARER secret-token")
+            principal = _auth(self._ctx(Path(tmp)), "BEARER secret-token")
             self.assertEqual(principal.subject, "api-bearer")
             self.assertEqual(principal.tenant_id, "tenant-a")
 
@@ -255,14 +282,14 @@ class OidcBranchTests(unittest.TestCase):
                 Path(tmp),
                 oidc=_OidcValidator(claims={"tenant_id": "t-oidc", "sub": "sub-1"}),
             )
-            principal = ctx.require_bearer_auth("Bearer some-jwt")
+            principal = _auth(ctx, "Bearer some-jwt")
             self.assertEqual(principal.tenant_id, "t-oidc")
             self.assertEqual(principal.subject, "sub-1")
 
     def test_missing_subject_maps_to_none(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             ctx = _make_ctx(Path(tmp), oidc=_OidcValidator(claims={"tenant_id": "t-oidc"}))
-            self.assertIsNone(ctx.require_bearer_auth("Bearer some-jwt").subject)
+            self.assertIsNone(_auth(ctx, "Bearer some-jwt").subject)
 
     def test_configured_tenant_claim_is_used(self) -> None:
         # Kills both ReplaceOrWithAnd mutants on the claim_name chain (L159):
@@ -273,7 +300,7 @@ class OidcBranchTests(unittest.TestCase):
                 oidc=_OidcValidator(claims={"custom_tenant": "t-custom"}),
                 oidc_tenant_claim="custom_tenant",
             )
-            principal = ctx.require_bearer_auth("Bearer some-jwt")
+            principal = _auth(ctx, "Bearer some-jwt")
             self.assertEqual(principal.tenant_id, "t-custom")
 
     def test_tid_and_org_id_are_not_used_as_tenant(self) -> None:
@@ -282,21 +309,21 @@ class OidcBranchTests(unittest.TestCase):
                 Path(tmp),
                 oidc=_OidcValidator(claims={"tid": "azure-tid", "org_id": "org-1", "sub": "sub-1"}),
             )
-            exc = _status(ctx.require_bearer_auth, "Bearer some-jwt")
+            exc = _status_auth(ctx, "Bearer some-jwt")
             self.assertEqual(exc.status_code, 401)
             self.assertEqual(exc.detail, "OIDC token missing required tenant claim")
 
     def test_bearer_and_oidc_schemes_are_distinct(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             bearer_ctx = _make_ctx(Path(tmp), api_bearer_token="secret-token")
-            bearer = bearer_ctx.require_bearer_auth("Bearer secret-token")
+            bearer = _auth(bearer_ctx, "Bearer secret-token")
             self.assertEqual(bearer.auth_scheme, "bearer")
             self.assertTrue(bearer.is_service_token)
             oidc_ctx = _make_ctx(
                 Path(tmp),
                 oidc=_OidcValidator(claims={"tenant_id": "t-oidc", "sub": "user-1"}),
             )
-            oidc = oidc_ctx.require_bearer_auth("Bearer some-jwt")
+            oidc = _auth(oidc_ctx, "Bearer some-jwt")
             self.assertEqual(oidc.auth_scheme, "oidc")
             self.assertFalse(oidc.is_service_token)
 
@@ -304,7 +331,7 @@ class OidcBranchTests(unittest.TestCase):
         # Kills AddNot / Delete_Not on `if not tenant` (L162) + 401 codes (L165).
         with tempfile.TemporaryDirectory() as tmp:
             ctx = _make_ctx(Path(tmp), oidc=_OidcValidator(claims={"tenant_id": "   "}))
-            exc = _status(ctx.require_bearer_auth, "Bearer some-jwt")
+            exc = _status_auth(ctx, "Bearer some-jwt")
             self.assertEqual(exc.status_code, 401)
 
     def test_validator_error_maps_to_generic_401_and_logs(self) -> None:
@@ -313,7 +340,7 @@ class OidcBranchTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             logger = _Logger()
             ctx = _make_ctx(Path(tmp), oidc=_OidcValidator(error="boom"), logger=logger)
-            exc = _status(ctx.require_bearer_auth, "Bearer bad-jwt")
+            exc = _status_auth(ctx, "Bearer bad-jwt")
             self.assertEqual(exc.status_code, 401)
             self.assertEqual(exc.detail, "Invalid API token")
             self.assertTrue(logger.warnings)
@@ -321,7 +348,7 @@ class OidcBranchTests(unittest.TestCase):
     def test_wrong_bearer_token_without_oidc_is_401(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             ctx = _make_ctx(Path(tmp), api_bearer_token="secret-token")
-            exc = _status(ctx.require_bearer_auth, "Bearer wrong")
+            exc = _status_auth(ctx, "Bearer wrong")
             self.assertEqual(exc.status_code, 401)
             self.assertEqual(exc.detail, "Invalid API token")
 

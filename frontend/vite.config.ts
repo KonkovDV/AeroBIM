@@ -3,6 +3,7 @@ import { cwd } from "node:process";
 import react from "@vitejs/plugin-react";
 import { loadEnv } from "vite";
 import { defineConfig } from "vitest/config";
+import { requestShouldSkipViteBearer } from "./src/lib/bff-cookie";
 
 /**
  * Dev auth proxy: browser calls same-origin `/v1/*`; Vite injects
@@ -61,7 +62,10 @@ export default defineConfig(({ mode }) => {
               viteHost === "::1" ||
               viteHost === "[::1]";
             proxy.on("proxyReq", (proxyReq: ClientRequest) => {
-              if (bearer && loopback) {
+              const cookieHeader = proxyReq.getHeader("cookie");
+              const cookieText =
+                typeof cookieHeader === "number" ? String(cookieHeader) : cookieHeader;
+              if (bearer && loopback && !requestShouldSkipViteBearer(cookieText)) {
                 proxyReq.setHeader("Authorization", `Bearer ${bearer}`);
               }
             });

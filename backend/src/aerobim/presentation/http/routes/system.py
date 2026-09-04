@@ -12,6 +12,7 @@ from aerobim.domain.system_capabilities import (
 )
 from aerobim.infrastructure.auth.oidc_bff_phase3 import (
     DEFAULT_BFF_SESSION_STORE,
+    LAB_AUTHZ_COOKIE_NAME,
     OidcBffSession,
     build_phase3_login_payload,
     build_phase3_session_payload,
@@ -45,6 +46,33 @@ def build_system_router(ctx: ApiContext) -> APIRouter:
 
     def _cookie_name() -> str:
         return session_cookie_name(secure=_cookie_secure())
+
+    def _apply_session_cookies(response: JSONResponse, session: OidcBffSession) -> None:
+        response.set_cookie(
+            key=_cookie_name(),
+            value=sign_session_cookie(session.session_id, _cookie_secret()),
+            httponly=True,
+            secure=_cookie_secure(),
+            samesite="lax",
+            path="/",
+            max_age=3600,
+        )
+        if session.identity_verified:
+            response.set_cookie(
+                key=LAB_AUTHZ_COOKIE_NAME,
+                value="1",
+                httponly=True,
+                secure=_cookie_secure(),
+                samesite="lax",
+                path="/",
+                max_age=3600,
+            )
+        else:
+            response.delete_cookie(key=LAB_AUTHZ_COOKIE_NAME, path="/")
+
+    def _clear_session_cookies(response: JSONResponse) -> None:
+        response.delete_cookie(key=_cookie_name(), path="/")
+        response.delete_cookie(key=LAB_AUTHZ_COOKIE_NAME, path="/")
 
     def _session_from_request(request: Request) -> OidcBffSession | None:
         raw = request.cookies.get(_cookie_name())
@@ -152,10 +180,18 @@ def build_system_router(ctx: ApiContext) -> APIRouter:
                 redirect_uri=redirect_uri,
                 code_verifier=consumed.code_verifier,
             )
-            subject, email, identity_verified = session_from_token_payload(
+            identity = session_from_token_payload(
                 tokens,
                 validator=ctx.oidc_validator,
                 expected_nonce=consumed.nonce,
+                roles_claim=ctx.settings.oidc_roles_claim,
+                tenant_claim=(ctx.settings.oidc_tenant_claim or "tenant_id").strip()
+                or "tenant_id",
+            )
+            subject, email, identity_verified = (
+                identity.subject,
+                identity.email,
+                identity.identity_verified,
             )
         except OidcValidationError as exc:
             return JSONResponse(
@@ -185,6 +221,8 @@ def build_system_router(ctx: ApiContext) -> APIRouter:
             id_token=str(tokens.get("id_token") or "") or None,
             email=email,
             identity_verified=identity_verified,
+            roles=identity.roles,
+            tenant_id=identity.tenant_id,
         )
         payload = {
             **build_auth_bff_capability(),
@@ -196,15 +234,7 @@ def build_system_router(ctx: ApiContext) -> APIRouter:
             "message": "Phase 3 lab session cookie issued; tokens stay server-side.",
         }
         json_response = JSONResponse(status_code=200, content=payload)
-        json_response.set_cookie(
-            key=_cookie_name(),
-            value=sign_session_cookie(session.session_id, _cookie_secret()),
-            httponly=True,
-            secure=_cookie_secure(),
-            samesite="lax",
-            path="/",
-            max_age=3600,
-        )
+        _apply_session_cookies(json_response, session)
         return json_response
 
     @router.post("/v1/auth/logout")
@@ -226,7 +256,7 @@ def build_system_router(ctx: ApiContext) -> APIRouter:
             "message": "Phase 3 logout cleared the bound session cookie only.",
         }
         json_response = JSONResponse(status_code=200, content=payload)
-        json_response.delete_cookie(key=_cookie_name(), path="/")
+        _clear_session_cookies(json_response)
         return json_response
 
     @router.get("/v1/auth/session")

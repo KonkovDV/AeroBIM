@@ -1,5 +1,6 @@
 import { UI_COPY } from "../../lib/ui-copy";
 import type { UiRoleAlias } from "../../lib/ui-role";
+import type { AuthBffDiscoveryStatus } from "../../lib/auth-bff";
 import RoleHonestyBanner from "../honesty/RoleHonestyBanner";
 
 export type ShellHeaderProps = {
@@ -7,6 +8,8 @@ export type ShellHeaderProps = {
   reportCount: number;
   uiRole: UiRoleAlias;
   onRoleChange: (role: UiRoleAlias) => void;
+  bffStatus?: AuthBffDiscoveryStatus;
+  roleLocked?: boolean;
 };
 
 export default function ShellHeader({
@@ -14,6 +17,8 @@ export default function ShellHeader({
   reportCount,
   uiRole,
   onRoleChange,
+  bffStatus = "NOT_IMPLEMENTED",
+  roleLocked = false,
 }: ShellHeaderProps) {
   return (
     <header className="app-header">
@@ -32,7 +37,7 @@ export default function ShellHeader({
             ),
           )}
         </p>
-        <RoleHonestyBanner />
+        <RoleHonestyBanner bffStatus={bffStatus} />
       </div>
       <div className="header-card">
         <span>{UI_COPY.apiLabel}</span>
@@ -43,6 +48,7 @@ export default function ShellHeader({
           <select
             aria-label={UI_COPY.roleSelectLabel}
             value={uiRole}
+            disabled={roleLocked}
             onChange={(event) => {
               onRoleChange(event.target.value === "user" ? "user" : "expert");
             }}

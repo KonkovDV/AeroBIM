@@ -1,8 +1,12 @@
 import { Suspense, lazy, useCallback, useEffect, useState } from "react";
 import { getApiBaseUrl } from "./lib/api";
-import type { ParsedRequirement, ValidationIssue, ValidationReport } from "./lib/types";
 import { readUrlReportId } from "./lib/report-filters";
-import { buildViewerFocus, filterTriageIssues, type FindingGroupBy } from "./lib/issue-triage";
+import {
+  buildViewerFocus,
+  filterTriageIssues,
+  findMatchingRequirements,
+  type FindingGroupBy,
+} from "./lib/issue-triage";
 import DemoFixturePanel from "./components/DemoFixturePanel";
 import VersionDiffPanel from "./components/VersionDiffPanel";
 import WorkspaceNav, {
@@ -21,27 +25,18 @@ import UserScreen from "./features/shell/UserScreen";
 import ViewerPlaceholder from "./features/shell/ViewerPlaceholder";
 import { persistUiRoleAlias, readUiRoleAlias, type UiRoleAlias } from "./lib/ui-role";
 import { UI_COPY } from "./lib/ui-copy";
+import { useAuthBff } from "./hooks/useAuthBff";
 import { usePackDraft } from "./hooks/usePackDraft";
 import { useReportFilters } from "./hooks/useReportFilters";
 import { useReports } from "./hooks/useReports";
 import { useSelectedReport } from "./hooks/useSelectedReport";
-import { useTriageKeyboard } from "./hooks/useTriageKeyboard";
 import { useSnapSelectionToFilter } from "./hooks/useSnapSelectionToFilter";
+import { useTriageKeyboard } from "./hooks/useTriageKeyboard";
 
 const IfcViewerPanel = lazy(() => import("./components/IfcViewerPanel"));
-
-function findMatchingRequirements(
-  report: ValidationReport,
-  issue: ValidationIssue | null,
-): ParsedRequirement[] {
-  if (issue === null) {
-    return report.requirements;
-  }
-  return report.requirements.filter((requirement) => requirement.rule_id === issue.rule_id);
-}
-
 export default function App() {
   const [uiRole, setUiRole] = useState<UiRoleAlias>(readUiRoleAlias);
+  const authBff = useAuthBff(uiRole);
   const [workspaceView, setWorkspaceView] = useState<WorkspaceView>(() =>
     readUiRoleAlias() === "user" ? "user" : "review",
   );
@@ -122,7 +117,7 @@ export default function App() {
     enabled: TRIAGE_KEYBOARD_VIEWS.has(workspaceView),
     filteredIssues,
     selectedIssueIndex,
-    uiRole,
+    hitlEnabled: authBff.hitlEnabled,
     setTriageHelpOpen,
     setSelectedIssueIndex,
     setSelectedClashIndex,
@@ -156,7 +151,9 @@ export default function App() {
       <ShellHeader
         apiBase={getApiBaseUrl()}
         reportCount={reports.length}
-        uiRole={uiRole}
+        uiRole={authBff.screenRole}
+        bffStatus={authBff.discovery.status}
+        roleLocked={authBff.roleLocked}
         onRoleChange={(next) => {
           setUiRole(next);
           persistUiRoleAlias(next);
@@ -242,7 +239,7 @@ export default function App() {
           remarkDraft={remarkDraft}
           remarkSaveState={remarkSaveState}
           hitlDecisionState={hitlDecisionState}
-          hitlEnabled={uiRole === "expert"}
+          hitlEnabled={authBff.hitlEnabled}
           reviewEvents={reviewEvents}
           reviewEventsError={reviewEventsError}
           spatialViewer={

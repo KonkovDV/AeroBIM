@@ -677,7 +677,8 @@ class Settings:
         """True only in lab/dev when Phase 3 IdP + cookie secrets are fully configured.
 
         ``samolet_pilot`` / ``production`` never activate Phase 3. Public
-        ``GET /v1/auth/bff`` stays 501 / NOT_IMPLEMENTED (POST-05).
+        ``GET /v1/auth/bff`` stays 501 / NOT_IMPLEMENTED there (POST-05).
+        Lab ``200 LAB`` is not a production SSO claim.
         """
 
         if self.signoff_profile in {"samolet_pilot", "production"}:
@@ -686,9 +687,14 @@ class Settings:
 
     @property
     def enforce_hitl_reviewer_auth(self) -> bool:
-        """Block static bearer from expert HITL sign-off under pilot/production."""
+        """Block static bearer from expert HITL sign-off under pilot/production.
 
-        return self.signoff_profile in {"samolet_pilot", "production"}
+        Lab Phase 3 also enforces this so viewer cookies cannot sign (WP-FE-15).
+        """
+
+        if self.signoff_profile in {"samolet_pilot", "production"}:
+            return True
+        return bool(getattr(self, "oidc_bff_phase3_ready", False))
 
     @property
     def disable_sync_package_analyze(self) -> bool:
@@ -706,7 +712,9 @@ class Settings:
     def require_hitl_reviewer_roles(self) -> bool:
         """OIDC principals must carry reviewer/admin roles for expert HITL."""
 
-        return self.signoff_profile in {"samolet_pilot", "production"}
+        if self.signoff_profile in {"samolet_pilot", "production"}:
+            return True
+        return bool(getattr(self, "oidc_bff_phase3_ready", False))
 
     @property
     def enforce_norm_pack_rbac(self) -> bool:

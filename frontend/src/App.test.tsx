@@ -9,6 +9,8 @@ const {
   fetchReviewEventsMock,
   uploadDocumentMock,
   submitAnalyzeProjectPackageMock,
+  fetchAuthBffMock,
+  fetchAuthSessionMock,
 } = vi.hoisted(() => ({
   fetchReportsMock: vi.fn(),
   fetchReportMock: vi.fn(),
@@ -16,6 +18,8 @@ const {
   fetchReviewEventsMock: vi.fn(),
   uploadDocumentMock: vi.fn(),
   submitAnalyzeProjectPackageMock: vi.fn(),
+  fetchAuthBffMock: vi.fn(),
+  fetchAuthSessionMock: vi.fn(),
 }));
 
 const clipboardWriteTextMock = vi.fn();
@@ -32,6 +36,8 @@ vi.mock("./lib/api", async () => {
     fetchReviewEvents: fetchReviewEventsMock,
     uploadDocument: uploadDocumentMock,
     submitAnalyzeProjectPackage: submitAnalyzeProjectPackageMock,
+    fetchAuthBff: fetchAuthBffMock,
+    fetchAuthSession: fetchAuthSessionMock,
     getApiBaseUrl: () => "http://localhost:8080",
   };
 });
@@ -242,6 +248,10 @@ describe("App", () => {
     const report = buildReport();
     fetchReportsMock.mockReset();
     fetchReportMock.mockReset();
+    fetchAuthBffMock.mockReset();
+    fetchAuthBffMock.mockResolvedValue({ httpStatus: 501, status: "NOT_IMPLEMENTED" });
+    fetchAuthSessionMock.mockReset();
+    fetchAuthSessionMock.mockResolvedValue(null);
     postReviewEventMock.mockReset();
     postReviewEventMock.mockImplementation(async (_reportId: string, body: { event_type: string; issue_rule_id?: string; finding_id?: string; previous_state?: string }) => {
       const resulting =
@@ -949,6 +959,28 @@ describe("App", () => {
     expect(screen.queryByRole("button", { name: /отклонить замечание/i })).toBeNull();
     expect(screen.queryByRole("button", { name: /сохранить правку/i })).toBeNull();
     expect(screen.queryByLabelText(UI_COPY.editRemark)).toBeNull();
+  });
+
+  it("hides HITL writes for a LAB viewer session and does not claim SSO", async () => {
+    fetchAuthBffMock.mockResolvedValue({ httpStatus: 200, status: "LAB" });
+    fetchAuthSessionMock.mockResolvedValue({
+      authenticated: true,
+      identityVerified: true,
+      roles: ["user"],
+      tenantId: "tenant-a",
+      subject: "viewer-1",
+    });
+    render(<App />);
+    expect(await screen.findByTestId("hitl-readonly-note")).toBeTruthy();
+    expect(screen.getByTestId("role-honesty-banner").textContent).toMatch(/не промышленный SSO/);
+    expect(screen.getByTestId("role-honesty-banner").textContent).toMatch(/LAB/);
+    expect(screen.queryByRole("button", { name: /подтвердить замечание/i })).toBeNull();
+    expect((screen.getByLabelText(UI_COPY.roleSelectLabel) as HTMLSelectElement).disabled).toBe(
+      true,
+    );
+    fireEvent.keyDown(window, { key: "a" });
+    fireEvent.keyDown(window, { key: "r" });
+    expect(postReviewEventMock).not.toHaveBeenCalled();
   });
 
   it("migrates a legacy team preset chip to JSON file exchange", async () => {
