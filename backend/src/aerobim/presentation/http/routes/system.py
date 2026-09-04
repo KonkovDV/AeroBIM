@@ -185,8 +185,7 @@ def build_system_router(ctx: ApiContext) -> APIRouter:
                 validator=ctx.oidc_validator,
                 expected_nonce=consumed.nonce,
                 roles_claim=ctx.settings.oidc_roles_claim,
-                tenant_claim=(ctx.settings.oidc_tenant_claim or "tenant_id").strip()
-                or "tenant_id",
+                tenant_claim=(ctx.settings.oidc_tenant_claim or "tenant_id").strip() or "tenant_id",
             )
             subject, email, identity_verified = (
                 identity.subject,
