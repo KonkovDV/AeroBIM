@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM — карта для жюри Техлаба и МИК"
 status: active
-version: "4.8.33"
+version: "4.8.34"
 last_updated: "2026-09-03"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
@@ -15,7 +15,7 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 
 **Объект КТ#3.** Речь и сценарий: [карточка КТ#3](demo/KT3_JURY_FAQ_2026_08_25.md) · [оператор](demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md) · [трекер, 6 задач](demo/KT3_TRACKER_SIX_TASKS_2026_08.md). Показ жюри = `python -m aerobim.tools.run_kt3_jury` (живой CLI из git). Review shell (`frontend/`) — трек ИТ-ментора, не чужой ноутбук жюри. В репозитории нет файлов заказчика. Замечание: суть + пункт нормы (не выдуман) + этаж/ось из `IfcSpatialIndex`, если GUID попал в индекс; иначе явно «нет в индексе», не из OCR. Модель 1,5 ГБ — RocksDB, не SPF RAM; WASM 256 МиБ. Unsigned OOS: [`../samples/oos/`](../samples/oos/) — в `DATASET_MANIFEST.json`, не закрывает RT.
 
-**Пять кресел отборочной комиссии №7** (роли, **не** ФИО; три кресла партнёра по согласованию): [брифы кресел](quality/MIK_SEAT_BRIEFS_2026_08.md). Инженерные пины инвентаря канала (census / family / local max-pass) **не** карта жюри и **не** exhibit.
+**Пять кресел отборочной комиссии №7** (роли, **не** ФИО; три кресла партнёра по согласованию): [брифы кресел](quality/MIK_SEAT_BRIEFS_2026_08.md) · [playbook по креслам](quality/MIK_COMMISSION_SEAT_PLAYBOOK_2026_09.md). Инженерные пины инвентаря канала (census / family / local max-pass) **не** карта жюри и **не** exhibit.
 
 **Объект КТ#2.** Речь и пакет = текущий `main`. Цифры тестов = CI pin в [`docs/evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json) (`attested_by=ci`: `commit_sha`, `tests_passed`, `tests_collected`). IUA freeze `f9389bf` (не HEAD). Прочие SHA на поверхностях — исторические. После правок документации pin может отставать на несколько коммитов до следующего прогона CI; локальные прогоны pytest не публикуем.
 
@@ -74,6 +74,8 @@ claim_boundary: "Jury pack only. Checkpoint NO_GO until RT-001/002/003. Eng read
 | [Новизна К2 vs витрина](quality/K2_NOVELTY_VS_PEERS_2026_08.md) | Четыре пункта методики; карточка ≠ публичный след |
 | [ПНСТ 841](quality/PNST_841_AI_QUALITY_EVAL_2026.md) | Карта на протокол 0,60; не SQuaRE-сертификат |
 | [Брифы кресел](quality/MIK_SEAT_BRIEFS_2026_08.md) | Роли, не ФИО; отбор — среднее; финал — сумма |
+| [Playbook комиссии](quality/MIK_COMMISSION_SEAT_PLAYBOOK_2026_09.md) | Удары, три письма, двухчастная защита; ФИО [Г] |
+| [Шесть вопросов Самолёту](partners/SAMOLET_QUESTIONS_GROUNDED_2026_09_03.md) | Блокеры ТЗ; не NDA; не формы Фонда |
 | [Пороги заказчика](quality/CUSTOMER_THRESHOLD_VS_ACTUAL_2026_08.md) | Целевое vs фактическое; 256 МиБ; cap не поднимаем |
 | [Обложка 0,60](partners/PARTNER_PROTOCOL_SIGNREADY_COVER_2026_08.md) | Письмо «готово подписать»; не 90% |
 

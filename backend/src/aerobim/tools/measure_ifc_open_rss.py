@@ -78,8 +78,12 @@ def _windows_working_set_bytes() -> int:
 
     counters = ProcessMemoryCounters()
     counters.cb = ctypes.sizeof(ProcessMemoryCounters)
-    handle = ctypes.windll.kernel32.GetCurrentProcess()
-    ok = ctypes.windll.psapi.GetProcessMemoryInfo(handle, ctypes.byref(counters), counters.cb)
+    # getattr: ctypes.windll is Windows-only; Linux CI mypy has no attr.
+    windll = getattr(ctypes, "windll", None)
+    if windll is None:
+        raise OSError("ctypes.windll unavailable")
+    handle = windll.kernel32.GetCurrentProcess()
+    ok = windll.psapi.GetProcessMemoryInfo(handle, ctypes.byref(counters), counters.cb)
     if not ok:
         raise OSError("GetProcessMemoryInfo failed")
     return int(counters.WorkingSetSize)

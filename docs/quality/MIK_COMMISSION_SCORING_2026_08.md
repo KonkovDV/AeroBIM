@@ -2,9 +2,9 @@
 ---
 title: "MIK commission scoring — attributed arithmetic 2026-08-30"
 date: "2026-08-29"
-last_updated: "2026-08-30"
+last_updated: "2026-09-03"
 status: active
-version: "1.5.0"
+version: "1.5.1"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -139,6 +139,7 @@ rest-high (36,6) = 52,6. К1 **не обязан** выходить из низ�
 [`K2_NOVELTY_VS_PEERS_2026_08.md`](K2_NOVELTY_VS_PEERS_2026_08.md) ·
 [`PNST_841_AI_QUALITY_EVAL_2026.md`](PNST_841_AI_QUALITY_EVAL_2026.md) ·
 [`MIK_SEAT_BRIEFS_2026_08.md`](MIK_SEAT_BRIEFS_2026_08.md) ·
+[`MIK_COMMISSION_SEAT_PLAYBOOK_2026_09.md`](MIK_COMMISSION_SEAT_PLAYBOOK_2026_09.md) ·
 [`B_FINAL_SCORING_TICKSHEET_2026_09.md`](B_FINAL_SCORING_TICKSHEET_2026_09.md).
 
 Программа допускает команду до **десяти** человек из НИИ, вузов и лабораторий.

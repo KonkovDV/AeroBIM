@@ -21,7 +21,7 @@ claim_boundary: >
 
 Машина: `python -c "from aerobim.domain.jury_pack_triage import jury_pack_triage_snapshot"`.
 
-Отборочная комиссия №7: [брифы кресел](MIK_SEAT_BRIEFS_2026_08.md) — **роли, не ФИО**. Три кресла партнёра **по согласованию**.
+Отборочная комиссия №7: [брифы кресел](MIK_SEAT_BRIEFS_2026_08.md) · [playbook](MIK_COMMISSION_SEAT_PLAYBOOK_2026_09.md) — **роли, не ФИО**. Три кресла партнёра **по согласованию**.
 
 Инженерные пины инвентаря канала (census / family / local max-pass) **не** карта жюри и **не** exhibit. Карта: [`../TIER0_INDEX.md`](../TIER0_INDEX.md).
 

@@ -52,6 +52,8 @@ QUORUM_MIN_MEMBERS: Final = 3
 NOMINAL_SEATS: Final = 5
 MIK_STAFF_SEATS: Final = 2
 PARTNER_SEATS_BY_AGREEMENT: Final = 3
+PARTNER_NOMINAL_CRITERIA: Final[tuple[str, ...]] = ("K1", "K3", "K5")
+MIK_STAFF_NOMINAL_CRITERIA: Final[tuple[str, ...]] = ("K2", "K4")
 TIE_BREAK_ORDER: Final[tuple[str, ...]] = ("K3", "K4")
 FINALIST_TIE_BREAK_ORDER: Final[tuple[str, ...]] = ("B1",)
 FINAL_ROUND_WIDER_THAN_NOMINAL: Final = True
@@ -78,6 +80,8 @@ K4_COMMERCIAL_PATH: Final = "docs/quality/K4_COMMERCIAL_PATH_2026_08.md"
 K2_NOVELTY_VS_PEERS: Final = "docs/quality/K2_NOVELTY_VS_PEERS_2026_08.md"
 PNST_841_MAP: Final = "docs/quality/PNST_841_AI_QUALITY_EVAL_2026.md"
 SEAT_BRIEFS: Final = "docs/quality/MIK_SEAT_BRIEFS_2026_08.md"
+SEAT_PLAYBOOK: Final = "docs/quality/MIK_COMMISSION_SEAT_PLAYBOOK_2026_09.md"
+MIK_OPERATOR_LETTER: Final = "docs/partners/MIK_OPERATOR_LETTER_REQUEST_2026_09.md"
 APPLICATION_PASTE: Final = "docs/partners/I_MOSCOW_APPLICATION_PASTE_2026_08.md"
 SIGNREADY_COVER: Final = "docs/partners/PARTNER_PROTOCOL_SIGNREADY_COVER_2026_08.md"
 CUSTOMER_THRESHOLDS: Final = "docs/quality/CUSTOMER_THRESHOLD_VS_ACTUAL_2026_08.md"
@@ -116,6 +120,18 @@ def criteria_max(code: str) -> int:
         if item_code == code:
             return points
     raise KeyError(code)
+
+
+def partner_nominal_criteria_weight() -> int:
+    """Nominal max points on partner-attributed seats (K1+K3+K5). Not a forecast."""
+
+    return sum(criteria_max(code) for code in PARTNER_NOMINAL_CRITERIA)
+
+
+def mik_staff_nominal_criteria_weight() -> int:
+    """Nominal max points on Fund staff seats (K2+K4). Not a forecast."""
+
+    return sum(criteria_max(code) for code in MIK_STAFF_NOMINAL_CRITERIA)
 
 
 def finalist_criteria_max(code: str) -> int:
@@ -377,6 +393,10 @@ def scoring_snapshot() -> dict[str, Any]:
         "k2_novelty_vs_peers": K2_NOVELTY_VS_PEERS,
         "pnst_841_map": PNST_841_MAP,
         "seat_briefs": SEAT_BRIEFS,
+        "seat_playbook": SEAT_PLAYBOOK,
+        "mik_operator_letter": MIK_OPERATOR_LETTER,
+        "partner_nominal_criteria_weight": partner_nominal_criteria_weight(),
+        "mik_staff_nominal_criteria_weight": mik_staff_nominal_criteria_weight(),
         "application_paste": APPLICATION_PASTE,
         "signready_cover": SIGNREADY_COVER,
         "k4_revenue_claimed": k4_revenue_claimed(),
@@ -424,6 +444,8 @@ __all__ = [
     "TIE_BREAK_ORDER",
     "confirmed_partner_validation_metrics",
     "criteria_max",
+    "partner_nominal_criteria_weight",
+    "mik_staff_nominal_criteria_weight",
     "finalist_criteria_max",
     "k1_low_band_points",
     "low_k1_high_rest_total",

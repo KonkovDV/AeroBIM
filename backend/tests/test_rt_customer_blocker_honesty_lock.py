@@ -209,6 +209,12 @@ _SPEECH_FORMULA_VERBATIM = (
     "профиля приёмки (публичные IDS экспертизы — измерение; подпись Самолёта — внедрение) "
     "и подтверждения импорта в СОД."
 )
+_SPEECH_FORMULA_EN_VERBATIM = (
+    "We are in *refinement*. One command shows a fail-closed finding on a fixture. "
+    "Effectiveness validation and deployment have not started. Checkpoint `NO_GO` until "
+    "an independent labeled pack, two raters, an acceptance profile (public examination "
+    "IDS for measurement; Samolet signature for deployment), and CDE proof."
+)
 _SPEECH_FORMULA_MARKERS = (
     "Мы на стадии доработки",
     "Одна команда показывает находку с доказательствами на учебном комплекте",
@@ -246,8 +252,8 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
 
     def test_seven_jury_surfaces_carry_verbatim_formula(self) -> None:
         repo = self._repo()
+        en_readme = repo / "README.md"
         surfaces = (
-            repo / "README.md",
             repo / "README.ru.md",
             repo / "docs" / "docs.md",
             repo / "docs" / "TIER0_INDEX.md",
@@ -261,6 +267,7 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
             repo / "submission" / "04-prototype" / "README.md",
             repo / "submission" / "05-additional" / "README.md",
         )
+        self.assertIn(_SPEECH_FORMULA_EN_VERBATIM, en_readme.read_text(encoding="utf-8"))
         for path in surfaces:
             text = path.read_text(encoding="utf-8")
             self.assertIn(_SPEECH_FORMULA_VERBATIM, text, msg=path.as_posix())

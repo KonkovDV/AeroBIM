@@ -16,6 +16,8 @@ from aerobim.domain.mik_commission_scoring import (
     criteria_max,
     k1_low_band_points,
     low_k1_high_rest_total,
+    mik_staff_nominal_criteria_weight,
+    partner_nominal_criteria_weight,
     predicted_aerobim_total,
     prize_floor_automatic_in_low_k1_high_rest,
     rest_high_band_points,
@@ -40,6 +42,18 @@ class MikCommissionScoringTests(unittest.TestCase):
 
     def test_k2_and_k5_together_are_only_thirty(self) -> None:
         self.assertEqual(criteria_max("K2") + criteria_max("K5"), 30)
+
+    def test_partner_and_mik_nominal_criteria_weights(self) -> None:
+        self.assertEqual(partner_nominal_criteria_weight(), 65)
+        self.assertEqual(mik_staff_nominal_criteria_weight(), 35)
+        snap = scoring_snapshot()
+        self.assertEqual(snap["partner_nominal_criteria_weight"], 65)
+        self.assertEqual(snap["mik_staff_nominal_criteria_weight"], 35)
+        self.assertIn("seat_playbook", snap)
+        self.assertIn("mik_operator_letter", snap)
+        repo = Path(__file__).resolve().parents[2]
+        self.assertTrue((repo / snap["seat_playbook"]).is_file())
+        self.assertTrue((repo / snap["mik_operator_letter"]).is_file())
 
     def test_aggregation_is_mean_and_novelty_is_not_tie_break(self) -> None:
         from aerobim.domain.mik_commission_scoring import FINALIST_AGGREGATION
