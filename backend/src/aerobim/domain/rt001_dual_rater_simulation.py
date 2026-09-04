@@ -1,4 +1,3 @@
-
 """Dual-rater *protocol rehearsal* on the in-repo fixture pack.
 
 Two independent deterministic labeling policies walk the *same* unit list

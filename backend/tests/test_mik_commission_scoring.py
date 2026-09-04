@@ -1,4 +1,3 @@
-
 """MIK commission arithmetic stays attributed and does not forecast a score."""
 
 from __future__ import annotations

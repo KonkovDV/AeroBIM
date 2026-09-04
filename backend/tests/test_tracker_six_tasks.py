@@ -1,4 +1,3 @@
-
 """Tracker six tasks stay NO_GO and do not invent demo counts."""
 
 from __future__ import annotations

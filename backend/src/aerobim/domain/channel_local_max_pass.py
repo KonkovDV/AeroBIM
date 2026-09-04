@@ -1,4 +1,3 @@
-
 """Maximum licensed pass on a local NDA copy (31.08.2026).
 
 What git plus a gitignored quarantine copy can do vs TZ v2, TechLab seven

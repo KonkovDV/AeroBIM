@@ -1,4 +1,3 @@
-
 """TR-67 spec vs schedule vs model quantities. Not estimate QTO.
 
 Customer answers 25.08 п. 2.1.3 call volume mismatch a logical collision.

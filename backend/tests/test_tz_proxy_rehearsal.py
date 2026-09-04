@@ -1,4 +1,3 @@
-
 """Honesty lock for the Samolet-free TZ proxy rehearsal."""
 
 from __future__ import annotations

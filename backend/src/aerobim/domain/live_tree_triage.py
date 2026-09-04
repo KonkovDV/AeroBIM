@@ -1,4 +1,3 @@
-
 """Live-tree Red Team triage 2026-08-27 — attacks, not RT CLOSED.
 
 Pass 1: TZ v1 / inject_defects / kitchen tokens.

@@ -1,4 +1,3 @@
-
 """PNST 909 22-scenario runtime CLI: pairing, path jail, no silent pass."""
 
 from __future__ import annotations

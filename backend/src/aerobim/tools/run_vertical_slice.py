@@ -1,4 +1,3 @@
-
 """Vertical slice demo (11.08.2026): one manifest → analyze → JSON/HTML artifacts.
 
 Honest scope: PDF **text layer** (vector) extraction via RasterDrawingAnalyzer,

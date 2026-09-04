@@ -1,4 +1,3 @@
-
 """Kane IUA ledger: no row licenses customer precision or RT close."""
 
 from __future__ import annotations

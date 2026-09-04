@@ -1,4 +1,3 @@
-
 """Owner-AI execution plan after TZ v1 pin + live-tree triage.
 
 Stages 0–4 from the 2026-08-27 plan. Agent-executable items are scaffolds

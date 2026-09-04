@@ -1,4 +1,3 @@
-
 """City AGR example pin: skip-safe; does not claim RT closed."""
 
 from __future__ import annotations

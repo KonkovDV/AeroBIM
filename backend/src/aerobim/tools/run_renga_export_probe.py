@@ -1,4 +1,3 @@
-
 """Probe a Renga IFC export: originating system + MOEXP IFC4 fail-closed.
 
 Does not replace the vertical-slice demo IFC (IfcOpenShell fixture).

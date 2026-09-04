@@ -1,4 +1,3 @@
-
 """Owner-disk files/ inventory — local only, never a git pack_hash.
 
 Stage 0 of the owner-AI plan. Scans extension/size presence plus counts-only

@@ -1,4 +1,3 @@
-
 """IFC Acceptance Gate projection — product-path report contract.
 
 Claim boundary: fixture/engineering contract only. Not customer accuracy,

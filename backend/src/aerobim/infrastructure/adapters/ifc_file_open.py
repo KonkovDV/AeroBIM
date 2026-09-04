@@ -1,4 +1,3 @@
-
 """Process-local IFC open helper with optional disk touch markers for SLA.
 
 When ``AEROBIM_IFC_PARSE_CACHE_DIR`` is configured via ``configure_ifc_parse_cache``,

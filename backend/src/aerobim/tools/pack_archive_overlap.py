@@ -1,4 +1,3 @@
-
 """Compare pack zip/7z members to the already-extracted tree. No names in aggregate.
 
 Does not unpack by default. ``--extract-missing-ifc-pdf`` writes hashed IFC/PDF

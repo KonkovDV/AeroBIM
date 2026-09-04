@@ -1,4 +1,3 @@
-
 """Owner-files inventory never writes into the git-tracked tree."""
 
 from __future__ import annotations

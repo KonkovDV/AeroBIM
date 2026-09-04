@@ -1,4 +1,3 @@
-
 """Task 7 — weekly eng status export (no invented funnel)."""
 
 from __future__ import annotations

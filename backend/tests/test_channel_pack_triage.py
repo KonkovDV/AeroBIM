@@ -1,4 +1,3 @@
-
 """Channel-pack Red Team triage stays NO_GO; GiB stays out of git."""
 
 from __future__ import annotations

@@ -1,4 +1,3 @@
-
 """Measurement vs residual volumes for RT-001 / RT-002 / RT-003.
 
 Owner re-scope 2026-09-04: what Samolet did not hand over is replaced by
@@ -144,9 +143,7 @@ def _channel_navis_carrier_closed(study: Mapping[str, Any]) -> bool:
     )
 
 
-def _ifc_system_graph_rehearsal_closed(
-    inventory: Mapping[str, Any], repo: Path
-) -> bool:
+def _ifc_system_graph_rehearsal_closed(inventory: Mapping[str, Any], repo: Path) -> bool:
     """IfcSystem + RelAssignsToGroup on the HVAC fixture — not pipe-vs-wall geometry."""
 
     if inventory.get("mep_system_clash") != "NOT_VERIFIED":
@@ -290,9 +287,7 @@ def assemble_rt_blocker_volumes(repo: Path) -> dict[str, Any]:
             "pointer_samolet_alias": bool(pointer.get("samolet_alias")),
             "eir_v4_present": bool(study.get("eir_v4_present")),
             "bim_standard_v4_present": bool(study.get("bim_standard_v4_present")),
-            "eir_lod_mep_disciplines_named": bool(
-                study.get("eir_lod_mep_disciplines_named")
-            ),
+            "eir_lod_mep_disciplines_named": bool(study.get("eir_lod_mep_disciplines_named")),
             "customer_approved_ids": bool(study.get("customer_approved_ids")),
             "ids_counts": {
                 "moexp": moexp_ids,
@@ -318,9 +313,7 @@ def assemble_rt_blocker_volumes(repo: Path) -> dict[str, Any]:
             "nwd_federation_count": int(study.get("nwd_federation_count") or 0),
             "mep_duct_pipe_cable_count": int(study.get("mep_duct_pipe_cable_count") or 0),
             "flow_terminal_present_on_ar": bool(study.get("flow_terminal_present_on_ar")),
-            "eir_lod_mep_disciplines_named": bool(
-                study.get("eir_lod_mep_disciplines_named")
-            ),
+            "eir_lod_mep_disciplines_named": bool(study.get("eir_lod_mep_disciplines_named")),
             "hvac_ifc_system_count": 2,
             "parse_rvt_nwd_lira": bool(study.get("parse_rvt_nwd_lira")),
             "planted_pin": PLANTED_CLASH_REL,

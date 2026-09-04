@@ -1,4 +1,3 @@
-
 """Declared-field table compare (LIRA xlsx/docx vs RD/BIM). Not a solver.
 
 SHA digest + per-field MATCH/MISMATCH. Native ``.lir`` is out of scope.

@@ -1,4 +1,3 @@
-
 """Git-safe carrier facts from the 30.08 evening deep study.
 
 Live trees and names stay under ``.local/``. This pin is coverage_map_only:

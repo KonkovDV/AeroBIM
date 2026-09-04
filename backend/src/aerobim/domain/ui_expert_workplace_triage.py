@@ -1,4 +1,3 @@
-
 """UI expert-workplace Red Team triage — 2026-09-01.
 
 The review shell is not a full-cycle expert seat. Path must not contain

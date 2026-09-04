@@ -1,4 +1,3 @@
-
 """Export a weekly engineering status JSON (Task 7).
 
 Commercial funnel numbers are **never invented** here — they stay owner-only

@@ -1,4 +1,3 @@
-
 """Maximum licensed Samolet-copy pass stays coverage_map_only."""
 
 from __future__ import annotations

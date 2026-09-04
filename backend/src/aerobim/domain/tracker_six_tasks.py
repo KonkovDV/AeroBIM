@@ -1,4 +1,3 @@
-
 """Tracker Dmitry (TechLab) — six sprint tasks as they apply to KT#3.
 
 Assigned 14.08.2026 ~15:26. KT#2 was 20.08; KT#3 window is 03–21.09.

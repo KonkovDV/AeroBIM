@@ -1,4 +1,3 @@
-
 """Eight KT#3 tracker tasks assigned 29.08.2026.
 
 Distinct from the six 14.08 tasks in ``tracker_six_tasks``. Git closes

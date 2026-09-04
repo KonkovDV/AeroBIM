@@ -1,4 +1,3 @@
-
 """Format-ingest Red Team triage stays NO_GO; natives stay fail-closed."""
 
 from __future__ import annotations

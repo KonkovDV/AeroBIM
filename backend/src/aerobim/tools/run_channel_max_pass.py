@@ -1,4 +1,3 @@
-
 """Run the maximum licensed local pass on a Samolet quarantine copy.
 
 Writes only under ``.local/`` or outside the git tree. Does not re-analyze

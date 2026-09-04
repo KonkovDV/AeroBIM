@@ -1,4 +1,3 @@
-
 """Jury-pack Red Team triage — 2026-09-01.
 
 Attacks on the public GitHub tree as read by selection commission no. 7

@@ -1,4 +1,3 @@
-
 """Honesty lock: NPA legal-force cannot promote IDS/AGR pre-check to expertise or RT CLOSED."""
 
 from __future__ import annotations

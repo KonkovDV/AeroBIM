@@ -1,4 +1,3 @@
-
 """Machine elapsed on a git fixture for the lab before/after journal.
 
 Protocol: ``docs/partners/BEFORE_AFTER_MEASUREMENT_PROTOCOL_2026_09.md``.

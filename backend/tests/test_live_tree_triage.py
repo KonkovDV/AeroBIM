@@ -1,4 +1,3 @@
-
 """Live-tree Red Team triage stays NO_GO and encodes KILL brakes."""
 
 from __future__ import annotations

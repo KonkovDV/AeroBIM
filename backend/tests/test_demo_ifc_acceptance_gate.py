@@ -1,4 +1,3 @@
-
 """IFC Acceptance Gate demo CLI — fixture path without overlay sidecar."""
 
 from __future__ import annotations

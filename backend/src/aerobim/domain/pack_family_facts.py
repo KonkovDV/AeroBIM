@@ -1,4 +1,3 @@
-
 """Git-safe unpack-tree family facts (31.08.2026).
 
 Counts and booleans only. Uncompressed GiB stays out of git (OA-9).

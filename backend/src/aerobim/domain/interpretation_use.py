@@ -1,4 +1,3 @@
-
 """Kane IUA ledger: which inferences current scores may support.
 
 Validity is a property of an inference from a score to a use (Messick 1995;

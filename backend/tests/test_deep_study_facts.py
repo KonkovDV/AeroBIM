@@ -1,4 +1,3 @@
-
 """Deep-study carrier pin stays name-free and is not «processed»."""
 
 from __future__ import annotations

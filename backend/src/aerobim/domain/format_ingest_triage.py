@@ -1,4 +1,3 @@
-
 """Format-ingest Red Team triage — 2026-09-01.
 
 Seven strategy classes for closed CAD/solver files. Path must not contain

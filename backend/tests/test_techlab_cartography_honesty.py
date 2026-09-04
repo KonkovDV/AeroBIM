@@ -1,4 +1,3 @@
-
 """Public seven-task cartography stays coverage_map_only (not detection)."""
 
 from __future__ import annotations

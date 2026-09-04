@@ -1,4 +1,3 @@
-
 """TR-67 spec-volume triple compare — logical collisions, not estimate QTO."""
 
 from __future__ import annotations

@@ -1,4 +1,3 @@
-
 """Tracker eight tasks (29.08) stay NO_GO and do not invent accuracy."""
 
 from __future__ import annotations

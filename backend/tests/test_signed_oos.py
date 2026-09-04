@@ -1,4 +1,3 @@
-
 """Signed OOS templates do not license skip until signer+statement lock."""
 
 from __future__ import annotations

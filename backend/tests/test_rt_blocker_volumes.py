@@ -1,4 +1,3 @@
-
 """RT-001/002/003 measurement volumes close on substitutes; residuals stay open."""
 
 from __future__ import annotations

@@ -1,4 +1,3 @@
-
 """SPG speech Red Team triage — 2026-09-01.
 
 Consulting notes stay owner speech, not a product and not a jury exhibit.

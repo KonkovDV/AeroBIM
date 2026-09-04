@@ -1,4 +1,3 @@
-
 """Sprint 3 maximal open-corpus battery — regression, BSI, IFC-Bench, schema suite.
 
 Writes committed evidence under ``docs/evidence/`` and ``audit/evidence/``.

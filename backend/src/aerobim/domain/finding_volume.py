@@ -1,4 +1,3 @@
-
 """Finding volume table — tracker SIG-01 metric shape.
 
 A raw machine-record count is not product accuracy, not TZ >90%, not

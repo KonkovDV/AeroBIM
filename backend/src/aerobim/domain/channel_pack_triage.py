@@ -1,4 +1,3 @@
-
 """Channel pack Red Team triage — 2026-08-31.
 
 Attacks on the local unpack inventory, family facts, and CC-2/CC-4

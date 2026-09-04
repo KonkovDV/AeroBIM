@@ -1,4 +1,3 @@
-
 """IFC analyze cap vs ingest envelope vs bSI vs WASM.
 
 SPF ``ifcopenshell.open`` stays 256 MiB (``AEROBIM_MAX_IFC_BYTES``). Files

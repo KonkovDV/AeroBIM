@@ -1,4 +1,3 @@
-
 """Git-safe suffix/magic census of the local unpack tree.
 
 Live scan writes under ``.local/`` only. This pin is counts, not a pack_hash,

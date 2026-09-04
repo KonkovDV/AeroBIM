@@ -1,4 +1,3 @@
-
 """Samolet answers 2026-08-25 — upload caps, remark shape, roles, intake honesty."""
 
 from __future__ import annotations

@@ -1,4 +1,3 @@
-
 """Mutation-kill recall for an ``inject_defects`` manifest (E2 protocol).
 
 For every variant directory produced by ``aerobim.tools.inject_defects`` this

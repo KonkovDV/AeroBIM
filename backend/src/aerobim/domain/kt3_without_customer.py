@@ -1,4 +1,3 @@
-
 """KT#3 without Samolet files: re-scope is the product decision, not a wait state.
 
 Does not close RT-001/002/003. Does not publish product accuracy.

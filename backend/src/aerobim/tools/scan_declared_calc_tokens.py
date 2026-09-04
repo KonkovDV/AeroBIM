@@ -1,4 +1,3 @@
-
 """Byte-token presence on office/PDF (SIG-06 CC-2/CC-4 pre-check).
 
 Not extraction, not a solver, not calculation_correctness. Writes counts

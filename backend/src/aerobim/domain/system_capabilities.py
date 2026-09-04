@@ -1,4 +1,3 @@
-
 """Static honesty surface for product capabilities (not runtime probe results)."""
 
 from __future__ import annotations

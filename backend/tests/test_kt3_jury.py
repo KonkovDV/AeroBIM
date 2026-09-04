@@ -1,4 +1,3 @@
-
 """KT#3 jury gate picks a GUID finding and stays fail-closed."""
 
 from __future__ import annotations

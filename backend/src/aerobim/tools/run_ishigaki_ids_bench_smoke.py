@@ -1,4 +1,3 @@
-
 """Ishigaki-IDS-Bench gold-IDS document audit (no IFC, no LLM F1).
 
 World practice (arXiv:2605.22079, HF ONESTRUCTION/Ishigaki-IDS-Bench, CC BY 4.0):

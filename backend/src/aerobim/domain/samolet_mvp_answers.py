@@ -1,4 +1,3 @@
-
 """Honesty snapshot of Samolet questionnaire answers (2026-08-25).
 
 Does not close RT-001/002/003. Share URL is not a hashed customer pack.

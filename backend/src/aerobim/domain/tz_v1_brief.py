@@ -1,4 +1,3 @@
-
 """Public TechLab TZ v1 brief (6-page contest PDF) — not a product score.
 
 This is the original sponsor brief (terms, concept, eval targets, TBD

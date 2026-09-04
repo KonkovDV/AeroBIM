@@ -1,4 +1,3 @@
-
 """RT-001 dual-rater protocol rehearsal: simulated passes, humans stay zero."""
 
 from __future__ import annotations

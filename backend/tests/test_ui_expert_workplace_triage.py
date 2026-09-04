@@ -1,4 +1,3 @@
-
 """UI expert-workplace Red Team triage; customer_go stays false."""
 
 from __future__ import annotations

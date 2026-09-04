@@ -1,4 +1,3 @@
-
 """Jury-pack Red Team triage stays NO_GO; unpack fingerprints stay off jury surfaces."""
 
 from __future__ import annotations

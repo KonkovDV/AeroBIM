@@ -1,4 +1,3 @@
-
 """Owner-AI plan stays NO_GO; owner-blocked items are explicit."""
 
 from __future__ import annotations

@@ -1,4 +1,3 @@
-
 """Construct-validity map for Samolet TZ rows that RT-001/002/003 still block.
 
 Public / synthetic proxies can support Messick *content* and *substantive*

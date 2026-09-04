@@ -1,4 +1,3 @@
-
 """IFC Acceptance Gate projector — fixture contract, ADR-001, no customer accuracy."""
 
 from __future__ import annotations

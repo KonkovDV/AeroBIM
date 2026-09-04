@@ -1,4 +1,3 @@
-
 """Sprint 2 synthetic baseline: mutation-apply → detect → TP/FP/FN + Wilson + p95.
 
 claim_level=synthetic_only. Never closes RT-001. No customer data.

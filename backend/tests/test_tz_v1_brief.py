@@ -1,4 +1,3 @@
-
 """Public TZ v1 brief is not a product score and not the seven tasks."""
 
 from __future__ import annotations

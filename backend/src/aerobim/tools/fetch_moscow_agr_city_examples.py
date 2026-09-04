@@ -1,4 +1,3 @@
-
 """Download city-published Moscow AGR example IFCs into gitignored ``.local/``.
 
 Does not vendor binaries into git. Does not close RT-001.

@@ -1,4 +1,3 @@
-
 """Ishigaki-IDS-Bench gold IDS audit: SKIPPED without files; processability only."""
 
 from __future__ import annotations

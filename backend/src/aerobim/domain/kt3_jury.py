@@ -1,4 +1,3 @@
-
 """KT#3 jury gate: fail-closed fixture, GUID finding, tracker six tasks.
 
 Does not close RT-001/002/003. Does not publish product accuracy.

@@ -1,4 +1,3 @@
-
 """Rehearse moscow_agr_2026 on city-published AGR example IFCs.
 
 Class-1 AGR exchange + official city IDS (IfcTester) + honest-scope clash/MEP

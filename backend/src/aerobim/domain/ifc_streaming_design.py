@@ -1,4 +1,3 @@
-
 """IFC streaming / disk R-tree — designed, not implemented.
 
 SPF ``ifcopenshell.open`` stays 256 MiB. Files up to 1.5 GB convert to

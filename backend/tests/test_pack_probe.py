@@ -1,4 +1,3 @@
-
 """Pack probe: aggregate stays name-free; local rows stay in quarantine."""
 
 from __future__ import annotations

@@ -1,4 +1,3 @@
-
 """Emit SIG-01 finding volume (not accuracy) from a gate JSON or the demo gate.
 
 Writes only under ``.local/`` or outside the git tree.

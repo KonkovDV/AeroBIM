@@ -1,4 +1,3 @@
-
 """SPG speech Red Team triage stays NO_GO; consulting pin stays off jury hop."""
 
 from __future__ import annotations

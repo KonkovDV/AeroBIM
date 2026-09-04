@@ -1,4 +1,3 @@
-
 """Sprint 2 dataset manifest contracts: determinism, provenance, claim lock."""
 
 from __future__ import annotations

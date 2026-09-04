@@ -1,4 +1,3 @@
-
 """Unsigned educational packs overlap on the same IFC property."""
 
 from __future__ import annotations

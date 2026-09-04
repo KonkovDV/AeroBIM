@@ -1,4 +1,3 @@
-
 """Local pack probe (operator tool) — tracker SIG-02 columns, git-safe aggregate.
 
 Runs fully offline against a local quarantine copy of the pack. Writes:

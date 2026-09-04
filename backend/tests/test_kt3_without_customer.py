@@ -1,4 +1,3 @@
-
 """KT#3 without Samolet files stays re-scope; customer_go false."""
 
 from __future__ import annotations

@@ -1,4 +1,3 @@
-
 """Attributed MIK commission scoring — arithmetic, not a predicted AeroBIM score.
 
 Owner briefing 2026-08-29 of Fund order P-01-OD-52-1/26 (17.06.2026).

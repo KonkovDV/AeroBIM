@@ -1,4 +1,3 @@
-
 """Development demo fixture seed is live in the review shell; production 404."""
 
 from __future__ import annotations

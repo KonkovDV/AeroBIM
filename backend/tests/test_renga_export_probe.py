@@ -1,4 +1,3 @@
-
 """Renga IFC probe: originating system + MOEXP IFC4 fail-closed. Not Samolet."""
 
 from __future__ import annotations

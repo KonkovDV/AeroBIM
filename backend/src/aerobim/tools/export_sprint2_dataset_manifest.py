@@ -1,4 +1,3 @@
-
 """Regenerate the deterministic Sprint 2 dataset track (Mode B cases + Mode A inventory).
 
 claim_level=synthetic_only. Never invents customer orgs/results. Does not download

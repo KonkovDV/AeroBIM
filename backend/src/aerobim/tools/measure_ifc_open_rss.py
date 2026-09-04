@@ -1,4 +1,3 @@
-
 """Measure IFC open RSS on a local file — fixture-only by default.
 
 Does not change the git default of ``AEROBIM_MAX_IFC_BYTES`` (SPF 256 MiB).

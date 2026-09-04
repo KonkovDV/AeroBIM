@@ -1,4 +1,3 @@
-
 """Signed out-of-scope records — fail-closed speech licenses, not RT CLOSED.
 
 Plan stages 1 and 2: QTO / federated MEP / Solihin class-4 rebar may be

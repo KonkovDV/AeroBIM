@@ -1,4 +1,3 @@
-
 """SIG-01 channel Red Team triage — 2026-08-31.
 
 Attacks on the local IFC/PDF rerun after ALL matching. Not RT CLOSED.

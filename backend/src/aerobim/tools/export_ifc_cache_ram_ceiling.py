@@ -1,4 +1,3 @@
-
 """Export the process-local IFC LRU RAM ceiling (RT16-RAM-01).
 
 Ceiling = max_cached_models × max_ifc_bytes. Not a VM profile, not federated
