@@ -4,7 +4,7 @@ title: "МИК (Фонд «Московский инновационный кл�
 status: active
 version: "1.6.0"
 last_updated: "2026-08-30"
-claim_boundary: "Пункты регламента МИК, не подтверждённые документами Фонда на руках, помечены VERIFY_WITH_OPERATOR — не выдумываем формулировки нормативки. Checkpoint NO_GO."
+claim_boundary: "Пункты регламента МИК, не подтверждённые документами Фонда на руках, помечены VERIFY_WITH_OPERATOR — не выдумываем формулировки нормативки. Checkpoint GO; customer_go false."
 tags: [aerobim, mik, techlab, samolet, pilot, grant, compliance]
 ---
 

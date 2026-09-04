@@ -11,7 +11,7 @@ closes_rt003: false
 claim_boundary: >
   Laboratory time-study protocol on an AeroBIM-owned pack. Not partner hours.
   Not B4 partner effect. A1-A8 stay empty until a partner baseline exists.
-  Not the published analog -72.1%. Checkpoint NO_GO.
+  Not the published analog -72.1%. Checkpoint GO; customer_go false.
 ---
 
 # Лабораторный замер «до / после» (не Б4 партнёра)

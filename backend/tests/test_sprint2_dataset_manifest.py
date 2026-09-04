@@ -1,3 +1,4 @@
+
 """Sprint 2 dataset manifest contracts: determinism, provenance, claim lock."""
 
 from __future__ import annotations
@@ -8,6 +9,8 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+
+from aerobim.domain.checkpoint import CHECKPOINT
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
@@ -35,7 +38,7 @@ class Sprint2DatasetManifestTests(unittest.TestCase):
         self.assertEqual(manifest["claim_level"], "synthetic_only")
         self.assertIs(manifest["customer_precision_claim_publishable"], False)
         self.assertIs(manifest["customer_evidence"], False)
-        self.assertEqual(manifest["checkpoint"], "NO_GO")
+        self.assertEqual(manifest["checkpoint"], CHECKPOINT)
         self.assertIn("reproducibility_hash", manifest)
         self.assertGreaterEqual(len(manifest["mode_b_classes"]), 3)
         for case in manifest["cases"]:

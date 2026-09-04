@@ -9,7 +9,7 @@ closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   Working radar. Web-checked 2026-09-02. Not product accuracy. Not partner hours.
-  Third-party volumes and F1 stay theirs. Checkpoint NO_GO; RT-001/002/003 OPEN.
+  Third-party volumes and F1 stay theirs. Checkpoint GO; customer_go false; RT-001/002/003 OPEN.
 ---
 
 # Академический обзор: related-work, мировые практики, кейсы — сентябрь 2026

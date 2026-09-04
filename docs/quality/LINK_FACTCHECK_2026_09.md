@@ -9,7 +9,7 @@ closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   Snapshot 2026-09-02. Not product accuracy. Not partner hours.
-  External checks via Crossref/DataCite/arXiv API. Checkpoint NO_GO.
+  External checks via Crossref/DataCite/arXiv API. Checkpoint GO; customer_go false.
 ---
 
 # Фактчек ссылок и цитирований (02.09.2026)

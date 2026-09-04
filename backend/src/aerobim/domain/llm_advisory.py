@@ -13,6 +13,7 @@ has ``can_change_verdict=False``.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any, Literal, Protocol
 
@@ -77,6 +78,47 @@ class LlmResponse:
     status: str = "advisory"
     schema_valid: bool = True
     unsupported_claims: tuple[str, ...] = ()
+
+
+ADVISORY_DRAFT_ALLOWED_KEYS = frozenset({"title", "body", "locale", "evidence_refs"})
+ADVISORY_VERDICT_LEAK_KEYS = frozenset(
+    {
+        "passed",
+        "summary",
+        "summary_passed",
+        "capabilities",
+        "severity",
+        "outcome",
+        "origin",
+        "rule_id",
+        "finding_id",
+    }
+)
+
+
+@dataclass(frozen=True)
+class AdvisoryDraft:
+    """Bounded remark JSON. Verdict keys are not fields (ADR-001)."""
+
+    title: str = ""
+    body: str = ""
+    locale: str = ""
+    evidence_refs: tuple[str, ...] = ()
+
+
+def advisory_draft_from_mapping(payload: Mapping[str, Any]) -> AdvisoryDraft:
+    """Keep title/body/locale/refs. Extra keys including ``passed`` are dropped."""
+
+    refs = payload.get("evidence_refs")
+    evidence: tuple[str, ...] = ()
+    if isinstance(refs, list):
+        evidence = tuple(str(item) for item in refs)
+    return AdvisoryDraft(
+        title=str(payload.get("title") or "").strip(),
+        body=str(payload.get("body") or "").strip(),
+        locale=str(payload.get("locale") or "").strip(),
+        evidence_refs=evidence,
+    )
 
 
 @dataclass(frozen=True)
@@ -218,6 +260,10 @@ def llm_advisory_capability_status(
 
 
 __all__ = [
+    "ADVISORY_DRAFT_ALLOWED_KEYS",
+    "ADVISORY_VERDICT_LEAK_KEYS",
+    "AdvisoryDraft",
+    "advisory_draft_from_mapping",
     "DisabledLlmProvider",
     "FORBIDDEN_LLM_ACTIONS",
     "LLM_GENERATED_FUNCTION_WRITES_SUMMARY_PASSED",

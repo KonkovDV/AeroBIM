@@ -1,9 +1,11 @@
+
 """TR-67 spec-volume triple compare — logical collisions, not estimate QTO."""
 
 from __future__ import annotations
 
 import unittest
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.samolet_mvp_answers import samolet_mvp_answers_payload
 from aerobim.domain.spec_volume_compare import (
     SpecVolumeLine,
@@ -22,7 +24,7 @@ class SpecVolumeCompareTests(unittest.TestCase):
         self.assertEqual(result.lines[0].outcome, "MATCH")
         self.assertIsNone(result.lines[0].finding_kind)
         self.assertFalse(result.closes_rt001)
-        self.assertEqual(result.checkpoint, "NO_GO")
+        self.assertEqual(result.checkpoint, CHECKPOINT)
 
     def test_three_way_mismatch_is_logical_collision_not_match(self) -> None:
         lines = (
@@ -33,7 +35,7 @@ class SpecVolumeCompareTests(unittest.TestCase):
         self.assertEqual(result.lines[0].outcome, "MISMATCH")
         self.assertEqual(result.lines[0].finding_kind, "logical_collision")
         self.assertFalse(result.closes_rt001)
-        self.assertEqual(result.checkpoint, "NO_GO")
+        self.assertEqual(result.checkpoint, CHECKPOINT)
 
     def test_missing_model_qty_is_fail_closed(self) -> None:
         lines = (
@@ -45,7 +47,7 @@ class SpecVolumeCompareTests(unittest.TestCase):
 
     def test_honesty_snapshot_rejects_estimate_qto_and_customer_pack(self) -> None:
         snap = spec_volume_honesty_snapshot()
-        self.assertEqual(snap["checkpoint"], "NO_GO")
+        self.assertEqual(snap["checkpoint"], CHECKPOINT)
         self.assertFalse(snap["closes_rt001"])
         self.assertEqual(snap["estimate_qto"], "not_in_scope")
         self.assertEqual(snap["customer_pack"], "not_ingested")

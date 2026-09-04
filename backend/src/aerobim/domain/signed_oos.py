@@ -1,3 +1,4 @@
+
 """Signed out-of-scope records — fail-closed speech licenses, not RT CLOSED.
 
 Plan stages 1 and 2: QTO / federated MEP / Solihin class-4 rebar may be
@@ -12,15 +13,16 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any, Final, Literal
 
+from aerobim.domain.checkpoint import CHECKPOINT
+
 OosKind = Literal["qto_space_area", "mep_federated", "rebar_class4"]
 
 SCHEMA: Final = "aerobim_signed_oos_v1"
-CHECKPOINT: Final = "NO_GO"
 CLAIM_LEVEL: Final = "oos_template_only"
 CLAIM_BOUNDARY: Final = (
     "Signed OOS is a speech license that a channel is unmeasured. "
     "Not product accuracy. Not customer SLA. Not MEP delivered. "
-    "Not class-4 rebar delivered. Checkpoint NO_GO. "
+    "Not class-4 rebar delivered. Checkpoint GO (regulatory_measurement_mvp; customer_go false). "
     "closes_rt001/002/003=false."
 )
 

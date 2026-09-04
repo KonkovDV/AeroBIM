@@ -5,6 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.tools.run_vertical_slice import run_vertical_slice
 
 
@@ -89,10 +90,11 @@ class VerticalSliceTests(unittest.TestCase):
             self.assertIn("overlay-problem-zone.png", html)
             self.assertIn("kt2-claim-boundary", html)
             self.assertIn("Not a CDE import", html)
-            self.assertIn("Checkpoint NO_GO", html)
+            self.assertIn("Checkpoint GO", html)
+            self.assertIn("customer_go", html)
             self.assertIn("summary.passed=", html)
             self.assertTrue((Path(tmp) / "run-manifest.json").is_file())
-            self.assertEqual(result["checkpoint_verdict"], "NO_GO")
+            self.assertEqual(result["checkpoint_verdict"], CHECKPOINT)
             self.assertEqual(result["verification_status"], "NOT_PASS_EXPERT_REQUIRED")
             self.assertEqual(result["vlm"]["comparison_status"], "comparison_not_run")
             self.assertIn("reproducibility_hash", result["reproducibility"])

@@ -1,3 +1,4 @@
+
 """Construct-validity map for Samolet TZ rows that RT-001/002/003 still block.
 
 Public / synthetic proxies can support Messick *content* and *substantive*
@@ -9,6 +10,7 @@ from __future__ import annotations
 
 from typing import Any, Final
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.egrz_intake_xml_checks import egrz_intake_catalog_snapshot
 from aerobim.domain.npa_legal_force import overlay_egrz_intake, overlay_ids_pack
 
@@ -18,7 +20,8 @@ CLAIM_BOUNDARY: Final = (
     "Messick content/substantive evidence for the engine is not criterion validity "
     "on a customer PD/RD + expertise corpus. Official MOEXP IDS is a jurisdiction "
     "profile, not a Samolet-signed EIR. IfcClash on planted or open federated IFC "
-    "is not MEP system-aware delivery. Checkpoint NO_GO. "
+    "is not MEP system-aware delivery. Checkpoint GO "
+    "(regulatory_measurement_mvp; customer_go false). "
     "closes_rt001=false, closes_rt002=false, closes_rt003=false."
 )
 
@@ -361,5 +364,5 @@ def construct_validity_frame() -> dict[str, Any]:
         "closes_rt001": False,
         "closes_rt002": False,
         "closes_rt003": False,
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
     }

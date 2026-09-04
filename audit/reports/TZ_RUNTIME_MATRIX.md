@@ -127,7 +127,7 @@ summary.passed = deterministic Shared-gate (ADR-001); not Shared→Published; AI
 
 ^[fn32]: Ответы 1.1.4: офис до 500 МБ (десятичные), модели до 1,5 ГБ. Под `samolet_pilot`/`production` это **ingest и disk-analyze**. SPF `ifcopenshell.open(.ifc)` и WASM остаются **256 МиБ**. Файлы больше SPF-капа и до 1,5 ГБ идут в IfcOpenShell RocksDB (`wired_over_spf_cap`), не в SPF RAM. HTTP 413 (`IFC exceeds analyze size limit`) — **свыше 1,5 ГБ**. Convert/open failure — 503 `IFC disk backend unavailable`. bSI Validation Service — **256 MB** несжатого `.ifc` (не MiB). SPF в ifcopenshell — порядка 8–10× диск в RAM ([#7116](https://github.com/IfcOpenShell/IfcOpenShell/issues/7116)); 1,5 ГБ SPF ≈ ~15 ГиБ RSS литература, поэтому SPF default не поднят. 1,5 ГБ ≈ практический потолок toolkit экспорта Revit, не обещание SPF-`open()`. RSS на файле заказчика не замерен (OA-16). Development HTTP без Samolet caps держит `max_model_bytes=256 МиБ`. SSOT: [`IFC_ANALYZE_VS_INGEST_CAP_2026_08.md`](../../docs/quality/IFC_ANALYZE_VS_INGEST_CAP_2026_08.md).
 
-Customer-corpus `VERIFIED`: **0 / 32**. Checkpoint **NO_GO**.
+Customer-corpus `VERIFIED`: **0 / 32**. Checkpoint **GO**; customer_go false.
 
 RT-001 / RT-002 / RT-003 remain **OPEN**. Native DWG remains **MISSING**. MEP system clash remains **NOT_VERIFIED**. CDE import remains **NOT_VERIFIED**. Independent calculation correctness remains **NOT_IMPLEMENTED**.
 

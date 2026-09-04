@@ -2,7 +2,7 @@
 ---
 title: "IFC analyze cap vs ingest envelope"
 date: "2026-08-30"
-last_updated: "2026-08-30"
+last_updated: "2026-09-04"
 status: active
 version: "1.1.0"
 closes_rt001: false
@@ -11,7 +11,7 @@ closes_rt003: false
 claim_boundary: >
   Four public numbers, four meanings. Default AEROBIM_MAX_IFC_BYTES stays
   256 MiB SPF in-memory. Files up to 1.5 GB (answers 1.1.4) open via
-  IfcOpenShell RocksDB, not SPF RAM. WASM stays 256 MiB. Checkpoint NO_GO.
+  IfcOpenShell RocksDB, not SPF RAM. WASM stays 256 MiB. Checkpoint GO; customer_go false.
 ---
 
 # IFC: SPF 256 MiB; RocksDB до 1,5 ГБ
@@ -19,7 +19,7 @@ claim_boundary: >
 Machine: `python -c "from aerobim.domain.ifc_size_policy import size_policy_snapshot"`.
 Probe: `python -m aerobim.tools.measure_ifc_open_rss --write-docs-evidence` (committed `samples/` only). The committed wall-pset fixture is 975 bytes; its RSS delta is **import noise**, not an SPF×10 measurement (`tiny_fixture_rss_delta_is_import_noise`).
 
-Checkpoint **`NO_GO`**. `raises_default_cap: false`. `rocksdb_backend: wired_over_spf_cap`.
+Checkpoint **`GO`**; `customer_go` false. `raises_default_cap: false`. `rocksdb_backend: wired_over_spf_cap`.
 
 ## Four numbers
 
@@ -64,5 +64,6 @@ Industry rule of thumb (export guides): keep a single IFC near **~250 MB** or sp
 4. RSS probe opens under the ingest envelope (RocksDB when over SPF). Files over ingest are classified, not opened. `--write-docs-evidence` stays fixture-only.
 5. WASM viewer and object-store `get_bytes` stay **256 MiB**. Do not buffer a 1.5 GB file for preview.
 6. Development HTTP (`Settings.from_env` without Samolet caps) still has `max_model_bytes=256 MiB`. The Samolet 1.5 GB path is `samolet_pilot`/`production` (or an explicit `AEROBIM_MAX_MODEL_BYTES`).
+7. UI 2026-09-04: `PackUploadPanel` / `AnalyzeRunPanel` state the split in Russian. Upload is one XHR with progress and cancel; resumable protocol is **not** implemented. WASM still 256 MiB.
 
 Does not close RT-001/002b/003. Does not parse RVT/NWD/LIRA. Does not raise the SPF default cap. Does not claim a measured 1.5 GB RSS or customer SLA.

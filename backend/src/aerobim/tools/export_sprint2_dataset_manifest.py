@@ -1,3 +1,4 @@
+
 """Regenerate the deterministic Sprint 2 dataset track (Mode B cases + Mode A inventory).
 
 claim_level=synthetic_only. Never invents customer orgs/results. Does not download
@@ -11,6 +12,8 @@ import hashlib
 import json
 from pathlib import Path
 from typing import Any
+
+from aerobim.domain.checkpoint import CHECKPOINT
 
 SCHEMA_VERSION = "1.0.0"
 CLAIM_LEVEL = "synthetic_only"
@@ -294,7 +297,7 @@ def build_manifest(repo: Path | None = None) -> dict[str, Any]:
         "customer_precision_claim_publishable": False,
         "customer_evidence": False,
         "closes_rt001": False,
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
         "generator": GENERATOR,
         "seed": SEED,
         "mode_b_classes": classes,

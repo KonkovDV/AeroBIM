@@ -91,7 +91,7 @@ def main(argv: list[str] | None = None) -> int:
     public = {k: v for k, v in result.items() if k != "_paths"}
     print(json.dumps(public, ensure_ascii=False, indent=2, default=str))
     print(
-        "Checkpoint NO_GO. Fixture Acceptance Gate, not customer accuracy. "
+        "Checkpoint GO (regulatory_measurement_mvp; customer_go false). Fixture Acceptance Gate, not customer accuracy. "
         "Open artifacts/ifc-acceptance-gate-demo/report.html",
         file=sys.stderr,
     )

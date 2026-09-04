@@ -1,3 +1,4 @@
+
 """Development demo fixture seed is live in the review shell; production 404."""
 
 from __future__ import annotations
@@ -7,6 +8,7 @@ import unittest
 from pathlib import Path
 
 from aerobim.core.config.settings import Settings
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.infrastructure.di.bootstrap import bootstrap_container
 from aerobim.presentation.http.api import create_http_app
 from aerobim.presentation.http.rate_limit import _RATE_LIMITED_POST_PREFIXES
@@ -58,7 +60,7 @@ class DemoSeedFixtureTests(unittest.TestCase):
             self.assertEqual(response.status_code, 200, response.text)
             payload = response.json()
             self.assertTrue(payload["fixture"])
-            self.assertEqual(payload["checkpoint"], "NO_GO")
+            self.assertEqual(payload["checkpoint"], CHECKPOINT)
             self.assertFalse(payload["closes_rt001"])
             self.assertNotIn("passed", payload)
             self.assertGreaterEqual(int(payload["issue_count"]), 1)
@@ -78,6 +80,7 @@ class DemoSeedFixtureTests(unittest.TestCase):
     def test_seed_fixture_hidden_outside_dev(self) -> None:
         try:
             from fastapi.testclient import TestClient
+
         except ModuleNotFoundError as exc:
             raise unittest.SkipTest("FastAPI/httpx not installed") from exc
 

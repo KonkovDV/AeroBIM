@@ -4,7 +4,7 @@ title: "Трёхисточниковая матрица требований: С
 status: active
 version: "1.2.3"
 last_updated: "2026-08-27"
-claim_boundary: "Матрица трассирует требования, не повышает статусы: fixture ≠ customer; Checkpoint NO_GO до RT-001/002/003."
+claim_boundary: "Матрица трассирует требования, не повышает статусы: fixture ≠ customer; Checkpoint GO; customer_go false до RT-001/002/003."
 tags: [aerobim, samolet, techlab, mik, traceability, requirements]
 ---
 

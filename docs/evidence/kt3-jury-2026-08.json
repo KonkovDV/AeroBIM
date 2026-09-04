@@ -5,7 +5,7 @@
   "closes_rt001": false,
   "closes_rt002": false,
   "closes_rt003": false,
-  "claim_boundary": "KT#3 jury gate over the git fixture. Not product accuracy. Not customer SLA. Not MEP delivered. Checkpoint NO_GO. closes_rt001/002/003=false.",
+  "claim_boundary": "KT#3 jury gate over the git fixture. Not product accuracy. Not customer SLA. Not MEP delivered. Checkpoint GO; customer_go false. closes_rt001/002/003=false.",
   "passed": false,
   "jury_finding": {
     "finding_id": "8ba0f7e08a62ee6e1ae0eccba397a159",
@@ -38,7 +38,7 @@
     "closes_rt001": false,
     "closes_rt002": false,
     "closes_rt003": false,
-    "claim_boundary": "Tracker six-task status for KT#3. Live fixture CLI and open-bench pins. Not product accuracy. Not customer SLA. Not a scheduled-demo count in git. Checkpoint NO_GO. closes_rt001/002/003=false.",
+    "claim_boundary": "Tracker six-task status for KT#3. Live fixture CLI and open-bench pins. Not product accuracy. Not customer SLA. Not a scheduled-demo count in git. Checkpoint GO; customer_go false. closes_rt001/002/003=false.",
     "detected_count": 0,
     "tracker": "Dmitry",
     "assigned_at": "2026-08-14",

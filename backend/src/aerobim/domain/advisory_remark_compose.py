@@ -10,7 +10,13 @@ import json
 from dataclasses import dataclass
 from typing import Any, Literal
 
-from aerobim.domain.llm_advisory import LlmDataPolicy, LlmProvider, LlmRequest, LlmResponse
+from aerobim.domain.llm_advisory import (
+    LlmDataPolicy,
+    LlmProvider,
+    LlmRequest,
+    LlmResponse,
+    advisory_draft_from_mapping,
+)
 from aerobim.domain.models import GeneratedRemark, ValidationIssue
 
 PROMPT_VERSION = "advisory-remark-compose/v1"
@@ -130,11 +136,11 @@ def parse_remark_response(
         except json.JSONDecodeError:
             payload = None
         if isinstance(payload, dict):
-            title = str(payload.get("title") or "").strip()
-            body = str(payload.get("body") or "").strip()
-            refs = payload.get("evidence_refs")
-            if isinstance(refs, list) and refs:
-                fallback_evidence = tuple(str(item) for item in refs)
+            draft = advisory_draft_from_mapping(payload)
+            title = draft.title
+            body = draft.body
+            if draft.evidence_refs:
+                fallback_evidence = draft.evidence_refs
     if not title:
         title = "Advisory remark" if locale.startswith("en") else "Черновик замечания"
     if not body:

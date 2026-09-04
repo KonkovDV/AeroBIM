@@ -10,7 +10,7 @@ closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   Cover letter the captain can send. Signing is the Partner's act. Git does
-  not claim a signed KPI. Checkpoint NO_GO.
+  not claim a signed KPI. Checkpoint GO; customer_go false.
 ---
 
 # Обложка для письма партнёру (подписать interim 0,60)

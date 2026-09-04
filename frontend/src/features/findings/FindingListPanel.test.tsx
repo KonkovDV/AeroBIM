@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import FindingListPanel from "./FindingListPanel";
 import type { ValidationIssue } from "../../lib/types";
 
@@ -82,5 +82,38 @@ describe("FindingListPanel", () => {
     expect(locations[0]?.textContent).toMatch(/ос\. А/);
     expect(locations[1]?.textContent).toMatch(/эт\. нет в индексе/);
     expect(locations[1]?.textContent).toMatch(/ос\. нет в индексе/);
+  });
+
+  it("exposes the clause filter and shows the stamp on the card", () => {
+    const onClauseChange = vi.fn();
+    render(
+      <FindingListPanel
+        issues={[
+          {
+            ...issue("R1", 0),
+            issue: {
+              ...issue("R1", 0).issue,
+              norm_source: "СП 63",
+              norm_clause: "8.1",
+            },
+          },
+        ]}
+        totalIssueCount={1}
+        selectedIssueIndex={0}
+        issueSeverityFilter="all"
+        hitlOnlyFilter={false}
+        hitlRegionCount={0}
+        groupBy="none"
+        clauseFilter="all"
+        clauseOptions={["СП 63 · 8.1"]}
+        onSeverityChange={() => undefined}
+        onHitlOnlyChange={() => undefined}
+        onGroupByChange={() => undefined}
+        onClauseChange={onClauseChange}
+        onSelectIssue={() => undefined}
+      />,
+    );
+    expect(screen.getByTestId("issue-clause").textContent).toMatch(/СП 63/);
+    expect(screen.getByTestId("clause-filter")).toBeTruthy();
   });
 });

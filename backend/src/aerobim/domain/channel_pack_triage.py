@@ -1,3 +1,4 @@
+
 """Channel pack Red Team triage — 2026-08-31.
 
 Attacks on the local unpack inventory, family facts, and CC-2/CC-4
@@ -9,15 +10,16 @@ from __future__ import annotations
 
 from typing import Final
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.pack_family_facts import pack_family_snapshot
 
 CLAIM_LEVEL: Final = "coverage_map_only"
-CHECKPOINT: Final = "NO_GO"
 CLAIM_BOUNDARY: Final = (
     "Channel-pack Red Team triage after the 31.08 unpack walk. "
     "Calc binaries are the majority of unpack bytes; that is inventory, "
     "not a solver. Token shortlists are not CC-2 MATCH. Uncompressed byte "
-    "totals stay out of git. Not pack processed. Checkpoint NO_GO."
+    "totals stay out of git. Not pack processed. Checkpoint GO "
+    "(regulatory_measurement_mvp; customer_go false)."
 )
 
 TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (

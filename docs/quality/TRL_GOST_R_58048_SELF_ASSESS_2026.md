@@ -10,7 +10,7 @@ closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   Self-assessment against GOST R 58048-2017 language. Not an independent
-  technology-readiness examination. Not TRL 5 or 6. Checkpoint NO_GO.
+  technology-readiness examination. Not TRL 5 or 6. Checkpoint GO; customer_go false.
 ---
 
 # УГТ (ГОСТ Р 58048-2017) — самооценка, не экспертиза
@@ -28,7 +28,7 @@ claim_boundary: >
 | УГТ 3 | Критические функции показаны аналитически и экспериментально | Ниже нас: движок + IDS + HITL на фикстуре |
 | **УГТ 4** | Компоненты испытаны в **лабораторном** окружении | **Самооценка:** CI pin `attested_by=ci`; CLI; открытые пакеты; фикстура |
 | УГТ 5 | Испытания в окружении, близком к реальному | **Нет:** нет dual-rater на комплекте партнёра; RT-001 OPEN |
-| УГТ 6+ | Пилот / штатная эксплуатация | **Нет.** Checkpoint `NO_GO` |
+| УГТ 6+ | Пилот / штатная эксплуатация | **Нет** (`customer_go` false). Checkpoint `GO` — другой флаг (измерительный MVP) |
 
 Лаборатория ≠ заказчик. Pytest и `run_kt3_jury` — доводы **УГТ 4**, не УГТ 5.
 

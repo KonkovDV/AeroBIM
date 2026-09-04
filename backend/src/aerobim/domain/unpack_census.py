@@ -1,20 +1,22 @@
+
 """Git-safe suffix/magic census of the local unpack tree.
 
 Live scan writes under ``.local/`` only. This pin is counts, not a pack_hash,
-not TP/FP, not «processed». Checkpoint NO_GO.
+not TP/FP, not «processed». Checkpoint GO (regulatory_measurement_mvp; customer_go false).
 """
 
 from __future__ import annotations
 
 from typing import Any, Final
 
-CHECKPOINT: Final = "NO_GO"
+from aerobim.domain.checkpoint import CHECKPOINT
+
 CLAIM_LEVEL: Final = "coverage_map_only"
 CLAIM_BOUNDARY: Final = (
     "Local wrapper + unpack-tree suffix/magic census. Evening recensus "
     "after deleting covered source archives (0 zip/7z left). Not pack "
     "processed. Not product accuracy. Not native RVT/DWG/LIRA. SPF cap "
-    "stays 256 MiB. Checkpoint NO_GO."
+    "stays 256 MiB. Checkpoint GO (regulatory_measurement_mvp; customer_go false)."
 )
 
 # Dated pin for git. Live trees may grow; names and hashes never enter git.

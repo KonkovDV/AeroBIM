@@ -1,3 +1,4 @@
+
 """Emit SIG-01 finding volume (not accuracy) from a gate JSON or the demo gate.
 
 Writes only under ``.local/`` or outside the git tree.
@@ -11,6 +12,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.finding_volume import REPORT_PHRASE, volume_from_findings
 from aerobim.domain.owner_files_inventory import require_local_only_output
 from aerobim.tools.benchmark_project_package import repo_root
@@ -81,7 +83,7 @@ def main(argv: list[str] | None = None) -> int:
                 "is_accuracy": False,
                 "is_pack_processed": False,
                 "is_customer_defect_list": False,
-                "checkpoint": "NO_GO",
+                "checkpoint": CHECKPOINT,
                 "output": str(args.output),
             }
         )

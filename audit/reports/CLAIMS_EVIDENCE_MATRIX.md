@@ -16,7 +16,7 @@
 | Checks calculations | OpenRebar digest + claim_labels | fixture | Partial | HIGH | Сверка PARTIAL; correctness НЕ РЕАЛИЗОВАНО |
 | Understands drawings (CV) | honesty `cv_human_level=missing` | none | No | BLOCKER | НЕ РЕАЛИЗОВАНО |
 | External academic audit | self evidence + display_label guard | n/a | Yes | HIGH | internal self-audit only |
-| Production-ready | ACL + fail-closed; intake gates false | mixed | Partial | HIGH | НЕ ДОКАЗАНО (checkpoint NO_GO) |
+| Production-ready | ACL + fail-closed; intake gates false | mixed | Partial | HIGH | НЕ ДОКАЗАНО (checkpoint GO; customer_go false) |
 | Fail-closed required clash | P0 + production/pilot sign-off profile | fixture | Yes | LOW | SKIPPED→FAILED under policy |
 | Finding provenance | persist reject + stamps | fixture | Yes | LOW | Mandatory `finding_id`/`evidence_refs` |
 | Object ACL | principal vs tenant_id | fixture | Yes | LOW | Cross-tenant **404** when enforced |

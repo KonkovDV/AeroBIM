@@ -1,3 +1,4 @@
+
 """KT#3 without Samolet files: re-scope is the product decision, not a wait state.
 
 Does not close RT-001/002/003. Does not publish product accuracy.
@@ -10,8 +11,10 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any, Final
 
+from aerobim.domain.checkpoint import CHECKPOINT, CUSTOMER_GO, GO_KIND
 from aerobim.domain.intake_gate_keys import INTAKE_GATE_KEYS
 from aerobim.domain.kt3_jury import JURY_COMMAND
+from aerobim.domain.rt_blocker_volumes import assemble_rt_blocker_volumes
 from aerobim.domain.tracker_eight_tasks import tracker_eight_snapshot
 from aerobim.domain.tracker_six_tasks import tracker_snapshot
 from aerobim.domain.tz_v1_brief import PAPER_OBJECTS
@@ -23,13 +26,18 @@ CLAIM_LEVEL: Final = "fixture_and_proxy_only"
 DEMO_COMMAND: Final = "python -m aerobim.tools.run_demo_ifc_acceptance_gate"
 PACK_COMMAND: Final = "python -m aerobim.tools.run_kt3_without_customer"
 JURY_PACK_COMMAND: Final = JURY_COMMAND
-SCHEMA_VERSION: Final = "1.2.0"
+SCHEMA_VERSION: Final = "1.6.0"
 
 CLAIM_BOUNDARY: Final = (
     "Customer files are not expected in git. "
     "KT#3 is the live fixture gate plus public/synthetic proxies. "
+    "Measurement volumes (RT-001a content pairing, RT-001 protocol rehearsal, "
+    "RT-002a public IDS, RT-002b channel EIR/BIM-standard text, RT-003a planted "
+    "geometric clash, RT-003b IfcSystem graph rehearsal, RT-003 NWD federation "
+    "carrier) use substitutes. "
     "Not product accuracy. Not customer SLA. Not MEP delivered. "
-    "Not CDE-ready. Checkpoint NO_GO. closes_rt001/002/003 stay false."
+    "Not CDE-ready. Checkpoint GO "
+    "(regulatory_measurement_mvp; customer_go false). closes_rt001/002/003 stay false."
 )
 
 REQUIRED_EVIDENCE: Final[tuple[tuple[str, str], ...]] = (
@@ -59,6 +67,8 @@ REQUIRED_EVIDENCE: Final[tuple[tuple[str, str], ...]] = (
         "typical_errors_catalog",
         "samples/benchmarks/samolet-typical-errors-catalog.json",
     ),
+    ("rt_blocker_volumes", "docs/evidence/rt-blocker-volumes-2026-09.md"),
+    ("rt001_dual_rater_simulation", "docs/evidence/rt001-dual-rater-simulation-2026-09.md"),
     ("oos_qto", "samples/oos/qto_space_area.unsigned.json"),
 )
 
@@ -155,6 +165,7 @@ def assemble_kt3_without_customer(
     pointer = _load_json(repo / "samples/ids/moexp/jurisdiction-profile-pointer.json")
     typical = _typical_errors_pin(repo)
     tracker = tracker_snapshot()
+    volumes = assemble_rt_blocker_volumes(repo)
 
     payload: dict[str, Any] = {
         "schema_version": SCHEMA_VERSION,
@@ -162,7 +173,11 @@ def assemble_kt3_without_customer(
         "claim_level": CLAIM_LEVEL,
         "claim_boundary": CLAIM_BOUNDARY,
         "generated_at": generated_at,
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
+        "go_kind": GO_KIND,
+        "customer_go": CUSTOMER_GO,
+        "market_go": False,
+        "deployment_go": False,
         "mik_stage": "доработка",
         "validation_effectiveness_started": False,
         "deployment_started": False,
@@ -175,11 +190,10 @@ def assemble_kt3_without_customer(
         "closes_rt001": False,
         "closes_rt002": False,
         "closes_rt003": False,
-        "rt002_split": {
-            "a_regulatory": "CLOSED",
-            "b_corporate": "OPEN",
-            "undifferentiated_closed_forbidden": True,
-        },
+        "rt001_split": volumes["RT-001"],
+        "rt002_split": volumes["RT-002"],
+        "rt003_split": volumes["RT-003"],
+        "volume_re_scope_date": volumes["volume_re_scope_date"],
         "demo_command": DEMO_COMMAND,
         "pack_command": PACK_COMMAND,
         "jury_command": JURY_PACK_COMMAND,
@@ -214,8 +228,12 @@ def require_honest_kt3_payload(
     errors: list[str] = []
     if missing:
         errors.append("missing evidence: " + ", ".join(missing))
-    if payload.get("checkpoint") != "NO_GO":
+    if payload.get("checkpoint") != CHECKPOINT:
         errors.append(f"checkpoint={payload.get('checkpoint')!r}")
+    if payload.get("go_kind") != GO_KIND:
+        errors.append(f"go_kind={payload.get('go_kind')!r}")
+    if payload.get("customer_go") is not False:
+        errors.append("customer_go must stay false")
     if payload.get("plan_b_decision") != PLAN_B_DECISION:
         errors.append(f"plan_b_decision={payload.get('plan_b_decision')!r}")
     if payload.get("customer_files_expected") is not False:
@@ -246,8 +264,30 @@ def require_honest_kt3_payload(
     split = payload.get("rt002_split")
     if not isinstance(split, dict) or split.get("b_corporate") != "OPEN":
         errors.append("rt002_split.b_corporate must stay OPEN")
+    if not isinstance(split, dict) or split.get("c_corporate_signed") != "OPEN":
+        errors.append("rt002_split.c_corporate_signed must stay OPEN")
+    if not isinstance(split, dict) or split.get("a_regulatory") != "CLOSED":
+        errors.append("rt002_split.a_regulatory must stay CLOSED")
+    if not isinstance(split, dict) or split.get("b_eir_carrier") != "CLOSED":
+        errors.append("rt002_split.b_eir_carrier must stay CLOSED")
     if isinstance(split, dict) and split.get("undifferentiated_closed_forbidden") is not True:
         errors.append("must forbid undifferentiated RT-002 CLOSED")
+    rt001 = payload.get("rt001_split")
+    if not isinstance(rt001, dict) or rt001.get("b_criterion_dual_rater") != "OPEN":
+        errors.append("rt001_split.b_criterion_dual_rater must stay OPEN")
+    if not isinstance(rt001, dict) or rt001.get("b_protocol_rehearsal") != "CLOSED":
+        errors.append("rt001_split.b_protocol_rehearsal must stay CLOSED")
+    if not isinstance(rt001, dict) or rt001.get("a_content_pairing") != "CLOSED":
+        errors.append("rt001_split.a_content_pairing must stay CLOSED")
+    rt003 = payload.get("rt003_split")
+    if not isinstance(rt003, dict) or rt003.get("b_mep_system_clash") != "OPEN":
+        errors.append("rt003_split.b_mep_system_clash must stay OPEN")
+    if not isinstance(rt003, dict) or rt003.get("b_navis_federation_carrier") != "CLOSED":
+        errors.append("rt003_split.b_navis_federation_carrier must stay CLOSED")
+    if not isinstance(rt003, dict) or rt003.get("b_ifc_system_graph_rehearsal") != "CLOSED":
+        errors.append("rt003_split.b_ifc_system_graph_rehearsal must stay CLOSED")
+    if not isinstance(rt003, dict) or rt003.get("a_federated_geometric_rehearsal") != "CLOSED":
+        errors.append("rt003_split.a_federated_geometric_rehearsal must stay CLOSED")
     gaps = payload.get("tz_explicit_gaps")
     if not isinstance(gaps, list) or not any("90%" in str(item) for item in gaps):
         errors.append("tz_explicit_gaps must keep publishable >90% as a gap")
@@ -288,7 +328,9 @@ def render_markdown(payload: Mapping[str, Any]) -> str:
         f'date: "{OWNER_DECISION_DATE}"',
         f"claim_level: {payload['claim_level']}",
         f"claim_boundary: {json.dumps(payload['claim_boundary'], ensure_ascii=False)}",
-        "checkpoint: NO_GO",
+        "checkpoint: GO",
+        "go_kind: regulatory_measurement_mvp",
+        "customer_go: false",
         "closes_rt001: false",
         "closes_rt002: false",
         "closes_rt003: false",
@@ -303,7 +345,8 @@ def render_markdown(payload: Mapping[str, Any]) -> str:
         f"**{PROGRAM_FORK_DATE}** не отменяется и не ждётся. Локальный диск владельца "
         "не входит в этот пакет и не закрывает RT-001.",
         "",
-        f"- Checkpoint: **{payload['checkpoint']}**",
+        f"- Checkpoint: **{payload['checkpoint']}** (`{payload.get('go_kind')}`)",
+        f"- customer_go: **{json.dumps(bool(payload.get('customer_go')))}**",
         f"- Стадия МИК: **{payload['mik_stage']}**",
         "- Валидация эффективности: **не начата**",
         f"- nda_corpus_in_git: **{json.dumps(bool(payload.get('nda_corpus_in_git')))}**",
@@ -311,18 +354,36 @@ def render_markdown(payload: Mapping[str, Any]) -> str:
         f"- closes_rt002: **{json.dumps(bool(payload['closes_rt002']))}** "
         "(не произносить CLOSED без split a/b)",
         f"- closes_rt003: **{json.dumps(bool(payload['closes_rt003']))}**",
-        f"- Показ (одна команда): `{payload.get('jury_command') or payload['demo_command']}`",
-        f"- Gate (если жюри просит отдельно): `{payload['demo_command']}`",
-        f"- Пакет без заказчика: `{payload['pack_command']}`",
-        "- Карточка речи: `docs/demo/KT3_JURY_FAQ_2026_08_25.md`",
-        "- Сценарий оператора: `docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md`",
-        "- Трекер (6 задач): `docs/demo/KT3_TRACKER_SIX_TASKS_2026_08.md`",
-        "",
-        str(payload["claim_boundary"]),
-        "",
-        "| Роль | Файл | Есть |",
-        "|---|---|---|",
     ]
+    rt001 = payload.get("rt001_split") or {}
+    rt002 = payload.get("rt002_split") or {}
+    rt003 = payload.get("rt003_split") or {}
+    lines.extend(
+        [
+            f"- RT-001 split: content pairing **{rt001.get('a_content_pairing')}**; "
+            f"protocol rehearsal **{rt001.get('b_protocol_rehearsal')}**; "
+            f"dual-rater **{rt001.get('b_criterion_dual_rater')}**",
+            f"- RT-002 split: regulatory **{rt002.get('a_regulatory')}**; "
+            f"EIR carrier **{rt002.get('b_eir_carrier')}**; "
+            f"signed corporate **{rt002.get('c_corporate_signed')}**",
+            f"- RT-003 split: planted geometric "
+            f"**{rt003.get('a_federated_geometric_rehearsal')}**; "
+            f"NWD carrier **{rt003.get('b_navis_federation_carrier')}**; "
+            f"IfcSystem rehearsal **{rt003.get('b_ifc_system_graph_rehearsal')}**; "
+            f"mep_system_clash **{rt003.get('b_mep_system_clash')}**",
+            f"- Показ (одна команда): `{payload.get('jury_command') or payload['demo_command']}`",
+            f"- Gate (если жюри просит отдельно): `{payload['demo_command']}`",
+            f"- Пакет без заказчика: `{payload['pack_command']}`",
+            "- Карточка речи: `docs/demo/KT3_JURY_FAQ_2026_08_25.md`",
+            "- Сценарий оператора: `docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md`",
+            "- Трекер (6 задач): `docs/demo/KT3_TRACKER_SIX_TASKS_2026_08.md`",
+            "",
+            str(payload["claim_boundary"]),
+            "",
+            "| Роль | Файл | Есть |",
+            "|---|---|---|",
+        ]
+    )
     for row in payload.get("evidence") or []:
         if not isinstance(row, dict):
             continue

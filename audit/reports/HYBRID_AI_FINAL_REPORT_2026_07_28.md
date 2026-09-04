@@ -3,7 +3,7 @@ title: "AeroBIM Hybrid AI — Final Report (2026-07-28)"
 status: active
 version: "1.0.0"
 last_updated: "2026-07-28"
-claim_boundary: "P0/P1 foundation, domain-pure, verdict-neutral, not in the verdict path. No product claims. Checkpoint NO_GO."
+claim_boundary: "P0/P1 foundation, domain-pure, verdict-neutral, not in the verdict path. No product claims. Checkpoint GO; customer_go false."
 tags: [aerobim, hybrid-ai, final-report, routing, privacy, audit]
 ---
 

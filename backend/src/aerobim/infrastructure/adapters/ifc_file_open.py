@@ -1,3 +1,4 @@
+
 """Process-local IFC open helper with optional disk touch markers for SLA.
 
 When ``AEROBIM_IFC_PARSE_CACHE_DIR`` is configured via ``configure_ifc_parse_cache``,
@@ -18,6 +19,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.ifc_size_policy import (
     BAND_ANALYZE_DISK,
     SPF_RAM_MULTIPLIER_LITERATURE,
@@ -155,7 +157,7 @@ def ifc_cache_ram_ceiling_payload(
         "literature_rss_ceiling_bytes": literature_spf_rss_bytes(ceiling),
         "literature_rss_not_measured": True,
         "closes_rt003": False,
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
     }
 
 
@@ -278,6 +280,7 @@ def open_ifc_model(ifc_path: Path) -> Any:
 
     try:
         import ifcopenshell
+
     except ModuleNotFoundError as exc:
         raise RuntimeError("ifcopenshell is required to open IFC models") from exc
 

@@ -15,7 +15,8 @@ AS_OF: Final = "2026-08-14"
 DEFAULT_CONFIG_RELATIVE: Final = "samples/config/npa-instrument-register-2026-08-14.json"
 CLAIM_BOUNDARY: Final = (
     "Legal-force labels for engineering honesty. Not a court opinion. "
-    "Not statutory compliance of a customer package. Checkpoint NO_GO."
+    "Not statutory compliance of a customer package. Checkpoint GO "
+    "(regulatory_measurement_mvp; customer_go false)."
 )
 
 FORCE_FEDERAL_STATUTE: Final = "federal_statute"

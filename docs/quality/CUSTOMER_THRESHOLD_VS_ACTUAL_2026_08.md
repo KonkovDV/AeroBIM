@@ -12,7 +12,7 @@ claim_boundary: >
   Target vs actual on the Partner TZ numeric and format bars. Right column is
   honesty for defense, not a product fail. Not >90%. Not customer SLA.
   Default SPF IFC cap stays 256 MiB. RocksDB covers up to 1.5 GB under
-  Samolet ingest. Checkpoint NO_GO.
+  Samolet ingest. Checkpoint GO; customer_go false.
 ---
 
 # Целевое против фактического (вторая система)

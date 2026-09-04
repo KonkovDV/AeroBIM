@@ -1,9 +1,11 @@
+
 """Unsigned educational packs overlap on the same IFC property."""
 
 from __future__ import annotations
 
 import unittest
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.unsigned_rule_overlap import (
     active_overlap_groups,
     normalize_ifc_entity,
@@ -35,7 +37,7 @@ class UnsignedRuleOverlapTests(unittest.TestCase):
         self.assertIn("REQ-FIRE-001", wall_fire["rule_ids"])
         self.assertIn("SAM-AR-011", wall_fire["rule_ids"])
         snap = overlap_snapshot()
-        self.assertEqual(snap["checkpoint"], "NO_GO")
+        self.assertEqual(snap["checkpoint"], CHECKPOINT)
         self.assertFalse(snap["is_accuracy"])
         self.assertFalse(snap["is_customer_defect_list"])
         self.assertEqual(snap["group_count"], len(groups))

@@ -3,7 +3,7 @@ title: "Self-Serve & Substitutes — что делаем сами или зам�
 status: active
 version: "1.0.1"
 last_updated: "2026-09-03"
-claim_boundary: "Стратегия замещения. Подмены НЕ создают customer-evidence: флаги customer_corpus_present/PrecisionClaim.publishable и подпись IDS остаются гейтами. Checkpoint NO_GO."
+claim_boundary: "Стратегия замещения. Подмены НЕ создают customer-evidence: флаги customer_corpus_present/PrecisionClaim.publishable и подпись IDS остаются гейтами. Checkpoint GO; customer_go false."
 ---
 
 # Само-обслуживание и замещения по волне данных Самолёта

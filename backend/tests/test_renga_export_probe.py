@@ -1,3 +1,4 @@
+
 """Renga IFC probe: originating system + MOEXP IFC4 fail-closed. Not Samolet."""
 
 from __future__ import annotations
@@ -6,6 +7,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.ids_schema_gate import parse_ifc_file_name
 from aerobim.tools.run_renga_export_probe import (
     build_payload,
@@ -92,7 +94,7 @@ class RengaExportProbeTests(unittest.TestCase):
         self.assertFalse(payload["samolet_export"])
         self.assertFalse(payload["closes_c4_samolet_intake"])
         self.assertFalse(payload["vertical_slice_ifc_replaced"])
-        self.assertEqual(payload["checkpoint"], "NO_GO")
+        self.assertEqual(payload["checkpoint"], CHECKPOINT)
 
     def test_resolve_missing_pack_is_none(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

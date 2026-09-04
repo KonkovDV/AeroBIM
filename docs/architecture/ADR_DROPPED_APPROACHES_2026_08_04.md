@@ -4,7 +4,7 @@ date: 2026-08-04
 status: accepted
 adr: ADR-RT-W-03
 responds_to: RT-W-03
-claim_boundary: Process ADR only. Checkpoint NO_GO unchanged.
+claim_boundary: Process ADR only. Checkpoint GO; customer_go false unchanged.
 ---
 
 # ADR: решения об отказе / удержании (неделя 27.07–04.08)

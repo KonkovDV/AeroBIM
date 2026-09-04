@@ -1,3 +1,4 @@
+
 """Live-tree Red Team triage stays NO_GO and encodes KILL brakes."""
 
 from __future__ import annotations
@@ -5,6 +6,7 @@ from __future__ import annotations
 import unittest
 from pathlib import Path
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.live_tree_triage import TRIAGE_ROWS, triage_snapshot
 from aerobim.domain.tz_v1_brief import (
     PAPER_OBJECTS,
@@ -16,7 +18,7 @@ from aerobim.domain.tz_v1_brief import (
 class LiveTreeTriageTests(unittest.TestCase):
     def test_snapshot_stays_no_go(self) -> None:
         snap = triage_snapshot()
-        self.assertEqual(snap["checkpoint"], "NO_GO")
+        self.assertEqual(snap["checkpoint"], CHECKPOINT)
         self.assertEqual(snap["detected_count"], 0)
         self.assertFalse(snap["closes_rt001"])
         self.assertFalse(snap["closes_rt002"])
@@ -182,7 +184,7 @@ class LiveTreeTriageTests(unittest.TestCase):
         snap = tracker_snapshot()
         self.assertFalse(snap["scheduled_demos_in_git"])
         self.assertGreaterEqual(snap["owner_blocked_count"], 4)
-        self.assertEqual(snap["checkpoint"], "NO_GO")
+        self.assertEqual(snap["checkpoint"], CHECKPOINT)
         repo = Path(__file__).resolve().parents[2]
         self.assertFalse(output_is_local_only(repo, repo / "docs" / "evidence" / "leak.json"))
         rehearsal = public_rehearsal_snapshot()

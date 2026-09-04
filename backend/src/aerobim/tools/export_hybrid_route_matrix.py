@@ -6,7 +6,7 @@
 проверяет инвариант безопасности: внешний выход возможен ТОЛЬКО для PUBLIC-маршрута
 (класс PUBLIC + цель PUBLIC), а также воспроизводимость этого артефакта.
 
-Fixture/matrix evidence — НЕ точность продукта; контур verdict-neutral; Checkpoint NO_GO.
+Fixture/matrix evidence — НЕ точность продукта; контур verdict-neutral; Checkpoint GO (regulatory_measurement_mvp; customer_go false).
 """
 
 from __future__ import annotations
@@ -108,7 +108,7 @@ def build_route_matrix() -> dict[str, Any]:
         "artifact": "hybrid-route-matrix",
         "note": (
             "fixture/matrix evidence; not product accuracy; verdict-neutral (OFF==ON); "
-            "masking != anonymity; Checkpoint NO_GO"
+            "masking != anonymity; Checkpoint GO (regulatory_measurement_mvp; customer_go false)"
         ),
         "tenant": _TENANT,
         "rows": rows,

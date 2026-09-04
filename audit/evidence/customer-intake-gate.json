@@ -58,7 +58,7 @@
     "2026-08-26 coverage_map: 6 AR IfcSpace lack NetFloorArea; FireRating 5.7% EI45 ≠ design TZ; does not close RT-001",
     "2026-08-26 owner-disk IFC engine rehearsal used fixture IDS/rules; detected_count=0; does not close RT-001",
     "Run python -m aerobim.tools.run_kt3_without_customer",
-    "Keep checkpoint NO_GO until RT-001/002/003 evidenced",
+    "Keep checkpoint GO (regulatory_measurement_mvp); customer_go false until residual volumes close",
     "docs/quality/TZ_SEAM_COVERAGE_MAP_2026_08.md — coverage_map_only; not detection"
   ],
   "references": [

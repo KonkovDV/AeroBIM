@@ -1,3 +1,4 @@
+
 """Static honesty surface for product capabilities (not runtime probe results)."""
 
 from __future__ import annotations
@@ -12,6 +13,7 @@ from aerobim.domain.calculation_evidence import (
     CALCULATION_CORRECTNESS_REASON,
 )
 from aerobim.domain.capability_contract import capability_contract
+from aerobim.domain.checkpoint import CHECKPOINT, GO_KIND
 from aerobim.domain.errors import HonestyCapabilityError
 from aerobim.domain.mep_intake import assess_mep_customer_intake
 from aerobim.domain.models import CapabilityState, CapabilityStatus, ReportCapabilities
@@ -75,14 +77,18 @@ def load_customer_intake_gate_snapshot() -> dict[str, Any]:
             "status": payload.get("status", "UNKNOWN"),
             "claim_level": payload.get("claim_level", "unknown"),
             "true_gates": true_gates,
-            "checkpoint": "NO_GO",
+            "checkpoint": CHECKPOINT,
+            "go_kind": GO_KIND,
+            "customer_go": False,
             "source": "audit/evidence/customer-intake-gate.json",
         }
     return {
         "status": "MISSING_GATE_FILE",
         "claim_level": "not_ready",
         "true_gates": [],
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
+        "go_kind": GO_KIND,
+        "customer_go": False,
         "source": None,
     }
 

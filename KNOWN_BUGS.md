@@ -70,7 +70,7 @@
 | Severity | **INFO** |
 | Effect | Presigned GET URL does not go through this store's `max_get_bytes` streaming cap. Direct `get()` is capped. |
 | Honesty | Self-documented in the method comment. **No `presign_get` callers in `backend/src` as of 02.09.2026** (port + two stores only). If a caller is wired later, it must enforce its own size limit. Also noted in `SECURITY.md`. Does not sit on the `summary.passed` path. |
-| Status | Residual; not a stub. Checkpoint **NO_GO**. |
+| Status | Residual; not a stub. Checkpoint **GO**; customer_go false. |
 
 ## Closed / N/A
 

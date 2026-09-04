@@ -15,6 +15,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from aerobim.domain.checkpoint import CHECKPOINT
+
 DEFAULT_RELEASE_EVIDENCE_DAY = "latest"
 ALLOWED_SYNTHETIC_CLAIM_LEVELS = frozenset({"synthetic_only", "fixture_only"})
 FORBIDDEN_CUSTOMER_CLAIM_LEVELS = frozenset(
@@ -309,8 +311,10 @@ def verify_release_evidence(
             release_status.get("verdict_candidate") or release_status.get("verdict") or ""
         )
         checkpoint = str(release_status.get("checkpoint") or "")
-        if checkpoint and checkpoint != "NO_GO":
-            errors.append(f"release-status checkpoint must remain NO_GO (got {checkpoint!r})")
+        if checkpoint and checkpoint not in {CHECKPOINT, "NO_GO"}:
+            errors.append(
+                f"release-status checkpoint must be GO or historical NO_GO (got {checkpoint!r})"
+            )
         if verdict and verdict not in {
             "ENGINEERING_READY_CUSTOMER_BLOCKED",
             "NO_GO",

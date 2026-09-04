@@ -1,18 +1,21 @@
 ---
 title: "Поле «Презентация» — дека, речь, запреты"
 status: active
-version: "1.1.0"
-last_updated: "2026-08-17"
+version: "1.1.1"
+last_updated: "2026-09-04"
 claim_boundary: >
-  Main deck is aerobim_kt2.pptx / aerobim_kt2.pdf. Slide copy in slides.md.
-  Video not recorded. Checkpoint NO_GO; RT-001/002/003 OPEN.
+  Main deck files are still aerobim_kt2.pptx / aerobim_kt2.pdf until the
+  KT#3 rebuild (P2, not this commit). Slide copy in slides.md.
+  Speech SSOT for KT#3 is docs/demo/KT3_JURY_FAQ_2026_08_25.md.
+  Video not recorded. Checkpoint GO; customer_go false; RT-001 OPEN; RT-002a CLOSED
+  regulatory / RT-002b CLOSED EIR carrier / RT-002c OPEN signed; RT-003 OPEN.
 ---
 
 # Презентация
 
-**Основная дека для формы и показа:** [`aerobim_kt2.pptx`](aerobim_kt2.pptx) · [`aerobim_kt2.pdf`](aerobim_kt2.pdf).
+**Основная дека для формы (бинарь пока с меткой КТ#2):** [`aerobim_kt2.pptx`](aerobim_kt2.pptx) · [`aerobim_kt2.pdf`](aerobim_kt2.pdf).
 
-Текст слайдов и дисциплина формулировок (SSOT для речи): [`slides.md`](slides.md). Ролик 2–3 мин **не записываем и не прилагаем.** Показ продукта — живой CLI, не mp4 и не снимок HTML.
+Речь КТ#3 (SSOT, не слайд-файл): [`../../docs/demo/KT3_JURY_FAQ_2026_08_25.md`](../../docs/demo/KT3_JURY_FAQ_2026_08_25.md) · runbook: [`../../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md`](../../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md). Пересборка pptx под КТ#3 — P2 до 18.09, не этот коммит. Ролик 2–3 мин **не записываем и не прилагаем.** Показ продукта — живой CLI, не mp4 и не снимок HTML.
 
 ## Каркас слайдов
 
@@ -26,7 +29,7 @@ claim_boundary: >
 | 4 | Демонстрация | Команда в терминале: IFC + IDS → находка с GUID, правилом, expected/observed → HTML/JSON/BCF |
 | 5 | Методика | Как мы будем мерить качество на комплекте заказчика (протокол опубликован заранее) |
 | 6 | Конкуренты | Сравнение пяти решений задаче Самолёта по верификации ПД/РД по одинаковым полям |
-| 7 | Статус | Стадия доработки, Checkpoint `NO_GO`, четыре пункта запроса к заказчику |
+| 7 | Статус | Стадия доработки, Checkpoint `GO`, четыре пункта запроса к заказчику |
 | 8 | Дорожная карта | Что закрывает КТ#3 и пилот |
 
 Развёрнутые требования к деке: [`../../docs/tz/TZ_SOLUTION_IMAGE_AND_PRESENTATION_2026.md`](../../docs/tz/TZ_SOLUTION_IMAGE_AND_PRESENTATION_2026.md) §2–4.
@@ -43,7 +46,7 @@ claim_boundary: >
 
 Формула стадии (дословно):
 
-> Мы на стадии доработки. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение ещё не начались. `NO_GO` сохраняется, пока нет независимого размеченного корпуса, двух разметчиков, профиля приёмки (публичные IDS экспертизы — измерение; подпись Самолёта — внедрение) и подтверждения импорта в СОД.
+> Мы на стадии доработки контура заказчика. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение у назначающей стороны ещё не начались. Checkpoint `GO` — регуляторно-измерительный MVP. `customer_go` остаётся false, пока нет независимого размеченного корпуса, двух разметчиков, подписанного профиля назначающей стороны и подтверждения импорта в СОД.
 
 **Первым делом, не дожидаясь вопроса:** штамп с листа в облако не отправляется; облачная модель видит только вырезанный фрагмент после клипа основной надписи.
 
@@ -63,6 +66,6 @@ claim_boundary: >
 - интеграция с Tangl / 10D
 - CDE-ready BCF
 - «ИИ понимает чертёж как инженер»
-- Checkpoint GO
+- Customer GO
 
 Полный реестр: [`../../docs/capability-claim-matrix-2026.md`](../../docs/capability-claim-matrix-2026.md). Нарушение ловится `scripts/lint_claims.py` в CI.

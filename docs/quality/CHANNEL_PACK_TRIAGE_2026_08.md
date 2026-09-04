@@ -14,7 +14,7 @@ claim_boundary: >
   KILL/HOLD/ACCEPT over the local unpack inventory and CC-2/CC-4 shortlist.
   Calc binaries are the majority of unpack bytes — inventory, not a solver.
   Token shortlists are not MATCH. Uncompressed GiB stays .local. Not pack
-  processed. Not a jury exhibit. Checkpoint NO_GO.
+  processed. Not a jury exhibit. Checkpoint GO; customer_go false.
 ---
 
 # Триаж пакета канала (31.08.2026)
@@ -25,7 +25,7 @@ claim_boundary: >
 
 Живой обход unpack-дерева **совпал** с вечерним census 30.08 (**6408** файлов). Именованные расширения расчётного комплекса — **235** файлов. Бинарные расчёты — **большинство байт** дерева (точное число ГиБ в git **не** публикуем, OA-9). Читаемый слой CC-2/CC-4: **6** docx с фразой «класс бетона», **46** xlsx с токенами нагрузок. Это **не** MATCH.
 
-Checkpoint **`NO_GO`**. `detected_count: 0`. `processed: false`. Семь задач Техлаба — **Uncertain**.
+Checkpoint **`GO`**; `customer_go` false. `detected_count: 0`. `processed: false`. Семь задач Техлаба — **Uncertain**.
 
 Связанные: [`CHANNEL_LOCAL_MAX_PASS_2026_08.md`](CHANNEL_LOCAL_MAX_PASS_2026_08.md) · [`SIG01_CHANNEL_TRIAGE_2026_08.md`](SIG01_CHANNEL_TRIAGE_2026_08.md) · [`CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md`](CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md).
 

@@ -1,3 +1,4 @@
+
 """IFC analyze cap vs ingest envelope vs bSI vs WASM.
 
 SPF ``ifcopenshell.open`` stays 256 MiB (``AEROBIM_MAX_IFC_BYTES``). Files
@@ -5,7 +6,7 @@ above that and up to the Samolet-stated 1.5 GB model envelope are analyzed
 via IfcOpenShell RocksDB (streaming convert, then open the key-value store).
 That is not an in-memory SPF raise and not a WASM raise.
 
-Checkpoint NO_GO. Does not raise the SPF default cap.
+Checkpoint GO (regulatory_measurement_mvp; customer_go false). Does not raise the SPF default cap.
 """
 
 from __future__ import annotations
@@ -19,11 +20,13 @@ from aerobim.core.security.upload_limits import (
     SAMOLET_STATED_MODEL_BYTES,
     WASM_IFC_VIEWER_CAP_BYTES,
 )
+from aerobim.domain.checkpoint import CHECKPOINT
 
 CLAIM_BOUNDARY: Final = (
     "SPF in-memory open stays 256 MiB. Files up to 1.5 GB use RocksDB, "
     "not SPF RAM. WASM viewer stays 256 MiB. bSI is 256 MB decimal. "
-    "SPF RAM multiplier is literature, not our RSS. Checkpoint NO_GO."
+    "SPF RAM multiplier is literature, not our RSS. Checkpoint GO "
+    "(regulatory_measurement_mvp; customer_go false)."
 )
 
 # buildingSMART Validation Service user guide: uncompressed .ifc, 256 MB.
@@ -155,7 +158,7 @@ def size_policy_snapshot() -> dict[str, object]:
     return {
         "artifact_type": "ifc_size_policy",
         "claim_level": "coverage_map_only",
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
         "analyze_cap_bytes": analyze,
         "analyze_cap_unit": "256 MiB SPF in-memory",
         "disk_analyze_cap_bytes": ingest,

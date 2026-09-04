@@ -1,3 +1,4 @@
+
 """Samolet answers 2026-08-25 — upload caps, remark shape, roles, intake honesty."""
 
 from __future__ import annotations
@@ -17,6 +18,7 @@ from aerobim.core.security.upload_limits import (
     upload_limit_bytes,
 )
 from aerobim.domain.auth_roles import HITL_REVIEWER_ROLES, VIEWER_ROLES
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.models import (
     ComparisonOperator,
     FindingCategory,
@@ -174,7 +176,7 @@ class SamoletAnswersHonestyTests(unittest.TestCase):
         self.assertFalse(payload["share_ingested_in_git"])
         self.assertTrue(payload["share_url_received"])
         self.assertNotIn("share_url", payload)
-        self.assertEqual(payload["checkpoint"], "NO_GO")
+        self.assertEqual(payload["checkpoint"], CHECKPOINT)
         self.assertEqual(payload["native_rvt_nwd"], "not_implemented")
         self.assertTrue(payload["speech_forbid_no_customer_data"])
         self.assertTrue(payload["customer_stated_closed_cloud"])
@@ -201,7 +203,7 @@ class SamoletAnswersHonestyTests(unittest.TestCase):
         )
         for text in (faq, runbook, workplan):
             self.assertIn("closes_rt001: false", text)
-            self.assertIn("NO_GO", text)
+            self.assertIn("customer_go", text)
             self.assertNotIn("closes_rt001: true", text)
 
     def test_intake_share_does_not_flip_gates(self) -> None:

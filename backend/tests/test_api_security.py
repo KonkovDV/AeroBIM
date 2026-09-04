@@ -9,6 +9,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 from uuid import uuid4
 
+from aerobim.domain.checkpoint import CHECKPOINT
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from aerobim.domain.models import (
@@ -822,7 +824,7 @@ class ApiAnalyzeProjectPackageEndpointTests(unittest.TestCase):
         self.assertIn("bcf_cde", body["claim_boundary"])
         self.assertEqual(body["auth_bff"]["status"], "NOT_IMPLEMENTED")
         intake = body["customer_intake_gate"]
-        self.assertEqual(intake["checkpoint"], "NO_GO")
+        self.assertEqual(intake["checkpoint"], CHECKPOINT)
         self.assertEqual(intake.get("true_gates"), [])
         directions = body["direction_contracts"]
         by_name = {row["capability"]: row for row in directions}

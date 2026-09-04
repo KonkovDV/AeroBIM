@@ -1,3 +1,4 @@
+
 """Unpack census pin stays name-free and is not «processed»."""
 
 from __future__ import annotations
@@ -6,6 +7,7 @@ import json
 import unittest
 from pathlib import Path
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.unpack_census import (
     PUBLIC_UNPACK_CENSUS,
     unpack_census_snapshot,
@@ -18,7 +20,7 @@ _EVIDENCE = _REPO / "docs" / "evidence" / "unpack-census-latest.json"
 class UnpackCensusTests(unittest.TestCase):
     def test_snapshot_stays_no_go_and_unprocessed(self) -> None:
         snap = unpack_census_snapshot()
-        self.assertEqual(snap["checkpoint"], "NO_GO")
+        self.assertEqual(snap["checkpoint"], CHECKPOINT)
         self.assertFalse(snap["processed"])
         self.assertFalse(snap["raise_cap"])
         self.assertFalse(snap["parse_rvt_nwd_lira"])

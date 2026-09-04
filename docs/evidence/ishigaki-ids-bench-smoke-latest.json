@@ -3,7 +3,7 @@
   "schema_version": "1.1.0",
   "generated_at": "2026-08-16T08:34:25.702803+00:00",
   "claim_level": "open_bench_only",
-  "claim_boundary": "Ishigaki-IDS-Bench gold IDS document audit only (CC BY 4.0). No IFC in the upstream set. Not LLM generation F1. Not product accuracy. Does not close RT-001. Checkpoint NO_GO.",
+  "claim_boundary": "Ishigaki-IDS-Bench gold IDS document audit only (CC BY 4.0). No IFC in the upstream set. Not LLM generation F1. Not product accuracy. Does not close RT-001. Checkpoint GO; customer_go false.",
   "status": "EXECUTED",
   "dataset_root": ".local/ishigaki-ids-bench",
   "source": {

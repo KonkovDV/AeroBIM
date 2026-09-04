@@ -4,7 +4,7 @@ import {
   submitAnalyzeProjectPackage,
 } from "../lib/api";
 import type { ReportCapabilities } from "../lib/types";
-import { BLOCKING_STATES, capabilityRows, engineGroupStatus, humanCapabilityLine, RUN_ENGINE_GROUPS } from "../lib/capability-copy";
+import { BLOCKING_STATES, capabilityRows, engineGroupStatus, formatEngineGroupStatus, humanCapabilityLine, RUN_ENGINE_GROUPS } from "../lib/capability-copy";
 import { UI_COPY } from "../lib/ui-copy";
 import {
   packCompositionLine,
@@ -186,6 +186,9 @@ export default function AnalyzeRunPanel({
         </div>
       </div>
       <p className="compact-copy">{UI_COPY.runHonesty}</p>
+      <p className="compact-copy" data-testid="analyze-size-honesty">
+        {UI_COPY.runSizeHonesty}
+      </p>
       <RunStatusStrip
         jobStatus={job?.status ?? null}
         elapsedSec={elapsedSec}
@@ -264,7 +267,7 @@ export default function AnalyzeRunPanel({
           const status = engineGroupStatus(capabilities, group.keys);
           return (
             <li key={group.id} className={`analyze-engine analyze-engine-${status}`}>
-              {group.title}: {status === "pending" ? UI_COPY.enginePending : status}
+              {group.title}: {formatEngineGroupStatus(status)}
             </li>
           );
         })}

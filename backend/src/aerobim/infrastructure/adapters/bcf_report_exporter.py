@@ -163,6 +163,19 @@ def _collect_topics(report: ValidationReport) -> list[_BcfTopicPayload]:
             (f"evidence_refs={','.join(issue.evidence_refs)}" if issue.evidence_refs else None),
             f"origin={issue.origin}" if issue.origin else None,
             f"ifc_globalid={issue.element_guid}" if issue.element_guid else None,
+            (
+                "norm="
+                + " · ".join(
+                    part
+                    for part in (issue.norm_source, issue.norm_edition, issue.norm_clause)
+                    if part and str(part).strip()
+                )
+                if any(
+                    part and str(part).strip()
+                    for part in (issue.norm_source, issue.norm_edition, issue.norm_clause)
+                )
+                else "norm="
+            ),
             "ai_generated=true;expert_confirmation_required=true" if ai_generated else None,
             "claim_boundary:RT-003_OPEN;MEP_not_delivered;geometry_may_be_NOT_VERIFIED"
             if is_mep

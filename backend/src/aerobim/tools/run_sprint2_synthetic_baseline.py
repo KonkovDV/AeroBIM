@@ -1,3 +1,4 @@
+
 """Sprint 2 synthetic baseline: mutation-apply → detect → TP/FP/FN + Wilson + p95.
 
 claim_level=synthetic_only. Never closes RT-001. No customer data.
@@ -22,6 +23,7 @@ from typing import Any
 
 from aerobim.core.config.settings import Settings
 from aerobim.core.di.tokens import Tokens
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.models import RequirementSource, SourceKind, ValidationRequest
 from aerobim.domain.study_design import wilson_interval
 from aerobim.infrastructure.adapters.spreadsheet_load_evidence_adapter import (
@@ -387,7 +389,7 @@ def run_baseline(
         "customer_accuracy_not_established": True,
         "closes_rt001": False,
         "customer_evidence": False,
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
         "method_doc": "docs/pilot/SPRINT2_DETECTION_METRICS_METHOD_2026_08.md",
         "ground_truth": str(gt_path.relative_to(repo)).replace("\\", "/"),
         "dataset_manifest": _rel_or_abs(repo, dataset_manifest_path),
@@ -489,7 +491,7 @@ def _render_markdown(report: dict[str, Any], *, json_path: Path) -> str:
         "",
         "## 1. Goal",
         "",
-        "Synthetic detection baseline on planted fixtures. Checkpoint **NO_GO**. "
+        "Synthetic detection baseline on planted fixtures. Checkpoint **GO**; customer_go false. "
         "Does not publish product accuracy.",
         "",
         "## 2. Commit SHA",
@@ -643,7 +645,7 @@ def _pdf_lines(report: dict[str, Any]) -> list[str]:
         "*** SYNTHETIC/FIXTURE ONLY ***",
         "*** CUSTOMER ACCURACY NOT ESTABLISHED ***",
         "AeroBIM Sprint 2 baseline report",
-        "1 Goal: synthetic detection baseline; checkpoint NO_GO",
+        "1 Goal: synthetic detection baseline; checkpoint GO; customer_go false",
         f"2 Commit: {report.get('commit_sha')}",
         f"3 Dataset: {report.get('ground_truth')} manifest={report.get('dataset_manifest')}",
         "4 License: repo MIT fixtures; no customer packs",

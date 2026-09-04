@@ -45,6 +45,8 @@ describe("ReviewKpiPanel", () => {
     render(<ReviewKpiPanel reportId={"r".repeat(32)} />);
     const bars = await screen.findByTestId("kpi-bars");
     expect(bars.textContent).toMatch(/подтверждено/);
+    expect(screen.getByTestId("kpi-cycle-honesty").textContent).toMatch(/не дни цикла/);
+    expect(screen.getByTestId("kpi-decision-split").textContent).toMatch(/Подтверждено 3, отклонено 1/);
     await waitFor(() => {
       expect(screen.getByRole("img", { name: /75/ })).toBeTruthy();
     });

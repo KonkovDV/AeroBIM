@@ -14,7 +14,7 @@ claim_boundary: >
   KILL/HOLD/ACCEPT over public GitHub surfaces a sitting member opens first.
   Roles not FIO. Unpack fingerprint counts stay off TIER0. Not pack processed.
   Not sitting-member OSINT in git. Engineering pins stay, not as a jury exhibit.
-  Checkpoint NO_GO.
+  Checkpoint GO; customer_go false.
 ---
 
 # Триаж поверхностей жюри (01.09.2026)
@@ -25,7 +25,7 @@ claim_boundary: >
 
 Инженерные пины инвентаря канала (census / family / local max-pass) **не** карта жюри и **не** exhibit. Карта: [`../TIER0_INDEX.md`](../TIER0_INDEX.md).
 
-Checkpoint **`NO_GO`**. `detected_count: 0`. `processed: false`. Семь задач Техлаба — **Uncertain**.
+Checkpoint **`GO`**; `customer_go` false. `detected_count: 0`. `processed: false`. Семь задач Техлаба — **Uncertain**.
 
 Связанные: [`TRACKER_EIGHT_TASKS_2026_08.md`](TRACKER_EIGHT_TASKS_2026_08.md) · [`KT3_IN_REPO_WORKPLAN_2026_08_27.md`](KT3_IN_REPO_WORKPLAN_2026_08_27.md) · [`INTERPRETATION_USE_LEDGER_2026_08.md`](INTERPRETATION_USE_LEDGER_2026_08.md) · [`FORMAT_INGEST_TRIAGE_2026_09.md`](FORMAT_INGEST_TRIAGE_2026_09.md) · [`UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md`](UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md).
 
@@ -70,4 +70,4 @@ Checkpoint **`NO_GO`**. `detected_count: 0`. `processed: false`. Семь зад
 
 Не добавлять фамилии в denylist без ротации CI-секрета. Не удалять инженерные пины.
 
-Checkpoint **`NO_GO`**.
+Checkpoint **`GO`**; `customer_go` false.

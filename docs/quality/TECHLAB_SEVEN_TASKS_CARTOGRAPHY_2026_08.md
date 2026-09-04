@@ -1,4 +1,4 @@
-<!-- claims-lint: allow-file reason="Seven TechLab task cartography; coverage_map_only; TZ 90%/SLA/MEP/RT CLOSED blocked; Checkpoint NO_GO" -->
+<!-- claims-lint: allow-file reason="Seven TechLab task cartography; coverage_map_only; TZ 90%/SLA/MEP/RT CLOSED blocked; Checkpoint GO; customer_go false" -->
 ---
 title: "Seven TechLab comparison tasks — cartography on local NDA rehearsal"
 date: "2026-08-26"
@@ -13,7 +13,7 @@ detected_count: 0
 claim_boundary: >
   Filename/entity/property presence map of seven sponsor comparison tasks
   onto a local owner-disk NDA pack. Not TP/FP. Not remark-closure. Not
-  product accuracy. Not customer SLA. Not MEP delivered. Checkpoint NO_GO.
+  product accuracy. Not customer SLA. Not MEP delivered. Checkpoint GO; customer_go false.
   Meets/Does-not are forbidden as customer verdicts on this rehearsal.
 ---
 
@@ -163,7 +163,7 @@ SAM-TYP: 021, 022, 025. **Запрет:** «арматура сверена с �
 
 Семь задач **разложены по 51 ячейке**. Ни одна задача **не** имеет состояния Meets. Критерий каждой — Uncertain. Там, где чтение свойства невозможно, ячейка Missing (это про экспорт, не про «ошибку Самолёта»).
 
-Гистограмма ячеек: present **23**, absent **19**, incomparable **5**, blocked **4**. Checkpoint **`NO_GO`**.
+Гистограмма ячеек: present **23**, absent **19**, incomparable **5**, blocked **4**. Checkpoint **`GO`**; `customer_go` false.
 
 Чтобы карта стала измерением, а не инвентарём: QTO на помещениях, сетки пакета A или отказ от осей, ИОС IFC или MEP-OOS, стержни или OOS п.7, IDS назначающей стороны, два разметчика.
 
@@ -182,4 +182,4 @@ SAM-TYP: 021, 022, 025. **Запрет:** «арматура сверена с �
 - КР `IfcMaterial.Name` несёт B25/B35 (CC-2 сторона BIM). Читаемой записки с \(A_s\)/прогибами по-прежнему нет.
 - EIR v4.0 + BIM-стандарт v4.0 present как текст; `customer_approved` absent.
 
-Пин: [`../evidence/deep-study-carrier-facts-2026-08.md`](../evidence/deep-study-carrier-facts-2026-08.md). Checkpoint **`NO_GO`**.
+Пин: [`../evidence/deep-study-carrier-facts-2026-08.md`](../evidence/deep-study-carrier-facts-2026-08.md). Checkpoint **`GO`**; `customer_go` false.

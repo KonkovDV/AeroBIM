@@ -1,3 +1,4 @@
+
 """Ishigaki-IDS-Bench gold IDS audit: SKIPPED without files; processability only."""
 
 from __future__ import annotations
@@ -7,6 +8,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.infrastructure.adapters.xml_ids_document_auditor import XmlIdsDocumentAuditor
 from aerobim.tools.run_ishigaki_ids_bench_smoke import audit_gold_ids, skipped_payload
 
@@ -93,7 +95,7 @@ class IshigakiIdsBenchSmokeTests(unittest.TestCase):
         self.assertEqual(payload["source"]["kind"], "hf_test_jsonl")
         self.assertEqual(payload["summary"]["audited"], 1)
         self.assertFalse(payload["citation"]["real_ifc"])
-        self.assertEqual(payload["checkpoint"], "NO_GO")
+        self.assertEqual(payload["checkpoint"], CHECKPOINT)
 
 
 if __name__ == "__main__":

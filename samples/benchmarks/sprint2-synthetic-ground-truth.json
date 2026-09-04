@@ -5,7 +5,7 @@
   "claim_level": "synthetic_only",
   "closes_rt001": false,
   "customer_evidence": false,
-  "limitation": "Measures only planted defects. Unplanted error classes remain unmeasured. Synthetic floor — not customer precision. Checkpoint NO_GO.",
+  "limitation": "Measures only planted defects. Unplanted error classes remain unmeasured. Synthetic floor — not customer precision. Checkpoint GO; customer_go false.",
   "tz_error_classes": [
     {
       "tz_class": "geometric_clash_between_systems",

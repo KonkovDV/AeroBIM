@@ -1,3 +1,4 @@
+
 """Maximum licensed Samolet-copy pass stays coverage_map_only."""
 
 from __future__ import annotations
@@ -8,6 +9,7 @@ import unittest
 from pathlib import Path
 
 from aerobim.domain.channel_local_max_pass import channel_local_max_pass_snapshot
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.tools.pack_probe import probe_pack
 from aerobim.tools.run_channel_max_pass import main as max_pass_main
 from aerobim.tools.run_finding_volume import main as finding_volume_main
@@ -17,7 +19,7 @@ from aerobim.tools.scan_declared_calc_tokens import scan_declared_calc_tokens
 class ChannelLocalMaxPassTests(unittest.TestCase):
     def test_snapshot_stays_no_go_and_uncertain(self) -> None:
         snap = channel_local_max_pass_snapshot()
-        self.assertEqual(snap["checkpoint"], "NO_GO")
+        self.assertEqual(snap["checkpoint"], CHECKPOINT)
         self.assertEqual(snap["claim_level"], "coverage_map_only")
         self.assertEqual(snap["publishable_finding_count"], 0)
         self.assertFalse(snap["pack_processed"])
@@ -141,7 +143,7 @@ class ChannelLocalMaxPassTests(unittest.TestCase):
                 0,
             )
             combined = json.loads((out / "combined-aggregate.json").read_text(encoding="utf-8"))
-            self.assertEqual(combined["checkpoint"], "NO_GO")
+            self.assertEqual(combined["checkpoint"], CHECKPOINT)
             self.assertFalse(combined["pack_processed"])
             self.assertEqual(combined["pack_file_count"], 1)
             self.assertFalse((out / "pack-local.json").exists())

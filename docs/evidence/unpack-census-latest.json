@@ -1,11 +1,11 @@
 {
   "artifact_type": "unpack_census",
   "claim_level": "coverage_map_only",
-  "checkpoint": "NO_GO",
+  "checkpoint": "GO",
   "closes_rt001": false,
   "closes_rt002": false,
   "closes_rt003": false,
-  "claim_boundary": "Local wrapper + unpack-tree suffix/magic census. Evening recensus after deleting covered source archives (0 zip/7z left). Not pack processed. Not product accuracy. Not native RVT/DWG/LIRA. SPF cap stays 256 MiB. Checkpoint NO_GO.",
+  "claim_boundary": "Local wrapper + unpack-tree suffix/magic census. Evening recensus after deleting covered source archives (0 zip/7z left). Not pack processed. Not product accuracy. Not native RVT/DWG/LIRA. SPF cap stays 256 MiB. Checkpoint GO (regulatory_measurement_mvp; customer_go false).",
   "detected_count": 0,
   "census_date": "2026-08-30",
   "census_pass": "evening",

@@ -10,6 +10,22 @@ from collections import defaultdict
 from typing import Any
 
 
+def issue_clause_label(issue: dict[str, Any]) -> str:
+    """ИТЗ / СТО / СП stamp. Empty means the field is missing, not invented."""
+
+    remark = issue.get("remark")
+    if isinstance(remark, dict):
+        cite = str(remark.get("clause_cite") or "").strip()
+        if cite:
+            return cite
+    parts = [
+        str(part).strip()
+        for part in (issue.get("norm_source"), issue.get("norm_edition"), issue.get("norm_clause"))
+        if part and str(part).strip()
+    ]
+    return " · ".join(parts)
+
+
 def _esc(value: str) -> str:
     """HTML-escape user-controlled values for element text and attributes."""
     import html
@@ -122,16 +138,19 @@ def _build_issue_rows(issues: list[dict[str, Any]]) -> str:
             f"<br><small class='audit'>{' · '.join(audit_bits)}</small>" if audit_bits else ""
         )
         detail_html = f"{pz_html}{audit_html}" or "—"
+        clause = issue_clause_label(issue)
+        clause_html = _esc(clause) if clause else "нет пункта"
         rows += (
             f"<tr><td class='sev {_esc(sev)}'>{_esc(sev)}{band_html}</td>"
             f"<td class='{pri_class}'>{pri}</td>"
             f"<td>{conf_display}</td>"
             f"<td>{_esc(issue.get('rule_id', ''))}{loin_html}{norm_html}</td>"
+            f"<td class='clause'>{clause_html}</td>"
             f"<td>{_esc(issue.get('message', ''))}</td>"
             f"{ev_exp}{ev_obs}"
             f"<td>{_esc(issue.get('element_guid') or '')}</td>"
             f"<td>{_esc(issue.get('target_ref') or '')}</td></tr>\n"
-            f"<tr class='detail'><td colspan='9'>{detail_html}</td></tr>\n"
+            f"<tr class='detail'><td colspan='10'>{detail_html}</td></tr>\n"
         )
     return rows
 
@@ -305,7 +324,8 @@ def _claim_boundary_banner(release: object) -> str:
         return ""
     return (
         '<p class="claim-boundary" id="kt2-claim-boundary">'
-        "Fixture demo. Not customer accuracy. Checkpoint NO_GO. Not CV. "
+        "Fixture demo. Not customer accuracy. Checkpoint GO "
+        "(regulatory_measurement_mvp; customer_go false). Not CV. "
         "Not a CDE import (structural ZIP / file ingest only). "
         "VLM/advisory cannot set PASS."
         "</p>\n"
@@ -447,7 +467,8 @@ def render_report_html(
         rows = _build_issue_rows(issues)
         category_sections += (
             f"<section class='cat'><h2>{label_html} ({len(issues)})</h2>"
-            f"<table><thead><tr><th>Severity</th><th>Priority</th><th>Confidence</th><th>Rule</th><th>Message</th>"
+            f"<table><thead><tr><th>Severity</th><th>Priority</th><th>Confidence</th><th>Rule</th>"
+            f"<th>ИТЗ / СТО / СП</th><th>Message</th>"
             f"<th>Expected</th><th>Observed</th><th>GUID</th><th>Target</th></tr></thead>"
             f"<tbody>{rows}</tbody></table></section>\n"
         )

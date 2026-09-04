@@ -1,20 +1,22 @@
+
 """SPG speech Red Team triage — 2026-09-01.
 
 Consulting notes stay owner speech, not a product and not a jury exhibit.
 Path must not contain the hyphenated token blocked by pre-commit.
-Checkpoint NO_GO.
+Checkpoint GO (regulatory_measurement_mvp; customer_go false).
 """
 
 from __future__ import annotations
 
 from typing import Final
 
+from aerobim.domain.checkpoint import CHECKPOINT
+
 CLAIM_LEVEL: Final = "coverage_map_only"
-CHECKPOINT: Final = "NO_GO"
 CLAIM_BOUNDARY: Final = (
     "SPG August 2026 notes are attributed speech. Construction cut is not SAM. "
     "FM/PM cut is adjacent. PDFs stay off git. Filename stays off TIER0. "
-    "Checkpoint NO_GO."
+    "Checkpoint GO (regulatory_measurement_mvp; customer_go false)."
 )
 
 TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (

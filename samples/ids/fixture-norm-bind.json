@@ -1,5 +1,5 @@
 {
-  "claim_boundary": "Fixture IDS implements demo TZ clauses from samples/specifications/techlab-tz.txt. Not SP 2.13130. Not customer class II/C0. Checkpoint NO_GO.",
+  "claim_boundary": "Fixture IDS implements demo TZ clauses from samples/specifications/techlab-tz.txt. Not SP 2.13130. Not customer class II/C0. Checkpoint GO; customer_go false.",
   "by_specification_name": {
     "Wall Fire Rating Multi": {
       "norm_source": "ТЗ (демо-пакет)",

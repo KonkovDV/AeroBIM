@@ -1,3 +1,4 @@
+
 """Owner-AI plan stays NO_GO; owner-blocked items are explicit."""
 
 from __future__ import annotations
@@ -6,6 +7,7 @@ import json
 import unittest
 from pathlib import Path
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.owner_ai_plan import (
     DESIGN_TZ_EXTRACTOR_HITS,
     DESIGN_TZ_EXTRACTOR_STATUS,
@@ -21,7 +23,7 @@ _EVIDENCE = _REPO / "docs" / "evidence" / "owner-ai-plan-execution-2026-08.json"
 class OwnerAiPlanTests(unittest.TestCase):
     def test_snapshot_stays_no_go(self) -> None:
         snap = plan_snapshot()
-        self.assertEqual(snap["checkpoint"], "NO_GO")
+        self.assertEqual(snap["checkpoint"], CHECKPOINT)
         self.assertEqual(snap["detected_count"], 0)
         self.assertFalse(snap["closes_rt001"])
         self.assertFalse(snap["closes_rt002"])

@@ -53,7 +53,7 @@ CLAIM_BOUNDARY = (
     "XMLSchema11 still needs a documentation xml:id strip to load those two "
     "files. Official zip folders contain 'dev_'. Survey XSDs are intake "
     "format only (GeologicalReport is not a generic all-discipline report). "
-    "Checkpoint NO_GO. closes_rt001=false."
+    "Checkpoint GO (regulatory_measurement_mvp; customer_go false). closes_rt001=false."
 )
 
 SCHEMA_CATALOG: Final[tuple[dict[str, Any], ...]] = (

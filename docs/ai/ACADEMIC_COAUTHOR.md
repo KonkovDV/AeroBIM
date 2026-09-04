@@ -5,7 +5,7 @@ status: active
 version: "1.0.0"
 last_updated: "2026-09-03"
 claim_boundary: >
-  Operator prompt. Not a measured result. Checkpoint NO_GO.
+  Operator prompt. Not a measured result. Checkpoint GO; customer_go false.
   Roadmap lives in docs/quality/ACADEMIC_ROADMAP_2026_09.md.
 ---
 

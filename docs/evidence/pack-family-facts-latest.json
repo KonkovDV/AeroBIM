@@ -1,11 +1,11 @@
 {
   "artifact_type": "pack_family_facts",
   "claim_level": "coverage_map_only",
-  "checkpoint": "NO_GO",
+  "checkpoint": "GO",
   "closes_rt001": false,
   "closes_rt002": false,
   "closes_rt003": false,
-  "claim_boundary": "Unpack-tree family facts after the 31.08 live walk. File counts and booleans only. Uncompressed byte totals stay out of git. Not pack processed. Not a LIRA solver. Not CC-2 MATCH. Checkpoint NO_GO.",
+  "claim_boundary": "Unpack-tree family facts after the 31.08 live walk. File counts and booleans only. Uncompressed byte totals stay out of git. Not pack processed. Not a LIRA solver. Not CC-2 MATCH. Checkpoint GO (regulatory_measurement_mvp; customer_go false).",
   "detected_count": 0,
   "study_date": "2026-08-31",
   "unpack_file_count": 6408,

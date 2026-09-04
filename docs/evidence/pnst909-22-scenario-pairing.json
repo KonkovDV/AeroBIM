@@ -1,7 +1,7 @@
 {
   "artifact_type": "pnst909_22_scenario_pairing",
   "schema_version": "1.0.0",
-  "claim_boundary": "Relative IDS/IFC pairing for the Renga PNST 909 publisher pack. Not product accuracy. Checkpoint NO_GO. Pack stays gitignored.",
+  "claim_boundary": "Relative IDS/IFC pairing for the Renga PNST 909 publisher pack. Not product accuracy. Checkpoint GO; customer_go false. Pack stays gitignored.",
   "source": "Frozen from 2026-08-05 measured pairing (building-element IDS variant per scenario).",
   "tos_cite": "GO",
   "tos_cite_date": "2026-08-05",

@@ -20,5 +20,21 @@ describe("CapabilityTopBanner", () => {
     expect(text).toMatch(/коллизии/);
     expect(text).toMatch(/тишина ≠ успех/i);
     expect(text).toMatch(/DWG/);
+    expect(text).not.toMatch(/\bskipped\b|\bfailed\b/);
+  });
+
+  it("states missing MEP IFC without calling silence success", () => {
+    render(
+      <CapabilityTopBanner
+        capabilities={{
+          ...capabilities,
+          mep_system_clash: { status: "not_verified", reason: "no MEP IFC" },
+        }}
+      />,
+    );
+    const text = screen.getByTestId("capability-top-banner").textContent ?? "";
+    expect(text).toMatch(/коллизий инженерных сетей/);
+    expect(text).toMatch(/сети в IFC не переданы/);
+    expect(text).not.toMatch(/not_verified/);
   });
 });

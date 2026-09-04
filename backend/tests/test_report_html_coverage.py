@@ -111,7 +111,7 @@ class ReportHtmlCoverageTests(unittest.TestCase):
             overlay_image_href="overlay-problem-zone.png",
         )
         self.assertIn("kt2-claim-boundary", sliced)
-        self.assertIn("Checkpoint NO_GO", sliced)
+        self.assertIn("Checkpoint GO", sliced)
         self.assertIn("summary.passed=false", sliced)
         self.assertIn("Not a CDE import", sliced)
         self.assertIn("kt2-capabilities", sliced)

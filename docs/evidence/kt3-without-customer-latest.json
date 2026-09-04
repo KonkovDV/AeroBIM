@@ -1,10 +1,14 @@
 {
-  "schema_version": "1.2.0",
+  "schema_version": "1.6.0",
   "artifact_type": "kt3_without_customer",
   "claim_level": "fixture_and_proxy_only",
-  "claim_boundary": "Customer files are not expected in git. KT#3 is the live fixture gate plus public/synthetic proxies. Not product accuracy. Not customer SLA. Not MEP delivered. Not CDE-ready. Checkpoint NO_GO. closes_rt001/002/003 stay false.",
-  "generated_at": "2026-08-27T08:31:32.588664+00:00",
-  "checkpoint": "NO_GO",
+  "claim_boundary": "Customer files are not expected in git. KT#3 is the live fixture gate plus public/synthetic proxies. Measurement volumes (RT-001a content pairing, RT-001 protocol rehearsal, RT-002a public IDS, RT-002b channel EIR/BIM-standard text, RT-003a planted geometric clash, RT-003b IfcSystem graph rehearsal, RT-003 NWD federation carrier) use substitutes. Not product accuracy. Not customer SLA. Not MEP delivered. Not CDE-ready. Checkpoint GO (regulatory_measurement_mvp; customer_go false). closes_rt001/002/003 stay false.",
+  "generated_at": "2026-09-04T00:00:00+00:00",
+  "checkpoint": "GO",
+  "go_kind": "regulatory_measurement_mvp",
+  "customer_go": false,
+  "market_go": false,
+  "deployment_go": false,
   "mik_stage": "доработка",
   "validation_effectiveness_started": false,
   "deployment_started": false,
@@ -17,11 +21,59 @@
   "closes_rt001": false,
   "closes_rt002": false,
   "closes_rt003": false,
+  "rt001_split": {
+    "a_content_pairing": "CLOSED",
+    "b_protocol_rehearsal": "CLOSED",
+    "b_criterion_dual_rater": "OPEN",
+    "c_customer_corpus": "OPEN",
+    "undifferentiated_closed_forbidden": true,
+    "open_benches_are_different_contour": true,
+    "substitute": "RF expertise typical-error catalogs (Experiment B) + public examination IDS + fixture/injection gold + two simulated independent passes with live κ/α/AC1. Not two humans.",
+    "kirov_kr_detectable": 4,
+    "independent_human_raters": 0,
+    "dual_rater_n": 28,
+    "dual_rater_kappa": 0.705263,
+    "dual_rater_alpha": 0.706927,
+    "dual_rater_ac1": 0.869413
+  },
   "rt002_split": {
     "a_regulatory": "CLOSED",
+    "b_eir_carrier": "CLOSED",
     "b_corporate": "OPEN",
-    "undifferentiated_closed_forbidden": true
+    "c_corporate_signed": "OPEN",
+    "undifferentiated_closed_forbidden": true,
+    "substitute": "City/MOEXP/CGE published IDS as the measurement ruler (RT-002a). Channel-pack EIR v4.0 + BIM-standard v4.0 as text (RT-002b carrier). Public examination IDS is not the appointing-party EIR. Text EIR is not a signed IDS.",
+    "agr_pack_status": "approved",
+    "pointer_samolet_alias": false,
+    "eir_v4_present": true,
+    "bim_standard_v4_present": true,
+    "eir_lod_mep_disciplines_named": true,
+    "customer_approved_ids": false,
+    "ids_counts": {
+      "moexp": 24,
+      "spb_cge": 22,
+      "moscow_agr": 4
+    }
   },
+  "rt003_split": {
+    "a_federated_geometric_rehearsal": "CLOSED",
+    "b_navis_federation_carrier": "CLOSED",
+    "b_ifc_system_graph_rehearsal": "CLOSED",
+    "b_mep_system_clash": "OPEN",
+    "c_customer_federated_ifc": "OPEN",
+    "undifferentiated_closed_forbidden": true,
+    "substitute": "In-repo planted IfcClash is geometric rehearsal (RT-003a). HVAC fixture IfcSystem graph (2 systems, RelAssignsToGroup) is RT-003b rehearsal — not pipe-vs-wall. Channel pack has three NWD federations; native unread. Zero duct/pipe/cable on customer IFC. EIR names OV/VK/ITP/EOM/SS LOD; models absent.",
+    "mep_system_clash": "NOT_VERIFIED",
+    "nwd_federation_count": 3,
+    "mep_duct_pipe_cable_count": 0,
+    "flow_terminal_present_on_ar": true,
+    "eir_lod_mep_disciplines_named": true,
+    "hvac_ifc_system_count": 2,
+    "parse_rvt_nwd_lira": false,
+    "planted_pin": "docs/evidence/federated-clash-planted-2026-08.json",
+    "mep_inventory_pin": "docs/evidence/federated-mep-inventory-2026-08.json"
+  },
+  "volume_re_scope_date": "2026-09-04",
   "demo_command": "python -m aerobim.tools.run_demo_ifc_acceptance_gate",
   "pack_command": "python -m aerobim.tools.run_kt3_without_customer",
   "jury_command": "python -m aerobim.tools.run_kt3_jury",
@@ -60,18 +112,18 @@
     "project_design_tz_houses"
   ],
   "typical_errors": {
-    "pattern_count": 25,
+    "pattern_count": 26,
     "customer_confirmed_patterns": 0,
     "catalog_status": "synthetic-scaffold"
   },
   "tracker": {
     "artifact_type": "tracker_six_tasks_kt3",
     "claim_level": "operational_hygiene",
-    "checkpoint": "NO_GO",
+    "checkpoint": "GO",
     "closes_rt001": false,
     "closes_rt002": false,
     "closes_rt003": false,
-    "claim_boundary": "Tracker six-task status for KT#3. Live fixture CLI and open-bench pins. Not product accuracy. Not customer SLA. Not a scheduled-demo count in git. Checkpoint NO_GO. closes_rt001/002/003=false.",
+    "claim_boundary": "Tracker six-task status for KT#3. Live fixture CLI and open-bench pins. Not product accuracy. Not customer SLA. Not a scheduled-demo count in git. Checkpoint GO (regulatory_measurement_mvp; customer_go false). closes_rt001/002/003=false.",
     "detected_count": 0,
     "tracker": "Dmitry",
     "assigned_at": "2026-08-14",
@@ -131,6 +183,105 @@
     "item_count": 6,
     "agent_done_count": 5,
     "owner_blocked_count": 5
+  },
+  "tracker_eight": {
+    "artifact_type": "tracker_eight_tasks_kt3",
+    "claim_level": "operational_hygiene",
+    "checkpoint": "GO",
+    "closes_rt001": false,
+    "closes_rt002": false,
+    "closes_rt003": false,
+    "claim_boundary": "Eight tracker tasks (29.08.2026). Finding volume is not accuracy. SIG-01 report phrase: объём находок на канале получен. Customer pack stays out of git until a written data-handling order. SPF in-memory open stays 256 MiB; 1.5 GB is ingest + RocksDB. auth_bff default remains NOT_IMPLEMENTED. Checkpoint GO (regulatory_measurement_mvp; customer_go false).",
+    "detected_count": 0,
+    "assigned_at": "2026-08-29",
+    "kt3_window": "2026-09-03..2026-09-21",
+    "feature_freeze": "2026-09-18",
+    "samolet_appendix4_task": 6,
+    "commission_order_number": 7,
+    "spf_analyze_cap_bytes": 268435456,
+    "ingest_cap_bytes": 1500000000,
+    "raises_spf_default_for_ingest": false,
+    "cadsofttools_usd_retrieved": 765,
+    "cadsofttools_stale_list_price": true,
+    "rt002a": "CLOSED",
+    "rt002b": "OPEN",
+    "auth_bff_status": "NOT_IMPLEMENTED",
+    "finding_volume_is_accuracy": false,
+    "sig01_report_phrase": "объём находок на канале получен",
+    "sig01_publishable_finding_count": 0,
+    "channel_max_pass": "channel_local_max_pass_snapshot",
+    "pack_family_facts": "pack_family_snapshot",
+    "customer_pack_in_git": false,
+    "space_efficiency_kt3": "advisory_unsigned",
+    "space_efficiency_delivered": false,
+    "items": [
+      {
+        "id": "SIG-01",
+        "title": "Run on Samolet IFC/PDF; finding volume + type breakdown",
+        "git": "volume_taxonomy_and_lite_cli",
+        "owner": "blocked_channel_pack",
+        "show": "python -m aerobim.tools.run_finding_volume --findings-lite-dir <local>",
+        "stop": "Finding count as product accuracy, pack processed, or customer defect list"
+      },
+      {
+        "id": "SIG-02",
+        "title": "Inventory the 43 GB pack (format / processed / priority / legal flag)",
+        "git": "pack_probe_and_archive_overlap",
+        "owner": "blocked_data_regime",
+        "show": "pack_probe + pack_archive_overlap + census/deep-study pins",
+        "stop": "Commit names, hashes, or '43 GB processed'"
+      },
+      {
+        "id": "SIG-03",
+        "title": "External contour: closed storage + Expert/User roles",
+        "git": "roles_in_api_bff_501",
+        "owner": "blocked_production_idp",
+        "show": "GET /v1/auth/bff → 501; expert/user aliases in auth_roles",
+        "stop": "Lab cookie path as production SSO"
+      },
+      {
+        "id": "SIG-04",
+        "title": "Two-criterion accuracy + draft typical-error classifier",
+        "git": "catalog_ge_20_unconfirmed",
+        "owner": "blocked_dual_rater",
+        "show": "samples/benchmarks/samolet-typical-errors-catalog.json",
+        "stop": "Treat unsigned catalog as customer-confirmed; mix fixture F1 with channel volume"
+      },
+      {
+        "id": "SIG-05",
+        "title": "Question pack to Samolet via organizers",
+        "git": "draft_in_partners",
+        "owner": "blocked_send_mail",
+        "show": "docs/partners/SAMOLET_QUESTION_PACK_KT3_2026_08.md",
+        "stop": "Republish the share URL; treat TBD as write-from-scratch"
+      },
+      {
+        "id": "SIG-06",
+        "title": "LIRA compare: effort and KT#3 feasibility",
+        "git": "four_checks_partial",
+        "owner": "blocked_calculation_notes",
+        "show": "docs/quality/CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md",
+        "stop": "Independent solver / native .lir"
+      },
+      {
+        "id": "SIG-07",
+        "title": "Position on RVT/NWD and computer vision",
+        "git": "osint_onepager",
+        "owner": "blocked_legal_entity_license",
+        "show": "docs/quality/FORMAT_INGEST_TRIAGE_2026_09.md",
+        "stop": "Sustaining 7500 USD = BimRv; stale CADSoftTools list price; DWG-ready"
+      },
+      {
+        "id": "SIG-08",
+        "title": "Datasets: RUT (MIIT) via IT mentor",
+        "git": "letter_not_in_git",
+        "owner": "blocked_send_mail",
+        "show": "docs/OWNER_ACTIONS_2026_09.md OA-10",
+        "stop": "Teaching pack closes RT-001"
+      }
+    ],
+    "item_count": 8,
+    "owner_blocked_count": 8
   },
   "mik_m2_m8": "VERIFY_WITH_OPERATOR",
   "evidence": [
@@ -195,6 +346,11 @@
       "present": true
     },
     {
+      "role": "kt3_tracker_eight",
+      "path": "docs/quality/TRACKER_EIGHT_TASKS_2026_08.md",
+      "present": true
+    },
+    {
       "role": "tz_v1_brief",
       "path": "docs/tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md",
       "present": true
@@ -212,6 +368,16 @@
     {
       "role": "typical_errors_catalog",
       "path": "samples/benchmarks/samolet-typical-errors-catalog.json",
+      "present": true
+    },
+    {
+      "role": "rt_blocker_volumes",
+      "path": "docs/evidence/rt-blocker-volumes-2026-09.md",
+      "present": true
+    },
+    {
+      "role": "rt001_dual_rater_simulation",
+      "path": "docs/evidence/rt001-dual-rater-simulation-2026-09.md",
       "present": true
     },
     {

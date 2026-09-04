@@ -10,6 +10,8 @@ import {
   issueMatchesSearch,
   snapIssueIndexToVisible,
   spatialOrMissing,
+  uniqueClauseKeys,
+  CLAUSE_FILTER_MISSING,
 } from "./issue-triage";
 import type { ValidationIssue, ValidationReport } from "./types";
 
@@ -103,6 +105,10 @@ describe("issue-triage", () => {
     expect(issueMatchesSearch(row, "3 этаж")).toBe(true);
     expect(issueMatchesSearch(row, "а-2")).toBe(true);
     expect(issueMatchesSearch(row, "колонна")).toBe(false);
+    expect(issueMatchesSearch(issue({ norm_source: "СП 63", norm_clause: "8.1" }), "сп 63")).toBe(
+      true,
+    );
+    expect(issueMatchesSearch(issue({ norm_clause: "п. 4.4" }), "4.4")).toBe(true);
   });
 
   it("filterTriageIssues applies severity, hitl and search, then sorts by priority", () => {
@@ -123,6 +129,31 @@ describe("issue-triage", () => {
     expect(found.map((row) => row.issue.rule_id)).toEqual(["R3"]);
     // Исходные индексы отчёта сохраняются — карточка и клавиатура работают по ним.
     expect(all[0]?.index).toBe(1);
+  });
+
+  it("filters by ИТЗ / СТО / СП stamp and lists unique keys", () => {
+    const report = {
+      issues: [
+        issue({ rule_id: "A", norm_source: "СП 63", norm_clause: "8.1" }),
+        issue({ rule_id: "B", norm_source: "СП 63", norm_clause: "8.1" }),
+        issue({ rule_id: "C" }),
+      ],
+    } as unknown as ValidationReport;
+    const stamped = filterTriageIssues(report, {
+      severity: "all",
+      hitlOnly: false,
+      search: "",
+      clause: "СП 63 · 8.1",
+    });
+    expect(stamped.map((row) => row.issue.rule_id)).toEqual(["A", "B"]);
+    const missing = filterTriageIssues(report, {
+      severity: "all",
+      hitlOnly: false,
+      search: "",
+      clause: CLAUSE_FILTER_MISSING,
+    });
+    expect(missing.map((row) => row.issue.rule_id)).toEqual(["C"]);
+    expect(uniqueClauseKeys(report.issues)).toEqual(["СП 63 · 8.1"]);
   });
 
   it("matches a HITL region to a finding on the same sheet and ignores stamp priors", () => {

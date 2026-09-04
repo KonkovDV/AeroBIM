@@ -1,3 +1,4 @@
+
 """TR-67 spec vs schedule vs model quantities. Not estimate QTO.
 
 Customer answers 25.08 п. 2.1.3 call volume mismatch a logical collision.
@@ -11,12 +12,14 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Final, Literal
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.quantity import parse_localized_number, parse_quantity, si_compare
 
 CLAIM_BOUNDARY: Final = (
     "Fixture three-way declared quantities (specification, drawing schedule, "
     "BIM). Not model-to-estimate volumes. Not a customer pack. Not geometry "
-    "clash. Checkpoint NO_GO. closes_rt001/002/003=false."
+    "clash. Checkpoint GO "
+    "(regulatory_measurement_mvp; customer_go false). closes_rt001/002/003=false."
 )
 _NUMERIC_EPS: Final = 1e-3
 
@@ -102,7 +105,7 @@ def compare_spec_volumes(lines: Sequence[SpecVolumeLine]) -> SpecVolumeCompareRe
     return SpecVolumeCompareResult(
         lines=tuple(results),
         all_match=all_match,
-        checkpoint="NO_GO",
+        checkpoint=CHECKPOINT,
         closes_rt001=False,
         closes_rt002=False,
         closes_rt003=False,
@@ -118,7 +121,7 @@ def spec_volume_honesty_snapshot() -> dict[str, object]:
         "requirement": "TR-67",
         "answers_clause": "2.1.3",
         "claim_level": "coverage_map_only",
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
         "estimate_qto": "not_in_scope",
         "customer_pack": "not_ingested",
         "ingest": "not_wired",

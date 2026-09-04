@@ -1,8 +1,9 @@
+
 """Run the maximum licensed local pass on a Samolet quarantine copy.
 
 Writes only under ``.local/`` or outside the git tree. Does not re-analyze
 IFC (use an existing findings-lite tree). Does not parse RVT/NWD/.lir.
-Does not raise the SPF cap. Checkpoint NO_GO.
+Does not raise the SPF cap. Checkpoint GO (regulatory_measurement_mvp; customer_go false).
 """
 
 from __future__ import annotations
@@ -14,6 +15,7 @@ from pathlib import Path
 from typing import Any
 
 from aerobim.domain.channel_local_max_pass import channel_local_max_pass_snapshot
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.finding_volume import REPORT_PHRASE, volume_from_findings
 from aerobim.domain.owner_files_inventory import require_local_only_output
 from aerobim.tools.benchmark_project_package import repo_root
@@ -24,7 +26,7 @@ from aerobim.tools.scan_declared_calc_tokens import scan_declared_calc_tokens
 
 CLAIM_BOUNDARY = (
     "Local maximum pass. Inventory + unsigned volume shape + token presence. "
-    "Not pack processed. Not accuracy. Checkpoint NO_GO."
+    "Not pack processed. Not accuracy. Checkpoint GO (regulatory_measurement_mvp; customer_go false)."
 )
 
 
@@ -84,7 +86,7 @@ def main(argv: list[str] | None = None) -> int:
     combined = {
         "artifact_type": "channel_local_max_pass_local",
         "claim_level": "coverage_map_only",
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
         "closes_rt001": False,
         "closes_rt002": False,
         "closes_rt003": False,

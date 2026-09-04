@@ -10,7 +10,7 @@ closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   Public price lists and licenses for closed CAD formats. Not a DWG-ready
-  product. Not a RVT/NWD reader. Not a purchase. Checkpoint NO_GO.
+  product. Not a RVT/NWD reader. Not a purchase. Checkpoint GO; customer_go false.
 ---
 
 # Лицензионная вилка native CAD (OSINT, 30.08.2026)
@@ -64,4 +64,4 @@ buildingSMART Validation Service принимает несжатый `.ifc` **н
 
 Нельзя: «купим ODA к финалу»; «7 500 $ = RVT»; «CADSoftTools 1 660 $»; «LibreDWG в MIT»; «Autodesk API подключим»; DWG-ready / RVT-ready.
 
-`predicted_aerobim_total() is None`. Checkpoint **NO_GO**.
+`predicted_aerobim_total() is None`. Checkpoint **GO**; customer_go false.

@@ -14,7 +14,7 @@ claim_boundary: >
   Suffix and magic counts of a gitignored wrapper copy and its unpack tree.
   Evening recensus after deleting covered source archives. Not pack processed.
   Not product accuracy. Not native RVT/DWG/LIRA. Tracker «43 GB» is the
-  assigned task title, not this measurement. Checkpoint NO_GO.
+  assigned task title, not this measurement. Checkpoint GO; customer_go false.
 ---
 
 # Local unpack census (30.08.2026)
@@ -22,7 +22,7 @@ claim_boundary: >
 Machine pin: `python -c "from aerobim.domain.unpack_census import unpack_census_snapshot"`.  
 JSON: [`unpack-census-latest.json`](unpack-census-latest.json). Live trees stay under `.local/`. Names and hashes are **not** in git.
 
-Checkpoint **`NO_GO`**. `processed: false`. This is SIG-02 **inventory**, not SIG-01 findings and not «пакет обработан». The 27.08 public rehearsal pin (**2383** files on a partial wrapper) remains.
+Checkpoint **`GO`**; `customer_go` false. `processed: false`. This is SIG-02 **inventory**, not SIG-01 findings and not «пакет обработан». The 27.08 public rehearsal pin (**2383** files on a partial wrapper) remains.
 
 **Evening recensus.** Morning counts **2618 / 6467** included packed zip/7z shells. After member-level coverage the source archives were deleted locally; live trees are **2552 / 6408** with **0** zip/7z remaining. Deletion is a disk-hygiene step, not «processed».
 

@@ -1,7 +1,7 @@
 import type { WorkspaceView } from "../../components/WorkspaceNav";
 import { packDraftHasAny, type PackDraft } from "../../lib/pack-draft";
 
-export type PackCycleStepId = "upload" | "run" | "expert" | "export";
+export type PackCycleStepId = "upload" | "run" | "coverage" | "expert" | "export";
 
 const STEPS: readonly {
   id: PackCycleStepId;
@@ -12,6 +12,13 @@ const STEPS: readonly {
 }[] = [
   { id: "upload", label: "Загрузка", ariaLabel: "Цикл: приём файлов", view: "upload", views: ["upload"] },
   { id: "run", label: "Прогон", ariaLabel: "Цикл: запуск анализа", view: "run", views: ["run"] },
+  {
+    id: "coverage",
+    label: "Покрытие ТЗ",
+    ariaLabel: "Цикл: карта покрытия ТЗ",
+    view: "user",
+    views: ["user"],
+  },
   { id: "expert", label: "Эксперт", ariaLabel: "Цикл: триаж находок", view: "review", views: ["review", "remark"] },
   { id: "export", label: "Экспорт", ariaLabel: "Цикл: выгрузка отчёта", view: "export", views: ["export"] },
 ];
@@ -37,6 +44,9 @@ function stepState(
   }
   if (step.id === "run") {
     return packDraftHasAny(packDraft) ? "ready" : "blocked";
+  }
+  if (step.id === "coverage") {
+    return "ready";
   }
   if (step.id === "expert" || step.id === "export") {
     return hasReport ? "ready" : "blocked";
@@ -71,7 +81,7 @@ export default function PackCycleStrip({
         );
       })}
       <p className="pack-cycle-caption">
-        Загрузка → прогон → триаж → отчёт. Не измеренный SLA. UI не пишет{" "}
+        Загрузка → прогон → покрытие ТЗ → триаж → отчёт. Не измеренный SLA. UI не пишет{" "}
         <code>summary.passed</code>.
       </p>
     </nav>

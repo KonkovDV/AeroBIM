@@ -1,3 +1,4 @@
+
 """Signed OOS templates do not license skip until signer+statement lock."""
 
 from __future__ import annotations
@@ -6,6 +7,7 @@ import json
 import unittest
 from pathlib import Path
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.signed_oos import (
     ALLOWED_STATEMENTS,
     OOS_KINDS,
@@ -62,7 +64,7 @@ class SignedOosTests(unittest.TestCase):
 
     def test_snapshot_has_no_accepted_oos(self) -> None:
         snap = oos_snapshot()
-        self.assertEqual(snap["checkpoint"], "NO_GO")
+        self.assertEqual(snap["checkpoint"], CHECKPOINT)
         self.assertFalse(snap["any_accepted"])
         self.assertTrue(snap["templates_unsigned"])
         self.assertEqual(snap["detected_count"], 0)

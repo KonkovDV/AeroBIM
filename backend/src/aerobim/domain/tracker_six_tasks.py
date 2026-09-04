@@ -1,3 +1,4 @@
+
 """Tracker Dmitry (TechLab) — six sprint tasks as they apply to KT#3.
 
 Assigned 14.08.2026 ~15:26. KT#2 was 20.08; KT#3 window is 03–21.09.
@@ -8,12 +9,13 @@ from __future__ import annotations
 
 from typing import Any, Final
 
+from aerobim.domain.checkpoint import CHECKPOINT
+
 CLAIM_LEVEL: Final = "operational_hygiene"
-CHECKPOINT: Final = "NO_GO"
 CLAIM_BOUNDARY: Final = (
     "Tracker six-task status for KT#3. Live fixture CLI and open-bench pins. "
     "Not product accuracy. Not customer SLA. Not a scheduled-demo count in git. "
-    "Checkpoint NO_GO. closes_rt001/002/003=false."
+    "Checkpoint GO (regulatory_measurement_mvp; customer_go false). closes_rt001/002/003=false."
 )
 TRACKER_NAME: Final = "Dmitry"
 ASSIGNED_AT: Final = "2026-08-14"

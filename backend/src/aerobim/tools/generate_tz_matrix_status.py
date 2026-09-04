@@ -100,7 +100,7 @@ def generate_tz_matrix_status(
         "author_relationship": "self",
         "claim_boundary": (
             "Capability snapshot. Fixture OK ≠ customer done. "
-            "Not product accuracy. Checkpoint NO_GO."
+            "Not product accuracy. Checkpoint GO (regulatory_measurement_mvp; customer_go false)."
         ),
         "interpretation_use": {
             "licensed_use": "engine_regression",

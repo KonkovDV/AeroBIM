@@ -1,12 +1,6 @@
-import { Suspense, lazy, useCallback, useEffect, useState } from "react";
+import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react";
 import { getApiBaseUrl } from "./lib/api";
 import { readUrlReportId } from "./lib/report-filters";
-import {
-  buildViewerFocus,
-  filterTriageIssues,
-  findMatchingRequirements,
-  type FindingGroupBy,
-} from "./lib/issue-triage";
 import DemoFixturePanel from "./components/DemoFixturePanel";
 import VersionDiffPanel from "./components/VersionDiffPanel";
 import WorkspaceNav, {
@@ -24,6 +18,7 @@ import ErrorBanner from "./features/shell/ErrorBanner";
 import UserScreen from "./features/shell/UserScreen";
 import ViewerPlaceholder from "./features/shell/ViewerPlaceholder";
 import { persistUiRoleAlias, readUiRoleAlias, type UiRoleAlias } from "./lib/ui-role";
+import { scrollExpertWorkplaceIntoView } from "./lib/rehearsal-land";
 import { UI_COPY } from "./lib/ui-copy";
 import { useAuthBff } from "./hooks/useAuthBff";
 import { usePackDraft } from "./hooks/usePackDraft";
@@ -32,6 +27,8 @@ import { useReports } from "./hooks/useReports";
 import { useSelectedReport } from "./hooks/useSelectedReport";
 import { useSnapSelectionToFilter } from "./hooks/useSnapSelectionToFilter";
 import { useTriageKeyboard } from "./hooks/useTriageKeyboard";
+import { useFindingFilters } from "./hooks/useFindingFilters";
+import { useTriageView } from "./hooks/useTriageView";
 
 const IfcViewerPanel = lazy(() => import("./components/IfcViewerPanel"));
 export default function App() {
@@ -42,13 +39,8 @@ export default function App() {
   );
   const [triageHelpOpen, setTriageHelpOpen] = useState(false);
   const [reportsEpoch, setReportsEpoch] = useState(0);
-  const [findingGroupBy, setFindingGroupBy] = useState<FindingGroupBy>("none");
-  const [issueSeverityFilter, setIssueSeverityFilter] = useState<
-    "all" | "error" | "warning" | "info"
-  >("all");
-  const [hitlOnlyFilter, setHitlOnlyFilter] = useState(false);
-  const [issueSearch, setIssueSearch] = useState("");
   const [selectedReportId, setSelectedReportId] = useState<string | null>(readUrlReportId);
+  const findings = useFindingFilters();
 
   const reportFilters = useReportFilters(selectedReportId);
   const { reports, reportsLoading, reportsError, filteredReports, groupedReports } = useReports({
@@ -80,33 +72,19 @@ export default function App() {
     decideRemark,
   } = useSelectedReport(selectedReportId, reportsEpoch);
   const pack = usePackDraft();
-
-  const activeIssue =
-    selectedReport && selectedReport.issues.length > 0
-      ? selectedReport.issues[Math.min(selectedIssueIndex, selectedReport.issues.length - 1)]
-      : null;
-  const filteredIssues =
-    selectedReport === null
-      ? []
-      : filterTriageIssues(selectedReport, {
-          severity: issueSeverityFilter,
-          hitlOnly: hitlOnlyFilter,
-          search: issueSearch,
-        });
-  const hitlRegionCount = selectedReport
-    ? (selectedReport.drawing_regions ?? []).filter((region) => region.hitl_required === true)
-        .length
-    : 0;
-  const activeClash =
-    selectedReport && selectedClashIndex !== null && selectedReport.clash_results.length > 0
-      ? selectedReport.clash_results[
-          Math.min(selectedClashIndex, selectedReport.clash_results.length - 1)
-        ]
-      : null;
-  const matchingRequirements = selectedReport
-    ? findMatchingRequirements(selectedReport, activeIssue)
-    : [];
-  const viewerFocus = buildViewerFocus(activeIssue, activeClash);
+  const pendingExpertLand = useRef(false);
+  const {
+    activeIssue,
+    filteredIssues,
+    hitlRegionCount,
+    matchingRequirements,
+    viewerFocus,
+  } = useTriageView(selectedReport, selectedIssueIndex, selectedClashIndex, {
+    severity: findings.issueSeverityFilter,
+    hitlOnly: findings.hitlOnlyFilter,
+    search: findings.issueSearch,
+    clause: findings.clauseFilter,
+  });
 
   const decideActiveRemark = useCallback(
     (eventType: "accepted" | "rejected") => decideRemark(eventType, activeIssue),
@@ -133,9 +111,14 @@ export default function App() {
     if (workspaceView === "export") {
       document.getElementById("export-actions")?.scrollIntoView({ block: "nearest" });
     }
+    if (pendingExpertLand.current && selectedReport && workspaceView === "review") {
+      pendingExpertLand.current = false;
+      scrollExpertWorkplaceIntoView();
+    }
   }, [workspaceView, selectedReport]);
 
   function handleSeededReport(reportId: string): void {
+    pendingExpertLand.current = true;
     setSelectedReportId(reportId);
     setReportsEpoch((value) => value + 1);
     setWorkspaceView("review");
@@ -179,7 +162,7 @@ export default function App() {
         hasReport={selectedReportId !== null}
         onChange={setWorkspaceView}
       />
-      <DemoFixturePanel onSeeded={handleSeededReport} />
+      <DemoFixturePanel onSeeded={handleSeededReport} hideIntro={selectedReport !== null} />
       {EXPERT_SHELL_VIEWS.has(workspaceView) && selectedReport ? (
         <CapabilityTopBanner capabilities={selectedReport.capabilities} />
       ) : null}
@@ -228,11 +211,12 @@ export default function App() {
           reportLoading={reportLoading}
           filteredIssues={filteredIssues}
           selectedIssueIndex={selectedIssueIndex}
-          issueSeverityFilter={issueSeverityFilter}
-          hitlOnlyFilter={hitlOnlyFilter}
+          issueSeverityFilter={findings.issueSeverityFilter}
+          hitlOnlyFilter={findings.hitlOnlyFilter}
           hitlRegionCount={hitlRegionCount}
-          issueSearch={issueSearch}
-          findingGroupBy={findingGroupBy}
+          issueSearch={findings.issueSearch}
+          findingGroupBy={findings.findingGroupBy}
+          clauseFilter={findings.clauseFilter}
           activeIssue={activeIssue}
           matchingRequirements={matchingRequirements}
           selectedClashIndex={selectedClashIndex}
@@ -258,10 +242,11 @@ export default function App() {
             </Suspense>
           }
           onSelectReport={setSelectedReportId}
-          onSeverityChange={setIssueSeverityFilter}
-          onHitlOnlyChange={setHitlOnlyFilter}
-          onSearchChange={setIssueSearch}
-          onGroupByChange={setFindingGroupBy}
+          onSeverityChange={findings.setIssueSeverityFilter}
+          onHitlOnlyChange={findings.setHitlOnlyFilter}
+          onSearchChange={findings.setIssueSearch}
+          onGroupByChange={findings.setFindingGroupBy}
+          onClauseChange={findings.setClauseFilter}
           onSelectIssue={selectIssue}
           onSelectClash={setSelectedClashIndex}
           onDraftChange={(value) => {

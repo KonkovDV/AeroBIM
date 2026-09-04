@@ -2,7 +2,7 @@
 ---
 title: "Vertical slice live CLI pin 2026-08-14"
 date: "2026-08-14"
-claim_boundary: "Fixture demo hashes. Checkpoint NO_GO. Not customer accuracy. Not CV. Not CDE-ready."
+claim_boundary: "Fixture demo hashes. Checkpoint GO; customer_go false. Not customer accuracy. Not CV. Not CDE-ready."
 ---
 
 # Vertical slice live CLI (14.08.2026)
@@ -13,7 +13,7 @@ Command (from `backend/`, venv with `.[dev,raster,pdf-agpl]`):
 python -m aerobim.tools.run_demo_vertical_slice
 ```
 
-Exit **0**. stderr: `VERDICT: NOT PASS` · `summary.passed=false` · `outcome=failed` · `checkpoint=NO_GO`.
+Exit **0**. stderr: `VERDICT: NOT PASS` · `summary.passed=false` · `outcome=failed` · `checkpoint=GO`.
 
 Binaries stay in gitignored `artifacts/vertical-slice-demo/`. Do not treat this pin as customer GO. BCF ZIP is a structural export; CDE import was not verified.
 

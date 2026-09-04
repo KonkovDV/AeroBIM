@@ -11,6 +11,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.tools.run_vertical_slice import _REPO, run_vertical_slice
 
 _DEFAULT_MANIFEST = _REPO / "samples" / "demo" / "vertical-slice-2026-08-11" / "manifest.json"
@@ -81,7 +82,7 @@ def main(argv: list[str] | None = None) -> int:
     print(
         "VERDICT: NOT PASS — fixture demo, not customer accuracy. "
         f"summary.passed={str(passed).lower()} outcome={outcome} "
-        "checkpoint=NO_GO expert_review_required=true",
+        f"checkpoint={CHECKPOINT} customer_go=false expert_review_required=true",
         file=sys.stderr,
     )
     return 0

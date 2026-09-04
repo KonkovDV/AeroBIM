@@ -6,7 +6,7 @@ adapters_delta: "+0"
 tokens_delta: "+0"
 claim_boundary: >-
   Engineering partial-run only. IFC capabilities SKIPPED/NOT_VERIFIED when
-  ifc_path omitted. Checkpoint NO_GO. Not product accuracy.
+  ifc_path omitted. Checkpoint GO; customer_go false. Not product accuracy.
 ---
 
 # Task 2 — честный частичный прогон без IFC

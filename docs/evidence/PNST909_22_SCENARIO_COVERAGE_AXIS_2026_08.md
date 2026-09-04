@@ -5,12 +5,12 @@ date: 2026-08-15
 status: RUNTIME_PARTIAL
 claim_boundary: >-
   Aggregated IDS coverage on Renga pack after ToS cite GO. AUTHOR_CLAIM.
-  Not product accuracy. Checkpoint NO_GO.
+  Not product accuracy. Checkpoint GO; customer_go false.
 ---
 
 # Вторая ось покрытия: 22 сценария ПНСТ 909-2024
 
-Not product accuracy. Checkpoint **NO_GO**.
+Not product accuracy. Checkpoint **GO**; customer_go false.
 
 | Ось | Эталон | Метрика | Статус |
 |---|---|---|---|

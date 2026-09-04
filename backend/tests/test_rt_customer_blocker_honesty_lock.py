@@ -14,6 +14,11 @@ from aerobim.core.config.settings import Settings
 from aerobim.core.di.tokens import Tokens
 from aerobim.domain.architecture import PrecisionClaim, precision_claim_publishable_with_agreement
 from aerobim.domain.cad_ingest import NATIVE_DWG_ODA_ENABLED_NO_SDK_REASON
+from aerobim.domain.checkpoint import (
+    SPEECH_FORMULA_EN,
+    SPEECH_FORMULA_MARKERS,
+    SPEECH_FORMULA_RU,
+)
 from aerobim.domain.system_capabilities import (
     build_auth_bff_capability,
     build_system_capabilities_payload,
@@ -164,7 +169,8 @@ class WithoutSamoletProxySearchHonestyTests(unittest.TestCase):
         self.assertIn("closes_rt001: false", text)
         self.assertIn("closes_rt002: false", text)
         self.assertIn("closes_rt003: false", text)
-        self.assertIn("NO_GO", text)
+        self.assertIn("GO", text)
+        self.assertIn("customer_go", text)
         self.assertIn("run_kt3_without_customer", text)
         self.assertNotIn("closes_rt001: true", text)
         self.assertNotIn("closes_rt002: true", text)
@@ -182,7 +188,8 @@ class WithoutSamoletProxySearchHonestyTests(unittest.TestCase):
         self.assertIn("closes_rt001: false", text)
         self.assertIn("closes_rt002: false", text)
         self.assertIn("closes_rt003: false", text)
-        self.assertIn("NO_GO", text)
+        self.assertIn("GO", text)
+        self.assertIn("customer_go", text)
         self.assertIn("Messick", text)
         self.assertNotIn("closes_rt001: true", text)
 
@@ -202,26 +209,9 @@ class JuryMikNovatorRedTeamHonestyTests(unittest.TestCase):
         self.assertIn("просрочен", text)
 
 
-_SPEECH_FORMULA_VERBATIM = (
-    "Мы на стадии доработки. Одна команда показывает находку с доказательствами "
-    "на учебном комплекте. Валидация эффективности и внедрение ещё не начались. "
-    "`NO_GO` сохраняется, пока нет независимого размеченного корпуса, двух разметчиков, "
-    "профиля приёмки (публичные IDS экспертизы — измерение; подпись Самолёта — внедрение) "
-    "и подтверждения импорта в СОД."
-)
-_SPEECH_FORMULA_EN_VERBATIM = (
-    "We are in *refinement*. One command shows a fail-closed finding on a fixture. "
-    "Effectiveness validation and deployment have not started. Checkpoint `NO_GO` until "
-    "an independent labeled pack, two raters, an acceptance profile (public examination "
-    "IDS for measurement; Samolet signature for deployment), and CDE proof."
-)
-_SPEECH_FORMULA_MARKERS = (
-    "Мы на стадии доработки",
-    "Одна команда показывает находку с доказательствами на учебном комплекте",
-    "Валидация эффективности и внедрение ещё не начались",
-    "`NO_GO` сохраняется, пока нет независимого размеченного корпуса",
-    "профиля приёмки (публичные IDS экспертизы — измерение; подпись Самолёта — внедрение)",
-)
+_SPEECH_FORMULA_VERBATIM = SPEECH_FORMULA_RU
+_SPEECH_FORMULA_EN_VERBATIM = SPEECH_FORMULA_EN
+_SPEECH_FORMULA_MARKERS = SPEECH_FORMULA_MARKERS
 
 
 class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
@@ -271,6 +261,33 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
         for path in surfaces:
             text = path.read_text(encoding="utf-8")
             self.assertIn(_SPEECH_FORMULA_VERBATIM, text, msg=path.as_posix())
+
+    def test_readme_checkpoint_heading_is_go_not_product_no_go(self) -> None:
+        repo = self._repo()
+        for name in ("README.md", "README.ru.md"):
+            text = (repo / name).read_text(encoding="utf-8")
+            self.assertIn("## Checkpoint: `GO`", text, msg=name)
+            self.assertNotIn("## Checkpoint: `NO_GO`", text, msg=name)
+            self.assertNotIn("Checkpoint stays `NO_GO`", text, msg=name)
+            self.assertNotIn("Checkpoint — `NO_GO`", text, msg=name)
+            self.assertNotIn("RT-003c/d", text, msg=name)
+
+    def test_tier0_kane_does_not_forbid_product_checkpoint_go(self) -> None:
+        text = (self._repo() / "docs" / "TIER0_INDEX.md").read_text(encoding="utf-8")
+        self.assertNotIn("импорт в СОД, Checkpoint GO", text)
+        self.assertIn("Intake-form 5/5 полей ≠ `customer_go`", text)
+        self.assertIn("Checkpoint `GO` — регуляторно-измерительный MVP, не вывод Kane", text)
+
+    def test_live_src_does_not_emit_checkpoint_stays_no_go(self) -> None:
+        src = self._repo() / "backend" / "src" / "aerobim"
+        allowed = {"verify_kt2_handoff.py"}
+        hits: list[str] = []
+        for path in src.rglob("*.py"):
+            if path.name in allowed:
+                continue
+            if "Checkpoint stays NO_GO" in path.read_text(encoding="utf-8"):
+                hits.append(path.as_posix())
+        self.assertEqual(hits, [])
 
     def test_kt2_video_is_withdrawn_not_promised(self) -> None:
         repo = self._repo()
@@ -408,7 +425,8 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
         text = path.read_text(encoding="utf-8")
         self.assertIn("representative_scale=false", text)
         self.assertIn("Not ≤30 min SLA", text)
-        self.assertIn("NO_GO", text)
+        self.assertIn("GO", text)
+        self.assertIn("customer_go", text)
         self.assertIn("sla_pass on the toy pack is not a claim", text)
 
     def test_ask_names_proxy_corpus_without_inventing_live_18_22(self) -> None:
@@ -443,7 +461,8 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
     def test_task07_comparison_does_not_adopt_competitor_accuracy(self) -> None:
         path = self._repo() / "docs" / "demo" / "KT2_TASK07_COMPARISON_2026_08.md"
         text = path.read_text(encoding="utf-8")
-        self.assertIn("NO_GO", text)
+        self.assertIn("GO", text)
+        self.assertIn("customer_go", text)
         self.assertIn("не переносим как факт", text)
         self.assertIn("покажите методику", text)
         self.assertIn("NormaChecker", text)
@@ -461,7 +480,8 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         self.assertIn("18/22", text)
         self.assertIn("05.08", text)
         self.assertIn("NOT_RUN", text)
-        self.assertIn("NO_GO", text)
+        self.assertIn("GO", text)
+        self.assertIn("customer_go", text)
 
     def test_10d_intake_is_proposed_boundary_not_cde_ready(self) -> None:
         path = self._repo() / "docs" / "demo" / "KT2_10D_INTAKE_CONTRACT_2026_08.md"
@@ -471,7 +491,8 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         self.assertIn("revision", text)
         self.assertIn("rule_pack_id", text)
         self.assertIn("Not CDE-ready", text)
-        self.assertIn("NO_GO", text)
+        self.assertIn("GO", text)
+        self.assertIn("customer_go", text)
         self.assertIn("AEROBIM_API_BEARER_TOKEN", text)
 
     def test_kt3_without_customer_stays_no_go(self) -> None:
@@ -479,7 +500,8 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         text = path.read_text(encoding="utf-8")
         self.assertIn("re-scope", text)
         self.assertIn("2026-08-23", text)
-        self.assertIn("NO_GO", text)
+        self.assertIn("GO", text)
+        self.assertIn("customer_go", text)
         self.assertIn("closes_rt001: false", text)
         self.assertIn("run_kt3_without_customer", text)
         self.assertIn("run_demo_ifc_acceptance_gate", text)
@@ -644,7 +666,8 @@ class SubmissionPackHonestyTests(unittest.TestCase):
     def test_presentation_pack_has_slide_copy(self) -> None:
         slides = self._submission() / "03-presentation" / "slides.md"
         text = slides.read_text(encoding="utf-8")
-        self.assertIn("NO_GO", text)
+        self.assertIn("GO", text)
+        self.assertIn("customer_go", text)
         self.assertIn("## Запрещено в кадре и в голосе", text)
         self.assertIn("требование → правило → объект → доказательство", text)
         self.assertIn("run_demo_ifc_acceptance_gate", text)
@@ -666,10 +689,10 @@ class SubmissionPackHonestyTests(unittest.TestCase):
         self.assertIn("aerobim_kt2.pptx", tracked)
         self.assertIn("aerobim_kt2.pdf", tracked)
         deck = _pptx_plain_text(pptx).lower()
-        self.assertIn("no_go", deck)
+        self.assertIn("checkpoint go", deck)
+        self.assertIn("customer_go", deck)
         self.assertIn("run_demo_ifc_acceptance_gate", deck)
         for needle in (
-            "checkpoint go",
             ">90%",
             "mep delivered",
             "cde-ready",
@@ -712,9 +735,10 @@ class SubmissionPackHonestyTests(unittest.TestCase):
         ):
             self.assertTrue((root / name).is_file(), msg=name)
 
-    def test_submission_pack_keeps_checkpoint_no_go(self) -> None:
+    def test_submission_pack_keeps_customer_go_false(self) -> None:
         index = (self._submission() / "README.md").read_text(encoding="utf-8")
-        self.assertIn("NO_GO", index)
+        self.assertIn("GO", index)
+        self.assertIn("customer_go", index)
         self.assertIn("RT-001/002/003 OPEN", index)
         for field in _SUBMISSION_FIELDS:
             self.assertIn(field, index, msg=field)
@@ -726,7 +750,8 @@ class SubmissionPackHonestyTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn("не измерено", text)
-        self.assertIn("NO_GO", text)
+        self.assertIn("GO", text)
+        self.assertIn("customer_go", text)
         self.assertIn("n=6", text)
         self.assertIn("654", text)
         self.assertIn("f9389bf", text)

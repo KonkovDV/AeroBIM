@@ -10,7 +10,7 @@ closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   Academic critical-path note for the KT#3 window. Not a predicted
-  commission total. Not customer pack contents. Checkpoint NO_GO.
+  commission total. Not customer pack contents. Checkpoint GO; customer_go false.
 ---
 
 # Окно КТ#3: критический путь (Red Team, проход 25)

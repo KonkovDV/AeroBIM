@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "rt001_dual_rater_simulation",
+  "claim_level": "protocol_rehearsal_not_human",
+  "claim_boundary": "Two simulated independent passes on the same in-repo fixture units. Not two human raters. LLM is not a rater. Fixture author is not counted twice. corpus_kind stays synthetic. closes_rt001 stays false. PrecisionClaim.publishable stays false. Checkpoint GO (regulatory_measurement_mvp; customer_go false).",
+  "checkpoint": "GO",
+  "closes_rt001": false,
+  "precision_claim_publishable": false,
+  "corpus_kind": "synthetic",
+  "independent_human_raters": 0,
+  "llm_counts_as_rater": false,
+  "fixture_author_counted_twice": false,
+  "simulated_independent_passes": 2,
+  "rater_a": {
+    "id": "sim-rater-a",
+    "human": false,
+    "llm": false,
+    "policy": "strict planted-gold: TP if the frozen contract says the defect is real and expected; FP if excluded/control; FN if unresolved or known miss"
+  },
+  "rater_b": {
+    "id": "sim-rater-b",
+    "human": false,
+    "llm": false,
+    "policy": "conservative evidence: TP only with machine-checkable evidence (GUID / IDS / canonical LOAD / inventory rule); geometric pipe-vs-wall is not system MEP; free-text narrative is out of сверка"
+  },
+  "same_pack": true,
+  "n": 28,
+  "n_pilot_protocol_max": 30,
+  "b_protocol_rehearsal": "CLOSED",
+  "b_criterion_dual_rater": "OPEN",
+  "c_customer_corpus": "OPEN",
+  "csv_rel": "samples/benchmarks/detection-precision/rt001-dual-rater-simulation.csv",
+  "cohens_kappa": 0.705263,
+  "krippendorff_alpha": 0.706927,
+  "gwet_ac1": 0.869413,
+  "pass_kappa_0_60": true,
+  "pass_alpha_0_67": true,
+  "pass_ac1_0_60": true,
+  "raw_agreement": 0.8929,
+  "disagreement_count": 3,
+  "disagreement_ids": [
+    "SYNTHETIC-AR-001-01",
+    "planted_federated_pipe_vs_wall",
+    "LB-004-freetext-area-mutation"
+  ],
+  "confusion_matrix": {
+    "FN/FN": 2,
+    "FN/FP": 1,
+    "FP/FP": 2,
+    "TP/FP": 2,
+    "TP/TP": 21
+  },
+  "strata": {
+    "discipline": {
+      "AR": 20,
+      "ST": 7,
+      "MEP": 1
+    },
+    "criticality": {
+      "warning": 20,
+      "error": 8
+    },
+    "modality": {
+      "cross_doc": 10,
+      "ifc": 10,
+      "calculation": 8
+    }
+  },
+  "instruction_ref": "docs/pilot/EXPERT_LABELING_INSTRUCTION_2026.md",
+  "protocol_ref": "docs/quality/RT001_LABELING_PROTOCOL_RT026_2026_08_03.md",
+  "generated_at": "2026-09-04T00:00:00+00:00",
+  "tool_csv_cohens_kappa": 0.7053
+}

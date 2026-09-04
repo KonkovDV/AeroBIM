@@ -1,3 +1,4 @@
+
 """Task 7 — weekly eng status export (no invented funnel)."""
 
 from __future__ import annotations
@@ -5,6 +6,7 @@ from __future__ import annotations
 import unittest
 from pathlib import Path
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.tools.export_weekly_eng_status import build_weekly_status
 
 
@@ -13,7 +15,7 @@ class WeeklyEngStatusTests(unittest.TestCase):
         repo = Path(__file__).resolve().parents[2]
         payload = build_weekly_status(repo=repo)
         self.assertEqual(payload["artifact_type"], "aerobim_weekly_eng_status")
-        self.assertEqual(payload["checkpoint"], "NO_GO")
+        self.assertEqual(payload["checkpoint"], CHECKPOINT)
         self.assertEqual(payload["commercial_funnel"]["status"], "OWNER_ONLY")
         self.assertIn("No invented commercial funnel", payload["claim_boundary"])
         self.assertEqual(

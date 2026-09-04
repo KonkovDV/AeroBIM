@@ -80,6 +80,17 @@ def _make_report_with_clash() -> ValidationReport:
 
 
 class BcfExportTests(unittest.TestCase):
+    def test_bcf_description_carries_itz_sto_sp_stamp(self) -> None:
+        from dataclasses import replace
+
+        from aerobim.infrastructure.adapters.bcf_report_exporter import collect_bcf_topics
+
+        report = _make_report(issue_count=1)
+        stamped = replace(report.issues[0], norm_source="СП 63", norm_clause="8.1")
+        topics = collect_bcf_topics(replace(report, issues=(stamped,)))
+        self.assertTrue(topics)
+        self.assertIn("norm=СП 63 · 8.1", topics[0].description)
+
     def test_bcf_exports_template_mep_as_comment_not_clash(self) -> None:
         from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
 

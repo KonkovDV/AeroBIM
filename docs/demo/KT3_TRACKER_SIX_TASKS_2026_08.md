@@ -3,13 +3,13 @@
 title: "КТ#3 — карточка для трекера (6 задач 14.08)"
 date: "2026-08-27"
 last_updated: "2026-08-30"
-checkpoint: NO_GO
+checkpoint: GO
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   Tracker six-task status for KT#3. Not product accuracy. Not customer SLA.
-  Not scheduled-demo counts in git. Checkpoint NO_GO.
+  Not scheduled-demo counts in git. Checkpoint GO; customer_go false.
 ---
 
 # КТ#3 — трекер (6 задач)
@@ -22,7 +22,7 @@ claim_boundary: >
 
 **После 29.08:** восемь задач трекера (назначены 29.08) — отдельный SSOT [`../quality/TRACKER_EIGHT_TASKS_2026_08.md`](../quality/TRACKER_EIGHT_TASKS_2026_08.md) (`tracker_eight_snapshot`). Не смешивать с таблицей ниже.
 
-Checkpoint **`NO_GO`**. Письмо Самолёту отправляет человек, не репозиторий.
+Checkpoint **`GO`**; `customer_go` false. Письмо Самолёту отправляет человек, не репозиторий.
 
 **После 25.08:** канал получен. Не говорить «нет данных заказчика». Хеш-пакет в git отсутствует. План в репо: [`../quality/KT3_IN_REPO_WORKPLAN_2026_08_27.md`](../quality/KT3_IN_REPO_WORKPLAN_2026_08_27.md).
 

@@ -10,7 +10,7 @@ closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   Self-assessment for KT#3. Compatibility with GOST R 72514-2026 is not
-  certification and not a conformity declaration. Checkpoint NO_GO.
+  certification and not a conformity declaration. Checkpoint GO; customer_go false.
 ---
 
 # Оценка воздействия системы ИИ (ГОСТ Р 72514-2026)

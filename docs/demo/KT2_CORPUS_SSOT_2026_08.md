@@ -6,7 +6,7 @@ status: active
 frozen_until: "2026-08-20"
 claim_boundary: >
   One-line SSOT until KT#2. Open benches ≠ Samolet pack. Not product accuracy.
-  Do not invent a fresh 18/22. Checkpoint NO_GO.
+  Do not invent a fresh 18/22. Checkpoint GO; customer_go false.
 ---
 
 # Корпус — одна строка до КТ#2

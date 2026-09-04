@@ -1,3 +1,4 @@
+
 """Vertical slice demo (11.08.2026): one manifest → analyze → JSON/HTML artifacts.
 
 Honest scope: PDF **text layer** (vector) extraction via RasterDrawingAnalyzer,
@@ -16,6 +17,8 @@ from dataclasses import asdict
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+
+from aerobim.domain.checkpoint import CHECKPOINT
 
 _REPO = Path(__file__).resolve().parents[4]
 _SRC = _REPO / "backend" / "src"
@@ -309,7 +312,7 @@ def run_vertical_slice(
         "page_number": document_identity.get("page_number"),
         "coordinates": document_identity.get("coordinates"),
         "verification_status": verification_status,
-        "checkpoint_verdict": "NO_GO",
+        "checkpoint_verdict": CHECKPOINT,
         "reproducibility_hash": run_manifest.reproducibility_hash,
         "schema_versions": {
             "slice_summary": "1.1.0",
@@ -752,7 +755,7 @@ def run_vertical_slice(
         "capability_honesty": asdict(report.capabilities) if report.capabilities else {},
         "outcome": outcome_value,
         "verification_status": verification_status,
-        "checkpoint_verdict": "NO_GO",
+        "checkpoint_verdict": CHECKPOINT,
         "expert_review_required": True,
         "customer_accuracy": False,
         "run_manifest": run_manifest.as_dict(),
@@ -808,7 +811,7 @@ def run_vertical_slice(
             "VLM advisory never changes summary.passed",
             "REQUIRES_EXPERT / INSUFFICIENT_DATA via coverage — never silent pass",
             "Original inputs are read-only in this slice",
-            "Checkpoint NO_GO. Fixture demo is not customer GO.",
+            "Checkpoint GO (regulatory_measurement_mvp; customer_go false). Fixture demo is not customer GO.",
         ],
         "vlm": {
             "qwen_fixture_status": "LIVE",

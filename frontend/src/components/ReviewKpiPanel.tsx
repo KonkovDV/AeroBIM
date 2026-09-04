@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchReviewKpi, type ReviewKpiPayload } from "../lib/api";
 import { hitlEventTypeLabel } from "../lib/hitl-event-copy";
-import { kpiBarRows } from "../lib/kpi-bars";
+import { hitlDecisionSplit, kpiBarRows } from "../lib/kpi-bars";
 import { UI_COPY } from "../lib/ui-copy";
 
 export type ReviewKpiPanelProps = {
@@ -55,6 +55,37 @@ function formatRate(value: number | null): string {
   return UI_COPY.kpiAcceptance(Math.round(value * 100));
 }
 
+function KpiPayloadBody({ payload }: { payload: ReviewKpiPayload }) {
+  const split = hitlDecisionSplit(payload.kpi.by_type);
+  return (
+    <>
+      <p className="compact-copy" data-testid="kpi-cycle-honesty">
+        {UI_COPY.kpiCycleHonesty}
+      </p>
+      <ul className="kpi-list">
+        <li>
+          {UI_COPY.kpiEvents}: {payload.kpi.event_count}
+        </li>
+        <li>
+          {UI_COPY.kpiOpened}: {payload.kpi.opened_count}
+        </li>
+        <li>
+          {UI_COPY.kpiTriaged}: {payload.kpi.triaged_count}
+        </li>
+        <li data-testid="kpi-decision-split">{UI_COPY.kpiCycleRound(split.accepted, split.rejected)}</li>
+        <li>{formatRate(payload.kpi.acceptance_rate)}</li>
+        <li>
+          {UI_COPY.kpiAvgLatency}:{" "}
+          {payload.kpi.avg_latency_ms === null
+            ? UI_COPY.kpiNoTimings
+            : `${Math.round(payload.kpi.avg_latency_ms)} мс`}
+        </li>
+      </ul>
+      <KpiTypeBars eventCount={payload.kpi.event_count} byType={payload.kpi.by_type} />
+    </>
+  );
+}
+
 export default function ReviewKpiPanel({ reportId }: ReviewKpiPanelProps) {
   const [payload, setPayload] = useState<ReviewKpiPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -103,27 +134,7 @@ export default function ReviewKpiPanel({ reportId }: ReviewKpiPanelProps) {
       ) : error ? (
         <p className="compact-copy">{error}</p>
       ) : payload ? (
-        <>
-          <ul className="kpi-list">
-            <li>
-              {UI_COPY.kpiEvents}: {payload.kpi.event_count}
-            </li>
-            <li>
-              {UI_COPY.kpiOpened}: {payload.kpi.opened_count}
-            </li>
-            <li>
-              {UI_COPY.kpiTriaged}: {payload.kpi.triaged_count}
-            </li>
-            <li>{formatRate(payload.kpi.acceptance_rate)}</li>
-            <li>
-              {UI_COPY.kpiAvgLatency}:{" "}
-              {payload.kpi.avg_latency_ms === null
-                ? UI_COPY.kpiNoTimings
-                : `${Math.round(payload.kpi.avg_latency_ms)} мс`}
-            </li>
-          </ul>
-          <KpiTypeBars eventCount={payload.kpi.event_count} byType={payload.kpi.by_type} />
-        </>
+        <KpiPayloadBody payload={payload} />
       ) : null}
     </section>
   );

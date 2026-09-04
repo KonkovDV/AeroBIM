@@ -24,7 +24,7 @@ AeroBIM is an open-source platform for cross-modal BIM validation. Contributions
 
 ## Maintenance (honest)
 
-Public GitHub shows a single contributor on origin. Dual-rater labeling (RT-001) is a customer-corpus protocol, not a git headcount. Review every claim-facing doc as if the next reader is a juror: no silent upgrades of Checkpoint `NO_GO`.
+Public GitHub shows a single contributor on origin. Dual-rater labeling (RT-001) is a customer-corpus protocol, not a git headcount. Review every claim-facing doc as if the next reader is a juror: no silent upgrades of Checkpoint `GO`.
 
 ## Local Setup
 

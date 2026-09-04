@@ -1,3 +1,4 @@
+
 """Mutation-kill recall for an ``inject_defects`` manifest (E2 protocol).
 
 For every variant directory produced by ``aerobim.tools.inject_defects`` this
@@ -16,7 +17,7 @@ Recall on injected synthetics does not transfer to the partner pack.
 
 Claim boundary: synthetic mutation test on a local NDA pack. Not Samolet
 accuracy. Not product accuracy >90%. Does not close RT-001/002/003.
-Checkpoint NO_GO.
+Checkpoint GO (regulatory_measurement_mvp; customer_go false).
 
 Example::
 
@@ -39,6 +40,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.study_design import wilson_interval
 from aerobim.tools._cli_base import run_cli
 
@@ -46,7 +48,7 @@ SCHEMA_VERSION = "1.0.0"
 CLAIM_BOUNDARY = (
     "Mutation-kill recall on injected synthetics. Output-sensitivity proxy, "
     "not semantic defect confirmation. Not Samolet accuracy. Not product "
-    "accuracy. Does not close RT-001/002/003. Checkpoint NO_GO."
+    "accuracy. Does not close RT-001/002/003. Checkpoint GO (regulatory_measurement_mvp; customer_go false)."
 )
 PLAN_DEVIATION = (
     "DEFECT_INJECTION_RECALL_PLAN_2026_09 (2026-08-30) gated recall on a "
@@ -250,7 +252,7 @@ def build_artifact(
         "artifact_type": "defect_injection_recall_run",
         "claim_level": "synthetic_only",
         "claim_boundary": CLAIM_BOUNDARY,
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
         "closes_rt001": False,
         "closes_rt002": False,
         "closes_rt003": False,
@@ -308,7 +310,7 @@ def render_markdown(artifact: Mapping[str, Any]) -> str:
         "claim_boundary: >",
         "  Mutation-kill recall on injected synthetics. Output-sensitivity",
         "  proxy, not semantic defect confirmation. Not Samolet accuracy.",
-        "  Not product accuracy. Checkpoint NO_GO.",
+        "  Not product accuracy. Checkpoint GO (regulatory_measurement_mvp; customer_go false).",
         "---",
         "",
         "# Recall на инъекциях — прогон E2 (синтетика, не партнёр)",
@@ -321,7 +323,8 @@ def render_markdown(artifact: Mapping[str, Any]) -> str:
         "## Отклонение от плана 2026-08-30",
         "",
         "План требовал шовно-чистый пакет с `summary.passed=true`. По команде",
-        "дорожной карты 2026-09-03 источник — дом-5 (дерево владельца), который",
+        "дорожной карты 2026-09-03 источник — канальный IFC (дерево владельца;",
+        "режим данных не согласован; не публикуется), который",
         "чистым не является; атрибуция — через CONTROL-дифф мультимножеств находок.",
         "Recall на синтетике **не** переносится на комплект Самолёта.",
         "",
@@ -362,7 +365,7 @@ def render_markdown(artifact: Mapping[str, Any]) -> str:
     lines += [
         "",
         "Граница: прокси — чувствительность выхода контура, не семантическое",
-        "подтверждение дефекта. `claim_level=synthetic_only`. Checkpoint NO_GO.",
+        "подтверждение дефекта. `claim_level=synthetic_only`. Checkpoint GO (regulatory_measurement_mvp; customer_go false).",
         "RT-001/002/003 остаются OPEN.",
         "",
     ]
@@ -472,7 +475,7 @@ def main(argv: list[str] | None = None) -> int:
                 "claim_level": artifact["claim_level"],
                 "determinism_check": determinism_check["status"],
                 "aggregate": artifact["aggregate"],
-                "checkpoint": "NO_GO",
+                "checkpoint": CHECKPOINT,
             },
             ensure_ascii=False,
         )

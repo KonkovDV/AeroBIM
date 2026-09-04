@@ -12,7 +12,7 @@ claim_level: tz_v1_brief_coverage
 detected_count: 0
 claim_boundary: >
   Pin of the public 6-page contest TZ v1. Not product accuracy. Not customer
-  SLA. Not the seven comparison tasks. Not a house design TZ. Checkpoint NO_GO.
+  SLA. Not the seven comparison tasks. Not a house design TZ. Checkpoint GO; customer_go false.
 ---
 
 # ТЗ v1 (бриф конкурса) — что это за PDF
@@ -61,4 +61,4 @@ claim_boundary: >
 
 Дальше (владелец): корпус + два разметчика; формы Фонда M2/M8; ИОС IFC или MEP-OOS; стержни или OOS п.7. Карта семи задач: [`../quality/TECHLAB_POST_CARTOGRAPHY_PLAN_2026_08.md`](../quality/TECHLAB_POST_CARTOGRAPHY_PLAN_2026_08.md). Триаж живого дерева 27.08: [`../quality/TZ_LIVE_TREE_TRIAGE_2026_08_27.md`](../quality/TZ_LIVE_TREE_TRIAGE_2026_08_27.md). Исполнение плана: [`../quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md`](../quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md).
 
-Checkpoint **`NO_GO`**.
+Checkpoint **`GO`**; `customer_go` false.

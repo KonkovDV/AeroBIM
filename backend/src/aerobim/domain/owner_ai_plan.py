@@ -1,24 +1,27 @@
+
 """Owner-AI execution plan after TZ v1 pin + live-tree triage.
 
 Stages 0–4 from the 2026-08-27 plan. Agent-executable items are scaffolds
 and honesty gates. Dual raters, signed appointing-party IDS, QTO export,
-federated MEP IFC, and bar entities remain owner-blocked. Checkpoint NO_GO.
+federated MEP IFC, and bar entities remain owner-blocked.
+Checkpoint GO (regulatory_measurement_mvp; customer_go false).
 """
 
 from __future__ import annotations
 
 from typing import Any, Final
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.owner_files_inventory import public_rehearsal_snapshot
 from aerobim.domain.signed_oos import oos_snapshot
 from aerobim.domain.tz_v1_brief import PAPER_OBJECTS, mik_act_may_cite_tz_v1_accuracy_as_measured
 
 CLAIM_LEVEL: Final = "coverage_map_only"
-CHECKPOINT: Final = "NO_GO"
 CLAIM_BOUNDARY: Final = (
     "Execution of the owner-AI quality plan. Scaffolds and honesty gates, "
     "not criterion validity. Not product accuracy. Not customer SLA. "
-    "Not MEP delivered. Checkpoint NO_GO. closes_rt001/002/003=false."
+    "Not MEP delivered. Checkpoint GO "
+    "(regulatory_measurement_mvp; customer_go false). closes_rt001/002/003=false."
 )
 
 DESIGN_TZ_EXTRACTOR_HITS: Final = 0

@@ -11,8 +11,8 @@ closes_rt003: false
 claim_boundary: >
   Mutation-kill recall on injected synthetics. Output-sensitivity proxy, not
   semantic defect confirmation. Not Samolet accuracy. Not product accuracy.
-  Checkpoint NO_GO. Two contours: house-5 NDA blocks (not externally
-  reproducible) and the published inject_defects mini-IFC (git-reproducible).
+  Checkpoint GO; customer_go false. Two contours: channel IFC (not in git; data regime not agreed)
+  and the published inject_defects mini-IFC (git-reproducible).
 ---
 
 # Recall на инъекциях — прогон E2 (синтетика, не партнёр)
@@ -34,14 +34,14 @@ CLI склейки: `python -m aerobim.tools.evaluate_injection_recall`
 `analyze(source) ≡ analyze(CONTROL)` — **pass** на всех трёх прогонах.
 
 Поле `source_path_sha256` в JSON — хеш **строки пути** staging-каталога,
-не байтов IFC. Содержимое NDA-модели в git не коммитится.
+не байтов IFC. Содержимое канальной модели в git не коммитится.
 
 Отклонение от плана 2026-08-30: план требовал шовно-чистый пакет с
-`summary.passed=true`. По команде дорожной карты 03.09 источник — дом-5
-(дерево владельца) плюс git-фикстура инжектора. Атрибуция — через
+`summary.passed=true`. По команде дорожной карты 03.09 источник — канальный IFC
+(дерево владельца; режим данных не согласован; не публикуется) плюс git-фикстура инжектора. Атрибуция — через
 CONTROL-дифф. Recall на синтетике **не** переносится на комплект Самолёта.
 
-## Контур 1 — дом-5, секции 1–3 (NDA, не внешняя репродукция)
+## Контур 1 — канальный IFC, секции 1–3 (не в git; режим не согласован; не внешняя репродукция)
 
 Контур не читает sidecar `.txt`; инжектор на больших IFC без
 `IFCQUANTITYAREA` падает на первый numeric-токен заголовка STEP
@@ -95,7 +95,7 @@ IDS на это не завязан.
 - CONTROL: 9 находок; детерминизм pass
 - JSON: [`defect-injection-recall-run-fixture-latest.json`](defect-injection-recall-run-fixture-latest.json)
 
-Репродукция контура 2 (без NDA): тот же mini-IFC, что в
+Репродукция контура 2 (без канальных файлов): тот же mini-IFC, что в
 `backend/tests/test_inject_defects.py`, затем:
 
 ```text
@@ -113,7 +113,7 @@ python -m aerobim.tools.evaluate_injection_recall \
 ## Что это не есть
 
 - Не customer-recall, не RT-001 CLOSED, не «движок не работает».
-- Число 0/6 на доме-5 — **слепота пары инжектор↔контур** на этом IDS/rule
+- Число 0/6 на канальном IFC — **слепота пары инжектор↔контур** на этом IDS/rule
   pack: мутации либо не в наблюдаемом пространстве (sidecar, заголовок
   STEP, неиспользуемый MILLI), либо класс не применился.
 - Число 1/8 на фикстуре — единственный класс, который demo-контур умеет
@@ -123,4 +123,4 @@ python -m aerobim.tools.evaluate_injection_recall \
 бьёт в `IFCSPACE.NetFloorArea` / `Pset_WallCommon.FireRating`, либо контур
 читает sidecar ПД/ТЗ/расчёта. Поверх этих цифр пороги не двигаем.
 
-Checkpoint **NO_GO**. RT-001/002/003 остаются OPEN.
+Checkpoint **GO**; customer_go false. RT-001/002/003 остаются OPEN.

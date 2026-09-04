@@ -1,7 +1,8 @@
+
 """Export the process-local IFC LRU RAM ceiling (RT16-RAM-01).
 
 Ceiling = max_cached_models × max_ifc_bytes. Not a VM profile, not federated
-RSS, not customer SLA. Does not close RT-003. Checkpoint NO_GO.
+RSS, not customer SLA. Does not close RT-003. Checkpoint GO (regulatory_measurement_mvp; customer_go false).
 """
 
 from __future__ import annotations
@@ -11,6 +12,7 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.infrastructure.adapters.ifc_file_open import ifc_cache_ram_ceiling_payload
 
 
@@ -42,7 +44,7 @@ def main(argv: list[str] | None = None) -> int:
                 "ceiling_gib": payload["ceiling_gib"],
                 "measured_rss_delta_bytes": payload["measured_rss_delta_bytes"],
                 "closes_rt003": False,
-                "checkpoint": "NO_GO",
+                "checkpoint": CHECKPOINT,
                 "output": str(out),
             }
         )

@@ -24,6 +24,8 @@ describe("PackUploadPanel", () => {
     expect(honesty.textContent).toMatch(/жёсткий отказ/i);
     expect(uploadDocumentMock).not.toHaveBeenCalled();
     expect(screen.getByTestId("pack-dropzone")).toBeTruthy();
+    expect(screen.getByTestId("upload-size-honesty").textContent).toMatch(/256 МиБ/);
+    expect(screen.getByTestId("upload-size-honesty").textContent).toMatch(/докачка/i);
   });
 
   it("cancels an in-flight upload via AbortSignal", async () => {

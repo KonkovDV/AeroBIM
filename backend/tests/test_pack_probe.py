@@ -1,3 +1,4 @@
+
 """Pack probe: aggregate stays name-free; local rows stay in quarantine."""
 
 from __future__ import annotations
@@ -7,6 +8,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.tools.pack_probe import main, probe_pack
 
 
@@ -40,7 +42,7 @@ class PackProbeTests(unittest.TestCase):
             rows, aggregate = probe_pack(root)
 
         self.assertEqual(aggregate["file_count"], 8)
-        self.assertEqual(aggregate["checkpoint"], "NO_GO")
+        self.assertEqual(aggregate["checkpoint"], CHECKPOINT)
         self.assertEqual(aggregate["by_ext"][".pdf"], 4)
         self.assertEqual(aggregate["by_section"]["КЖ"], 2)
         self.assertEqual(aggregate["by_tz_class"]["2"], 1)

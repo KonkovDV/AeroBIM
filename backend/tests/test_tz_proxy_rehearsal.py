@@ -1,3 +1,4 @@
+
 """Honesty lock for the Samolet-free TZ proxy rehearsal."""
 
 from __future__ import annotations
@@ -7,6 +8,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.errors import ClashCapabilityError
 from aerobim.domain.tz_proxy_constructs import (
     construct_validity_frame,
@@ -26,7 +28,7 @@ class ConstructValidityFrameTests(unittest.TestCase):
         self.assertFalse(frame["closes_rt001"])
         self.assertFalse(frame["closes_rt002"])
         self.assertFalse(frame["closes_rt003"])
-        self.assertEqual(frame["checkpoint"], "NO_GO")
+        self.assertEqual(frame["checkpoint"], CHECKPOINT)
         self.assertIn("external", frame["aspects"])
         self.assertIn("Messick", str(frame["theory"]))
 
@@ -115,7 +117,7 @@ class TzProxyRehearsalPayloadTests(unittest.TestCase):
         self.assertFalse(payload["closes_rt001"])
         self.assertFalse(payload["closes_rt002"])
         self.assertFalse(payload["closes_rt003"])
-        self.assertEqual(payload["checkpoint"], "NO_GO")
+        self.assertEqual(payload["checkpoint"], CHECKPOINT)
         runs = {row["label"]: row for row in payload["rt003_geometric_clash"]["runs"]}
         self.assertEqual(runs["planted_overlapping_boxes"]["status"], "SKIPPED")
         self.assertEqual(runs["planted_federated_crossing_walls"]["status"], "SKIPPED")
@@ -259,7 +261,7 @@ class Rt001SyntheticFreezeTests(unittest.TestCase):
         self.assertEqual(data["status"], "FROZEN_ON_SYNTHETIC")
         self.assertEqual(data["corpus_kind"], "synthetic")
         self.assertFalse(data["closes_rt001"])
-        self.assertEqual(data["checkpoint"], "NO_GO")
+        self.assertEqual(data["checkpoint"], CHECKPOINT)
         self.assertFalse(data["raters"]["llm_counts_as_rater"])
         self.assertEqual(data["raters"]["independent_human_raters"], 0)
         self.assertFalse(data["metrics"]["measured_on_this_freeze"])
@@ -274,4 +276,4 @@ class DuplexEvidencePinTests(unittest.TestCase):
         self.assertEqual(data["mep_system_clash"], "NOT_VERIFIED")
         self.assertFalse(data["customer_federated_ifc"])
         self.assertFalse(data["signed_scope"])
-        self.assertEqual(data["checkpoint"], "NO_GO")
+        self.assertEqual(data["checkpoint"], CHECKPOINT)

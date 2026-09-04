@@ -15,7 +15,7 @@ class SpgConstructionVsFmPinTests(unittest.TestCase):
 
     def test_pin_stays_no_go_and_splits_markets(self) -> None:
         md = self._md()
-        self.assertIn("NO_GO", md)
+        self.assertIn("customer_go", md)
         self.assertIn("398-р", md)
         self.assertIn("FM/PM", md)
         self.assertIn("не в git", md)

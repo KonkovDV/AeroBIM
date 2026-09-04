@@ -1,3 +1,4 @@
+
 """Honesty lock: NPA legal-force cannot promote IDS/AGR pre-check to expertise or RT CLOSED."""
 
 from __future__ import annotations
@@ -6,6 +7,7 @@ import json
 import unittest
 from pathlib import Path
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.npa_legal_force import (
     AGR_EXCHANGE_LEGAL,
     AS_OF,
@@ -109,7 +111,7 @@ class NpaLegalForceTests(unittest.TestCase):
         payload = json.loads(REGISTER.read_text(encoding="utf-8"))
         self.assertEqual(payload["as_of"], AS_OF)
         self.assertTrue(payload["not_legal_advice"])
-        self.assertEqual(payload["checkpoint"], "NO_GO")
+        self.assertEqual(payload["checkpoint"], CHECKPOINT)
         draft = payload["minstroy_cim_composition"]
         self.assertEqual(draft["legal_force"], FORCE_DRAFT)
         self.assertFalse(draft["in_force_on_as_of"])

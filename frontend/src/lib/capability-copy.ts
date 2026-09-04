@@ -60,15 +60,35 @@ export function formatCapabilityLabel(key: string): string {
   return LABEL_RU[key] ?? key.replaceAll("_", " ");
 }
 
+const STATUS_RU: Record<CapabilityState, string> = {
+  ok: "выполнена",
+  skipped: "пропущена",
+  failed: "не выполнена",
+  missing: "отсутствует",
+  not_verified: "не проверена",
+  not_implemented: "не реализована",
+};
+
+export function formatCapabilityState(status: CapabilityState): string {
+  return STATUS_RU[status];
+}
+
+export function capabilityStatusPhrase(row: CapabilityRow): string {
+  return `${formatCapabilityLabel(row.key)}: ${formatCapabilityState(row.status)}`;
+}
+
 export function humanCapabilityLine(row: CapabilityRow): string {
+  if (row.key === "mep_system_clash" && row.status !== "ok") {
+    return "Проверка коллизий инженерных сетей не выполнена (сети в IFC не переданы) → тишина ≠ успех";
+  }
   const label = formatCapabilityLabel(row.key);
-  if (row.status === "skipped" || row.status === "not_verified" || row.status === "not_implemented") {
-    return `Проверка «${label}» пропущена (${row.status}) → тишина ≠ успех`;
+  if (row.status === "ok") {
+    return `Проверка «${label}» выполнена`;
   }
   if (BLOCKING_STATES.has(row.status)) {
-    return `Проверка «${label}» = ${row.status} → тишина ≠ успех; серверный summary.passed не зелёный`;
+    return `Проверка «${label}» не выполнена → вердикт отрицательный; UI не пишет summary.passed`;
   }
-  return `Проверка «${label}» = ${row.status}`;
+  return `Проверка «${label}» не выполнена → тишина ≠ успех`;
 }
 
 export const RUN_ENGINE_GROUPS: Array<{
@@ -92,6 +112,13 @@ const ENGINE_RANK: Record<CapabilityState, number> = {
 };
 
 export type EngineGroupStatus = CapabilityState | "pending";
+
+export function formatEngineGroupStatus(status: EngineGroupStatus): string {
+  if (status === "pending") {
+    return "ожидание";
+  }
+  return formatCapabilityState(status);
+}
 
 export function engineGroupStatus(
   capabilities: ReportCapabilities | null | undefined,

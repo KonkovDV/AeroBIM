@@ -1,3 +1,4 @@
+
 """Rehearse moscow_agr_2026 on city-published AGR example IFCs.
 
 Class-1 AGR exchange + official city IDS (IfcTester) + honest-scope clash/MEP
@@ -24,6 +25,7 @@ from aerobim.domain.agr_exchange_checks import (
     collect_agr_tep_xml_issues,
     collect_agr_vedomost_xsd_issues,
 )
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.models import ReportCapabilities
 from aerobim.domain.npa_legal_force import agr_exchange_legal_payload
 from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_model
@@ -62,7 +64,7 @@ def skipped_payload(*, reason: str) -> dict[str, Any]:
         "closes_rt001": False,
         "closes_rt002b": False,
         "closes_rt003": False,
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
         "pd_pack": False,
         "injector_ran": False,
         "legal_qualification": agr_exchange_legal_payload(),
@@ -164,7 +166,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
             "closes_rt001: false",
             "closes_rt002b: false",
             "closes_rt003: false",
-            "checkpoint: NO_GO",
+            f"checkpoint: {CHECKPOINT}",
             "---",
             "",
             "# Moscow AGR city examples",
@@ -274,7 +276,7 @@ def main(argv: list[str] | None = None) -> int:
         "closes_rt001": False,
         "closes_rt002b": False,
         "closes_rt003": False,
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
         "pd_pack": False,
         "missing_pd_parts": [
             "sheets",

@@ -2,6 +2,10 @@ import { startTransition, useEffect, useLayoutEffect, useMemo, useRef, useState 
 import type { ValidationIssue } from "../../lib/types";
 import { computeScrollTopToReveal } from "../../lib/finding-scroll";
 import {
+  CLAUSE_FILTER_ALL,
+  CLAUSE_FILTER_MISSING,
+  clauseFilterKey,
+  clauseLine,
   groupFindings,
   priorityCaption,
   spatialOrMissing,
@@ -49,10 +53,13 @@ export type FindingListPanelProps = {
   hitlRegionCount: number;
   searchQuery?: string;
   groupBy: FindingGroupBy;
+  clauseFilter?: string;
+  clauseOptions?: string[];
   onSeverityChange: (value: "all" | "error" | "warning" | "info") => void;
   onHitlOnlyChange: (value: boolean) => void;
   onSearchChange?: (value: string) => void;
   onGroupByChange: (value: FindingGroupBy) => void;
+  onClauseChange?: (value: string) => void;
   onSelectIssue: (index: number, issue: ValidationIssue) => void;
 };
 
@@ -71,6 +78,7 @@ function IssueCard({
   const caption = priorityCaption(issue);
   const storey = spatialOrMissing(issue.storey_name ?? issue.remark?.storey_name);
   const axis = spatialOrMissing(issue.grid_axis ?? issue.remark?.grid_axis);
+  const clause = clauseLine(issue);
   return (
     <button
       type="button"
@@ -123,6 +131,12 @@ function IssueCard({
         <span className={axis === UI_COPY.spatialMissing ? "issue-location-missing" : undefined}>
           {UI_COPY.findingAxis(axis)}
         </span>
+        <span
+          className={clauseFilterKey(issue) === CLAUSE_FILTER_MISSING ? "issue-location-missing" : undefined}
+          data-testid="issue-clause"
+        >
+          {UI_COPY.findingClause(clause)}
+        </span>
       </div>
       {caption ? <p className="compact-copy">{caption}</p> : null}
     </button>
@@ -138,10 +152,13 @@ export default function FindingListPanel({
   hitlRegionCount,
   searchQuery,
   groupBy,
+  clauseFilter = CLAUSE_FILTER_ALL,
+  clauseOptions = [],
   onSeverityChange,
   onHitlOnlyChange,
   onSearchChange,
   onGroupByChange,
+  onClauseChange,
   onSelectIssue,
 }: FindingListPanelProps) {
   const groups = groupFindings(issues, groupBy);
@@ -266,8 +283,28 @@ export default function FindingListPanel({
             <option value="storey">{UI_COPY.groupStorey}</option>
             <option value="axis">{UI_COPY.groupAxis}</option>
             <option value="discipline">{UI_COPY.groupCategory}</option>
+            <option value="clause">{UI_COPY.groupClause}</option>
           </select>
         </label>
+        {onClauseChange ? (
+          <label>
+            {UI_COPY.filterClause}
+            <select
+              aria-label={UI_COPY.filterClause}
+              data-testid="clause-filter"
+              value={clauseFilter}
+              onChange={(event) => onClauseChange(event.target.value)}
+            >
+              <option value={CLAUSE_FILTER_ALL}>{UI_COPY.clauseAll}</option>
+              <option value={CLAUSE_FILTER_MISSING}>{UI_COPY.clauseMissing}</option>
+              {clauseOptions.map((key) => (
+                <option key={key} value={key}>
+                  {key}
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : null}
         <label className="hitl-filter">
           <input
             type="checkbox"

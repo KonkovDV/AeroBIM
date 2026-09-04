@@ -10,7 +10,7 @@ closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   Paste-ready application fields. Person names stay out of git. Not a
-  predicted score. Checkpoint NO_GO.
+  predicted score. Checkpoint GO; customer_go false.
 ---
 
 # Вставка в заявку i.moscow (капитан подставляет ФИО сам)

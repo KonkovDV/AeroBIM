@@ -4,7 +4,7 @@ title: "RT-001 labeling protocol (RT-026) — preregistration draft"
 status: draft
 version: "0.1.0"
 last_updated: "2026-08-03"
-claim_boundary: "Protocol draft only. No corpus measured. Checkpoint NO_GO. Not a κ claim."
+claim_boundary: "Protocol draft only. No corpus measured. Checkpoint GO; customer_go false. Not a κ claim."
 ---
 
 # RT-001 labeling protocol (RT-026)

@@ -1,3 +1,4 @@
+
 """PNST 909 22-scenario runtime CLI: pairing, path jail, no silent pass."""
 
 from __future__ import annotations
@@ -8,6 +9,7 @@ import unittest
 from pathlib import Path
 
 from aerobim.core.security.path_jail import PathJailError
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.tools.run_pnst909_22_scenario_runtime import (
     default_pairing_path,
     load_pairing,
@@ -120,7 +122,7 @@ class Pnst909RuntimeTests(unittest.TestCase):
         self.assertEqual(by_n[3]["runtime_status"], "NO_IDS_IN_PACK")
         self.assertEqual(payload["summary"]["executed"], 1)
         self.assertFalse(payload["closes_rt001"])
-        self.assertEqual(payload["checkpoint"], "NO_GO")
+        self.assertEqual(payload["checkpoint"], CHECKPOINT)
 
     def test_findings_are_runtime_findings_not_precision(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

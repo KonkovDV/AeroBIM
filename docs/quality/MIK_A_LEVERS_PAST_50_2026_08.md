@@ -10,7 +10,7 @@ closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   Arithmetic identities and owner actions. Not a predicted AeroBIM total.
-  Not Checkpoint GO. Checkpoint NO_GO.
+  Not customer_go. Checkpoint GO; customer_go false.
 ---
 
 # Как вытащить систему A за 50 — без десяти фамилий

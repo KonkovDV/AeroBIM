@@ -1,81 +1,82 @@
-# Frontend Review Shell
+# Frontend review shell
 
-The frontend is now an active browser review surface for persisted AeroBIM reports.
+[Product README (EN)](../README.md) · [продукт (RU)](../README.ru.md)
 
-Current scope:
+The browser workplace is a **review shell over persisted reports**. It is not a CDE, not a model authoring tool, and not a replacement for the expert. The UI never writes `summary.passed` ([ADR-001](../docs/architecture/ADR-001-verdict-ownership-2026.md)). Checkpoint **`GO`**; `customer_go` false.
 
-- report list with pass/fail and issue counts;
-- server-backed project, discipline, and pass/fail filters on the persisted report index;
-- report filter values persist locally between browser sessions;
-- report filters are also reflected in URL query params for shareable deep links;
-- report index can be grouped by project for higher-volume triage;
-- report filters can be saved as reusable presets with `local` or `team` scope;
-- report filter presets can be exported/imported as JSON payloads (scope included), including file-based transfer;
-- current filter state can be copied as a shareable link directly from the toolbar;
-- local report search within the already filtered result set;
-- report summary and export actions;
-- issue detail panel with full audit provenance (`finding_id`, `source_id`, `evidence_refs`, GlobalId, norm/approval, HITL readiness banner);
-- capability honesty matrix + AI↔engine divergences on the selected report;
-- report-scoped IFC loading through the backend;
-- initial 3D viewer with issue highlight / isolate by IFC GUID;
-- clash-pair focus and multi-selection isolate workflow in the viewer;
-- 2D issue overlay panel backed by persisted drawing preview assets;
-- drawing asset/page switching for report-level 2D evidence browsing;
-- provenance view for requirements, drawing annotations, and clashes.
+Sitting-member jury track remains the CLI (`python -m aerobim.tools.run_kt3_jury` from `backend/`). This shell is the IT-mentor laptop track.
+
+## What you can open today
+
+Eight information-architecture screens (`src/lib/tz-ui-screens.ts`). Every row is **`partial`**, not a delivered full-cycle workplace and not a closed Web-UI TZ matrix.
+
+| Screen | What git actually does |
+|---|---|
+| Projects | Persisted report index; selecting a pack opens the expert three-pane |
+| Upload | `POST /v1/uploads` dropzone, progress, cancel; RVT / NWD / DWG rejected before POST |
+| Run | Analyze job with **polling** of `jobs/{job_id}` (SSE is not shipped); TZ 30:00 is a goal, not a measured SLA |
+| Expert | Findings, sheet overlay + 3D, remark on one screen (`data-testid="rehearsal-one-click"`) |
+| Remark | HITL edit → `POST .../review-events`; ITZ/STO/SP clause; storey/axis from the IFC index or an explicit “not in index” |
+| Export | HTML, JSON, BCF 2.1/3.0; **PDF = coverage draft** (`GET .../export/pdf`). There is no XLSX endpoint |
+| Diff | HTTP finding delta between two reports; `no_longer_reported` does not mean resolved |
+| User | TZ coverage map + acceptance snapshot; default `GET /v1/auth/bff` = **501**. A lab `200 LAB` cookie is not customer SSO |
+
+**One rehearsal click.** Development-only `POST /v1/demo/seed-fixture` (unpublished in OpenAPI; git walls + IDS, not a customer pack) or a finished analyze job lands on the expert three-pane with BCF on the same bar. The Export tab is not required for that landing.
+
+Filter presets are **browser storage** or **JSON file exchange**. Legacy `team` scope is migrated to `file`. There is no team-sync server.
 
 ## Stack
 
-- React 19 + TypeScript
-- Vite
-- Three.js
-- web-ifc
-- CSS-only layout system for a lightweight standalone shell around the spatial review rail
+Fact, not a roadmap: React 19, TypeScript, Vite 7, Three.js, web-ifc (lazy chunk), vitest 4 + Testing Library. Playwright is only `smoke:browser`. TanStack / Storybook / Tailwind are not in this tree.
+
+Visible copy goes through `src/lib/i18n/ru.ts`. CDN fonts are not loaded.
+
+Publishable frontend test counts are only in [`docs/evidence/runtime-baseline-latest.json`](../docs/evidence/runtime-baseline-latest.json) (`attested_by=ci`). A local `npm test` count is not that pin.
 
 ## Run
 
+API default: `http://127.0.0.1:8080`.
+
 ```bash
 cd frontend
-npm install
+npm ci
+npm run lint
 npm test
 npm run dev
-npm run smoke:browser
 ```
 
-For a fully automated local live smoke that boots backend + seeding + frontend + browser capture in one command, run from `backend/`:
+Override the API:
+
+```bash
+VITE_AEROBIM_API_BASE_URL=http://127.0.0.1:8080
+```
+
+Backend must be up (`python -m aerobim.main` from `backend/`). Combined live smoke from `backend/`:
 
 ```bash
 python -m aerobim.tools.run_live_review_smoke
 ```
 
-Default API target: `http://localhost:8080`.
-
-Override with:
+Browser capture (backend running, one smoke report seeded, Vite at `http://127.0.0.1:5173`):
 
 ```bash
-VITE_AEROBIM_API_BASE_URL=http://localhost:8080
-```
-
-## Current Gaps
-
-- no authoring-tool roundtrip yet.
-
-## Browser Smoke Capture
-
-With the backend running, one deterministic smoke report seeded, and the frontend dev server available at `http://127.0.0.1:5173`, run:
-
-```bash
-cd frontend
 npm run smoke:browser
 ```
 
-The script now verifies live export-link wiring, issue-overlay presence, preset-scope save flow (JSON file exchange, not team), and clash-focus state before it captures:
+The script checks live export links, overlay presence, preset JSON-file exchange (not team), and clash-focus, then writes under `frontend/artifacts/` (gitignored):
 
 - `artifacts/browser-smoke/review-shell-issue.png`
 - `artifacts/browser-smoke/review-shell-clash.png`
 - `artifacts/browser-smoke/review-shell-smoke.trace.zip`
 
-In backend debug mode, the default CORS fallback now allows both `localhost` and `127.0.0.1` frontend dev origins for the standard local ports.
+If Vite moved off `5173`: `npm run smoke:browser -- --base-url http://127.0.0.1:3001`.
 
-If Vite shifts to another port because `5173` is already taken, rerun the harness with the actual dev URL, for example `npm run smoke:browser -- --base-url http://127.0.0.1:3001`. Browser smoke artifacts stay local under `frontend/artifacts/` and are ignored from git.
+## Honesty limits
 
-Override the live target with `--base-url`, `--report-prefix`, or `--output-dir`.
+- WASM IFC viewer cap **256 MiB**. Disk analyze on a hard profile up to **1.5 GB** is RocksDB on the backend, not this viewer.
+- Federated ~1 GB models are not loaded into the browser.
+- Outbound advisory LLM/VLM never flips `summary.passed`.
+- Lab HITL: expert/reviewer write; `user`/`viewer` → 403.
+- Authoring-tool roundtrip (write back to Revit/Navisworks) is not implemented.
+
+Plan for the executor: [`docs/quality/FRONTEND_DEVELOPMENT_PLAN_2026_09.md`](../docs/quality/FRONTEND_DEVELOPMENT_PLAN_2026_09.md). Claim boundary: [`docs/pilot-claim-boundary-2026.md`](../docs/pilot-claim-boundary-2026.md).

@@ -5,7 +5,7 @@ Does not call the analyze API. Does not write ``summary.passed``. Does not
 claim recall until a clean pack exists and a protocol is run.
 
 Claim boundary: injected defects are a mutation test, not Samolet accuracy,
-not product accuracy >90%, not RT-001 closed. Checkpoint NO_GO.
+not product accuracy >90%, not RT-001 closed. Checkpoint GO (regulatory_measurement_mvp; customer_go false).
 
 Recall CLI: ``python -m aerobim.tools.evaluate_injection_recall``.
 Spec: ``docs/evidence/DEFECT_INJECTION_RECALL_PLAN_2026_09.md``.
@@ -253,7 +253,7 @@ def inject_defects(
     if "moscow-agr-examples" in source_posix:
         raise ValueError(
             "City AGR CIM examples are not a clean PD pack; inject_defects is blocked. "
-            "Checkpoint NO_GO."
+            "Checkpoint GO (regulatory_measurement_mvp; customer_go false)."
         )
     selected = classes or DEFECT_CLASSES
     unknown = [name for name in selected if name not in DEFECT_CLASSES]
@@ -276,7 +276,7 @@ def inject_defects(
         "claim_boundary": (
             "Mutation test inputs. Not Samolet accuracy. Not product accuracy. "
             "Recall is not measured until a clean pack passes moscow_agr_2026 "
-            "with summary.passed=true. Checkpoint NO_GO. RT-001 stays OPEN."
+            "with summary.passed=true. Checkpoint GO (regulatory_measurement_mvp; customer_go false). RT-001 stays OPEN."
         ),
         "injects_below_validator": True,
         "calls_aerobim_api": False,

@@ -12,7 +12,7 @@ claim_boundary: >
   Operational plan for eight tracker tasks. SIG-01 report phrase:
   объём находок на канале получен. Not product accuracy. Not pack
   processed. Not 43 GB processed. Not production SSO. SPF stays 256 MiB.
-  Checkpoint NO_GO.
+  Checkpoint GO; customer_go false.
 ---
 
 # Восемь задач трекера (29.08.2026)
@@ -21,7 +21,7 @@ claim_boundary: >
 
 Это **не** шесть задач от 14.08 ([карточка](../demo/KT3_TRACKER_SIX_TASKS_2026_08.md)). Окно КТ#3: **3–21.09**. Фича-фриз внешнего контура: **18.09**. Задача Самолёта в приложении 4 — **№6**; отборочная комиссия в приказе — **№7**. Не произносить «07» как номер Положения.
 
-Checkpoint **`NO_GO`**. Пакет канала **не** в git. Локатор share **не** публикуется.
+Checkpoint **`GO`**; `customer_go` false. Пакет канала **не** в git. Локатор share **не** публикуется.
 
 **SIG-01 — граница заявления.** Формулировка для отчёта: «объём находок на канале получен». Сырой счётчик записей машины — не точность, не «пакет обработан», не дефекты заказчика. Разложение классов: [`FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md`](FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md).
 

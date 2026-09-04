@@ -10,7 +10,7 @@ closes_rt003: false
 claim_boundary: >
   Inventory of how Settings reads env names. Does not close RT.
   Does not publish a new runtime-baseline pin (attested_by=ci only).
-  Checkpoint NO_GO.
+  Checkpoint GO; customer_go false.
 ---
 
 # P0: documented_env_vars absent from code_env_vars

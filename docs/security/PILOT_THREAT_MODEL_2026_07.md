@@ -4,7 +4,7 @@ title: "Pilot threat model (Samolet) — 2026-07"
 status: active
 date: 2026-07-21
 last_updated: "2026-07-21"
-claim_boundary: "Does not claim SSO production-ready. Checkpoint NO_GO unchanged."
+claim_boundary: "Does not claim SSO production-ready. Checkpoint GO; customer_go false unchanged."
 ---
 
 # Pilot Threat Model (2026-07)

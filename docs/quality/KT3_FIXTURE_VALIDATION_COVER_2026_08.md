@@ -11,7 +11,7 @@ closes_rt003: false
 claim_boundary: >
   Cover sheet for engine regression and the live jury CLI. Not partner
   acceptance. Not customer SLA. Fixture p95 on kilobyte files is not the
-  30-minute TZ goal. Checkpoint NO_GO.
+  30-minute TZ goal. Checkpoint GO; customer_go false.
 ---
 
 # Обложка валидации фикстуры (нижняя полка Б2)
@@ -46,4 +46,4 @@ Open-bench (AECV и прочие) остаётся `open_bench_only`.
 - Согласованный KPI (в том числе «>90%») в письме партнёра.
 
 Методика, когда корпус появится: [`PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md`](../partners/PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md).
-Checkpoint **`NO_GO`**.
+Checkpoint **`GO`**; `customer_go` false.

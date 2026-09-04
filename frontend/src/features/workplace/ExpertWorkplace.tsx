@@ -2,6 +2,7 @@ import { startTransition, type ReactNode } from "react";
 import type { ParsedRequirement, ReportSummaryEntry, ValidationIssue, ValidationReport } from "../../lib/types";
 import type { ReviewEventRow } from "../../lib/api";
 import type { FindingGroupBy, IndexedIssue } from "../../lib/issue-triage";
+import { uniqueClauseKeys } from "../../lib/issue-triage";
 import type { WorkspaceView } from "../../components/WorkspaceNav";
 import { UI_COPY } from "../../lib/ui-copy";
 import CoverageMapPanel from "../../components/CoverageMapPanel";
@@ -28,6 +29,7 @@ export type ExpertWorkplaceProps = {
   hitlRegionCount: number;
   issueSearch: string;
   findingGroupBy: FindingGroupBy;
+  clauseFilter: string;
   activeIssue: ValidationIssue | null;
   matchingRequirements: ParsedRequirement[];
   selectedClashIndex: number | null;
@@ -43,6 +45,7 @@ export type ExpertWorkplaceProps = {
   onHitlOnlyChange: (value: boolean) => void;
   onSearchChange: (value: string) => void;
   onGroupByChange: (value: FindingGroupBy) => void;
+  onClauseChange: (value: string) => void;
   onSelectIssue: (index: number, issue: ValidationIssue) => void;
   onSelectClash: (index: number | null) => void;
   onDraftChange: (value: string) => void;
@@ -66,6 +69,7 @@ export default function ExpertWorkplace({
   hitlRegionCount,
   issueSearch,
   findingGroupBy,
+  clauseFilter,
   activeIssue,
   matchingRequirements,
   selectedClashIndex,
@@ -81,6 +85,7 @@ export default function ExpertWorkplace({
   onHitlOnlyChange,
   onSearchChange,
   onGroupByChange,
+  onClauseChange,
   onSelectIssue,
   onSelectClash,
   onDraftChange,
@@ -113,6 +118,9 @@ export default function ExpertWorkplace({
             </label>
             <ExportActionsBar reportId={selectedReport.report_id} />
           </div>
+          <p className="compact-copy" data-testid="rehearsal-one-click">
+            {UI_COPY.rehearsalOneClick}
+          </p>
           <p className="compact-copy" data-testid="training-rules-banner" role="note">
             {UI_COPY.trainingRulesBanner}
           </p>
@@ -163,10 +171,13 @@ export default function ExpertWorkplace({
                 hitlRegionCount={hitlRegionCount}
                 searchQuery={issueSearch}
                 groupBy={findingGroupBy}
+                clauseFilter={clauseFilter}
+                clauseOptions={uniqueClauseKeys(selectedReport.issues)}
                 onSeverityChange={onSeverityChange}
                 onHitlOnlyChange={onHitlOnlyChange}
                 onSearchChange={onSearchChange}
                 onGroupByChange={onGroupByChange}
+                onClauseChange={onClauseChange}
                 onSelectIssue={onSelectIssue}
               />
             )}

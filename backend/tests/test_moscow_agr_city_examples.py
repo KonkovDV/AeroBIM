@@ -1,9 +1,11 @@
+
 """City AGR example pin: skip-safe; does not claim RT closed."""
 
 from __future__ import annotations
 
 import unittest
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.tools.benchmark_project_package import repo_root
 from aerobim.tools.moscow_agr_city_examples import load_manifest, missing_ifc_files
 from aerobim.tools.run_moscow_agr_city_examples import skipped_payload
@@ -39,7 +41,7 @@ class MoscowAgrCityExamplesTests(unittest.TestCase):
         self.assertFalse(payload["closes_rt001"])
         self.assertFalse(payload["closes_rt002b"])
         self.assertFalse(payload["closes_rt003"])
-        self.assertEqual(payload["checkpoint"], "NO_GO")
+        self.assertEqual(payload["checkpoint"], CHECKPOINT)
         self.assertFalse(payload["injector_ran"])
         self.assertIn("content_sha256", payload)
 

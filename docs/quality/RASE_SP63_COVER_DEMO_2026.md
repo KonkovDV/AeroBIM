@@ -10,7 +10,7 @@ closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   Four-role markup of one synthetic cover rule. Not SP 63 table 8.1.
-  Not customer_approved. No fabricated DOI. Checkpoint NO_GO.
+  Not customer_approved. No fabricated DOI. Checkpoint GO; customer_go false.
 ---
 
 # Четыре роли RASE на одном пункте (шаблон)
@@ -49,4 +49,4 @@ advisory; E не авто). Машина:
 - выдуманный DOI
 - точность >90%
 
-Checkpoint **NO_GO**.
+Checkpoint **GO**; customer_go false.

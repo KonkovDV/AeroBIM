@@ -5,7 +5,7 @@ date: 2026-08-07
 status: canonical
 claim_boundary: >-
   fixture_only · live_provider=false · advisory only · cannot change summary.passed.
-  No product accuracy >90%. Checkpoint NO_GO.
+  No product accuracy >90%. Checkpoint GO; customer_go false.
 ---
 
 # Kimi vs Qwen — LLM extraction (Sprint 3, August 2026)

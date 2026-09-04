@@ -1,7 +1,7 @@
 {
   "artifact_type": "aerobim_pnst909_22_scenario_runtime",
   "generated_at": "2026-08-05T20:04:31.762645+00:00",
-  "claim_boundary": "Aggregated PNST 909 IDS coverage on Renga open pack after ToS cite GO (2026-08-05). 18/22 scenarios: IDS validator EXECUTED with 0 findings on reference IFC. 4/22: no IDS in downloaded pack. AUTHOR_CLAIM coverage map — NOT product accuracy, NOT expert adjudication. Clean pack != customer precision. Checkpoint NO_GO.",
+  "claim_boundary": "Aggregated PNST 909 IDS coverage on Renga open pack after ToS cite GO (2026-08-05). 18/22 scenarios: IDS validator EXECUTED with 0 findings on reference IFC. 4/22: no IDS in downloaded pack. AUTHOR_CLAIM coverage map — NOT product accuracy, NOT expert adjudication. Clean pack != customer precision. Checkpoint GO; customer_go false.",
   "tos_cite": "GO",
   "tos_cite_date": "2026-08-05",
   "source_pack": ".local/renga-pnst909/pack",

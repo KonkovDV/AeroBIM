@@ -25,4 +25,4 @@
 2. Plant defects on **license-cleared** IFC (IFC-Bench duplex/dental non-GPL, OSArch after read).  
 3. Emit GT JSON compatible with Sprint-2 detection metrics method.
 
-Does not close RT-001. Does not change Checkpoint **NO_GO**.
+Does not close RT-001. Does not change Checkpoint **GO**; customer_go false.

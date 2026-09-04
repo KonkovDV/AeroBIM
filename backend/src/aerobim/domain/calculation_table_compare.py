@@ -1,3 +1,4 @@
+
 """Declared-field table compare (LIRA xlsx/docx vs RD/BIM). Not a solver.
 
 SHA digest + per-field MATCH/MISMATCH. Native ``.lir`` is out of scope.
@@ -16,12 +17,13 @@ from aerobim.domain.calculation_evidence import (
     CALCULATION_CORRECTNESS_CLAIM,
     CalculationEvidenceOutcome,
 )
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.quantity import parse_localized_number, parse_quantity, si_compare
 
 CLAIM_BOUNDARY: Final = (
     "Fixture сверка of declared fields (xlsx/docx). Not a LIRA solver. "
     "Not calculation_correctness. Native .lir not parsed. PDF remains fragile. "
-    "Checkpoint NO_GO. closes_rt001/002/003=false."
+    "Checkpoint GO (regulatory_measurement_mvp; customer_go false). closes_rt001/002/003=false."
 )
 
 _NUMERIC_EPS: Final = 1e-3
@@ -169,7 +171,7 @@ def table_compare_honesty_snapshot() -> dict[str, object]:
     return {
         "artifact_type": "calculation_table_compare",
         "claim_level": "coverage_map_only",
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
         "claim": CALCULATION_CORRECTNESS_CLAIM,
         "solver": "not_implemented",
         "native_lir": "not_implemented",

@@ -1,3 +1,4 @@
+
 """Bundle the honest maximum for ТР-11/14/15 / RT-001–003 without Samolet files.
 
 Writes artifacts only by default. Does not mark blockers CLOSED. Does not
@@ -15,6 +16,7 @@ from pathlib import Path
 from time import perf_counter
 from typing import Any
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.errors import ClashCapabilityError
 from aerobim.domain.norm_pack_hash import compute_directory_tree_hash
 from aerobim.domain.tz_proxy_constructs import (
@@ -274,7 +276,7 @@ def build_payload(
         "generated_at": datetime.now(tz=UTC).isoformat(),
         "machine": _machine_fingerprint(),
         "ci": _ci_environment(),
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
         "closes_rt001": False,
         "closes_rt002": False,
         "closes_rt003": False,
@@ -380,7 +382,7 @@ def write_federated_clash_pin(repo: Path, payload: dict[str, Any]) -> None:
         "schema_version": "1.0.0",
         "artifact_type": "federated_clash_planted_pin",
         "claim_level": "engine_rehearsal",
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
         "closes_rt003": False,
         "mep_system_clash": "NOT_VERIFIED",
         "geometry_verified": False,
@@ -389,7 +391,7 @@ def write_federated_clash_pin(repo: Path, payload: dict[str, Any]) -> None:
         "claim_boundary": (
             "Hashed IfcClash on in-repo planted federated IFC (walls; pipe vs wall). "
             "License-cleared synthetic fixtures, not customer models, not coordinator "
-            "BCF gold, not MEP system-aware. Checkpoint NO_GO."
+            "BCF gold, not MEP system-aware. Checkpoint GO (regulatory_measurement_mvp; customer_go false)."
         ),
         "runs": pin_runs,
     }
@@ -437,7 +439,7 @@ def write_open_federated_clash_pin(repo: Path, payload: dict[str, Any]) -> None:
         "schema_version": "1.0.0",
         "artifact_type": "federated_clash_duplex_pin",
         "claim_level": "open_bench_only",
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
         "closes_rt003": False,
         "mep_system_clash": "NOT_VERIFIED",
         "geometry_verified": False,
@@ -448,7 +450,7 @@ def write_open_federated_clash_pin(repo: Path, payload: dict[str, Any]) -> None:
             "Hashed IfcClash on gitignored IFC-Bench duplex ARC vs MEP. Public "
             "federated pair, no coordinator BCF gold, no signed clearance matrix, "
             "not customer models, not MEP system-aware. Hits ≠ delivered. "
-            "Checkpoint NO_GO."
+            "Checkpoint GO (regulatory_measurement_mvp; customer_go false)."
         ),
         "runs": pin_runs,
     }

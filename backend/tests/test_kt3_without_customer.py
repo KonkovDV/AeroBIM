@@ -1,4 +1,5 @@
-"""KT#3 without Samolet files stays re-scope and NO_GO."""
+
+"""KT#3 without Samolet files stays re-scope; customer_go false."""
 
 from __future__ import annotations
 
@@ -6,6 +7,7 @@ import json
 import unittest
 from pathlib import Path
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.kt3_without_customer import (
     CLAIM_LEVEL,
     OWNER_DECISION_DATE,
@@ -30,7 +32,7 @@ class Kt3WithoutCustomerTests(unittest.TestCase):
         self.assertEqual(payload["plan_b_decision"], PLAN_B_DECISION)
         self.assertEqual(payload["owner_decision_date"], OWNER_DECISION_DATE)
         self.assertEqual(payload["program_fork_date"], PROGRAM_FORK_DATE)
-        self.assertEqual(payload["checkpoint"], "NO_GO")
+        self.assertEqual(payload["checkpoint"], CHECKPOINT)
         self.assertEqual(payload["claim_level"], CLAIM_LEVEL)
         self.assertFalse(payload["customer_files_expected"])
         self.assertFalse(payload["waiting_for_customer"])
@@ -38,9 +40,18 @@ class Kt3WithoutCustomerTests(unittest.TestCase):
         self.assertFalse(payload["closes_rt002"])
         self.assertFalse(payload["closes_rt003"])
         self.assertFalse(payload["nda_corpus_in_git"])
-        self.assertEqual(payload["schema_version"], "1.2.0")
+        self.assertEqual(payload["schema_version"], "1.6.0")
+        self.assertEqual(payload["go_kind"], "regulatory_measurement_mvp")
+        self.assertFalse(payload["customer_go"])
+        self.assertEqual(payload["rt002_split"]["a_regulatory"], "CLOSED")
+        self.assertEqual(payload["rt002_split"]["b_eir_carrier"], "CLOSED")
         self.assertEqual(payload["rt002_split"]["b_corporate"], "OPEN")
+        self.assertEqual(payload["rt002_split"]["c_corporate_signed"], "OPEN")
         self.assertTrue(payload["rt002_split"]["undifferentiated_closed_forbidden"])
+        self.assertEqual(payload["rt003_split"]["a_federated_geometric_rehearsal"], "CLOSED")
+        self.assertEqual(payload["rt003_split"]["b_navis_federation_carrier"], "CLOSED")
+        self.assertEqual(payload["rt003_split"]["b_ifc_system_graph_rehearsal"], "CLOSED")
+        self.assertEqual(payload["rt003_split"]["b_mep_system_clash"], "OPEN")
         self.assertTrue(any("90%" in item for item in payload["tz_explicit_gaps"]))
         roles = {row["role"] for row in payload["evidence"]}
         self.assertIn("tz_v2", roles)
@@ -50,6 +61,8 @@ class Kt3WithoutCustomerTests(unittest.TestCase):
         self.assertIn("kt3_tracker_card", roles)
         self.assertIn("tz_v1_brief", roles)
         self.assertIn("typical_errors_catalog", roles)
+        self.assertIn("rt_blocker_volumes", roles)
+        self.assertIn("rt001_dual_rater_simulation", roles)
         self.assertEqual(len(payload["paper_objects"]), 4)
         self.assertEqual(payload["typical_errors"]["customer_confirmed_patterns"], 0)
         self.assertGreaterEqual(payload["typical_errors"]["pattern_count"], 20)
@@ -80,7 +93,11 @@ class Kt3WithoutCustomerTests(unittest.TestCase):
         with self.assertRaises(Kt3WithoutCustomerError):
             require_honest_kt3_payload(dirty)
         dirty = dict(base)
-        dirty["checkpoint"] = "GO"
+        dirty["checkpoint"] = "NO_GO"
+        with self.assertRaises(Kt3WithoutCustomerError):
+            require_honest_kt3_payload(dirty)
+        dirty = dict(base)
+        dirty["customer_go"] = True
         with self.assertRaises(Kt3WithoutCustomerError):
             require_honest_kt3_payload(dirty)
         dirty = dict(base)
@@ -111,6 +128,10 @@ class Kt3WithoutCustomerTests(unittest.TestCase):
         self.assertIn("- closes_rt001: **false**", md)
         self.assertIn("- closes_rt002: **false**", md)
         self.assertIn("- closes_rt003: **false**", md)
+        self.assertIn("RT-001 split:", md)
+        self.assertIn("protocol rehearsal", md)
+        self.assertIn("RT-002 split:", md)
+        self.assertIn("RT-003 split:", md)
         self.assertNotIn("**False**", md)
         self.assertIn("customer_files_expected: false", md)
         self.assertIn("nda_corpus_in_git: false", md)
@@ -124,7 +145,8 @@ class Kt3WithoutCustomerTests(unittest.TestCase):
         runbook = (REPO_ROOT / "docs" / "demo" / "KT3_OPERATOR_RUNBOOK_2026_08_25.md").read_text(
             encoding="utf-8"
         )
-        self.assertIn("NO_GO", faq)
+        self.assertIn("GO", faq)
+        self.assertIn("customer_go", faq)
         self.assertIn("run_demo_ifc_acceptance_gate", faq)
         self.assertIn("RT-002 CLOSED", faq)
         self.assertIn("run_demo_ifc_acceptance_gate", runbook)

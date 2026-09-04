@@ -9,7 +9,7 @@ closes_rt001: false
 closes_rt002: false
 closes_rt003: false
 claim_boundary: >
-  Interrogation pack. Checkpoint NO_GO. Не точность продукта. Не SLA.
+  Interrogation pack. Checkpoint GO; customer_go false. Не точность продукта. Не SLA.
   Не native CAD. Не MEP delivered. Не CDE-ready BCF. Не production-ready.
   Три источника требований не склеивать. Цифры пакета заказчика сюда не входят.
 ---
@@ -18,7 +18,7 @@ claim_boundary: >
 
 Единая фраза (README / слайд 1 / трекер): **AeroBIM ловит расхождения между файлами комплекта: площадь в ведомости против площади в IFC, отметка в ПД против отметки в РД, требование ТЗ против фактического наполнения.** Не начинать со слова «модель».
 
-Checkpoint **`NO_GO`**. RT-001 / RT-002 / RT-003 кодом не закрываются.
+Checkpoint **`GO`**; `customer_go` false. RT-001 / RT-002 / RT-003 кодом не закрываются.
 
 ---
 

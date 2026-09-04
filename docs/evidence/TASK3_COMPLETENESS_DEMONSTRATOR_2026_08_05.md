@@ -9,7 +9,7 @@ adapters_delta: "+0"
 tokens_delta: "+0"
 claim_boundary: >-
   Open/synthetic package completeness only. Not product accuracy. Not PNST 909
-  vendoring. Checkpoint NO_GO. Inventory-level topics/justification markers only —
+  vendoring. Checkpoint GO; customer_go false. Inventory-level topics/justification markers only —
   not OCR of customer ТЧ and not engineering calc correctness.
 ---
 

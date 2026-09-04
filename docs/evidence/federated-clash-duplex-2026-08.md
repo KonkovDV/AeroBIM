@@ -16,4 +16,4 @@ mep_system_clash: NOT_VERIFIED
 | --- | --- | ---: |
 | duplex_arc_vs_mep | RUN | 837 |
 
-Hashed IfcClash on gitignored IFC-Bench duplex ARC vs MEP. Public federated pair, no coordinator BCF gold, no signed clearance matrix, not customer models, not MEP system-aware. Hits ≠ delivered. Checkpoint NO_GO.
+Hashed IfcClash on gitignored IFC-Bench duplex ARC vs MEP. Public federated pair, no coordinator BCF gold, no signed clearance matrix, not customer models, not MEP system-aware. Hits ≠ delivered. Checkpoint GO; customer_go false.

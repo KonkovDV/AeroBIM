@@ -7,7 +7,7 @@ insufficient_data / requires_expert + строку (unattributed).
 
 Честные границы: это наблюдаемость на фикстуре, НЕ точность продукта; «нет находок» ≠
 «не проверялось»; CHECKED_OK требует явной области (scope); карта не выставляет
-summary.passed (ADR-001). Checkpoint NO_GO.
+summary.passed (ADR-001). Checkpoint GO (regulatory_measurement_mvp; customer_go false).
 """
 
 from __future__ import annotations

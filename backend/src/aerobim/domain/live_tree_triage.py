@@ -1,3 +1,4 @@
+
 """Live-tree Red Team triage 2026-08-27 — attacks, not RT CLOSED.
 
 Pass 1: TZ v1 / inject_defects / kitchen tokens.
@@ -70,11 +71,13 @@ from __future__ import annotations
 
 from typing import Final
 
+from aerobim.domain.checkpoint import CHECKPOINT
+
 CLAIM_LEVEL: Final = "coverage_map_only"
-CHECKPOINT: Final = "NO_GO"
 CLAIM_BOUNDARY: Final = (
     "Live-tree Red Team triage. Not customer precision. Not TZ v1 as a "
-    "product score. MIK act uses interim 0.60. Checkpoint NO_GO. "
+    "product score. 0.60 is TZ v2 pilot methodology, not a customer-signed "
+    "MIK-act criterion. Checkpoint GO (regulatory_measurement_mvp; customer_go false). "
     "closes_rt001/002/003=false."
 )
 
@@ -125,8 +128,8 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
     {
         "id": "RT-KT3-01",
         "verdict": "KILL",
-        "attack": "Fixture passed=false or a live CLI means Checkpoint GO",
-        "brake": "require_kt3_jury_gate rejects passed=True; checkpoint stays NO_GO",
+        "attack": "Fixture passed=false or a live CLI means customer_go",
+        "brake": "require_kt3_jury_gate rejects passed=True; customer_go stays false",
     },
     {
         "id": "RT-KT3-02",
@@ -150,7 +153,7 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "id": "RT-TRK-GO",
         "verdict": "KILL",
         "attack": "Tracker agent_done_count means six customer tasks closed",
-        "brake": "owner_blocked_count >= 4; checkpoint NO_GO",
+        "brake": "owner_blocked_count >= 4; checkpoint GO; customer_go false",
     },
     {
         "id": "RT-OOS-01",
@@ -696,7 +699,7 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "id": "RT-AGR-002",
         "verdict": "HOLD",
         "attack": "moscow_agr_2026 status=approved means Samolet customer_approved",
-        "brake": "RT-002a city pack; RT-002b OPEN; profile not customer-hard",
+        "brake": "RT-002a city pack; RT-002c signed OPEN; profile not customer-hard",
     },
     {
         "id": "RT-INV-HOLD",

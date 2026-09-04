@@ -9,7 +9,7 @@
   "customer_federated_ifc": false,
   "signed_scope": false,
   "license": "CC BY 4.0 (IFC-Bench duplex / buildingSMART sample)",
-  "claim_boundary": "Hashed IfcClash on gitignored IFC-Bench duplex ARC vs MEP. Public federated pair, no coordinator BCF gold, no signed clearance matrix, not customer models, not MEP system-aware. Hits ≠ delivered. Checkpoint NO_GO.",
+  "claim_boundary": "Hashed IfcClash on gitignored IFC-Bench duplex ARC vs MEP. Public federated pair, no coordinator BCF gold, no signed clearance matrix, not customer models, not MEP system-aware. Hits ≠ delivered. Checkpoint GO; customer_go false.",
   "runs": [
     {
       "label": "duplex_arc_vs_mep",

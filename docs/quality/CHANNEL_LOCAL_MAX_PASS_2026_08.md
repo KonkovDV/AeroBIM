@@ -14,7 +14,7 @@ claim_boundary: >
   What git plus a gitignored quarantine copy can do for TZ v2, TechLab
   seven comparison tasks, MIK speech, and tracker SIG-01…08. Inventory and
   unsigned volume shape only. Not product accuracy. Not pack processed.
-  Not Meets/Does-not. Not a jury exhibit. Checkpoint NO_GO.
+  Not Meets/Does-not. Not a jury exhibit. Checkpoint GO; customer_go false.
 ---
 
 # Максимум на локальной копии Самолёта (31.08)
@@ -25,7 +25,7 @@ claim_boundary: >
 
 Триаж семейств: [`CHANNEL_PACK_TRIAGE_2026_08.md`](CHANNEL_PACK_TRIAGE_2026_08.md). Несжатые ГиБ дерева в git **не** публикуем.
 
-Checkpoint **`NO_GO`**. Формулировка SIG-01: **«объём находок на канале получен»**. `publishable_finding_count` = **0**. Семь задач Техлаба остаются **Uncertain**. Каталог: `customer_confirmed_patterns=0`.
+Checkpoint **`GO`**; `customer_go` false. Формулировка SIG-01: **«объём находок на канале получен»**. `publishable_finding_count` = **0**. Семь задач Техлаба остаются **Uncertain**. Каталог: `customer_confirmed_patterns=0`.
 
 Это не закрытие SIG-01…08 у владельца. Git даёт форму и честный разбор; письма, IdP, два разметчика, подпись IDS и OA-9 остаются за владельцем.
 

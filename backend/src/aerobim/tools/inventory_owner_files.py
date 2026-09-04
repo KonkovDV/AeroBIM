@@ -1,3 +1,4 @@
+
 """Write owner-disk files/ inventory under .local/ only.
 
 Does not parse IFC. Does not raise the 256 MiB cap. Does not close RT.
@@ -11,6 +12,7 @@ import os
 import sys
 from pathlib import Path
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.owner_files_inventory import (
     DEFAULT_IFC_CAP_BYTES,
     public_rehearsal_snapshot,
@@ -77,7 +79,7 @@ def main(argv: list[str] | None = None) -> int:
                 "file_count": scan.get("file_count"),
                 "ifc_count": scan.get("ifc_count"),
                 "differs_from_public_rehearsal": payload["differs_from_public_rehearsal"],
-                "checkpoint": "NO_GO",
+                "checkpoint": CHECKPOINT,
                 "closes_rt001": False,
             }
         )

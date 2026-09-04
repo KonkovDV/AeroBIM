@@ -10,7 +10,12 @@ import { UI_COPY } from "./ui-copy";
 export const TRIAGE_BANDS = ["critical", "major", "minor", "negligible"] as const;
 export type TriageBand = (typeof TRIAGE_BANDS)[number];
 
-export type FindingGroupBy = "none" | "rule" | "storey" | "axis" | "discipline";
+export type FindingGroupBy = "none" | "rule" | "storey" | "axis" | "discipline" | "clause";
+
+/** Sentinel for the clause filter: show every finding. */
+export const CLAUSE_FILTER_ALL = "all";
+/** Sentinel: finding has no ИТЗ / СТО / СП stamp. */
+export const CLAUSE_FILTER_MISSING = "";
 
 export type IndexedIssue = { issue: ValidationIssue; index: number };
 
@@ -23,6 +28,8 @@ export type TriageFilter = {
   severity: TriageSeverityFilter;
   hitlOnly: boolean;
   search: string;
+  /** `all` | empty (нет пункта) | exact clauseFilterKey. Default `all`. */
+  clause?: string;
 };
 
 /** Текстовый поиск по находке: правило, суть, GUID, цель, этаж, ось, категория. */
@@ -41,6 +48,10 @@ export function issueMatchesSearch(issue: ValidationIssue, query: string): boole
     issue.grid_axis,
     issue.finding_id,
     issue.remark?.title,
+    issue.norm_source,
+    issue.norm_edition,
+    issue.norm_clause,
+    issue.remark?.clause_cite,
   ]
     .filter((part): part is string => Boolean(part && part.trim()))
     .join("\n")
@@ -64,6 +75,10 @@ export function filterTriageIssues(
         return false;
       }
       if (filter.hitlOnly && issue.rule_id !== HITL_RULE_ID) {
+        return false;
+      }
+      const clauseWanted = filter.clause ?? CLAUSE_FILTER_ALL;
+      if (clauseWanted !== CLAUSE_FILTER_ALL && clauseFilterKey(issue) !== clauseWanted) {
         return false;
       }
       return issueMatchesSearch(issue, filter.search);
@@ -145,6 +160,10 @@ export function findingGroupKey(issue: ValidationIssue, groupBy: FindingGroupBy)
   if (groupBy === "discipline") {
     return spatialOrMissing(issue.category);
   }
+  if (groupBy === "clause") {
+    const key = clauseFilterKey(issue);
+    return key === CLAUSE_FILTER_MISSING ? UI_COPY.clauseMissing : key;
+  }
   return "";
 }
 
@@ -176,6 +195,15 @@ export function priorityCaption(issue: ValidationIssue): string | null {
 }
 
 export function clauseLine(issue: ValidationIssue): string {
+  const key = clauseFilterKey(issue);
+  if (key !== CLAUSE_FILTER_MISSING) {
+    return key;
+  }
+  return UI_COPY.clauseMissingCard;
+}
+
+/** Stamp used for filter/group. Empty string = нет пункта. Does not invent from OCR. */
+export function clauseFilterKey(issue: ValidationIssue): string {
   const fromRemark = issue.remark?.clause_cite?.trim();
   if (fromRemark) {
     return fromRemark;
@@ -183,10 +211,18 @@ export function clauseLine(issue: ValidationIssue): string {
   const parts = [issue.norm_source, issue.norm_edition, issue.norm_clause].filter(
     (part): part is string => Boolean(part && part.trim()),
   );
-  if (parts.length > 0) {
-    return parts.join(" · ");
+  return parts.join(" · ");
+}
+
+export function uniqueClauseKeys(issues: ValidationIssue[]): string[] {
+  const keys = new Set<string>();
+  for (const issue of issues) {
+    const key = clauseFilterKey(issue);
+    if (key !== CLAUSE_FILTER_MISSING) {
+      keys.add(key);
+    }
   }
-  return "в записи нет пункта нормы — обязательное поле ТЗ, не украшение";
+  return [...keys].sort((a, b) => a.localeCompare(b, "ru"));
 }
 
 export function essenceLine(issue: ValidationIssue): string {

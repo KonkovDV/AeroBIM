@@ -1,6 +1,6 @@
 {
   "artifact": "hybrid-contour-bench",
-  "note": "deterministic contour only; NO network/model call; not model quality and not product accuracy; latency is environment-specific; masking != anonymity; verdict-neutral; Checkpoint NO_GO",
+  "note": "deterministic contour only; NO network/model call; not model quality and not product accuracy; latency is environment-specific; masking != anonymity; verdict-neutral; Checkpoint GO; customer_go false",
   "rows": [
     {
       "classification": "confidential",

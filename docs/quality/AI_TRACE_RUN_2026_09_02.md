@@ -8,7 +8,7 @@ closes_rt001: false
 closes_rt002: false
 closes_rt003: false
 claim_boundary: >
-  Editorial run log. Not product accuracy. Checkpoint NO_GO.
+  Editorial run log. Not product accuracy. Checkpoint GO; customer_go false.
   Owner chose variant A (move lit-radar prompt to docs/ai/).
 ---
 

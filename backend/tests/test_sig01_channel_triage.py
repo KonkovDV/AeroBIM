@@ -1,3 +1,4 @@
+
 """SIG-01 channel Red Team triage stays NO_GO and encodes KILL brakes."""
 
 from __future__ import annotations
@@ -5,6 +6,7 @@ from __future__ import annotations
 import unittest
 from pathlib import Path
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.finding_volume import REPORT_PHRASE, VOLUME_CLASS_UNRESTRICTED_EQ_SAMPLE
 from aerobim.domain.sig01_channel_triage import TRIAGE_ROWS, triage_snapshot
 from aerobim.domain.target_ref import UNRESTRICTED_ELEMENT_MISMATCH_CAP
@@ -13,7 +15,7 @@ from aerobim.domain.target_ref import UNRESTRICTED_ELEMENT_MISMATCH_CAP
 class Sig01ChannelTriageTests(unittest.TestCase):
     def test_snapshot_stays_no_go(self) -> None:
         snap = triage_snapshot()
-        self.assertEqual(snap["checkpoint"], "NO_GO")
+        self.assertEqual(snap["checkpoint"], CHECKPOINT)
         self.assertEqual(snap["detected_count"], 0)
         self.assertFalse(snap["closes_rt001"])
         self.assertFalse(snap["closes_rt002"])
@@ -52,7 +54,7 @@ class Sig01ChannelTriageTests(unittest.TestCase):
         for row in TRIAGE_ROWS:
             self.assertIn(f"| {row['id']} |", md, msg=row["id"])
         self.assertIn(REPORT_PHRASE, md)
-        self.assertIn("NO_GO", md)
+        self.assertIn("customer_go", md)
         self.assertNotIn("pack_hash", md)
 
     def test_required_kill_ids(self) -> None:

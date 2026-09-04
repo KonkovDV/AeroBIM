@@ -6,7 +6,7 @@ last_updated: "2026-08-24"
 status: LIVING
 claim_boundary: >-
   Date/status inventory for engineering. Not legal advice. Not «соответствуем ГОСТ целиком».
-  Re-verify before each public claim. Checkpoint NO_GO.
+  Re-verify before each public claim. Checkpoint GO; customer_go false.
 ---
 
 # Нормативная база 2026 — срез для продукта

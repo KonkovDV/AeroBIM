@@ -1,3 +1,4 @@
+
 """IFC Acceptance Gate projector — fixture contract, ADR-001, no customer accuracy."""
 
 from __future__ import annotations
@@ -5,6 +6,7 @@ from __future__ import annotations
 import unittest
 from pathlib import Path
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.ifc_acceptance_gate import (
     AcceptanceGateError,
     project_ifc_acceptance_gate,
@@ -76,7 +78,7 @@ class IfcAcceptanceGateTests(unittest.TestCase):
         )
         self.assertEqual(gate["outcome"], "failed")
         self.assertFalse(gate["passed"])
-        self.assertEqual(gate["checkpoint_verdict"], "NO_GO")
+        self.assertEqual(gate["checkpoint_verdict"], CHECKPOINT)
         self.assertEqual(gate["capabilities"]["ids_validation"], "FAILED")
         self.assertEqual(gate["capabilities"]["geometry"], "NOT_VERIFIED")
         self.assertEqual(gate["findings"][0]["ifc_guid"], "GUID-1")

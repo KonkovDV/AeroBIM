@@ -1734,6 +1734,15 @@ button.linkish {
   margin-bottom: 16px;
 }
 
+.demo-fixture-compact {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-bottom: 8px;
+  padding: 8px 12px;
+}
+
 .hotkeys-footer {
   display: flex;
   flex-wrap: wrap;

@@ -1,3 +1,4 @@
+
 """Deep-study carrier pin stays name-free and is not «processed»."""
 
 from __future__ import annotations
@@ -6,6 +7,7 @@ import json
 import unittest
 from pathlib import Path
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.deep_study_facts import (
     PUBLIC_DEEP_STUDY,
     deep_study_snapshot,
@@ -18,13 +20,17 @@ _EVIDENCE = _REPO / "docs" / "evidence" / "deep-study-carrier-facts-latest.json"
 class DeepStudyFactsTests(unittest.TestCase):
     def test_snapshot_stays_no_go_and_unprocessed(self) -> None:
         snap = deep_study_snapshot()
-        self.assertEqual(snap["checkpoint"], "NO_GO")
+        self.assertEqual(snap["checkpoint"], CHECKPOINT)
         self.assertFalse(snap["processed"])
         self.assertFalse(snap["raise_cap"])
         self.assertFalse(snap["parse_rvt_nwd_lira"])
         self.assertFalse(snap["names_in_git"])
         self.assertFalse(snap["hashes_in_git"])
         self.assertFalse(snap["customer_approved_ids"])
+        self.assertTrue(snap["eir_v4_present"])
+        self.assertTrue(snap["bim_standard_v4_present"])
+        self.assertTrue(snap["eir_lod_mep_disciplines_named"])
+        self.assertEqual(snap["nwd_federation_count"], 3)
         self.assertEqual(snap["customer_confirmed_patterns"], 0)
         self.assertEqual(snap["ifc_schema"], "IFC2X3")
         self.assertEqual(snap["netfloorarea_count"], 0)

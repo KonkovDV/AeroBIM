@@ -1,8 +1,10 @@
+
 """Attributed MIK commission scoring — arithmetic, not a predicted AeroBIM score.
 
 Owner briefing 2026-08-29 of Fund order P-01-OD-52-1/26 (17.06.2026).
 The Fund PDF is not in git. Weights are IUA over that briefing, not a
-CI-attested pin and not a prize forecast. Checkpoint NO_GO.
+CI-attested pin and not a prize forecast.
+Checkpoint GO (regulatory_measurement_mvp; customer_go false).
 
 Does not close RT-001 / RT-002 / RT-003. Does not name sitting members.
 """
@@ -11,12 +13,14 @@ from __future__ import annotations
 
 from typing import Any, Final
 
+from aerobim.domain.checkpoint import CHECKPOINT
+
 CLAIM_LEVEL: Final = "attributed_program_arithmetic"
-CHECKPOINT: Final = "NO_GO"
 CLAIM_BOUNDARY: Final = (
     "Attributed TechLab commission weights. Selection uses the order "
     "protocol form (K1-K5). Regulation Appendix 3 (final table) is not in "
-    "git. Not a predicted AeroBIM total. Checkpoint stays NO_GO."
+    "git. Not a predicted AeroBIM total. Checkpoint GO "
+    "(regulatory_measurement_mvp); customer_go false."
 )
 
 ORDER_ID: Final = "П-01-ОД-52-1/26"

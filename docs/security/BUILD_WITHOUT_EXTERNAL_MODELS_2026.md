@@ -9,7 +9,7 @@ closes_rt003: false
 claim_boundary: >
   Operator note for IB review. Default is no outbound advisory.
   samolet_pilot / production hard-disable LLM and VLM ready().
-  Checkpoint NO_GO.
+  Checkpoint GO; customer_go false.
 ---
 
 # Сборка без внешних обращений к моделям

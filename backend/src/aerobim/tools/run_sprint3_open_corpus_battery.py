@@ -1,3 +1,4 @@
+
 """Sprint 3 maximal open-corpus battery — regression, BSI, IFC-Bench, schema suite.
 
 Writes committed evidence under ``docs/evidence/`` and ``audit/evidence/``.
@@ -15,6 +16,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.tools.benchmark_project_package import (
     benchmark_schema_suite,
     schema_suite_pack_paths,
@@ -185,7 +187,7 @@ def run_battery(
         "schema_version": "1.0.0",
         "generated_at": generated_at,
         "claim_boundary": CLAIM_BOUNDARY,
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
         "battery_pass": battery_pass,
         "open_corpora": open_corpora,
         "ifc_bench": ifc_bench,

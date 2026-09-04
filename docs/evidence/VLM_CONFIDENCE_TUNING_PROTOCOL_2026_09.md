@@ -10,7 +10,7 @@ closes_rt003: false
 claim_boundary: >
   Default thresholds are abstention knobs on fixture VLM reads.
   Not product accuracy. Not the MIK interim TP/(TP+FP) ≥ 0.60.
-  Not a published calibration. Checkpoint NO_GO.
+  Not a published calibration. Checkpoint GO; customer_go false.
 ---
 
 # VLM confidence — tuning protocol

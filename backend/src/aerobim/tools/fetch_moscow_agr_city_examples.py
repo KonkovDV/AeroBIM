@@ -1,3 +1,4 @@
+
 """Download city-published Moscow AGR example IFCs into gitignored ``.local/``.
 
 Does not vendor binaries into git. Does not close RT-001.
@@ -15,6 +16,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.tools.benchmark_project_package import repo_root
 from aerobim.tools.moscow_agr_city_examples import (
     CLAIM_BOUNDARY,
@@ -120,7 +122,7 @@ def main(argv: list[str] | None = None) -> int:
         "closes_rt001": False,
         "closes_rt002b": False,
         "closes_rt003": False,
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
         "generated_at": datetime.now(tz=UTC).isoformat(),
         "source_page": manifest.get("source_page"),
         "files": rows,

@@ -7,7 +7,7 @@ last_updated: "2026-08-30"
 claim_boundary: >
   Requirement-to-artifact map. TZ evaluation targets are the customer's
   criteria, not AeroBIM measurements. Fixture and open
-  benches ≠ Samolet корпус. Checkpoint NO_GO; RT-001/002/003 OPEN.
+  benches ≠ Samolet корпус. Checkpoint GO; customer_go false; RT-001/002/003 OPEN.
 ---
 
 # Покрытие требований ТЗ
@@ -153,6 +153,6 @@ claim_boundary: >
 
 ## 8. Что закрывает разрыв
 
-Checkpoint **`NO_GO`** снимается не кодом, а четырьмя поставками заказчика: комплект ПД/РД одной ревизии с IFC, подписанный профиль приёмки, два инженера-разметчика, целевая СОД для BCF. Запрос: [`../docs/partners/SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md`](../docs/partners/SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md).
+`customer_go` **false** снимается не кодом, а четырьмя поставками заказчика: комплект ПД/РД одной ревизии с IFC, подписанный профиль приёмки, два инженера-разметчика, целевая СОД для BCF. Запрос: [`../docs/partners/SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md`](../docs/partners/SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md).
 
 Допустимые интерпретации текущих цифр: [Kane IUA](../docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md) (заморозка `f9389bf`). Показ: `python -m aerobim.tools.run_demo_ifc_acceptance_gate`; оверлей `run_demo_vertical_slice` — P1.

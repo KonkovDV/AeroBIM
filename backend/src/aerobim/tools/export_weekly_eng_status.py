@@ -1,3 +1,4 @@
+
 """Export a weekly engineering status JSON (Task 7).
 
 Commercial funnel numbers are **never invented** here — they stay owner-only
@@ -5,7 +6,7 @@ under ``.local/commercial-ops/``. This tool only aggregates public eng evidence:
 runtime baseline, architecture inventory, Exp B KR share, adjudication plan
 preview, and claim boundary.
 
-Claim boundary: engineering readiness only. Checkpoint NO_GO. Not customer SLA.
+Claim boundary: engineering readiness only. Checkpoint GO (regulatory_measurement_mvp; customer_go false). Not customer SLA.
 """
 
 from __future__ import annotations
@@ -15,6 +16,8 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+
+from aerobim.domain.checkpoint import CHECKPOINT
 
 
 def _repo_root() -> Path:
@@ -93,10 +96,10 @@ def build_weekly_status(*, repo: Path | None = None) -> dict[str, Any]:
         "generated_at": datetime.now(tz=UTC).isoformat(),
         "claim_boundary": (
             "Engineering weekly status only. No invented commercial funnel. "
-            "Checkpoint NO_GO until RF PD+expertise corpus, Samolet acceptance "
+            "Checkpoint GO (regulatory_measurement_mvp; customer_go false) until RF PD+expertise corpus, Samolet acceptance "
             "profile, and measured federated MEP. Fixture != customer accuracy."
         ),
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
         "rt_open": ["RT-001", "RT-002", "RT-003"],
         "commercial_funnel": _commercial_block(root),
         "runtime_baseline": {
@@ -130,7 +133,7 @@ def build_weekly_status(*, repo: Path | None = None) -> dict[str, Any]:
         "interpretation_use": {
             "ledger": "docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md",
             "cli": "python -m aerobim.tools.export_interpretation_use_ledger",
-            "checkpoint": "NO_GO",
+            "checkpoint": CHECKPOINT,
         },
         "ifc_cache_ram_ceiling": _ifc_cache_ram_ceiling(),
         "next_levers": [

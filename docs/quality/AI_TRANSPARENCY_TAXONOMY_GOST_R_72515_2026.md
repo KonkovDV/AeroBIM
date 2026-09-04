@@ -11,7 +11,7 @@ closes_rt003: false
 claim_boundary: >
   Mapping of existing AeroBIM honesty onto GOST R 72515-2026 (ISO/IEC
   12792:2025) information-element buckets. Not a conformity declaration.
-  Checkpoint NO_GO.
+  Checkpoint GO; customer_go false.
 ---
 
 # Таксономия прозрачности (ГОСТ Р 72515-2026)
@@ -48,4 +48,4 @@ claim_boundary: >
 будущей логикой проекта закона. Это аргумент К2, не действующее требование и
 не «доверенная модель в реестре».
 
-Checkpoint **`NO_GO`**.
+Checkpoint **`GO`**; `customer_go` false.

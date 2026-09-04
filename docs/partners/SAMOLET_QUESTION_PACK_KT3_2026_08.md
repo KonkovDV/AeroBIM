@@ -11,7 +11,7 @@ closes_rt003: false
 claim_boundary: >
   Draft questions. Git does not send mail. Channel locator is not republished.
   RT-002a is not 'no norms'. TBD sections are our v2 for confirmation.
-  Checkpoint NO_GO.
+  Checkpoint GO; customer_go false.
 ---
 
 # Пакет вопросов Самолёту (черновик, SIG-05)

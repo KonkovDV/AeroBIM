@@ -19,7 +19,7 @@ CLAIM_BOUNDARY = (
     "City-published AGR CIM examples (stroimprosto.mos.ru cim-agr). "
     "Not a PD pack: no sheets, TZ, two revisions, calculations, or expertise "
     "remarks. Not a Samolet-signed profile. Class-1 AGR exchange + official "
-    "IDS engine coverage only. Checkpoint NO_GO."
+    "IDS engine coverage only. Checkpoint GO (regulatory_measurement_mvp; customer_go false)."
 )
 CLAIM_LEVEL = "moscow_agr_city_example_rehearsal"
 

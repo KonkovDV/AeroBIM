@@ -10,7 +10,7 @@ closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   Fit to the public Partner mandate. Not Partner validation metrics (B2).
-  Not TZ >90%. Not a predicted K3 score. Checkpoint NO_GO.
+  Not TZ >90%. Not a predicted K3 score. Checkpoint GO; customer_go false.
 ---
 
 # К3: посадка на запрос партнёра, не метрики Б2

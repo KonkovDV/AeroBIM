@@ -6,7 +6,7 @@ status: PACK_PINNED_LOCAL
 claim_boundary: >-
   Integrity + ToS note. IFC binaries live only under .local/ (gitignored).
   Official IDS/TEP/Vedomost stay in samples/. Not a PD pack. Not Samolet.
-  Does not close RT-001 / RT-002b / RT-003. Checkpoint NO_GO.
+  Does not close RT-001 / RT-002b / RT-003. Checkpoint GO; customer_go false.
 closes_rt001: false
 closes_rt002b: false
 closes_rt003: false

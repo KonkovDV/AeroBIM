@@ -11,7 +11,7 @@ closes_rt003: false
 claim_boundary: >
   Methodology for declared-value compare (RD/BIM vs calculation note).
   Not an independent structural solver. Not customer precision.
-  Checkpoint NO_GO.
+  Checkpoint GO; customer_go false.
 ---
 
 # Четыре проверки «заявленное vs записка»
@@ -44,4 +44,4 @@ claim_boundary: >
 - Процент «точности ЛИРА» без dual-rater (RT-001).
 - Fixture clash n=6 как суррогат этой сверки.
 
-Связанные: `calculation_compare` в коде; [ADR-001](../architecture/ADR-001-verdict-ownership-2026.md); [`DEFECT_INJECTION_RECALL_PLAN_2026_09.md`](../evidence/DEFECT_INJECTION_RECALL_PLAN_2026_09.md). Checkpoint **NO_GO**.
+Связанные: `calculation_compare` в коде; [ADR-001](../architecture/ADR-001-verdict-ownership-2026.md); [`DEFECT_INJECTION_RECALL_PLAN_2026_09.md`](../evidence/DEFECT_INJECTION_RECALL_PLAN_2026_09.md). Checkpoint **GO**; customer_go false.

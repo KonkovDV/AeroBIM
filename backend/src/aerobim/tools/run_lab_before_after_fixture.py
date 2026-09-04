@@ -1,3 +1,4 @@
+
 """Machine elapsed on a git fixture for the lab before/after journal.
 
 Protocol: ``docs/partners/BEFORE_AFTER_MEASUREMENT_PROTOCOL_2026_09.md``.
@@ -19,6 +20,7 @@ from typing import Any
 
 from aerobim.core.config.settings import Settings
 from aerobim.core.di.tokens import Tokens
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.mik_commission_scoring import (
     foreign_labor_cut_as_ours,
     k4_revenue_claimed,
@@ -29,7 +31,7 @@ from aerobim.tools._cli_base import run_cli
 
 CLAIM_BOUNDARY = (
     "Fixture tool elapsed only. t_manual_s is null. Not partner B4. "
-    "Not A1-A8. Not the published analog labor cut. Checkpoint NO_GO."
+    "Not A1-A8. Not the published analog labor cut. Checkpoint GO (regulatory_measurement_mvp; customer_go false)."
 )
 SCHEMA_VERSION = "1.0.0"
 DEFAULT_IFC_REL = "samples/ifc/wall-fire-rating-rei60.ifc"
@@ -106,7 +108,7 @@ def build_journal(
         "artifact_type": "lab_before_after_journal",
         "claim_level": "fixture_only",
         "claim_boundary": CLAIM_BOUNDARY,
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
         "closes_rt001": False,
         "closes_rt002": False,
         "closes_rt003": False,
@@ -180,7 +182,7 @@ def main(argv: list[str] | None = None) -> int:
                 "t_manual_s": payload["t_manual_s"],
                 "t_tool_ms": payload["t_tool_ms"],
                 "pack_hash": payload["pack_hash"],
-                "checkpoint": "NO_GO",
+                "checkpoint": CHECKPOINT,
             }
         )
     )

@@ -3,7 +3,7 @@ title: "Academic Roadmap — что доделать на академическ
 status: active
 version: "1.0.1"
 last_updated: "2026-09-03"
-claim_boundary: "Дорожная карта научного слоя. Checkpoint NO_GO; RT-001/002/003 OPEN. Все числа — из артефактов; forbidden_wording действует и для статьи."
+claim_boundary: "Дорожная карта научного слоя. Checkpoint GO; customer_go false; RT-001/002/003 OPEN. Все числа — из артефактов; forbidden_wording действует и для статьи."
 ---
 
 # Академическая дорожная карта — что доделать (03.09)

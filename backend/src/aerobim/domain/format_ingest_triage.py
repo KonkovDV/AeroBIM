@@ -1,19 +1,23 @@
+
 """Format-ingest Red Team triage — 2026-09-01.
 
 Seven strategy classes for closed CAD/solver files. Path must not contain
-the hyphenated token blocked by pre-commit. Not a DWG product. Checkpoint NO_GO.
+the hyphenated token blocked by pre-commit. Not a DWG product.
+Checkpoint GO (regulatory_measurement_mvp; customer_go false).
 """
 
 from __future__ import annotations
 
 from typing import Final
 
+from aerobim.domain.checkpoint import CHECKPOINT
+
 CLAIM_LEVEL: Final = "coverage_map_only"
-CHECKPOINT: Final = "NO_GO"
 CLAIM_BOUNDARY: Final = (
     "Format-ingest Red Team triage after the 01.09 academic option map. "
     "KT#3 exchange object is IFC + PDF/A. Closed Autodesk CAD and .lir stay "
-    "fail-closed. ODA trial is measurement, not a product. Checkpoint NO_GO."
+    "fail-closed. ODA trial is measurement, not a product. Checkpoint GO "
+    "(regulatory_measurement_mvp; customer_go false)."
 )
 
 KT3_RECOMMENDED: Final[dict[str, str]] = {

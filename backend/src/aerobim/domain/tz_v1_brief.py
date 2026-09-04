@@ -1,24 +1,29 @@
+
 """Public TechLab TZ v1 brief (6-page contest PDF) — not a product score.
 
 This is the original sponsor brief (terms, concept, eval targets, TBD
 architecture). It is not the seven comparison tasks, not the house design TZ,
 and not TZ v2 (ТР-1…62). Accuracy «>90%» here is an evaluation target.
-MIK act speech is the TechLab interim 0.60 protocol, not that target.
+MIK-act speech may cite the TechLab interim 0.60 *protocol* (TZ v2 methodology).
+That is not a customer-signed criterion. Target >90% is not withdrawn.
 
-Does not close RT-001 / RT-002 / RT-003. Checkpoint NO_GO.
+Does not close RT-001 / RT-002 / RT-003.
+Checkpoint GO (regulatory_measurement_mvp; customer_go false).
 """
 
 from __future__ import annotations
 
 from typing import Any, Final
 
+from aerobim.domain.checkpoint import CHECKPOINT
+
 CLAIM_LEVEL: Final = "tz_v1_brief_coverage"
-CHECKPOINT: Final = "NO_GO"
 CLAIM_BOUNDARY: Final = (
     "Public contest TZ v1 brief (6 pages). Not customer precision. "
     "Not the seven TechLab comparison tasks. Not a project design TZ. "
-    "TZ v1 «>90%» is an evaluation target. MIK act uses interim 0.60. "
-    "Checkpoint NO_GO. closes_rt001/002/003=false."
+    "TZ v1 «>90%» is an evaluation target. 0.60 is TZ v2 pilot methodology "
+    "(TR-37/TR-48), not a customer-signed MIK-act criterion; >0.90 is not withdrawn. "
+    "Checkpoint GO (regulatory_measurement_mvp; customer_go false). closes_rt001/002/003=false."
 )
 
 # Local owner copy of the public brief. Binary stays out of git.

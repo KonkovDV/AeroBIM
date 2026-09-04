@@ -5,7 +5,7 @@ status: active
 version: "1.0.0"
 last_updated: "2026-09-02"
 claim_boundary: >
-  Operator prompt. Not a measured result. Checkpoint NO_GO.
+  Operator prompt. Not a measured result. Checkpoint GO; customer_go false.
   Review lives in docs/quality/ACADEMIC_LIT_REVIEW_2026_09.md.
 ---
 

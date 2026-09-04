@@ -11,6 +11,7 @@ const {
   submitAnalyzeProjectPackageMock,
   fetchAuthBffMock,
   fetchAuthSessionMock,
+  seedDemoFixtureMock,
 } = vi.hoisted(() => ({
   fetchReportsMock: vi.fn(),
   fetchReportMock: vi.fn(),
@@ -20,6 +21,7 @@ const {
   submitAnalyzeProjectPackageMock: vi.fn(),
   fetchAuthBffMock: vi.fn(),
   fetchAuthSessionMock: vi.fn(),
+  seedDemoFixtureMock: vi.fn(),
 }));
 
 const clipboardWriteTextMock = vi.fn();
@@ -38,6 +40,7 @@ vi.mock("./lib/api", async () => {
     submitAnalyzeProjectPackage: submitAnalyzeProjectPackageMock,
     fetchAuthBff: fetchAuthBffMock,
     fetchAuthSession: fetchAuthSessionMock,
+    seedDemoFixture: seedDemoFixtureMock,
     getApiBaseUrl: () => "http://localhost:8080",
   };
 });
@@ -276,6 +279,7 @@ describe("App", () => {
     fetchReviewEventsMock.mockResolvedValue({ events: [], count: 0 });
     uploadDocumentMock.mockReset();
     submitAnalyzeProjectPackageMock.mockReset();
+    seedDemoFixtureMock.mockReset();
     fetchReportsMock.mockResolvedValue({
       reports: [toReportSummary(report)],
       count: 1,
@@ -1003,7 +1007,46 @@ describe("App", () => {
     expect(screen.queryByText(/^team$/i)).toBeNull();
   });
 
-  it("walks the commission route upload → run → expert → remark → export on mocked API", async () => {
+  it("lands the git fixture on the expert screen with BCF and the remark card", async () => {
+    const seeded = buildReport();
+    seeded.report_id = "d".repeat(32);
+    seeded.project_name = "Git walls fixture";
+    seedDemoFixtureMock.mockResolvedValue({
+      fixture: true,
+      checkpoint: "GO",
+      closes_rt001: false,
+      report_id: seeded.report_id,
+      issue_count: seeded.issues.length,
+      note: "Git fixture",
+    });
+    fetchReportMock.mockImplementation(async (reportId: string) =>
+      reportId === seeded.report_id ? seeded : buildReport(),
+    );
+    fetchReportsMock.mockResolvedValue({
+      reports: [toReportSummary(buildReport()), toReportSummary(seeded)],
+      count: 2,
+    });
+    render(<App />);
+    expect(await screen.findByTestId("expert-workplace")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: UI_COPY.demoSeed }));
+    await waitFor(() => {
+      expect((screen.getByLabelText(UI_COPY.selectedPack) as HTMLSelectElement).value).toBe(
+        seeded.report_id,
+      );
+    });
+    expect(screen.getByTestId("demo-fixture-panel").getAttribute("data-compact")).toBe("true");
+    expect(screen.getByTestId("expert-findings-pane")).toBeTruthy();
+    expect(screen.getByTestId("expert-spatial-pane")).toBeTruthy();
+    expect(screen.getByTestId("expert-remark-pane")).toBeTruthy();
+    expect(screen.getByTestId("remark-card").textContent).toContain(UI_COPY.remarkClause);
+    expect(screen.getByTestId("remark-card").textContent).toMatch(/нет в индексе/);
+    expect(screen.getByTestId("export-actions")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "BCF" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: UI_COPY.exportPdf })).toBeTruthy();
+    expect(screen.queryByTestId("export-preview")).toBeNull();
+  });
+
+  it("walks the commission route upload → run onto the expert screen without extra tabs", async () => {
     const packed = buildReport();
     uploadDocumentMock.mockResolvedValue({
       upload_id: "up-1",
@@ -1027,12 +1070,12 @@ describe("App", () => {
     });
     expect(await screen.findByTestId("analyze-run-panel")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Запустить анализ" }));
-    // Succeeded job notifies onReportReady and opens the expert shell; do not require the run-panel button.
     expect(await screen.findByTestId("expert-workplace")).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Замечание" }));
+    expect(screen.getByTestId("rehearsal-one-click")).toBeTruthy();
     expect(screen.getByTestId("remark-card")).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Экспорт" }));
     expect(screen.getByTestId("export-actions")).toBeTruthy();
     expect(screen.getByRole("button", { name: "BCF" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: UI_COPY.exportPdf })).toBeTruthy();
+    expect(screen.queryByTestId("export-preview")).toBeNull();
   });
 });

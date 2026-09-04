@@ -38,4 +38,20 @@ describe("PackCycleStrip", () => {
     fireEvent.click(screen.getByRole("button", { name: "Цикл: триаж находок" }));
     expect(onChange).toHaveBeenCalledWith("review");
   });
+
+  it("opens TZ coverage without waiting for a report", () => {
+    const onChange = vi.fn();
+    render(
+      <PackCycleStrip
+        workspaceView="projects"
+        packDraft={EMPTY_PACK_DRAFT}
+        hasReport={false}
+        onChange={onChange}
+      />,
+    );
+    const coverage = screen.getByRole("button", { name: "Цикл: карта покрытия ТЗ" }) as HTMLButtonElement;
+    expect(coverage.disabled).toBe(false);
+    fireEvent.click(coverage);
+    expect(onChange).toHaveBeenCalledWith("user");
+  });
 });

@@ -13,7 +13,7 @@ detected_count: 0
 claim_boundary: >
   Review shell vs TZ full-cycle expert seat. Upload → run → triage → remark →
   export is the gap. Natives stay fail-closed. UI does not write summary.passed.
-  Not a 10D/Tangl connector. Checkpoint NO_GO.
+  Not a 10D/Tangl connector. Checkpoint GO; customer_go false.
 ---
 
 # Триаж рабочего места эксперта (01.09.2026)
@@ -22,7 +22,7 @@ claim_boundary: >
 
 Бэкенд — пять слоёв, порты/адаптеры/токены по CI-пину. Фронт в git — **review shell** над сохранёнными отчётами (`frontend/src/App.tsx`). ТЗ просит полный цикл: загрузил комплект → увидел прогресс → отсмотрел находки → отредактировал замечания → выгрузил отчёт. Половины цепочки в UI не было; этот проход закрывает **проводку** загрузки, джоба, KPI, восьми экранов и **dev-only** `POST /v1/demo/seed-fixture` (git walls+IDS, не заказчик) — не «рабочее место сдано».
 
-Checkpoint **`NO_GO`**. `detected_count: 0`. UI **не** закрывает RT-001 / RT-002 / RT-003.
+Checkpoint **`GO`**; `customer_go` false. `detected_count: 0`. UI **не** закрывает RT-001 / RT-002 / RT-003.
 
 Позиционирование (не модель-чекер против Tangl/10D): согласованность **комплекта** (модель ↔ чертежи ↔ ТЗ ↔ расчёты ↔ смежные разделы) и файловый выход BCF/HTML/JSON. Импорт в СОД заказчика — **NOT_VERIFIED**.
 
@@ -65,7 +65,7 @@ Checkpoint **`NO_GO`**. `detected_count: 0`. UI **не** закрывает RT-0
 | RT-UI-I18N | Английский хром на пути эксперта | `ui-copy.ts` — один проход RU |
 | RT-UI-CLICK-PATH | Разрозненные панели без маршрута | Цикл + таймер + к эксперту + BCF |
 | RT-UI-HITL-BEARER | Общий Bearer + макет Эксперт = HITL | POST review-events 403 на service token |
-| RT-UI-NOGO-MASK | Хром UI = Checkpoint GO | Баннер NO_GO |
+| RT-UI-NOGO-MASK | Хром UI = customer_go | Баннер customer_go false |
 | RT-UI-STACK-CLAIM | TanStack/Storybook как shipped | Vite + React + vitest |
 | RT-UI-SPLIT | Навсегда один App.tsx | Резать по фичам, тесты зелёные |
 | RT-UI-THEME | Неон / выдуманный брендбук | Светлая лаконичная; blue alias |
@@ -94,7 +94,7 @@ Checkpoint **`NO_GO`**. `detected_count: 0`. UI **не** закрывает RT-0
 | RT-UI-VIEWER-ID | Перезагрузка IFC на каждую смену объекта report | Fetch ключ — `report_id` |
 | RT-UI-EXPERT-PANE | Индекс отчётов как левая панель эксперта | Три панели ТЗ: находки / 2D-3D / замечание |
 | RT-UI-INTAKE-WIRE | Эффект прячет RT-001/002/003 | GET /v1/system/capabilities; UI ворота не пишет |
-| RT-UI-INTAKE-GREEN | true_gates как RT CLOSED / GO | NO_GO; PrecisionClaim.publishable |
+| RT-UI-INTAKE-GREEN | true_gates как RT CLOSED / customer_go | customer_go false; PrecisionClaim.publishable |
 
 ## Что UI не закроет
 
@@ -111,7 +111,7 @@ RT-001 (корпус + два оценщика), RT-002b (подпись Сам�
 
 Ожидаемый IDS-пример на обоих треках — учебные стены: FireRating REI60 vs REI30. Это сценарий фикстуры, не RT-001 CLOSED.
 
-Checkpoint **`NO_GO`**.
+Checkpoint **`GO`**; `customer_go` false.
 
 ## План до 15.09 (не delivery)
 

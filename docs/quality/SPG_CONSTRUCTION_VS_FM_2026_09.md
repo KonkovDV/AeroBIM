@@ -13,14 +13,14 @@ detected_count: 0
 claim_boundary: >
   Attributed paraphrase of two Strategy Partners (АО СПГ) August 2026 notes
   held on the owner disk. Not a copy of the PDFs. Not AeroBIM SAM. Not
-  product accuracy. Not a digital-twin / FM product. Checkpoint NO_GO.
+  product accuracy. Not a digital-twin / FM product. Checkpoint GO; customer_go false.
 ---
 
 # СПГ август 2026 — речь, не продукт
 
 Два PDF у владельца (не в git). Автор: **АО «СПГ» / Strategy Partners**, август 2026. Копировать и распространять отчёты без разрешения СПГ нельзя; при цифрах — «АО СПГ».
 
-Checkpoint **`NO_GO`**. `detected_count: 0`. Не TAM. Не SAM. Не A1–A8.
+Checkpoint **`GO`**; `customer_go` false. `detected_count: 0`. Не TAM. Не SAM. Не A1–A8.
 
 Машина: `python -c "from aerobim.domain.spg_speech_triage import spg_speech_triage_snapshot"`.
 

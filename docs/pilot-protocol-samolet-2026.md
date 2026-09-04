@@ -4,7 +4,7 @@ title: "Samolet Pilot Protocol 2026"
 status: active
 version: "1.1.0"
 last_updated: "2026-07-24"
-claim_boundary: "Protocol only. Thresholds are parameters for customer agreement. Checkpoint NO_GO until RT-001/002/003."
+claim_boundary: "Protocol only. Thresholds are parameters for customer agreement. Checkpoint GO; customer_go false until RT-001/002/003."
 ---
 
 # Pilot Protocol — ГК «Самолёт» × AeroBIM TechLab Task 07

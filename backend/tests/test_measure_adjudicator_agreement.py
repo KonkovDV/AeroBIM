@@ -5,6 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.tools.measure_adjudicator_agreement import (
     cohen_kappa,
     krippendorff_alpha_nominal,
@@ -61,7 +62,7 @@ class CustomerIntakeGateValidationTests(unittest.TestCase):
         report = validate_customer_intake_gate(gate)
         self.assertTrue(report["ok"], report["errors"])
         self.assertEqual(report["true_gates"], [])
-        self.assertEqual(report["checkpoint_hint"], "NO_GO")
+        self.assertEqual(report["checkpoint_hint"], CHECKPOINT)
 
     def test_true_gate_without_evidence_fails(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

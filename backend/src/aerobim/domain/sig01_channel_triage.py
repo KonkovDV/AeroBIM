@@ -1,3 +1,4 @@
+
 """SIG-01 channel Red Team triage — 2026-08-31.
 
 Attacks on the local IFC/PDF rerun after ALL matching. Not RT CLOSED.
@@ -8,17 +9,17 @@ from __future__ import annotations
 
 from typing import Final
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.finding_volume import REPORT_PHRASE, VOLUME_CLASS_UNRESTRICTED_EQ_SAMPLE
 from aerobim.domain.target_ref import UNRESTRICTED_ELEMENT_MISMATCH_CAP
 from aerobim.domain.unsigned_rule_overlap import overlap_groups
 
 CLAIM_LEVEL: Final = "pack_volume_not_accuracy"
-CHECKPOINT: Final = "NO_GO"
 CLAIM_BOUNDARY: Final = (
     "SIG-01 channel Red Team triage after the ALL matching fix. "
     "Report phrase: объём находок на канале получен. "
     "Not product accuracy. Not pack processed. Not a customer defect list. "
-    "Unsigned ALL+eq is not SP. Checkpoint NO_GO."
+    "Unsigned ALL+eq is not SP. Checkpoint GO (regulatory_measurement_mvp; customer_go false)."
 )
 
 # Verdict is KILL / HOLD / ACCEPT. Brake is the speech or code stop.
@@ -45,7 +46,7 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "id": "RT-SIG01-SP",
         "verdict": "KILL",
         "attack": "Unsigned ALL+eq REI60 is an SP 2.13130 / SP 63 check",
-        "brake": "samolet-*-rules and SAM-AR template are synthetic; RT-002b OPEN",
+        "brake": "samolet-*-rules and SAM-AR template are synthetic; RT-002c OPEN",
     },
     {
         "id": "RT-SIG01-EI45",

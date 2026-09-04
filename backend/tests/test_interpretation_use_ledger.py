@@ -1,3 +1,4 @@
+
 """Kane IUA ledger: no row licenses customer precision or RT close."""
 
 from __future__ import annotations
@@ -133,7 +134,7 @@ class InterpretationUseLedgerTests(unittest.TestCase):
             self.assertEqual(code, 0)
             payload = json.loads(out.read_text(encoding="utf-8"))
             self.assertEqual(payload["artifact_type"], "aerobim_interpretation_use_ledger")
-            self.assertEqual(payload["checkpoint"], "NO_GO")
+            self.assertEqual(payload["checkpoint"], CHECKPOINT)
 
 
 if __name__ == "__main__":

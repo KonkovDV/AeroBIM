@@ -1,24 +1,24 @@
 <!-- claims-lint: allow-file reason="Submission index quoting TZ evaluation targets as non-claims; NO_GO explicit" -->
 ---
-title: "КТ#2 — пакет подачи (Техлаб Москва, задаче Самолёта по верификации ПД/РД)"
+title: "КТ#3 — пакет подачи (Техлаб Москва, задача Самолёта по верификации ПД/РД)"
 status: active
-version: "1.1.6"
-last_updated: "2026-08-27"
+version: "1.2.0"
+last_updated: "2026-09-04"
 claim_boundary: >
   Submission index only. TZ criteria (>90%, до 30 минут) are the customer's
-  evaluation targets, not AeroBIM measurements. Checkpoint NO_GO;
-  RT-001/002/003 OPEN. Fixture ≠ customer корпус.
+  evaluation targets, not AeroBIM measurements.   Checkpoint GO; customer_go false; RT-001/002/003 OPEN.
+  RT-002a CLOSED regulatory / RT-002b CLOSED EIR carrier / RT-002c OPEN signed.
 ---
 
-# Пакет подачи КТ#2
+# Пакет подачи КТ#3
 
-**Команда:** AeroBIM · **Задача:** 07 «Система автоматизированной верификации проектной и рабочей документации» · **Заказчик:** ГК «Самолёт» · **КТ#2:** 20.08.2026
+**Команда:** AeroBIM · **Задача:** 07 «Система автоматизированной верификации проектной и рабочей документации» · **Заказчик:** ГК «Самолёт» · **Окно КТ#3:** 03–21.09.2026 · **Финал:** 29–30.09.2026 · **Архив КТ#2:** 20.08.2026
 
-**Checkpoint: `NO_GO`.** Не прячем. Стадия МИК — **доработка**. Блокеры RT-001/002/003 закрываются только доказательствами заказчика: [реестр блокеров](../audit/reports/CRITICAL_BLOCKERS.md).
+**Checkpoint: `GO` (`regulatory_measurement_mvp`).** `customer_go` **false**. Не прячем остаток приёмки. Стадия МИК — **доработка**. Остатки RT-001b / RT-002c / RT-003b закрываются только доказательствами заказчика (RT-002a = публичные IDS; RT-002b = EIR v4 как текст на канале): [реестр блокеров](../audit/reports/CRITICAL_BLOCKERS.md).
 
 **Объект КТ#2.** Речь и пакет = текущий `main`. Цифры тестов = CI pin в [`docs/evidence/runtime-baseline-latest.json`](../docs/evidence/runtime-baseline-latest.json) (`attested_by=ci`: `commit_sha`, `tests_passed`, `tests_collected`). IUA freeze `f9389bf` (не HEAD). Прочие SHA на поверхностях — исторические. После правок документации pin может отставать на несколько коммитов до следующего прогона CI; локальные прогоны pytest не публикуем.
 
-**Объект КТ#3 (без файлов заказчика в git).** Пакет показа не ждёт `samples/customer/`. Показ — живой CLI: `python -m aerobim.tools.run_kt3_jury`. Пакет без ожидания: `python -m aerobim.tools.run_kt3_without_customer`. Речь: [`../docs/demo/KT3_JURY_FAQ_2026_08_25.md`](../docs/demo/KT3_JURY_FAQ_2026_08_25.md). Трекер: [`../docs/demo/KT3_TRACKER_SIX_TASKS_2026_08.md`](../docs/demo/KT3_TRACKER_SIX_TASKS_2026_08.md). Сценарий: [`../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md`](../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md). RT-001/002/003 **OPEN**.
+**Объект КТ#3 (без файлов заказчика в git).** Пакет показа не ждёт `samples/customer/`. Показ — живой CLI: `python -m aerobim.tools.run_kt3_jury`. Пакет без ожидания: `python -m aerobim.tools.run_kt3_without_customer`. Речь: [`../docs/demo/KT3_JURY_FAQ_2026_08_25.md`](../docs/demo/KT3_JURY_FAQ_2026_08_25.md). Трекер: [`../docs/demo/KT3_TRACKER_SIX_TASKS_2026_08.md`](../docs/demo/KT3_TRACKER_SIX_TASKS_2026_08.md). Сценарий: [`../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md`](../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md). Review shell: `frontend/` (RBAC лаборатории ≠ SSO; PDF-кнопка = реальный `GET .../export/pdf`; XLSX нет). RT-001 **OPEN** (undifferentiated; `a_content_pairing` CLOSED). RT-002a **CLOSED** (публичные IDS) / RT-002b **CLOSED** (EIR v4 как текст) / RT-002c **OPEN** (подпись). RT-003 **OPEN** (undifferentiated; `a_federated_geometric_rehearsal` CLOSED; NWD-носитель CLOSED; `mep_system_clash` OPEN). Тома: [реестр блокеров](../audit/reports/CRITICAL_BLOCKERS.md).
 
 ## Пять полей формы → пять папок
 
@@ -49,7 +49,7 @@ claim_boundary: >
 
 | Стол | Одна фраза |
 |---|---|
-| Техлаб | Доработка. Живой CLI. Учебный комплект. `NO_GO`. |
+| Техлаб | Доработка. Живой CLI. Учебный комплект. Checkpoint `GO`; `customer_go` false. |
 | МИК | Стадия доработки. Валидация эффективности не начата. Пять полей формы — не акт Checkpoint. |
 | Трекер | Tangl = модель, мы = комплект. Задачи 1–3 в репо; письмо Самолёту отправляет человек, а не репозиторий. |
 | ИТ-ментор | Пропуск IDS роняет комплект. CI pin = `runtime-baseline-latest.json`. Отставание pin на несколько коммитов принято. |
@@ -62,4 +62,4 @@ claim_boundary: >
 
 Формула стадии (дословно; источник — [карточка речи для жюри](../docs/demo/KT2_JURY_FAQ_2026_08_12.md)):
 
-> Мы на стадии доработки. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение ещё не начались. `NO_GO` сохраняется, пока нет независимого размеченного корпуса, двух разметчиков, профиля приёмки (публичные IDS экспертизы — измерение; подпись Самолёта — внедрение) и подтверждения импорта в СОД.
+> Мы на стадии доработки контура заказчика. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение у назначающей стороны ещё не начались. Checkpoint `GO` — регуляторно-измерительный MVP. `customer_go` остаётся false, пока нет независимого размеченного корпуса, двух разметчиков, подписанного профиля назначающей стороны и подтверждения импорта в СОД.

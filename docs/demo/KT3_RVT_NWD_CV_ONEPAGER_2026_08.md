@@ -11,7 +11,7 @@ closes_rt003: false
 claim_boundary: >
   Counted license fork plus CV scope. Not a native RVT/NWD reader.
   CADSoftTools 1660 USD is stale. Stock Navisworks does not write IFC.
-  Checkpoint NO_GO.
+  Checkpoint GO; customer_go false.
 ---
 
 # RVT / NWD / CV — одна страница (защита)

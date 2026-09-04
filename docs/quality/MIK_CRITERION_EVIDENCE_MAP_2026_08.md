@@ -10,13 +10,13 @@ closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   Findability pack for selection K/B briefing. Regulation Appendix 3 is not
-  in git. Not a predicted total. Not certification. Checkpoint NO_GO.
+  in git. Not a predicted total. Not certification. Checkpoint GO; customer_go false.
 ---
 
 # Карта доказательств: критерий → git
 
 Комиссия ставит балл за то, что **находит**. Этот файл — указатель, не прогноз.
-`predicted_aerobim_total() is None`. Checkpoint **`NO_GO`**.
+`predicted_aerobim_total() is None`. Checkpoint **`GO`**; `customer_go` false.
 
 Публичная сверка приложения 4 (ЛЭТИ, 30.04.2026): задача Самолёта — **№6**,
 приз — платное пилотное тестирование 2 млн ₽.

@@ -39,7 +39,7 @@ def write_payload(
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="KT#3 pack without Samolet files. Re-scope. Checkpoint stays NO_GO."
+        description="KT#3 pack without Samolet files. Re-scope. Checkpoint GO; customer_go false."
     )
     parser.add_argument(
         "--write-docs-evidence",

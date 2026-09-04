@@ -13,7 +13,7 @@ detected_count: 0
 claim_boundary: >
   Entity/property/format presence after unpack. Not pack processed.
   Not product accuracy. Not native RVT/NWD/LIRA. Not dual-rater gold.
-  FireRating wall fill is not a fire-delivered claim. Checkpoint NO_GO.
+  FireRating wall fill is not a fire-delivered claim. Checkpoint GO; customer_go false.
 ---
 
 # Deep-study carrier facts (30.08.2026 evening)
@@ -22,7 +22,7 @@ Machine pin: `python -c "from aerobim.domain.deep_study_facts import deep_study_
 JSON: [`deep-study-carrier-facts-latest.json`](deep-study-carrier-facts-latest.json).  
 Named trees stay under `.local/`. Pack letters match [`../quality/TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md`](../quality/TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md).
 
-Checkpoint **`NO_GO`**. `processed: false`. `customer_confirmed_patterns: 0`. This is SIG-02 **depth on carriers**, not SIG-01 findings and not «пакет обработан».
+Checkpoint **`GO`**; `customer_go` false. `processed: false`. `customer_confirmed_patterns: 0`. This is SIG-02 **depth on carriers**, not SIG-01 findings and not «пакет обработан».
 
 ## IFC (15 unique, IFC2X3 only)
 
@@ -61,7 +61,7 @@ Pack C AR is the one file **over the 256 MiB SPF cap**. Do not raise `AEROBIM_MA
 | LIRA blocks (pack A) | 16 | one block missing fragments #68/#69 and CRC-defect on #67 |
 | `.lir` on pack B | **0** | KR IFC present, calculation model absent |
 
-EIR v4.0 workbook + BIM-standard v4.0 are present as **text**. That is not `customer_approved` IDS (RT-002b OPEN).
+EIR v4.0 workbook + BIM-standard v4.0 are present as **text** (RT-002b carrier CLOSED). That is not `customer_approved` IDS (RT-002c OPEN). EIR LOD names OV/VK/ITP/EOM/SS (`eir_lod_mep_disciplines_named`); the corresponding IFC models are absent.
 
 ## Tracker mapping (licensed speech)
 

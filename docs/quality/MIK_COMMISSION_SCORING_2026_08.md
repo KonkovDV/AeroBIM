@@ -11,7 +11,7 @@ closes_rt003: false
 claim_level: attributed_program_arithmetic
 claim_boundary: >
   Weights from an owner briefing of Fund order П-01-ОД-52-1/26 (17.06.2026).
-  Not a predicted AeroBIM total. Not Checkpoint GO. Fund PDF is not in git.
+  Not a predicted AeroBIM total. Not customer_go. Fund PDF is not in git.
 ---
 
 # Арифметика комиссии МИК (приписанный приказ 17.06.2026)
@@ -19,7 +19,7 @@ claim_boundary: >
 Машина: `python -c "from aerobim.domain.mik_commission_scoring import scoring_snapshot"`.
 
 PDF приказа Фонда **в git нет**. Веса ниже — IUA над брифингом владельца от 30.08.2026,
-не прогноз балла AeroBIM и не `attested_by=ci`. Checkpoint **`NO_GO`**.
+не прогноз балла AeroBIM и не `attested_by=ci`. Checkpoint **`GO`**; `customer_go` false.
 
 Пункт 2 приказа разводит **две** обязанности и **две** математики.
 

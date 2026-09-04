@@ -1,19 +1,22 @@
+
 """Git-safe unpack-tree family facts (31.08.2026).
 
 Counts and booleans only. Uncompressed GiB stays out of git (OA-9).
-Not pack processed. Checkpoint NO_GO.
+Not pack processed. Checkpoint GO (regulatory_measurement_mvp; customer_go false).
 """
 
 from __future__ import annotations
 
 from typing import Any, Final
 
-CHECKPOINT: Final = "NO_GO"
+from aerobim.domain.checkpoint import CHECKPOINT
+
 CLAIM_LEVEL: Final = "coverage_map_only"
 CLAIM_BOUNDARY: Final = (
     "Unpack-tree family facts after the 31.08 live walk. File counts and "
     "booleans only. Uncompressed byte totals stay out of git. Not pack "
-    "processed. Not a LIRA solver. Not CC-2 MATCH. Checkpoint NO_GO."
+    "processed. Not a LIRA solver. Not CC-2 MATCH. Checkpoint GO "
+    "(regulatory_measurement_mvp; customer_go false)."
 )
 
 # Named calc-complex extensions (not garbled numeric sidecars).

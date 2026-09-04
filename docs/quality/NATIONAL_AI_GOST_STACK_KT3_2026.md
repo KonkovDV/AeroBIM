@@ -11,7 +11,7 @@ closes_rt003: false
 claim_boundary: >
   Pointers to in-force GOST R AI standards and how existing AeroBIM honesty
   maps. Not a certified AI management system. Not a product-accuracy claim.
-  Checkpoint NO_GO.
+  Checkpoint GO; customer_go false.
 ---
 
 # Национальный стек ИИ (ТК 164) — карта, не сертификат

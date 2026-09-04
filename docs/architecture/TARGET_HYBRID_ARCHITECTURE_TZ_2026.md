@@ -15,7 +15,7 @@ claim_boundary: "Design proposal only. Checkpoint remains NO_GO until RT-001/002
 
 **Authority alignment:** preserves existing four contours in `domain/architecture.py` (`INGESTION → DETERMINISTIC_VALIDATION → AI_ADVISORY → EVIDENCE_REPORTING`). Semantic owner of `summary.passed` = deterministic outputs; physical writer = EvidenceAssembler (ADR-001). AI/OCR cannot flip Shared-gate; Shared-gate ≠ Published.
 
-**Implemented (2026-07-28 foundation + 2026-08-02 WP-02):** secure data-routing foundation in `domain/hybrid/*` (5-level classification, fail-closed policy, secret-safe audit, privacy guard) + `HybridRouteGate`. **WP-02** wires the gate as a mandatory **advisory pre-gate** on Analyze (`AdvisoryOrchestrator`): blocked → no advisory observations; never sets `summary.passed` (OFF==ON). Masking ≠ anonymity; PUBLIC VLM egress remains residual. Checkpoint NO_GO. See [`../../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md`](../../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) · [`../capability-claim-matrix-2026.md`](../capability-claim-matrix-2026.md).
+**Implemented (2026-07-28 foundation + 2026-08-02 WP-02):** secure data-routing foundation in `domain/hybrid/*` (5-level classification, fail-closed policy, secret-safe audit, privacy guard) + `HybridRouteGate`. **WP-02** wires the gate as a mandatory **advisory pre-gate** on Analyze (`AdvisoryOrchestrator`): blocked → no advisory observations; never sets `summary.passed` (OFF==ON). Masking ≠ anonymity; PUBLIC VLM egress remains residual. Checkpoint GO; customer_go false. See [`../../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md`](../../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) · [`../capability-claim-matrix-2026.md`](../capability-claim-matrix-2026.md).
 
 ---
 

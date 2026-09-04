@@ -1,3 +1,4 @@
+
 """Kane IUA ledger: which inferences current scores may support.
 
 Validity is a property of an inference from a score to a use (Messick 1995;
@@ -5,8 +6,9 @@ Kane 2013), not of the tool. This module is the executable SSOT for that
 boundary across Samolet TZ, TechLab/MIK checkpoints, tracker tasks, and
 industry standards.
 
-No row licenses customer precision, Checkpoint GO, native DWG, MEP delivered,
-or CDE-ready BCF. RT-001 / RT-002 / RT-003 stay OPEN.
+No row licenses customer precision, customer GO, native DWG, MEP delivered,
+or CDE-ready BCF. RT-001 / RT-002 / RT-003 stay OPEN. Product checkpoint GO
+is the regulatory-measurement MVP only.
 """
 
 from __future__ import annotations
@@ -15,15 +17,16 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
+from aerobim.domain.checkpoint import CHECKPOINT
+
 LEDGER_ID = "aerobim_interpretation_use_ledger"
 SCHEMA_VERSION = "1.2.1"
 AUDITED_HEAD = "f9389bf"  # IUA freeze; hygiene commits after this do not reopen validity
-CHECKPOINT = "NO_GO"
 CLAIM_BOUNDARY = (
     "Kane IUA over existing AeroBIM scores. Licensed uses stop at fixture "
     "demo, engine regression, open-bench countable subsets, gold-IDS "
     "processability, and protocol planning. Not customer precision, not TZ "
-    ">90%, not customer SLA, not Checkpoint GO."
+    ">90%, not customer SLA, not customer GO."
 )
 
 LICENSED_USES = frozenset(
@@ -41,6 +44,7 @@ FORBIDDEN_LICENSED_USES = frozenset(
     {
         "customer_precision",
         "checkpoint_go",
+        "customer_go",
         "native_dwg",
         "mep_delivered",
         "cde_ready",
@@ -263,7 +267,8 @@ LEDGER: tuple[InferenceRow, ...] = (
         "TRK-01",
         "tracker",
         "Задача 1: доработать продукт к КТ#3 (03–21.09); КТ#2 был 20.08",
-        "IFC Acceptance Gate + live CLI + run_kt3_jury; Checkpoint NO_GO",
+        "IFC Acceptance Gate + live CLI + run_kt3_jury; Checkpoint GO "
+        "(regulatory_measurement_mvp; customer_go false)",
         "Checkpoint GO / market GO = customer GO",
         "docs/demo/KT3_TRACKER_SIX_TASKS_2026_08.md",
         "КТ#3 — итоговое решение; победителей определяют заказчики",

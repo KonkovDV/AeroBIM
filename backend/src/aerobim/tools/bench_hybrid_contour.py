@@ -11,7 +11,7 @@
 - задержка зависит от окружения; «стоимость» здесь = байты маскированного payload,
   а не деньги;
 - маскирование снижает раскрытие, но НЕ доказывает анонимность;
-- вердикт не затрагивается (verdict-neutral), Checkpoint NO_GO.
+- вердикт не затрагивается (verdict-neutral), Checkpoint GO (regulatory_measurement_mvp; customer_go false).
 """
 
 from __future__ import annotations
@@ -139,7 +139,7 @@ def run_bench(cases: list[dict[str, Any]], *, tenant_salt: str = "bench-salt") -
         "note": (
             "deterministic contour only; NO network/model call; not model quality and not "
             "product accuracy; latency is environment-specific; masking != anonymity; "
-            "verdict-neutral; Checkpoint NO_GO"
+            "verdict-neutral; Checkpoint GO (regulatory_measurement_mvp; customer_go false)"
         ),
         "rows": rows,
         "summary": {

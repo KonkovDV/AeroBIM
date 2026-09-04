@@ -33,7 +33,7 @@ describe("CapabilityHonestyPanel", () => {
 
     expect(screen.getByTestId("capability-honesty")).toBeTruthy();
     expect(screen.getByText(/Блокирующие статусы \(1\)/i)).toBeTruthy();
-    expect(screen.getByText(/DWG=failed/i)).toBeTruthy();
+    expect(screen.getByText(/DWG: не выполнена/i)).toBeTruthy();
     expect(screen.getByTestId("capability-skip-banner").textContent).toMatch(/Тишина ≠ успех/i);
     expect(screen.getByTestId("divergence-list").textContent).toMatch(/engine_wins/);
   });

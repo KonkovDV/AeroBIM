@@ -62,4 +62,4 @@ MinStroy TIM news of **07.08.2026** named construction-stage XML schemas (instru
 
 ## Not RT-001 CLOSED
 
-Matching the ECPE *schema version* and failing empty XML at the door is not a paired PD + expertise remark + dual κ/α + held-out FN. Product function: `egrz_intake_precheck`. Checkpoint **NO_GO**.
+Matching the ECPE *schema version* and failing empty XML at the door is not a paired PD + expertise remark + dual κ/α + held-out FN. Product function: `egrz_intake_precheck`. Checkpoint **GO**; customer_go false.

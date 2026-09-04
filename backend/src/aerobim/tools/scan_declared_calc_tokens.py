@@ -1,7 +1,8 @@
+
 """Byte-token presence on office/PDF (SIG-06 CC-2/CC-4 pre-check).
 
 Not extraction, not a solver, not calculation_correctness. Writes counts
-only. Paths stay out of the aggregate. Checkpoint NO_GO.
+only. Paths stay out of the aggregate. Checkpoint GO (regulatory_measurement_mvp; customer_go false).
 """
 
 from __future__ import annotations
@@ -13,6 +14,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.owner_files_inventory import require_local_only_output
 from aerobim.tools.benchmark_project_package import repo_root
 from aerobim.tools.pack_archive_overlap import iter_files
@@ -20,7 +22,7 @@ from aerobim.tools.pack_archive_overlap import iter_files
 CLAIM_BOUNDARY = (
     "Byte-token presence in the first chunk of office/PDF files. "
     "Not a LIRA solver. Not CC-2 MATCH. Not конструкции пересчитаны. "
-    "Compressed PDF streams may hide tokens. Checkpoint NO_GO."
+    "Compressed PDF streams may hide tokens. Checkpoint GO (regulatory_measurement_mvp; customer_go false)."
 )
 
 HEAD_BYTES = 512 * 1024
@@ -80,7 +82,7 @@ def scan_declared_calc_tokens(root: Path) -> dict[str, Any]:
     return {
         "artifact_type": "declared_calc_token_scan",
         "claim_level": "token_presence_not_solver",
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
         "closes_rt001": False,
         "closes_rt002": False,
         "closes_rt003": False,

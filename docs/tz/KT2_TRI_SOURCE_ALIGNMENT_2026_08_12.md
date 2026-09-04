@@ -2,7 +2,7 @@
 ---
 title: "КТ#2 — выравнивание Самолёт × Техлаб × МИК (2026-08-12)"
 date: "2026-08-12"
-claim_boundary: "Alignment map only. Interim 0.60 / SLA / BCF-in-CDE require customer evidence. Checkpoint NO_GO."
+claim_boundary: "Alignment map only. Interim 0.60 / SLA / BCF-in-CDE require customer evidence. Checkpoint GO; customer_go false."
 ---
 
 # Tri-source alignment for KT#2 (→ 20.08.2026)

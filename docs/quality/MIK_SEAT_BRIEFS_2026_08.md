@@ -10,7 +10,7 @@ closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   One paragraph per attributed seat role. Not a sitting-member list.
-  Three partner seats are by agreement. Checkpoint NO_GO.
+  Three partner seats are by agreement. Checkpoint GO; customer_go false.
 ---
 
 # Кресла: отбор — среднее; финал — сумма

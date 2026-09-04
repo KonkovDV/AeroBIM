@@ -1,3 +1,4 @@
+
 """Tracker eight tasks (29.08) stay NO_GO and do not invent accuracy."""
 
 from __future__ import annotations
@@ -7,6 +8,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.finding_volume import volume_from_findings
 from aerobim.domain.tracker_eight_tasks import TRACKER_EIGHT, tracker_eight_snapshot
 from aerobim.tools.run_finding_volume import main as finding_volume_main
@@ -15,7 +17,7 @@ from aerobim.tools.run_finding_volume import main as finding_volume_main
 class TrackerEightTasksTests(unittest.TestCase):
     def test_snapshot_stays_no_go_and_locks_gigachat_errors(self) -> None:
         snap = tracker_eight_snapshot()
-        self.assertEqual(snap["checkpoint"], "NO_GO")
+        self.assertEqual(snap["checkpoint"], CHECKPOINT)
         self.assertEqual(snap["item_count"], 8)
         self.assertEqual(len(TRACKER_EIGHT), 8)
         self.assertEqual([row["id"] for row in TRACKER_EIGHT], [f"SIG-0{i}" for i in range(1, 9)])
@@ -70,7 +72,7 @@ class FindingVolumeTests(unittest.TestCase):
         self.assertEqual(table["total"], 3)
         self.assertFalse(table["is_accuracy"])
         self.assertEqual(table["by_type"]["IDS_VALIDATION"], 2)
-        self.assertEqual(table["checkpoint"], "NO_GO")
+        self.assertEqual(table["checkpoint"], CHECKPOINT)
         self.assertIn("Not product accuracy", table["claim_boundary"])
         self.assertEqual(table["report_phrase"], "объём находок на канале получен")
         self.assertFalse(table["is_pack_processed"])

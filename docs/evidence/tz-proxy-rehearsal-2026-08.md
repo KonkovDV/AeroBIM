@@ -5,7 +5,7 @@ date: "2026-08-14"
 claim_level: tz_proxy_rehearsal
 claim_boundary: >
   Public and synthetic proxies for Task 07. Messick content/substantive
-  evidence is not criterion validity on a customer corpus. Checkpoint NO_GO.
+  evidence is not criterion validity on a customer corpus. Checkpoint GO; customer_go false.
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false

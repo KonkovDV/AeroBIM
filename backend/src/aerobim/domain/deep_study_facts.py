@@ -1,20 +1,23 @@
+
 """Git-safe carrier facts from the 30.08 evening deep study.
 
 Live trees and names stay under ``.local/``. This pin is coverage_map_only:
-entity/property presence, not TP/FP, not «processed». Checkpoint NO_GO.
+entity/property presence, not TP/FP, not «processed».
+Checkpoint GO (regulatory_measurement_mvp; customer_go false).
 """
 
 from __future__ import annotations
 
 from typing import Any, Final
 
-CHECKPOINT: Final = "NO_GO"
+from aerobim.domain.checkpoint import CHECKPOINT
+
 CLAIM_LEVEL: Final = "coverage_map_only"
 CLAIM_BOUNDARY: Final = (
     "Carrier facts after unpack (packs A/B/C + standard tree). "
     "Not pack processed. Not product accuracy. Not native RVT/NWD/LIRA. "
     "FireRating wall fill is not a fire-delivered claim. "
-    "SPF cap stays 256 MiB. Checkpoint NO_GO."
+    "SPF cap stays 256 MiB. Checkpoint GO (regulatory_measurement_mvp; customer_go false)."
 )
 
 # Pack letters match docs/quality/TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md.
@@ -68,6 +71,8 @@ PUBLIC_DEEP_STUDY: Final[dict[str, Any]] = {
     "lira_crc_defect_member_count": 1,
     "lira_present_pack_b": False,
     "eir_v4_present": True,
+    "bim_standard_v4_present": True,
+    "eir_lod_mep_disciplines_named": True,
     "customer_approved_ids": False,
     "names_in_git": False,
     "hashes_in_git": False,

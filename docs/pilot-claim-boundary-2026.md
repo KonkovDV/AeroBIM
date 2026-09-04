@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM Pilot Claim Boundary 2026"
 status: active
-version: "1.13.14"
-last_updated: "2026-09-01"
+version: "1.13.15"
+last_updated: "2026-09-05"
 tags: [aerobim, pilot, claims, evidence]
 ---
 
@@ -10,9 +10,9 @@ tags: [aerobim, pilot, claims, evidence]
 
 This document separates **verified repository evidence** from **roadmap intent** for pilot and accelerator communications.
 
-**Формула стадии (дословно):** Мы на стадии доработки. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение ещё не начались. `NO_GO` сохраняется, пока нет независимого размеченного корпуса, двух разметчиков, профиля приёмки (публичные IDS экспертизы — измерение; подпись Самолёта — внедрение) и подтверждения импорта в СОД.
+**Формула стадии (дословно):** Мы на стадии доработки контура заказчика. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение у назначающей стороны ещё не начались. Checkpoint `GO` — регуляторно-измерительный MVP. `customer_go` остаётся false, пока нет независимого размеченного корпуса, двух разметчиков, подписанного профиля назначающей стороны и подтверждения импорта в СОД.
 
-**Checkpoint:** **`NO_GO`**. RT-001 / RT-002 / RT-003 OPEN. Form 5/5 ≠ Checkpoint GO. Дословная формула речи: [`demo/KT2_JURY_FAQ_2026_08_12.md`](demo/KT2_JURY_FAQ_2026_08_12.md). Blockers: [`../audit/reports/CRITICAL_BLOCKERS.md`](../audit/reports/CRITICAL_BLOCKERS.md).
+**Checkpoint:** **`GO`** (`regulatory_measurement_mvp`). `customer_go` **false**. Undifferentiated RT-001 / RT-002 / RT-003 stay **OPEN**. Measurement substitutes (2026-09-04): **RT-001** `a_content_pairing` CLOSED; **RT-001** `b_protocol_rehearsal` CLOSED (simulated dual pass, not humans); **RT-002a** CLOSED; **RT-002b** `b_eir_carrier` CLOSED (EIR v4 + BIM-standard v4 as text on the channel pack); **RT-003a** planted geometric CLOSED; **RT-003b** HVAC `IfcSystem` graph CLOSED; **RT-003** NWD federation carrier CLOSED. Residuals: **RT-001b** dual human raters, **RT-001c** customer corpus, **RT-002c** Samolet signature, **RT-003c** `mep_system_clash` NOT_VERIFIED. Form 5/5 ≠ `customer_go`. Volumes: [`evidence/rt-blocker-volumes-2026-09.md`](evidence/rt-blocker-volumes-2026-09.md) · dual-rater: [`evidence/rt001-dual-rater-simulation-2026-09.md`](evidence/rt001-dual-rater-simulation-2026-09.md). Дословная формула речи: [`demo/KT2_JURY_FAQ_2026_08_12.md`](demo/KT2_JURY_FAQ_2026_08_12.md) · КТ#3: [`demo/KT3_JURY_FAQ_2026_08_25.md`](demo/KT3_JURY_FAQ_2026_08_25.md). Blockers: [`../audit/reports/CRITICAL_BLOCKERS.md`](../audit/reports/CRITICAL_BLOCKERS.md).
 
 **Stakeholder distribution:** share [`docs.md`](docs.md) (jury memo) + [`partners/TECHLAB_TASK_07_READINESS_2026.md`](partners/TECHLAB_TASK_07_READINESS_2026.md) at kickoff; map: [`TIER0_INDEX.md`](TIER0_INDEX.md).  
 **Индекс ТЗ:** [`tz/README.md`](tz/README.md).  
@@ -38,7 +38,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Fail-closed required clash / raster zero-yield / provenance persist | P0 tests; Claims Lock |
 | Object ACL on report artifacts | API principal + `tenant_id` |
 | BCF 2.1/3.0 ZIP export — **structural T1** | `audit/evidence/bcf-structural-handoff-2026-07-25.json` |
-| Browser review shell (3D + 2D evidence) | Frontend vitest **57** passed (CI pin `docs/evidence/runtime-baseline-latest.json`, `attested_by=ci`, backend commit `fc1f03838cb6`); `run_live_review_smoke` |
+| Browser review shell (3D + 2D evidence; eight IA screens, all `partial`) | CI pin in `docs/evidence/runtime-baseline-latest.json` (`attested_by=ci`); do **not** copy `tests_passed` integers here. Live smoke: `run_live_review_smoke`. One-click rehearsal: development `POST /v1/demo/seed-fixture` (unpublished in OpenAPI; git walls+IDS, not a customer pack) |
 | OpenRebar provenance digest (**сверка**, not correctness) | Digest endpoint + `claim_labels` |
 | ISO 19650-lite context fields on reports | Optional request/report fields (Shared-gate metadata, not CDE) |
 | Extraction quality metrics (RU **fixtures**) | `evaluate_extraction`; fixture macro_f1 ≠ product accuracy |
@@ -95,7 +95,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Package completeness inventory (WP-05) | Soft opt-in inventory checks; DWG native read not implemented; fixture-grade only |
 | Open corpora profiles (WP-06) | 3 pinned profiles; honest regression n=7; regression/timing only — not product accuracy |
 | Quality measurement protocol (WP-07) | Wilson P/R + sample-size planner; interim confirmed-finding target 0.60; never >90% |
-| IFC+IDS evidence layer | This file — scope freeze; not 10D/Tangl replacement; Checkpoint **NO_GO** |
+| IFC+IDS evidence layer | This file — scope freeze; not 10D/Tangl replacement; Checkpoint **GO** (measurement); `customer_go` **false** |
 | Core PDF via pypdfium2/pdfminer (LIC-001 Option B) | Production PDF path; PyMuPDF optional `pdf-agpl` only — not a court opinion |
 | Annotation claimed-GUID → `ifc_guid` (P2-04) | Presence confirm via spatial index only; wall-guid demo evidence pin |
 | MEP edge provenance + AABB broadphase (eng) | `edge_kinds` + optional AABB; always `geometry_verified=False`; capability stays `NOT_VERIFIED` |
@@ -141,7 +141,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 8. AeroBIM does **not** claim Experiment B coverage percentages (e.g. KR **≈16.7%** of n=24 open-source remarks) as product detection rate on a customer corpus — they are **coverage-map** measurements with explicit out-of-scope classes; see [`evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md`](evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md).
 9. AeroBIM does **not** claim IfcLLM / GraphRAG product capability. I9 is an **advisory scaffold** (port + allowlisted query + fixture QA); multi-hop GraphRAG is unshipped.
 10. AeroBIM does **not** claim Hybrid AI is in the verdict path, nor that masking guarantees anonymity — WP-02 wires `HybridRouteGate` as an **advisory pre-gate** only (verdict-neutral, OFF==ON; blocked → no advisory observation).
-11. AeroBIM does **not** replace 10D, Tangl, Renga, CDE, or the expert. First sell is a white-box IFC+IDS evidence layer; Checkpoint **NO_GO** until RT-001/002/003.
+11. AeroBIM does **not** replace 10D, Tangl, Renga, CDE, or the expert. First sell is a white-box IFC+IDS evidence layer; `customer_go` stays **false** until residual volumes close. Product Checkpoint **GO** is the regulatory-measurement MVP, not customer sign-off.
 12. The SPb GAU CGE profile (`samples/profiles/spb-cge/`) is a published rule set (OFFICIAL_PUBLISHED), not a customer-signed acceptance profile. It does **not** close RT-001 or RT-002 and is not an expertise verdict.
 13. AeroBIM does **not** SPF-open a 1.5 GB IFC and does **not** treat 1.5 GB as WASM capability, and does **not** treat «5–10 packs/day» as a published SLA.
 14. After the 25.08 questionnaire, AeroBIM does **not** say the customer sent no data. The channel is received; a hashed pack is **not** in git; RT-001 stays OPEN. HTTPS / closed-cloud storage is a **stated** target — browser OIDC BFF remains `NOT_IMPLEMENTED`.

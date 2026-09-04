@@ -112,6 +112,10 @@ audit/evidence/phase10-*.json
 
 # Samolet / customer pilot (never commit NDA corpus)
 files/
+# Call scripts and pack audits — .local/partners/ or ../AeroBIM-private/
+docs/partners/SAMOLET_CALL_*.md
+docs/partners/MENTOR_CALL_*.md
+docs/partners/SAMOLET_PACK_AUDIT*.md
 samples/benchmarks/project-package-samolet-pilot-v1.json
 samples/customer/**
 !samples/customer/README.md

@@ -1,3 +1,4 @@
+
 """KT#3 jury gate picks a GUID finding and stays fail-closed."""
 
 from __future__ import annotations
@@ -7,6 +8,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.kt3_jury import Kt3JuryError, require_kt3_jury_gate, select_jury_finding
 from aerobim.tools.run_kt3_jury import assemble_kt3_jury
 from aerobim.tools.run_kt3_jury import main as jury_main
@@ -17,7 +19,7 @@ _REPO = Path(__file__).resolve().parents[2]
 def _gate(*, passed: bool = False, findings: list[dict] | None = None) -> dict:
     return {
         "passed": passed,
-        "checkpoint_verdict": "NO_GO",
+        "checkpoint_verdict": CHECKPOINT,
         "finding_count": 2,
         "capabilities": {"mep_system_clash": "NOT_VERIFIED"},
         "findings": findings
@@ -72,7 +74,7 @@ class Kt3JuryTests(unittest.TestCase):
 
     def test_assemble_keeps_tracker_and_typical_errors(self) -> None:
         payload = assemble_kt3_jury(_REPO, gate=_gate(), generated_at="2026-08-27T00:00:00+00:00")
-        self.assertEqual(payload["checkpoint"], "NO_GO")
+        self.assertEqual(payload["checkpoint"], CHECKPOINT)
         self.assertFalse(payload["passed"])
         self.assertEqual(payload["typical_errors"]["customer_confirmed_patterns"], 0)
         self.assertGreaterEqual(payload["typical_errors"]["pattern_count"], 20)
@@ -104,7 +106,7 @@ class Kt3JuryTests(unittest.TestCase):
         pack_path = _REPO / "artifacts" / "kt3-without-customer" / "latest.json"
         self.assertTrue(pack_path.is_file())
         pack = json.loads(pack_path.read_text(encoding="utf-8"))
-        self.assertEqual(pack["schema_version"], "1.2.0")
+        self.assertEqual(pack["schema_version"], "1.6.0")
         self.assertFalse(pack["closes_rt001"])
 
 

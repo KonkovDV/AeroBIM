@@ -10,7 +10,7 @@ closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   Competitive honesty for K2. Peer 90% figures stay their claims. Ablation is
-  fixture-only. Not product accuracy. Checkpoint NO_GO.
+  fixture-only. Not product accuracy. Checkpoint GO; customer_go false.
 ---
 
 # К2: новизна против витрины «90% без методики»

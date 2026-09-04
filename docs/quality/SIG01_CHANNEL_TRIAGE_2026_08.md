@@ -14,7 +14,7 @@ claim_boundary: >
   KILL/HOLD/ACCEPT over the local SIG-01 IFC/PDF rerun after ALL matching.
   Report phrase: объём находок на канале получен. Not product accuracy.
   Not pack processed. Not a customer defect list. Unsigned ALL+eq is not SP.
-  Channel totals stay .local. Checkpoint NO_GO.
+  Channel totals stay .local. Checkpoint GO; customer_go false.
 ---
 
 # Триаж канала SIG-01 (31.08.2026)
@@ -25,7 +25,7 @@ claim_boundary: >
 
 Носители (без имён): 15 IFC, схема IFC2X3; 6 АР + 5 КР в пакете A; QTO `NetFloorArea` = 0; заполненный `FireRating` стен пакета A — класс **EI 45**, не учебный `REI60` ([deep-study](../evidence/deep-study-carrier-facts-2026-08.md), IUA `SAM-09`). PDF-выборка даёт HITL, не находки чертежа.
 
-Checkpoint **`NO_GO`**. `detected_count: 0`. `publishable_finding_count: 0`.
+Checkpoint **`GO`**; `customer_go` false. `detected_count: 0`. `publishable_finding_count: 0`.
 
 Связанные: [`FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md`](FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md) · [`TRACKER_EIGHT_TASKS_2026_08.md`](TRACKER_EIGHT_TASKS_2026_08.md).
 
@@ -36,7 +36,7 @@ Checkpoint **`NO_GO`**. `detected_count: 0`. `publishable_finding_count: 0`.
 | RT-SIG01-ACCURACY | Сырой total = точность / F1 | `is_accuracy=false`; `publishable_finding_count=0` |
 | RT-SIG01-DEFECT | Объём канала = дефекты Самолёта | `is_customer_defect_list=false`; только фраза отчёта |
 | RT-SIG01-PACK | 15/15 IFC прогнаны = пакет обработан | `is_pack_processed=false`; census `processed=false` |
-| RT-SIG01-SP | Unsigned ALL+eq REI60 = проверка СП 2.13130 / СП 63 | Учебные `samolet-*.txt` / SAM-AR; RT-002b OPEN |
+| RT-SIG01-SP | Unsigned ALL+eq REI60 = проверка СП 2.13130 / СП 63 | Учебные `samolet-*.txt` / SAM-AR; RT-002c OPEN |
 | RT-SIG01-EI45 | EI 45 vs демо-REI60 = провал огнестойкости | IUA SAM-09; не класс II / C0 |
 | RT-SIG01-CAP-RAISE | Поднять потолок 50 = полный список дефектов | Потолок — граница честности; suppressor ≠ дефекты |
 | RT-SIG01-SUPPRESS-N | «N further suppressed» = N дефектов | `suppressed_remainder_is_finding_count=false` |

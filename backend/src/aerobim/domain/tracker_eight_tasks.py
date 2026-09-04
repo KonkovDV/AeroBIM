@@ -1,8 +1,10 @@
+
 """Eight KT#3 tracker tasks assigned 29.08.2026.
 
 Distinct from the six 14.08 tasks in ``tracker_six_tasks``. Git closes
 engineering hygiene; it does not send mail, inventory a customer channel, or
-mint product accuracy. Personal names stay out of this snapshot. Checkpoint NO_GO.
+mint product accuracy. Personal names stay out of this snapshot.
+Checkpoint GO (regulatory_measurement_mvp; customer_go false).
 """
 
 from __future__ import annotations
@@ -13,16 +15,17 @@ from aerobim.core.security.upload_limits import (
     DEV_DEFAULT_UPLOAD_BYTES,
     SAMOLET_STATED_MODEL_BYTES,
 )
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.system_capabilities import build_auth_bff_capability
 
 CLAIM_LEVEL: Final = "operational_hygiene"
-CHECKPOINT: Final = "NO_GO"
 CLAIM_BOUNDARY: Final = (
     "Eight tracker tasks (29.08.2026). Finding volume is not accuracy. "
     "SIG-01 report phrase: объём находок на канале получен. "
     "Customer pack stays out of git until a written data-handling order. "
     "SPF in-memory open stays 256 MiB; 1.5 GB is ingest + RocksDB. "
-    "auth_bff default remains NOT_IMPLEMENTED. Checkpoint NO_GO."
+    "auth_bff default remains NOT_IMPLEMENTED. Checkpoint GO "
+    "(regulatory_measurement_mvp; customer_go false)."
 )
 SIG01_REPORT_PHRASE: Final = "объём находок на канале получен"
 ASSIGNED_AT: Final = "2026-08-29"

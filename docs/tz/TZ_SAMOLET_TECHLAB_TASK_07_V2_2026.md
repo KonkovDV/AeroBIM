@@ -11,7 +11,9 @@ language: ru
 tags: [aerobim, tz, samolet, techlab, task-07]
 claim_boundary: >
   Документ согласован с Claims Lock и CRITICAL_BLOCKERS.
-  Checkpoint продукта NO_GO до RT-001/002/003. Не обещает >90%, MEP delivered,
+  Живой product checkpoint (04.09) = GO regulatory_measurement_mvp.
+  Строка ТЗ «NO_GO до RT-001/002/003» читается как customer_go false /
+  недифференцированные closes_rt* false. Не обещает >90%, MEP delivered,
   нативный DWG, корректность расчётов, CDE-ready BCF.
 basis:
   - docs/tz/* (черновики TBD)

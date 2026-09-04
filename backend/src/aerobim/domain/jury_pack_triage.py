@@ -1,20 +1,23 @@
+
 """Jury-pack Red Team triage — 2026-09-01.
 
 Attacks on the public GitHub tree as read by selection commission no. 7
 (roles, not names). Path must not contain the hyphenated token blocked
-by pre-commit. Not RT CLOSED. Checkpoint NO_GO.
+by pre-commit. Not RT CLOSED. Checkpoint GO (regulatory_measurement_mvp; customer_go false).
 """
 
 from __future__ import annotations
 
 from typing import Final
 
+from aerobim.domain.checkpoint import CHECKPOINT
+
 CLAIM_LEVEL: Final = "coverage_map_only"
-CHECKPOINT: Final = "NO_GO"
 CLAIM_BOUNDARY: Final = (
     "Jury-pack Red Team triage after the kitchen-surface pass. "
     "Roles not FIO. Unpack counts stay off TIER0. Not pack processed. "
-    "Not sitting-member OSINT in git. Checkpoint NO_GO."
+    "Not sitting-member OSINT in git. Checkpoint GO "
+    "(regulatory_measurement_mvp; customer_go false)."
 )
 
 # Surfaces a sitting member is expected to open first. Fingerprint counts

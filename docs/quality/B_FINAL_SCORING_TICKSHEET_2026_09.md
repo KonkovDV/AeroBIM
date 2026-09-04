@@ -11,7 +11,7 @@ closes_rt003: false
 claim_boundary: >
   Findability pack for attributed System B weights (order briefing, not
   Regulation Appendix 3). Band arithmetic is not a predicted AeroBIM total.
-  Not partner validation metrics. Checkpoint NO_GO.
+  Not partner validation metrics. Checkpoint GO; customer_go false.
 ---
 
 # Система B: лист Б1–Б5 (не прогноз)

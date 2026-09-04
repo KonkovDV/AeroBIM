@@ -7,7 +7,7 @@ last_updated: "2026-09-04"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
-claim_boundary: "Рабочий чек-лист + Red Team KILL/HOLD/ACCEPT. Checkpoint NO_GO; RT-001/002/003 OPEN. Источники: серия RED_TEAM_* (25 отчётов), DOCUMENTS_CROSS_AUDIT_2026_09, трекер/gap/UI/SOTA документы."
+claim_boundary: "Рабочий чек-лист + Red Team KILL/HOLD/ACCEPT. Checkpoint GO; customer_go false; RT-001/002/003 OPEN. Источники: серия RED_TEAM_* (25 отчётов), DOCUMENTS_CROSS_AUDIT_2026_09, трекер/gap/UI/SOTA документы."
 ---
 
 # Closing Checklist — детальный список на закрытие
@@ -18,7 +18,7 @@ claim_boundary: "Рабочий чек-лист + Red Team KILL/HOLD/ACCEPT. Che
 
 | ID | Verdict | Почему |
 |---|---|---|
-| **A1** | **HOLD** production SSO; **ACCEPT** honesty | HITL 403 на shared Bearer и viewer/user под pilot. По умолчанию `GET /v1/auth/bff` = 501. Lab `200 LAB` — не SSO заказчика: непроверенная cookie не авторизует (HD3-BFF-01); проверенная может bind `AuthPrincipal`, viewer → 403. Поддельная lab-cookie как промышленный RBAC — **KILL**. `hitl_write.ui_role_is_acl=false`. Речь: FAQ «вопрос №1». |
+| **A1** | **HOLD** production SSO; **ACCEPT** honesty | HITL 403 на shared Bearer и viewer/user под pilot. По умолчанию `GET /v1/auth/bff` = 501. Lab `200 LAB` — не SSO заказчика: непроверенная cookie не авторизует (HD3-BFF-01); проверенная может bind `AuthPrincipal`, viewer → 403. Поддельная lab-cookie как промышленный RBAC — **KILL**. `hitl_write.ui_role_is_acl=false`. Речь: FAQ «вопрос №1». UI 04.09: загрузка/прогон разделяют приём 1,5 ГБ и SPF/вьюер 256 МиБ; докачка не реализована. |
 | **A2** | **KILL** nearest intersection; **ACCEPT** AxisTag+storey | Резолвер **уже** в `ifc_spatial_index.py` (этаж + `IfcGridAxis.AxisTag`). «Ближайшая ось» — атака live_tree_triage. Дом 5 без осей = данные (B7), не код. Гвоздь: два грида → `grid_axis is None`. |
 | **A3** | **ACCEPT** | Пресет: pilot/production → пустой LLM/VLM allowlist; `allow` только с `CONSENT_REF`. Не включает egress сам по себе (`llm_local_ready` всё ещё false). |
 | **A4** | **ACCEPT already** | Таймер в `AnalyzeRunPanel` с копирайтом «не SLA». Не доказательство ТЗ 30 мин. |
@@ -31,7 +31,7 @@ claim_boundary: "Рабочий чек-лист + Red Team KILL/HOLD/ACCEPT. Che
 | **A11** | **ACCEPT** | `App.tsx` = 300 строк (порог плана). Не закрывает WP-FE-15 / SSO. |
 | **B1** | **ACCEPT** | Баннер «учебный набор правил» на экране находок. |
 | **B2** | **HOLD** owner | Слайд пустых данных пакета — не git (агрегат канала). |
-| **B3** | **HOLD** | Куски есть (upload → timer → expert → BCF). Склейка репетиции, не новый движок. |
+| **B3** | **ACCEPT** glue 04.09; not a new engine | Куски были. Склейка: демо/прогон сажает на эксперт с BCF на полосе; вкладка «Экспорт» не нужна. Не SLA. |
 | **B4** | **ACCEPT already** | `TzWorkplaceCoveragePanel` + `ReviewKpiPanel` в App. Не тай-брейк балла. |
 | **B5** | **ACCEPT** | Карточка речи: вопрос №1. |
 | **C1–C6** | **HOLD** owner | Git не закрывает юрлицо, NDA, письма, брендбук. |
@@ -49,11 +49,11 @@ claim_boundary: "Рабочий чек-лист + Red Team KILL/HOLD/ACCEPT. Che
 
 | # | Гэп | Где | Оценка | Источник |
 |---|---|---|---|---|
-| A1 | **Серверный минимум RBAC**: сессия + 403 на запись для роли «Пользователь» (сейчас роль — localStorage-мок; HITL защищён, но оптика демо провальна) | `ui-role.ts` / `system.py` BFF-501 / HITL routes | 2–3 дня | UI 2.txt §1; CROSS §1 |
+| A1 | **Серверный минимум RBAC**: lab HTTP 403 для viewer **есть** (04.09). Production SSO / BFF по умолчанию 501 — HOLD. localStorage остаётся макетом экрана | `ui-role.ts` / `system.py` / `oidc_bff_phase3.py` | HOLD SSO | WP-FE-15 |
 | A2 | **IfcGrid-резолвер** «GUID → этаж + ближайшая ось» (заказчик просил локацию в замечании; в доме 5 осей нет — резолвер нужен и для демо, и для запроса B7) | новый domain-модуль + adapter по IfcGrid/IfcBuildingStorey | 1–2 дня | Трекер задача 4; GAP §3 |
 | A3 | **Пресет «LLM egress deny для пакета заказчика»**: пустой allowlist как профиль конфига, включение только письменным согласием (механизм HybridRouteGate есть) | settings + `hybrid_route_gate` wiring | часы | Трекер §3.1; CROSS §2 |
 | A4 | **Таймер прогона на экране** (stage_progress уже в данных): бесплатное доказательство критерия ТЗ «30 минут» | `AnalyzeRunPanel.tsx` | часы | UI 2.txt #6 |
-| A5 | **Streaming IFC-read + дисковый R-tree + bbox-предфильтр** (план подтверждён литературой; без прогона на ~1,5 ГБ не заявлять) | `ifc_file_open` / новый adapter | 1–2 недели | Трекер задача 1; SOTA B.3 |
+| A5 | **Streaming IFC-read + дисковый R-tree + bbox-предфильтр** (без RSS на ~1,5 ГБ не заявлять). UI 04.09 уже пишет: приём ≠ SPF 256 МиБ. SPF не поднимать | `ifc_file_open` / UI copy | HOLD RSS | Трекер задача 1; WP-FE-18 |
 | A6 | Расширить e2e-прогон экспортов (pdf/html/json/bcf) — кнопка PDF работает, но смоук-путь не закреплён | `frontend/scripts` + Playwright | часы | CROSS §1 (STALE-фикс) |
 | A7 | **CRLF-нормализация 5 файлов до коммита** (`vlm_grounding.py`, `bcf3_exporter.py`, `TARGET_HYBRID…`, `docs.md`, `pre_push_gate.py`) | git | 10 минут | session (git warnings) |
 | A8 | **Заккоммитить волну** (52 файла: фиксы серии + Expert Workplace) — разбить на fix/feat/docs | git | 1 час | session |
@@ -67,7 +67,7 @@ claim_boundary: "Рабочий чек-лист + Red Team KILL/HOLD/ACCEPT. Che
 |---|---|---|
 | B1 | Дисклеймер «учебный набор правил» на каждом экране с находками (до подписи IDS C2) | слайд + баннер; язык claims-машины |
 | B2 | Слайд «пустые данные пакета» — площади 0/16000, арматура 0, инженерия 0, оси нет → запрос B1–B7 с датами превращает провал в дисциплину | слайд |
-| B3 | Сквозной маршрут демо одним кликом: комплект → прогон с таймером → список по критичности → карточка Суть/Норма/Ось-Этаж → доказательство на листе и 3D → BCF | сборка из готовых кусков |
+| B3 | Сквозной маршрут демо одним кликом: комплект → прогон с таймером → список по критичности → карточка Суть/Норма/Ось-Этаж → доказательство на листе и 3D → BCF | **склейка 04.09**: эксперт + BCF на одном экране; не новый движок |
 | B4 | Экраны «Покрытие ТЗ» и «Дашборд эффекта» — тай-брейк K3/K4 жюри (среднее 5 оценок, порог 50, тай-брейк — соответствие задачам партнёра) | TzWorkplaceCoveragePanel + review-kpi |
 | B5 | Ответ на вопрос №1 комиссии про разграничение доступа — заготовлен: «UI-мок, сервер решает (ADR-001 + OIDC-гейт HITL)» | репетиция |
 

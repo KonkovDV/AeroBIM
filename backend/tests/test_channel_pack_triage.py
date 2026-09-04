@@ -1,3 +1,4 @@
+
 """Channel-pack Red Team triage stays NO_GO; GiB stays out of git."""
 
 from __future__ import annotations
@@ -7,13 +8,14 @@ import unittest
 from pathlib import Path
 
 from aerobim.domain.channel_pack_triage import TRIAGE_ROWS, pack_triage_snapshot
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.pack_family_facts import LIRA_NAMED_EXT, pack_family_snapshot
 
 
 class PackFamilyFactsTests(unittest.TestCase):
     def test_snapshot_stays_no_go_and_omits_gib(self) -> None:
         snap = pack_family_snapshot()
-        self.assertEqual(snap["checkpoint"], "NO_GO")
+        self.assertEqual(snap["checkpoint"], CHECKPOINT)
         self.assertFalse(snap["processed"])
         self.assertFalse(snap["parse_lira"])
         self.assertFalse(snap["is_cc2_match"])
@@ -47,7 +49,7 @@ class PackFamilyFactsTests(unittest.TestCase):
 class ChannelPackTriageTests(unittest.TestCase):
     def test_snapshot_stays_no_go(self) -> None:
         snap = pack_triage_snapshot()
-        self.assertEqual(snap["checkpoint"], "NO_GO")
+        self.assertEqual(snap["checkpoint"], CHECKPOINT)
         self.assertEqual(snap["detected_count"], 0)
         self.assertFalse(snap["closes_rt001"])
         self.assertFalse(snap["is_pack_processed"])
@@ -79,7 +81,7 @@ class ChannelPackTriageTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
         for row in TRIAGE_ROWS:
             self.assertIn(f"| {row['id']} |", md, msg=row["id"])
-        self.assertIn("NO_GO", md)
+        self.assertIn("customer_go", md)
         self.assertNotIn("pack_hash", md)
         self.assertNotIn("81 ГиБ", md)
         self.assertNotIn("61,15", md)

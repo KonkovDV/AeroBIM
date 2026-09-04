@@ -2,7 +2,7 @@
 
 Reads ``samples/ifc/walls-multi-entity.ifc``, writes
 ``samples/ifc/walls-multi-entity-spatial.ifc`` keeping wall GUIDs and psets.
-Not a customer model. Checkpoint NO_GO.
+Not a customer model. Checkpoint GO (regulatory_measurement_mvp; customer_go false).
 """
 
 from __future__ import annotations

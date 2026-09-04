@@ -1,14 +1,14 @@
-<!-- claims-lint: allow-file reason="Approval-boundary SSOT; RT-002 split; forbidden phrases as non-claims; Checkpoint NO_GO" -->
+<!-- claims-lint: allow-file reason="Approval-boundary SSOT; RT-002 split; forbidden phrases as non-claims; Checkpoint GO; customer_go false" -->
 
 # Approval boundary — `moscow_agr_2026`
 
-Checkpoint **NO_GO**. This pack does **not** paint RT-002 CLOSED without the a/b split. It does **not** unfreeze the CUT `moscow_agr` DI port.
+Checkpoint **GO**; customer_go false. This pack does **not** paint RT-002 CLOSED without the a/b split. It does **not** unfreeze the CUT `moscow_agr` DI port.
 
 ## Verbatim boundary
 
-City published the CIM AGR filing requirements (DGP order № ДГП-Р-1/26/64-16-6/26, effective 2026-04-02, plus the public stroimprosto IDS). The city is the **publisher of the NPA / IDS**, not AeroBIM’s customer, and did not endorse the product. Samolet internals remain out of scope.
+City published the CIM AGR filing requirements (joint DIT/DGP order № ДГП-Р-1/26/64-16-6/26, effective 2026-04-02, plus the public stroimprosto IDS). The city is the **publisher of the NPA / IDS**, not AeroBIM’s customer, and did not endorse the product. Samolet internals remain out of scope.
 
-RT-002 is closed in **regulatory** volume (`RT-002a`): this pack has `status=approved`, a full `approval` object, city as `approved_by`, and a content `pack_hash`. RT-002 stays open in **corporate** volume (`RT-002b`): no Samolet-signed EIR / `pack_hash`.
+RT-002 is closed in **regulatory** volume (`RT-002a`): this pack has `status=approved`, a full `approval` object, city as `approved_by`, and a content `pack_hash`. Channel-pack EIR v4 / BIM-standard v4 as text is a separate carrier volume (`RT-002b`) — not this city pack. RT-002 stays open in **signed corporate** volume (`RT-002c` / `b_corporate`): no Samolet-signed IDS / `pack_hash`. The string RT-002b in older notes meant signature; that residual is now RT-002c.
 
 JSON schema vocabulary maps pack `status=approved` onto the engine badge `customer_approved`. That badge here means **city-as-publisher**, not “Samolet signed this pack”. Do not say “customer stack = Renga”. Do not say product accuracy >90%. Do not say RT-003 is closed. Clash/MEP stay honest SKIPPED under `AEROBIM_SIGNOFF_PROFILE=moscow_agr_2026`.
 

@@ -36,6 +36,9 @@ export default function PackUploadPanel({
         </div>
       </div>
       <p className="compact-copy">{UI_COPY.uploadHint}</p>
+      <p className="compact-copy" data-testid="upload-size-honesty">
+        {UI_COPY.uploadSizeHonesty}
+      </p>
       <div
         className={`pack-dropzone ${dragging ? "dragging" : ""}`}
         data-testid="pack-dropzone"

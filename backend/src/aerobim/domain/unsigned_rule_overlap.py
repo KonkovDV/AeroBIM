@@ -1,3 +1,4 @@
+
 """Overlap between unsigned educational packs (not a customer defect list).
 
 ``samples/requirements/samolet-*.txt`` (eq/gte/lte on ALL) and
@@ -14,12 +15,13 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Any, Final
 
-CHECKPOINT: Final = "NO_GO"
+from aerobim.domain.checkpoint import CHECKPOINT
+
 CLAIM_LEVEL: Final = "pack_volume_not_accuracy"
 CLAIM_BOUNDARY: Final = (
     "Unsigned educational packs overlap on the same IFC property. "
     "Summing both rule ids is not two defects. Not SP. Not accuracy. "
-    "Checkpoint NO_GO."
+    "Checkpoint GO (regulatory_measurement_mvp; customer_go false)."
 )
 
 _UNSIGNED_PACKS: Final[tuple[str, ...]] = (

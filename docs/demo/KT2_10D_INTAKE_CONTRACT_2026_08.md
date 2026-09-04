@@ -5,7 +5,7 @@ date: "2026-08-16"
 status: active
 claim_boundary: >
   Proposed file/API boundary. Not implemented as a 10D connector.
-  Not CDE-ready. Not Tangl integration. Checkpoint NO_GO.
+  Not CDE-ready. Not Tangl integration. Checkpoint GO; customer_go false.
 ---
 
 # Intake-контракт (одна страница)
@@ -44,4 +44,4 @@ claim_boundary: >
 
 IFC LRU: не более **8** моделей в процессе; потолок размера файла **256 MiB** (`max_upload_bytes`). Верхняя граница кэша **8 × 256 MiB = 2 GiB** IFC, если каждый слот заполнен максимумом. RAM на федеративном пакете **не замерена**.
 
-Checkpoint **NO_GO**. Импорт BCF в 10D = NOT_VERIFIED, пока нет лога/скрина заказчика.
+Checkpoint **GO**; `customer_go` false. Импорт BCF в 10D = NOT_VERIFIED, пока нет лога/скрина заказчика.

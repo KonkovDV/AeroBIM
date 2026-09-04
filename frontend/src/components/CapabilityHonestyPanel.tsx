@@ -1,5 +1,5 @@
 import type { CapabilityState, DivergenceRecord, ReportCapabilities } from "../lib/types";
-import { BLOCKING_STATES, capabilityRows, formatCapabilityLabel } from "../lib/capability-copy";
+import { BLOCKING_STATES, capabilityRows, capabilityStatusPhrase, formatCapabilityLabel, formatCapabilityState } from "../lib/capability-copy";
 import { UI_COPY } from "../lib/ui-copy";
 
 function statusClass(status: CapabilityState): string {
@@ -50,7 +50,7 @@ export default function CapabilityHonestyPanel({
         <p className="capability-block-banner" role="status">
           {UI_COPY.capBlocking(
             blocking.length,
-            blocking.map((row) => `${formatCapabilityLabel(row.key)}=${row.status}`).join("; "),
+            blocking.map(capabilityStatusPhrase).join("; "),
           )}
         </p>
       )}
@@ -58,7 +58,7 @@ export default function CapabilityHonestyPanel({
       {skipped.length > 0 && (
         <p className="capability-skip-banner" role="status" data-testid="capability-skip-banner">
           {UI_COPY.capSkipped(
-            skipped.map((row) => `${formatCapabilityLabel(row.key)}=${row.status}`).join("; "),
+            skipped.map(capabilityStatusPhrase).join("; "),
           )}
         </p>
       )}
@@ -76,7 +76,7 @@ export default function CapabilityHonestyPanel({
             <tr key={row.key} className={statusClass(row.status)}>
               <td>{formatCapabilityLabel(row.key)}</td>
               <td>
-                <code>{row.status}</code>
+                {formatCapabilityState(row.status)}
               </td>
               <td>{row.reason?.trim() ? row.reason : "—"}</td>
             </tr>

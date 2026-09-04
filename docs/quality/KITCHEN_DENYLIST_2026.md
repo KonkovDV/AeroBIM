@@ -10,7 +10,7 @@ closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   Describes the out-of-git denylist gate. Does not list protected tokens.
-  Checkpoint NO_GO.
+  Checkpoint GO; customer_go false.
 ---
 
 # Kitchen denylist pin

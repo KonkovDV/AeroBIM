@@ -1,16 +1,18 @@
+
 """Tracker six tasks stay NO_GO and do not invent demo counts."""
 
 from __future__ import annotations
 
 import unittest
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.tracker_six_tasks import TRACKER_TASKS, tracker_snapshot
 
 
 class TrackerSixTasksTests(unittest.TestCase):
     def test_snapshot_stays_no_go(self) -> None:
         snap = tracker_snapshot()
-        self.assertEqual(snap["checkpoint"], "NO_GO")
+        self.assertEqual(snap["checkpoint"], CHECKPOINT)
         self.assertEqual(snap["detected_count"], 0)
         self.assertFalse(snap["closes_rt001"])
         self.assertFalse(snap["scheduled_demos_in_git"])

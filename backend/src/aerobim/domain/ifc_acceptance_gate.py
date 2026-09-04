@@ -1,3 +1,4 @@
+
 """IFC Acceptance Gate projection — product-path report contract.
 
 Claim boundary: fixture/engineering contract only. Not customer accuracy,
@@ -16,13 +17,15 @@ from __future__ import annotations
 from typing import Any
 
 from aerobim.domain.advisory_origin import is_advisory_issue
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.models import FindingCategory, Severity
 from aerobim.domain.package_outcome import PackageOutcome, summary_passed_from_outcome
 
 SCHEMA_VERSION = "1.1.0"
 ARTIFACT_TYPE = "aerobim_ifc_acceptance_gate"
 CLAIM_BOUNDARY = (
-    "IFC Acceptance Gate fixture contract. Checkpoint NO_GO. "
+    "IFC Acceptance Gate fixture contract. Checkpoint GO "
+    "(regulatory_measurement_mvp; customer_go false). "
     "Not product accuracy. Not TZ >90%. Not CDE-ready. Not native DWG. "
     "Not MEP delivered. Overlay/CV never writes summary.passed."
 )
@@ -173,7 +176,7 @@ def project_ifc_acceptance_gate(
         "artifact_type": ARTIFACT_TYPE,
         "schema_version": SCHEMA_VERSION,
         "claim_boundary": CLAIM_BOUNDARY,
-        "checkpoint_verdict": "NO_GO",
+        "checkpoint_verdict": CHECKPOINT,
         "customer_accuracy": False,
         "outcome_scope": "full_package",
         "findings_scope": "ifc_ids",

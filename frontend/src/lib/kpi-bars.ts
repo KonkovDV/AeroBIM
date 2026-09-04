@@ -6,6 +6,21 @@ export type KpiBarRow = {
   percent: number;
 };
 
+export type HitlDecisionSplit = {
+  accepted: number;
+  rejected: number;
+};
+
+/** Counts from review-kpi by_type. Not cycle days and not product accuracy. */
+export function hitlDecisionSplit(
+  byType: Record<string, number> | null | undefined,
+): HitlDecisionSplit {
+  return {
+    accepted: typeof byType?.accepted === "number" ? byType.accepted : 0,
+    rejected: typeof byType?.rejected === "number" ? byType.rejected : 0,
+  };
+}
+
 export function kpiBarRows(byType: Record<string, number> | null | undefined): KpiBarRow[] {
   if (!byType) {
     return [];

@@ -13,7 +13,7 @@ detected_count: 0
 claim_boundary: >
   Execution of the quality plan after TZ v1 pin and live-tree triage.
   Scaffolds and honesty gates. Not product accuracy. Not customer SLA.
-  Not MEP delivered. Unsigned OOS does not license skip. Checkpoint NO_GO.
+  Not MEP delivered. Unsigned OOS does not license skip. Checkpoint GO; customer_go false.
 ---
 
 # Owner-AI plan execution (27.08.2026)
@@ -21,7 +21,7 @@ claim_boundary: >
 Машина: `python -c "from aerobim.domain.owner_ai_plan import plan_snapshot"`.  
 Снимок: [`../evidence/owner-ai-plan-execution-2026-08.json`](../evidence/owner-ai-plan-execution-2026-08.json). IUA `PLAN-00`…`PLAN-05`.
 
-Checkpoint **`NO_GO`**. `detected_count: 0`. Семь задач сравнения остаются **Uncertain**.
+Checkpoint **`GO`**; `customer_go` false. `detected_count: 0`. Семь задач сравнения остаются **Uncertain**.
 
 Не склеивать четыре бумаги: бриф ТЗ v1 (6 стр.); ТЗ v2 (ТР-1…62); семь задач Техлаба; проектное ТЗ объекта.
 

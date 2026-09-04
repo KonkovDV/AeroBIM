@@ -12,14 +12,14 @@ claim_boundary: >
   Design note. Streaming parser and disk R-tree are not implemented.
   Default AEROBIM_MAX_IFC_BYTES stays 256 MiB SPF. Files up to 1.5 GB
   use IfcOpenShell RocksDB. WASM stays 256 MiB. In-memory IfcSpatialIndex
-  is not a disk R-tree. Checkpoint NO_GO.
+  is not a disk R-tree. Checkpoint GO; customer_go false.
 ---
 
 # IFC streaming / disk R-tree (design)
 
 Machine: `python -c "from aerobim.domain.ifc_streaming_design import streaming_design_snapshot"`.
 
-Checkpoint **`NO_GO`**. `raises_default_cap: false`. `rocksdb_backend: wired_over_spf_cap`.
+Checkpoint **`GO`**; `customer_go` false. `raises_default_cap: false`. `rocksdb_backend: wired_over_spf_cap`.
 
 ## Today
 

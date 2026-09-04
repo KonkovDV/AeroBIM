@@ -1,6 +1,7 @@
 """Development-only demo fixture seed so the review shell can be shown live.
 
-Production returns 404. Uses git samples, not customer packs. Checkpoint NO_GO.
+Production returns 404. Uses git samples, not customer packs. Checkpoint GO
+(regulatory_measurement_mvp; customer_go false).
 """
 
 import shutil
@@ -10,6 +11,7 @@ from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.ifc_size_policy import IfcAnalyzeCapError, IfcDiskBackendError
 from aerobim.domain.models import SourceKind, ValidationRequest
 from aerobim.domain.object_acl import AuthPrincipal
@@ -101,7 +103,7 @@ def build_demo_router(ctx: ApiContext) -> APIRouter:
 
         return {
             "fixture": True,
-            "checkpoint": "NO_GO",
+            "checkpoint": CHECKPOINT,
             "closes_rt001": False,
             "closes_rt002": False,
             "closes_rt003": False,

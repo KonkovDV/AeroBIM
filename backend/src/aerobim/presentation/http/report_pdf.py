@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from aerobim.core.simple_pdf import write_simple_pdf
-from aerobim.presentation.http.report_html import coverage_lines_for_export
+from aerobim.presentation.http.report_html import coverage_lines_for_export, issue_clause_label
 
 
 def render_report_pdf_bytes(report_id: str, data: dict[str, Any]) -> bytes:
@@ -33,9 +33,10 @@ def render_report_pdf_bytes(report_id: str, data: dict[str, Any]) -> bytes:
     for issue in data.get("issues") or []:
         if not isinstance(issue, dict):
             continue
+        clause = issue_clause_label(issue) or "нет пункта"
         lines.append(
             f"[{issue.get('severity', '?')}] {issue.get('category', '?')}: "
-            f"{issue.get('rule_id', '')} — {str(issue.get('message', ''))[:120]}"
+            f"{issue.get('rule_id', '')} — {str(issue.get('message', ''))[:120]} | {clause}"
         )
     if len(lines) < 8:
         lines.append("(no issues)")

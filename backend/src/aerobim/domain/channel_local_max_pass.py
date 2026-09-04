@@ -1,8 +1,9 @@
+
 """Maximum licensed pass on a local NDA copy (31.08.2026).
 
 What git plus a gitignored quarantine copy can do vs TZ v2, TechLab seven
 comparison tasks, MIK speech, and tracker SIG-01…08. Not a customer
-verdict. Not a jury exhibit. Checkpoint NO_GO.
+verdict. Not a jury exhibit. Checkpoint GO (regulatory_measurement_mvp; customer_go false).
 """
 
 from __future__ import annotations
@@ -10,19 +11,19 @@ from __future__ import annotations
 from typing import Any, Final
 
 from aerobim.domain.channel_pack_triage import pack_triage_snapshot
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.deep_study_facts import deep_study_snapshot
 from aerobim.domain.pack_family_facts import pack_family_snapshot
 from aerobim.domain.tracker_eight_tasks import tracker_eight_snapshot
 from aerobim.domain.unpack_census import unpack_census_snapshot
 from aerobim.domain.unsigned_rule_overlap import overlap_snapshot
 
-CHECKPOINT: Final = "NO_GO"
 CLAIM_LEVEL: Final = "coverage_map_only"
 CLAIM_BOUNDARY: Final = (
     "Maximum pass on a local NDA copy: inventory, unsigned-pack volume "
     "shape, carrier presence. Not product accuracy. Not pack processed. "
     "Not statutory PP-87. Not Meets/Does-not on seven TechLab tasks. "
-    "Not native RVT/NWD/.lir. Checkpoint NO_GO."
+    "Not native RVT/NWD/.lir. Checkpoint GO (regulatory_measurement_mvp; customer_go false)."
 )
 
 # Agent can land these on the local copy. Owner still owns mail, IdP, raters.

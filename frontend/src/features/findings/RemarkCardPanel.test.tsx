@@ -44,6 +44,7 @@ describe("RemarkCardPanel", () => {
     );
     expect(screen.getByText("СП 2.13130 · 5.4")).toBeTruthy();
     expect(screen.getAllByText("нет в индексе")).toHaveLength(3);
+    expect(screen.getByText("Пункт ИТЗ / СТО / СП")).toBeTruthy();
     expect(screen.getByText("1XYVUKGoDDbREfVxRKsHkl")).toBeTruthy();
     expect(screen.getByText("fid-1")).toBeTruthy();
     expect(screen.getByText("ids:FIRE-1")).toBeTruthy();

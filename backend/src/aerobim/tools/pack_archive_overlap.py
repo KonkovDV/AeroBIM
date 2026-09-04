@@ -1,9 +1,10 @@
+
 """Compare pack zip/7z members to the already-extracted tree. No names in aggregate.
 
 Does not unpack by default. ``--extract-missing-ifc-pdf`` writes hashed IFC/PDF
 under ``.local/``. ``--extract-all`` streams every zip member under
 ``out/unpacked-all`` (Windows long paths). 7z listing/extract still needs 7-Zip.
-Does not close RT. Checkpoint NO_GO.
+Does not close RT. Checkpoint GO (regulatory_measurement_mvp; customer_go false).
 """
 
 from __future__ import annotations
@@ -20,12 +21,13 @@ from collections import Counter
 from pathlib import Path
 from typing import IO, Any
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.owner_files_inventory import require_local_only_output
 from aerobim.tools.benchmark_project_package import repo_root
 
 CLAIM_BOUNDARY = (
     "Archive overlap vs local copy. Not unpacked-as-processed. "
-    "Not channel pack processed. Checkpoint NO_GO."
+    "Not channel pack processed. Checkpoint GO (regulatory_measurement_mvp; customer_go false)."
 )
 _EXTRACT_EXT = {".ifc", ".pdf"}
 _ARCHIVE_EXT = {".zip", ".7z"}
@@ -206,7 +208,7 @@ def probe_archives(root: Path) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     aggregate: dict[str, Any] = {
         "artifact_type": "pack_archive_overlap",
         "claim_level": "local_inventory_not_processed",
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
         "closes_rt001": False,
         "closes_rt002": False,
         "closes_rt003": False,
@@ -354,7 +356,7 @@ def extract_all_zips(root: Path, dest: Path) -> dict[str, Any]:
         "disk_full": False,
         "sevenzip_unextracted": 0,
         "dest": str(dest),
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
     }
     for path in iter_files(root):
         if path.suffix.lower() == ".7z":
@@ -485,7 +487,7 @@ def extract_missing_ifc_pdf(root: Path, dest: Path) -> dict[str, Any]:
         "written_bytes": written_bytes,
         "skipped_already_on_disk": skipped_exists,
         "dest": str(dest),
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
     }
 
 

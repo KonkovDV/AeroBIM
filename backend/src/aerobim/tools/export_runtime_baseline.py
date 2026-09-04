@@ -1174,7 +1174,7 @@ def export_runtime_baseline(
         "corpus_kind": "fixture",
         "claim_boundary": (
             "Engineering build evidence only. Fixture macro_f1 != product accuracy. "
-            "Checkpoint NO_GO until RT-001/002/003."
+            "Checkpoint GO (regulatory_measurement_mvp; customer_go false) until RT-001/002/003."
         ),
         "backend": {
             "tests_collected": collected,

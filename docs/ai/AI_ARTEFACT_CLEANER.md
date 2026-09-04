@@ -6,7 +6,7 @@ version: "1.0.0"
 last_updated: "2026-09-02"
 claim_boundary: >
   Operator prompt. Does not rewrite claims for a more human tone.
-  Checkpoint NO_GO. Reports: docs/quality/AI_TRACE_*.
+  Checkpoint GO; customer_go false. Reports: docs/quality/AI_TRACE_*.
 ---
 
 # Промт «Очиститель ИИ-артефактов»

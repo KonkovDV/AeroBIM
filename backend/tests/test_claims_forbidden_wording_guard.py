@@ -130,7 +130,7 @@ def test_nelzya_heading_covers_following_list_items() -> None:
             "## Нельзя говорить",
             "",
             "- SLA ≤30",
-            "- Checkpoint GO",
+            "- Customer GO",
         ],
         ["нельзя", "запрещено", "not claimed"],
     )

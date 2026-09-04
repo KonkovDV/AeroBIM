@@ -1,3 +1,4 @@
+
 """Public TZ v1 brief is not a product score and not the seven tasks."""
 
 from __future__ import annotations
@@ -8,6 +9,7 @@ import os
 import unittest
 from pathlib import Path
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.tz_v1_brief import (
     MIK_ACT_ACCURACY_HORIZON,
     PAPER_OBJECTS,
@@ -25,7 +27,7 @@ _EVIDENCE = _REPO_ROOT / "docs" / "evidence" / "tz-v1-brief-coverage-2026-08.jso
 class TzV1BriefTests(unittest.TestCase):
     def test_snapshot_stays_no_go_and_unmixed(self) -> None:
         snap = v1_brief_snapshot()
-        self.assertEqual(snap["checkpoint"], "NO_GO")
+        self.assertEqual(snap["checkpoint"], CHECKPOINT)
         self.assertEqual(snap["detected_count"], 0)
         self.assertFalse(snap["closes_rt001"])
         self.assertFalse(snap["closes_rt002"])

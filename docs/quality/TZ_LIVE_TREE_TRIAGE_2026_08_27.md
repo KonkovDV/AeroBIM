@@ -12,7 +12,7 @@ claim_level: coverage_map_only
 detected_count: 0
 claim_boundary: >
   KILL/HOLD/ACCEPT over the live tree after TZ v1 pin and the KT#3 pack.
-  Not product accuracy. Not customer SLA. Not MEP delivered. Checkpoint NO_GO.
+  Not product accuracy. Not customer SLA. Not MEP delivered. Checkpoint GO; customer_go false.
 ---
 
 # Live-tree triage (27.08.2026)
@@ -39,7 +39,7 @@ PR-diff к `main` на первом проходе 27.08 был пустой. Э
 
 Проход 27: SPF RAM ~8–10× диска (IfcOpenShell #7116); 1,5 ГБ ingest ≈ лимит toolkit экспорта Revit. RocksDB wired over SPF cap. WASM 256 МиБ.
 
-Checkpoint **`NO_GO`**. `detected_count: 0`.
+Checkpoint **`GO`**; `customer_go` false. `detected_count: 0`.
 
 ## Этот проход (KILL, затор в коде)
 
@@ -164,7 +164,7 @@ Checkpoint **`NO_GO`**. `detected_count: 0`.
 |---|---|---|
 | RT-SEAM-HOLD | Карта семи задач = Meets / RT CLOSED | §5 TZ seam уже KILL; критерий Uncertain |
 | RT-FULL-D01 | `/v1/validate/ifc` зелёный в production через development | DI берёт `settings.signoff_profile`; soft `passed` не authoritative |
-| RT-AGR-002 | `moscow_agr_2026` `status=approved` = профиль Самолёта | RT-002a ≠ RT-002b; профиль не customer-hard |
+| RT-AGR-002 | `moscow_agr_2026` `status=approved` = профиль Самолёта | RT-002a ≠ RT-002c; профиль не customer-hard |
 | RT-INV-HOLD | Счётчики 2383/15/1 = `pack_hash` / RT-001 CLOSED | `coverage_map_only`; имён нет; intake blocked |
 
 ## ACCEPT (тормоз уже стоит)

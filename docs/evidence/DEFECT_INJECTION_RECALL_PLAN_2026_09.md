@@ -11,10 +11,13 @@ closes_rt003: false
 claim_boundary: >
   Plan for mutation-test recall on an injected pack. Not Samolet accuracy.
   Not product accuracy >90%. Recall on synthetics does not transfer to the
-  partner pack. Checkpoint NO_GO.
+  partner pack. Checkpoint GO; customer_go false.
 ---
 
 # Recall на инъекциях (синтетика, не партнёр)
+
+Пилот методики измерения при отсутствии ground truth; **не является измерением
+точности продукта.** Recall на инъекциях не переносится на комплект заказчика.
 
 Генератор **уже есть**: `python -m aerobim.tools.inject_defects`
 (`backend/src/aerobim/tools/inject_defects.py`). Тесты:

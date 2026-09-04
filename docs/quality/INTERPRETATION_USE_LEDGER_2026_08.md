@@ -1,21 +1,21 @@
 <!-- claims-lint: allow-file reason="Kane IUA ledger; TZ 90%/SLA as blocked inferences; NO_GO" -->
 ---
 title: "Interpretation/Use ledger — Самолёт × трекер × Техлаб/МИК × отрасль"
-date: "2026-09-01"
+date: "2026-09-04"
 status: active
 version: "1.2.1"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
 claim_boundary: >-
-  Kane IUA over existing AeroBIM scores. Licensed uses stop at fixture demo, engine regression, open-bench countable subsets, gold-IDS processability, and protocol planning. Not customer precision, not TZ >90%, not customer SLA, not Checkpoint GO.
+  Kane IUA over existing AeroBIM scores. Licensed uses stop at fixture demo, engine regression, open-bench countable subsets, gold-IDS processability, and protocol planning. Not customer precision, not TZ >90%, not customer SLA, not customer GO.
 ---
 
 # Interpretation/Use ledger (КТ#2 → КТ#3)
 
 Валидность — свойство **вывода из оценки**, не свойства программы (Messick 1995; Kane 2013). Этот файл — SSOT: что текущие цифры AeroBIM имеют право значить для Самолёта, трекера проекта, Техлаба, МИК и отраслевых стандартов, и чего они значить не имеют.
 
-- Checkpoint **NO_GO**
+- Checkpoint **GO**
 - IUA freeze (construct-validity object, not HEAD): `f9389bf`
 - closes_rt001/002/003: **false**
 - CLI: `python -m aerobim.tools.export_interpretation_use_ledger --write-docs-evidence`
@@ -40,7 +40,7 @@ claim_boundary: >-
 | PLAN-03 | techlab | Стержни IFC или подписанный OOS п.7 (Solihin 4) | Unsigned rebar_class4 template; .lir not parsed | Арматура сверена с расчётом; pitch pset = class 4 | `protocol_planning` |
 | PLAN-04 | techlab | Extractor по прозе проектного ТЗ: 0 hits = extraction_gap | II/C0 and TEP prose ≠ fixture REI60 patterns; gap is mapping, not empty TZ | В проектном ТЗ нет требований к огнестойкости и площадям | `engine_regression` |
 | PLAN-05 | techlab | Два независимых разметчика + κ/α до PrecisionClaim.publishable | Protocol ready (RT-001 labeling); zero labeled customer points | Один судья / LLM-as-judge = gold; >90% без κ | `protocol_planning` |
-| TRK-01 | tracker | Задача 1: доработать продукт к КТ#3 (03–21.09); КТ#2 был 20.08 | IFC Acceptance Gate + live CLI + run_kt3_jury; Checkpoint NO_GO | Checkpoint GO / market GO = customer GO | `fixture_demo` |
+| TRK-01 | tracker | Задача 1: доработать продукт к КТ#3 (03–21.09); КТ#2 был 20.08 | IFC Acceptance Gate + live CLI + run_kt3_jury; Checkpoint GO (regulatory_measurement_mvp; customer_go false) | Checkpoint GO / market GO = customer GO | `fixture_demo` |
 | TRK-02 | tracker | Задача 2: таблица IFC2X3 / IFC4 / IFC4X3 | Fixture kernel n=20: findings 5/4/6, passed=false, clash=skipped | Product accuracy / customer SLA по релизам IFC | `engine_regression` |
 | TRK-03 | tracker | Задача 3: поиск и прогон открытых датасетов | IFC-Bench 27/1026 countable; PNST CLI skip-honest; Ishigaki XML processability | Open bench = RT-001; свежий 18/22; Harbor agent run; DrawingVQA в MIT tree | `open_bench` |
 | TRK-04 | tracker | Задача 4: научный консультант / ИТ-ментор | Вопросы и демо-ссылка в репозитории | Выдуманные минуты консультаций | `operational_hygiene` |

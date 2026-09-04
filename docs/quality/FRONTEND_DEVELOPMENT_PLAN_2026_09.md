@@ -4,7 +4,7 @@ title: "План развития фронтенда (для ИИ-исполни
 date: "2026-09-03"
 last_updated: "2026-09-04"
 status: active
-version: "1.3.0"
+version: "1.4.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -13,7 +13,7 @@ detected_count: 0
 claim_boundary: >
   Фронтенд — review shell над сохранёнными отчётами, не полный цикл CDE и не
   коннектор 10D/Tangl. UI не пишет summary.passed (ADR-001). Нативные
-  RVT/NWD/DWG — fail-closed. SSE нет, только опрос jobs. Checkpoint NO_GO.
+  RVT/NWD/DWG — fail-closed. SSE нет, только опрос jobs. Checkpoint GO; customer_go false.
 ---
 
 # План развития фронтенда — для ИИ-исполнителя
@@ -32,7 +32,7 @@ SSOT по рамкам: [`UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md`](UI_EXPERT_WORK
 (RT-UI-STACK-CLAIM).
 
 Восемь экранов IA (`frontend/src/lib/tz-ui-screens.ts`) — все `partial`.
-Каркас: `App.tsx` (292 строки, порог 300 — RT-UI-SPLIT), фичи в
+Каркас: `App.tsx` (порог 300 — RT-UI-SPLIT), фичи в
 `features/{workplace,findings,export,shell,reports,honesty,capabilities}`,
 чистые функции в `lib/`, хуки в `hooks/`.
 
@@ -66,8 +66,9 @@ lazy-чанк, предупреждение о размере — исходно
    native RVT/NWD/DWG, «пакет заказчика обработан» для git-фикстуры.
 3. Нет SSE — только опрос `jobs/{job_id}` (RT-UI-JOBS). Нет XLSX-кнопки —
    эндпоинта нет, фальшивый 200 хуже отсутствия (RT-UI-XLSX-FAKE).
-4. OIDC не имитировать: BFF = 501, переключатель роли — localStorage-макет,
-   баннер честности ролей не снимать (RT-UI-OIDC-LIVE, RT-UI-ROLE-LS).
+4. OIDC заказчика не имитировать. По умолчанию `GET /v1/auth/bff` = 501.
+   Lab `200 LAB` — не SSO: непроверенная cookie не авторизует. Баннер читает
+   discovery, не хардкодит 501 (RT-UI-OIDC-LIVE, RT-UI-ROLE-LS).
 5. Баннер NO_GO и honesty-панели не прятать и не «улучшать» до зелёного
    (RT-UI-NOGO-MASK, RT-UI-HONEST-CAP).
 6. Все видимые строки — через `RU_COPY` (`lib/i18n/ru.ts`); латиница только
@@ -266,7 +267,77 @@ viewer/user → 403 на expert HITL. Это HTTP RBAC лаборатории, �
   `features/honesty/RoleHonestyBanner.tsx`.
 - Запреты: не писать «OIDC live»; не считать 200 LAB закрытием WP как SSO.
 
+### WP-FE-18. Приём 1,5 ГБ ≠ разбор SPF 256 МиБ (P0, К1)
+
+**Статус: done, 04.09.** Не поднимает SPF. Не добавляет протокол докачки.
+Не закрывает RT-001/002b/003. Не измеренный RSS на файле заказчика.
+
+Экран загрузки и экран прогона прямо разделяют четыре числа из
+[`IFC_ANALYZE_VS_INGEST_CAP_2026_08.md`](IFC_ANALYZE_VS_INGEST_CAP_2026_08.md):
+SPF 256 МиБ, bSI 256 MB, WASM 256 МиБ, диск 1,5 ГБ на жёстком профиле.
+Одна отправка с прогрессом и отменой уже была; докачка с места обрыва —
+честный HOLD, не фальшивый tus.
+
+- Файлы: `lib/i18n/ru.ts`, `lib/pack-kind.ts`, `PackUploadPanel.tsx`,
+  `AnalyzeRunPanel.tsx`.
+- Запреты: не поднимать `AEROBIM_MAX_IFC_BYTES`; не писать «принимаем 1,5 ГБ
+  в браузере»; не смешивать приём и SPF-`open()`.
+
+### WP-FE-19. HITL подтверждено/отклонено ≠ дни цикла (P1, К3)
+
+**Статус: done, 04.09.** Экран «Эффект» показывает split из `review-kpi`
+и прямо пишет, что это не «минус один круг» в СОД.
+
+- Файлы: `lib/kpi-bars.ts`, `ReviewKpiPanel.tsx`, `lib/i18n/ru.ts`.
+- Запреты: не выводить дни цикла без журнала ревизий заказчика.
+
+### WP-FE-20. Пункт ИТЗ / СТО / СП — поле первого класса (P0, К1)
+
+**Статус: done, 04.09.** Не новый порт. Поля `norm_source` / `norm_clause` уже
+были в отчёте. Закрывает вопрос «привязка к пункту ИТЗ» на колле 15.09.
+
+Карточка: подпись «Пункт ИТЗ / СТО / СП». Список: фильтр + группировка +
+строка на карточке. Поиск включает штамп. HTML-колонка и BCF `norm=`.
+Пустой штамп = «нет пункта», не OCR.
+
+- Файлы: `lib/issue-triage.ts`, `FindingListPanel.tsx`, `RemarkCardPanel` copy,
+  `hooks/useFindingFilters.ts`, `hooks/useTriageView.ts`, `report_html.py`,
+  `bcf_report_exporter.py`.
+- Запреты: не выдумывать пункт; PDF-кнопка остаётся (эндпоинт есть).
+
 Серверные пресеты фильтров — после фриза, отдельным решением.
+
+### WP-FE-21. Баннер возможностей и цикл «покрытие ТЗ» человеческим языком (P0, К1)
+
+**Статус: done, 04.09.** Не закрывает RT-001/002/003. Не native DWG. Не MEP-solver.
+Матрица ТЗ Web UI остаётся `partial`.
+
+Баннер и таблица возможностей больше не показывают enum `skipped`/`failed`/`ok`.
+`failed`/`missing` → «не выполнена → вердикт отрицательный». Пропуск и
+`not_verified` → «не выполнена → тишина ≠ успех». Для `mep_system_clash` —
+«сети в IFC не переданы». В цикле комплекта шаг «Покрытие ТЗ» открывает экран
+«Эффект» (карта пункт→функция→git). PDF-кнопка не снималась.
+
+- Файлы: `lib/capability-copy.ts`, `CapabilityHonestyPanel.tsx`,
+  `AnalyzeRunPanel.tsx`, `PackCycleStrip.tsx`, `CapabilityTopBanner` tests.
+- Запреты: не писать «вердикт отрицательный» на каждый пропуск в профиле
+  development как измеренный SLA; не помечать строку ТЗ Web UI как done.
+
+### WP-FE-22. Один клик: учебный комплект → эксперт с BCF (P1-9, B3)
+
+**Статус: done, 04.09.** Не новый движок. Не SSO. Не точность продукта.
+Не снимает PDF. Не распиливает `App.tsx`.
+
+После кнопки учебного комплекта или успешного прогона оболочка остаётся на
+экране эксперта: список, карточка (пункт ИТЗ, этаж/ось или «нет в индексе»),
+лист и 3D, BCF на той же полосе. Вкладка «Экспорт» не обязательна. Плашка
+демо сжимается, когда отчёт уже на экране. Выбор свежепосеянного id не
+сбрасывается, если список отчётов отстал на один GET.
+
+- Файлы: `DemoFixturePanel.tsx`, `ExpertWorkplace.tsx`, `App.tsx`,
+  `useReports.ts`, `lib/rehearsal-land.ts`.
+- Запреты: не писать второй auth-стек; не убирать PDF из `ExportFormat`;
+  не обещать SLA 30:00.
 
 ## 6. Очередность
 
@@ -275,10 +346,13 @@ viewer/user → 403 на expert HITL. Это HTTP RBAC лаборатории, �
 | Сделано 03.09 утро | FE-01…FE-06 | done |
 | До демо ИТ-ментору | WP-FE-07, WP-FE-08, WP-FE-09, WP-FE-16 | done |
 | До 15.09 | WP-FE-10, WP-FE-11, WP-FE-12, WP-FE-13, WP-FE-14, WP-FE-17 | done |
+| До 11.09 | WP-FE-18, WP-FE-19, WP-FE-20 | done 04.09 |
+| 04.09 вечер | WP-FE-21 | done 04.09 |
+| 04.09 | WP-FE-22 | done 04.09 |
 | Пока нет IdP заказчика | WP-FE-15 | HOLD |
 
-Гейты: `npm test` — 41 файл / 160 тестов; `npm run lint` — чисто; `npm run build` — чисто.
-`App.tsx` = 300 строк. Новая рантайм-зависимость не добавлялась. По умолчанию баннер
+Гейты: `npm test` — 41 файл / 170 тестов; `npm run lint` — чисто; `npm run build` — чисто.
+`App.tsx` ≤ 300 строк. Новая рантайм-зависимость не добавлялась. По умолчанию баннер
 читает `GET /v1/auth/bff` (501); 200 LAB не SSO заказчика. WP-FE-15 остаётся HOLD.
 `axe-core` — только `devDependencies`, jsdom, правило color-contrast выключено.
 Это внутренний проход, не сертификат WCAG.
@@ -298,6 +372,11 @@ viewer/user → 403 на expert HITL. Это HTTP RBAC лаборатории, �
 | WP-FE-14 | ACCEPT | Хвосты копирайта в `RU_COPY`; английский отказ coverage убран |
 | WP-FE-17 | ACCEPT | Повтор GET; пустой эксперт с переходами; epoch перезапрашивает отчёт |
 | WP-FE-15 | HOLD | По умолчанию BFF = 501; 200 LAB ≠ SSO заказчика; viewer 403 только в лаборатории |
+| WP-FE-18 | ACCEPT | Копирайт приём≠SPF; докачка HOLD; SPF не поднят |
+| WP-FE-19 | ACCEPT | Split HITL; не дни цикла СОД |
+| WP-FE-20 | ACCEPT | Штамп ИТЗ/СТО/СП в карточке, фильтре, HTML/BCF; пустое ≠ OCR |
+| WP-FE-21 | ACCEPT | RU-статусы возможностей; шаг покрытия ТЗ; enum не в баннере |
+| WP-FE-22 | ACCEPT | Склейка репетиции: демо/прогон → эксперт с BCF; PDF на месте |
 | Fragments / федерация | KILL | Не грузить ~1 ГБ во вкладку |
 | XLSX / OIDC live / SLA | KILL | Без изменений рамок триажа |
 
@@ -310,6 +389,6 @@ viewer/user → 403 на expert HITL. Это HTTP RBAC лаборатории, �
    `hooks/`.
 5. Запись в этом плане: статус WP → done, дата, коммит.
 
-Checkpoint **`NO_GO`**. Этот план не закрывает RT-001 / RT-002b / RT-003 и не
+Checkpoint **`GO`**; `customer_go` false. Этот план не закрывает RT-001 / RT-002b / RT-003 и не
 меняет позиционирование: шов комплекта, файловый выход BCF/HTML/JSON, импорт
 в СОД заказчика — NOT_VERIFIED.

@@ -10,7 +10,7 @@ closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   Черновик исходящего владельца. Git не отправляет почту. Формы Фонда не
-  сочиняем. Checkpoint NO_GO.
+  сочиняем. Checkpoint GO; customer_go false.
 ---
 
 # Письмо менеджеру МИК (отдельно от письма Самолёту)
@@ -63,4 +63,4 @@ evidence bundle, BCF T1) мы формируем сами; **форму и кр�
 | M8 | `VERIFY_WITH_OPERATOR` |
 | M3 переупаковка | `ENG_READY` после шаблона |
 
-`predicted_aerobim_total() is None`. Checkpoint **NO_GO**.
+`predicted_aerobim_total() is None`. Checkpoint **GO**; customer_go false.

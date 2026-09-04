@@ -1,5 +1,5 @@
 {
-  "note": "Synthetic / de-identified cases for the Hybrid AI contour bench (P3). No real customer data. Not product accuracy; masking != anonymity; verdict-neutral; Checkpoint NO_GO.",
+  "note": "Synthetic / de-identified cases for the Hybrid AI contour bench (P3). No real customer data. Not product accuracy; masking != anonymity; verdict-neutral; Checkpoint GO; customer_go false.",
   "cases": [
     {
       "name": "local-ifc-no-payload",

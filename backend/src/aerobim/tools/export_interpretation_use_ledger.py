@@ -1,6 +1,6 @@
 """Export the Kane IUA ledger to JSON / markdown evidence.
 
-Does not close RT-001 / RT-002 / RT-003. Checkpoint NO_GO.
+Does not close RT-001 / RT-002 / RT-003. Checkpoint GO (regulatory_measurement_mvp; customer_go false).
 """
 
 from __future__ import annotations

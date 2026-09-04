@@ -6,7 +6,7 @@
   "working_tree_clean": true,
   "generated_at": "2026-09-04T06:08:35.140182+00:00",
   "corpus_kind": "fixture",
-  "claim_boundary": "Engineering build evidence only. Fixture macro_f1 != product accuracy. Checkpoint NO_GO until RT-001/002/003.",
+  "claim_boundary": "Engineering build evidence only. Fixture macro_f1 != product accuracy. Checkpoint GO; customer_go false until RT-001/002/003.",
   "backend": {
     "tests_collected": 2905,
     "tests_passed": 2886,

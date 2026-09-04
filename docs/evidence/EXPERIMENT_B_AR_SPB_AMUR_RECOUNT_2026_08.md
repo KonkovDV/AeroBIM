@@ -4,7 +4,7 @@ date: 2026-08-05
 status: AUTHOR_CLAIM_RECOUNT
 claim_boundary: >-
   Coverage map on open typical-error lists. Not precision. Not product accuracy.
-  Three bodies ≠ one population. Checkpoint NO_GO.
+  Three bodies ≠ one population. Checkpoint GO; customer_go false.
 supersedes_partial: EXPERIMENT_B_AR rows Mordovia-only narrative
 ---
 

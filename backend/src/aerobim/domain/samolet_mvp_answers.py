@@ -1,3 +1,4 @@
+
 """Honesty snapshot of Samolet questionnaire answers (2026-08-25).
 
 Does not close RT-001/002/003. Share URL is not a hashed customer pack.
@@ -12,6 +13,7 @@ from aerobim.core.security.upload_limits import (
     WASM_IFC_VIEWER_CAP_BYTES,
 )
 from aerobim.domain.calculation_table_compare import table_compare_honesty_snapshot
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.ifc_streaming_design import streaming_design_snapshot
 from aerobim.domain.spec_volume_compare import spec_volume_honesty_snapshot
 
@@ -30,7 +32,9 @@ def samolet_mvp_answers_payload() -> dict[str, object]:
         "closes_rt001": False,
         "closes_rt002": False,
         "closes_rt003": False,
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
+        "go_kind": "regulatory_measurement_mvp",
+        "customer_go": False,
         "dataset_classes": [
             "tz",
             "dwg",

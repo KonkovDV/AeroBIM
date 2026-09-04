@@ -28,10 +28,10 @@
     "backend": "spf",
     "literature_spf_rss_bytes": 9750,
     "raises_default_cap": false,
-    "claim_boundary": "SPF in-memory open stays 256 MiB. Files up to 1.5 GB use RocksDB, not SPF RAM. WASM viewer stays 256 MiB. bSI is 256 MB decimal. SPF RAM multiplier is literature, not our RSS. Checkpoint NO_GO."
+    "claim_boundary": "SPF in-memory open stays 256 MiB. Files up to 1.5 GB use RocksDB, not SPF RAM. WASM viewer stays 256 MiB. bSI is 256 MB decimal. SPF RAM multiplier is literature, not our RSS. Checkpoint GO; customer_go false."
   },
   "closes_rt001": false,
   "closes_rt002": false,
   "closes_rt003": false,
-  "claim_boundary": "SPF in-memory open stays 256 MiB. Files up to 1.5 GB use RocksDB, not SPF RAM. WASM viewer stays 256 MiB. bSI is 256 MB decimal. SPF RAM multiplier is literature, not our RSS. Checkpoint NO_GO."
+  "claim_boundary": "SPF in-memory open stays 256 MiB. Files up to 1.5 GB use RocksDB, not SPF RAM. WASM viewer stays 256 MiB. bSI is 256 MB decimal. SPF RAM multiplier is literature, not our RSS. Checkpoint GO; customer_go false."
 }

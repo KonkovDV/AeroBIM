@@ -67,7 +67,7 @@ class MoscowAgr2026PackTests(unittest.TestCase):
     def test_does_not_claim_samolet_customer_profile(self) -> None:
         boundary = (PACK_PATH.parent / "APPROVAL_BOUNDARY.md").read_text(encoding="utf-8")
         self.assertIn("RT-002b", boundary)
-        self.assertIn("NO_GO", boundary)
+        self.assertIn("customer_go", boundary)
         self.assertIn("Samolet internals remain out of scope", boundary)
 
 

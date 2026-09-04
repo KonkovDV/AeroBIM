@@ -4,7 +4,7 @@
 СИНТЕТИЧЕСКОМ листе зон: хороший штамп/спецификация (AUTO_READ), низкокачественная и
 нечитаемая зоны (EXPERT_REVIEW, без классификации — anti-bad-scan), неоднозначная зона
 (UNKNOWN -> EXPERT_REVIEW) и зона без сигналов (REVIEW_REQUIRED). Без данных заказчика,
-без сети, verdict-neutral (не выставляет summary.passed, ADR-001). Checkpoint NO_GO.
+без сети, verdict-neutral (не выставляет summary.passed, ADR-001). Checkpoint GO (regulatory_measurement_mvp; customer_go false).
 """
 
 from __future__ import annotations

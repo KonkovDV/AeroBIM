@@ -1,4 +1,4 @@
-<!-- claims-lint: allow-file reason="Post-cartography execution plan; TZ 90%/SLA/MEP/RT CLOSED blocked; Checkpoint NO_GO" -->
+<!-- claims-lint: allow-file reason="Post-cartography execution plan; TZ 90%/SLA/MEP/RT CLOSED blocked; Checkpoint GO; customer_go false" -->
 ---
 title: "Post-cartography execution plan — seven TechLab tasks"
 date: "2026-08-27"
@@ -12,7 +12,7 @@ claim_level: coverage_map_only
 detected_count: 0
 claim_boundary: >
   Execution plan after a local NDA coverage map. Not TP/FP. Not product
-  accuracy. Not customer SLA. Not MEP delivered. Checkpoint NO_GO.
+  accuracy. Not customer SLA. Not MEP delivered. Checkpoint GO; customer_go false.
   Meets/Does-not are forbidden as customer verdicts until dual raters + κ.
 ---
 
@@ -24,7 +24,7 @@ claim_boundary: >
 
 Карта ячеек: [`TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md`](TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md). Шов литературы: [`TZ_SEAM_COVERAGE_MAP_2026_08.md`](TZ_SEAM_COVERAGE_MAP_2026_08.md). IUA: [`INTERPRETATION_USE_LEDGER_2026_08.md`](INTERPRETATION_USE_LEDGER_2026_08.md) строки `TL-04`…`TL-10`. Публичный бриф ТЗ v1 (6 стр.): [`../tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md`](../tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md) · `SAM-10`. Триаж живого дерева 27.08: [`TZ_LIVE_TREE_TRIAGE_2026_08_27.md`](TZ_LIVE_TREE_TRIAGE_2026_08_27.md).
 
-Checkpoint **`NO_GO`**. `detected_count: 0`.
+Checkpoint **`GO`**; `customer_go` false. `detected_count: 0`.
 
 ## Этот проход (код)
 

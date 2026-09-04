@@ -1,20 +1,23 @@
+
 """UI expert-workplace Red Team triage — 2026-09-01.
 
 The review shell is not a full-cycle expert seat. Path must not contain
-the hyphenated token blocked by pre-commit. Checkpoint NO_GO.
+the hyphenated token blocked by pre-commit.
+Checkpoint GO (regulatory_measurement_mvp; customer_go false).
 """
 
 from __future__ import annotations
 
 from typing import Final
 
+from aerobim.domain.checkpoint import CHECKPOINT
+
 CLAIM_LEVEL: Final = "coverage_map_only"
-CHECKPOINT: Final = "NO_GO"
 CLAIM_BOUNDARY: Final = (
     "UI expert-workplace Red Team triage. Current git is a review shell over "
     "persisted reports. TZ wants upload → run → triage → remark → export. "
     "Natives stay fail-closed. UI does not write summary.passed. "
-    "Not a 10D/Tangl connector. Checkpoint NO_GO."
+    "Not a 10D/Tangl connector. Checkpoint GO (regulatory_measurement_mvp; customer_go false)."
 )
 
 # Eight-screen IA. git is the honest status, not a delivery claim.
@@ -150,8 +153,8 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
     {
         "id": "RT-UI-NOGO-MASK",
         "verdict": "KILL",
-        "attack": "Workplace chrome implies Checkpoint GO or RT closed",
-        "brake": "Banner stays NO_GO; UI does not close RT-001/002/003",
+        "attack": "Workplace chrome implies customer_go or RT closed",
+        "brake": "Banner keeps customer_go false; UI does not close RT-001/002/003",
     },
     {
         "id": "RT-UI-STACK-CLAIM",
@@ -324,8 +327,8 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
     {
         "id": "RT-UI-INTAKE-GREEN",
         "verdict": "KILL",
-        "attack": "Treat true_gates or this screen as RT CLOSED / Checkpoint GO",
-        "brake": "NO_GO; PrecisionClaim.publishable remains the gate",
+        "attack": "Treat true_gates or this screen as RT CLOSED / customer_go",
+        "brake": "customer_go stays false; PrecisionClaim.publishable remains the gate",
     },
     {
         "id": "RT-UI-ROLE-LS",

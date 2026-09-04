@@ -18,4 +18,4 @@ Not the official buildingSMART `IDS-Audit-tool` binary. Official files were **no
 
 `0` document issues is **not** IfcTester execution against a CIM, **not** IDS 1.1 certification (auditor schema is IDS 1.0), **not** a signed customer pack.
 
-Checkpoint **NO_GO**.
+Checkpoint **GO**; customer_go false.

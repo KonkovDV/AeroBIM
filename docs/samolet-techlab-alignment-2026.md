@@ -5,7 +5,7 @@ status: active
 version: "1.2.4"
 last_updated: "2026-08-29"
 tags: [aerobim, samolet, techlab, openBIM, academic, traceability]
-claim_boundary: "Checkpoint NO_GO until RT-001/002/003. Fixture evidence ≠ product accuracy."
+claim_boundary: "Checkpoint GO; customer_go false until RT-001/002/003. Fixture evidence ≠ product accuracy."
 ---
 
 # Samolet × TechLab × AeroBIM — Academic Alignment

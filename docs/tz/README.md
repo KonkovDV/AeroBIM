@@ -4,7 +4,7 @@ status: active
 version: "2.1.2"
 last_updated: "2026-08-27"
 tags: [aerobim, tz, index]
-claim_boundary: "Checkpoint NO_GO until RT-001/002/003."
+claim_boundary: "Checkpoint GO; customer_go false until RT-001/002/003."
 ---
 
 # TZ Response Pack (index)

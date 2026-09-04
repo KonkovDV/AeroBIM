@@ -5,6 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.tools.run_demo_vertical_slice import (
     DemoSliceError,
     main,
@@ -34,7 +35,8 @@ class DemoVerticalSliceTests(unittest.TestCase):
             self.assertIn("overlay-problem-zone.png", html)
             self.assertIn("kt2-claim-boundary", html)
             self.assertIn("Fixture demo", html)
-            self.assertIn("Checkpoint NO_GO", html)
+            self.assertIn("Checkpoint GO", html)
+            self.assertIn("customer_go", html)
             self.assertIn("Not a CDE import", html)
             self.assertIn("summary.passed=", html)
             self.assertIn("summary.outcome=", html)
@@ -43,7 +45,7 @@ class DemoVerticalSliceTests(unittest.TestCase):
             self.assertTrue((out / "run-manifest.json").is_file())
             self.assertTrue((out / "slice-summary.json").is_file())
             envelope = json.loads((out / "slice-summary.json").read_text(encoding="utf-8"))
-            self.assertEqual(envelope["checkpoint_verdict"], "NO_GO")
+            self.assertEqual(envelope["checkpoint_verdict"], CHECKPOINT)
             self.assertFalse(envelope["summary"]["passed"])
             self.assertEqual(envelope["vlm"]["comparison_status"], "comparison_not_run")
             self.assertEqual(envelope["vlm"]["qwen_fixture_status"], "LIVE")

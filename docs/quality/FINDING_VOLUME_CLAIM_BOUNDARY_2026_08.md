@@ -13,14 +13,14 @@ claim_boundary: >
   IFC/drawings/Qto, EXISTS coverage, mismatch cap, unrestricted_eq_sample,
   unsigned pack overlap, shared named-ref attributes, SPF GUID allowlist).
   Report phrase: объём находок на канале получен. Not product accuracy.
-  Not pack processed. Not a customer defect list. Checkpoint NO_GO.
+  Not pack processed. Not a customer defect list. Checkpoint GO; customer_go false.
 ---
 
 # Объём находок: граница заявления и исправления движка
 
 Формулировка для отчёта: **«объём находок на канале получен»**.
 
-Это **не** точность продукта, **не** «пакет обработан», **не** список дефектов заказчика, **не** ТЗ >90 %, **не** dual-rater F1. Checkpoint `NO_GO`. Имена и хэши пакета канала в git не публикуются (OA-9).
+Это **не** точность продукта, **не** «пакет обработан», **не** список дефектов заказчика, **не** ТЗ >90 %, **не** dual-rater F1. Checkpoint `GO`. Имена и хэши пакета канала в git не публикуются (OA-9).
 
 Машина: `python -c "from aerobim.domain.finding_volume import volume_from_findings, REPORT_PHRASE"`.
 

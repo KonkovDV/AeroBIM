@@ -1,3 +1,4 @@
+
 """Measure IFC open RSS on a local file — fixture-only by default.
 
 Does not change the git default of ``AEROBIM_MAX_IFC_BYTES`` (SPF 256 MiB).
@@ -6,7 +7,7 @@ the SPF cap and under ingest open via RocksDB. OA-16 (owner-local RSS on a
 file larger than 256 MiB) does not raise the SPF default; omit
 ``--write-docs-evidence`` and write JSON under ``.local/``.
 Customer paths must not be written to ``docs/evidence``.
-Checkpoint NO_GO.
+Checkpoint GO (regulatory_measurement_mvp; customer_go false).
 """
 
 from __future__ import annotations
@@ -19,6 +20,7 @@ from pathlib import Path
 from typing import Any
 
 from aerobim.core.security.upload_limits import DEV_DEFAULT_UPLOAD_BYTES
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.ifc_size_policy import (
     CLAIM_BOUNDARY,
     analyze_cap_from_env,
@@ -138,7 +140,7 @@ def measure_ifc_open_rss(
         "schema_version": "1.0.0",
         "generated_at": datetime.now(tz=UTC).isoformat(),
         "claim_level": "fixture_only" if sample else "local_uncommitted",
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
         "raises_default_cap": False,
         "analyze_cap_differs_from_git_default": cap != DEV_DEFAULT_UPLOAD_BYTES,
         "opened": opened,
@@ -197,7 +199,7 @@ def main(argv: list[str] | None = None) -> int:
                 "band": payload["size_decision"]["band"],
                 "rss_delta_bytes": payload["rss_delta_bytes"],
                 "raises_default_cap": False,
-                "checkpoint": "NO_GO",
+                "checkpoint": CHECKPOINT,
                 "output": str(out),
             }
         )

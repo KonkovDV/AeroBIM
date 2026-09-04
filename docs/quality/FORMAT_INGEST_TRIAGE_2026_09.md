@@ -13,7 +13,7 @@ detected_count: 0
 claim_boundary: >
   KILL/HOLD/ACCEPT over closed CAD/solver files. KT#3 exchange is IFC + PDF/A
   (PP 614 / MinStroy 783/pr). Closed Autodesk CAD and `.lir` stay fail-closed.
-  ODA trial is measurement, not a product. Checkpoint NO_GO.
+  ODA trial is measurement, not a product. Checkpoint GO; customer_go false.
 ---
 
 # Триаж форматов ingest (01.09.2026)
@@ -28,7 +28,7 @@ claim_boundary: >
 
 Связанные: [`NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md`](NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md) · [`../tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md`](../tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md) · [`../architecture/ADR-003-dwg-oda-trial-kt3-2026.md`](../architecture/ADR-003-dwg-oda-trial-kt3-2026.md) · [`CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md`](CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md) · [`../demo/KT3_RVT_NWD_CV_ONEPAGER_2026_08.md`](../demo/KT3_RVT_NWD_CV_ONEPAGER_2026_08.md).
 
-Checkpoint **`NO_GO`**. `detected_count: 0`. `is_dwg_ready: false`.
+Checkpoint **`GO`**; `customer_go` false. `detected_count: 0`. `is_dwg_ready: false`.
 
 ## Этот проход (KILL / HOLD / ACCEPT)
 

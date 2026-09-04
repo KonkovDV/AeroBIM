@@ -18,7 +18,7 @@
 
 ## 1. Goal
 
-Synthetic detection baseline on planted fixtures. Checkpoint **NO_GO**. Does not publish product accuracy.
+Synthetic detection baseline on planted fixtures. Checkpoint **GO**; customer_go false. Does not publish product accuracy.
 
 ## 2. Commit SHA
 

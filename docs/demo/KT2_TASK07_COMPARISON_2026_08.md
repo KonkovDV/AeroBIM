@@ -5,7 +5,7 @@ date: "2026-08-16"
 status: active
 claim_boundary: >
   Competitive comparison only. Competitor numbers are their public claims
-  (card 09.08), not AeroBIM measurements. Not product accuracy. Checkpoint NO_GO.
+  (card 09.08), not AeroBIM measurements. Not product accuracy. Checkpoint GO; customer_go false.
 ---
 
 # Пять решений Задачи 07 — одна таблица
@@ -33,4 +33,4 @@ claim_boundary: >
 
 **Базовая линия валидации IFC (не шестой конкурент Задачи 07):** [buildingSMART IFC Validation Service](https://validate.buildingsmart.org/) — schema / info-takeoff / норматив Gherkin. Карта перекрытия: [`../evidence/upstream-validate-overlap-2026-08.md`](../evidence/upstream-validate-overlap-2026-08.md). AeroBIM **не** заявляет, что гоняет официальный сервис. Коммерческий якорь data-validation: [Solibri](https://www.solibri.com/solutions/bim-quality-assurance/data-validation) — в [`../partners/COMPETITIVE_MATRIX_2026_08.md`](../partners/diagrams/04-competitive-matrix.md), не в этой пятиколоночной таблице.
 
-Checkpoint **NO_GO**. RT-001/002/003 OPEN.
+Checkpoint **GO**; `customer_go` false. RT-001/002/003 OPEN.

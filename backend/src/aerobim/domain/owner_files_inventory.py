@@ -1,3 +1,4 @@
+
 """Owner-disk files/ inventory — local only, never a git pack_hash.
 
 Stage 0 of the owner-AI plan. Scans extension/size presence plus counts-only
@@ -15,13 +16,14 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any, Final
 
+from aerobim.domain.checkpoint import CHECKPOINT
+
 DEFAULT_IFC_CAP_BYTES: Final = 256 * 1024 * 1024
-CHECKPOINT: Final = "NO_GO"
 CLAIM_LEVEL: Final = "coverage_map_only"
 CLAIM_BOUNDARY: Final = (
     "Local owner-disk inventory of files/. Extension and size counts only. "
     "Not TP/FP. Not product accuracy. Not a customer pack_hash. "
-    "Checkpoint NO_GO. closes_rt001/002/003=false."
+    "Checkpoint GO (regulatory_measurement_mvp; customer_go false). closes_rt001/002/003=false."
 )
 
 # Dated rehearsal pin for git. Live scan may differ; names never enter git.

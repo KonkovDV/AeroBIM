@@ -4,7 +4,7 @@
   "closes_rt002": false,
   "closes_rt003": false,
   "detected_count": 0,
-  "checkpoint": "NO_GO",
+  "checkpoint": "GO",
   "generated_at_utc": "2026-08-26T20:45:00Z",
   "note": "Cartography of the seven TechLab comparison tasks onto a local NDA pack. Cells are filename/entity/property presence. Not TP/FP. Not remark-closure. NDA binaries, GUIDs, OEP remark bodies, OEP status literals, and design-TZ TEP square metres are not in this git twin. Exact workflow histograms live only in the gitignored local YAML.",
   "four_state_legend": {

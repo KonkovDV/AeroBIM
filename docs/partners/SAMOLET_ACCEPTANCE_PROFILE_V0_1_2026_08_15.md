@@ -9,7 +9,7 @@ closes_rt003: false
 claim_boundary: >
   Template for customer signature. Empty owner/date/hash.
   Public MOEXP IDS are a reference layer, not this profile.
-  Checkpoint NO_GO. Does not close RT-002.
+  Checkpoint GO; customer_go false. Does not close RT-002.
 ---
 
 # Samolet Acceptance Profile v0.1 (черновик на согласование)

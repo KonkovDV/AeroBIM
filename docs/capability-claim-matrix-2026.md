@@ -2,8 +2,8 @@
 title: "AeroBIM Capability Claim Matrix 2026"
 status: active
 version: "1.4.4"
-last_updated: "2026-09-01"
-claim_boundary: "Sync with CLAIMS_LOCK. Checkpoint NO_GO until RT-001/002/003. Eng readiness ≠ customer GO."
+last_updated: "2026-09-05"
+claim_boundary: "Sync with CLAIMS_LOCK. Checkpoint GO; customer_go false until RT-001/002/003. Eng readiness ≠ customer GO."
 ---
 
 # Capability × Claim Matrix (TechLab / Samolet)
@@ -46,7 +46,7 @@ API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_
 | BCF ready for CDE | RT-008 T2 | Structural ZIP **AVAILABLE**; CDE import **NOT_VERIFIED** ([ladder](architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md)); requires log+screenshot+hashes |
 | Bare-metal offline-ready (any air-gap) | — | Docker image-track only; bare-metal **DEFERRED** |
 | Entire product is MIT (no third-party disclosure) | — | MIT for AeroBIM code; PDF/IFC stack has own licenses (LIC-001 Option B) |
-| Production-ready / external academic audit | — | Self-audit + NO_GO |
+| Production-ready / external academic audit | — | Self-audit; `customer_go` false |
 | Hybrid AI makes the public API safe for customer data / masking = anonymity | — | Route only *policy-eligible*; masking reduces disclosure, not anonymity; WP-02 advisory pre-gate ≠ verdict path / anonymity guarantee |
 | Cloud Qwen 3.8-Max / Alibaba Model Studio in product | Contour + Claims Lock | Profile `public_qwen38_max` stays NOT_VERIFIED; never default |
 | Samolet CONFIDENTIAL via Yandex Studio *cloud* | Hybrid classification | Studio cloud = PUBLIC/INTERNAL only; on-prem Studio or local for RESTRICTED |
@@ -103,4 +103,4 @@ Evidence bundles emit `run_manifest.json` with `reproducibility_hash` over deter
 | FAILED | deterministic ERROR findings / hard clash under clash_affects_pass |
 | REVIEW_REQUIRED | HITL regions require review |
 
-Checkpoint remains **NO_GO** until RT-001/002/003 customer evidence. `summary.passed` remains Shared-gate technical status — **not** Shared→Published.
+Checkpoint **GO** (`regulatory_measurement_mvp`). `customer_go` stays **false** until RT-001/002/003 residual volumes. `summary.passed` remains Shared-gate technical status — **not** Shared→Published.

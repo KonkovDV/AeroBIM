@@ -1,3 +1,4 @@
+
 """Probe a Renga IFC export: originating system + MOEXP IFC4 fail-closed.
 
 Does not replace the vertical-slice demo IFC (IfcOpenShell fixture).
@@ -20,6 +21,7 @@ from pathlib import Path
 from time import perf_counter
 from typing import Any
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.ids_schema_gate import (
     RULE_IFC_VERSION,
     collect_schema_mismatches,
@@ -37,7 +39,7 @@ CLAIM_BOUNDARY = (
     "is not a Samolet export, not product accuracy, not Exp A 18/22 rerun. "
     "Vertical-slice demo IFC stays IfcOpenShell. This Renga 8.7 pack sample is "
     "FILE_SCHEMA IFC4 (not IFC4X3). IFC4X3 fail-closed remains on the "
-    "IfcOpenShell fixture. Checkpoint NO_GO."
+    "IfcOpenShell fixture. Checkpoint GO (regulatory_measurement_mvp; customer_go false)."
 )
 PACK_HEADER_SAMPLE = {
     "date": "2026-08-14",
@@ -178,7 +180,7 @@ def skipped_payload(*, reason: str) -> dict[str, Any]:
         "samolet_export": False,
         "closes_c4_samolet_intake": False,
         "vertical_slice_ifc_replaced": False,
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
     }
     encoded = json.dumps(body, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode(
         "utf-8"
@@ -235,7 +237,7 @@ def probe_ifc(ifc_path: Path, ids_path: Path, *, repo: Path) -> dict[str, Any]:
         "fail_closed_rule_id": RULE_IFC_VERSION if mismatches else None,
         "mismatch_spec_names": [item.spec_name for item in mismatches[:5]],
         "elapsed_ms": elapsed_ms,
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
     }
     if publisher:
         result["pack_header_sample"] = dict(PACK_HEADER_SAMPLE)
@@ -289,7 +291,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
         "# Renga IFC export probe",
         "",
         "Vertical-slice demo IFC is **not** replaced. Publisher PNST 909 sample "
-        "is **not** a Samolet export. Checkpoint **NO_GO**.",
+        "is **not** a Samolet export. Checkpoint **GO**; customer_go false.",
         "",
         f"- status: **{status}**",
     ]

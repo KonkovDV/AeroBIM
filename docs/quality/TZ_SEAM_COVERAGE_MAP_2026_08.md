@@ -1,4 +1,4 @@
-<!-- claims-lint: allow-file reason="Coverage map + literature IUA; TZ 90%/SLA/MEP/RT CLOSED as blocked inferences; Checkpoint NO_GO" -->
+<!-- claims-lint: allow-file reason="Coverage map + literature IUA; TZ 90%/SLA/MEP/RT CLOSED as blocked inferences; Checkpoint GO; customer_go false" -->
 ---
 title: "TZ seam coverage map — local NDA rehearsal × literature 2026-08-26"
 date: "2026-08-26"
@@ -14,7 +14,7 @@ claim_boundary: >
   Kane IUA over a local owner-disk NDA rehearsal. Entity/property counts are
   not customer findings. Open 2026 benches do not close RT-001/002/003.
   Not product accuracy. Not customer SLA. Not MEP delivered. Not CDE-ready.
-  Checkpoint NO_GO. LLM/VLM never write summary.passed (ADR-001).
+  Checkpoint GO; customer_go false. LLM/VLM never write summary.passed (ADR-001).
 ---
 
 # TZ seam coverage map (26.08.2026)

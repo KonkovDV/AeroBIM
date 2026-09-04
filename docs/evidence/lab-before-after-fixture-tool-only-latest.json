@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "artifact_type": "lab_before_after_journal",
   "claim_level": "fixture_only",
-  "claim_boundary": "Fixture tool elapsed only. t_manual_s is null. Not partner B4. Not A1-A8. Not the published analog labor cut. Checkpoint NO_GO.",
+  "claim_boundary": "Fixture tool elapsed only. t_manual_s is null. Not partner B4. Not A1-A8. Not the published analog labor cut. Checkpoint GO; customer_go false.",
   "checkpoint": "NO_GO",
   "closes_rt001": false,
   "closes_rt002": false,

@@ -1,7 +1,8 @@
 """Bind committed demo-TZ clauses onto known fixture IDS specs.
 
 Source: ``samples/specifications/techlab-tz.txt`` (п. 4.1–4.5). Not SP 2.13130,
-not customer class II/C0, not a signed Samolet profile. Checkpoint NO_GO.
+not customer class II/C0, not a signed Samolet profile.
+Checkpoint GO (regulatory_measurement_mvp; customer_go false).
 """
 
 from __future__ import annotations
@@ -17,7 +18,8 @@ from aerobim.domain.models import ValidationIssue
 _BIND_REL = Path("samples") / "ids" / "fixture-norm-bind.json"
 _CLAIM = (
     "Fixture IDS implements demo TZ clauses from techlab-tz.txt. "
-    "Not SP 2.13130. Not customer class II/C0. Checkpoint NO_GO."
+    "Not SP 2.13130. Not customer class II/C0. Checkpoint GO "
+    "(regulatory_measurement_mvp; customer_go false)."
 )
 
 

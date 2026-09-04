@@ -81,6 +81,10 @@ export function useReports(options: UseReportsOptions): ReportsState {
           if (current && response.reports.some((report) => report.report_id === current)) {
             return current;
           }
+          // Keep a just-seeded id while GET /reports lags; GET /reports/{id} still loads it.
+          if (current) {
+            return current;
+          }
           return response.reports[0]?.report_id ?? null;
         });
       })

@@ -1,3 +1,4 @@
+
 """HD3 engine/store remediations: IDS silence, clash mapper, IFC LRU, BFF authz."""
 
 from __future__ import annotations
@@ -5,6 +6,7 @@ from __future__ import annotations
 import inspect
 import unittest
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.errors import ClashCapabilityError
 from aerobim.infrastructure.adapters.ifc_clash_detector import clash_results_from_sets
 from aerobim.infrastructure.auth.oidc_bff_phase3 import (
@@ -105,7 +107,7 @@ class Hd3IfcLruTests(unittest.TestCase):
         self.assertEqual(payload["literature_rss_ceiling_bytes"], 10 * 8 * 256 * 1024 * 1024)
         self.assertFalse(payload["closes_rt003"])
         self.assertFalse(payload["representative_scale"])
-        self.assertEqual(payload["checkpoint"], "NO_GO")
+        self.assertEqual(payload["checkpoint"], CHECKPOINT)
 
 
 if __name__ == "__main__":

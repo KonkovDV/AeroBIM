@@ -10,7 +10,7 @@ closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   Preliminary national standard mapping. Not a certified SQuaRE assessment.
-  Not product accuracy. Checkpoint NO_GO.
+  Not product accuracy. Checkpoint GO; customer_go false.
 ---
 
 # ПНСТ 841-2023 — карта на уже стоящий протокол

@@ -12,7 +12,7 @@ claim_boundary: >
   Repo work split after the 25.08 questionnaire. Channel received is not a
   hashed pack in git. Not product accuracy. Not customer SLA. Not native
   RVT/NWD. Not OIDC BFF live. Not LIRA solver. Streaming IFC not shipped.
-  Checkpoint NO_GO.
+  Checkpoint GO; customer_go false.
 ---
 
 # In-repo workplan (after 25.08 answers)

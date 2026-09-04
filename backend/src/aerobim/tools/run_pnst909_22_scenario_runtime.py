@@ -1,9 +1,10 @@
+
 """PNST 909 22-scenario IDS runtime on the gitignored Renga publisher pack.
 
 Not product accuracy. Zero findings on the publisher reference IFC are expected
 (the pack is designed to satisfy its own IDS). Missing IDS → ``NO_IDS_IN_PACK``,
 never a silent pass. Absent pack → ``SKIPPED`` and does **not** overwrite the
-measured docs snapshot. Checkpoint NO_GO. Does not close RT-001 / RT-002.
+measured docs snapshot. Checkpoint GO (regulatory_measurement_mvp; customer_go false). Does not close RT-001 / RT-002.
 """
 
 from __future__ import annotations
@@ -19,11 +20,12 @@ from time import perf_counter
 from typing import Any, Protocol
 
 from aerobim.core.security.path_jail import PathJailError, resolve_storage_path
+from aerobim.domain.checkpoint import CHECKPOINT
 
 CLAIM_BOUNDARY = (
     "Aggregated PNST 909 IDS coverage on Renga open pack after ToS cite GO "
     "(2026-08-05). AUTHOR_CLAIM coverage map — NOT product accuracy, NOT expert "
-    "adjudication. Clean pack != customer precision. Checkpoint NO_GO."
+    "adjudication. Clean pack != customer precision. Checkpoint GO (regulatory_measurement_mvp; customer_go false)."
 )
 ENV_PACK = "AEROBIM_PNST909_PACK"
 DEFAULT_PACK_REL = Path(".local") / "renga-pnst909" / "pack"
@@ -149,7 +151,7 @@ def skipped_pack_payload(
         "validator": None,
         "closes_rt001": False,
         "closes_rt002": False,
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
         "summary": {
             "scenarios_total": 22,
             "executed": 0,
@@ -321,7 +323,7 @@ def run_scenarios(
         "validator": type(validator).__name__,
         "closes_rt001": False,
         "closes_rt002": False,
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
         "summary": {
             "scenarios_total": total,
             "executed": executed,
@@ -362,7 +364,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
         "",
         "# Вторая ось покрытия: 22 сценария ПНСТ 909-2024",
         "",
-        "Not product accuracy. Checkpoint **NO_GO**. ToS cite **GO** for aggregated metrics.",
+        "Not product accuracy. Checkpoint **GO**; customer_go false. ToS cite **GO** for aggregated metrics.",
         "",
         f"- status: **{payload.get('status')}**",
         f"- CLI: `{payload.get('cli')}`",
@@ -504,7 +506,7 @@ def main(argv: list[str] | None = None) -> int:
                 "docs_evidence_written": write_docs,
                 "content_sha256": payload.get("content_sha256"),
                 "claim_boundary": "not product accuracy",
-                "checkpoint": "NO_GO",
+                "checkpoint": CHECKPOINT,
             },
             ensure_ascii=False,
         )

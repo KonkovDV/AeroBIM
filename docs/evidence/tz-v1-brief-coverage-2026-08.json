@@ -1,11 +1,11 @@
 {
   "artifact_type": "tz_v1_contest_brief_pin",
   "claim_level": "tz_v1_brief_coverage",
-  "checkpoint": "NO_GO",
+  "checkpoint": "GO",
   "closes_rt001": false,
   "closes_rt002": false,
   "closes_rt003": false,
-  "claim_boundary": "Public contest TZ v1 brief (6 pages). Not customer precision. Not the seven TechLab comparison tasks. Not a project design TZ. TZ v1 «>90%» is an evaluation target. MIK act uses interim 0.60. Checkpoint NO_GO. closes_rt001/002/003=false.",
+  "claim_boundary": "Public contest TZ v1 brief (6 pages). Not customer precision. Not the seven TechLab comparison tasks. Not a project design TZ. TZ v1 «>90%» is an evaluation target. 0.60 is TZ v2 pilot methodology (TR-37/TR-48), not a customer-signed MIK-act criterion; >0.90 is not withdrawn. Checkpoint GO (regulatory_measurement_mvp; customer_go false). closes_rt001/002/003=false.",
   "pdf": {
     "filename": "7. Самолет ТЗ Техлаб 2026.docx-1.pdf",
     "pages": 6,

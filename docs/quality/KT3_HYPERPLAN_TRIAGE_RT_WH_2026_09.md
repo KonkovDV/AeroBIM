@@ -11,7 +11,7 @@ closes_rt003: false
 claim_boundary: >
   Operational synthesis of the 03.09 partner-question and measurement work.
   Git does not send Telegram or mail. Object ciphers stay out of git.
-  Open corpora and defect injection are not product accuracy. Checkpoint NO_GO.
+  Open corpora and defect injection are not product accuracy. Checkpoint GO; customer_go false.
 ---
 
 # Гиперплан КТ#3 (03–30.09.2026)
@@ -244,4 +244,4 @@ Claims Lock, IDS 1.0 или ИБ. Числа инвентаря канала —
 Четыре «да» по достижимым критериям программы (метод, честная граница,
 канал внедрения файлом, ритм) — не «внедрено у партнёра».
 
-Checkpoint **NO_GO**. `closes_rt001/002/003: false`.
+Checkpoint **GO**; customer_go false. `closes_rt001/002/003: false`.

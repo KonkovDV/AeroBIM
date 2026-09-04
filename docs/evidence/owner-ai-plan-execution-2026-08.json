@@ -1,11 +1,11 @@
 {
   "artifact_type": "owner_ai_plan_execution",
   "claim_level": "coverage_map_only",
-  "checkpoint": "NO_GO",
+  "checkpoint": "GO",
   "closes_rt001": false,
   "closes_rt002": false,
   "closes_rt003": false,
-  "claim_boundary": "Execution of the owner-AI quality plan. Scaffolds and honesty gates, not criterion validity. Not product accuracy. Not customer SLA. Not MEP delivered. Checkpoint NO_GO. closes_rt001/002/003=false.",
+  "claim_boundary": "Execution of the owner-AI quality plan. Scaffolds and honesty gates, not criterion validity. Not product accuracy. Not customer SLA. Not MEP delivered. Checkpoint GO (regulatory_measurement_mvp; customer_go false). closes_rt001/002/003=false.",
   "detected_count": 0,
   "paper_objects": [
     "tz_v1_contest_brief",
@@ -39,11 +39,11 @@
   "inventory": {
     "artifact_type": "owner_files_public_rehearsal",
     "claim_level": "coverage_map_only",
-    "checkpoint": "NO_GO",
+    "checkpoint": "GO",
     "closes_rt001": false,
     "closes_rt002": false,
     "closes_rt003": false,
-    "claim_boundary": "Local owner-disk inventory of files/. Extension and size counts only. Not TP/FP. Not product accuracy. Not a customer pack_hash. Checkpoint NO_GO. closes_rt001/002/003=false.",
+    "claim_boundary": "Local owner-disk inventory of files/. Extension and size counts only. Not TP/FP. Not product accuracy. Not a customer pack_hash. Checkpoint GO (regulatory_measurement_mvp; customer_go false). closes_rt001/002/003=false.",
     "detected_count": 0,
     "rehearsal_date": "2026-08-27",
     "pack_folder_count": 4,

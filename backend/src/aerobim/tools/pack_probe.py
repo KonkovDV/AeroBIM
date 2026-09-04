@@ -1,3 +1,4 @@
+
 """Local pack probe (operator tool) — tracker SIG-02 columns, git-safe aggregate.
 
 Runs fully offline against a local quarantine copy of the pack. Writes:
@@ -28,6 +29,7 @@ from aerobim.core.security.upload_limits import (
     DEV_DEFAULT_UPLOAD_BYTES,
     SAMOLET_STATED_MODEL_BYTES,
 )
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.owner_files_inventory import require_local_only_output
 from aerobim.domain.pack_family_facts import LIRA_NAMED_EXT
 from aerobim.tools.benchmark_project_package import repo_root
@@ -36,7 +38,7 @@ from aerobim.tools.pack_archive_overlap import iter_files, rel_posix, win_long
 CLAIM_BOUNDARY = (
     "Local copy inventory. Names/paths/hashes stay in quarantine. "
     "Not RT closure; not customer accuracy; not channel-pack processed. "
-    "Archives are counted unexpanded. Checkpoint NO_GO."
+    "Archives are counted unexpanded. Checkpoint GO (regulatory_measurement_mvp; customer_go false)."
 )
 
 SECTIONS: tuple[str, ...] = (
@@ -315,7 +317,7 @@ def probe_pack(
     aggregate: dict[str, Any] = {
         "artifact_type": "pack_probe_aggregate",
         "claim_level": "local_inventory_not_processed",
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
         "closes_rt001": False,
         "closes_rt002": False,
         "closes_rt003": False,
@@ -429,7 +431,7 @@ def write_chat_summary(path: Path, aggregate: dict[str, Any]) -> None:
             f"Legal-skip (developer internal regs heuristic): {aggregate['legal_skip_gib']} GiB.",
             f"SIG-01 run set (priority 1): {aggregate['sig01_run_set_files']} files, "
             f"{round(aggregate['sig01_run_set_bytes'] / (1024**3), 3)} GiB.",
-            "Archives counted unexpanded. Checkpoint NO_GO. Owner pastes this + TSV.",
+            "Archives counted unexpanded. Checkpoint GO (regulatory_measurement_mvp; customer_go false). Owner pastes this + TSV.",
             "",
         ]
     )

@@ -3,14 +3,14 @@
 title: "BCF Evidence Ladder T0–T4"
 status: active
 date: 2026-07-21
-last_updated: "2026-07-21"
-claim_boundary: "Structural ZIP AVAILABLE; CDE import NOT_VERIFIED. Checkpoint NO_GO unchanged."
+last_updated: "2026-09-05"
+claim_boundary: "Structural ZIP AVAILABLE; CDE import NOT_VERIFIED. Checkpoint GO; customer_go false unchanged."
 ---
 
 # BCF Evidence Ladder (T0–T4)
 
 Canonical taxonomy for AeroBIM BCF interoperability claims. Engineering remediations
-do **not** flip CDE product wording. Checkpoint remains **NO_GO**.
+do **not** flip CDE product wording. Checkpoint **GO** (measurement); `customer_go` **false**. CDE T2 stays NOT_VERIFIED.
 
 ## Ladder
 

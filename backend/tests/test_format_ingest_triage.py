@@ -1,3 +1,4 @@
+
 """Format-ingest Red Team triage stays NO_GO; natives stay fail-closed."""
 
 from __future__ import annotations
@@ -6,6 +7,7 @@ import json
 import unittest
 from pathlib import Path
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.format_ingest_triage import (
     KT3_RECOMMENDED,
     STRATEGY_CLASSES,
@@ -20,7 +22,7 @@ class FormatIngestTriageTests(unittest.TestCase):
 
     def test_snapshot_stays_no_go(self) -> None:
         snap = format_ingest_triage_snapshot()
-        self.assertEqual(snap["checkpoint"], "NO_GO")
+        self.assertEqual(snap["checkpoint"], CHECKPOINT)
         self.assertEqual(snap["detected_count"], 0)
         self.assertFalse(snap["closes_rt001"])
         self.assertFalse(snap["is_dwg_ready"])
@@ -83,7 +85,7 @@ class FormatIngestTriageTests(unittest.TestCase):
         )
         for row in TRIAGE_ROWS:
             self.assertIn(f"| {row['id']} |", md, msg=row["id"])
-        self.assertIn("NO_GO", md)
+        self.assertIn("customer_go", md)
         self.assertNotIn("DWG-ready", md)
         self.assertNotIn("81 ГиБ", md)
         self.assertNotIn("pack_hash", md)

@@ -11,7 +11,7 @@ closes_rt003: false
 claim_boundary: >
   Six-row checklist to reconcile the owner briefing with Fund PDFs. The PDF
   column stays empty. While UNVERIFIED, weights stay attributed, not
-  attested_by=ci. Not a predicted score. Checkpoint NO_GO.
+  attested_by=ci. Not a predicted score. Checkpoint GO; customer_go false.
 ---
 
 # Сверка весов с PDF (колонка PDF пустая)

@@ -1,3 +1,4 @@
+
 """Ishigaki-IDS-Bench gold-IDS document audit (no IFC, no LLM F1).
 
 World practice (arXiv:2605.22079, HF ONESTRUCTION/Ishigaki-IDS-Bench, CC BY 4.0):
@@ -21,13 +22,14 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.models import Severity
 from aerobim.infrastructure.adapters.xml_ids_document_auditor import XmlIdsDocumentAuditor
 
 CLAIM_BOUNDARY = (
     "Ishigaki-IDS-Bench gold IDS document audit only (CC BY 4.0). No IFC in the "
     "upstream set. Not LLM generation F1. Not product accuracy. Does not close "
-    "RT-001. Checkpoint NO_GO."
+    "RT-001. Checkpoint GO (regulatory_measurement_mvp; customer_go false)."
 )
 ENV_ROOT = "AEROBIM_ISHIGAKI_IDS_ROOT"
 DEFAULT_REL = Path(".local") / "ishigaki-ids-bench"
@@ -146,7 +148,7 @@ def skipped_payload(*, reason: str, dataset_root: str) -> dict[str, Any]:
             "real_ifc": False,
         },
         "closes_rt001": False,
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
         "summary": {
             "ids_files": 0,
             "audited": 0,
@@ -213,7 +215,7 @@ def _audit_ids_files(
             "real_ifc": False,
         },
         "closes_rt001": False,
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
         "summary": {
             "ids_files": len(ids_files),
             "audited": len(rows),
@@ -320,7 +322,7 @@ def main(argv: list[str] | None = None) -> int:
                 "source": payload.get("source"),
                 "output": str(out),
                 "claim_level": "open_bench_only",
-                "checkpoint": "NO_GO",
+                "checkpoint": CHECKPOINT,
             }
         )
     )

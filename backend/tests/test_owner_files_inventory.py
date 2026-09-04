@@ -1,3 +1,4 @@
+
 """Owner-files inventory never writes into the git-tracked tree."""
 
 from __future__ import annotations
@@ -6,6 +7,7 @@ import json
 import unittest
 from pathlib import Path
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.owner_files_inventory import (
     PUBLIC_REHEARSAL,
     output_is_local_only,
@@ -21,7 +23,7 @@ _REPO = Path(__file__).resolve().parents[2]
 class OwnerFilesInventoryTests(unittest.TestCase):
     def test_public_rehearsal_has_no_names_or_hashes(self) -> None:
         snap = public_rehearsal_snapshot()
-        self.assertEqual(snap["checkpoint"], "NO_GO")
+        self.assertEqual(snap["checkpoint"], CHECKPOINT)
         self.assertFalse(snap["names_in_git"])
         self.assertFalse(snap["hashes_in_git"])
         self.assertFalse(snap["raise_cap"])

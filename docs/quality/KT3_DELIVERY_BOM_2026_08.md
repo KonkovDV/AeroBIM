@@ -10,7 +10,7 @@ closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   What this git tree can hand over. Not a Partner CDE import. Not customer
-  files. Not exclusive-rights clearance. Checkpoint NO_GO.
+  files. Not exclusive-rights clearance. Checkpoint GO; customer_go false.
 ---
 
 # Перечень поставки КТ#3 (минимум для Б5)

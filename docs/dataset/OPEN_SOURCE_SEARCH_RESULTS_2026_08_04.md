@@ -7,7 +7,7 @@ scope: >-
   Блок 1.1 (инвентаризация). Landed into repo after operator research pass.
   Numbers for IFC-Bench v2 cross-checked against Hugging Face card 2026-08-04.
 claim_boundary: >-
-  Inventory and planning only. Does not close RT-001/002/003. Checkpoint NO_GO.
+  Inventory and planning only. Does not close RT-001/002/003. Checkpoint GO; customer_go false.
   Licenses for PARTIAL sources must be opened at primary URLs before vendoring.
 ---
 
@@ -113,7 +113,7 @@ Thin GUID/attribute IFC model-diff landed (no deepdiff). Wheel has no `ifcdiff` 
 - Full Block-2 customer metrics — needs local runs (synthetic floor already in `docs/evidence/sprint2-synthetic-baseline-*`).  
 - Customer outreach — operator.  
 - License texts for PARTIAL sources — open primary URLs before vendoring.  
-- RT-001/002/003 — still customer artifacts; Checkpoint **NO_GO**.
+- RT-001/002/003 — still customer artifacts; Checkpoint **GO**; customer_go false.
 
 ## Sources
 

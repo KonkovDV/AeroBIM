@@ -152,11 +152,30 @@ class OidcBffHitlRbacTests(unittest.TestCase):
             json={"event_type": "accepted", "finding_id": "f-1", "note": "no"},
         )
         self.assertEqual(accepted.status_code, 403, accepted.text)
+        rejected = self.client.post(
+            f"/v1/reports/{report_id}/review-events",
+            json={"event_type": "rejected", "finding_id": "f-1", "note": "no"},
+        )
+        self.assertEqual(rejected.status_code, 403, rejected.text)
         edited = self.client.post(
             f"/v1/reports/{report_id}/review-events",
             json={"event_type": "edited_remark", "finding_id": "f-1", "note": "edit"},
         )
         self.assertEqual(edited.status_code, 403, edited.text)
+
+    def test_user_cookie_sees_foreign_report_as_404_not_403(self) -> None:
+        foreign_id = self._seed_report(tenant_id="tenant-b")
+        self._bind_cookie(
+            subject="viewer-1",
+            roles=frozenset({"user"}),
+            tenant_id="tenant-a",
+            identity_verified=True,
+        )
+        response = self.client.get(f"/v1/reports/{foreign_id}")
+        self.assertEqual(response.status_code, 404, response.text)
+        self.assertNotIn("403", str(response.status_code))
+        export = self.client.get(f"/v1/reports/{foreign_id}/export/html")
+        self.assertEqual(export.status_code, 404, export.text)
 
     def test_expert_verified_cookie_can_open_then_edit_remark(self) -> None:
         report_id = self._seed_report()

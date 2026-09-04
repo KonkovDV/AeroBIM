@@ -1,4 +1,5 @@
-"""UI expert-workplace Red Team triage stays NO_GO; shell is not a full cycle."""
+
+"""UI expert-workplace Red Team triage; customer_go stays false."""
 
 from __future__ import annotations
 
@@ -7,6 +8,7 @@ import re
 import unittest
 from pathlib import Path
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.ui_expert_workplace_triage import (
     SCREEN_ROWS,
     TRIAGE_ROWS,
@@ -20,7 +22,7 @@ class UiExpertWorkplaceTriageTests(unittest.TestCase):
 
     def test_snapshot_stays_no_go(self) -> None:
         snap = ui_expert_workplace_triage_snapshot()
-        self.assertEqual(snap["checkpoint"], "NO_GO")
+        self.assertEqual(snap["checkpoint"], CHECKPOINT)
         self.assertEqual(snap["detected_count"], 0)
         self.assertFalse(snap["closes_rt001"])
         self.assertFalse(snap["is_full_cycle_workplace"])
@@ -60,7 +62,7 @@ class UiExpertWorkplaceTriageTests(unittest.TestCase):
             self.assertIn(f"| {row['id']} |", md, msg=row["id"])
         for row in SCREEN_ROWS:
             self.assertIn(f"| {row['id']} |", md, msg=row["id"])
-        self.assertIn("NO_GO", md)
+        self.assertIn("customer_go", md)
         self.assertNotIn("DWG-ready", md)
 
     def test_frontend_screen_ssot_lists_ids(self) -> None:

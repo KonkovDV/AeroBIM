@@ -8,7 +8,7 @@ closes_rt001: false
 closes_rt002: false
 closes_rt003: false
 claim_boundary: >
-  Editorial hygiene audit. Checkpoint NO_GO; RT-001/002/003 OPEN.
+  Editorial hygiene audit. Checkpoint GO; customer_go false; RT-001/002/003 OPEN.
   Not product accuracy. Prompts live in docs/ai/.
 ---
 

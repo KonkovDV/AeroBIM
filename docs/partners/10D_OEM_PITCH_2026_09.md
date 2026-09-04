@@ -11,7 +11,7 @@ closes_rt003: false
 claim_boundary: >
   Internal draft for a file/API boundary conversation. Git does not send mail.
   Roles, not personal names. Not CDE-ready BCF. Not a signed OEM. Not hardware
-  LLM deny. Not a count of 10D customers. Checkpoint NO_GO.
+  LLM deny. Not a count of 10D customers. Checkpoint GO; customer_go false.
 ---
 
 # Черновик границы с СОД партнёра (файловый обмен)

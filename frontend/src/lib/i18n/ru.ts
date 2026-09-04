@@ -6,16 +6,16 @@
  */
 
 export const RU_COPY = {
-  headerEyebrow: "AeroBIM · оболочка разбора · checkpoint NO_GO",
+  headerEyebrow: "AeroBIM · оболочка разбора · checkpoint GO; customer_go false",
   headerTitle: "Комплект: модель ↔ листы ↔ ТЗ ↔ расчёты",
   headerLede:
     "Шов комплекта, не замена 10D/Tangl. UI не пишет summary.passed. Нативные RVT/NWD/DWG — жёсткий отказ. 30:00 — цель ТЗ, не измеренный SLA.",
   trainingRulesBanner:
-    "Находки на учебном наборе правил (публичный IDS экспертизы). Не профиль Самолёта, пока нет подписи RT-002b. Checkpoint NO_GO.",
+    "Находки на учебном наборе правил (публичный IDS экспертизы). Не подписанный профиль Самолёта (RT-002c). Checkpoint GO; customer_go false.",
   capabilityMissing:
-    "Матрица возможностей отсутствует в этом отчёте. Тишина ≠ успех. Checkpoint NO_GO. UI не пишет summary.passed.",
+    "Матрица возможностей отсутствует в этом отчёте. Тишина ≠ успех. Checkpoint GO; customer_go false. UI не пишет summary.passed.",
   capabilityOkBanner:
-    "FAILED/MISSING на сервере блокируют summary.passed. UI флаг не пишет (ADR-001). Checkpoint NO_GO.",
+    "FAILED/MISSING на сервере блокируют summary.passed. UI флаг не пишет (ADR-001). Checkpoint GO; customer_go false.",
   roleBanner:
     "Демо-режим: роль не проверяется сервером. Переключатель в шапке — макет экрана, не разграничение доступа. GET /v1/auth/bff = 501 (не OIDC). HITL на сервере: expert/reviewer; user/viewer и общий Bearer → 403.",
   roleBannerLab:
@@ -55,6 +55,8 @@ export const RU_COPY = {
   runTitle: "Задание анализа",
   runTimer: (mmss: string) => `Таймер: ${mmss}. Цель ТЗ записана как 30:00. SLA не заявляем.`,
   runTimerIdle: "Таймер появится после запуска. Цель ТЗ записана как 30:00. SLA не заявляем.",
+  runSizeHonesty:
+    "Приём модели на жёстком профиле — до 1,5 ГБ диском, не SPF в оперативной памяти. Разбор SPF и вьюер — 256 МиБ. Файл между порогами идёт через дисковый контур. RSS на файле заказчика не замерен.",
   runHonesty:
     "Опрос jobs/{job_id}, не SSE. Тишина ≠ успех. Цель ТЗ записана как 30:00. SLA не заявляем.",
   runFinalTime: (mmss: string) => `Итоговое время: ${mmss}`,
@@ -154,13 +156,18 @@ export const RU_COPY = {
   advisoryTitle: "Кандидат ИИ — на проверку эксперту; не подтверждённый вердикт",
   lowConfidenceTitle: "Низкая самооценка уверенности (без калибровки) — нужна проверка человеком",
   searchFindings: "Поиск находок",
-  searchFindingsPh: "Правило, текст, GUID, этаж, ось",
+  searchFindingsPh: "Правило, текст, GUID, этаж, ось, пункт ИТЗ / СТО / СП",
   groupFindings: "Группировка",
   groupNone: "Без групп",
   groupRule: "По правилу",
   groupStorey: "По этажу",
   groupAxis: "По оси",
   groupCategory: "По категории",
+  groupClause: "По пункту ИТЗ / СТО / СП",
+  filterClause: "Пункт ИТЗ / СТО / СП",
+  clauseAll: "Все пункты",
+  clauseMissing: "нет пункта",
+  clauseMissingCard: "в записи нет пункта нормы — обязательное поле ТЗ, не украшение",
   hitlOnly: "Только HITL-регионы",
   shownCount: (shown: number, total: number, virtualize: boolean) =>
     `${shown} / ${total} показано${virtualize ? " · оконный список" : ""}`,
@@ -173,7 +180,9 @@ export const RU_COPY = {
   uploadKicker: "Загрузка",
   uploadTitle: "Приём файлов",
   uploadHint:
-    "Обмен КТ#3: IFC + PDF/A. Office — заявленные поля. Нативные RVT/NWD/DWG/.lir — жёсткий отказ, не тихий пропуск. 1,5 ГБ модель в браузере не разбираем. Checkpoint NO_GO.",
+    "Обмен КТ#3: IFC + PDF/A. Office — заявленные поля. Нативные RVT/NWD/DWG/.lir — жёсткий отказ, не тихий пропуск. Приём модели до 1,5 ГБ на жёстком профиле (диск). Разбор SPF и вьюер — 256 МиБ. Checkpoint GO; customer_go false.",
+  uploadSizeHonesty:
+    "Одна отправка с прогрессом и отменой. Докачка с места обрыва не реализована. Вьюер не разбирает 1,5 ГБ. На профиле разработки приём модели по умолчанию тоже 256 МиБ, пока не задан лимит заказчика.",
   dropHint: "Перетащите IFC/PDF/Office или выберите файл. Нативные RVT/NWD/DWG на сервер не уходят.",
   chooseFile: "Выбрать файл",
   packFileUpload: "Файл комплекта",
@@ -236,6 +245,7 @@ export const RU_COPY = {
   spatialNoneDetail: "Выберите находку с GUID IFC или пару клэша.",
   findingStorey: (name: string) => `эт. ${name}`,
   findingAxis: (name: string) => `ос. ${name}`,
+  findingClause: (name: string) => `пункт: ${name}`,
   copyGuid: "Копировать GUID",
   guidCopied: "GUID скопирован",
   guidCopyFailed: "Не скопировалось",
@@ -302,12 +312,12 @@ export const RU_COPY = {
   provUnit: "Единица",
   provEvidenceModality: "Модальность доказательства",
   provConfidence: "Уверенность (некалиброванная)",
-  provNorm: "Норма",
+  provNorm: "Пункт ИТЗ / СТО / СП",
   provApproval: "Согласование",
   provTenantProject: "Тенант / проект",
   provProblemZone: "Зона на листе",
   remarkEssence: "Суть",
-  remarkClause: "Норма / СТО / СП",
+  remarkClause: "Пункт ИТЗ / СТО / СП",
   remarkLocation: "Описание с локацией",
   remarkStorey: "Этаж",
   remarkAxis: "Ось",
@@ -315,7 +325,7 @@ export const RU_COPY = {
   diffKicker: "Версии",
   diffTitle: "Сравнение версий комплекта",
   diffNote:
-    "Дельта находок между двумя сохранёнными отчётами. «Не воспроизведено» ≠ исправлено — проверка могла не запуститься снова. «Вернувшиеся» требуют три ревизии; этот экран сравнивает две. Не пишет summary.passed. Checkpoint NO_GO.",
+    "Дельта находок между двумя сохранёнными отчётами. «Не воспроизведено» ≠ исправлено — проверка могла не запуститься снова. «Вернувшиеся» требуют три ревизии; этот экран сравнивает две. Не пишет summary.passed. Checkpoint GO; customer_go false.",
   diffNeedTwo: "Нужны два сохранённых отчёта. Загрузите и прогоните комплект дважды.",
   diffBaseline: "Базовый отчёт",
   diffHead: "Сравниваемый отчёт",
@@ -329,7 +339,11 @@ export const RU_COPY = {
   kpiKicker: "Эффект разбора",
   kpiTitle: "Показатели ревью",
   kpiBody:
-    "Журнал HITL, не точность продукта и не часы A1–A8. Задержка UI-событий — не SLA для «времени до первого валидного замечания». Пустой журнал — пустой экран, не «0 % ошибок». Checkpoint NO_GO.",
+    "Журнал HITL, не точность продукта и не часы A1–A8. Задержка UI-событий — не SLA для «времени до первого валидного замечания». Пустой журнал — пустой экран, не «0 % ошибок». Checkpoint GO; customer_go false.",
+  kpiCycleHonesty:
+    "Доля подтверждённых против отклонённых — журнал HITL по этому отчёту. Это не дни цикла согласования и не минус один круг в контуре заказчика.",
+  kpiCycleRound: (accepted: number, rejected: number) =>
+    `Подтверждено ${accepted}, отклонено ${rejected}. Круг согласования в СОД здесь не считается.`,
   kpiSelectReport: "Выберите отчёт в списке, затем откройте этот экран.",
   kpiLoading: "Загружаем показатели…",
   kpiUnavailable: "Показатели недоступны",
@@ -342,7 +356,7 @@ export const RU_COPY = {
   kpiNoTimings: "нет замеров UI-событий (TR-65: третья метрика отсутствует)",
   blockersKicker: "Блокеры приёмки",
   blockersBody:
-    "Этот экран помогает пилоту, но не скрывает checkpoint. UI не переключает гейты. Два независимых эксперта и подписанный профиль живут вне этой оболочки. κ/α считается на бэкенде, когда появится корпус. Checkpoint NO_GO.",
+    "Этот экран помогает пилоту, но не скрывает checkpoint. UI не переключает гейты. Два независимых эксперта и подписанный профиль живут вне этой оболочки. κ/α считается на бэкенде, когда появится корпус. Checkpoint GO; customer_go false.",
   blockersGateClosed: "гейты закрыты (канал принял, пакета нет в git)",
   blockersLoading: "Загружаем GET /v1/system/capabilities…",
   blockersSnapshotFailed: (error: string) =>
@@ -377,7 +391,7 @@ export const RU_COPY = {
   kt2Kicker: "KT#2: сквозной срез (фикстура)",
   kt2Title: "Фрагмент → находка → доказательство → вердикт",
   kt2Body:
-    "Текстовый слой PDF / путь через штамп. Не обученный CV. Не точность заказчика. Checkpoint NO_GO. Структурный BCF ZIP — только приём файла. Импорт в CDE — NOT_VERIFIED.",
+    "Текстовый слой PDF / путь через штамп. Не обученный CV. Не точность заказчика. Checkpoint GO; customer_go false. Структурный BCF ZIP — только приём файла. Импорт в CDE — NOT_VERIFIED.",
   kt2Outcome: "Исход пакета",
   kt2UnexpectedPass: "Неожиданный pass на демо-фикстуре — считать отказом гейта.",
   kt2NotPass: "Вердикт не PASS. Общий гейт остаётся закрытым.",
@@ -445,11 +459,14 @@ export const RU_COPY = {
   demoKicker: "Демо для ментора",
   demoTitle: "Учебный комплект",
   demoBody:
-    "Одна кнопка: git IFC+IDS (стены, огнестойкость). Не пакет заказчика. Не точность продукта. Ожидаемый исход — находки, summary.passed=false с сервера. Checkpoint NO_GO.",
+    "Одна кнопка: git IFC+IDS (стены, огнестойкость). Дальше — эксперт на одном экране, без вкладки «Экспорт». Не пакет заказчика. Не точность продукта. Ожидаемый исход — находки, summary.passed=false с сервера. Checkpoint GO; customer_go false.",
   demoSeed: "Загрузить демонстрационный комплект",
+  demoRepeat: "Повторить учебный комплект",
   demoSeeding: "Готовим фикстуру…",
   demoSeeded: (n: number, checkpoint: string) =>
     `${n} находок · checkpoint ${checkpoint}. Фикстура git, не заказчик.`,
+  rehearsalOneClick:
+    "Один экран: находки, пункт ИТЗ, этаж или «нет в индексе», лист и 3D, BCF на этой полосе. Вкладка «Экспорт» не нужна. Не SLA.",
   tzCoverageKicker: "Покрытие ТЗ",
   tzCoverageTitle: "Пункт → функция → доказательство",
   tzCoverageBody:

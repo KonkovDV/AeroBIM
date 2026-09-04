@@ -131,6 +131,15 @@ class ReportHtmlTriageTests(unittest.TestCase):
         self.assertIn("<td>regulatory</td><td>1</td>", html)
         self.assertIn("<td>probabilistic</td><td>1</td>", html)
 
+    def test_html_has_first_class_clause_column(self) -> None:
+        issue = _spatial_issue("critical", 1, 40)
+        issue["norm_source"] = "СП 63.13330"
+        issue["norm_clause"] = "8.1"
+        html = render_report_html("r" * 32, _payload([issue]))
+        self.assertIn("<th>ИТЗ / СТО / СП</th>", html)
+        self.assertIn("СП 63.13330 · 8.1", html)
+        self.assertIn("colspan='10'", html)
+
 
 if __name__ == "__main__":
     unittest.main()

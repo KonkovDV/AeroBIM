@@ -6,6 +6,7 @@ from aerobim.domain.architecture import (
     PrecisionClaim,
     precision_claim_publishable_with_agreement,
 )
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.system_capabilities import (
     build_system_capabilities_payload,
     load_customer_intake_gate_snapshot,
@@ -79,14 +80,14 @@ class PrecisionAgreementPublishabilityTests(unittest.TestCase):
         self.assertEqual(payload["schema_version"], "1.3.0")
         intake = payload["customer_intake_gate"]
         assert isinstance(intake, dict)
-        self.assertEqual(intake["checkpoint"], "NO_GO")
+        self.assertEqual(intake["checkpoint"], CHECKPOINT)
         self.assertIn("precision_claim", payload["claim_boundary"])
         self.assertIn("auth_bff", payload["claim_boundary"])
         auth_bff = payload["auth_bff"]
         assert isinstance(auth_bff, dict)
         self.assertEqual(auth_bff["status"], "NOT_IMPLEMENTED")
         snap = load_customer_intake_gate_snapshot()
-        self.assertEqual(snap["checkpoint"], "NO_GO")
+        self.assertEqual(snap["checkpoint"], CHECKPOINT)
 
 
 if __name__ == "__main__":

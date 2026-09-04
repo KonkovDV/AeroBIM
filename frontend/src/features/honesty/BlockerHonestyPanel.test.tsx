@@ -20,7 +20,8 @@ describe("BlockerHonestyPanel", () => {
         status: "BLOCKED_NO_CUSTOMER_DATA",
         claim_level: "not_ready",
         true_gates: [],
-        checkpoint: "NO_GO",
+        checkpoint: "GO",
+        go_kind: "regulatory_measurement_mvp",
         source: "audit/evidence/customer-intake-gate.json",
       },
       auth_bff: { status: "not_implemented" },
@@ -29,7 +30,9 @@ describe("BlockerHonestyPanel", () => {
         closes_rt001: false,
         closes_rt002: false,
         closes_rt003: false,
-        checkpoint: "NO_GO",
+        checkpoint: "GO",
+        go_kind: "regulatory_measurement_mvp",
+        customer_go: false,
         cde_integration_mvp: false,
       },
     });
@@ -47,6 +50,6 @@ describe("BlockerHonestyPanel", () => {
       );
     });
     expect(screen.getAllByText("false").length).toBeGreaterThanOrEqual(INTAKE_GATE_KEYS.length);
-    expect(screen.queryByText(/Checkpoint GO/i)).toBeNull();
+    expect(screen.getByText(/Checkpoint GO/i)).toBeTruthy();
   });
 });

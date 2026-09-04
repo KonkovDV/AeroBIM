@@ -9,7 +9,7 @@ closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   Availability of fixtures and public benches. Not a customer PD+expertise corpus.
-  Not product accuracy. Harbor NOT_RUN. Checkpoint NO_GO.
+  Not product accuracy. Harbor NOT_RUN. Checkpoint GO; customer_go false.
 ---
 
 # Data availability statement
@@ -57,7 +57,7 @@ GPLv3 IFC-Bench projects may be read locally with `--samolet-demo-copyleft`. The
 | Federated MEP system-clash on customer IFC | public inventory exists; `mep_system_clash=NOT_VERIFIED` | RT-003 stays OPEN |
 | Independent external reproduction of our benches | all runs are author-lab | academic gap (б) |
 
-Ask to obtain (1)–(4): independent labeled pack, two named raters, Samolet-signed acceptance profile, federated MEP IFC or written out-of-scope. Without those, Checkpoint stays `NO_GO`.
+Ask to obtain (1)–(4): independent labeled pack, two named raters, Samolet-signed acceptance profile, federated MEP IFC or written out-of-scope. Without those, `customer_go` stays false. Product Checkpoint `GO` is the regulatory-measurement MVP.
 
 ## 4. Ethics / PII
 
@@ -74,7 +74,7 @@ python -m aerobim.tools.run_pnst909_22_scenario_runtime
 
 IFC-Bench / GNI / full ПНСТ extracts require a local checkout outside git (not vendored). PNST CLI returns `SKIPPED_PACK_INCOMPLETE` when the live pack is a header sample — that skip is the honest result.
 
-Checkpoint **NO_GO**.
+Checkpoint **GO**; customer_go false.
 
 ## 6. Literature that calibrates (does not close RT-001)
 
@@ -88,4 +88,4 @@ August 2026 map: [`../quality/ACADEMIC_LITERATURE_TRIAGE_2026_08.md`](../quality
 | *Buildings* 16(13):2623 (2026) | Clash detection ≠ coordination | MEP delivered |
 | ISO 19650-6:2025 | H&S information sharing (not implemented) | «ISO 19650 compliant» without a part number |
 
-Checkpoint **NO_GO**.
+Checkpoint **GO**; customer_go false.

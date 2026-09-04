@@ -11,7 +11,7 @@ closes_rt003: false
 claim_boundary: >
   Labeled market and partner-reporting context for System A K4. Not revenue.
   Not a second contract. Not partner hours. Not the 72% analog. Not an IFRS
-  offset. Checkpoint NO_GO.
+  offset. Checkpoint GO; customer_go false.
 ---
 
 # К4: нулевой вход, не запрос инвестиций

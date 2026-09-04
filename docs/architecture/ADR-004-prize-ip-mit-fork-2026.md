@@ -11,7 +11,7 @@ closes_rt003: false
 claim_boundary: >
   Records the IP fork in Regulation 6.3 vs LICENSE MIT. Does not change
   LICENSE. Does not promise a patent fence or a transfer of exclusive rights.
-  Checkpoint NO_GO.
+  Checkpoint GO; customer_go false.
 ---
 
 # ADR-004: исключительные права приза vs MIT

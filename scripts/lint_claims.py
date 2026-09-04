@@ -199,6 +199,8 @@ _BOUNDARY_MARKERS = (
     "coverage_map",
     "coverage-map",
     "NO_GO",
+    "customer_go",
+    "regulatory_measurement",
     "not product accuracy",
     "не точность",
     "fixture corpus",

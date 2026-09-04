@@ -349,7 +349,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
             "",
             pair_table,
             "",
-            "Student GNI models are **not** product accuracy. Checkpoint stays NO_GO.",
+            "Student GNI models are **not** product accuracy. Checkpoint GO; customer_go false.",
             "",
             "```bash",
             "cd backend",

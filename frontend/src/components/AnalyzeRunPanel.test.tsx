@@ -26,6 +26,8 @@ describe("AnalyzeRunPanel", () => {
     const timer = screen.getByTestId("analyze-elapsed");
     expect(timer.textContent).toMatch(/Цель ТЗ записана как 30:00/);
     expect(timer.textContent).toMatch(/SLA не заявляем/);
+    expect(screen.getByTestId("analyze-size-honesty").textContent).toMatch(/256 МиБ/);
+    expect(screen.getByTestId("analyze-size-honesty").textContent).toMatch(/1,5 ГБ/);
   });
 
   it("offers a repeat run only after a terminal state", () => {
@@ -51,9 +53,9 @@ describe("AnalyzeRunPanel", () => {
     } as ReportCapabilities;
     render(<AnalyzeRunPanel ifcPath="walls.ifc" capabilities={capabilities} />);
     const list = screen.getByTestId("analyze-engine-groups");
-    expect(list.textContent).toMatch(/модель: ok/);
-    expect(list.textContent).toMatch(/правила: skipped/);
-    expect(list.textContent).toMatch(/документы: failed/);
+    expect(list.textContent).toMatch(/модель: выполнена/);
+    expect(list.textContent).toMatch(/правила: пропущена/);
+    expect(list.textContent).toMatch(/документы: не выполнена/);
   });
 
   it("records a finished job in the tab journal without calling it a CDE audit", async () => {

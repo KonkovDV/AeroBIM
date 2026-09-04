@@ -10,11 +10,11 @@ mep_system_clash: NOT_VERIFIED
 
 - closes_rt003: **False**
 - mep_system_clash: **NOT_VERIFIED**
-- content_sha256: `5ff1ecc6fe9e0b9df96a8650e9fdb9f8b0efca91939e1f3d16f994b5245dca9c`
+- content_sha256: `e4db36d0e6cb2f3122e67f6f3e07af8e16ceeb7a5df055ed41fa8617da0e5b77`
 
 | label | status | clash_count |
 | --- | --- | ---: |
 | planted_federated_crossing_walls | RUN | 1 |
 | planted_federated_pipe_vs_wall | RUN | 1 |
 
-Hashed IfcClash on in-repo planted federated IFC (walls; pipe vs wall). License-cleared synthetic fixtures, not customer models, not coordinator BCF gold, not MEP system-aware. Checkpoint NO_GO.
+Hashed IfcClash on in-repo planted federated IFC (walls; pipe vs wall). License-cleared synthetic fixtures, not customer models, not coordinator BCF gold, not MEP system-aware. Checkpoint GO; customer_go false.

@@ -24,4 +24,4 @@
 - Product SLA / accuracy.  
 - Bare-metal offline-ready.
 
-`claim_boundary`: eng / fixture evidence only · Checkpoint NO_GO until RT-001/002/003.
+`claim_boundary`: eng / fixture evidence only · Checkpoint GO; customer_go false until RT-001/002/003.

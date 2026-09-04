@@ -53,7 +53,7 @@ export function packKindHonesty(kind: PackKind): string {
     case "ids":
       return "Набор правил IDS 1.0. Запрошенный набор, который не грузится, — жёсткий отказ.";
     case "ifc":
-      return "IFC — формат модели на общем шлюзе.";
+      return "IFC — формат модели на общем шлюзе. Вьюер и SPF: 256 МиБ. Крупнее — диск на сервере, не разбор в браузере.";
     case "pdf":
       return "PDF/A и векторный PDF — обмен чертежами и записками.";
     case "office":

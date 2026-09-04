@@ -1,3 +1,4 @@
+
 """KT#3 jury gate: fail-closed fixture, GUID finding, tracker six tasks.
 
 Does not close RT-001/002/003. Does not publish product accuracy.
@@ -9,14 +10,16 @@ import re
 from collections.abc import Mapping, Sequence
 from typing import Any, Final
 
+from aerobim.domain.checkpoint import CHECKPOINT
+
 _RE_SHALL_BE = re.compile(r"shall be ([A-Za-z0-9]+)", re.I)
 _RE_PROPERTY_VALUE = re.compile(r'property value "([^"]+)"', re.I)
 
 CLAIM_LEVEL: Final = "fixture_and_proxy_only"
-CHECKPOINT: Final = "NO_GO"
 CLAIM_BOUNDARY: Final = (
     "KT#3 jury gate over the git fixture. Not product accuracy. "
-    "Not customer SLA. Not MEP delivered. Checkpoint NO_GO. "
+    "Not customer SLA. Not MEP delivered. Checkpoint GO "
+    "(regulatory_measurement_mvp; customer_go false). "
     "closes_rt001/002/003=false."
 )
 JURY_COMMAND: Final = "python -m aerobim.tools.run_kt3_jury"

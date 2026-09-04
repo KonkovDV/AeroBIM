@@ -1,3 +1,4 @@
+
 """Jury-pack Red Team triage stays NO_GO; unpack fingerprints stay off jury surfaces."""
 
 from __future__ import annotations
@@ -6,6 +7,7 @@ import json
 import unittest
 from pathlib import Path
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.jury_pack_triage import (
     JURY_FINGERPRINT_TOKENS,
     JURY_SURFACES,
@@ -20,7 +22,7 @@ class JuryPackTriageTests(unittest.TestCase):
 
     def test_snapshot_stays_no_go(self) -> None:
         snap = jury_pack_triage_snapshot()
-        self.assertEqual(snap["checkpoint"], "NO_GO")
+        self.assertEqual(snap["checkpoint"], CHECKPOINT)
         self.assertEqual(snap["detected_count"], 0)
         self.assertFalse(snap["closes_rt001"])
         self.assertFalse(snap["is_pack_processed"])
@@ -87,7 +89,7 @@ class JuryPackTriageTests(unittest.TestCase):
         )
         for row in TRIAGE_ROWS:
             self.assertIn(f"| {row['id']} |", md, msg=row["id"])
-        self.assertIn("NO_GO", md)
+        self.assertIn("customer_go", md)
         self.assertNotIn("pack_hash", md)
         self.assertNotIn("81 ГиБ", md)
         self.assertNotIn("61,15", md)

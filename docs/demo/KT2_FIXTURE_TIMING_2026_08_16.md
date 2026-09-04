@@ -5,7 +5,7 @@ date: "2026-08-16"
 status: active
 claim_boundary: >
   Fixture wall-clock only. representative_scale=false. Not customer комплект.
-  Not ≤30 min SLA. Checkpoint NO_GO. sla_pass on the toy pack is not a claim.
+  Not ≤30 min SLA. Checkpoint GO; customer_go false. sla_pass on the toy pack is not a claim.
 ---
 
 # Fixture timing — порядок величины
@@ -38,4 +38,4 @@ Sell-path КТ#2: `python -m aerobim.tools.run_demo_ifc_acceptance_gate`. Жив
 - переносить p95 533 ms на Renga/Tangl/10D комплект
 - называть wall-guid 1.7 с временем продукта или streaming TTFF
 
-Checkpoint **NO_GO**. RT-001/002/003 OPEN.
+Checkpoint **GO**; `customer_go` false. RT-001/002/003 OPEN.

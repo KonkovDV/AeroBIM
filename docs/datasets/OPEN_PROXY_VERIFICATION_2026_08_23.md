@@ -2,7 +2,7 @@
 ---
 title: "Проверка открытых прокси на RT-001/002/003 (вечер 23.08.2026)"
 date: "2026-08-23"
-checkpoint: NO_GO
+checkpoint: GO
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false

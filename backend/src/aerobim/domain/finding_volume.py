@@ -1,7 +1,9 @@
+
 """Finding volume table — tracker SIG-01 metric shape.
 
 A raw machine-record count is not product accuracy, not TZ >90%, not
-«пакет обработан», and not a customer defect list. Checkpoint NO_GO.
+«пакет обработан», and not a customer defect list.
+Checkpoint GO (regulatory_measurement_mvp; customer_go false).
 
 Mandated report phrase: «объём находок на канале получен».
 """
@@ -13,6 +15,7 @@ from collections import Counter
 from collections.abc import Mapping, Sequence
 from typing import Any, Final
 
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.target_ref import (
     UNRESTRICTED_MISMATCH_SUPPRESSOR_MARKER,
     is_unrestricted_target_ref,
@@ -20,7 +23,6 @@ from aerobim.domain.target_ref import (
 from aerobim.domain.unsigned_rule_overlap import active_overlap_groups
 
 CLAIM_LEVEL: Final = "pack_volume_not_accuracy"
-CHECKPOINT: Final = "NO_GO"
 REPORT_PHRASE: Final = "объём находок на канале получен"
 CLAIM_BOUNDARY: Final = (
     "Finding volume and type breakdown on this pack. "
@@ -28,7 +30,7 @@ CLAIM_BOUNDARY: Final = (
     "Not product accuracy. Not pack processed. Not a customer defect list. "
     "Not TZ >90%. Not dual-rater precision. "
     "Capped ALL+eq samples are unrestricted_eq_sample, not element detections. "
-    "Checkpoint NO_GO."
+    "Checkpoint GO (regulatory_measurement_mvp; customer_go false)."
 )
 
 VOLUME_CLASS_UNRESTRICTED_EQ_SAMPLE: Final = "unrestricted_eq_sample"

@@ -10,7 +10,7 @@ closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   Empty template. Person cells stay blank in git. Public LETI text requires
-  both scientific and engineering competencies. Checkpoint NO_GO.
+  both scientific and engineering competencies. Checkpoint GO; customer_go false.
 ---
 
 # Шаблон матрицы К1

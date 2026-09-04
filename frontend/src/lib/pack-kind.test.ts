@@ -9,6 +9,7 @@ describe("pack-kind", () => {
     expect(packKindHonesty("dwg")).toMatch(/не тихий пропуск/i);
     expect(packKindHonesty("nwd")).toMatch(/не пишет IFC/i);
     expect(packKindVerdict("ifc")).toBe("upload_ok");
+    expect(packKindHonesty("ifc")).toMatch(/256 МиБ/);
     expect(packKindHonesty("ifc")).not.toMatch(/DWG-ready/);
   });
 

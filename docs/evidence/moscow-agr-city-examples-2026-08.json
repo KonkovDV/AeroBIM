@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "artifact_type": "moscow_agr_city_examples",
   "claim_level": "moscow_agr_city_example_rehearsal",
-  "claim_boundary": "City-published AGR CIM examples (stroimprosto.mos.ru cim-agr). Not a PD pack: no sheets, TZ, two revisions, calculations, or expertise remarks. Not a Samolet-signed profile. Class-1 AGR exchange + official IDS engine coverage only. Checkpoint NO_GO.",
+  "claim_boundary": "City-published AGR CIM examples (stroimprosto.mos.ru cim-agr). Not a PD pack: no sheets, TZ, two revisions, calculations, or expertise remarks. Not a Samolet-signed profile. Class-1 AGR exchange + official IDS engine coverage only. Checkpoint GO; customer_go false.",
   "generated_at": "2026-08-23T23:45:17.708866+00:00",
   "status": "RUN",
   "closes_rt001": false,
@@ -54,7 +54,7 @@
     "substitutes_egrz_remark_corpus": false,
     "federal_im_obligation_created": false,
     "closes_rt002": false,
-    "claim_boundary": "Legal-force labels for engineering honesty. Not a court opinion. Not statutory compliance of a customer package. Checkpoint NO_GO."
+    "claim_boundary": "Legal-force labels for engineering honesty. Not a court opinion. Not statutory compliance of a customer package. Checkpoint GO; customer_go false."
   },
   "vedomost_xsd_rule_ids": [],
   "ifc": [

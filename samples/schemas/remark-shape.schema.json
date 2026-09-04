@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://aerobim.local/schemas/remark-shape.schema.json",
   "title": "AeroBIM remark shape (customer answers п. 2.1.5)",
-  "description": "Essence + bound norm/STO clause or explicit unbound marker + location. Not product accuracy. Checkpoint NO_GO.",
+  "description": "Essence + bound norm/STO clause or explicit unbound marker + location. Not product accuracy. Checkpoint GO; customer_go false.",
   "type": "object",
   "additionalProperties": false,
   "required": ["essence", "clause_cite", "clause_bound", "location", "detail"],

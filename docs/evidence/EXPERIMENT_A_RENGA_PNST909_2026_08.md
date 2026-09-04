@@ -6,7 +6,7 @@ claim_level: pack_pinned_tos_go_runtime_partial
 supersedes: EXPERIMENT_A_MINSTROI_INVERSE_2026_08.md
 claim_boundary: >-
   AUTHOR_CLAIM frequency of findings on a standards-oriented open pack.
-  Not match to expert conclusion. Not product accuracy. Checkpoint NO_GO.
+  Not match to expert conclusion. Not product accuracy. Checkpoint GO; customer_go false.
 ---
 
 # Эксперимент А — перенос на комплект Renga (ПНСТ 909)

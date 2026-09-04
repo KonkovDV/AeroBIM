@@ -21,5 +21,5 @@
   "moexp_ids_not_copied": "samples/ids/moexp/ is the MOGE pack; this JSON pack is a small AR subset of Moscow AGR IDS properties only",
   "class1_exchange_checks": "backend/src/aerobim/domain/agr_exchange_checks.py — not this pack",
   "pack_hash": "f13fd0f06074fc03caf0ac311729229094c7447e5ddfea291153458344bdb104",
-  "claim_boundary": "City-as-publisher. Not Samolet EIR. Not product accuracy. Checkpoint NO_GO."
+  "claim_boundary": "City-as-publisher. Not Samolet EIR. Not product accuracy. Checkpoint GO; customer_go false."
 }

@@ -11,7 +11,7 @@ closes_rt003: false
 claim_level: attributed_seat_playbook
 claim_boundary: >
   ФИО — мнемоника брифинга владельца [Г], не подтверждённый приказ в git.
-  Не прогноз балла AeroBIM. Не ценз пакета заказчика. Checkpoint NO_GO.
+  Не прогноз балла AeroBIM. Не ценз пакета заказчика. Checkpoint GO; customer_go false.
 ---
 
 # Playbook комиссии: силы, удары, закрытие
@@ -22,7 +22,7 @@ claim_boundary: >
 
 **ФИО ниже подтверждены выпиской из приказа (Отборочная комиссия №7)**, это больше не гипотеза. На защите говорить **ролями**; имена — только если сидящий представился сам.
 
-Checkpoint **`NO_GO`**. `predicted_aerobim_total() is None`.
+Checkpoint **`GO`**; `customer_go` false. `predicted_aerobim_total() is None`.
 
 ---
 

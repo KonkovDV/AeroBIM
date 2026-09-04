@@ -9,7 +9,7 @@ closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   Fail-closed refusal of closed Autodesk formats. Not a DWG/RVT/NWD reader.
-  Stock Navisworks does not write IFC. Checkpoint NO_GO.
+  Stock Navisworks does not write IFC. Checkpoint GO; customer_go false.
 ---
 
 # Native RVT / NWD — honest refusal (same class as DWG)

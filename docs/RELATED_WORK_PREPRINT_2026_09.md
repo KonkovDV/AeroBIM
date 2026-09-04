@@ -11,7 +11,7 @@ closes_rt003: false
 claim_boundary: >
   Bibliography and third-party public programs. Not AeroBIM measured volume.
   Not partner hours. Not product accuracy. LLM remains advisory-only (ADR-001).
-  Checkpoint NO_GO. Working radar with verification log:
+  Checkpoint GO; customer_go false. Working radar with verification log:
   docs/quality/ACADEMIC_LIT_REVIEW_2026_09.md.
 ---
 

@@ -1,3 +1,4 @@
+
 """IFC streaming / disk R-tree — designed, not implemented.
 
 SPF ``ifcopenshell.open`` stays 256 MiB. Files up to 1.5 GB convert to
@@ -14,6 +15,7 @@ from aerobim.core.security.upload_limits import (
     DEV_DEFAULT_UPLOAD_BYTES,
     SAMOLET_STATED_MODEL_BYTES,
 )
+from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.ifc_size_policy import (
     ROCKSDB_BACKEND_STATUS,
     SPF_RAM_MULTIPLIER_LITERATURE,
@@ -25,7 +27,7 @@ CLAIM_BOUNDARY: Final = (
     "Streaming IFC parser and disk R-tree are designed, not implemented. "
     "SPF in-memory open stays 256 MiB. Files up to 1.5 GB use RocksDB. "
     "In-memory IfcSpatialIndex is not a disk R-tree. JSON sidecar is dump_only. "
-    "WASM stays 256 MiB. Checkpoint NO_GO."
+    "WASM stays 256 MiB. Checkpoint GO (regulatory_measurement_mvp; customer_go false)."
 )
 
 DEFAULT_ANALYZE_IFC_BYTES: Final = DEV_DEFAULT_UPLOAD_BYTES
@@ -39,7 +41,7 @@ def streaming_design_snapshot() -> dict[str, object]:
     return {
         "artifact_type": "ifc_streaming_disk_rtree_design",
         "claim_level": "coverage_map_only",
-        "checkpoint": "NO_GO",
+        "checkpoint": CHECKPOINT,
         "streaming_parser": STREAMING_PARSER_STATUS,
         "disk_r_tree": DISK_RTREE_STATUS,
         "in_memory_spatial_index": True,

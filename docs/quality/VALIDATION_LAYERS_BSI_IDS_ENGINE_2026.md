@@ -10,7 +10,7 @@ closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   One-page responsibility split. Compatibility with the bSI Validation
-  Service is not replacement and not certification. Checkpoint NO_GO.
+  Service is not replacement and not certification. Checkpoint GO; customer_go false.
 ---
 
 # Слои проверки: файл, требования, инженерное содержание
@@ -53,4 +53,4 @@ IDS — Information Delivery Specification: контракт информаци�
 - Checkpoint GO
 - production-ready
 
-Checkpoint **NO_GO**.
+Checkpoint **GO**; customer_go false.

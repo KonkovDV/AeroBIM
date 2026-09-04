@@ -10,7 +10,7 @@ closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   Questionnaire answers, demo video frames, and slides are publication.
-  Same gate as git. Checkpoint NO_GO.
+  Same gate as git. Checkpoint GO; customer_go false.
 ---
 
 # Протокол публичных поверхностей
