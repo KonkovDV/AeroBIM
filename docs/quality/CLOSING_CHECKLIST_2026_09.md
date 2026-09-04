@@ -3,7 +3,7 @@
 title: "Closing Checklist — все выявленные гэпы, проблемы и что закрыть (сентябрь, КТ#3)"
 status: active
 version: "1.1.0"
-last_updated: "2026-09-02"
+last_updated: "2026-09-04"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -18,7 +18,7 @@ claim_boundary: "Рабочий чек-лист + Red Team KILL/HOLD/ACCEPT. Che
 
 | ID | Verdict | Почему |
 |---|---|---|
-| **A1** | **HOLD** production SSO; **ACCEPT** honesty | HITL 403 на shared Bearer и viewer/user OIDC под pilot уже есть (`principal_may_append_hitl_event`). localStorage не ACL. Lab-cookie как RBAC — **KILL** (клиент подделывает). OIDC BFF остаётся 501. В capabilities: `hitl_write.ui_role_is_acl=false`. Речь: FAQ «вопрос №1». |
+| **A1** | **HOLD** production SSO; **ACCEPT** honesty | HITL 403 на shared Bearer и viewer/user под pilot. По умолчанию `GET /v1/auth/bff` = 501. Lab `200 LAB` — не SSO заказчика: непроверенная cookie не авторизует (HD3-BFF-01); проверенная может bind `AuthPrincipal`, viewer → 403. Поддельная lab-cookie как промышленный RBAC — **KILL**. `hitl_write.ui_role_is_acl=false`. Речь: FAQ «вопрос №1». |
 | **A2** | **KILL** nearest intersection; **ACCEPT** AxisTag+storey | Резолвер **уже** в `ifc_spatial_index.py` (этаж + `IfcGridAxis.AxisTag`). «Ближайшая ось» — атака live_tree_triage. Дом 5 без осей = данные (B7), не код. Гвоздь: два грида → `grid_axis is None`. |
 | **A3** | **ACCEPT** | Пресет: pilot/production → пустой LLM/VLM allowlist; `allow` только с `CONSENT_REF`. Не включает egress сам по себе (`llm_local_ready` всё ещё false). |
 | **A4** | **ACCEPT already** | Таймер в `AnalyzeRunPanel` с копирайтом «не SLA». Не доказательство ТЗ 30 мин. |
@@ -28,7 +28,7 @@ claim_boundary: "Рабочий чек-лист + Red Team KILL/HOLD/ACCEPT. Che
 | **A8** | **ACCEPT** | Коммит волны; RED_TEAM_* unpublished не в git. |
 | **A9** | **ACCEPT** | `ui-copy.ts`; баннер capabilities на RU. Остаток EN в глубоком chrome — не блокер демо. |
 | **A10** | **ACCEPT already** | `team` → `file`; тест миграции есть. |
-| **A11** | **HOLD** | App.tsx уже с хуками (~550 строк). Цель &lt;300 не в этом коммите. |
+| **A11** | **ACCEPT** | `App.tsx` = 300 строк (порог плана). Не закрывает WP-FE-15 / SSO. |
 | **B1** | **ACCEPT** | Баннер «учебный набор правил» на экране находок. |
 | **B2** | **HOLD** owner | Слайд пустых данных пакета — не git (агрегат канала). |
 | **B3** | **HOLD** | Куски есть (upload → timer → expert → BCF). Склейка репетиции, не новый движок. |
