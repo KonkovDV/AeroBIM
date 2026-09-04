@@ -632,6 +632,34 @@ class ReportIfcSourceTests(unittest.TestCase):
             exc = _status(ctx.resolve_report_ifc_source, report.report_id)
             self.assertEqual(exc.status_code, 409)
 
+    def test_dev_allows_samples_ifc_outside_storage(self) -> None:
+        fixture = Path(__file__).resolve().parents[2] / "samples" / "ifc" / "walls-multi-entity.ifc"
+        if not fixture.is_file():
+            self.skipTest("walls fixture missing")
+        with tempfile.TemporaryDirectory() as tmp:
+            ctx = _make_ctx(Path(tmp), enforce_object_acl=False, environment="test")
+            report = _report(ifc_path=str(fixture))
+            ctx.audit_store.reports[report.report_id] = report
+            name, resolved = ctx.resolve_report_ifc_source(report.report_id)
+            self.assertEqual(name, "walls-multi-entity.ifc")
+            self.assertEqual(Path(resolved), fixture.resolve())
+
+    def test_production_rejects_samples_ifc_outside_storage(self) -> None:
+        fixture = Path(__file__).resolve().parents[2] / "samples" / "ifc" / "walls-multi-entity.ifc"
+        if not fixture.is_file():
+            self.skipTest("walls fixture missing")
+        with tempfile.TemporaryDirectory() as tmp:
+            ctx = _make_ctx(
+                Path(tmp),
+                enforce_object_acl=False,
+                environment="production",
+                debug=False,
+            )
+            report = _report(ifc_path=str(fixture))
+            ctx.audit_store.reports[report.report_id] = report
+            exc = _status(ctx.resolve_report_ifc_source, report.report_id)
+            self.assertEqual(exc.status_code, 409)
+
     def test_acl_off_ignores_report_tenant_prefix(self) -> None:
         # Kills AddNot on `if settings.enforce_object_acl` (L405): the mutant
         # applies tenant scoping with ACL off and 404s a legitimate source.

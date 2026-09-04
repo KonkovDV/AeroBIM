@@ -69,6 +69,10 @@ def create_http_app(container: Container) -> FastAPI:
         if settings.signoff_profile in {"samolet_pilot", "production"}
         else 0
     )
+    cors_origins = list(settings.cors_origins)
+    # credentials:include on the review shell needs Allow-Credentials; Starlette
+    # forbids that together with origin "*". Empty origins stay credential-less.
+    cors_credentials = bool(cors_origins) and "*" not in cors_origins
     add_rate_limit_middleware(
         app,
         requests_per_minute=settings.http_rate_limit_per_minute,
@@ -81,8 +85,8 @@ def create_http_app(container: Container) -> FastAPI:
     add_auth_header_hygiene_middleware(app)
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=list(settings.cors_origins),
-        allow_credentials=False,
+        allow_origins=cors_origins,
+        allow_credentials=cors_credentials,
         allow_methods=["GET", "POST"],
         allow_headers=[
             "Authorization",

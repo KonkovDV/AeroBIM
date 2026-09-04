@@ -32,6 +32,7 @@ export const RU_COPY = {
   remarkSaved: "Записано в review-events",
   remarkSaveFailed: "Не удалось сохранить",
   remarkDecisionFailed: "Решение не записано",
+  rejectDefaultNote: "Отклонено экспертом без дополнительного текста.",
   hitlUserAlias:
     "Макет «Пользователь» — не OIDC. Правка, подтверждение и отклонение на сервере недоступны этой роли (403).",
   hitlHistory: "История HITL",
@@ -483,6 +484,8 @@ export const RU_COPY = {
   runStarting: "Запускаем…",
   runCancel: "Отменить",
   runCancelFailed: "Не удалось отменить задание",
+  runNeedUpload: "Сначала загрузите IFC или документы. Нативные RVT/NWD/DWG — жёсткий отказ.",
+  runSubmitFailed: "Не удалось отправить задание",
   runToUpload: "К загрузке",
   runStagesHonesty: "Стадии — грубый статус опроса, не SSE по движкам.",
   runStageAccepted: "принято",

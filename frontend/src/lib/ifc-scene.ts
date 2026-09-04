@@ -233,7 +233,9 @@ export class IfcSceneController {
     this.resizeObserver.disconnect();
     this.controls.dispose();
     this.renderer.dispose();
-    this.container.removeChild(this.renderer.domElement);
+    if (this.renderer.domElement.parentElement === this.container) {
+      this.container.removeChild(this.renderer.domElement);
+    }
     if (this.ifcApi !== null) {
       this.ifcApi.Dispose();
       this.ifcApi = null;

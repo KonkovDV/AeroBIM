@@ -33,7 +33,7 @@
     "mep_federated_scope_path": "samples/mep/federated-scope-verified-fixture.json",
     "pins": {
       "ifc_sha256": "35b499476ae537e2bed66953aa095360830cdf5ce5346ac6c1642dc420bc9b5b",
-      "requirement_sha256": "ff331a2056124811b0460679bcc16cbfbde22256e0cf6a5d717fd79b708bf0a3",
+      "requirement_sha256": "e83a27e9b04ba582be4ff4b577dc07cc9b01f44707cd9ede2b5e9a4b4d11ac45",
       "mep_federated_scope_sha256": "40a826cd9914df855b1e6538b4451cf7eb472eb98a061cf2e36aac58c58017c4"
     },
     "note": "ENG_FIXTURE federated MEP path timing; never mep_system_clash=OK (RT-003 OPEN)."

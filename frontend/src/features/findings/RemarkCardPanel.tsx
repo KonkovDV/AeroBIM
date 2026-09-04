@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { ValidationIssue } from "../../lib/types";
-import { fetchReviewEvents, type ReviewEventRow } from "../../lib/api";
+import type { ReviewEventRow } from "../../lib/api";
 import { hitlEventTypeLabel } from "../../lib/hitl-event-copy";
+import { eventMatchesIssue } from "../../lib/hitl-state";
 import { clauseLine, essenceLine, spatialOrMissing } from "../../lib/issue-triage";
 import { UI_COPY } from "../../lib/ui-copy";
 import EvidenceStepper from "./EvidenceStepper";
@@ -9,16 +10,6 @@ import EvidenceStepper from "./EvidenceStepper";
 function dash(value: string | null | undefined): string {
   const text = value?.trim();
   return text ? text : "—";
-}
-
-function eventMatchesIssue(event: ReviewEventRow, issue: ValidationIssue): boolean {
-  if (event.finding_id && issue.finding_id) {
-    return event.finding_id === issue.finding_id;
-  }
-  if (event.issue_rule_id) {
-    return event.issue_rule_id === issue.rule_id;
-  }
-  return false;
 }
 
 function GuidCopyRow({ guid }: { guid: string | null | undefined }) {
@@ -56,6 +47,8 @@ export type RemarkCardPanelProps = {
   remarkSaveState: "idle" | "saving" | "saved" | "failed";
   hitlDecisionState: "idle" | "saving" | "accepted" | "rejected" | "failed";
   hitlEnabled?: boolean;
+  reviewEvents?: ReviewEventRow[];
+  reviewEventsError?: string | null;
   onDraftChange: (value: string) => void;
   onSave: () => void;
   onAccept: () => void;
@@ -69,37 +62,17 @@ export default function RemarkCardPanel({
   remarkSaveState,
   hitlDecisionState,
   hitlEnabled = true,
+  reviewEvents = [],
+  reviewEventsError = null,
   onDraftChange,
   onSave,
   onAccept,
   onReject,
 }: RemarkCardPanelProps) {
-  const [history, setHistory] = useState<ReviewEventRow[]>([]);
-  const [historyError, setHistoryError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!reportId || !activeIssue) {
-      setHistory([]);
-      return;
-    }
-    const controller = new AbortController();
-    fetchReviewEvents(reportId, { signal: controller.signal })
-      .then((payload) => {
-        if (controller.signal.aborted) {
-          return;
-        }
-        const rows = payload.events.filter((event) => eventMatchesIssue(event, activeIssue));
-        setHistory(rows);
-        setHistoryError(null);
-      })
-      .catch((error: unknown) => {
-        if (!controller.signal.aborted) {
-          setHistory([]);
-          setHistoryError(error instanceof Error ? error.message : UI_COPY.historyFailed);
-        }
-      });
-    return () => controller.abort();
-  }, [reportId, activeIssue, remarkSaveState, hitlDecisionState]);
+  const history = activeIssue
+    ? reviewEvents.filter((event) => eventMatchesIssue(event, activeIssue))
+    : [];
+  const historyError = reportId ? reviewEventsError : null;
 
   return (
     <article className="detail-block" data-testid="remark-card">

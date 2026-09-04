@@ -176,7 +176,7 @@ async function main() {
   try {
     await page.goto(options.baseUrl, { waitUntil: "domcontentloaded", timeout: 30_000 });
     // Shell opens on the expert workplace; the report index lives on «Проекты».
-    await page.getByRole("button", { name: "Проекты" }).click();
+    await page.getByRole("button", { name: "Проекты", exact: true }).click();
     await page.locator(".report-card").first().waitFor({ state: "visible", timeout: 30_000 });
 
     const presetChecks = await assertPresetScopeState(page);

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import tempfile
 import unittest
 from pathlib import Path
@@ -70,7 +71,14 @@ class MentorVlmDemoTests(unittest.TestCase):
             pdf = Path(tmp) / "sheet.pdf"
             _make_pdf(pdf)
             out = Path(tmp) / "artifacts"
-            code = main(["--pdf", str(pdf), "--output", str(out), "--dry-crop-only"])
+            # Isolate from backend/.env so later Settings.from_env tests
+            # do not inherit AEROBIM_LLM_BASE_URL from this CLI helper.
+            controlled = {k: v for k, v in os.environ.items() if not k.startswith("AEROBIM_")}
+            with (
+                patch.dict("os.environ", controlled, clear=True),
+                patch("aerobim.tools.run_mentor_vlm_demo._load_dotenv", return_value=None),
+            ):
+                code = main(["--pdf", str(pdf), "--output", str(out), "--dry-crop-only"])
             self.assertEqual(code, 0)
             report = json.loads((out / "report.json").read_text(encoding="utf-8"))
             self.assertEqual(report["status"], "dry_crop_only")

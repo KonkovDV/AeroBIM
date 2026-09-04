@@ -212,6 +212,8 @@
     },
     {
       "gap_id": "space_efficiency",
+      "jury_speech": "IfcSpace inventory as INFO; no signed sellable-area KPI; not delivered",
+      "kt3_scope": "advisory_unsigned",
       "label": "Эффективность использования пространства",
       "reason": "Самолёт 25.08: продаваемая площадь, избыточные техпомещения, широкие коридоры, мёртвые зоны МОП. Пороги не подписаны; advisory inventory ≠ delivered metric",
       "status": "not_checked",

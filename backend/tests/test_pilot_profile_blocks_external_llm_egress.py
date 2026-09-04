@@ -74,6 +74,8 @@ class PilotProfileBlocksExternalLlmEgressTests(unittest.TestCase):
             },
             clear=False,
         ):
+            os.environ.pop("AEROBIM_LLM_BASE_URL", None)
+            os.environ.pop("AEROBIM_VLM_API_BASE_URL", None)
             settings = Settings.from_env()
             self.assertEqual(settings.llm_allowed_hosts, ())
 

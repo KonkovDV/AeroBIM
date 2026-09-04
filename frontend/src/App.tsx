@@ -73,6 +73,8 @@ export default function App() {
     remarkDraft,
     remarkSaveState,
     hitlDecisionState,
+    reviewEvents,
+    reviewEventsError,
     setSelectedIssueIndex,
     setSelectedClashIndex,
     setRemarkDraft,
@@ -241,6 +243,8 @@ export default function App() {
           remarkSaveState={remarkSaveState}
           hitlDecisionState={hitlDecisionState}
           hitlEnabled={uiRole === "expert"}
+          reviewEvents={reviewEvents}
+          reviewEventsError={reviewEventsError}
           spatialViewer={
             <Suspense fallback={<ViewerPlaceholder message={UI_COPY.viewerLoading} />}>
               {selectedReport ? (

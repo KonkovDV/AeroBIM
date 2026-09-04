@@ -475,6 +475,31 @@ class ApiContext:
         if not key.startswith(prefix):
             raise HTTPException(status_code=404, detail="Object not found")
 
+    def _dev_sample_ifc_source(self, resolved: Path) -> Path | None:
+        """Allow fixture IFC under ``samples/`` in development/test only.
+
+        Benchmarks and CLI seeds may store an absolute path into the git
+        samples tree. Production still 409s anything outside the storage jail.
+        """
+        if not self.settings.is_dev_environment:
+            return None
+        if resolved.suffix.lower() != ".ifc":
+            return None
+        samples = Path(__file__).resolve().parents[5] / "samples"
+        try:
+            samples_base = samples.resolve()
+        except OSError:
+            return None
+        try:
+            if not resolved.is_relative_to(samples_base):
+                return None
+            reject_symlinks(resolved, base=samples_base)
+        except (PathJailError, ValueError, OSError):
+            return None
+        if not resolved.is_file():
+            return None
+        return resolved
+
     def resolve_report_ifc_source(
         self,
         report_id: str,
@@ -500,6 +525,9 @@ class ApiContext:
         base = settings.storage_dir.resolve()
         resolved = candidate.resolve() if candidate.is_absolute() else (base / candidate).resolve()
         if not resolved.is_relative_to(base):
+            sample = self._dev_sample_ifc_source(resolved)
+            if sample is not None:
+                return report.ifc_path.name, sample
             raise HTTPException(
                 status_code=409,
                 detail="Stored IFC source escapes storage boundary",

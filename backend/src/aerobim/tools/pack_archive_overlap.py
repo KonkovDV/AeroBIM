@@ -18,7 +18,7 @@ import sys
 import zipfile
 from collections import Counter
 from pathlib import Path
-from typing import Any
+from typing import IO, Any
 
 from aerobim.domain.owner_files_inventory import require_local_only_output
 from aerobim.tools.benchmark_project_package import repo_root
@@ -256,7 +256,7 @@ def _archive_unpack_dir(dest_root: Path, archive_rel: str) -> Path:
     return dest_root.joinpath(*rel.with_suffix("").parts)
 
 
-def _stream_copy(src, dest: Path) -> int:
+def _stream_copy(src: IO[bytes], dest: Path) -> int:
     win_long(dest.parent).mkdir(parents=True, exist_ok=True)
     written = 0
     with open(str(win_long(dest)), "wb") as handle:

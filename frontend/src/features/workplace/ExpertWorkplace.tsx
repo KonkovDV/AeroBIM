@@ -1,5 +1,6 @@
 import { startTransition, type ReactNode } from "react";
 import type { ParsedRequirement, ReportSummaryEntry, ValidationIssue, ValidationReport } from "../../lib/types";
+import type { ReviewEventRow } from "../../lib/api";
 import type { FindingGroupBy, IndexedIssue } from "../../lib/issue-triage";
 import type { WorkspaceView } from "../../components/WorkspaceNav";
 import { UI_COPY } from "../../lib/ui-copy";
@@ -34,6 +35,8 @@ export type ExpertWorkplaceProps = {
   remarkSaveState: "idle" | "saving" | "saved" | "failed";
   hitlDecisionState: HitlDecisionState;
   hitlEnabled: boolean;
+  reviewEvents: ReviewEventRow[];
+  reviewEventsError: string | null;
   spatialViewer: ReactNode;
   onSelectReport: (reportId: string) => void;
   onSeverityChange: (value: "all" | "error" | "warning" | "info") => void;
@@ -70,6 +73,8 @@ export default function ExpertWorkplace({
   remarkSaveState,
   hitlDecisionState,
   hitlEnabled,
+  reviewEvents,
+  reviewEventsError,
   spatialViewer,
   onSelectReport,
   onSeverityChange,
@@ -238,6 +243,8 @@ export default function ExpertWorkplace({
                   remarkSaveState={remarkSaveState}
                   hitlDecisionState={hitlDecisionState}
                   hitlEnabled={hitlEnabled}
+                  reviewEvents={reviewEvents}
+                  reviewEventsError={reviewEventsError}
                   onDraftChange={onDraftChange}
                   onSave={onSave}
                   onAccept={onAccept}

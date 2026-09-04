@@ -18,11 +18,10 @@ from aerobim.infrastructure.di.bootstrap import bootstrap_container
 from aerobim.tools.benchmark_project_package import load_benchmark_pack, repo_root
 
 # Pinned on project-package-baseline.json @ development profile (fixture only).
-# 2026-08-14 (sixth conscious refresh): IDS SKIPPED / ifcVersion fail-closed
-# (29fd0d5) plus capability-policy contour after that commit. Baseline pack
-# still FAILED with engine findings; hash is status+engine (not reason text).
-# Previous pin b243e8c9…c01c1524 was 2026-08-13 PackageOutcome FAILED>BLOCKED.
-GOLDEN_BASELINE_REPRO_HASH = "5c8917550af8d452375ab96d022b142bd2ce1b014f520253533cc8578b0e9d21"
+# 2026-09-03 (seventh conscious refresh): dwg_dxf / qualified_signature missing
+# contour on the baseline pack. Hash is status+engine (not reason text).
+# Previous pin 5c891755…8b0e9d21 was 2026-08-14 IDS SKIPPED / ifcVersion.
+GOLDEN_BASELINE_REPRO_HASH = "a088dfa0da879bedb2420781c9e240f51a14f6aa32ceb9cfb2da300f7ded430d"
 
 
 class GoldenReportTests(unittest.TestCase):

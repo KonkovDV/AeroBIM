@@ -652,7 +652,7 @@
     },
     {
       "path": "benchmarks/open-corpora/profiles/load.json",
-      "sha256": "8aa26499582e67502b01031e0046e986c3125e2e0d457cf5ea9b2c665fb0eb00",
+      "sha256": "19207699b9d2a95ed6e651bed8e2885505cd753c1d0491e28833b849dfd2e493",
       "bytes": 1943,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
@@ -940,8 +940,8 @@
     },
     {
       "path": "benchmarks/samolet-typical-errors-catalog.json",
-      "sha256": "2c6c38e911d43deac790c43ef6a5a749cc2923a22872c53f8b4f88800be81dff",
-      "bytes": 16047,
+      "sha256": "45f3eb422221bd1dafaf0a540dd74bfca83040c6eb83fb0e7c3d7a6e6bf1948a",
+      "bytes": 17182,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",

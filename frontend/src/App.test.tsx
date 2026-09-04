@@ -243,7 +243,25 @@ describe("App", () => {
     fetchReportsMock.mockReset();
     fetchReportMock.mockReset();
     postReviewEventMock.mockReset();
-    postReviewEventMock.mockResolvedValue({ event: {} });
+    postReviewEventMock.mockImplementation(async (_reportId: string, body: { event_type: string; issue_rule_id?: string; finding_id?: string; previous_state?: string }) => {
+      const resulting =
+        body.event_type === "edited_remark"
+          ? "edited"
+          : body.event_type === "triaged"
+            ? "opened"
+            : body.event_type;
+      return {
+        event: {
+          event_id: `${body.event_type}-${body.issue_rule_id ?? "none"}-${resulting}`,
+          event_type: body.event_type,
+          created_at: "2026-09-03T00:00:00Z",
+          issue_rule_id: body.issue_rule_id ?? null,
+          finding_id: body.finding_id ?? null,
+          resulting_state: resulting,
+          previous_state: body.previous_state ?? null,
+        },
+      };
+    });
     fetchReviewEventsMock.mockReset();
     fetchReviewEventsMock.mockResolvedValue({ events: [], count: 0 });
     uploadDocumentMock.mockReset();
@@ -836,7 +854,11 @@ describe("App", () => {
     await waitFor(() => {
       expect(postReviewEventMock).toHaveBeenCalledWith(
         expect.any(String),
-        expect.objectContaining({ event_type: "accepted" }),
+        expect.objectContaining({ event_type: "opened", issue_rule_id: "DRAW-001" }),
+      );
+      expect(postReviewEventMock).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({ event_type: "accepted", previous_state: "opened" }),
       );
     });
     expect(await screen.findByText("Подтверждено")).toBeTruthy();
@@ -846,7 +868,7 @@ describe("App", () => {
     await waitFor(() => {
       expect(postReviewEventMock).toHaveBeenCalledWith(
         expect.any(String),
-        expect.objectContaining({ event_type: "rejected" }),
+        expect.objectContaining({ event_type: "rejected", previous_state: "accepted" }),
       );
     });
     expect(await screen.findByText("Отклонено")).toBeTruthy();

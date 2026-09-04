@@ -143,7 +143,7 @@ export default function AnalyzeRunPanel({
 
   async function start(): Promise<void> {
     if (!packDraftHasAny(draft)) {
-      setError("Сначала загрузите IFC или документы. Нативные RVT/NWD/DWG — жёсткий отказ.");
+      setError(UI_COPY.runNeedUpload);
       return;
     }
     setBusy(true);
@@ -154,7 +154,7 @@ export default function AnalyzeRunPanel({
       trackJob(next, { restartClock: true });
       recordJournal(next, 0);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Не удалось отправить задание");
+      setError(err instanceof Error ? err.message : UI_COPY.runSubmitFailed);
     } finally {
       setBusy(false);
     }

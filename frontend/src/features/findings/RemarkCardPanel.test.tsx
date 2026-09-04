@@ -51,6 +51,40 @@ describe("RemarkCardPanel", () => {
     expect(screen.getByTestId("review-history")).toBeTruthy();
   });
 
+  it("filters cached HITL events for the active finding", () => {
+    render(
+      <RemarkCardPanel
+        reportId="r1"
+        activeIssue={baseIssue}
+        remarkDraft="REI"
+        remarkSaveState="idle"
+        hitlDecisionState="idle"
+        reviewEvents={[
+          {
+            event_id: "e1",
+            event_type: "opened",
+            created_at: "2026-09-03T00:00:00Z",
+            finding_id: "fid-1",
+            issue_rule_id: "FIRE-1",
+          },
+          {
+            event_id: "e2",
+            event_type: "accepted",
+            created_at: "2026-09-03T00:01:00Z",
+            finding_id: "other",
+            issue_rule_id: "OTHER",
+          },
+        ]}
+        onDraftChange={() => undefined}
+        onSave={() => undefined}
+        onAccept={() => undefined}
+        onReject={() => undefined}
+      />,
+    );
+    expect(screen.getByText(/открыто/)).toBeTruthy();
+    expect(screen.queryByText(/подтверждено/)).toBeNull();
+  });
+
   it("saves the remark draft on Ctrl+Enter from the editor", () => {
     const onSave = vi.fn();
     render(

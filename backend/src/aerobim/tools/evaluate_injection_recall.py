@@ -124,7 +124,7 @@ def evaluate_manifest(
 
     applied_rows = [row for row in rows if row["applied"]]
     not_applied = [row["class"] for row in rows if not row["applied"]]
-    killed = sum(1 for row in applied_rows if row["killed"])
+    killed_count = sum(1 for row in applied_rows if row["killed"])
     trials = len(applied_rows)
     recall_block: dict[str, Any]
     if trials == 0:
@@ -132,16 +132,16 @@ def evaluate_manifest(
     else:
         recall_block = {
             "defined": True,
-            **wilson_interval(killed, trials, alpha=0.05).as_dict(),
+            **wilson_interval(killed_count, trials, alpha=0.05).as_dict(),
         }
     return {
         "rows": rows,
         "not_applied_classes": not_applied,
         "control_issue_count": sum(baseline.values()),
         "aggregate": {
-            "killed": killed,
+            "killed": killed_count,
             "trials": trials,
-            "recall_point": (killed / trials) if trials else None,
+            "recall_point": (killed_count / trials) if trials else None,
             "wilson_95": recall_block,
             "denominator_note": (
                 "CONTROL excluded; classes with applied=false excluded (no defect "

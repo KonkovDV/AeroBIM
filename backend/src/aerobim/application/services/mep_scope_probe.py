@@ -108,12 +108,17 @@ class MepScopeProbe:
         try:
             graph = self._provider.build(ifc_path)
         except Exception as exc:
-            _logger.exception("MEP system graph probe failed for %s", ifc_path)
             if is_expected_unconfigured_error(exc):
                 reason = str(exc)
                 if scope is not None:
                     reason += f"; scope_status={scope.status}"
+                _logger.debug(
+                    "MEP system graph not configured for %s: %s",
+                    ifc_path,
+                    reason,
+                )
                 return CapabilityStatus(CapabilityState.NOT_VERIFIED, reason), ()
+            _logger.exception("MEP system graph probe failed for %s", ifc_path)
             return (
                 CapabilityStatus(
                     CapabilityState.FAILED,

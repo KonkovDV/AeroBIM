@@ -229,6 +229,8 @@ export type ReviewEventRow = {
   finding_id?: string | null;
   note?: string | null;
   actor?: string | null;
+  resulting_state?: string | null;
+  previous_state?: string | null;
 };
 
 export async function fetchReviewEvents(

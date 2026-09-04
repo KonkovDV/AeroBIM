@@ -1,4 +1,4 @@
-import { startTransition, useEffect, useMemo, useRef, useState } from "react";
+import { startTransition, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { ValidationIssue } from "../../lib/types";
 import { computeScrollTopToReveal } from "../../lib/finding-scroll";
 import {
@@ -150,6 +150,7 @@ export default function FindingListPanel({
   const listRef = useRef<HTMLDivElement | null>(null);
   const skipScrollRef = useRef(false);
   const prevSelectedRef = useRef(selectedIssueIndex);
+  const pendingFocusAfterScrollRef = useRef<number | null>(null);
   const [scrollTop, setScrollTop] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(720);
 
@@ -164,7 +165,7 @@ export default function FindingListPanel({
     return () => node.removeEventListener("scroll", onScroll);
   }, [virtualize]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const indexChanged = prevSelectedRef.current !== selectedIssueIndex;
     prevSelectedRef.current = selectedIssueIndex;
     const node = listRef.current;
@@ -174,6 +175,7 @@ export default function FindingListPanel({
     const selectedPos = flat.findIndex((row) => row.index === selectedIssueIndex);
     if (skipScrollRef.current) {
       skipScrollRef.current = false;
+      pendingFocusAfterScrollRef.current = null;
       return;
     }
     if (virtualize) {
@@ -184,7 +186,10 @@ export default function FindingListPanel({
         node.scrollTop,
       );
       if (nextTop !== node.scrollTop) {
+        pendingFocusAfterScrollRef.current = nextTop;
         node.scrollTop = nextTop;
+        setScrollTop(nextTop);
+        return;
       }
     } else {
       const activeCard = node.querySelector<HTMLElement>(".issue-card.active");
@@ -192,6 +197,15 @@ export default function FindingListPanel({
     }
     node.querySelector<HTMLElement>(".issue-card.active")?.focus?.();
   }, [selectedIssueIndex, virtualize, flat, viewportHeight]);
+
+  useLayoutEffect(() => {
+    const pending = pendingFocusAfterScrollRef.current;
+    if (pending === null || scrollTop !== pending) {
+      return;
+    }
+    pendingFocusAfterScrollRef.current = null;
+    listRef.current?.querySelector<HTMLElement>(".issue-card.active")?.focus?.();
+  }, [scrollTop]);
 
   let visible = flat;
   let padTop = 0;
