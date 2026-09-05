@@ -12,6 +12,8 @@ from aerobim.core.security.zip_limits import (
     ZipInspection,
     inspect_zip_bytes,
     inspect_zip_path,
+    verify_zip_inflate,
+    verify_zip_inflate_bytes,
 )
 
 __all__ = [
@@ -25,4 +27,6 @@ __all__ = [
     "ZipInspection",
     "inspect_zip_bytes",
     "inspect_zip_path",
+    "verify_zip_inflate",
+    "verify_zip_inflate_bytes",
 ]

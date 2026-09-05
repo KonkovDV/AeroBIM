@@ -267,6 +267,24 @@ class ApiSecurityTests(unittest.TestCase):
         )
         self.assertEqual(ok_response.status_code, 200)
 
+    def test_non_ascii_bearer_is_401_not_500(self) -> None:
+        try:
+            from fastapi.testclient import TestClient
+        except ModuleNotFoundError as exc:
+            raise unittest.SkipTest("FastAPI/httpx not installed") from exc
+        from aerobim.presentation.http.api import create_http_app
+
+        client = TestClient(
+            create_http_app(_make_test_container(api_bearer_token="test-token")),
+            raise_server_exceptions=True,
+        )
+        response = client.get(
+            "/v1/reports",
+            headers={"Authorization": "Bearer \xe9".encode("latin-1")},
+        )
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.json()["detail"], "Invalid API token")
+
 
 class ApiReportEndpointTests(unittest.TestCase):
     @classmethod

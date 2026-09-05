@@ -63,6 +63,7 @@ class CustomerIntakeGateValidationTests(unittest.TestCase):
         self.assertTrue(report["ok"], report["errors"])
         self.assertEqual(report["true_gates"], [])
         self.assertEqual(report["checkpoint_hint"], CHECKPOINT)
+        self.assertFalse(report["customer_go"])
 
     def test_true_gate_without_evidence_fails(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

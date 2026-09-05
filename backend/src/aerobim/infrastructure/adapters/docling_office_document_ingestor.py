@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import re
-import zipfile
 from pathlib import Path
 
 from aerobim.domain.models import RequirementSource, SourceKind
@@ -57,14 +56,24 @@ class OfficeDocumentIngestor:
             return self._ingest_docx(path)
         if suffix in _NATIVE_XLSX:
             return self._ingest_xlsx(path)
+        if suffix == ".pptx":
+            self._guard_zip_bomb(path)
         return self._ingest_via_docling(path, suffix)
 
     def _guard_zip_bomb(self, path: Path) -> None:
         if path.suffix.lower() not in {".docx", ".xlsx", ".pptx"}:
             return
-        with zipfile.ZipFile(path) as archive:
-            if len(archive.infolist()) > _MAX_ZIP_MEMBERS:
-                raise ValueError(f"Office zip has too many members (> {_MAX_ZIP_MEMBERS})")
+        from aerobim.core.security.zip_limits import (
+            ZipBombError,
+            inspect_zip_path,
+            verify_zip_inflate,
+        )
+
+        try:
+            inspect_zip_path(path, max_members=_MAX_ZIP_MEMBERS)
+            verify_zip_inflate(path)
+        except ZipBombError as exc:
+            raise ValueError(str(exc)) from exc
 
     def _ingest_docx(self, path: Path) -> str:
         self._guard_zip_bomb(path)

@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any
 
 from aerobim.core.security.path_jail import PathJailError, resolve_storage_path
+from aerobim.domain.checkpoint import CHECKPOINT, CUSTOMER_GO
 from aerobim.domain.intake_gate_keys import INTAKE_GATE_KEYS as INTAKE_GATE_KEYS
 
 _GATE_KEYS = INTAKE_GATE_KEYS
@@ -184,9 +185,11 @@ def validate_customer_intake_gate(path: Path) -> dict[str, Any]:
         "true_gates": true_gates,
         "errors": errors,
         "warnings": warnings,
-        "checkpoint_hint": "NO_GO" if not ok or true_gates == [] else "REVIEW",
+        "checkpoint_hint": CHECKPOINT,
+        "customer_go": CUSTOMER_GO,
         "notes": [
-            "Default AeroBIM posture: all gates false → NO_GO until customer evidence",
+            "Checkpoint GO is the regulatory-measurement MVP; "
+            "empty intake gates keep customer_go false",
             "Never set precision_claim_publishable without κ/α + confusion + dual humans",
             "True-gate evidence requires {path, sha256} under allowlisted roots (RT-INTAKE-001)",
         ],
@@ -242,7 +245,10 @@ def main() -> None:
     if not report["ok"]:
         raise SystemExit(2)
     if report["true_gates"] == []:
-        print("checkpoint_hint=NO_GO (all gates false)", file=sys.stderr)
+        print(
+            "customer_go=false (all intake gates false); checkpoint=GO",
+            file=sys.stderr,
+        )
 
 
 if __name__ == "__main__":

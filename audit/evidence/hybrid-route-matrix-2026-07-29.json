@@ -1,6 +1,6 @@
 {
   "artifact": "hybrid-route-matrix",
-  "note": "fixture/matrix evidence; not product accuracy; verdict-neutral (OFF==ON); masking != anonymity; Checkpoint GO; customer_go false",
+  "note": "fixture/matrix evidence; not product accuracy; verdict-neutral (OFF==ON); masking != anonymity; Checkpoint GO (regulatory_measurement_mvp; customer_go false)",
   "rows": [
     {
       "classification": "confidential",

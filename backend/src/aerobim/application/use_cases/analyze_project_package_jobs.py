@@ -31,7 +31,9 @@ class SubmitAnalyzeProjectPackageJobUseCase:
         tenant_id = (request.tenant_id or "").strip() or None
         idempotency_key = (idempotency_key or "").strip() or None
         # Opportunistic reclaim before concurrency accounting / create.
+        # JOB-01: QUEUED rows whose runner never started (API process died) fail closed.
         self._job_store.reclaim_stale_running()
+        self._job_store.reclaim_stale_queued()
         if idempotency_key:
             existing = self._job_store.get_by_idempotency_key(
                 idempotency_key,

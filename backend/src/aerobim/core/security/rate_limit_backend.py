@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import time
-from collections import defaultdict, deque
+from collections import OrderedDict, deque
 from threading import Lock
 from typing import Protocol
+
+DEFAULT_MAX_KEYS = 4096
 
 
 class RateLimitBackend(Protocol):
@@ -17,10 +19,16 @@ class InProcessRateLimitBackend:
 
     HD2-RL-01: Redis backend is fixed-window; do not treat in-process tests as
     covering Redis boundary burst behaviour.
+
+    RL-01: ``max_keys`` caps distinct bucket:key entries (LRU eviction) so a
+    token-spray cannot grow this dict without bound.
     """
 
-    def __init__(self) -> None:
-        self._events: dict[str, deque[float]] = defaultdict(deque)
+    def __init__(self, *, max_keys: int = DEFAULT_MAX_KEYS) -> None:
+        if max_keys < 1:
+            raise ValueError("max_keys must be >= 1")
+        self._max_keys = max_keys
+        self._events: OrderedDict[str, deque[float]] = OrderedDict()
         self._lock = Lock()
 
     def allow(self, *, bucket: str, key: str, max_events: int, window_seconds: float) -> bool:
@@ -32,7 +40,13 @@ class InProcessRateLimitBackend:
         now = time.monotonic()
         cutoff = now - window_seconds
         with self._lock:
-            events = self._events[composite]
+            events = self._events.get(composite)
+            if events is None:
+                self._evict_if_needed_unlocked()
+                events = deque()
+                self._events[composite] = events
+            else:
+                self._events.move_to_end(composite)
             while events and events[0] <= cutoff:
                 events.popleft()
             if len(events) >= max_events:
@@ -40,8 +54,13 @@ class InProcessRateLimitBackend:
             events.append(now)
             return True
 
+    def _evict_if_needed_unlocked(self) -> None:
+        while len(self._events) >= self._max_keys:
+            self._events.popitem(last=False)
+
 
 __all__ = [
+    "DEFAULT_MAX_KEYS",
     "InProcessRateLimitBackend",
     "RateLimitBackend",
 ]

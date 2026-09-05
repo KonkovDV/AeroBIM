@@ -122,3 +122,48 @@ class ReportHtmlCoverageTests(unittest.TestCase):
         self.assertNotIn("evil.example", rejected)
         traversal = render_report_html("r1", data, overlay_image_href="../secret.png")
         self.assertNotIn("kt2-overlay", traversal)
+
+    def test_problem_zone_string_coordinates_do_not_crash(self) -> None:
+        data = {
+            "summary": {
+                "passed": False,
+                "issue_count": 1,
+                "error_count": 1,
+                "warning_count": 0,
+                "requirement_count": 0,
+            },
+            "issues": [
+                {
+                    "category": "spatial",
+                    "severity": "warning",
+                    "rule_id": "R",
+                    "message": "x",
+                    "priority": 10,
+                    "problem_zone": {
+                        "sheet_id": "AR-01",
+                        "x": "10.5",
+                        "y": "20",
+                    },
+                }
+            ],
+        }
+        html = render_report_html("r1", data)
+        self.assertIn("AR-01", html)
+        self.assertIn("(10.5, 20.0)", html)
+        bad = {
+            **data,
+            "issues": [
+                {
+                    "category": "spatial",
+                    "severity": "warning",
+                    "rule_id": "R",
+                    "message": "x",
+                    "priority": 10,
+                    "problem_zone": {"sheet_id": "AR-01", "x": "east", "y": "north"},
+                }
+            ],
+        }
+        skipped = render_report_html("r1", bad)
+        self.assertIn("AR-01", skipped)
+        self.assertNotIn("(east", skipped)
+        self.assertIn("Лист: AR-01", skipped)

@@ -1,16 +1,26 @@
 # Shared / LAN stack with required secrets — not production OIDC BFF / SSO (POST-05).
 # Usage:
 #   set AEROBIM_API_BEARER_TOKEN=<long-random>
+#   set AEROBIM_REDIS_PASSWORD=<url-safe-secret>
 #   docker compose -f docker-compose.production.yml up --build
 #
 # Never commit real tokens. Prefer OIDC in real deployments (AEROBIM_OIDC_*).
 # Phase 3 BFF lab flags (AEROBIM_OIDC_BFF_*) must stay unset here.
+# AEROBIM_REDIS_PASSWORD is compose-only (interpolated into AEROBIM_REDIS_URL).
 
 services:
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 256
     deploy:
       resources:
         limits:
@@ -32,7 +42,7 @@ services:
       # Compose fails fast if the variable is missing — no default token.
       AEROBIM_API_BEARER_TOKEN: ${AEROBIM_API_BEARER_TOKEN:?Set AEROBIM_API_BEARER_TOKEN to a long random secret}
       AEROBIM_ALLOW_ANONYMOUS_DEV: "false"
-      AEROBIM_REDIS_URL: redis://redis:6379/0
+      AEROBIM_REDIS_URL: redis://:${AEROBIM_REDIS_PASSWORD:?Set AEROBIM_REDIS_PASSWORD}@redis:6379/0
     depends_on:
       redis:
         condition: service_started
@@ -48,7 +58,14 @@ services:
 
   redis:
     image: redis:7.4-alpine
-    command: ["redis-server", "--appendonly", "yes"]
+    command:
+      [
+        "redis-server",
+        "--appendonly",
+        "yes",
+        "--requirepass",
+        "${AEROBIM_REDIS_PASSWORD:?}",
+      ]
     volumes:
       - redis-data:/data
 

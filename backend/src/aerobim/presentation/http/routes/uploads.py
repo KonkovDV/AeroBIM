@@ -18,7 +18,7 @@ from aerobim.core.security.upload_content import (
     validate_upload_content,
 )
 from aerobim.core.security.upload_quota import UploadQuotaExceeded
-from aerobim.core.security.zip_limits import ZipBombError, inspect_zip_path
+from aerobim.core.security.zip_limits import ZipBombError, inspect_zip_path, verify_zip_inflate
 from aerobim.domain.object_acl import AuthPrincipal
 from aerobim.presentation.http.context import (
     UPLOAD_HASH_CHUNK,
@@ -183,6 +183,7 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
                 (".zip", ".ifczip", ".docx", ".xlsx", ".pptx")
             ):
                 inspect_zip_path(quarantine)
+                verify_zip_inflate(quarantine)
                 reject_autodesk_zip_path(quarantine)
         except UploadContentError as exc:
             quarantine.unlink(missing_ok=True)

@@ -20,6 +20,7 @@ from aerobim.core.security.zip_limits import (
     ZipInspection,
     inspect_zip_bytes,
     inspect_zip_path,
+    verify_zip_inflate,
 )
 
 
@@ -75,6 +76,23 @@ class ZipBombGuardTests(unittest.TestCase):
     def test_invalid_archive_rejected(self) -> None:
         with self.assertRaises(ZipBombError):
             inspect_zip_bytes(b"not-a-zip")
+
+    def test_verify_zip_inflate_rejects_forged_central_directory_size(self) -> None:
+        payload = b"Q" * 7777
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w", compression=zipfile.ZIP_STORED) as archive:
+            archive.writestr("member.bin", payload)
+        raw = buf.getvalue()
+        sig = b"PK\x01\x02"
+        idx = raw.rfind(sig)
+        self.assertGreaterEqual(idx, 0)
+        forged = raw[: idx + 24] + (10).to_bytes(4, "little") + raw[idx + 28 :]
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "forged.zip"
+            path.write_bytes(forged)
+            inspect_zip_path(path)
+            with self.assertRaises(ZipBombError):
+                verify_zip_inflate(path)
 
 
 class XmlBombGuardTests(unittest.TestCase):

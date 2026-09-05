@@ -13,13 +13,21 @@ from datetime import UTC, datetime
 from aerobim.domain.job_transitions import can_transition
 from aerobim.domain.models import AnalyzeProjectPackageJob, JobStatus
 
+_DEFAULT_QUEUED_TTL_SECONDS = 600
+
 
 def _now_iso() -> str:
     return datetime.now(tz=UTC).isoformat()
 
 
 class RedisAnalyzeProjectPackageJobStore:
-    def __init__(self, redis_url: str, *, key_prefix: str = "aerobim:jobs:") -> None:
+    def __init__(
+        self,
+        redis_url: str,
+        *,
+        key_prefix: str = "aerobim:jobs:",
+        queued_ttl_seconds: int = _DEFAULT_QUEUED_TTL_SECONDS,
+    ) -> None:
         try:
             import redis
         except ModuleNotFoundError as exc:
@@ -30,6 +38,7 @@ class RedisAnalyzeProjectPackageJobStore:
         self._redis = redis.Redis.from_url(redis_url, decode_responses=True)
         self._redis_mod = redis
         self._prefix = key_prefix
+        self._queued_ttl_seconds = queued_ttl_seconds
 
     def _key(self, job_id: str) -> str:
         return f"{self._prefix}{job_id}"
@@ -272,6 +281,48 @@ class RedisAnalyzeProjectPackageJobStore:
                 job.job_id,
                 "Lease expired; job marked failed for recovery/resubmit",
             )
+            if updated is not None:
+                reclaimed.append(updated)
+        return reclaimed
+
+    def reclaim_stale_queued(
+        self, ttl_seconds: int | None = None, *, now_iso: str | None = None
+    ) -> list[AnalyzeProjectPackageJob]:
+        from datetime import timedelta
+
+        def _parse_iso(value: str | None) -> datetime | None:
+            if not value:
+                return None
+            try:
+                parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+            except ValueError:
+                return None
+            if parsed.tzinfo is None:
+                return parsed.replace(tzinfo=UTC)
+            return parsed.astimezone(UTC)
+
+        ttl = (
+            int(ttl_seconds)
+            if ttl_seconds is not None
+            else int(getattr(self, "_queued_ttl_seconds", _DEFAULT_QUEUED_TTL_SECONDS))
+        )
+        now = _parse_iso(now_iso) or datetime.now(tz=UTC)
+        horizon = timedelta(seconds=max(ttl, 0))
+        reclaimed: list[AnalyzeProjectPackageJob] = []
+        for key in self._redis.scan_iter(match=f"{self._prefix}*"):
+            key_str = str(key)
+            if ":idem:" in key_str:
+                continue
+            raw = self._redis.get(key)
+            if raw is None:
+                continue
+            job = self._deserialize(str(raw))
+            if job.status is not JobStatus.QUEUED or job.started_at:
+                continue
+            created = _parse_iso(job.created_at)
+            if created is None or created + horizon >= now:
+                continue
+            updated = self.mark_failed(job.job_id, "orphaned_before_start")
             if updated is not None:
                 reclaimed.append(updated)
         return reclaimed

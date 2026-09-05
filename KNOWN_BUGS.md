@@ -72,6 +72,17 @@
 | Honesty | Self-documented in the method comment. **No `presign_get` callers in `backend/src` as of 02.09.2026** (port + two stores only). If a caller is wired later, it must enforce its own size limit. Also noted in `SECURITY.md`. Does not sit on the `summary.passed` path. |
 | Status | Residual; not a stub. Checkpoint **GO**; customer_go false. |
 
+### PROC-01 — Windows pdfium isolate has no RLIMIT_AS / RLIMIT_CPU
+
+| Field | Value |
+|-------|-------|
+| ID | `PROC-01` |
+| Adapter | `backend/src/aerobim/infrastructure/adapters/pdfium_isolate/process_isolate.py` |
+| Severity | **LOW** |
+| Effect | POSIX child applies `RLIMIT_AS` (1 GiB) and `RLIMIT_CPU` (30s) via `preexec_fn`. Windows has no equivalent rlimit; the isolate still uses `subprocess` timeout only. |
+| Honesty | Residual host risk on Windows lab hosts. Does not sit on the `summary.passed` path. |
+| Status | Residual; not a stub. Checkpoint **GO**; customer_go false. |
+
 ## Closed / N/A
 
 - Cad / OCR multimodal / MEP unconfigured adapters are real fail-closed or degrade paths (not `@sota-stub`).

@@ -110,6 +110,17 @@ class PdfiumRegionCropperTests(unittest.TestCase):
                 )
         self.assertIn("exit 1", str(ctx.exception))
 
+    def test_posix_isolate_declares_rlimit_preexec(self) -> None:
+        import inspect
+
+        from aerobim.infrastructure.adapters.pdfium_isolate import process_isolate as mod
+
+        source = inspect.getsource(mod)
+        self.assertIn("RLIMIT_AS", source)
+        self.assertIn("RLIMIT_CPU", source)
+        self.assertIn("preexec_fn", source)
+        self.assertIn('sys.platform != "win32"', source)
+
 
 if __name__ == "__main__":
     unittest.main()

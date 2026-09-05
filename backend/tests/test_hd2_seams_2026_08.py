@@ -198,6 +198,15 @@ class Hd2JwksTests(unittest.TestCase):
             validator.fetch_jwks(force=True)
             self.assertEqual(calls["n"], 2)
 
+    def test_jwks_cache_uses_lock(self) -> None:
+        validator = OidcTokenValidator(
+            issuer="https://idp.example.com/",
+            audience="aerobim",
+            jwks_url="https://idp.example.com/jwks",
+        )
+        self.assertTrue(hasattr(validator, "_lock"))
+        self.assertTrue(hasattr(validator._lock, "acquire"))
+
     def test_unknown_kid_does_not_hammer_jwks(self) -> None:
         jwt_mod = types.ModuleType("jwt")
         jwt_mod.get_unverified_header = lambda _token: {"kid": "missing"}  # type: ignore[attr-defined]

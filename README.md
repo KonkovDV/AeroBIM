@@ -192,7 +192,7 @@ Register: [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS
 | `POST` | `/v1/uploads` | Multipart ingest; returns a storage-relative path for analysis |
 | `POST` | `/v1/validate/ifc` | Validate an IFC file against requirements and IDS |
 | `POST` | `/v1/analyze/project-package` | Full package analysis: model, drawings, specification, calculation |
-| `POST` | `/v1/analyze/project-package/submit` | Queue a larger package as a background job |
+| `POST` | `/v1/analyze/project-package/submit` | Queue a larger package as an **in-process** FastAPI `BackgroundTasks` job (not a durable worker). Redis stores job records outside development; a process crash can leave `QUEUED` until reclaim |
 | `GET` | `/v1/analyze/project-package/jobs/{job_id}` | Poll a background job |
 | `POST` | `/v1/analyze/project-package/jobs/{job_id}/cancel` | Cancel a running job |
 | `GET` | `/v1/reports` | List persisted reports, filtered by project, discipline or verdict |
@@ -300,7 +300,7 @@ A local clone runs on defaults. The collapsed table is the operator-facing confi
 | `AEROBIM_BSI_API_TOKEN` | *(unset)* | Optional buildingSMART Validation Service token |
 | `AEROBIM_BSI_VALIDATION_URL` | *(built-in)* | Optional override for bSI Validation Service URL |
 | `AEROBIM_GATES_ATTESTED` | *(CI only)* | Comma-separated CI job names attested into the runtime baseline; ignored locally, and must equal the required gate set under GitHub Actions |
-| `AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE` | `120` | Per-client limit for analyze/validate/upload POSTs and GET `/v1/auth/login` + `/v1/auth/callback`; HD2-RL-02: `0` disables in development; **must be >0** under pilot/production |
+| `AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE` | `120` | Pre-auth **per-IP** bucket for mutating `/v1` POSTs and GET `/v1/auth/login` + `/callback` + `/session`; after successful auth a second **per-principal** (`tenant_id:subject`) bucket applies to those POSTs. HD2-RL-02: `0` disables in development; **must be >0** under pilot/production |
 | `AEROBIM_TRUSTED_PROXY_IPS` | *(unset)* | Comma-separated peer IPs allowed to supply `X-Forwarded-For` for rate-limit keys; empty = never trust XFF |
 | `AEROBIM_IFC_PARSE_CACHE_DIR` | *(unset)* | Optional on-disk IFC parse cache directory |
 | `AEROBIM_KIMI_API_BASE_URL` | *(unset)* | Deprecated alias of the primary VLM base URL (internal name). Default unset. Under `samolet_pilot`/`production` VLM is not ready even if set. See [`docs/security/BUILD_WITHOUT_EXTERNAL_MODELS_2026.md`](docs/security/BUILD_WITHOUT_EXTERNAL_MODELS_2026.md) |

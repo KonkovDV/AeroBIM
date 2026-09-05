@@ -8,6 +8,7 @@ Static API bearer remains supported in parallel.
 from __future__ import annotations
 
 import json
+import threading
 import time
 import urllib.request
 from dataclasses import dataclass
@@ -37,6 +38,7 @@ class OidcTokenValidator:
         self._jwks_fetched_at: float = 0.0
         self._jwks_force_at: float = 0.0
         self._unknown_kid_until: dict[str, float] = {}
+        self._lock = threading.Lock()
         self.leeway_seconds: int = 60
 
     def _select_jwk(self, jwks: dict[str, Any], kid: str) -> dict[str, Any] | None:
@@ -73,21 +75,26 @@ class OidcTokenValidator:
             key_data = self._select_jwk(jwks, kid)
             if key_data is None:
                 now = time.monotonic()
-                if self._unknown_kid_until.get(kid, 0.0) > now:
+                with self._lock:
+                    cooldown_until = self._unknown_kid_until.get(kid, 0.0)
+                    force_at = self._jwks_force_at
+                if cooldown_until > now:
                     raise OidcValidationError(f"No JWKS key matched kid={kid!r}")
-                if now - self._jwks_force_at >= _FORCE_JWKS_COOLDOWN_S:
+                if now - force_at >= _FORCE_JWKS_COOLDOWN_S:
                     jwks = self.fetch_jwks(force=True)
-                    self._jwks_force_at = now
+                    with self._lock:
+                        self._jwks_force_at = time.monotonic()
                     key_data = self._select_jwk(jwks, kid)
             if key_data is None:
                 now = time.monotonic()
-                self._unknown_kid_until[kid] = now + _FORCE_JWKS_COOLDOWN_S
-                if len(self._unknown_kid_until) > _UNKNOWN_KID_CAP:
-                    oldest = min(
-                        self._unknown_kid_until,
-                        key=lambda kid: self._unknown_kid_until[kid],
-                    )
-                    self._unknown_kid_until.pop(oldest, None)
+                with self._lock:
+                    self._unknown_kid_until[kid] = now + _FORCE_JWKS_COOLDOWN_S
+                    if len(self._unknown_kid_until) > _UNKNOWN_KID_CAP:
+                        oldest = min(
+                            self._unknown_kid_until,
+                            key=lambda queued_kid: self._unknown_kid_until[queued_kid],
+                        )
+                        self._unknown_kid_until.pop(oldest, None)
                 raise OidcValidationError(f"No JWKS key matched kid={kid!r}")
             signing_key = PyJWK.from_dict(key_data)
             claims = jwt.decode(
@@ -117,12 +124,13 @@ class OidcTokenValidator:
     def fetch_jwks(self, *, force: bool = False) -> dict[str, Any]:
         """Fetch JWKS through the shared SSRF outbound guard (resolve DNS at fetch)."""
         now = time.monotonic()
-        if (
-            not force
-            and self._jwks_cache is not None
-            and now - self._jwks_fetched_at < self.jwks_cache_ttl_seconds
-        ):
-            return self._jwks_cache
+        with self._lock:
+            if (
+                not force
+                and self._jwks_cache is not None
+                and now - self._jwks_fetched_at < self.jwks_cache_ttl_seconds
+            ):
+                return self._jwks_cache
         from aerobim.core.security.outbound_url import assert_safe_outbound_url, safe_urlopen
 
         assert_safe_outbound_url(self.jwks_url, allow_http=False, resolve_dns=True)
@@ -135,6 +143,14 @@ class OidcTokenValidator:
         payload = json.loads(raw.decode("utf-8"))
         if not isinstance(payload, dict):
             raise OidcValidationError("JWKS response must be a JSON object")
-        self._jwks_cache = payload
-        self._jwks_fetched_at = now
-        return payload
+        with self._lock:
+            now = time.monotonic()
+            if (
+                not force
+                and self._jwks_cache is not None
+                and now - self._jwks_fetched_at < self.jwks_cache_ttl_seconds
+            ):
+                return self._jwks_cache
+            self._jwks_cache = payload
+            self._jwks_fetched_at = now
+            return payload

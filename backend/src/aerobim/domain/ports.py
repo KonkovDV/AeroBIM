@@ -246,6 +246,10 @@ class AnalyzeProjectPackageJobStore(Protocol):
         self, *, now_iso: str | None = None
     ) -> list[AnalyzeProjectPackageJob]: ...
 
+    def reclaim_stale_queued(
+        self, ttl_seconds: int | None = None, *, now_iso: str | None = None
+    ) -> list[AnalyzeProjectPackageJob]: ...
+
 
 class ExternalEvidenceVerifier(Protocol):
     """Port for third-party calculation / reinforcement evidence verification."""

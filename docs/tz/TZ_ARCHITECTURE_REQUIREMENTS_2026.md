@@ -91,7 +91,7 @@ P1 ports already live: `NormRulePackLoader`, `SectionDiffAnalyzer`, and file-bas
 |---------|---------|------------|
 | Report payloads | Filesystem under `storage_dir` | + S3/MinIO `ObjectStore` |
 | Report index | Filesystem list | Postgres filtered `list_reports` |
-| Async jobs | In-memory snapshot in development/test only | Redis **required** outside development (`AEROBIM_REDIS_URL`) |
+| Async jobs | In-memory snapshot in development/test only | Redis **required** outside development (`AEROBIM_REDIS_URL`) for job **records**. Submit still uses in-process FastAPI `BackgroundTasks`, not a durable worker. |
 | Review telemetry | Filesystem JSONL | same store contract |
 
 ## 8. Frontend bounded context

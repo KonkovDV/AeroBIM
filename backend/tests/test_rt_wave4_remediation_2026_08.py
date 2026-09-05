@@ -96,6 +96,13 @@ class RateLimitBackendTests(unittest.TestCase):
         backend = build_rate_limit_backend(None)
         self.assertIsInstance(backend, InProcessRateLimitBackend)
 
+    def test_in_process_backend_caps_key_count(self) -> None:
+        backend = InProcessRateLimitBackend(max_keys=2)
+        self.assertTrue(backend.allow(bucket="post", key="a", max_events=10, window_seconds=60.0))
+        self.assertTrue(backend.allow(bucket="post", key="b", max_events=10, window_seconds=60.0))
+        self.assertTrue(backend.allow(bucket="post", key="c", max_events=10, window_seconds=60.0))
+        self.assertLessEqual(len(backend._events), 2)
+
 
 class RoleHelperTests(unittest.TestCase):
     def test_principal_has_any_role_case_insensitive(self) -> None:

@@ -11,6 +11,7 @@ from aerobim.domain.models import AnalyzeProjectPackageJob, JobStatus
 
 _DEFAULT_LEASE_SECONDS = 120
 _MAX_RETRIES_BEFORE_DEAD_LETTER = 3
+_DEFAULT_QUEUED_TTL_SECONDS = 600
 
 
 def _now() -> datetime:
@@ -40,12 +41,14 @@ class InMemoryAnalyzeProjectPackageJobStore:
         *,
         lease_seconds: int = _DEFAULT_LEASE_SECONDS,
         max_retries: int = _MAX_RETRIES_BEFORE_DEAD_LETTER,
+        queued_ttl_seconds: int = _DEFAULT_QUEUED_TTL_SECONDS,
     ) -> None:
         self._jobs: dict[str, AnalyzeProjectPackageJob] = {}
         self._lock = Lock()
         self._snapshot_path = snapshot_path
         self._lease_seconds = lease_seconds
         self._max_retries = max_retries
+        self._queued_ttl_seconds = queued_ttl_seconds
         self._load_snapshot()
 
     def _load_snapshot(self) -> None:
@@ -293,6 +296,39 @@ class InMemoryAnalyzeProjectPackageJobStore:
         with self._lock:
             now = _parse_iso(now_iso) or _now()
             return self._reclaim_stale_unlocked(now)
+
+    def reclaim_stale_queued(
+        self, ttl_seconds: int | None = None, *, now_iso: str | None = None
+    ) -> list[AnalyzeProjectPackageJob]:
+        ttl = self._queued_ttl_seconds if ttl_seconds is None else int(ttl_seconds)
+        with self._lock:
+            now = _parse_iso(now_iso) or _now()
+            return self._reclaim_stale_queued_unlocked(now, ttl)
+
+    def _reclaim_stale_queued_unlocked(
+        self, now: datetime, ttl_seconds: int
+    ) -> list[AnalyzeProjectPackageJob]:
+        reclaimed: list[AnalyzeProjectPackageJob] = []
+        horizon = timedelta(seconds=max(ttl_seconds, 0))
+        for job_id, job in list(self._jobs.items()):
+            if job.status is not JobStatus.QUEUED:
+                continue
+            if job.started_at:
+                continue
+            created = _parse_iso(job.created_at)
+            if created is None or created + horizon >= now:
+                continue
+            updated = self._update_unlocked(
+                job_id,
+                status=JobStatus.FAILED,
+                completed_at=now.isoformat(),
+                error_message="orphaned_before_start",
+                lease_expires_at=None,
+                stage_progress="orphaned_before_start",
+            )
+            if updated is not None:
+                reclaimed.append(updated)
+        return reclaimed
 
     def _reclaim_stale_unlocked(self, now: datetime) -> list[AnalyzeProjectPackageJob]:
         reclaimed: list[AnalyzeProjectPackageJob] = []

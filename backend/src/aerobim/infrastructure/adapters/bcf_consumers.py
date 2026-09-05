@@ -255,6 +255,7 @@ def verify_bcf_zip_structure(
         ZipBombError,
         inspect_zip_bytes,
         read_zip_member_capped,
+        verify_zip_inflate_bytes,
     )
 
     errors: list[str] = []
@@ -266,6 +267,7 @@ def verify_bcf_zip_structure(
 
     try:
         inspect_zip_bytes(archive)
+        verify_zip_inflate_bytes(archive)
     except ZipBombError as exc:
         return BcfStructuralVerification(
             ok=False,

@@ -196,7 +196,7 @@ flowchart LR
 | `POST` | `/v1/uploads` | Приём файлов; возвращает путь относительно хранилища |
 | `POST` | `/v1/validate/ifc` | Проверка IFC против требований и IDS |
 | `POST` | `/v1/analyze/project-package` | Полный анализ комплекта: модель, чертежи, спецификация, расчёт |
-| `POST` | `/v1/analyze/project-package/submit` | Постановка крупного комплекта в фоновую очередь |
+| `POST` | `/v1/analyze/project-package/submit` | Постановка крупного комплекта в **in-process** `BackgroundTasks` API-процесса (не durable worker) |
 | `GET` | `/v1/analyze/project-package/jobs/{job_id}` | Статус фонового задания |
 | `POST` | `/v1/analyze/project-package/jobs/{job_id}/cancel` | Отмена задания |
 | `GET` | `/v1/reports` | Список сохранённых отчётов с фильтрами |

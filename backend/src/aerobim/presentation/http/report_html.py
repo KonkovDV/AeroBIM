@@ -62,10 +62,17 @@ def _build_issue_rows(issues: list[dict[str, Any]]) -> str:
         pz_html = ""
         if pz:
             sheet = _esc(pz.get("sheet_id") or "")
-            x = pz.get("x")
-            y = pz.get("y")
-            if sheet and x is not None and y is not None:
-                pz_html = f"<br><small class='pz'>Лист: {sheet} ({x:.1f}, {y:.1f})</small>"
+            xf = yf = None
+            try:
+                if pz.get("x") is not None and pz.get("y") is not None:
+                    xf = float(pz.get("x"))
+                    yf = float(pz.get("y"))
+            except (TypeError, ValueError):
+                xf = yf = None
+            if sheet and xf is not None and yf is not None:
+                pz_html = f"<br><small class='pz'>Лист: {sheet} ({xf:.1f}, {yf:.1f})</small>"
+            elif sheet:
+                pz_html = f"<br><small class='pz'>Лист: {sheet}</small>"
         ev_obs = (
             f"<td>{_esc(obs)}{_esc(' ' + unit if unit and obs else '')}</td>"
             if obs

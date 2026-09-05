@@ -54,6 +54,41 @@ class Phase9RedisReclaimTests(unittest.TestCase):
         store.mark_failed.assert_called_once()
         self.assertEqual(reclaimed[0].status, JobStatus.FAILED)
 
+    def test_reclaim_stale_queued_marks_failed(self) -> None:
+        store = RedisAnalyzeProjectPackageJobStore.__new__(RedisAnalyzeProjectPackageJobStore)
+        store._prefix = "aerobim:jobs:"
+        store._queued_ttl_seconds = 60
+        store._redis_mod = MagicMock()
+        past = (datetime.now(tz=UTC) - timedelta(minutes=10)).isoformat()
+        stale = AnalyzeProjectPackageJob(
+            job_id="b" * 32,
+            request_id="r2",
+            status=JobStatus.QUEUED,
+            created_at=past,
+            tenant_id="t1",
+        )
+        real = RedisAnalyzeProjectPackageJobStore
+        store._serialize = real._serialize.__get__(store, RedisAnalyzeProjectPackageJobStore)
+        store._deserialize = real._deserialize.__get__(store, RedisAnalyzeProjectPackageJobStore)
+        store._key = real._key.__get__(store, RedisAnalyzeProjectPackageJobStore)
+        store.mark_failed = MagicMock(
+            return_value=AnalyzeProjectPackageJob(
+                job_id=stale.job_id,
+                request_id="r2",
+                status=JobStatus.FAILED,
+                created_at=past,
+                error_message="orphaned_before_start",
+                tenant_id="t1",
+            )
+        )
+        redis = MagicMock()
+        redis.scan_iter.return_value = [f"aerobim:jobs:{stale.job_id}"]
+        redis.get.return_value = store._serialize(stale)
+        store._redis = redis
+        reclaimed = RedisAnalyzeProjectPackageJobStore.reclaim_stale_queued(store)
+        self.assertEqual(len(reclaimed), 1)
+        store.mark_failed.assert_called_once_with(stale.job_id, "orphaned_before_start")
+
 
 if __name__ == "__main__":
     unittest.main()

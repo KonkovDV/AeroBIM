@@ -114,7 +114,8 @@ class RateLimitKeyHygieneTests(unittest.TestCase):
             )
             key = str(captured.get("key", ""))
             self.assertNotIn("super-secret", key)
-            self.assertIn(":", key)
+            self.assertNotIn("Bearer", key)
+            self.assertNotIn("jwt-token", key)
 
 
 class RedisRateLimitFailClosedTests(unittest.TestCase):

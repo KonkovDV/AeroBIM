@@ -103,6 +103,35 @@ class Phase6JobLeaseTests(unittest.TestCase):
         assert dead is not None
         self.assertEqual(dead.status, JobStatus.DEAD_LETTER)
 
+    def test_reclaim_stale_queued_orphans_before_start(self) -> None:
+        store = InMemoryAnalyzeProjectPackageJobStore(queued_ttl_seconds=60)
+        stale = (datetime.now(tz=UTC) - timedelta(minutes=10)).isoformat()
+        store.create(
+            AnalyzeProjectPackageJob(
+                job_id="q" * 32,
+                request_id="r-orphan",
+                status=JobStatus.QUEUED,
+                created_at=stale,
+            )
+        )
+        fresh = datetime.now(tz=UTC).isoformat()
+        store.create(
+            AnalyzeProjectPackageJob(
+                job_id="n" * 32,
+                request_id="r-fresh",
+                status=JobStatus.QUEUED,
+                created_at=fresh,
+            )
+        )
+        reclaimed = store.reclaim_stale_queued()
+        self.assertEqual(len(reclaimed), 1)
+        self.assertEqual(reclaimed[0].job_id, "q" * 32)
+        self.assertEqual(reclaimed[0].status, JobStatus.FAILED)
+        self.assertEqual(reclaimed[0].error_message, "orphaned_before_start")
+        kept = store.get("n" * 32)
+        assert kept is not None
+        self.assertEqual(kept.status, JobStatus.QUEUED)
+
 
 if __name__ == "__main__":
     unittest.main()

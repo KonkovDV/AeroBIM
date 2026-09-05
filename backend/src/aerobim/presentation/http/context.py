@@ -64,6 +64,7 @@ from aerobim.presentation.http.package_request_builders import (
     build_project_package_request,
     build_requirement_source,
 )
+from aerobim.presentation.http.rate_limit import post_path_is_rate_limited
 from aerobim.presentation.http.schemas import AnalyzeProjectPackageRequest
 
 REPORT_ID_RE = _re.compile(r"^[a-f0-9]{32}$")
@@ -190,7 +191,7 @@ class ApiContext:
         if not authorization:
             cookie_principal = self._principal_from_verified_bff_cookie(request)
             if cookie_principal is not None:
-                return cookie_principal
+                return self._bind_authenticated(request, cookie_principal)
 
         if configured_token is None and not oidc_ready:
             if settings.oidc_bff_phase3_ready:
@@ -200,10 +201,13 @@ class ApiContext:
                     headers={"WWW-Authenticate": "Bearer"},
                 )
             if settings.is_dev_environment and settings.allow_anonymous_dev:
-                return AuthPrincipal(
-                    tenant_id=settings.api_tenant_id,
-                    subject="anonymous-dev",
-                    auth_scheme="anonymous",
+                return self._bind_authenticated(
+                    request,
+                    AuthPrincipal(
+                        tenant_id=settings.api_tenant_id,
+                        subject="anonymous-dev",
+                        auth_scheme="anonymous",
+                    ),
                 )
             if settings.is_dev_environment:
                 raise HTTPException(
@@ -238,13 +242,23 @@ class ApiContext:
                 detail="Invalid Authorization header format",
                 headers={"WWW-Authenticate": "Bearer"},
             )
+        # AUTH-01: hmac.compare_digest(str, str) raises TypeError on non-ASCII.
+        if not token.isascii():
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid API token",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
 
         if configured_token is not None and secrets.compare_digest(token, configured_token):
-            return AuthPrincipal(
-                tenant_id=settings.api_tenant_id,
-                subject="api-bearer",
-                is_service_token=True,
-                auth_scheme="bearer",
+            return self._bind_authenticated(
+                request,
+                AuthPrincipal(
+                    tenant_id=settings.api_tenant_id,
+                    subject="api-bearer",
+                    is_service_token=True,
+                    auth_scheme="bearer",
+                ),
             )
 
         if oidc_ready:
@@ -269,11 +283,14 @@ class ApiContext:
                     claims,
                     roles_claim=settings.oidc_roles_claim,
                 )
-                return AuthPrincipal(
-                    tenant_id=tenant,
-                    subject=str(subject) if subject is not None else None,
-                    roles=roles,
-                    auth_scheme="oidc",
+                return self._bind_authenticated(
+                    request,
+                    AuthPrincipal(
+                        tenant_id=tenant,
+                        subject=str(subject) if subject is not None else None,
+                        roles=roles,
+                        auth_scheme="oidc",
+                    ),
                 )
             except HTTPException:
                 raise
@@ -290,6 +307,35 @@ class ApiContext:
             detail="Invalid API token",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+    def _bind_authenticated(self, request: Request, principal: AuthPrincipal) -> AuthPrincipal:
+        self._enforce_principal_rate_limit(request, principal)
+        return principal
+
+    def _enforce_principal_rate_limit(self, request: Request, principal: AuthPrincipal) -> None:
+        """Per-principal bucket after a successful bind (RL-01). Pre-auth is per-IP."""
+
+        if request.method != "POST" or not post_path_is_rate_limited(request.url.path):
+            return
+        backend = getattr(request.app.state, "rate_limit_backend", None)
+        rpm = int(getattr(request.app.state, "http_rate_limit_per_minute", 0) or 0)
+        window = float(getattr(request.app.state, "rate_limit_window_seconds", 60.0) or 60.0)
+        if backend is None or rpm <= 0:
+            return
+        tenant = (principal.tenant_id or "").strip() or "unknown"
+        subject = (principal.subject or "").strip() or "unknown"
+        allowed = backend.allow(
+            bucket="principal",
+            key=f"{tenant}:{subject}",
+            max_events=rpm,
+            window_seconds=window,
+        )
+        if not allowed:
+            raise HTTPException(
+                status_code=429,
+                detail="Rate limit exceeded",
+                headers={"Retry-After": str(int(window))},
+            )
 
     # -- Path jail / limits -------------------------------------------------
 

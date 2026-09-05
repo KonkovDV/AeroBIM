@@ -254,6 +254,7 @@ class Adv04NoReclaimOnGetTests(unittest.TestCase):
     def test_submit_still_reclaims(self) -> None:
         store = InMemoryAnalyzeProjectPackageJobStore()
         store.reclaim_stale_running = MagicMock(return_value=[])  # type: ignore[method-assign]
+        store.reclaim_stale_queued = MagicMock(return_value=[])  # type: ignore[method-assign]
         submit = SubmitAnalyzeProjectPackageJobUseCase(job_store=store)
         with tempfile.TemporaryDirectory() as temporary_directory:
             ifc = Path(temporary_directory) / "m.ifc"
@@ -269,6 +270,7 @@ class Adv04NoReclaimOnGetTests(unittest.TestCase):
             )
             submit.execute(request)
         store.reclaim_stale_running.assert_called()
+        store.reclaim_stale_queued.assert_called()
 
 
 class AdvHitlTrailBeforeSaveTests(unittest.TestCase):

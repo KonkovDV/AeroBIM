@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
 import ipaddress
 from collections.abc import Awaitable, Callable
 from typing import TYPE_CHECKING
@@ -21,7 +20,14 @@ _RATE_LIMITED_POST_PREFIXES = (
     "/v1/validate/",
     "/v1/uploads/",
     "/v1/demo/",
+    "/v1/reports/",
+    "/v1/norm-packs/",
+    "/v1/auth/",
 )
+# POST /v1/* routes that skip the expensive-route limiter. Each entry needs a
+# comment in the contract test if one is added. Empty: every mutating /v1 POST
+# shares the pre-auth per-IP bucket (RL-01 / RL-02).
+_RATE_LIMIT_POST_ALLOWLIST: frozenset[str] = frozenset()
 _RATE_LIMITED_GET_EXACT = (
     "/v1/auth/login",
     "/v1/auth/callback",
@@ -31,6 +37,18 @@ _JOB_POLL_PREFIX = "/v1/analyze/project-package/jobs/"
 _DEFAULT_JOB_POLL_PER_MINUTE = 300
 _WINDOW_SECONDS = 60.0
 _RETRY_AFTER = str(int(_WINDOW_SECONDS))
+
+
+def post_path_is_rate_limited(path: str) -> bool:
+    """True when a POST path shares the expensive-route limiter (RL-02)."""
+
+    if path in _RATE_LIMIT_POST_ALLOWLIST:
+        return False
+    for prefix in _RATE_LIMITED_POST_PREFIXES:
+        trimmed = prefix.rstrip("/")
+        if path == trimmed or path.startswith(trimmed + "/") or path.startswith(prefix):
+            return True
+    return False
 
 
 def client_bucket_host(request: Request, trusted_proxy_ips: frozenset[str]) -> str:
@@ -71,13 +89,16 @@ def add_rate_limit_middleware(
     fail_closed: bool = False,
     trusted_proxy_ips: tuple[str, ...] = (),
 ) -> None:
-    """Attach per-client limiter for expensive routes (shared when Redis is configured).
+    """Attach per-IP pre-auth limiter for expensive routes (shared when Redis is configured).
 
     HD2-RL-02: ``0 = off`` — ``0`` disables a bucket. ``requests_per_minute <= 0`` skips POST and
     auth-GET limiting; ``job_poll_per_minute <= 0`` skips job-poll limiting. If both
     are ``<= 0``, this function returns without attaching middleware. ``0`` is
     by-design in development only; ``samolet_pilot`` / ``production`` reject
     ``AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE <= 0`` at Settings boot.
+
+    RL-01: middleware keys are the client IP only (no Authorization fingerprint).
+    Authenticated POSTs take a second per-principal bucket in ``require_bearer_auth``.
     """
 
     if requests_per_minute <= 0 and job_poll_per_minute <= 0:
@@ -91,6 +112,9 @@ def add_rate_limit_middleware(
         fail_closed=fail_closed,
     )
     trusted = frozenset(ip.strip() for ip in trusted_proxy_ips if ip.strip())
+    app.state.rate_limit_backend = backend
+    app.state.http_rate_limit_per_minute = requests_per_minute
+    app.state.rate_limit_window_seconds = _WINDOW_SECONDS
 
     class _RateLimitMiddleware(BaseHTTPMiddleware):
         async def dispatch(
@@ -99,12 +123,7 @@ def add_rate_limit_middleware(
             call_next: Callable[[Request], Awaitable[Response]],
         ) -> Response:
             path = request.url.path
-            client = client_bucket_host(request, trusted)
-            auth = request.headers.get("authorization", "")
-            auth_fingerprint = (
-                hashlib.sha256(auth.encode("utf-8")).hexdigest()[:16] if auth else "anon"
-            )
-            key = f"{client}:{auth_fingerprint}"
+            key = client_bucket_host(request, trusted)
 
             if request.method == "GET" and path.startswith(_JOB_POLL_PREFIX):
                 if job_poll_per_minute > 0 and not backend.allow(
@@ -131,7 +150,7 @@ def add_rate_limit_middleware(
             if request.method != "POST":
                 response = await call_next(request)
                 return response
-            if not any(path.startswith(prefix) for prefix in _RATE_LIMITED_POST_PREFIXES):
+            if not post_path_is_rate_limited(path):
                 response = await call_next(request)
                 return response
             if requests_per_minute > 0 and not backend.allow(
@@ -149,6 +168,9 @@ def add_rate_limit_middleware(
 
 __all__ = [
     "_DEFAULT_JOB_POLL_PER_MINUTE",
+    "_RATE_LIMIT_POST_ALLOWLIST",
+    "_RATE_LIMITED_POST_PREFIXES",
     "add_rate_limit_middleware",
     "client_bucket_host",
+    "post_path_is_rate_limited",
 ]

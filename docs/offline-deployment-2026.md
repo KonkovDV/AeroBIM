@@ -19,7 +19,7 @@ python -m aerobim.tools.offline_bundle sbom
 python -m aerobim.tools.offline_bundle wheelhouse  # exit 2 — OUT_OF_SCOPE honesty artifact
 ```
 
-`smoke` path: `docker rmi` tag → `docker load` from tar → `--network none` with `AEROBIM_ENV=development` → in-container probes (health, auth 401 gate, capabilities, egress block). Production remains `docker-compose.production.yml` plus Redis (`AEROBIM_REDIS_URL`); a single air-gap container cannot reach Redis.
+`smoke` path: `docker rmi` tag → `docker load` from tar → `--network none` with `AEROBIM_ENV=development` → in-container probes (health, auth 401 gate, capabilities, egress block). Production remains `docker-compose.production.yml` plus Redis (`AEROBIM_REDIS_URL` with `AEROBIM_REDIS_PASSWORD` / `--requirepass`); a single air-gap container cannot reach Redis.
 
 `wheelhouse` writes `wheelhouse-OUT_OF_SCOPE.json` (exit **2**) — bare-metal pip is not required for И1.
 

@@ -2,7 +2,8 @@
   "schema": "aerobim_npa_instrument_register_v1",
   "as_of": "2026-08-14",
   "not_legal_advice": true,
-  "checkpoint": "NO_GO",
+  "checkpoint": "GO",
+  "customer_go": false,
   "claim_boundary": "Legal-force inventory for engineering honesty. Not a court opinion. Not full GOST/SP compliance. Does not close RT-001/002/003.",
   "pp614_formats_citation": "PP RF 614 of 17.05.2024, composition of electronic documents item 7 subitems b/g/d: PDF/A; LandXML or open-spec terrain; IFC or open-spec CIM. Do not cite Rules item 7 (open GIS resource pointers) as the format list.",
   "im_obligation": {
