@@ -2,14 +2,14 @@
 title: "Документация AeroBIM — вход для жюри Техлаба и МИК"
 status: active
 version: "3.7.0"
-last_updated: "2026-09-04"
+last_updated: "2026-09-05"
 tags: [aerobim, documentation, samolet, techlab, jury]
 claim_boundary: "Public GitHub = TechLab jury pack only. Checkpoint GO; customer_go false. Eng readiness ≠ customer GO. Working/debug docs stay local, outside git."
 ---
 
 # Документация
 
-Checkpoint: **`NO_GO`**. Стадия МИК — **доработка**. На учебном комплекте проверка работает. Корпуса Самолёта, разметчиков, подписанного профиля Самолёта (RT-002c) и подтверждения импорта в СОД нет. Публичные IDS экспертизы — линейка измерения (RT-002a). EIR v4 на канале — носитель (RT-002b), не «RT-002 CLOSED».
+Checkpoint: **`GO`** (`regulatory_measurement_mvp`). `customer_go` **false**. Стадия МИК — **доработка**. На учебном комплекте проверка работает. Корпуса Самолёта, двух человеческих разметчиков, подписанного профиля Самолёта (RT-002c) и подтверждения импорта в СОД нет. Публичные IDS экспертизы — линейка измерения (RT-002a). EIR v4 на канале — носитель (RT-002b CLOSED). Не писать недифференцированно «RT-002 CLOSED».
 
 Полная карта: [`TIER0_INDEX.md`](TIER0_INDEX.md). Пакет формы: [`../submission/README.md`](../submission/README.md).
 

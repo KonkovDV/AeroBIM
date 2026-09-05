@@ -145,6 +145,7 @@ export default function RemarkCardPanel({
                     onSave();
                   }
                 }}
+                spellCheck
                 aria-label={UI_COPY.editRemark}
               />
               <div className="remark-actions">

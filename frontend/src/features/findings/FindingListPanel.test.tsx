@@ -43,12 +43,12 @@ describe("FindingListPanel", () => {
         onSelectIssue={() => undefined}
       />,
     );
-    const buttons = screen.getAllByRole("button");
-    const cards = buttons.filter((button) => button.className.includes("issue-card"));
+    const cards = screen.getAllByTestId("issue-card");
     expect(cards).toHaveLength(2);
     expect(cards[0]?.tabIndex).toBe(-1);
     expect(cards[1]?.tabIndex).toBe(0);
-    expect(cards[1]?.className).toMatch(/active/);
+    expect(cards[1]?.getAttribute("aria-selected")).toBe("true");
+    expect(screen.getByRole("listbox").getAttribute("aria-activedescendant")).toBe("finding-row-1");
   });
 
   it("shows storey and axis on the card or нет в индексе", () => {

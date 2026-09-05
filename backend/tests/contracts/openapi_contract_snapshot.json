@@ -97,6 +97,7 @@
           },
           "norm_rule_pack_paths": {
             "items": {
+              "maxLength": 2048,
               "type": "string"
             },
             "maxItems": 16,
@@ -978,6 +979,7 @@
                 "type": "null"
               }
             ],
+            "description": "Ignored. HITL actor is taken from the bound principal (F-04).",
             "title": "Actor"
           },
           "event_type": {
@@ -1350,7 +1352,7 @@
   },
   "info": {
     "title": "aerobim-backend",
-    "version": "0.2.0"
+    "version": "0.1.0"
   },
   "openapi": "3.1.0",
   "paths": {

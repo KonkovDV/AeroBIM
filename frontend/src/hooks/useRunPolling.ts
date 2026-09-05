@@ -21,9 +21,15 @@ export type RunPolling = {
 };
 
 /**
- * Опрос jobs/{job_id} раз в 2 с + живой счётчик от старта. Не SSE.
+ * Опрос jobs/{job_id} с backoff 2 с → 15 с. Не SSE: бэкенд не отдаёт /events.
  * Таймер — фактическая длительность прогона. SLA не заявляем.
  */
+export const JOB_POLL_INTERVAL_MS = 2000;
+export const JOB_POLL_MAX_INTERVAL_MS = 15_000;
+
+export function nextJobPollInterval(currentMs: number): number {
+  return Math.min(Math.round(currentMs * 1.5), JOB_POLL_MAX_INTERVAL_MS);
+}
 export function useRunPolling(onReportReady?: (reportId: string) => void): RunPolling {
   const [job, setJob] = useState<AnalyzeJobSnapshot | null>(null);
   const [pollError, setPollError] = useState<string | null>(null);
@@ -66,14 +72,40 @@ export function useRunPolling(onReportReady?: (reportId: string) => void): RunPo
     if (!jobId || terminal) {
       return;
     }
-    const handle = window.setInterval(() => {
-      void fetchAnalyzeJob(jobId)
-        .then(setJob)
-        .catch((err: unknown) => {
-          setPollError(err instanceof Error ? err.message : "Не удалось опросить задание");
-        });
-    }, 2000);
-    return () => window.clearInterval(handle);
+    let cancelled = false;
+    let delay = 0;
+    let handle = 0;
+    const polledJobId = jobId;
+
+    function schedule(): void {
+      handle = window.setTimeout(() => {
+        void fetchAnalyzeJob(polledJobId)
+          .then((snapshot) => {
+            if (cancelled) {
+              return;
+            }
+            setJob(snapshot);
+            delay = delay === 0 ? JOB_POLL_INTERVAL_MS : nextJobPollInterval(delay);
+            if (!TERMINAL_JOB_STATUSES.has(snapshot.status.toLowerCase())) {
+              schedule();
+            }
+          })
+          .catch((err: unknown) => {
+            if (cancelled) {
+              return;
+            }
+            setPollError(err instanceof Error ? err.message : "Не удалось опросить задание");
+            delay = delay === 0 ? JOB_POLL_INTERVAL_MS : nextJobPollInterval(delay);
+            schedule();
+          });
+      }, delay);
+    }
+
+    schedule();
+    return () => {
+      cancelled = true;
+      window.clearTimeout(handle);
+    };
   }, [jobId, jobStatus, terminal]);
 
   function trackJob(next: AnalyzeJobSnapshot | null, options?: { restartClock?: boolean }): void {

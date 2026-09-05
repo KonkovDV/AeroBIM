@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-from typing import Literal
+import json
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class ValidateIfcRequest(BaseModel):
@@ -19,6 +20,12 @@ class ValidateIfcRequest(BaseModel):
     information_container_id: str | None = Field(default=None, max_length=256)
     revision: str | None = Field(default=None, max_length=64)
     doc_status: Literal["WIP", "Shared", "Published", "Archived"] | None = None
+
+
+BoundedStoragePath = Annotated[str, Field(max_length=2048)]
+
+_MAX_RULE_DIFF_KEYS = 64
+_MAX_RULE_DIFF_JSON_CHARS = 32_768
 
 
 class DrawingPayload(BaseModel):
@@ -46,7 +53,7 @@ class AnalyzeProjectPackageRequest(BaseModel):
     calculation_text: str = Field(default="", max_length=50_000)
     calculation_path: str | None = Field(default=None, max_length=2048)
     drawings: list[DrawingPayload] = Field(default_factory=list, max_length=64)
-    norm_rule_pack_paths: list[str] = Field(default_factory=list, max_length=16)
+    norm_rule_pack_paths: list[BoundedStoragePath] = Field(default_factory=list, max_length=16)
     pd_section_path: str | None = Field(default=None, max_length=2048)
     rd_section_path: str | None = Field(default=None, max_length=2048)
     reinforcement_report_path: str | None = Field(default=None, max_length=2048)
@@ -96,7 +103,11 @@ class ReviewEventRequest(BaseModel):
         "superseded",
     ]
     issue_rule_id: str | None = Field(default=None, max_length=256)
-    actor: str | None = Field(default=None, max_length=128)
+    actor: str | None = Field(
+        default=None,
+        max_length=128,
+        description="Ignored. HITL actor is taken from the bound principal (F-04).",
+    )
     note: str | None = Field(default=None, max_length=2000)
     latency_ms: int | None = Field(default=None, ge=0, le=86_400_000)
     previous_state: str | None = Field(default=None, max_length=64)
@@ -112,6 +123,19 @@ class NormRuleHitlEventRequest(BaseModel):
     target_approval_status: Literal["synthetic", "draft", "customer_approved"] | None = None
     approval_ref: str | None = Field(default=None, max_length=512)
     report_id: str | None = Field(default=None, max_length=64)
+
+    @field_validator("rule_diff")
+    @classmethod
+    def _bound_rule_diff(cls, value: dict[str, object]) -> dict[str, object]:
+        if len(value) > _MAX_RULE_DIFF_KEYS:
+            raise ValueError("rule_diff exceeds key limit")
+        try:
+            blob = json.dumps(value, ensure_ascii=False)
+        except TypeError as exc:
+            raise ValueError("rule_diff must be JSON-serializable") from exc
+        if len(blob) > _MAX_RULE_DIFF_JSON_CHARS:
+            raise ValueError("rule_diff exceeds size limit")
+        return value
 
 
 # --- /v1/system/capabilities response contract (schema_version 1.3.0) ------

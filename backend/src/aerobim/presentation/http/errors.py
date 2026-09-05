@@ -26,6 +26,7 @@ _PUBLIC_HITL_STATE_CONFLICT = "HITL state conflict"
 _PUBLIC_STORAGE_BOUNDARY = "Stored object escapes storage boundary"
 _PUBLIC_NOT_FOUND = "Object not found"
 _PUBLIC_EXPORT_UNAVAILABLE = "Export service unavailable"
+_PUBLIC_CSRF_HEADER_REQUIRED = "CSRF header required"
 
 
 def public_bad_request_detail() -> str:
@@ -116,9 +117,16 @@ def public_export_unavailable_detail() -> str:
     return _PUBLIC_EXPORT_UNAVAILABLE
 
 
+def public_csrf_header_required_detail() -> str:
+    """Stable 403 when a BFF cookie is present on a mutation without the custom header."""
+
+    return _PUBLIC_CSRF_HEADER_REQUIRED
+
+
 __all__ = [
     "public_analyze_concurrency_limit_detail",
     "public_bad_request_detail",
+    "public_csrf_header_required_detail",
     "public_export_unavailable_detail",
     "public_ifc_analyze_cap_body",
     "public_ifc_analyze_cap_detail",

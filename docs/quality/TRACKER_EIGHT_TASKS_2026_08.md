@@ -2,7 +2,7 @@
 ---
 title: "Eight tracker tasks (29.08) — git SSOT for KT#3"
 date: "2026-08-30"
-last_updated: "2026-09-03"
+last_updated: "2026-09-05"
 status: active
 version: "1.2.0"
 closes_rt001: false
@@ -44,7 +44,7 @@ Checkpoint **`GO`**; `customer_go` false. Пакет канала **не** в gi
 
 1. **Не** «поднять SPF 256 МиБ до 1,5 ГБ». SPF in-memory остаётся 256 МиБ. До 1,5 ГБ — RocksDB. WASM 256 МиБ.
 2. CADSoftTools на 30.08 — **от 765 USD**, не 1 660.
-3. RT-002 **split**: 002a CLOSED (городские IDS + `pack_hash`); 002b OPEN (нет подписи Самолёта). Не «норм нет».
+3. RT-002 **split**: 002a CLOSED (городские IDS + `pack_hash`); 002b CLOSED (EIR v4 как текст); 002c OPEN (нет подписи Самолёта). Не «норм нет».
 4. Задача 3 упирается в **OIDC BFF 501**, не в отсутствие HTML. Откат к 21.09: API + ссылки на отчёты.
 5. «Неэффективное пространство»: в git **`advisory_unsigned`** — inventory IfcSpace, пороги не подписаны, не delivered. Не оставлять строку без позиции.
 6. Fixture clash n=6 / P=1,0 **не показывать** (Wilson lower ≈ 0,61).

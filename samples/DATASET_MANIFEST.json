@@ -1288,8 +1288,8 @@
     },
     {
       "path": "customer/README.md",
-      "sha256": "7cfdb50a790a03cafe6888abb488e87140c13af7c0fb44abb4c2a7e27e2288b1",
-      "bytes": 1243,
+      "sha256": "1c736342ffad70d9d8f4adf0bbc7a7ab6a67f2223f640af935b757ec84d74e15",
+      "bytes": 1389,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",

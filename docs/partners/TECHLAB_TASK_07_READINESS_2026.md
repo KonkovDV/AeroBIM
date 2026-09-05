@@ -6,7 +6,7 @@
 title: "TechLab Samolet Samolet PD/RD verification task Readiness 2026"
 status: active
 version: "1.3.5"
-last_updated: "2026-08-29"
+last_updated: "2026-09-05"
 tags: [aerobim, techlab, samolet, task-07, readiness]
 ---
 
@@ -17,7 +17,7 @@ tags: [aerobim, techlab, samolet, task-07, readiness]
 **Prize:** paid pilot testing **2 000 000 ₽** (Partner↔Fund agreement; not a 449-PP entry grant)  
 **Task page:** https://i.moscow/techlab/samolet  
 **Eligibility (official FAQ, 26.08.2026):** individuals or a team of **1–10**, age 18+. **ИП/ООО is not an entry requirement.** Captain files the application on i.moscow.  
-**Checkpoint:** **`NO_GO`** until RT-001/002/003 ([`../../audit/reports/CRITICAL_BLOCKERS.md`](../../audit/reports/CRITICAL_BLOCKERS.md)).  
+**Checkpoint:** **`GO`** (`regulatory_measurement_mvp`). `customer_go` **false** until residual RT-001b/c, RT-002c, RT-003c, federated IFC, and CDE T2 ([`../../audit/reports/CRITICAL_BLOCKERS.md`](../../audit/reports/CRITICAL_BLOCKERS.md)). Undifferentiated `closes_rt001/002/003` stay false.  
 **26.08.2026 owner-disk rehearsal:** IFC analyze with **fixture** IDS/rules does not change the table below. Not a customer defect list. `detected_count` stays 0. Intake remains `BLOCKED_NO_CUSTOMER_DATA`. Seam coverage map (spaces without QTO area; FireRating sparse / EI 45 ≠ design-TZ II/C0): [`../quality/TZ_SEAM_COVERAGE_MAP_2026_08.md`](../quality/TZ_SEAM_COVERAGE_MAP_2026_08.md).  
 **МИК stage:** **доработка** (КТ#3 открывается 03.09). Валидация эффективности и внедрение **не начаты**. Показ: [`../demo/KT3_JURY_FAQ_2026_08_25.md`](../demo/KT3_JURY_FAQ_2026_08_25.md).  
 **Eng status (Aug 2026):** IUA ledger [`../quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../quality/INTERPRETATION_USE_LEDGER_2026_08.md). Post-cartography plan [`../quality/TECHLAB_POST_CARTOGRAPHY_PLAN_2026_08.md`](../quality/TECHLAB_POST_CARTOGRAPHY_PLAN_2026_08.md). TZ v1 brief pin [`../tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md`](../tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md). KT#3 one-command [`../demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md`](../demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md). Tracker six tasks [`../demo/KT3_TRACKER_SIX_TASKS_2026_08.md`](../demo/KT3_TRACKER_SIX_TASKS_2026_08.md).  

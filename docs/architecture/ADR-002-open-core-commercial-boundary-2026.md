@@ -3,7 +3,7 @@
 title: "ADR-002 — Open-core commercial boundary"
 status: accepted
 date: 2026-07-21
-last_updated: "2026-08-30"
+last_updated: "2026-09-05"
 accepted_on: "2026-08-05"
 ---
 
@@ -22,8 +22,9 @@ AeroBIM is currently MIT-licensed (`LICENSE`). Pilot packaging needs a clear
 customer-facing products (hosted CDE connectors, managed adjudication, SLA
 ops) can be monetized later — **without changing the LICENSE in this ADR**.
 
-Checkpoint remains **NO_GO**; this ADR does not authorize product accuracy,
-customer SLA, or CDE-ready claims.
+Product Checkpoint is **GO** (`regulatory_measurement_mvp`); `customer_go` stays
+**false**. This ADR does not authorize product accuracy, customer SLA, or
+CDE-ready claims.
 
 ## Decision
 

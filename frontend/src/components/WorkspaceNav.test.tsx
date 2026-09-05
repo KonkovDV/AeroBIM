@@ -14,6 +14,13 @@ describe("WorkspaceNav", () => {
     expect(onChange).toHaveBeenCalledWith("upload");
   });
 
+  it("switches screens with Alt and digit 1-8", () => {
+    const onChange = vi.fn();
+    render(<WorkspaceNav workspaceView="review" onChange={onChange} />);
+    fireEvent.keyDown(window, { key: "2", altKey: true });
+    expect(onChange).toHaveBeenCalledWith("upload");
+  });
+
   it("shows the selected-report findings badge only when a count is given", () => {
     const { rerender } = render(<WorkspaceNav workspaceView="review" onChange={() => undefined} />);
     expect(screen.queryByTestId("nav-review-badge")).toBeNull();
@@ -22,6 +29,10 @@ describe("WorkspaceNav", () => {
     );
     const badge = screen.getByTestId("nav-review-badge");
     expect(badge.textContent).toBe("7");
+    rerender(
+      <WorkspaceNav workspaceView="projects" onChange={() => undefined} reviewFindingsCount={120} />,
+    );
+    expect(screen.getByTestId("nav-review-badge").textContent).toBe("99+");
     // aria-hidden: доступное имя кнопки «Эксперт» не меняется.
     expect(badge.getAttribute("aria-hidden")).toBe("true");
     expect(screen.getByRole("button", { name: "Эксперт" })).toBeTruthy();

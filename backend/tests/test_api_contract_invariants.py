@@ -107,6 +107,12 @@ class OpenApiSnapshotTests(unittest.TestCase):
             f"{UPDATE_ENV}=1 and commit the snapshot diff."
         )
 
+    def test_openapi_version_matches_installed_package(self) -> None:
+        from importlib.metadata import version as pkg_version
+
+        app = _build_app()
+        self.assertEqual(app.version, pkg_version("aerobim-backend"))
+
 
 class AuthGateTests(unittest.TestCase):
     """Invariant 2: no /v1 route ships without the bearer-auth dependency."""

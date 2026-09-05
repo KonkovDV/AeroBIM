@@ -5,20 +5,27 @@ import type { ReportCapabilities } from "../lib/types";
 import { UI_COPY } from "../lib/ui-copy";
 import { RUN_JOURNAL_STORAGE_KEY } from "../lib/run-journal";
 
-const { submitAnalyzeProjectPackageMock, cancelAnalyzeJobMock } = vi.hoisted(() => ({
+const { submitAnalyzeProjectPackageMock, cancelAnalyzeJobMock, fetchAnalyzeJobMock } = vi.hoisted(() => ({
   submitAnalyzeProjectPackageMock: vi.fn(),
   cancelAnalyzeJobMock: vi.fn(),
+  fetchAnalyzeJobMock: vi.fn(),
 }));
 
 vi.mock("../lib/api", () => ({
   submitAnalyzeProjectPackage: (...args: unknown[]) => submitAnalyzeProjectPackageMock(...args),
   cancelAnalyzeJob: (...args: unknown[]) => cancelAnalyzeJobMock(...args),
+  fetchAnalyzeJob: (...args: unknown[]) => fetchAnalyzeJobMock(...args),
 }));
 
 describe("AnalyzeRunPanel", () => {
   beforeEach(() => {
     submitAnalyzeProjectPackageMock.mockReset();
     cancelAnalyzeJobMock.mockReset();
+    fetchAnalyzeJobMock.mockReset();
+    fetchAnalyzeJobMock.mockImplementation(async (jobId: string) => ({
+      job_id: jobId,
+      status: "running",
+    }));
     sessionStorage.removeItem(RUN_JOURNAL_STORAGE_KEY);
   });
   it("shows elapsed-timer copy without claiming SLA", () => {
@@ -84,19 +91,19 @@ describe("AnalyzeRunPanel", () => {
       job_id: "job-running-1",
       status: "cancelled",
     });
-    const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(false);
     render(<AnalyzeRunPanel ifcPath="walls.ifc" />);
     fireEvent.click(screen.getByRole("button", { name: "Запустить анализ" }));
     expect(await screen.findByTestId("analyze-job-status")).toBeTruthy();
     expect(screen.getByTestId("analyze-job-status").textContent).toMatch(/job-running-1/);
     fireEvent.click(screen.getByRole("button", { name: "Отменить" }));
-    expect(confirmSpy).toHaveBeenCalled();
+    expect(screen.getByTestId("run-cancel-confirm")).toBeTruthy();
     expect(cancelAnalyzeJobMock).not.toHaveBeenCalled();
-    confirmSpy.mockReturnValue(true);
+    fireEvent.click(screen.getByRole("button", { name: "Оставить прогон" }));
+    expect(screen.queryByTestId("run-cancel-confirm")).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "Отменить" }));
+    fireEvent.click(screen.getByRole("button", { name: "Да, отменить" }));
     await waitFor(() => {
       expect(cancelAnalyzeJobMock).toHaveBeenCalledWith("job-running-1");
     });
-    confirmSpy.mockRestore();
   });
 });

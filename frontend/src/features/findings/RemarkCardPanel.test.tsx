@@ -50,6 +50,7 @@ describe("RemarkCardPanel", () => {
     expect(screen.getByText("ids:FIRE-1")).toBeTruthy();
     expect(screen.getByTestId("evidence-stepper")).toBeTruthy();
     expect(screen.getByTestId("review-history")).toBeTruthy();
+    expect(screen.getByLabelText("Текст замечания").getAttribute("spellcheck")).toBe("true");
   });
 
   it("filters cached HITL events for the active finding", () => {

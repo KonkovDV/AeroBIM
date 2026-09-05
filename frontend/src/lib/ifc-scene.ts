@@ -2,6 +2,8 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { IfcAPI, IFCBUILDINGSTOREY, IFCRELCONTAINEDINSPATIALSTRUCTURE, type FlatMesh, type PlacedGeometry } from "web-ifc";
 import webIfcWasmUrl from "web-ifc/web-ifc.wasm?url";
+import { maxIndexValue } from "./typed-array-max";
+import { assertFitsIfcViewerCap } from "./wasm-cap";
 import {
   indexContainedInStorey,
   iterateIdVector,
@@ -15,7 +17,7 @@ function getVertexStride(vertices: Float32Array, indices: Uint32Array): number {
   if (indices.length === 0) {
     return 6;
   }
-  const vertexCount = Math.max(...indices) + 1;
+  const vertexCount = maxIndexValue(indices) + 1;
   const stride = vertices.length / vertexCount;
   return Number.isInteger(stride) && stride >= 3 ? stride : 6;
 }
@@ -98,6 +100,7 @@ export class IfcSceneController {
   async loadModel(ifcBytes: Uint8Array): Promise<void> {
     await this.init();
     this.clearModel();
+    assertFitsIfcViewerCap(ifcBytes.byteLength);
 
     const ifcApi = this.ifcApi;
     if (ifcApi === null) {

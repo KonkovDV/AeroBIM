@@ -308,8 +308,7 @@ describe("App", () => {
       expect(screen.queryByText("Drawing issue")).toBeNull();
     });
     const cards = screen
-      .getAllByRole("button")
-      .filter((button) => button.className.includes("issue-card"));
+      .getAllByTestId("issue-card");
     expect(cards).toHaveLength(1);
     expect(cards[0]?.className).toMatch(/active/);
     expect(cards[0]?.textContent).toMatch(/DRAW-SECOND/);
@@ -686,7 +685,7 @@ describe("App", () => {
     expect(within(activeIssueBlock).getByText(UI_COPY.provenanceOk)).toBeTruthy();
     expect(within(activeIssueBlock).getByText("fid-draw-001")).toBeTruthy();
 
-    fireEvent.click(screen.getByRole("button", { name: /DRAW-SECOND/i }));
+    fireEvent.click(screen.getByRole("option", { name: /DRAW-SECOND/i }));
     const secondImage = await screen.findByRole("img", { name: /Превью чертежа a-101/i });
     Object.defineProperty(secondImage, "naturalWidth", { configurable: true, value: 640 });
     Object.defineProperty(secondImage, "naturalHeight", { configurable: true, value: 400 });
@@ -709,7 +708,7 @@ describe("App", () => {
     render(<App />);
 
     await screen.findByRole("img", { name: /Превью чертежа a-102/i });
-    fireEvent.click(screen.getByRole("button", { name: /DRAW-SECOND/i }));
+    fireEvent.click(screen.getByRole("option", { name: /DRAW-SECOND/i }));
 
     expect(await screen.findByRole("img", { name: /Превью чертежа a-101/i })).toBeTruthy();
     expect(screen.getAllByText("DRAW-SECOND").length).toBeGreaterThan(0);
@@ -763,7 +762,7 @@ describe("App", () => {
     expect(negligibleChip.className).toContain("triage-band-negligible");
 
     // Priority-desc reviewer order: critical card must precede negligible card.
-    const cards = screen.getAllByRole("button", { name: /SPATIAL-/i });
+    const cards = screen.getAllByRole("option", { name: /SPATIAL-/i });
     expect(cards[0].textContent).toContain("SPATIAL-CRITICAL");
     expect(cards[1].textContent).toContain("SPATIAL-NEGLIGIBLE");
   });
@@ -778,8 +777,8 @@ describe("App", () => {
 
     render(<App />);
 
-    const advisoryCard = await screen.findByRole("button", { name: /ADV-CAND-001/i });
-    const deterministicCard = screen.getByRole("button", { name: /DET-CONF-001/i });
+    const advisoryCard = await screen.findByRole("option", { name: /ADV-CAND-001/i });
+    const deterministicCard = screen.getByRole("option", { name: /DET-CONF-001/i });
 
     // Advisory observation is visually marked as a candidate needing review — §12:
     // it must not read as a confirmed verdict/error.
@@ -804,9 +803,9 @@ describe("App", () => {
 
     render(<App />);
 
-    const lowCard = await screen.findByRole("button", { name: /LOWCONF-001/i });
-    const highCard = screen.getByRole("button", { name: /HIGHCONF-001/i });
-    const noneCard = screen.getByRole("button", { name: /NOCONF-001/i });
+    const lowCard = await screen.findByRole("option", { name: /LOWCONF-001/i });
+    const highCard = screen.getByRole("option", { name: /HIGHCONF-001/i });
+    const noneCard = screen.getByRole("option", { name: /NOCONF-001/i });
 
     // Low self-reported confidence is surfaced as a review cue (§12), labelled
     // uncalibrated so it is not read as a calibrated probability.
@@ -1054,7 +1053,6 @@ describe("App", () => {
       path: "uploads/walls.ifc",
       size_bytes: 12,
       content_type: null,
-      object_key: null,
     });
     submitAnalyzeProjectPackageMock.mockResolvedValue({
       job_id: "job-kt3",

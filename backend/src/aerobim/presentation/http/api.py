@@ -11,6 +11,8 @@ and includes the routers, keeping the historical public surface:
 
 from __future__ import annotations
 
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version as pkg_version
 from typing import TYPE_CHECKING
 
 from aerobim.core.di.container import Container
@@ -18,6 +20,17 @@ from aerobim.core.di.tokens import Tokens
 
 if TYPE_CHECKING:
     from fastapi import FastAPI
+
+_PACKAGE_NAME = "aerobim-backend"
+
+
+def _http_api_version() -> str:
+    """OpenAPI version follows ``pyproject.toml``; do not hard-code a second SSOT."""
+
+    try:
+        return pkg_version(_PACKAGE_NAME)
+    except PackageNotFoundError:
+        return "0.1.0"
 
 
 def create_http_app(container: Container) -> FastAPI:
@@ -47,18 +60,19 @@ def create_http_app(container: Container) -> FastAPI:
     )
 
     settings = container.resolve(Tokens.SETTINGS)
+    api_version = _http_api_version()
 
     # Harden OpenAPI surfaces outside development/test (RT A03).
     if not settings.is_dev_environment:
         app = FastAPI(
             title="aerobim-backend",
-            version="0.2.0",
+            version=api_version,
             docs_url=None,
             redoc_url=None,
             openapi_url=None,
         )
     else:
-        app = FastAPI(title="aerobim-backend", version="0.2.0")
+        app = FastAPI(title="aerobim-backend", version=api_version)
 
     # Innermost first. Last add_middleware is outermost (Starlette).
     # Rate-limit must sit inside security-headers/correlation so 429 keeps CSP/HSTS
@@ -96,6 +110,7 @@ def create_http_app(container: Container) -> FastAPI:
             "Content-Type",
             "Idempotency-Key",
             "X-Request-ID",
+            "X-AeroBIM-Requested-With",
             "Accept",
         ],
         expose_headers=["X-Request-ID"],

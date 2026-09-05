@@ -41,6 +41,7 @@ vi.mock("../lib/ifc-scene", () => ({
 }));
 
 import IfcViewerPanel from "./IfcViewerPanel";
+import { IfcViewerCapError } from "../lib/wasm-cap";
 
 function report(): ValidationReport {
   return {
@@ -119,5 +120,21 @@ describe("IfcViewerPanel", () => {
     expect(fetchReportIfcSourceMock).toHaveBeenCalledTimes(1);
     expect(loadModelMock).toHaveBeenCalledTimes(1);
     expect(screen.getByText("guid-b")).toBeTruthy();
+  });
+
+  it("does not open WASM when the IFC exceeds the 256 MiB viewer cap", async () => {
+    fetchReportIfcSourceMock.mockRejectedValue(new IfcViewerCapError());
+    render(
+      <IfcViewerPanel
+        report={report()}
+        selectedGuids={[]}
+        selectionMode="none"
+        selectionHeading=""
+        selectionDetail=""
+      />,
+    );
+    expect(await screen.findByTestId("viewer-overlay-error")).toBeTruthy();
+    expect(screen.getByText(UI_COPY.viewerOverWasmCap)).toBeTruthy();
+    expect(loadModelMock).not.toHaveBeenCalled();
   });
 });

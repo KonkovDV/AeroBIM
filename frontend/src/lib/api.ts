@@ -6,6 +6,8 @@ import {
   type AuthBffDiscovery,
   type AuthBffSession,
 } from "./auth-bff";
+import { aerobimCsrfHeaders } from "./csrf";
+import { WASM_IFC_VIEWER_CAP_BYTES, assertFitsIfcViewerCap } from "./wasm-cap";
 
 export type ReportListFilters = {
   project?: string;
@@ -30,6 +32,7 @@ function authHeaders(extra: Record<string, string> = {}): HeadersInit {
   const headers: Record<string, string> = {
     Accept: "application/json",
     ...extra,
+    ...aerobimCsrfHeaders(),
   };
   if (apiBearerToken) {
     headers.Authorization = `Bearer ${apiBearerToken}`;
@@ -67,7 +70,10 @@ async function readJson<T>(url: string, init?: { signal?: AbortSignal }): Promis
   return (await response.json()) as T;
 }
 
-async function readBytes(url: string): Promise<{ bytes: Uint8Array; contentType: string | null }> {
+async function readBytes(
+  url: string,
+  options?: { maxBytes?: number },
+): Promise<{ bytes: Uint8Array; contentType: string | null }> {
   const response = await fetch(url, {
     headers: authHeaders({ Accept: "*/*" }),
     credentials: "include",
@@ -75,8 +81,18 @@ async function readBytes(url: string): Promise<{ bytes: Uint8Array; contentType:
   if (!response.ok) {
     throwForFailedResponse(response);
   }
+  if (options?.maxBytes != null) {
+    const declared = Number(response.headers.get("content-length"));
+    if (Number.isFinite(declared) && declared > options.maxBytes) {
+      assertFitsIfcViewerCap(declared);
+    }
+  }
+  const bytes = new Uint8Array(await response.arrayBuffer());
+  if (options?.maxBytes != null) {
+    assertFitsIfcViewerCap(bytes.byteLength);
+  }
   return {
-    bytes: new Uint8Array(await response.arrayBuffer()),
+    bytes,
     contentType: response.headers.get("Content-Type"),
   };
 }
@@ -204,7 +220,9 @@ export async function fetchReportCoverage(reportId: string): Promise<CheckCovera
 }
 
 export async function fetchReportIfcSource(reportId: string): Promise<Uint8Array> {
-  const { bytes } = await readBytes(buildReportIfcSourceUrl(reportId));
+  const { bytes } = await readBytes(buildReportIfcSourceUrl(reportId), {
+    maxBytes: WASM_IFC_VIEWER_CAP_BYTES,
+  });
   return bytes;
 }
 
@@ -230,6 +248,46 @@ export async function fetchDrawingAssetPreviewBlobUrl(reportId: string, assetId:
   return URL.createObjectURL(blob);
 }
 
+function triggerBlobDownload(blob: Blob, filename: string): void {
+  const objectUrl = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = objectUrl;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(objectUrl);
+}
+
+function isAbortError(error: unknown): boolean {
+  return error instanceof DOMException && error.name === "AbortError";
+}
+
+type SaveFilePicker = (options: { suggestedName: string }) => Promise<{
+  createWritable: () => Promise<WritableStream<Uint8Array>>;
+}>;
+
+/** Stream to disk when the picker exists; otherwise buffer a blob. Not a 1.5 GB WASM raise. */
+export async function saveResponseDownload(response: Response, filename: string): Promise<void> {
+  const picker = (window as Window & { showSaveFilePicker?: SaveFilePicker }).showSaveFilePicker;
+  const body = response.body;
+  if (body && typeof picker === "function") {
+    try {
+      const handle = await picker({ suggestedName: filename });
+      await body.pipeTo(await handle.createWritable());
+      return;
+    } catch (error: unknown) {
+      if (isAbortError(error)) {
+        return;
+      }
+      if (body.locked) {
+        throw error instanceof Error ? error : new Error("Экспорт: поток уже закрыт");
+      }
+    }
+  }
+  triggerBlobDownload(await response.blob(), filename);
+}
+
 export async function downloadExport(
   reportId: string,
   format: ExportFormat,
@@ -242,16 +300,8 @@ export async function downloadExport(
   if (!response.ok) {
     throw new Error(`Экспорт завершился ошибкой ${response.status}: ${response.statusText}`);
   }
-  const blob = await response.blob();
   const extension = format === "bcf" ? "bcfzip" : format;
-  const objectUrl = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = objectUrl;
-  anchor.download = `aerobim-report-${reportId}.${extension}`;
-  document.body.appendChild(anchor);
-  anchor.click();
-  anchor.remove();
-  URL.revokeObjectURL(objectUrl);
+  await saveResponseDownload(response, `aerobim-report-${reportId}.${extension}`);
 }
 
 export type ReviewEventType =
@@ -354,12 +404,11 @@ export async function uploadDocument(
   path: string;
   size_bytes: number;
   content_type: string | null;
-  object_key: string | null;
 }> {
   if (!options?.onProgress && !options?.signal) {
     const form = new FormData();
     form.append("file", file);
-    const headers: Record<string, string> = {};
+    const headers: Record<string, string> = { ...aerobimCsrfHeaders() };
     if (apiBearerToken) {
       headers.Authorization = `Bearer ${apiBearerToken}`;
     }
@@ -378,7 +427,6 @@ export async function uploadDocument(
       path: string;
       size_bytes: number;
       content_type: string | null;
-      object_key: string | null;
     };
   }
 
@@ -386,6 +434,10 @@ export async function uploadDocument(
     const xhr = new XMLHttpRequest();
     xhr.open("POST", `${apiBaseUrl}/v1/uploads`);
     xhr.withCredentials = true;
+    const csrf = aerobimCsrfHeaders();
+    for (const [name, value] of Object.entries(csrf)) {
+      xhr.setRequestHeader(name, value);
+    }
     if (apiBearerToken) {
       xhr.setRequestHeader("Authorization", `Bearer ${apiBearerToken}`);
     }
@@ -402,7 +454,6 @@ export async function uploadDocument(
           path: string;
           size_bytes: number;
           content_type: string | null;
-          object_key: string | null;
         });
         return;
       }

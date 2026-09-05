@@ -20,6 +20,7 @@ from aerobim.infrastructure.auth.oidc_bff_phase3 import (
 )
 from aerobim.infrastructure.di.bootstrap import bootstrap_container
 from aerobim.presentation.http.api import create_http_app
+from aerobim.presentation.http.csrf import csrf_request_headers
 
 
 def _phase3_kwargs(storage: Path) -> dict[str, object]:
@@ -100,6 +101,9 @@ class OidcBffHitlRbacTests(unittest.TestCase):
         packed = sign_session_cookie(session.session_id, "cookie-secret")
         self.client.cookies.set("aerobim_bff_session", packed)
 
+    def _csrf(self) -> dict[str, str]:
+        return csrf_request_headers()
+
     def test_default_discovery_without_phase3_is_501(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             settings = Settings(
@@ -149,16 +153,19 @@ class OidcBffHitlRbacTests(unittest.TestCase):
         )
         accepted = self.client.post(
             f"/v1/reports/{report_id}/review-events",
+            headers=self._csrf(),
             json={"event_type": "accepted", "finding_id": "f-1", "note": "no"},
         )
         self.assertEqual(accepted.status_code, 403, accepted.text)
         rejected = self.client.post(
             f"/v1/reports/{report_id}/review-events",
+            headers=self._csrf(),
             json={"event_type": "rejected", "finding_id": "f-1", "note": "no"},
         )
         self.assertEqual(rejected.status_code, 403, rejected.text)
         edited = self.client.post(
             f"/v1/reports/{report_id}/review-events",
+            headers=self._csrf(),
             json={"event_type": "edited_remark", "finding_id": "f-1", "note": "edit"},
         )
         self.assertEqual(edited.status_code, 403, edited.text)
@@ -187,11 +194,13 @@ class OidcBffHitlRbacTests(unittest.TestCase):
         )
         opened = self.client.post(
             f"/v1/reports/{report_id}/review-events",
+            headers=self._csrf(),
             json={"event_type": "opened", "finding_id": "f-1"},
         )
         self.assertEqual(opened.status_code, 200, opened.text)
         edited = self.client.post(
             f"/v1/reports/{report_id}/review-events",
+            headers=self._csrf(),
             json={
                 "event_type": "edited_remark",
                 "finding_id": "f-1",
@@ -201,6 +210,37 @@ class OidcBffHitlRbacTests(unittest.TestCase):
         )
         self.assertEqual(edited.status_code, 200, edited.text)
         self.assertEqual(edited.json()["event"]["event_type"], "edited_remark")
+
+    def test_cookie_mutation_without_csrf_header_is_403(self) -> None:
+        report_id = self._seed_report()
+        self._bind_cookie(
+            subject="expert-1",
+            roles=frozenset({"reviewer"}),
+            tenant_id="tenant-a",
+            identity_verified=True,
+        )
+        response = self.client.post(
+            f"/v1/reports/{report_id}/review-events",
+            json={"event_type": "opened", "finding_id": "f-1"},
+        )
+        self.assertEqual(response.status_code, 403, response.text)
+        self.assertEqual(response.json()["detail"], "CSRF header required")
+
+    def test_cookie_plus_bearer_still_requires_csrf_header(self) -> None:
+        report_id = self._seed_report()
+        self._bind_cookie(
+            subject="expert-1",
+            roles=frozenset({"reviewer"}),
+            tenant_id="tenant-a",
+            identity_verified=True,
+        )
+        response = self.client.post(
+            f"/v1/reports/{report_id}/review-events",
+            headers={"Authorization": "Bearer test-token"},
+            json={"event_type": "opened", "finding_id": "f-1"},
+        )
+        self.assertEqual(response.status_code, 403, response.text)
+        self.assertEqual(response.json()["detail"], "CSRF header required")
 
     def test_verified_cookie_does_not_claim_production_sso(self) -> None:
         self._bind_cookie(

@@ -1,3 +1,4 @@
+import { useDeferredValue, useMemo } from "react";
 import {
   buildViewerFocus,
   filterTriageIssues,
@@ -29,38 +30,49 @@ export function useTriageView(
     clause: string;
   },
 ): TriageView {
-  const activeIssue =
-    selectedReport && selectedReport.issues.length > 0
-      ? selectedReport.issues[Math.min(selectedIssueIndex, selectedReport.issues.length - 1)]
-      : null;
-  const filteredIssues =
-    selectedReport === null
-      ? []
-      : filterTriageIssues(selectedReport, {
-          severity: filters.severity,
-          hitlOnly: filters.hitlOnly,
-          search: filters.search,
-          clause: filters.clause,
-        });
-  const hitlRegionCount = selectedReport
-    ? (selectedReport.drawing_regions ?? []).filter((region) => region.hitl_required === true).length
-    : 0;
-  const activeClash =
-    selectedReport && selectedClashIndex !== null && selectedReport.clash_results.length > 0
-      ? selectedReport.clash_results[
-          Math.min(selectedClashIndex, selectedReport.clash_results.length - 1)
-        ]
-      : null;
-  const matchingRequirements = selectedReport
-    ? findMatchingRequirements(selectedReport, activeIssue)
-    : [];
-  const viewerFocus = buildViewerFocus(activeIssue, activeClash);
-  return {
-    activeIssue,
-    filteredIssues,
-    hitlRegionCount,
-    activeClash,
-    matchingRequirements,
-    viewerFocus,
-  };
+  const deferredSearch = useDeferredValue(filters.search);
+  return useMemo(() => {
+    const activeIssue =
+      selectedReport && selectedReport.issues.length > 0
+        ? selectedReport.issues[Math.min(selectedIssueIndex, selectedReport.issues.length - 1)]
+        : null;
+    const filteredIssues =
+      selectedReport === null
+        ? []
+        : filterTriageIssues(selectedReport, {
+            severity: filters.severity,
+            hitlOnly: filters.hitlOnly,
+            search: deferredSearch,
+            clause: filters.clause,
+          });
+    const hitlRegionCount = selectedReport
+      ? (selectedReport.drawing_regions ?? []).filter((region) => region.hitl_required === true).length
+      : 0;
+    const activeClash =
+      selectedReport && selectedClashIndex !== null && selectedReport.clash_results.length > 0
+        ? selectedReport.clash_results[
+            Math.min(selectedClashIndex, selectedReport.clash_results.length - 1)
+          ]
+        : null;
+    const matchingRequirements = selectedReport
+      ? findMatchingRequirements(selectedReport, activeIssue)
+      : [];
+    const viewerFocus = buildViewerFocus(activeIssue, activeClash);
+    return {
+      activeIssue,
+      filteredIssues,
+      hitlRegionCount,
+      activeClash,
+      matchingRequirements,
+      viewerFocus,
+    };
+  }, [
+    selectedReport,
+    selectedIssueIndex,
+    selectedClashIndex,
+    filters.severity,
+    filters.hitlOnly,
+    filters.clause,
+    deferredSearch,
+  ]);
 }

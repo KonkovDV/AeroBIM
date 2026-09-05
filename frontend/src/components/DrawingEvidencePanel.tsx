@@ -2,9 +2,12 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { fetchDrawingAssetPreviewBlobUrl } from "../lib/api";
 import {
   applyDrawingPan,
+  applyDrawingPinch,
+  applyDrawingScaleStep,
   applyDrawingWheel,
   IDENTITY_DRAWING_VIEW,
   prefersReducedMotion,
+  type DrawingPointer,
   type DrawingViewTransform,
 } from "../lib/drawing-zoom";
 import {
@@ -126,6 +129,12 @@ export default function DrawingEvidencePanel({
   const [regionNote, setRegionNote] = useState<string | null>(null);
   const panningRef = useRef(false);
   const lastPointRef = useRef<{ x: number; y: number } | null>(null);
+  const pointersRef = useRef(new Map<number, DrawingPointer>());
+  const pinchStartRef = useRef<{ distance: number; view: DrawingViewTransform } | null>(null);
+  const previewCacheRef = useRef(new Map<string, string>());
+  const viewportRef = useRef<HTMLDivElement | null>(null);
+  const viewRef = useRef(view);
+  viewRef.current = view;
   const reducedMotion = prefersReducedMotion();
 
   const problemZone = activeIssue?.problem_zone ?? null;
@@ -150,21 +159,36 @@ export default function DrawingEvidencePanel({
   }, [drawingAssets, selectedAssetId]);
 
   useEffect(() => {
-    let revokedUrl: string | null = null;
-    let cancelled = false;
+    const cache = previewCacheRef.current;
+    return () => {
+      for (const url of cache.values()) {
+        URL.revokeObjectURL(url);
+      }
+      cache.clear();
+    };
+  }, [report?.report_id]);
 
+  useEffect(() => {
     if (!report || !selectedAsset) {
       setPreviewUrl(null);
       return;
     }
 
+    const cacheKey = `${report.report_id}:${selectedAsset.asset_id}`;
+    const cached = previewCacheRef.current.get(cacheKey);
+    if (cached) {
+      setPreviewUrl(cached);
+      return;
+    }
+
+    let cancelled = false;
     fetchDrawingAssetPreviewBlobUrl(report.report_id, selectedAsset.asset_id)
       .then((url) => {
         if (cancelled) {
           URL.revokeObjectURL(url);
           return;
         }
-        revokedUrl = url;
+        previewCacheRef.current.set(cacheKey, url);
         setPreviewUrl(url);
       })
       .catch(() => {
@@ -176,9 +200,6 @@ export default function DrawingEvidencePanel({
 
     return () => {
       cancelled = true;
-      if (revokedUrl) {
-        URL.revokeObjectURL(revokedUrl);
-      }
     };
   }, [report, selectedAsset]);
 
@@ -332,6 +353,22 @@ export default function DrawingEvidencePanel({
             <button
               type="button"
               className="toolbar-button"
+              data-testid="drawing-zoom-out"
+              onClick={() => setView((current) => applyDrawingScaleStep(current, -1))}
+            >
+              {UI_COPY.drawingZoomOut}
+            </button>
+            <button
+              type="button"
+              className="toolbar-button"
+              data-testid="drawing-zoom-in"
+              onClick={() => setView((current) => applyDrawingScaleStep(current, 1))}
+            >
+              {UI_COPY.drawingZoomIn}
+            </button>
+            <button
+              type="button"
+              className="toolbar-button"
               data-testid="drawing-reset-zoom"
               onClick={() => setView(IDENTITY_DRAWING_VIEW)}
             >
@@ -348,14 +385,34 @@ export default function DrawingEvidencePanel({
           <div
             className="drawing-evidence-viewport"
             data-testid="drawing-evidence-viewport"
+            ref={viewportRef}
             onWheel={(event) => {
               if (event.cancelable) {
                 event.preventDefault();
               }
-              setView((current) => applyDrawingWheel(current, event.deltaY, reducedMotion));
+              const rect = event.currentTarget.getBoundingClientRect();
+              const pointer = { x: event.clientX - rect.left, y: event.clientY - rect.top };
+              setView((current) => applyDrawingWheel(current, event.deltaY, reducedMotion, pointer));
             }}
             onPointerDown={(event) => {
               if ((event.target as HTMLElement).closest("[data-region-button]")) {
+                return;
+              }
+              const rect = event.currentTarget.getBoundingClientRect();
+              const point = { x: event.clientX - rect.left, y: event.clientY - rect.top };
+              pointersRef.current.set(event.pointerId, point);
+              if (pointersRef.current.size >= 2) {
+                const points = [...pointersRef.current.values()];
+                const first = points[0];
+                const second = points[1];
+                if (first && second) {
+                  pinchStartRef.current = {
+                    distance: Math.hypot(second.x - first.x, second.y - first.y),
+                    view: viewRef.current,
+                  };
+                }
+                panningRef.current = false;
+                lastPointRef.current = null;
                 return;
               }
               panningRef.current = true;
@@ -363,6 +420,28 @@ export default function DrawingEvidencePanel({
               event.currentTarget.setPointerCapture(event.pointerId);
             }}
             onPointerMove={(event) => {
+              if (pointersRef.current.has(event.pointerId)) {
+                const rect = event.currentTarget.getBoundingClientRect();
+                pointersRef.current.set(event.pointerId, {
+                  x: event.clientX - rect.left,
+                  y: event.clientY - rect.top,
+                });
+              }
+              if (pointersRef.current.size >= 2 && pinchStartRef.current) {
+                const points = [...pointersRef.current.values()];
+                const first = points[0];
+                const second = points[1];
+                if (!first || !second) {
+                  return;
+                }
+                const distance = Math.hypot(second.x - first.x, second.y - first.y);
+                const start = pinchStartRef.current;
+                if (start.distance > 0 && distance > 0) {
+                  const midpoint = { x: (first.x + second.x) / 2, y: (first.y + second.y) / 2 };
+                  setView(applyDrawingPinch(start.view, distance / start.distance, midpoint));
+                }
+                return;
+              }
               if (!panningRef.current || !lastPointRef.current) {
                 return;
               }
@@ -371,7 +450,11 @@ export default function DrawingEvidencePanel({
               lastPointRef.current = { x: event.clientX, y: event.clientY };
               setView((current) => applyDrawingPan(current, dx, dy));
             }}
-            onPointerUp={() => {
+            onPointerUp={(event) => {
+              pointersRef.current.delete(event.pointerId);
+              if (pointersRef.current.size < 2) {
+                pinchStartRef.current = null;
+              }
               panningRef.current = false;
               lastPointRef.current = null;
             }}

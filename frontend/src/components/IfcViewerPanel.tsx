@@ -2,6 +2,7 @@ import { useEffect, useEffectEvent, useRef, useState } from "react";
 import type { ValidationReport } from "../lib/types";
 import { fetchReportIfcSource } from "../lib/api";
 import { IfcSceneController } from "../lib/ifc-scene";
+import { IfcViewerCapError } from "../lib/wasm-cap";
 import type { IfcElementProps, IfcStoreyOption } from "../lib/ifc-element-props";
 import { UI_COPY } from "../lib/ui-copy";
 
@@ -131,6 +132,10 @@ export default function IfcViewerPanel({
           return;
         }
         setViewerStatus("error");
+        if (error instanceof IfcViewerCapError) {
+          setViewerError(UI_COPY.viewerOverWasmCap);
+          return;
+        }
         setViewerError(error instanceof Error ? error.message : UI_COPY.viewerLoadFailed);
       });
 
@@ -243,7 +248,7 @@ export default function IfcViewerPanel({
           </div>
         )}
         {viewerStatus === "error" && (
-          <div className="viewer-overlay viewer-overlay-error">
+          <div className="viewer-overlay viewer-overlay-error" data-testid="viewer-overlay-error">
             <p>{viewerError ?? UI_COPY.viewerError}</p>
           </div>
         )}

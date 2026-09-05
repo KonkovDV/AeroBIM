@@ -82,8 +82,12 @@ function IssueCard({
   return (
     <button
       type="button"
+      id={`finding-row-${index}`}
+      role="option"
+      aria-selected={selected}
       tabIndex={selected ? 0 : -1}
       className={`issue-card ${selected ? "active" : ""} ${issue.origin === "advisory" ? "issue-card--advisory" : ""}`}
+      data-testid="issue-card"
       onClick={() => {
         startTransition(() => {
           onSelect(index, issue);
@@ -170,6 +174,7 @@ export default function FindingListPanel({
   const pendingFocusAfterScrollRef = useRef<number | null>(null);
   const [scrollTop, setScrollTop] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(720);
+  const [itemHeight, setItemHeight] = useState(ITEM_HEIGHT);
 
   useEffect(() => {
     const node = listRef.current;
@@ -196,9 +201,9 @@ export default function FindingListPanel({
       return;
     }
     if (virtualize) {
-      const nextTop = computeScrollTopToReveal(
+        const nextTop = computeScrollTopToReveal(
         selectedPos,
-        ITEM_HEIGHT,
+        itemHeight,
         node.clientHeight || viewportHeight,
         node.scrollTop,
       );
@@ -213,7 +218,7 @@ export default function FindingListPanel({
       activeCard?.scrollIntoView?.({ block: "nearest" });
     }
     node.querySelector<HTMLElement>(".issue-card.active")?.focus?.();
-  }, [selectedIssueIndex, virtualize, flat, viewportHeight]);
+  }, [selectedIssueIndex, virtualize, flat, viewportHeight, itemHeight]);
 
   useLayoutEffect(() => {
     const pending = pendingFocusAfterScrollRef.current;
@@ -224,6 +229,16 @@ export default function FindingListPanel({
     listRef.current?.querySelector<HTMLElement>(".issue-card.active")?.focus?.();
   }, [scrollTop]);
 
+  useLayoutEffect(() => {
+    const card = listRef.current?.querySelector(".issue-card");
+    if (!(card instanceof HTMLElement) || card.offsetHeight < 8) {
+      return;
+    }
+    if (Math.abs(card.offsetHeight - itemHeight) > 1) {
+      setItemHeight(card.offsetHeight);
+    }
+  });
+
   let visible = flat;
   let padTop = 0;
   let padBottom = 0;
@@ -232,14 +247,14 @@ export default function FindingListPanel({
       0,
       flat.findIndex((row) => row.index === selectedIssueIndex),
     );
-    const visibleCount = Math.max(1, Math.ceil(viewportHeight / ITEM_HEIGHT));
-    let start = Math.max(0, Math.floor(scrollTop / ITEM_HEIGHT) - OVERSCAN);
+    const visibleCount = Math.max(1, Math.ceil(viewportHeight / itemHeight));
+    let start = Math.max(0, Math.floor(scrollTop / itemHeight) - OVERSCAN);
     let end = Math.min(flat.length, start + visibleCount + OVERSCAN * 2);
     start = Math.min(start, Math.max(0, selectedPos - OVERSCAN));
     end = Math.max(end, Math.min(flat.length, selectedPos + OVERSCAN + 1));
     visible = flat.slice(start, end);
-    padTop = start * ITEM_HEIGHT;
-    padBottom = (flat.length - end) * ITEM_HEIGHT;
+    padTop = start * itemHeight;
+    padBottom = (flat.length - end) * itemHeight;
   }
 
   return (
@@ -291,6 +306,7 @@ export default function FindingListPanel({
             {UI_COPY.filterClause}
             <select
               aria-label={UI_COPY.filterClause}
+              aria-controls="finding-list"
               data-testid="clause-filter"
               value={clauseFilter}
               onChange={(event) => onClauseChange(event.target.value)}
@@ -319,7 +335,14 @@ export default function FindingListPanel({
         </span>
       </div>
 
-      <div className={`issue-list ${virtualize ? "issue-list-virtual" : ""}`} ref={listRef}>
+      <div
+        className={`issue-list ${virtualize ? "issue-list-virtual" : ""}`}
+        ref={listRef}
+        id="finding-list"
+        role="listbox"
+        aria-label={UI_COPY.findingsListAria}
+        aria-activedescendant={flat.length > 0 ? `finding-row-${selectedIssueIndex}` : undefined}
+      >
         {issues.length === 0 ? (
           <div className="panel-empty compact">
             {UI_COPY.noFindings}

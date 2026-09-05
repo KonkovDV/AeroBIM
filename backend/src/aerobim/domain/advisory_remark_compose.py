@@ -18,6 +18,7 @@ from aerobim.domain.llm_advisory import (
     advisory_draft_from_mapping,
 )
 from aerobim.domain.models import GeneratedRemark, ValidationIssue
+from aerobim.domain.remark_shape import UNBOUND_CLAUSE_EN, UNBOUND_CLAUSE_RU
 
 PROMPT_VERSION = "advisory-remark-compose/v1"
 CLAIM_BOUNDARY = (
@@ -145,6 +146,8 @@ def parse_remark_response(
         title = "Advisory remark" if locale.startswith("en") else "Черновик замечания"
     if not body:
         body = response.remark_draft or ""
+    locale_norm = "en" if (locale or "ru").strip().lower().startswith("en") else "ru"
+    unbound = UNBOUND_CLAUSE_EN if locale_norm == "en" else UNBOUND_CLAUSE_RU
     return GeneratedRemark(
         title=title,
         body=body,
@@ -155,6 +158,10 @@ def parse_remark_response(
         model=response.model,
         evidence_refs=fallback_evidence or response.evidence_refs,
         claim_boundary=CLAIM_BOUNDARY,
+        essence=title,
+        clause_cite=unbound,
+        clause_bound=False,
+        detail=body,
     )
 
 

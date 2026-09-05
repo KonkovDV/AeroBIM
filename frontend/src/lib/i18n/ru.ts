@@ -155,6 +155,7 @@ export const RU_COPY = {
   triageBandNegligible: "незначительная",
   advisoryTitle: "Кандидат ИИ — на проверку эксперту; не подтверждённый вердикт",
   lowConfidenceTitle: "Низкая самооценка уверенности (без калибровки) — нужна проверка человеком",
+  findingsListAria: "Список находок",
   searchFindings: "Поиск находок",
   searchFindingsPh: "Правило, текст, GUID, этаж, ось, пункт ИТЗ / СТО / СП",
   groupFindings: "Группировка",
@@ -210,6 +211,8 @@ export const RU_COPY = {
   viewerError: "Вьюер не загрузил выбранный IFC.",
   viewerInitFailed: "Не удалось инициализировать IFC-вьюер.",
   viewerLoadFailed: "Не удалось загрузить IFC выбранного отчёта.",
+  viewerOverWasmCap:
+    "Модель больше 256 МиБ. Вьюер не открывает её во вкладке. Дальше — диск на сервере. Это ошибка вьюера, не вердикт комплекта.",
   viewerReport: (id: string) => `Отчёт ${id}`,
   viewerStatusIdle: "ожидание",
   viewerStatusInitializing: "инициализация",
@@ -287,8 +290,10 @@ export const RU_COPY = {
   drawingIncompleteZone:
     "Превью загружено, но у текущей находки пока нет полного прямоугольника координат для выбранного актива.",
   drawingResetZoom: "Сбросить масштаб",
+  drawingZoomIn: "Увеличить",
+  drawingZoomOut: "Уменьшить",
   drawingZoomHint:
-    "Масштаб и сдвиг листа. Прямоугольники едут вместе с картинкой — координаты не пересчитываются. Не CV.",
+    "Масштаб к курсору, сдвиг листа, жесты двумя пальцами. Прямоугольники едут вместе с картинкой — координаты не пересчитываются. Не CV.",
   regionNoFinding: "Для этого региона нет находки с тем же листом.",
   regionSelectFinding: (sheet: string) => `Выбрать находку листа ${sheet}`,
   unmatchedSheet: (sheet: string) =>
@@ -422,6 +427,8 @@ export const RU_COPY = {
   runJournalEmpty: "В этой вкладке ещё не было завершённых прогонов.",
   runCancelConfirm:
     "Отменить текущий опрос задания? Уже сохранённый отчёт не удаляется.",
+  runCancelYes: "Да, отменить",
+  runCancelKeep: "Оставить прогон",
   kpiByType: "События по типу",
   kpiBarsEmpty: "Журнал HITL пуст — диаграммы нет, это не «0 % ошибок».",
   kpiBarAria: (label: string, count: string, percent: string) =>

@@ -55,8 +55,14 @@ from aerobim.infrastructure.auth.oidc_bff_phase3 import (
     session_cookie_name,
 )
 from aerobim.infrastructure.security.oidc_token_validator import OidcValidationError
+from aerobim.presentation.http.csrf import (
+    BFF_CSRF_HEADER,
+    csrf_header_matches,
+    mutating_bff_cookie_requires_csrf,
+)
 from aerobim.presentation.http.errors import (
     public_bad_request_detail,
+    public_csrf_header_required_detail,
     public_ifc_analyze_cap_body,
     public_ifc_disk_backend_detail,
     public_not_found_detail,
@@ -192,6 +198,13 @@ class ApiContext:
         settings = self.settings
         configured_token = settings.api_bearer_token
         oidc_ready = self.oidc_validator is not None
+        # Cookie present on a mutation → custom header, even if Vite also injects Bearer.
+        if mutating_bff_cookie_requires_csrf(method=request.method, cookies=request.cookies):
+            if not csrf_header_matches(request.headers.get(BFF_CSRF_HEADER)):
+                raise HTTPException(
+                    status_code=403,
+                    detail=public_csrf_header_required_detail(),
+                )
 
         if not authorization:
             cookie_principal = self._principal_from_verified_bff_cookie(request)

@@ -116,6 +116,8 @@ export default function AnalyzeRunPanel({
     typeof sessionStorage === "undefined" ? [] : readRunJournal(sessionStorage),
   );
 
+  const [confirmingCancel, setConfirmingCancel] = useState(false);
+
   function recordJournal(snapshot: { job_id: string; status: string }, elapsed: number): void {
     if (!TERMINAL_JOB_STATUSES.has(snapshot.status.toLowerCase())) {
       return;
@@ -139,6 +141,7 @@ export default function AnalyzeRunPanel({
       return;
     }
     recordJournal(job, elapsedSec);
+    setConfirmingCancel(false);
   }, [job, terminal, elapsedSec]);
 
   async function start(): Promise<void> {
@@ -164,10 +167,8 @@ export default function AnalyzeRunPanel({
     if (!job?.job_id) {
       return;
     }
-    if (typeof window !== "undefined" && !window.confirm(UI_COPY.runCancelConfirm)) {
-      return;
-    }
     setBusy(true);
+    setConfirmingCancel(false);
     try {
       trackJob(await cancelAnalyzeJob(job.job_id));
     } catch (err: unknown) {
@@ -200,9 +201,25 @@ export default function AnalyzeRunPanel({
         <button type="button" onClick={() => void start()} disabled={busy || !packDraftHasAny(draft)}>
           {busy ? UI_COPY.runStarting : UI_COPY.runStart}
         </button>
-        <button type="button" onClick={() => void cancel()} disabled={busy || !job?.job_id || terminal}>
+        {confirmingCancel ? (
+          <span className="run-cancel-confirm" data-testid="run-cancel-confirm">
+            <span className="compact-copy">{UI_COPY.runCancelConfirm}</span>
+            <button type="button" onClick={() => void cancel()} disabled={busy || !job?.job_id}>
+              {UI_COPY.runCancelYes}
+            </button>
+            <button type="button" onClick={() => setConfirmingCancel(false)} disabled={busy}>
+              {UI_COPY.runCancelKeep}
+            </button>
+          </span>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setConfirmingCancel(true)}
+            disabled={busy || !job?.job_id || terminal}
+          >
             {UI_COPY.runCancel}
-        </button>
+          </button>
+        )}
         {terminal ? (
           <button type="button" onClick={() => void start()} disabled={busy || !packDraftHasAny(draft)}>
             {UI_COPY.repeatRun}

@@ -1,7 +1,7 @@
 # LLM advisory contour
 
 **claim_level:** architecture note · `fixture_only` / `synthetic_only`  
-**Checkpoint:** NO_GO  
+**Checkpoint:** **GO** (`regulatory_measurement_mvp`). `customer_go` **false**. LLM/VLM never write `summary.passed`.  
 
 ## Contour (ADR-001 hybrid)
 

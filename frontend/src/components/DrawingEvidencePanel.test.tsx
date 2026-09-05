@@ -277,6 +277,8 @@ describe("DrawingEvidencePanel", () => {
     expect(zoom.getAttribute("style")).toMatch(/scale\(1\.2\)/);
     fireEvent.click(screen.getByTestId("drawing-reset-zoom"));
     expect(zoom.getAttribute("style")).toMatch(/scale\(1\)/);
+    fireEvent.click(screen.getByTestId("drawing-zoom-in"));
+    expect(zoom.getAttribute("style")).toMatch(/scale\(1\.5\)/);
   });
 
   it("surfaces image load failures without claiming overlay success", async () => {

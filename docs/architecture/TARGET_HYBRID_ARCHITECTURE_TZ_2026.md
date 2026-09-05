@@ -3,9 +3,9 @@
 title: "AeroBIM Target Hybrid Architecture for Samolet TechLab TZ"
 status: active
 version: "1.1.4"
-last_updated: "2026-09-02"
+last_updated: "2026-09-05"
 tags: [aerobim, architecture, openbim, tz, sota-2026, hybrid-ai]
-claim_boundary: "Design proposal only. Checkpoint remains NO_GO until RT-001/002/003 evidenced. ADR-001 owns summary.passed wording."
+claim_boundary: "Design proposal only. Checkpoint GO (regulatory_measurement_mvp); customer_go false until RT-001b/c, RT-002c, RT-003c. ADR-001 owns summary.passed wording."
 ---
 
 # Target Hybrid Architecture — AeroBIM × ТЗ Техлаб / Самолёт (SOTA 2026)
@@ -93,7 +93,7 @@ EVIDENCE:      AuditReportStore, ReviewEventStore, NormRulePackVersionStore,
 | G6 | Расчётные ошибки (нагрузки), площади, пространство, логика, missing elements, размеры | **PARTIAL / WEAK depth** | **I2b:** Quantity/Load/Logic ports wired (сверка semantics). Depth ≠ solver correctness; missing-elements/VLM still gap |
 | G7 | AI: CV, OCR, NLP, anomalies | **PARTIAL** | OCR + deterministic IDS compile + norm retrieve. **I5:** ComplianceAgent allowlist (advisory→DeterminismGate). LLM IDS = `@sota-stub`; no product VLM/MCP server |
 | G8 | Поддержка эксперта: подсветка, RU/EN замечания, edit | **PARTIAL** | Remarks + HITL. **I7:** `drawing_regions` / `divergences` / `advisory_ids_draft` on report; frontend overlay types still incomplete |
-| G9 | Точность >90% | **BLOCKED** | PrecisionClaim + κ/α + intake gate. Checkpoint **NO_GO** (RT-001) |
+| G9 | Точность >90% | **BLOCKED** | PrecisionClaim + κ/α + intake gate. `customer_go` false (RT-001b/c); product Checkpoint **GO** |
 | G10 | Комплект ≤30 мин | **PARTIAL** | StageBudget + jobs; customer SLA **не доказан** |
 | G11 | Масштабируемость / стабильность | **PARTIAL** | Redis/Postgres/S3 extras; нет parallel section fan-out как продуктовый контракт |
 | G12 | Снижение когнитивной нагрузки | **PARTIAL** | Confidence + priority + BCF; agent evidence packs without VLM reasoning chain |
@@ -443,4 +443,4 @@ Customer SLA remains **unproven** until measured on customer packages (`measure_
 
 See [`TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) · [`ADR-001-verdict-ownership-2026.md`](ADR-001-verdict-ownership-2026.md) · [`../../audit/reports/CRITICAL_BLOCKERS.md`](../../audit/reports/CRITICAL_BLOCKERS.md).
 
-Checkpoint remains **NO_GO** until RT-001/002/003.
+Product Checkpoint is **GO** (`regulatory_measurement_mvp`). `customer_go` stays **false** until RT-001b/c, RT-002c, RT-003c, and CDE T2.

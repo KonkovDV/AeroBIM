@@ -104,6 +104,25 @@ _EXTENSION_KINDS: dict[str, frozenset[str]] = {
 # Default allowlist for pilot uploads.
 _ALLOWED_EXTENSIONS = frozenset(_EXTENSION_KINDS)
 
+# Unknown/low-confidence sniff must not pass for these extensions (L-06).
+_UNKNOWN_KIND_HARD_REJECT = frozenset(
+    {
+        ".ifc",
+        ".pdf",
+        ".png",
+        ".jpg",
+        ".jpeg",
+        ".gif",
+        ".dwg",
+        ".dxf",
+        ".ifczip",
+        ".docx",
+        ".xlsx",
+        ".pptx",
+        ".zip",
+    }
+)
+
 # Closed Autodesk natives: reject with an explicit NOT_IMPLEMENTED reason
 # (same class as native DWG). Do not import domain from core.
 _AUTODESK_CLOSED_SUFFIXES = frozenset({".rvt", ".rte", ".nwd", ".nwc"})
@@ -217,18 +236,7 @@ def validate_upload_content(
             raise UploadContentError(
                 f"Content mismatch: extension {ext} does not match sniffed type {sniffed.kind}"
             )
-        if sniffed.kind == "unknown" and ext in {
-            ".ifc",
-            ".pdf",
-            ".png",
-            ".jpg",
-            ".jpeg",
-            ".dwg",
-            ".ifczip",
-            ".docx",
-            ".xlsx",
-            ".zip",
-        }:
+        if sniffed.kind == "unknown" and ext in _UNKNOWN_KIND_HARD_REJECT:
             raise UploadContentError(
                 f"Content mismatch: extension {ext} does not match sniffed type {sniffed.kind}"
             )

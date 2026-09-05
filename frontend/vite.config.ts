@@ -1,9 +1,34 @@
 import type { ClientRequest } from "node:http";
 import { cwd } from "node:process";
 import react from "@vitejs/plugin-react";
-import { loadEnv } from "vite";
+import { loadEnv, type Plugin } from "vite";
 import { defineConfig } from "vitest/config";
 import { requestShouldSkipViteBearer } from "./src/lib/bff-cookie";
+
+const SHELL_SECURITY_HEADERS = {
+  "X-Content-Type-Options": "nosniff",
+  "Referrer-Policy": "no-referrer",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
+} as const;
+
+/** Production CSP matches `index.html`. `wasm-unsafe-eval` is web-ifc only. */
+const DEV_CSP =
+  "default-src 'self'; script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' blob: data:; connect-src 'self' ws: wss: http://127.0.0.1:* http://localhost:* http://[::1]:*; font-src 'self'; worker-src 'self' blob:; child-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
+
+function aerobimHtmlSecurity(): Plugin {
+  return {
+    name: "aerobim-html-security",
+    transformIndexHtml(html, ctx) {
+      if (!ctx.server) {
+        return html;
+      }
+      return html.replace(
+        /(<meta\s+http-equiv="Content-Security-Policy"\s+content=")([^"]*)("\s*\/>)/,
+        `$1${DEV_CSP}$3`,
+      );
+    },
+  };
+}
 
 /**
  * Dev auth proxy: browser calls same-origin `/v1/*`; Vite injects
@@ -16,7 +41,7 @@ export default defineConfig(({ mode }) => {
   const bearer = (env.AEROBIM_API_BEARER_TOKEN || "").trim();
 
   return {
-    plugins: [react()],
+    plugins: [react(), aerobimHtmlSecurity()],
     build: {
       chunkSizeWarningLimit: 700,
       rollupOptions: {
@@ -48,6 +73,7 @@ export default defineConfig(({ mode }) => {
     server: {
       host: env.AEROBIM_VITE_HOST || "127.0.0.1",
       port: 5173,
+      headers: { ...SHELL_SECURITY_HEADERS },
       proxy: {
         "/v1": {
           target: backend,
@@ -80,6 +106,7 @@ export default defineConfig(({ mode }) => {
     preview: {
       host: env.AEROBIM_VITE_HOST || "127.0.0.1",
       port: 4173,
+      headers: { ...SHELL_SECURITY_HEADERS },
     },
   };
 });

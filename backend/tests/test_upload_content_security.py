@@ -31,7 +31,19 @@ class UploadContentSniffTests(unittest.TestCase):
         with self.assertRaises(UploadContentError):
             validate_upload_content(filename="sheet.pdf", payload=b"\x89PNG\r\n\x1a\n")
 
-    def test_matching_ifc_and_pdf_accepted(self) -> None:
+    def test_ascii_dxf_accepted(self) -> None:
+        sniffed = validate_upload_content(
+            filename="plan.dxf",
+            payload=b"0\nSECTION\n2\nHEADER\n0\nENDSEC\n",
+        )
+        self.assertEqual(sniffed.kind, "dxf")
+
+    def test_unknown_binary_dxf_rejected(self) -> None:
+        with self.assertRaises(UploadContentError):
+            validate_upload_content(
+                filename="malware.dxf",
+                payload=b"\x7fELF" + b"\x00" * 64,
+            )
         ifc = validate_upload_content(filename="model.ifc", payload=b"ISO-10303-21;\n")
         self.assertEqual(ifc.kind, "ifc")
         pdf = validate_upload_content(filename="a.pdf", payload=b"%PDF-1.4\n%")

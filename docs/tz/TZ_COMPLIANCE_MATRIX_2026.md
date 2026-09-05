@@ -2,8 +2,8 @@
 ---
 title: "AeroBIM TZ Compliance Matrix 2026"
 status: active
-version: "1.3.5"
-last_updated: "2026-09-01"
+version: "1.3.6"
+last_updated: "2026-09-05"
 tags: [aerobim, tz, compliance, mvp]
 ---
 
@@ -34,7 +34,7 @@ Extraction integrity: [`../extraction-integrity-2026.md`](../extraction-integrit
 
 | Term | TZ meaning | AeroBIM mapping | Status | Phase |
 |------|------------|-----------------|--------|-------|
-| OCR | Image/PDF → editable text | `RasterDrawingAnalyzer` (PyMuPDF + RapidOCR) | partial | MVP baseline / P2 deepen |
+| OCR | Image/PDF → editable text | `RasterDrawingAnalyzer` (pypdfium2 + RapidOCR; optional `pdf-agpl` PyMuPDF) | partial | MVP baseline / P2 deepen |
 | Computer Vision | Interpret drawings like a human | Not in sign-off; planned advisory layout CV | missing | P2 advisory |
 | NLP | Understand / generate language | Regex + pipe extractors; LLM stub advisory only | partial | MVP deterministic / P3 advisory |
 | BIM model | Geometry + attributes | IFC via IfcOpenShell + IDS | done | MVP |
@@ -161,7 +161,7 @@ Manifest: [`samples/tz-appendix/MANIFEST.json`](../../samples/tz-appendix/MANIFE
 | Phase | Focus |
 |-------|-------|
 | **MVP** | Deterministic IFC/IDS/cross-doc/clash + OCR baseline + templates + browser review |
-| **P0 (Checkpoint #2 eng)** | WP-01..08 + WP-R0/R10/R4 eng: publishable baseline schema 1.3.0 (`tests_passed`, five PASS gates, `baseline-integrity` CI); executable Claims Lock linter + matrix guard; coverage map four states in report/UI. RT-001/002/003 still OPEN → Checkpoint **NO_GO** |
+| **P0 (Checkpoint #2 eng)** | WP-01..08 + WP-R0/R10/R4 eng: publishable baseline schema 1.3.0 (`tests_passed`, five PASS gates, `baseline-integrity` CI); executable Claims Lock linter + matrix guard; coverage map four states in report/UI. Undifferentiated RT-001/002/003 still OPEN → `customer_go` **false**; product Checkpoint **GO** (`regulatory_measurement_mvp`) |
 | **P0** | Multipart upload, remarks UI (list/filter/edit), EN remarks |
 | **P1** | Norm packs, section pairing, detection precision harness — engineering scaffolds landed; customer pack/corpus still required |
 | **P2** | DXF/DWG thin adapter, OCR deepen, CV advisory |

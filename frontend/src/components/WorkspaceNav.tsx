@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { UI_COPY } from "../lib/ui-copy";
 
 export type WorkspaceView =
@@ -33,6 +34,10 @@ export const TRIAGE_KEYBOARD_VIEWS: ReadonlySet<WorkspaceView> = new Set([
   "export",
 ]);
 
+export function formatNavBadgeCount(count: number): string {
+  return count > 99 ? "99+" : String(count);
+}
+
 export type WorkspaceNavProps = {
   workspaceView: WorkspaceView;
   onChange: (view: WorkspaceView) => void;
@@ -45,6 +50,28 @@ export default function WorkspaceNav({
   onChange,
   reviewFindingsCount = null,
 }: WorkspaceNavProps) {
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent): void {
+      if (!event.altKey || event.ctrlKey || event.metaKey) {
+        return;
+      }
+      const target = event.target as HTMLElement | null;
+      const tag = target?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target?.isContentEditable) {
+        return;
+      }
+      const index = Number(event.key) - 1;
+      const next = WORKSPACE_NAV[index];
+      if (!next) {
+        return;
+      }
+      event.preventDefault();
+      onChange(next.id);
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [onChange]);
+
   return (
     <nav className="workspace-nav" aria-label={UI_COPY.navAria} data-testid="workspace-nav">
       {WORKSPACE_NAV.map(({ id, label }) => (
@@ -63,7 +90,7 @@ export default function WorkspaceNav({
               title={UI_COPY.navReviewCount(reviewFindingsCount)}
               aria-hidden="true"
             >
-              {reviewFindingsCount}
+              {formatNavBadgeCount(reviewFindingsCount)}
             </span>
           ) : null}
         </button>

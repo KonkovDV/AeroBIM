@@ -18,4 +18,4 @@ Owner downloads locally (gitignored `files/`). A URL does **not** flip intake ga
 1. Dual human adjudicators (LLM does not count)
 2. Measure κ/α: `aerobim-measure-adjudicator-agreement --csv …`
 3. Validate gate: `aerobim-validate-customer-intake-gate`
-4. Checkpoint stays **NO_GO** until RT-001/002/003 evidenced in Claims Lock
+4. Product Checkpoint is **GO** (`regulatory_measurement_mvp`). `customer_go` stays **false** until RT-001b/c, RT-002c, RT-003c, and CDE T2 are evidenced in Claims Lock. Undifferentiated `closes_rt001/002/003` stay false.

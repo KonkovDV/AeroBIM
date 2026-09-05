@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { seedDemoFixture } from "../lib/api";
+import { isLabDemoSeedUiEnabled } from "../lib/lab-demo";
 import { UI_COPY } from "../lib/ui-copy";
 
 export type DemoFixturePanelProps = {
@@ -11,6 +12,10 @@ export type DemoFixturePanelProps = {
 export default function DemoFixturePanel({ onSeeded, hideIntro = false }: DemoFixturePanelProps) {
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "failed">("idle");
   const [detail, setDetail] = useState<string | null>(null);
+
+  if (!isLabDemoSeedUiEnabled()) {
+    return null;
+  }
 
   async function seed(): Promise<void> {
     setStatus("loading");

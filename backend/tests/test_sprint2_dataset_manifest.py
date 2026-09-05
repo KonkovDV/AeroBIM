@@ -142,8 +142,9 @@ class Sprint2CustomerDocsTests(unittest.TestCase):
         path = REPO / "samples" / "customer" / "README.md"
         self.assertTrue(path.is_file())
         text = path.read_text(encoding="utf-8")
-        self.assertIn("NO_GO", text)
+        self.assertIn("`customer_go` stays **false**", text)
         self.assertIn("Do **not** commit", text)
+        self.assertNotIn("closes_rt001: true", text)
 
     def test_customer_outreach_kitchen_is_unpublished(self) -> None:
         self.assertFalse((REPO / "docs" / "customer").exists())

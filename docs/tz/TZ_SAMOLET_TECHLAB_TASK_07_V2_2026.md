@@ -6,7 +6,7 @@
 title: "ТЗ Самолет × ТехЛаб 2026 — Задача 07 (редакция v2.0)"
 status: active
 version: "2.4.0"
-last_updated: "2026-08-28"
+last_updated: "2026-09-05"
 language: ru
 tags: [aerobim, tz, samolet, techlab, task-07]
 claim_boundary: >
@@ -335,7 +335,7 @@ basis:
 | REPRODUCIBILITY-2026 | FAIR/CODE |
 | SECURITY.md | Уязвимости |
 | KNOWN_BUGS + capabilities honesty | Ограничения |
-| Claims Lock / CRITICAL_BLOCKERS | NO_GO регистр |
+| Claims Lock / CRITICAL_BLOCKERS | Реестр блокеров; `customer_go` false |
 
 **Критерий:** все пути существуют в репо или явно помечены customer-local/gitignored.
 
@@ -387,7 +387,7 @@ basis:
 | 6 | CDE для BCF import week-1 | CDE claim |
 | 7 | Signed scope memo (CV/ГОСТ/MEP границы) | Scope |
 
-Без п.1–4 checkpoint остаётся **NO_GO**.
+Без п.1–4 `customer_go` остаётся **false**. Product Checkpoint остаётся **GO** (`regulatory_measurement_mvp`). Недифференцированные `closes_rt001/002/003` остаются false.
 
 ---
 
@@ -540,6 +540,6 @@ PDF/Excel**, а не бинарные файлы комплекса; добав�
 
 ## 20. Заключение
 
-Редакция **v2.0** делает TBD-разделы проверяемыми, привязывает требования к AeroBIM и research 2025–2026, и устраняет неизмеримые обещания v1. Продуктовый checkpoint остаётся **NO_GO** до RT-001/002/003; конкурсный MVP демонстрируется на детерминированном openBIM-контуре с честной таблицей gaps.
+Редакция **v2.0** делает TBD-разделы проверяемыми, привязывает требования к AeroBIM и research 2025–2026, и устраняет неизмеримые обещания v1. Product Checkpoint — **GO** (`regulatory_measurement_mvp`); `customer_go` остаётся **false**, пока открыты RT-001b/c, RT-002c, RT-003c и CDE T2. Конкурсный MVP демонстрируется на детерминированном openBIM-контуре с честной таблицей gaps.
 
 **Согласовано с:** `CLAIMS_LOCK_2026_07_17.md`, `CRITICAL_BLOCKERS.md`, `RESEARCH_ALIGNMENT_AEC_AI_2025_2026_07.md`, `TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`.

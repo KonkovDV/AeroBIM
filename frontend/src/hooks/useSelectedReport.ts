@@ -45,6 +45,11 @@ export function useSelectedReport(
   const [hitlDecisionState, setHitlDecisionState] = useState<HitlDecisionState>("idle");
   const reviewEventsRef = useRef<ReviewEventRow[]>([]);
   reviewEventsRef.current = reviewEvents;
+  const hitlIdempotencyKey = useRef(
+    typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+      ? crypto.randomUUID()
+      : `hitl-${Date.now()}`,
+  );
 
   useEffect(() => {
     if (selectedReportId === null) {
@@ -141,7 +146,12 @@ export function useSelectedReport(
           event_type: "opened",
           issue_rule_id: issue.rule_id,
           finding_id: issue.finding_id ?? undefined,
+          idempotency_key: hitlIdempotencyKey.current,
         });
+        hitlIdempotencyKey.current =
+          typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+            ? crypto.randomUUID()
+            : `hitl-${Date.now()}`;
         rememberEvent(opened.event);
         previous = "opened";
       }
@@ -151,8 +161,10 @@ export function useSelectedReport(
         finding_id: issue.finding_id ?? undefined,
         note,
         previous_state: previous ?? undefined,
+        idempotency_key: hitlIdempotencyKey.current,
       });
       rememberEvent(result.event);
+      hitlIdempotencyKey.current = crypto.randomUUID();
     },
     [rememberEvent, selectedReport],
   );
@@ -190,6 +202,20 @@ export function useSelectedReport(
     },
     [postHitlEvent, remarkDraft, selectedReport],
   );
+
+  useEffect(() => {
+    const original = selectedReport?.issues[selectedIssueIndex]?.remark?.body ?? "";
+    const dirty = remarkDraft !== original && remarkSaveState !== "saved";
+    if (!dirty) {
+      return;
+    }
+    function onBeforeUnload(event: BeforeUnloadEvent): void {
+      event.preventDefault();
+      event.returnValue = "";
+    }
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => window.removeEventListener("beforeunload", onBeforeUnload);
+  }, [remarkDraft, remarkSaveState, selectedIssueIndex, selectedReport]);
 
   return {
     selectedReport,

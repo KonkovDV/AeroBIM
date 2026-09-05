@@ -48,7 +48,7 @@ python -m aerobim.tools.run_federated_mep_inventory --samolet-demo-copyleft
 
 Вторая команда **не** пишет GPL-строки в `docs/evidence/`. LibreDWG **не** линкуется: для показа Самолёту заказчик даёт IFC/PDF/A; CAD capability на `.dwg` остаётся FAILED.
 
-Это не юридическое заключение. Checkpoint остаётся **NO_GO**.
+Это не юридическое заключение. Product Checkpoint **GO** (`regulatory_measurement_mvp`); `customer_go` **false**.
 
 ## LIC-001 (PyMuPDF) — дерево решений
 

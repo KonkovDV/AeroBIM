@@ -162,7 +162,9 @@ export default function App() {
         hasReport={selectedReportId !== null}
         onChange={setWorkspaceView}
       />
-      <DemoFixturePanel onSeeded={handleSeededReport} hideIntro={selectedReport !== null} />
+      {import.meta.env.DEV ? (
+        <DemoFixturePanel onSeeded={handleSeededReport} hideIntro={selectedReport !== null} />
+      ) : null}
       {EXPERT_SHELL_VIEWS.has(workspaceView) && selectedReport ? (
         <CapabilityTopBanner capabilities={selectedReport.capabilities} />
       ) : null}
