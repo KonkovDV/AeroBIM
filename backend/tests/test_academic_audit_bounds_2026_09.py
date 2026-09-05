@@ -48,23 +48,11 @@ class AnalyzePathBoundTests(unittest.TestCase):
 
 class CsrfHeaderContractTests(unittest.TestCase):
     def test_frontend_csrf_constants_match_backend(self) -> None:
-        front = (
-            Path(__file__).resolve().parents[2]
-            / "frontend"
-            / "src"
-            / "lib"
-            / "csrf.ts"
-        )
+        front = Path(__file__).resolve().parents[2] / "frontend" / "src" / "lib" / "csrf.ts"
         text = front.read_text(encoding="utf-8")
         self.assertIn(BFF_CSRF_HEADER, text)
         self.assertIn(BFF_CSRF_VALUE, text)
-        api = (
-            Path(__file__).resolve().parents[2]
-            / "frontend"
-            / "src"
-            / "lib"
-            / "api.ts"
-        )
+        api = Path(__file__).resolve().parents[2] / "frontend" / "src" / "lib" / "api.ts"
         self.assertIn("aerobimCsrfHeaders", api.read_text(encoding="utf-8"))
 
 
