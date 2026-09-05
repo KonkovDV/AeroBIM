@@ -21,6 +21,7 @@ import urllib.request
 from dataclasses import dataclass, field
 from typing import Any
 
+from aerobim.core.security.object_limits import ObjectTooLargeError, read_http_response_capped
 from aerobim.core.security.outbound_url import UnsafeOutboundUrlError, safe_urlopen
 from aerobim.domain.auth_roles import extract_oidc_roles
 from aerobim.infrastructure.auth.oidc_bff_stubs import OidcBffStubState
@@ -212,9 +213,12 @@ def exchange_authorization_code(
     )
     try:
         with safe_urlopen(request, timeout=timeout_seconds) as response:
-            payload = json.loads(response.read().decode("utf-8"))
+            raw = read_http_response_capped(response)
+            payload = json.loads(raw.decode("utf-8"))
     except UnsafeOutboundUrlError as exc:
         raise RuntimeError(f"OIDC token exchange failed SSRF gate: {exc}") from exc
+    except ObjectTooLargeError as exc:
+        raise RuntimeError("OIDC token exchange failed: response exceeds size cap") from exc
     except (urllib.error.URLError, TimeoutError, json.JSONDecodeError, OSError) as exc:
         raise RuntimeError(f"OIDC token exchange failed: {exc}") from exc
     if not isinstance(payload, dict):

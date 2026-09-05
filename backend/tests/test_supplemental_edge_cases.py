@@ -393,6 +393,7 @@ class SettingsEnvDefaultsTests(unittest.TestCase):
         self.assertEqual(settings.host, "127.0.0.1")
         self.assertFalse(settings.debug)
         self.assertEqual(settings.cors_origins, ())
+        self.assertFalse(settings.cors_allow_credentials)
         self.assertFalse(settings.allow_anonymous_dev)
 
     @patch.dict(os.environ, {"AEROBIM_DEBUG": "true"}, clear=True)
@@ -406,6 +407,29 @@ class SettingsEnvDefaultsTests(unittest.TestCase):
         self.assertIn("http://127.0.0.1:5173", settings.cors_origins)
         self.assertIn("http://localhost:3000", settings.cors_origins)
         self.assertIn("http://127.0.0.1:3000", settings.cors_origins)
+        self.assertTrue(settings.cors_allow_credentials)
+
+    def test_cors_origins_reject_null_and_non_https_on_hard_profile(self) -> None:
+        from aerobim.core.config.settings import assert_cors_origins_safe
+
+        with self.assertRaisesRegex(RuntimeError, "null"):
+            assert_cors_origins_safe(("null",), hard_profile=False)
+        with self.assertRaisesRegex(RuntimeError, "https"):
+            assert_cors_origins_safe(("http://evil.example",), hard_profile=True)
+        assert_cors_origins_safe(("https://app.example",), hard_profile=True)
+        assert_cors_origins_safe(("http://127.0.0.1:5173",), hard_profile=True)
+
+    @patch.dict(
+        os.environ,
+        {"AEROBIM_DEBUG": "true", "AEROBIM_CORS_ALLOW_CREDENTIALS": "false"},
+        clear=True,
+    )
+    def test_from_env_explicit_credentials_false_wins_in_debug(self) -> None:
+        from aerobim.core.config.settings import Settings
+
+        settings = Settings.from_env()
+        self.assertTrue(settings.cors_origins)
+        self.assertFalse(settings.cors_allow_credentials)
 
 
 # ---------------------------------------------------------------------------

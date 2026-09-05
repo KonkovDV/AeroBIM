@@ -74,6 +74,7 @@ class SettingsUploadLimitTests(unittest.TestCase):
         env = {
             "AEROBIM_ENV": "development",
             "AEROBIM_SIGNOFF_PROFILE": "samolet_pilot",
+            "AEROBIM_API_BEARER_TOKEN": "test-pilot-bearer",
             "AEROBIM_LLM_ADVISORY_ENABLED": "false",
         }
         with patch.dict(os.environ, env, clear=False):
@@ -93,6 +94,7 @@ class SettingsUploadLimitTests(unittest.TestCase):
         env = {
             "AEROBIM_ENV": "development",
             "AEROBIM_SIGNOFF_PROFILE": "samolet_pilot",
+            "AEROBIM_API_BEARER_TOKEN": "test-pilot-bearer",
             "AEROBIM_APPLY_SAMOLET_UPLOAD_CAPS": "0",
             "AEROBIM_LLM_ADVISORY_ENABLED": "false",
         }

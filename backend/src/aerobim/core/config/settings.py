@@ -4,6 +4,7 @@ import logging
 import os
 from dataclasses import dataclass, replace
 from pathlib import Path
+from urllib.parse import urlparse
 
 _DEBUG_CORS_ORIGINS = (
     "http://localhost:3000",
@@ -39,6 +40,55 @@ def _read_bool(name: str, default: bool) -> bool:
     if raw is None:
         return default
     return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def assert_cors_origins_safe(
+    origins: tuple[str, ...],
+    *,
+    hard_profile: bool,
+) -> None:
+    """Boot-fail CORS allowlists that would widen credentialed browser access."""
+
+    if any(origin.strip().lower() == "null" for origin in origins):
+        raise RuntimeError("AEROBIM_CORS_ORIGINS must not include the 'null' origin")
+    if hard_profile and len(origins) > _MAX_HARD_CORS_ORIGINS:
+        raise RuntimeError(
+            "AEROBIM_CORS_ORIGINS is capped at "
+            f"{_MAX_HARD_CORS_ORIGINS} entries under samolet_pilot/production"
+        )
+    for origin in origins:
+        if origin == "*":
+            continue
+        parsed = urlparse(origin)
+        if parsed.scheme not in {"http", "https"}:
+            raise RuntimeError(f"AEROBIM_CORS_ORIGINS entry is not an origin: {origin!r}")
+        if parsed.username is not None or parsed.password is not None:
+            raise RuntimeError(f"AEROBIM_CORS_ORIGINS must not include userinfo: {origin!r}")
+        if parsed.path not in {"", "/"} or parsed.query or parsed.fragment:
+            raise RuntimeError(
+                f"AEROBIM_CORS_ORIGINS must be scheme://host[:port] only: {origin!r}"
+            )
+        host = (parsed.hostname or "").strip("[]").lower()
+        if not host:
+            raise RuntimeError(f"AEROBIM_CORS_ORIGINS must include a host: {origin!r}")
+        if hard_profile and parsed.scheme != "https" and host not in _LOOPBACK_CORS_HOSTS:
+            raise RuntimeError(
+                "AEROBIM_CORS_ORIGINS must be https:// "
+                "(loopback http allowed) under samolet_pilot/production; "
+                f"got {origin!r}"
+            )
+
+
+def _cors_allow_credentials_from_env(
+    origins: tuple[str, ...],
+    *,
+    env_name: str,
+) -> bool:
+    if not origins or any(origin == "*" for origin in origins):
+        return False
+    if "AEROBIM_CORS_ALLOW_CREDENTIALS" in os.environ:
+        return _read_bool("AEROBIM_CORS_ALLOW_CREDENTIALS", False)
+    return env_name in _DEV_ENVIRONMENTS
 
 
 def _read_vlm_enabled() -> bool:
@@ -122,6 +172,8 @@ def _samolet_model_default(profile_gate: bool) -> int:
 
 
 _DEV_ENVIRONMENTS = frozenset({"development", "dev", "test"})
+_MAX_HARD_CORS_ORIGINS = 8
+_LOOPBACK_CORS_HOSTS = frozenset({"localhost", "127.0.0.1", "::1"})
 _DEFAULT_MAX_IFC_BYTES = 256 * 1024 * 1024  # 256 MiB; comparable to bSI 256 MB, not identical
 # Baked pilot/production quotas when env unset (RTATOM-I20 / A2.3).
 _PILOT_DEFAULT_MAX_UPLOADS_PER_DAY = 100
@@ -283,6 +335,14 @@ class Settings:
     storage_dir: Path
     debug: bool
     cors_origins: tuple[str, ...] = ()
+    cors_allow_credentials: bool = True
+    """CORS ``Access-Control-Allow-Credentials``.
+
+    ``from_env`` enables this in development/test for a finite origin list so the
+    review shell ``credentials:include`` keeps working. ``samolet_pilot`` /
+    ``production`` stay false unless ``AEROBIM_CORS_ALLOW_CREDENTIALS=true``
+    (Phase-3 BFF is lab-only and never ready on those profiles).
+    """
     api_bearer_token: str | None = None
     cross_doc_contradiction_severity: str = "warning"
     """Severity for cross-document contradictions: ``error`` | ``warning`` | ``info``."""
@@ -747,15 +807,21 @@ class Settings:
             )
 
     def require_secure_auth(self) -> None:
-        """Fail closed: non-dev deployments must configure bearer and/or OIDC."""
-        if self.is_dev_environment:
+        """Fail closed: non-dev *and* hard signoff profiles must configure auth.
+
+        ``AEROBIM_ENV=development`` must not waive this when
+        ``signoff_profile`` is ``samolet_pilot`` or ``production`` (F-02).
+        """
+        hard_profile = self.signoff_profile in {"samolet_pilot", "production"}
+        if self.is_dev_environment and not hard_profile:
             return
         if self.api_bearer_token or self.oidc_enabled:
             return
         raise RuntimeError(
-            "Non-development deployments require AEROBIM_API_BEARER_TOKEN "
-            "and/or OIDC settings (AEROBIM_OIDC_ISSUER, AEROBIM_OIDC_AUDIENCE, "
-            f"AEROBIM_OIDC_JWKS_URL); AEROBIM_ENV={self.environment!r}"
+            "Non-development deployments and samolet_pilot/production signoff "
+            "require AEROBIM_API_BEARER_TOKEN and/or OIDC settings "
+            "(AEROBIM_OIDC_ISSUER, AEROBIM_OIDC_AUDIENCE, AEROBIM_OIDC_JWKS_URL); "
+            f"AEROBIM_ENV={self.environment!r} signoff_profile={self.signoff_profile!r}"
         )
 
     def require_oidc_runtime_deps(self) -> None:
@@ -833,6 +899,8 @@ class Settings:
             )
         profile_gate = signoff_profile in {"samolet_pilot", "production"}
         demo_gate = signoff_profile in {"samolet_pilot_demo", "moscow_agr_2026"}
+        assert_cors_origins_safe(origins, hard_profile=profile_gate)
+        cors_allow_credentials = _cors_allow_credentials_from_env(origins, env_name=env_name)
         # Pilot/production are fail-closed: env cannot weaken required gates.
         if profile_gate:
             require_clash = True
@@ -910,6 +978,7 @@ class Settings:
             storage_dir=Path(os.getenv("AEROBIM_STORAGE_DIR", "var/reports")),
             debug=debug,
             cors_origins=origins,
+            cors_allow_credentials=cors_allow_credentials,
             api_bearer_token=(os.getenv("AEROBIM_API_BEARER_TOKEN") or "").strip() or None,
             cross_doc_contradiction_severity=cross_doc_severity,
             priority_profile=priority_profile,
@@ -1114,6 +1183,12 @@ class Settings:
                     "OIDC BFF Phase 3 is lab-only; unset AEROBIM_OIDC_BFF_* "
                     "under samolet_pilot/production (POST-05)"
                 )
+        if (
+            settings.oidc_bff_phase3_ready
+            and settings.cors_origins
+            and "*" not in settings.cors_origins
+        ):
+            settings = replace(settings, cors_allow_credentials=True)
         if settings.llm_local_enabled and not settings.llm_local_ready():
             if (
                 settings.signoff_profile

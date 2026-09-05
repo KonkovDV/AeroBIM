@@ -84,7 +84,7 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
 
         upload_id = uuid4().hex
         try:
-            ctx.upload_quota_store.reconcile_stale_holds()
+            ctx.upload_quota_store.reconcile_stale_holds_throttled()
             ctx.upload_quota_store.reserve(tenant_key, size_bytes=max_bytes, hold_id=upload_id)
         except UploadQuotaExceeded as exc:
             logger.warning(
@@ -98,18 +98,22 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
 
         def _drop_quota() -> None:
             nonlocal held_bytes
-            if held_bytes <= 0:
-                ctx.upload_quota_store.clear_hold(tenant_key, upload_id)
-                return
-            try:
-                ctx.upload_quota_store.release(tenant_key, size_bytes=held_bytes)
-            except Exception:
-                logger.warning(
-                    "upload quota release failed",
-                    tenant_id=tenant_key,
-                    size_bytes=held_bytes,
-                )
-            held_bytes = 0
+            if held_bytes > 0:
+                last_error: Exception | None = None
+                for _ in range(2):
+                    try:
+                        ctx.upload_quota_store.release(tenant_key, size_bytes=held_bytes)
+                        last_error = None
+                        break
+                    except Exception as exc:
+                        last_error = exc
+                if last_error is not None:
+                    logger.error(
+                        "upload quota release failed",
+                        tenant_id=tenant_key,
+                        size_bytes=held_bytes,
+                    )
+                held_bytes = 0
             ctx.upload_quota_store.clear_hold(tenant_key, upload_id)
 
         relative_path = f"{tenant_prefix}uploads/{upload_id}/{safe_name}"

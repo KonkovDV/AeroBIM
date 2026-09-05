@@ -316,6 +316,7 @@ class ApiReportEndpointTests(unittest.TestCase):
             created_at=datetime.now(tz=UTC).isoformat(),
             project_name=project_name,
             discipline=discipline,
+            tenant_id="lab-anonymous",
             requirements=(),
             issues=(),
             summary=ValidationSummary(

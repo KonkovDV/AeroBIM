@@ -85,17 +85,25 @@ class PdfiumRegionCropperTests(unittest.TestCase):
         self.assertIn("run_pdfium_crop_isolated", source)
 
     def test_worker_crash_is_runtime_error_not_success(self) -> None:
-        from subprocess import CompletedProcess
-        from unittest.mock import patch
+        from unittest.mock import MagicMock, patch
 
         from aerobim.infrastructure.adapters.pdfium_isolate.process_isolate import (
             run_pdfium_crop_isolated,
         )
 
-        fake = CompletedProcess(args=[], returncode=1, stdout=b"", stderr=b"worker boom")
-        with patch(
-            "aerobim.infrastructure.adapters.pdfium_isolate.process_isolate.subprocess.run",
-            return_value=fake,
+        fake = MagicMock()
+        fake.pid = 4242
+        fake.returncode = 1
+        fake.communicate.return_value = (b"", b"worker boom")
+        with (
+            patch(
+                "aerobim.infrastructure.adapters.pdfium_isolate.process_isolate.subprocess.Popen",
+                return_value=fake,
+            ),
+            patch(
+                "aerobim.infrastructure.adapters.pdfium_isolate.process_isolate._windows_job_create",
+                return_value=None,
+            ),
         ):
             with self.assertRaises(RuntimeError) as ctx:
                 run_pdfium_crop_isolated(
@@ -120,6 +128,17 @@ class PdfiumRegionCropperTests(unittest.TestCase):
         self.assertIn("RLIMIT_CPU", source)
         self.assertIn("preexec_fn", source)
         self.assertIn('sys.platform != "win32"', source)
+
+    def test_windows_isolate_declares_job_object(self) -> None:
+        import inspect
+
+        from aerobim.infrastructure.adapters.pdfium_isolate import process_isolate as mod
+
+        source = inspect.getsource(mod)
+        self.assertIn("CreateJobObjectW", source)
+        self.assertIn("AssignProcessToJobObject", source)
+        self.assertIn("JOB_OBJECT_LIMIT_PROCESS_MEMORY", source)
+        self.assertIn("SetInformationJobObject", source)
 
 
 if __name__ == "__main__":

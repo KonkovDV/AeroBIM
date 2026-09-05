@@ -96,13 +96,24 @@ class ArchitectureSeamTests(unittest.TestCase):
         self.assertIn("@sota-stub", adapter_src)
         self.assertIn("StubIdsAssistDraftAdapter", adapter_src)
 
-    def test_hd19_s3_presign_residual_is_tracked_and_unwired(self) -> None:
-        """Re-Audit #9: presign GET cap bypass stays in KNOWN_BUGS; no src callers."""
+    def test_hd19_s3_presign_is_capped_and_unwired(self) -> None:
+        """Presign GET is HeadObject-capped; no src callers of ``.presign_get(``."""
 
         root = Path(__file__).resolve().parents[2]
         known = (root / "KNOWN_BUGS.md").read_text(encoding="utf-8")
         self.assertIn("HD19-S3-01", known)
-        self.assertIn("presign_get", known)
+        s3_src = (
+            root
+            / "backend"
+            / "src"
+            / "aerobim"
+            / "infrastructure"
+            / "adapters"
+            / "s3_object_store.py"
+        ).read_text(encoding="utf-8")
+        self.assertIn("head_object", s3_src)
+        self.assertIn("max_get_bytes", s3_src)
+        self.assertIn("pin_s3_outbound_dials", s3_src)
         src = root / "backend" / "src"
         callers: list[str] = []
         for path in src.rglob("*.py"):

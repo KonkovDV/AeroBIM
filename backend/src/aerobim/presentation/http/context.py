@@ -40,11 +40,13 @@ from aerobim.domain.models import (
     ValidationRequest,
 )
 from aerobim.domain.object_acl import (
+    LAB_ANONYMOUS_TENANT_ID,
     AuthPrincipal,
     principal_may_access_job,
     principal_may_access_norm_pack,
     principal_may_access_report,
     principal_may_access_tenant_id,
+    principal_may_list_unscoped_reports,
 )
 from aerobim.infrastructure.auth.oidc_bff_phase3 import (
     DEFAULT_BFF_SESSION_STORE,
@@ -64,7 +66,10 @@ from aerobim.presentation.http.package_request_builders import (
     build_project_package_request,
     build_requirement_source,
 )
-from aerobim.presentation.http.rate_limit import post_path_is_rate_limited
+from aerobim.presentation.http.rate_limit import (
+    heavy_get_path_is_rate_limited,
+    post_path_is_rate_limited,
+)
 from aerobim.presentation.http.schemas import AnalyzeProjectPackageRequest
 
 REPORT_ID_RE = _re.compile(r"^[a-f0-9]{32}$")
@@ -201,10 +206,11 @@ class ApiContext:
                     headers={"WWW-Authenticate": "Bearer"},
                 )
             if settings.is_dev_environment and settings.allow_anonymous_dev:
+                bound_tenant = (settings.api_tenant_id or "").strip() or LAB_ANONYMOUS_TENANT_ID
                 return self._bind_authenticated(
                     request,
                     AuthPrincipal(
-                        tenant_id=settings.api_tenant_id,
+                        tenant_id=bound_tenant,
                         subject="anonymous-dev",
                         auth_scheme="anonymous",
                     ),
@@ -277,6 +283,12 @@ class ApiContext:
                         headers={"WWW-Authenticate": "Bearer"},
                     )
                 subject = claims.get("sub")
+                if not isinstance(subject, str) or not subject.strip():
+                    raise HTTPException(
+                        status_code=401,
+                        detail="OIDC token missing required subject",
+                        headers={"WWW-Authenticate": "Bearer"},
+                    )
                 from aerobim.domain.auth_roles import extract_oidc_roles
 
                 roles = extract_oidc_roles(
@@ -287,7 +299,7 @@ class ApiContext:
                     request,
                     AuthPrincipal(
                         tenant_id=tenant,
-                        subject=str(subject) if subject is not None else None,
+                        subject=subject.strip(),
                         roles=roles,
                         auth_scheme="oidc",
                     ),
@@ -315,7 +327,14 @@ class ApiContext:
     def _enforce_principal_rate_limit(self, request: Request, principal: AuthPrincipal) -> None:
         """Per-principal bucket after a successful bind (RL-01). Pre-auth is per-IP."""
 
-        if request.method != "POST" or not post_path_is_rate_limited(request.url.path):
+        path = request.url.path
+        if request.method == "POST":
+            if not post_path_is_rate_limited(path):
+                return
+            bucket = "principal"
+        elif request.method == "GET" and heavy_get_path_is_rate_limited(path):
+            bucket = "principal-get"
+        else:
             return
         backend = getattr(request.app.state, "rate_limit_backend", None)
         rpm = int(getattr(request.app.state, "http_rate_limit_per_minute", 0) or 0)
@@ -325,7 +344,7 @@ class ApiContext:
         tenant = (principal.tenant_id or "").strip() or "unknown"
         subject = (principal.subject or "").strip() or "unknown"
         allowed = backend.allow(
-            bucket="principal",
+            bucket=bucket,
             key=f"{tenant}:{subject}",
             max_events=rpm,
             window_seconds=window,
@@ -483,6 +502,11 @@ class ApiContext:
                     detail="Object ACL requires authenticated tenant binding",
                 )
             return principal_tenant
+        # Lab ACL-off: body tenant_id never selects a tenant unless the principal
+        # is already bound or is an explicit platform_admin (TENANT-PAYLOAD-01).
+        if principal_tenant is None and payload_tenant:
+            if not principal_may_list_unscoped_reports(principal):
+                raise HTTPException(status_code=400, detail=public_bad_request_detail())
         return principal_tenant or payload_tenant
 
     # -- Identifier validation ----------------------------------------------

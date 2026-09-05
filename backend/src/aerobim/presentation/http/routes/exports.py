@@ -31,6 +31,7 @@ def build_exports_router(ctx: ApiContext) -> APIRouter:
         report_id: str,
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
     ) -> JSONResponse:
+        ctx.validate_report_id(report_id)
         report = ctx.load_authorized_report(report_id, principal)
         return JSONResponse(
             content=ctx.serialize_public_report(report),
@@ -42,6 +43,7 @@ def build_exports_router(ctx: ApiContext) -> APIRouter:
         report_id: str,
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
     ) -> HTMLResponse:
+        ctx.validate_report_id(report_id)
         report = ctx.load_authorized_report(report_id, principal)
         data: dict[str, Any] = ctx.serialize_public_report(report)
         scope = derive_report_scope(report)
@@ -57,6 +59,7 @@ def build_exports_router(ctx: ApiContext) -> APIRouter:
         report_id: str,
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
     ) -> Response:
+        ctx.validate_report_id(report_id)
         report = ctx.load_authorized_report(report_id, principal)
         data: dict[str, Any] = ctx.serialize_public_report(report)
         scope = derive_report_scope(report)
@@ -80,6 +83,7 @@ def build_exports_router(ctx: ApiContext) -> APIRouter:
         - ``2.1`` (default) — stable BCF 2.1 export.
         - ``3`` or ``3.0`` — experimental BCF 3.0 export (buildingSMART BCF 3.0).
         """
+        ctx.validate_report_id(report_id)
         report = ctx.load_authorized_report(report_id, principal)
         normalized = (version or "").strip()
         if normalized in {"3", "3.0"}:
@@ -109,6 +113,7 @@ def build_exports_router(ctx: ApiContext) -> APIRouter:
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
     ) -> dict[str, object]:
         """Push report topics to a remote OpenCDE BCF API 3.0 hub."""
+        ctx.validate_report_id(report_id)
         ctx.load_authorized_report(report_id, principal)
         project_id = (payload.project_id or ctx.settings.bcf_api_project_id or "").strip()
         if not project_id:

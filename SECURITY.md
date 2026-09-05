@@ -89,7 +89,10 @@ Pilot threat-model note: [`docs/security/PILOT_THREAT_MODEL_2026_07.md`](docs/se
 - OIDC JWKS is fetched only via SSRF-guarded `safe_urlopen` (no unguarded `PyJWKClient` HTTP).
 - OIDC JWKS hostname must match issuer hostname unless listed in `AEROBIM_OIDC_JWKS_EXTRA_HOSTS` (multi-host IdP allowlist).
 - Frontend never embeds bearer tokens; Vite loopback proxy may inject `Authorization` in dev only. Production builds require reverse-proxy / BFF auth (POST-05 default **DESIGNED / NOT_IMPLEMENTED** — `docs/security/PILOT_THREAT_MODEL_2026_07.md`; public `GET /v1/auth/bff` returns 501 honesty JSON unless lab Phase 3 is configured, which is still not a production SSO claim).
-- Untrusted XML (BCF ZIP members, IDS documents) parses via `defusedxml` with byte/element/depth/text caps (`xml_limits`); object-store `get_bytes` streams with `max_get_bytes` (default = max IFC). Presigned/file:// URLs remain a residual caller responsibility.
+- Untrusted XML (BCF ZIP members, IDS documents) parses via `defusedxml` with byte/element/depth/text caps (`xml_limits`); object-store `get_bytes` streams with `max_get_bytes` (default = max IFC). Presigned GET is HeadObject-capped and unwired from HTTP (HD19-S3-01).
+- Lab OIDC BFF token exchange and BCF API error bodies are read through `read_http_response_capped` (same 1 MiB class as JWKS). Phase 3 remains lab-only (POST-05); not production SSO.
+- IfcOpenShell runs in the API process (IFC-ISO-01, 1.5 GB disk band). Pdfium uses a process isolate + POSIX rlimit / Windows Job Object (PROC-01 closed; Job-create failure falls back to timeout).
+- Storage path resolution rejects nested percent-encoding (`%252e%252e` → `..`), symlinks, and path escapes under `AEROBIM_STORAGE_DIR`; report JSON reads use `open_storage_file` (POSIX `O_NOFOLLOW`; Windows reparse-point open). ZIP path inspect streams via `ZipFile(path)` without `read_bytes`; members with `..` or absolute paths are rejected (including BCF consumers via `inspect_zip_bytes`).
 - Non-dev `AEROBIM_ENV` defaults `AEROBIM_SIGNOFF_PROFILE=production` (fail-closed clash / MEP / schema / unit_scale). Soft `AEROBIM_CLASH_AFFECTS_PASS=false` is ignored under pilot/production.
 - OIDC JWT validation pins algorithms (RS256), verifies `iss`, `aud`, and `exp`; tenant claim only from `AEROBIM_OIDC_TENANT_CLAIM` (default `tenant_id`).
 - Cross-tenant object ACL denials return **HTTP 404** (not 403).
@@ -110,9 +113,8 @@ Pilot threat-model note: [`docs/security/PILOT_THREAT_MODEL_2026_07.md`](docs/se
 - Soft `development`/`fixture` sign-off profiles cannot weaken pilot/production capability gates; evidence-bundle PASS claims are evaluated under production policy.
 - Backend image base is digest-pinned (`python:3.12-slim@sha256:…`); CI/Docker install from hashed locks via `pip install --require-hashes` (pip/uv bootstrap pin residual only). Core PDF path is pypdfium2 + pdfminer.six; optional `pdf-agpl` PyMuPDF is **not** in the runtime lock or production image.
 - Duplicate / oversized / smuggled `Authorization` headers are rejected with HTTP 401 before token parsing.
-- PDF preview/raster of untrusted uploads remains a residual host risk (timeouts/page caps apply; sandbox not yet shipped).
+- PDF preview/raster of untrusted uploads uses a subprocess isolate (POSIX `RLIMIT_*` / Windows Job Object). Nested-job hosts may fall back to timeout-only.
 - Security regression battery is exercised in CI job `security-regression` (engineering only; not a production multi-tenant certification). See `docs/security/PILOT_THREAT_MODEL_2026_07.md`.
-- Storage path resolution rejects symlinks and path escapes under `AEROBIM_STORAGE_DIR`; report JSON reads use `open_storage_file` (POSIX `O_NOFOLLOW` when available). ZIP path inspect streams via `ZipFile(path)` without `read_bytes`; members with `..` or absolute paths are rejected (including BCF consumers via `inspect_zip_bytes`).
 - IFC files larger than the **model ingest cap** (1.5 GB under `samolet_pilot`/`production`) are rejected with HTTP 413. SPF in-memory open stays at `AEROBIM_MAX_IFC_BYTES` (default 256 MiB); larger IFC files convert to IfcOpenShell RocksDB. Frontend WASM IFC memory stays 256 MiB.
 - Optional validation engines publish `report.capabilities` so silent empty clash/IDS results cannot look like PASS.
 - Upload responses omit storage `object_key` from client-visible JSON.

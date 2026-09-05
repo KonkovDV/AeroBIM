@@ -45,6 +45,14 @@ NORM_PACK_EDITOR_ROLES = frozenset(
     }
 )
 
+# Cross-tenant catalogue listing only. Distinct from HITL ``admin`` (tenant-scoped).
+PLATFORM_ADMIN_ROLES = frozenset(
+    {
+        "platform_admin",
+        "aerobim:platform_admin",
+    }
+)
+
 
 def _normalize_role(value: object) -> str | None:
     if value is None:
@@ -99,6 +107,7 @@ def principal_has_any_role(*, principal_roles: frozenset[str], required: frozens
 __all__ = [
     "HITL_REVIEWER_ROLES",
     "NORM_PACK_EDITOR_ROLES",
+    "PLATFORM_ADMIN_ROLES",
     "VIEWER_ROLES",
     "extract_oidc_roles",
     "principal_has_any_role",

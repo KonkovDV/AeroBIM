@@ -116,6 +116,32 @@ NATIVE_LIRA_CLOSED_REASON = (
 )
 _REVIT_CONTAINER_ZIP_BASENAMES = frozenset({"basicfileinfo"})
 
+# High-confidence declared MIME → sniffed kind. octet-stream / empty / unknown
+# types are ignored so browsers that send generic MIME still upload (MIME-01).
+_DECLARED_MIME_KIND: dict[str, str] = {
+    "application/pdf": "pdf",
+    "image/png": "png",
+    "image/jpeg": "jpeg",
+    "image/jpg": "jpeg",
+    "image/gif": "gif",
+    "application/zip": "zip",
+    "application/x-zip-compressed": "zip",
+    "image/vnd.dwg": "dwg",
+    "application/acad": "dwg",
+    "application/x-step": "ifc",
+    "application/xml": "xml",
+    "text/xml": "xml",
+}
+
+
+def _declared_kind_from_content_type(declared_content_type: str | None) -> str | None:
+    if not declared_content_type:
+        return None
+    media = declared_content_type.split(";", 1)[0].strip().lower()
+    if not media or media in {"application/octet-stream", "binary/octet-stream"}:
+        return None
+    return _DECLARED_MIME_KIND.get(media)
+
 
 def extension_of(filename: str) -> str:
     name = filename.replace("\\", "/").split("/")[-1]
@@ -150,11 +176,12 @@ def validate_upload_content(
 ) -> SniffResult:
     """Validate filename extension against sniffed content.
 
-    Raises UploadContentError on empty payload, disallowed extension, or
-    extension/magic mismatch for high-confidence binary formats.
+    Raises UploadContentError on empty payload, disallowed extension,
+    extension/magic mismatch, or a high-confidence Content-Type that names a
+    different binary kind than the sniffed magic (MIME-01). Generic
+    ``application/octet-stream`` is not a signal.
     """
 
-    del declared_content_type  # reserved for future MIME cross-check
     if not payload:
         raise UploadContentError("Empty upload")
 
@@ -169,6 +196,17 @@ def validate_upload_content(
         raise UploadContentError(f"Disallowed upload extension: {ext}")
 
     sniffed = sniff_content(payload)
+    declared_kind = _declared_kind_from_content_type(declared_content_type)
+    if (
+        declared_kind
+        and sniffed.confidence == "high"
+        and sniffed.kind != "empty"
+        and declared_kind != sniffed.kind
+    ):
+        raise UploadContentError(
+            "Content mismatch: declared type "
+            f"{declared_kind} does not match sniffed type {sniffed.kind}"
+        )
     allowed = _EXTENSION_KINDS[ext]
     if sniffed.kind == "empty":
         raise UploadContentError("Empty upload")

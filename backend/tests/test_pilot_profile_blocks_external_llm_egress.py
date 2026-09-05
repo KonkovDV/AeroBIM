@@ -8,6 +8,8 @@ from unittest import mock
 
 from aerobim.core.config.settings import Settings
 
+_PILOT_AUTH = {"AEROBIM_API_BEARER_TOKEN": "test-pilot-bearer"}
+
 
 class PilotProfileBlocksExternalLlmEgressTests(unittest.TestCase):
     def test_pilot_profile_blocks_external_llm_egress(self) -> None:
@@ -16,6 +18,7 @@ class PilotProfileBlocksExternalLlmEgressTests(unittest.TestCase):
             {
                 "AEROBIM_ENV": "development",
                 "AEROBIM_SIGNOFF_PROFILE": "samolet_pilot",
+                **_PILOT_AUTH,
                 "AEROBIM_LLM_ADVISORY_ENABLED": "true",
                 "AEROBIM_LLM_BASE_URL": "https://llm.api.cloud.yandex.net/v1",
                 "AEROBIM_LLM_MODEL": "gpt://folder/model",
@@ -40,6 +43,7 @@ class PilotProfileBlocksExternalLlmEgressTests(unittest.TestCase):
             {
                 "AEROBIM_ENV": "development",
                 "AEROBIM_SIGNOFF_PROFILE": "samolet_pilot",
+                **_PILOT_AUTH,
                 "AEROBIM_CUSTOMER_PACK_LLM_EGRESS": "allow",
             },
             clear=False,
@@ -54,6 +58,7 @@ class PilotProfileBlocksExternalLlmEgressTests(unittest.TestCase):
             {
                 "AEROBIM_ENV": "development",
                 "AEROBIM_SIGNOFF_PROFILE": "samolet_pilot",
+                **_PILOT_AUTH,
                 "AEROBIM_CUSTOMER_PACK_LLM_EGRESS": "allow",
                 "AEROBIM_CUSTOMER_PACK_LLM_EGRESS_CONSENT_REF": "letter-oa-2026-09",
             },
@@ -104,6 +109,7 @@ class PilotProfileBlocksExternalLlmEgressTests(unittest.TestCase):
             {
                 "AEROBIM_ENV": "development",
                 "AEROBIM_SIGNOFF_PROFILE": "samolet_pilot",
+                **_PILOT_AUTH,
                 "AEROBIM_KIMI_K3_ENABLED": "true",
             },
             clear=False,

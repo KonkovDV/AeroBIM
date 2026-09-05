@@ -79,6 +79,14 @@ def test_frontend_runtime_dependencies_are_classified() -> None:
     assert not missing, f"Frontend runtime deps without license classification: {missing}"
 
 
+def test_ifcopenshell_lgpl_flags_legal_review() -> None:
+    # F-15: core IFC kernel is LGPL; inventory flags legal review (not a runtime vuln).
+    item = _inventory()["ifcopenshell"]
+    assert item["risk_class"] == "weak_copyleft"
+    assert item["legal_review_required"] is True
+    assert item["scope"] == "core"
+
+
 def test_web_ifc_mpl_is_acknowledged() -> None:
     # VERIFIED 2026-07-31: web-ifc 0.0.77 declares MPL-2.0 (file-level copyleft).
     item = _inventory()["web-ifc"]

@@ -13,6 +13,7 @@ import ipaddress
 import re
 import socket
 import ssl
+import threading
 from dataclasses import dataclass
 from typing import Any
 from urllib.error import URLError
@@ -361,6 +362,85 @@ def resolve_and_pin_outbound_url(
     )
 
 
+_pin_lock = threading.Lock()
+_orig_create_connection = socket.create_connection
+_dial_pins_installed = False
+_dial_pins: dict[str, str] = {}
+
+
+def _dial_pin_key(host: object) -> str:
+    text = str(host).strip().lower()
+    if text.startswith("[") and text.endswith("]"):
+        return text[1:-1]
+    return text
+
+
+def _pinned_create_connection(
+    address: tuple[Any, ...] | Any,
+    *args: Any,
+    **kwargs: Any,
+) -> Any:
+    """Dial a validated IP when the hostname was pinned; keep Host/SNI unchanged."""
+
+    if isinstance(address, tuple) and address:
+        host, rest = address[0], address[1:]
+        key = _dial_pin_key(host)
+        with _pin_lock:
+            pinned_ip = _dial_pins.get(key)
+        if pinned_ip is not None:
+            address = (pinned_ip, *rest)
+    return _orig_create_connection(address, *args, **kwargs)
+
+
+def ensure_outbound_dial_pins_installed() -> None:
+    """Wrap ``socket.create_connection`` once so boto3 can keep hostname SNI/Host."""
+
+    global _dial_pins_installed, _orig_create_connection
+    with _pin_lock:
+        if _dial_pins_installed:
+            return
+        if socket.create_connection is _pinned_create_connection:
+            _dial_pins_installed = True
+            return
+        _orig_create_connection = socket.create_connection
+        socket.create_connection = _pinned_create_connection
+        _dial_pins_installed = True
+
+
+def set_outbound_dial_pin(hostname: str, ip: str) -> None:
+    """Pin TCP dials for *hostname* to *ip* (hostname stays on the TLS/HTTP layer)."""
+
+    ensure_outbound_dial_pins_installed()
+    key = _dial_pin_key(hostname)
+    if not key:
+        raise UnsafeOutboundUrlError("Outbound dial pin requires a hostname")
+    with _pin_lock:
+        _dial_pins[key] = ip
+
+
+def outbound_dial_pin_for(hostname: str) -> str | None:
+    with _pin_lock:
+        return _dial_pins.get(_dial_pin_key(hostname))
+
+
+def clear_outbound_dial_pins() -> None:
+    with _pin_lock:
+        _dial_pins.clear()
+
+
+def pin_s3_outbound_dials(pinned: PinnedOutboundUrl, *, bucket: str) -> None:
+    """Pin the S3 endpoint host and the virtual-hosted ``{bucket}.{host}`` name.
+
+    boto3 keeps the original hostname for Host/SNI; TCP goes to ``pinned.pinned_ip``.
+    """
+
+    set_outbound_dial_pin(pinned.hostname, pinned.pinned_ip)
+    name = (bucket or "").strip()
+    if not name or _parse_literal_ip_host(pinned.hostname) is not None:
+        return
+    set_outbound_dial_pin(f"{name}.{pinned.hostname}", pinned.pinned_ip)
+
+
 def _open_pinned(request: Request, *, timeout: float, allow_http: bool) -> Any:
     opener: OpenerDirector
     if request.full_url.lower().startswith("https:"):
@@ -500,7 +580,12 @@ __all__ = [
     "assert_oidc_jwks_host_bound",
     "assert_safe_datastore_url",
     "assert_safe_outbound_url",
+    "clear_outbound_dial_pins",
+    "ensure_outbound_dial_pins_installed",
+    "outbound_dial_pin_for",
+    "pin_s3_outbound_dials",
     "resolve_and_pin_outbound_url",
     "safe_datastore_urlopen",
     "safe_urlopen",
+    "set_outbound_dial_pin",
 ]

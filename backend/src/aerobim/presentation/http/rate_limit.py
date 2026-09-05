@@ -39,6 +39,18 @@ _WINDOW_SECONDS = 60.0
 _RETRY_AFTER = str(int(_WINDOW_SECONDS))
 
 
+def heavy_get_path_is_rate_limited(path: str) -> bool:
+    """True for authenticated heavy GET exports / source / preview (F-12)."""
+
+    if "/export/" in path:
+        return True
+    if "/source/" in path:
+        return True
+    if "/drawing-assets/" in path and path.rstrip("/").endswith("/preview"):
+        return True
+    return False
+
+
 def post_path_is_rate_limited(path: str) -> bool:
     """True when a POST path shares the expensive-route limiter (RL-02)."""
 
@@ -99,6 +111,8 @@ def add_rate_limit_middleware(
 
     RL-01: middleware keys are the client IP only (no Authorization fingerprint).
     Authenticated POSTs take a second per-principal bucket in ``require_bearer_auth``.
+    Heavy GET exports / source / preview share the pre-auth per-IP bucket and a
+    per-principal ``principal-get`` bucket after bind (F-12).
     """
 
     if requests_per_minute <= 0 and job_poll_per_minute <= 0:
@@ -147,6 +161,17 @@ def add_rate_limit_middleware(
                 response = await call_next(request)
                 return response
 
+            if request.method == "GET" and heavy_get_path_is_rate_limited(path):
+                if requests_per_minute > 0 and not backend.allow(
+                    bucket="get-heavy",
+                    key=key,
+                    max_events=requests_per_minute,
+                    window_seconds=_WINDOW_SECONDS,
+                ):
+                    return _limited_response(path=path)
+                response = await call_next(request)
+                return response
+
             if request.method != "POST":
                 response = await call_next(request)
                 return response
@@ -172,5 +197,6 @@ __all__ = [
     "_RATE_LIMITED_POST_PREFIXES",
     "add_rate_limit_middleware",
     "client_bucket_host",
+    "heavy_get_path_is_rate_limited",
     "post_path_is_rate_limited",
 ]

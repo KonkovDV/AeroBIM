@@ -17,6 +17,8 @@ from aerobim.domain.models import ReportListFilters
 from aerobim.domain.object_acl import (
     AuthPrincipal,
     principal_may_access_tenant_id,
+    principal_may_list_unscoped_reports,
+    review_actor_from_principal,
 )
 from aerobim.domain.revision_diff import compare_report_revisions
 from aerobim.presentation.http.context import (
@@ -44,17 +46,20 @@ def build_reports_router(ctx: ApiContext) -> APIRouter:
         discipline: str | None = None,
         passed: bool | None = None,
     ) -> dict[str, object]:
-        # RTATOM-H02/H03: when principal has tenant_id, always scope list — even with ACL soft-off.
+        # F-03: empty tenant never lists the catalogue unless platform_admin.
         principal_tenant = (principal.tenant_id or "").strip() or None
+        unscoped = principal_may_list_unscoped_reports(principal)
+        if not unscoped and not principal_tenant:
+            return {"reports": [], "count": 0}
         entries = audit_store.list_reports(
             ReportListFilters(
                 project=project,
                 discipline=discipline,
                 passed=passed,
-                tenant_id=principal_tenant,
+                tenant_id=None if unscoped else principal_tenant,
             )
         )
-        if settings.enforce_object_acl:
+        if settings.enforce_object_acl and not unscoped:
             if not principal_tenant:
                 entries = []
             else:
@@ -118,7 +123,7 @@ def build_reports_router(ctx: ApiContext) -> APIRouter:
         ):
             raise HTTPException(status_code=403, detail=public_hitl_forbidden_detail())
         review_store = ctx.container.resolve(Tokens.REVIEW_EVENT_STORE)
-        actor = (principal.subject or "").strip() or payload.actor
+        actor = review_actor_from_principal(principal)
         idem = (payload.idempotency_key or "").strip()
         if not idem:
             idem_seed = "|".join(

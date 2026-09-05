@@ -141,6 +141,12 @@ class S3ObjectStoreTests(unittest.TestCase):
             def delete_object(self, *, Bucket: str, Key: str) -> None:
                 stored_objects.pop(Key, None)
 
+            def head_object(self, *, Bucket: str, Key: str) -> dict[str, object]:
+                del Bucket
+                if Key not in stored_objects:
+                    raise NoSuchKeyError()
+                return {"ContentLength": len(stored_objects[Key])}
+
             def generate_presigned_url(
                 self,
                 method: str,
@@ -219,3 +225,22 @@ class S3ObjectStoreTests(unittest.TestCase):
             )
             with self.assertRaises(ObjectTooLargeError):
                 store.get_bytes("aerobim/any")
+
+    def test_presign_get_rejects_oversized_content_length(self) -> None:
+        stored_objects: dict[str, bytes] = {}
+        with self._patch_fake_client(stored_objects):
+            store = S3ObjectStore(
+                bucket="bucket",
+                region="ru-test-1",
+                prefix="aerobim",
+                max_get_bytes=8,
+            )
+            key = store.put_bytes("ifc-sources/report-1/model.ifc", b"0123456789")
+            with self.assertRaises(ObjectTooLargeError):
+                store.presign_get(key)
+
+    def test_presign_get_missing_object_returns_none(self) -> None:
+        stored_objects: dict[str, bytes] = {}
+        with self._patch_fake_client(stored_objects):
+            store = S3ObjectStore(bucket="bucket", region="ru-test-1", prefix="aerobim")
+            self.assertIsNone(store.presign_get("missing.bin"))

@@ -1,4 +1,4 @@
-"""OIDC JWT access-token validation (RS256, iss/aud/exp) for enterprise SSO.
+"""OIDC JWT access-token validation (RS256, iss/aud/exp/sub) for enterprise SSO.
 
 Follows 2026 FastAPI/OIDC practice: pin algorithms, validate issuer + audience +
 expiry, fetch JWKS via SSRF-guarded safe_urlopen (never unguarded PyJWKClient HTTP).
@@ -105,7 +105,7 @@ class OidcTokenValidator:
                 issuer=self.issuer,
                 leeway=self.leeway_seconds,
                 options={
-                    "require": ["exp", "iss", "aud"],
+                    "require": ["exp", "iss", "aud", "sub"],
                     "verify_aud": True,
                     "verify_iss": True,
                     "verify_exp": True,
@@ -119,6 +119,9 @@ class OidcTokenValidator:
 
         if not isinstance(claims, dict):
             raise OidcValidationError("OIDC token claims must be an object")
+        subject = claims.get("sub")
+        if not isinstance(subject, str) or not subject.strip():
+            raise OidcValidationError("OIDC token missing required subject")
         return claims
 
     def fetch_jwks(self, *, force: bool = False) -> dict[str, Any]:

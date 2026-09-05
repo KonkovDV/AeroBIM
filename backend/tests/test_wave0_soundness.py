@@ -94,6 +94,34 @@ class AuthFailClosedSettingsTests(unittest.TestCase):
         )
         settings.require_secure_auth()
 
+    def test_production_signoff_in_dev_env_without_token_refuses_start(self) -> None:
+        settings = Settings(
+            application_name="test",
+            environment="development",
+            host="127.0.0.1",
+            port=8080,
+            storage_dir=Path("."),
+            debug=True,
+            api_bearer_token=None,
+            signoff_profile="production",
+        )
+        with self.assertRaises(RuntimeError):
+            settings.require_secure_auth()
+
+    def test_samolet_pilot_signoff_in_dev_env_without_token_refuses_start(self) -> None:
+        settings = Settings(
+            application_name="test",
+            environment="development",
+            host="127.0.0.1",
+            port=8080,
+            storage_dir=Path("."),
+            debug=True,
+            api_bearer_token=None,
+            signoff_profile="samolet_pilot",
+        )
+        with self.assertRaises(RuntimeError):
+            settings.require_secure_auth()
+
 
 class IncompleteRuleVisibilityTests(unittest.TestCase):
     def test_incomplete_property_rule_emits_warning(self) -> None:

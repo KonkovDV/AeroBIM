@@ -413,6 +413,19 @@ class QuotaReleaseTests(unittest.TestCase):
             self.assertEqual(snap.upload_count, 0)
             self.assertEqual(snap.bytes_used, 0)
 
+    def test_release_hold_is_idempotent(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            store = FilesystemUploadQuotaStore(
+                Path(tmp),
+                max_uploads_per_day=10,
+                max_bytes_per_day=10_000,
+            )
+            store.reserve("tenant-a", size_bytes=100, hold_id="hold-1")
+            self.assertTrue(store.release_hold("tenant-a", "hold-1"))
+            self.assertEqual(store.snapshot("tenant-a").bytes_used, 0)
+            self.assertFalse(store.release_hold("tenant-a", "hold-1"))
+            self.assertEqual(store.snapshot("tenant-a").bytes_used, 0)
+
 
 class SoftAuthoritativeStampTests(unittest.TestCase):
     def test_soft_validate_passed_is_non_authoritative(self) -> None:

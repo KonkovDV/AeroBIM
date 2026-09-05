@@ -239,6 +239,7 @@ A local clone runs on defaults. The collapsed table is the operator-facing confi
 | `AEROBIM_DEBUG` | `false` | Debug mode (also enables localhost CORS defaults when origins unset) |
 | `AEROBIM_STORAGE_DIR` | `var/reports` | Report persistence directory |
 | `AEROBIM_CORS_ORIGINS` | *(auto)* | Comma-separated CORS origins |
+| `AEROBIM_CORS_ALLOW_CREDENTIALS` | *(auto)* | `true` in development/test for a finite origin list; `samolet_pilot`/`production` require explicit `true` |
 | `AEROBIM_ENV` | `development` | Environment name; non-dev requires bearer/OIDC (fail-closed) |
 | `AEROBIM_SIGNOFF_PROFILE` | *(auto)* | `samolet_pilot` and `production` are closed customer contours: capabilities fail closed and outbound advisory LLM calls are forbidden. `samolet_pilot_demo` and `moscow_agr_2026` are **honest-scope** contours (development/test only): clash/MEP/bSI-submit stay out of scope (honest SKIPPED, not faked); FAILED engines still block; LLM egress still forbidden. `moscow_agr_2026` cites DGP-R-1/26 CIM AGR, not demo convenience, and does not close RT-003 or Samolet RT-002. Unset outside development resolves to `production`. Also accepts `development` and `fixture` |
 | `AEROBIM_API_BEARER_TOKEN` | *(unset)* | Bearer for `/v1/*`; required unless `AEROBIM_ALLOW_ANONYMOUS_DEV` |
@@ -346,6 +347,7 @@ AEROBIM_BSI_VALIDATION_URL
 AEROBIM_CLASH_AFFECTS_PASS
 AEROBIM_CLASH_MIN_AABB_VOLUME_M3
 AEROBIM_CLASH_SKIP_TINY
+AEROBIM_CORS_ALLOW_CREDENTIALS
 AEROBIM_CORS_ORIGINS
 AEROBIM_CROSS_DOC_SEVERITY
 AEROBIM_CUSTOMER_PACK_LLM_EGRESS

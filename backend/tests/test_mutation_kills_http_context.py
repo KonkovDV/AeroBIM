@@ -235,6 +235,18 @@ class AuthFallbackBranchTests(unittest.TestCase):
             self.assertEqual(principal.subject, "anonymous-dev")
             self.assertEqual(principal.tenant_id, "tenant-dev")
 
+    def test_dev_anonymous_without_api_tenant_uses_lab_anonymous(self) -> None:
+        from aerobim.domain.object_acl import LAB_ANONYMOUS_TENANT_ID
+
+        with tempfile.TemporaryDirectory() as tmp:
+            ctx = _make_ctx(
+                Path(tmp),
+                environment="development",
+                allow_anonymous_dev=True,
+            )
+            principal = _auth(ctx, None)
+            self.assertEqual(principal.tenant_id, LAB_ANONYMOUS_TENANT_ID)
+
 
 class AuthSchemeParsingTests(unittest.TestCase):
     """Scheme comparison mutants on L144-153 (Gt/Lt/Is/OrWithAnd + 401 codes)."""
@@ -286,10 +298,12 @@ class OidcBranchTests(unittest.TestCase):
             self.assertEqual(principal.tenant_id, "t-oidc")
             self.assertEqual(principal.subject, "sub-1")
 
-    def test_missing_subject_maps_to_none(self) -> None:
+    def test_missing_subject_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             ctx = _make_ctx(Path(tmp), oidc=_OidcValidator(claims={"tenant_id": "t-oidc"}))
-            self.assertIsNone(_auth(ctx, "Bearer some-jwt").subject)
+            exc = _status_auth(ctx, "Bearer some-jwt")
+            self.assertEqual(exc.status_code, 401)
+            self.assertEqual(exc.detail, "OIDC token missing required subject")
 
     def test_configured_tenant_claim_is_used(self) -> None:
         # Kills both ReplaceOrWithAnd mutants on the claim_name chain (L159):
@@ -297,7 +311,7 @@ class OidcBranchTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             ctx = _make_ctx(
                 Path(tmp),
-                oidc=_OidcValidator(claims={"custom_tenant": "t-custom"}),
+                oidc=_OidcValidator(claims={"custom_tenant": "t-custom", "sub": "sub-1"}),
                 oidc_tenant_claim="custom_tenant",
             )
             principal = _auth(ctx, "Bearer some-jwt")
@@ -500,15 +514,26 @@ class ResolveBoundTenantTests(unittest.TestCase):
                 "tenant-a",
             )
 
-    def test_acl_off_payload_fallback_and_none(self) -> None:
-        # Kills ReplaceOrWithAnd on both strip chains (L283, L291).
+    def test_acl_off_unbound_payload_tenant_is_400(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             ctx = _make_ctx(Path(tmp), enforce_object_acl=False)
             empty = AuthPrincipal(tenant_id="   ")
-            self.assertEqual(
-                ctx.resolve_bound_tenant(empty, payload_tenant_id="tenant-p"), "tenant-p"
+            exc = _status(
+                ctx.resolve_bound_tenant,
+                empty,
+                payload_tenant_id="tenant-p",
             )
+            self.assertEqual(exc.status_code, 400)
             self.assertIsNone(ctx.resolve_bound_tenant(empty, payload_tenant_id=None))
+
+    def test_acl_off_platform_admin_may_bind_payload_tenant(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            ctx = _make_ctx(Path(tmp), enforce_object_acl=False)
+            admin = AuthPrincipal(tenant_id="   ", roles=frozenset({"platform_admin"}))
+            self.assertEqual(
+                ctx.resolve_bound_tenant(admin, payload_tenant_id="tenant-p"),
+                "tenant-p",
+            )
 
 
 class ObjectKeyTenantScopeTests(unittest.TestCase):

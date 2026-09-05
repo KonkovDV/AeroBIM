@@ -27,6 +27,16 @@ class PathJailFuzzTests(unittest.TestCase):
             with self.assertRaises(PathJailError):
                 resolve_storage_path("..%2foutside.ifc", base=base)
 
+    def test_rejects_double_percent_encoded_traversal(self) -> None:
+        """PATH-UNQUOTE-01: %252e%252e must decode to .. and fail the jail."""
+
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            base = Path(temporary_directory)
+            with self.assertRaises(PathJailError):
+                resolve_storage_path("%252e%252e/outside.ifc", base=base)
+            with self.assertRaises(PathJailError):
+                resolve_storage_path("%25252e%25252e/outside.ifc", base=base)
+
     def test_rejects_unc_and_drive_absolute(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
             base = Path(temporary_directory)
@@ -65,11 +75,11 @@ class PathJailAdversarialProbeTests(unittest.TestCase):
         "\u2025\u2025/x",  # two-dot leader: NFKC -> '....' -> trailing-dot reject
         "\uff0e\uff0e/\uff0e\uff0e/etc",  # fullwidth dots -> NFKC '..'
         "%2e%2e/%2e%2e/secret",  # percent-encoded traversal
+        "%252e%252e/x",  # double encoding now decodes to '..' (PATH-UNQUOTE-01)
         " ..%2fsecret",  # leading space + encoded slash
     )
 
     ACCEPTED_VECTORS = (
-        "%252e%252e/x",  # double encoding decodes once to literal '%2e%2e' (no traversal)
         "a\u2215b",  # division slash is NOT NFKC-normalized to '/' -> plain filename
         "..\u2044etc",  # fraction slash is NOT NFKC-normalized -> plain filename
         "console.log",  # 'CON' must match whole stem only, not a prefix

@@ -9,6 +9,20 @@ from aerobim.core.security.object_limits import (
 )
 
 
+def _s3_missing_object(exc: BaseException, client: Any) -> bool:
+    missing_type = getattr(getattr(client, "exceptions", None), "NoSuchKey", None)
+    if missing_type is not None and isinstance(exc, missing_type):
+        return True
+    response = getattr(exc, "response", None)
+    if not isinstance(response, dict):
+        return False
+    error = response.get("Error")
+    code = error.get("Code") if isinstance(error, dict) else None
+    meta = response.get("ResponseMetadata")
+    status = meta.get("HTTPStatusCode") if isinstance(meta, dict) else None
+    return code in {"NoSuchKey", "404", "NotFound"} or status == 404
+
+
 class S3ObjectStore:
     def __init__(
         self,
@@ -87,14 +101,34 @@ class S3ObjectStore:
         client.delete_object(Bucket=self._bucket, Key=self._qualify_key(key))
 
     def presign_get(self, key: str, *, expires_in_seconds: int = 3600) -> str | None:
-        # Residual: presigned GET bypasses this store's max_get_bytes streaming cap;
-        # callers that fetch via URL must enforce their own size limits.
+        # Parity with LocalObjectStore: refuse a GET URL for an oversized object.
+        # The URL itself cannot stream-cap the download; HeadObject is the gate.
         client = self._build_client()
+        object_key = self._qualify_key(key)
+        try:
+            head = client.head_object(Bucket=self._bucket, Key=object_key)
+        except Exception as exc:
+            if _s3_missing_object(exc, client):
+                return None
+            raise
+        raw_length = head.get("ContentLength") if isinstance(head, dict) else None
+        if raw_length is None:
+            raise ObjectTooLargeError("S3 HeadObject omitted ContentLength; refuse presigned GET")
+        try:
+            length = int(raw_length)
+        except (TypeError, ValueError) as exc:
+            raise ObjectTooLargeError(
+                "S3 HeadObject ContentLength is not an integer; refuse presigned GET"
+            ) from exc
+        if length > self._max_get_bytes:
+            raise ObjectTooLargeError(
+                f"Object ContentLength too large ({length} > {self._max_get_bytes})"
+            )
         return cast(
             str | None,
             client.generate_presigned_url(
                 "get_object",
-                Params={"Bucket": self._bucket, "Key": self._qualify_key(key)},
+                Params={"Bucket": self._bucket, "Key": object_key},
                 ExpiresIn=expires_in_seconds,
             ),
         )
@@ -108,17 +142,20 @@ class S3ObjectStore:
                 "S3ObjectStore requires boto3/botocore. Install AeroBIM enterprise extras."
             ) from exc
 
-        # Re-assert DNS pin at connect time so a stale boot-time check cannot
-        # survive a rebind. Residual: boto3 still dials the hostname (Host/SNI);
-        # full IP dial requires a custom endpoint resolver.
+        # Re-resolve at connect time so a stale boot-time check cannot survive a
+        # rebind. TCP is pinned to the validated IP; hostname stays for Host/SNI.
         if self._endpoint_url:
-            from aerobim.core.security.outbound_url import assert_safe_outbound_url
+            from aerobim.core.security.outbound_url import (
+                pin_s3_outbound_dials,
+                resolve_and_pin_outbound_url,
+            )
 
-            assert_safe_outbound_url(
+            pinned = resolve_and_pin_outbound_url(
                 self._endpoint_url,
                 allow_http=self._allow_http_endpoint,
                 resolve_dns=True,
             )
+            pin_s3_outbound_dials(pinned, bucket=self._bucket)
 
         return boto3.client(
             "s3",

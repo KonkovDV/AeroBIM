@@ -6,7 +6,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
@@ -89,6 +89,36 @@ class HttpBcfApiClientTests(unittest.TestCase):
         self.assertEqual(result.failed, 0)
         self.assertEqual(len(calls), 1)
         self.assertEqual(calls[0][1]["title"], "SAM-001")
+
+    def test_http_error_body_is_capped(self) -> None:
+        import urllib.error
+        from io import BytesIO
+
+        from aerobim.core.security.object_limits import DEFAULT_MAX_HTTP_RESPONSE_BYTES
+
+        huge = b"e" * (DEFAULT_MAX_HTTP_RESPONSE_BYTES + 16)
+        err = urllib.error.HTTPError(
+            "https://hub.example.test/bcf",
+            500,
+            "fail",
+            hdrs=None,
+            fp=BytesIO(huge),
+        )
+
+        def _boom(*_args: object, **_kwargs: object) -> object:
+            raise err
+
+        with patch(
+            "aerobim.core.security.outbound_url.safe_urlopen",
+            _boom,
+        ):
+            with self.assertRaisesRegex(RuntimeError, "size cap"):
+                HttpBcfApiClient._default_http_post(
+                    "https://hub.example.test/opencde/bcf/3.0/projects/x/topics",
+                    {"title": "t"},
+                    "tok",
+                    5.0,
+                )
 
 
 class PushReportToBcfApiUseCaseTests(unittest.TestCase):

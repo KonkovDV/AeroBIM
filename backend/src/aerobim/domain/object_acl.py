@@ -7,9 +7,13 @@ from dataclasses import dataclass, field
 from aerobim.domain.auth_roles import (
     HITL_REVIEWER_ROLES,
     NORM_PACK_EDITOR_ROLES,
+    PLATFORM_ADMIN_ROLES,
     principal_has_any_role,
 )
 from aerobim.domain.models import AnalyzeProjectPackageJob, ValidationReport
+
+LAB_ANONYMOUS_TENANT_ID = "lab-anonymous"
+LAB_ANONYMOUS_ACTOR = "lab:anonymous"
 
 
 @dataclass(frozen=True)
@@ -150,13 +154,37 @@ def principal_may_access_norm_pack(
     return _tenants_match(principal.tenant_id, pack_tenant)
 
 
+def principal_may_list_unscoped_reports(principal: AuthPrincipal) -> bool:
+    """True only for an explicit platform-admin role — never for empty tenant."""
+
+    if principal.is_service_token:
+        return False
+    return principal_has_any_role(
+        principal_roles=principal.roles,
+        required=PLATFORM_ADMIN_ROLES,
+    )
+
+
+def review_actor_from_principal(principal: AuthPrincipal) -> str:
+    """HITL journal actor: bound subject, never a client-supplied body field (F-04)."""
+
+    subject = (principal.subject or "").strip()
+    if subject:
+        return subject
+    return LAB_ANONYMOUS_ACTOR
+
+
 __all__ = [
     "AuthPrincipal",
     "HITL_EXPERT_EVENT_TYPES",
+    "LAB_ANONYMOUS_ACTOR",
+    "LAB_ANONYMOUS_TENANT_ID",
     "principal_may_access_job",
     "principal_may_access_norm_pack",
     "principal_may_access_report",
     "principal_may_access_tenant_id",
     "principal_may_append_hitl_event",
     "principal_may_edit_norm_pack",
+    "principal_may_list_unscoped_reports",
+    "review_actor_from_principal",
 ]

@@ -50,6 +50,8 @@ class FilesystemUploadQuotaStore:
         )
         self._max_bytes = max_bytes_per_day if max_bytes_per_day and max_bytes_per_day > 0 else None
         self._fail_closed = fail_closed
+        self._last_reconcile_mono = 0.0
+        self._reconcile_min_interval_s = 30.0
 
     def _day(self) -> str:
         return datetime.now(tz=UTC).strftime("%Y-%m-%d")
@@ -200,6 +202,36 @@ class FilesystemUploadQuotaStore:
             self._hold_path(tenant_id, hold_id).unlink(missing_ok=True)
         except UploadQuotaExceeded:
             return
+
+    def reconcile_stale_holds_throttled(self, *, max_age_seconds: float = 3600.0) -> int:
+        """FS-scan reconcile at most once per ``_reconcile_min_interval_s`` (F-06)."""
+
+        now = time.monotonic()
+        if now - self._last_reconcile_mono < self._reconcile_min_interval_s:
+            return 0
+        released = self.reconcile_stale_holds(max_age_seconds=max_age_seconds)
+        self._last_reconcile_mono = now
+        return released
+
+    def release_hold(self, tenant_id: str, hold_id: str) -> bool:
+        """Idempotent rollback: release reserved bytes iff the hold marker still exists."""
+
+        try:
+            path = self._hold_path(tenant_id, hold_id)
+        except UploadQuotaExceeded:
+            return False
+        if not path.is_file():
+            return False
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            path.unlink(missing_ok=True)
+            return False
+        size_bytes = int(payload.get("size_bytes") or 0)
+        count = int(payload.get("count") or 1)
+        self.release(tenant_id, size_bytes=size_bytes, count=count)
+        path.unlink(missing_ok=True)
+        return True
 
     def reconcile_stale_holds(self, *, max_age_seconds: float = 3600.0) -> int:
         """Release counters for holds left behind after a process crash."""

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import re
+import stat
 import unicodedata
 from pathlib import Path
 from typing import IO, Any
@@ -17,6 +18,8 @@ class PathJailError(ValueError):
 _DRIVE_ABS = re.compile(r"^[A-Za-z]:[\\/]")
 _UNC = re.compile(r"^[\\/]{2}")
 _COMPONENT_SPLIT = re.compile(r"[\\/]+")
+# Nested percent-encoding (%252e%252e → %2e%2e → ..) must fully decode.
+_MAX_PERCENT_DECODE_ROUNDS = 4
 # NTFS filename component limit; also bounds the 8.3/long-path expansion surface.
 _MAX_COMPONENT_LENGTH = 255
 # Reserved device names are dangerous in ANY component, with or without extension
@@ -33,8 +36,18 @@ def _normalize_user_path(user_path: str) -> str:
         raise PathJailError("Null bytes are not allowed in paths")
     if any(ord(ch) < 32 for ch in user_path):
         raise PathJailError("Control characters are not allowed in paths")
-    # Decode a single layer of percent-encoding so %2e%2e / %2f cannot bypass checks.
-    decoded = unquote(user_path)
+    # Decode percent-encoding to a fixed point so %252e%252e cannot remain as %2e%2e
+    # for a later decoder. Cap rounds so a pathological chain cannot spin.
+    decoded = user_path
+    for _ in range(_MAX_PERCENT_DECODE_ROUNDS):
+        nxt = unquote(decoded)
+        if nxt == decoded:
+            break
+        decoded = nxt
+    else:
+        raise PathJailError("Percent-encoding nesting exceeds decode limit")
+    if "%" in decoded and unquote(decoded) != decoded:
+        raise PathJailError("Percent-encoding nesting exceeds decode limit")
     if "\x00" in decoded or any(ord(ch) < 32 for ch in decoded):
         raise PathJailError("Encoded control characters are not allowed in paths")
     # NFKC collapses compatibility lookalikes before jail checks (OWASP API1 / Unicode).
@@ -140,11 +153,152 @@ def safe_storage_token(value: str) -> str:
     return safe
 
 
+def _windows_open_write_nofollow(path: Path, mode: str) -> IO[Any]:
+    """Open for write without following NTFS reparse points (F-01).
+
+    ``path.open`` / ``os.open`` on Windows follow symlinks and can truncate the
+    target before a post-open ``is_symlink`` check. ``CreateFileW`` with
+    ``FILE_FLAG_OPEN_REPARSE_POINT`` opens the reparse point itself so we can
+    refuse it without touching the destination.
+    """
+    import ctypes
+    import msvcrt
+    from ctypes import wintypes
+
+    generic_write = 0x40000000
+    file_append_data = 0x0004
+    file_share_read = 0x1
+    file_share_write = 0x2
+    file_share_delete = 0x4
+    create_new = 1
+    open_always = 4
+    file_attribute_normal = 0x80
+    file_flag_open_reparse_point = 0x00200000
+    file_attribute_reparse_point = 0x400
+
+    access = file_append_data if mode == "ab" else generic_write
+    creation = create_new if mode == "xb" else open_always
+
+    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    create_file = kernel32.CreateFileW
+    create_file.argtypes = [
+        wintypes.LPCWSTR,
+        wintypes.DWORD,
+        wintypes.DWORD,
+        wintypes.LPVOID,
+        wintypes.DWORD,
+        wintypes.DWORD,
+        wintypes.HANDLE,
+    ]
+    create_file.restype = ctypes.c_void_p
+    close_handle = kernel32.CloseHandle
+    close_handle.argtypes = [ctypes.c_void_p]
+    close_handle.restype = wintypes.BOOL
+
+    class _ByHandleFileInformation(ctypes.Structure):
+        _fields_ = [
+            ("dwFileAttributes", wintypes.DWORD),
+            ("ftCreationTime", wintypes.FILETIME),
+            ("ftLastAccessTime", wintypes.FILETIME),
+            ("ftLastWriteTime", wintypes.FILETIME),
+            ("dwVolumeSerialNumber", wintypes.DWORD),
+            ("nFileSizeHigh", wintypes.DWORD),
+            ("nFileSizeLow", wintypes.DWORD),
+            ("nNumberOfLinks", wintypes.DWORD),
+            ("nFileIndexHigh", wintypes.DWORD),
+            ("nFileIndexLow", wintypes.DWORD),
+        ]
+
+    get_info = kernel32.GetFileInformationByHandle
+    get_info.argtypes = [ctypes.c_void_p, ctypes.POINTER(_ByHandleFileInformation)]
+    get_info.restype = wintypes.BOOL
+    set_pointer = kernel32.SetFilePointer
+    set_pointer.argtypes = [ctypes.c_void_p, wintypes.LONG, wintypes.PLONG, wintypes.DWORD]
+    set_pointer.restype = wintypes.DWORD
+    set_eof = kernel32.SetEndOfFile
+    set_eof.argtypes = [ctypes.c_void_p]
+    set_eof.restype = wintypes.BOOL
+
+    handle = create_file(
+        str(path),
+        access,
+        file_share_read | file_share_write | file_share_delete,
+        None,
+        creation,
+        file_attribute_normal | file_flag_open_reparse_point,
+        None,
+    )
+    invalid = ctypes.c_void_p(-1).value
+    if handle in {None, 0, invalid}:
+        err = ctypes.get_last_error()
+        # ERROR_FILE_EXISTS / ERROR_ALREADY_EXISTS
+        if mode == "xb" and err in {80, 183}:
+            raise FileExistsError(str(path))
+        raise PathJailError(f"Cannot open storage path without following links: {path}") from None
+    handle_int = int(handle)
+
+    info = _ByHandleFileInformation()
+    if not get_info(handle, ctypes.byref(info)):
+        close_handle(handle)
+        raise PathJailError(f"Cannot inspect storage handle: {path}")
+    if int(info.dwFileAttributes) & file_attribute_reparse_point:
+        close_handle(handle)
+        raise PathJailError(f"Symlinks are not allowed in storage paths: {path}")
+
+    if mode == "wb":
+        set_pointer(handle, 0, None, 0)
+        if not set_eof(handle):
+            close_handle(handle)
+            raise PathJailError(f"Cannot truncate storage path: {path}")
+
+    flags = getattr(os, "O_BINARY", 0)
+    if mode == "ab":
+        flags |= getattr(os, "O_APPEND", 0)
+    try:
+        fd = msvcrt.open_osfhandle(handle_int, flags)
+    except OSError as exc:
+        close_handle(handle)
+        raise PathJailError(f"Cannot open storage path without following links: {path}") from exc
+    return os.fdopen(fd, mode)
+
+
+def _open_write_fallback(path: Path, *, base: Path, mode: str) -> IO[Any]:
+    """lstat + open retry when O_NOFOLLOW / Windows reparse open is unavailable."""
+
+    last_error: Exception | None = None
+    for _ in range(3):
+        reject_symlinks(path, base=base)
+        try:
+            st = path.lstat()
+        except FileNotFoundError:
+            pass
+        except OSError as exc:
+            raise PathJailError(f"Cannot stat storage path: {path}") from exc
+        else:
+            if stat.S_ISLNK(st.st_mode):
+                raise PathJailError(f"Symlinks are not allowed in storage paths: {path}")
+        handle = path.open(mode)
+        try:
+            reject_symlinks(path, base=base)
+            if path.is_symlink():
+                raise PathJailError(f"Symlinks are not allowed in storage paths: {path}")
+        except Exception as exc:
+            handle.close()
+            last_error = exc
+            continue
+        return handle
+    if last_error is not None:
+        raise last_error
+    raise PathJailError(f"Cannot open storage path without following links: {path}")
+
+
 def open_storage_file(path: Path, *, base: Path, mode: str = "rb") -> IO[Any]:
     """Open a storage file after symlink rejection; prefer O_NOFOLLOW on POSIX.
 
     Callers must pass a path already resolved under *base* (or about to be checked).
     Re-checks for planted symlinks immediately before open to shrink TOCTOU windows.
+    On Windows, write modes use ``CreateFileW`` + ``FILE_FLAG_OPEN_REPARSE_POINT``
+    so a raced symlink is not truncated before the post-open check (F-01).
     """
     reject_symlinks(path, base=base)
     nofollow = getattr(os, "O_NOFOLLOW", 0)
@@ -169,6 +323,21 @@ def open_storage_file(path: Path, *, base: Path, mode: str = "rb") -> IO[Any]:
                 f"Cannot open storage path without following links: {path}"
             ) from exc
         return os.fdopen(fd, mode)
+
+    if mode in write_flags and os.name == "nt":
+        try:
+            return _windows_open_write_nofollow(path, mode)
+        except PathJailError:
+            raise
+        except FileExistsError:
+            raise
+        except OSError as exc:
+            raise PathJailError(
+                f"Cannot open storage path without following links: {path}"
+            ) from exc
+
+    if mode in write_flags:
+        return _open_write_fallback(path, base=base, mode=mode)
 
     handle = path.open(mode)
     try:

@@ -167,3 +167,18 @@ class ReportHtmlCoverageTests(unittest.TestCase):
         self.assertIn("AR-01", skipped)
         self.assertNotIn("(east", skipped)
         self.assertIn("Лист: AR-01", skipped)
+
+    def test_summary_counts_are_html_escaped(self) -> None:
+        data = {
+            "summary": {
+                "passed": False,
+                "issue_count": "<script>alert(1)</script>",
+                "error_count": 0,
+                "warning_count": 0,
+                "requirement_count": 0,
+            },
+            "issues": [],
+        }
+        html = render_report_html("r" * 32, data)
+        self.assertNotIn("<script>alert(1)</script>", html)
+        self.assertIn("&lt;script&gt;alert(1)&lt;/script&gt;", html)

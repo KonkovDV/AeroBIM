@@ -71,7 +71,8 @@ class UploadApiTests(unittest.TestCase):
             self.assertEqual(body["filename"], "pilot.ifc")
             path = body["path"]
             self.assertTrue(
-                path.startswith("tenants/anonymous-dev/uploads/")
+                path.startswith("tenants/lab-anonymous/uploads/")
+                or path.startswith("tenants/anonymous-dev/uploads/")
                 or path.startswith("tenants/anonymous/uploads/"),
                 path,
             )

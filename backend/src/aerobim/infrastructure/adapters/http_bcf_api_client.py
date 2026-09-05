@@ -136,5 +136,13 @@ class HttpBcfApiClient:
                 parsed = json.loads(raw)
                 return parsed if isinstance(parsed, dict) else {}
         except urllib.error.HTTPError as exc:
-            detail = exc.read().decode("utf-8", errors="replace")
+            from aerobim.core.security.object_limits import (
+                ObjectTooLargeError,
+                read_http_response_capped,
+            )
+
+            try:
+                detail = read_http_response_capped(exc).decode("utf-8", errors="replace")
+            except ObjectTooLargeError:
+                detail = "error body exceeds size cap"
             raise RuntimeError(f"BCF API HTTP {exc.code}: {detail}") from exc

@@ -7,6 +7,7 @@ import json
 import os
 import tempfile
 import unittest
+from contextlib import contextmanager
 from pathlib import Path
 from unittest.mock import patch
 from urllib.parse import parse_qs, urlparse
@@ -246,6 +247,32 @@ class OidcBffPhase3Tests(unittest.TestCase):
                 redirect_uri="https://app.example.test/callback",
                 code_verifier="verifier",
             )
+
+    def test_token_exchange_rejects_oversized_response(self) -> None:
+        from aerobim.core.security.object_limits import DEFAULT_MAX_HTTP_RESPONSE_BYTES
+
+        class _HugeBody:
+            def read(self, size: int = -1) -> bytes:
+                n = size if size and size > 0 else DEFAULT_MAX_HTTP_RESPONSE_BYTES + 2
+                return b"x" * n
+
+        @contextmanager
+        def _fake_urlopen(*_args: object, **_kwargs: object):
+            yield _HugeBody()
+
+        with patch(
+            "aerobim.infrastructure.auth.oidc_bff_phase3.safe_urlopen",
+            _fake_urlopen,
+        ):
+            with self.assertRaisesRegex(RuntimeError, "size cap"):
+                exchange_authorization_code(
+                    token_url="https://idp.example.test/token",
+                    client_id="lab-client",
+                    client_secret="lab-secret",
+                    code="auth-code",
+                    redirect_uri="https://app.example.test/callback",
+                    code_verifier="verifier",
+                )
 
     def test_from_env_rejects_loopback_bff_token_url(self) -> None:
         env = {

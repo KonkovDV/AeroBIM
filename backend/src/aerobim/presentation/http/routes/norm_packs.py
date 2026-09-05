@@ -37,12 +37,7 @@ def build_norm_packs_router(ctx: ApiContext) -> APIRouter:
         if payload.report_id:
             ctx.load_authorized_report(payload.report_id, principal)
         subject = (principal.subject or "").strip()
-        if subject:
-            proposed_by = subject
-        elif settings.is_dev_environment and settings.allow_anonymous_dev:
-            proposed_by = (payload.proposed_by or "").strip() or "anonymous-dev"
-        else:
-            proposed_by = None
+        proposed_by = subject or "lab:anonymous"
         if payload.target_approval_status == "customer_approved":
             if not subject or subject in {"anonymous-dev", "api-bearer"}:
                 raise HTTPException(

@@ -33,6 +33,12 @@ def _esc(value: str) -> str:
     return html.escape(str(value), quote=True)
 
 
+def _esc_count(value: object) -> str:
+    """Escape numeric (or tampered) summary counts for HTML insertion (F-07)."""
+
+    return _esc(str(value))
+
+
 _TRIAGE_BANDS = ("critical", "major", "minor", "negligible")
 
 
@@ -176,7 +182,7 @@ def _finding_gates_section(issues: list[dict[str, Any]]) -> str:
             natures[nature] += 1
     rows = "".join(
         (
-            f"<tr><td>{_esc(name)}</td><td>{count}</td></tr>\n"
+            f"<tr><td>{_esc(name)}</td><td>{_esc_count(count)}</td></tr>\n"
             for name, count in (*gates.items(), *natures.items())
         )
     )
@@ -538,9 +544,9 @@ background:#fff8e1;font-size:.95em}}
 <strong>{status_label}</strong> &mdash;
 summary.passed={_esc(str(passed).lower())} &middot;
 summary.outcome={_esc(str(outcome_text))} &middot;
-{summary["issue_count"]} issue(s): {summary["error_count"]} error(s),
-{summary["warning_count"]} warning(s) &middot;
-{summary["requirement_count"]} requirement(s)
+{_esc_count(summary["issue_count"])} issue(s): {_esc_count(summary["error_count"])} error(s),
+{_esc_count(summary["warning_count"])} warning(s) &middot;
+{_esc_count(summary["requirement_count"])} requirement(s)
 </div>
 {overlay_html}{text_evidence_html}{coverage_html}{gates_html}{capabilities_html}{kt2_release_html}{iso_section}{category_sections}
 <p class="meta">

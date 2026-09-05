@@ -37,6 +37,22 @@ class UploadContentSniffTests(unittest.TestCase):
         pdf = validate_upload_content(filename="a.pdf", payload=b"%PDF-1.4\n%")
         self.assertEqual(pdf.kind, "pdf")
 
+    def test_octet_stream_declared_type_does_not_block_pdf(self) -> None:
+        pdf = validate_upload_content(
+            filename="a.pdf",
+            payload=b"%PDF-1.4\n%",
+            declared_content_type="application/octet-stream",
+        )
+        self.assertEqual(pdf.kind, "pdf")
+
+    def test_declared_mime_mismatch_rejected(self) -> None:
+        with self.assertRaises(UploadContentError):
+            validate_upload_content(
+                filename="a.pdf",
+                payload=b"%PDF-1.4\n%",
+                declared_content_type="image/png",
+            )
+
     def test_disallowed_extension_rejected(self) -> None:
         with self.assertRaises(UploadContentError):
             validate_upload_content(filename="evil.exe", payload=b"MZ\x90\x00")

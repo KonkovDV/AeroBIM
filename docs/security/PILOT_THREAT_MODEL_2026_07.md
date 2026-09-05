@@ -3,8 +3,8 @@
 title: "Pilot threat model (Samolet) — 2026-07"
 status: active
 date: 2026-07-21
-last_updated: "2026-07-21"
-claim_boundary: "Does not claim SSO production-ready. Checkpoint GO; customer_go false unchanged."
+last_updated: "2026-09-05"
+claim_boundary: "Does not claim SSO production-ready. Checkpoint GO (regulatory_measurement_mvp); customer_go false unchanged."
 ---
 
 # Pilot Threat Model (2026-07)
@@ -42,6 +42,7 @@ production-ready.
 | Design spike | POST-05 OIDC BFF — **NOT_IMPLEMENTED** (this threat model) |
 | Public honesty | `GET /v1/auth/bff` → 501; capabilities `auth_bff.status=NOT_IMPLEMENTED` |
 | Dev-only | Vite loopback may inject `Authorization` — **not** production SSO |
+| Token endpoint body cap | Lab exchange uses `read_http_response_capped` (1 MiB), same class as JWKS. Not SSO. |
 
 Do **not** claim SSO / production auth until POST-05 has a production IdP, JWKS-verified identity, and FE bearer removal. Phase 3 lab cookies are not that close.
 
@@ -58,4 +59,8 @@ Prefer these over narrative claims:
 
 ## Checkpoint
 
-Still **`NO_GO`** (RT-001 / RT-002 / RT-003). Security engineering readiness ≠ customer evidence closure.
+Product Checkpoint is **`GO`** (`regulatory_measurement_mvp`). `customer_go` stays
+**false**. Residual volumes (RT-001b dual human raters, RT-001c customer corpus,
+RT-002c Samolet signature, RT-003c system MEP, CDE T2) are not closed by
+engineering controls in this document. Security readiness ≠ customer sign-off.
+Do not write undifferentiated «RT-001/002/003 CLOSED».
