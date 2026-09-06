@@ -1,6 +1,14 @@
 import { startTransition, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { ValidationIssue } from "../../lib/types";
-import { computeScrollTopToReveal } from "../../lib/finding-scroll";
+import {
+  FINDING_GROUP_HEADER_HEIGHT,
+  buildFindingListItems,
+  buildItemOffsets,
+  buildVisibleRuns,
+  computeFindingWindow,
+  computeScrollTopToRevealItem,
+  findItemIndexForIssue,
+} from "../../lib/finding-window";
 import {
   CLAUSE_FILTER_ALL,
   CLAUSE_FILTER_MISSING,
@@ -19,6 +27,7 @@ import { UI_COPY } from "../../lib/ui-copy";
 export const VIRTUALIZE_AFTER = 40;
 const ITEM_HEIGHT = 148;
 const OVERSCAN = 4;
+const DEFAULT_VIEWPORT_HEIGHT = 720;
 
 /** UI3: severity по-русски — Блокирующее / Существенное / Информация. */
 export function severityLabel(severity: ValidationIssue["severity"]): string {
@@ -42,6 +51,11 @@ function triageBandLabel(band: TriageBand): string {
     return UI_COPY.triageBandMinor;
   }
   return UI_COPY.triageBandNegligible;
+}
+
+/** Стабильный id заголовка группы: по ключу, а не по позиции в окне прокрутки. */
+function groupHeaderId(groupKey: string): string {
+  return `finding-group-${groupKey.replace(/\s+/g, "-") || "flat"}`;
 }
 
 export type FindingListPanelProps = {
@@ -165,16 +179,33 @@ export default function FindingListPanel({
   onClauseChange,
   onSelectIssue,
 }: FindingListPanelProps) {
-  const groups = groupFindings(issues, groupBy);
-  const flat = useMemo(() => groups.flatMap((group) => group.rows), [groups]);
-  const virtualize = flat.length > VIRTUALIZE_AFTER;
+  // groupFindings() без useMemo пересчитывался каждый рендер и менял идентичность
+  // groups, из-за чего useMemo ниже никогда не попадал в кэш.
+  const groups = useMemo(() => groupFindings(issues, groupBy), [issues, groupBy]);
+  const showHeaders = groupBy !== "none";
+  const virtualize = issues.length > VIRTUALIZE_AFTER;
   const listRef = useRef<HTMLDivElement | null>(null);
   const skipScrollRef = useRef(false);
   const prevSelectedRef = useRef(selectedIssueIndex);
   const pendingFocusAfterScrollRef = useRef<number | null>(null);
   const [scrollTop, setScrollTop] = useState(0);
-  const [viewportHeight, setViewportHeight] = useState(720);
+  const [viewportHeight, setViewportHeight] = useState(DEFAULT_VIEWPORT_HEIGHT);
   const [itemHeight, setItemHeight] = useState(ITEM_HEIGHT);
+
+  // Заголовок группы — такой же элемент списка, как строка. Поэтому окно
+  // прокрутки считается по смешанному списку и группировка не пропадает.
+  const items = useMemo(
+    () => buildFindingListItems(groups, showHeaders),
+    [groups, showHeaders],
+  );
+  const offsets = useMemo(
+    () => buildItemOffsets(items, itemHeight, FINDING_GROUP_HEADER_HEIGHT),
+    [items, itemHeight],
+  );
+  const selectedItemIndex = useMemo(
+    () => findItemIndexForIssue(items, selectedIssueIndex),
+    [items, selectedIssueIndex],
+  );
 
   useEffect(() => {
     const node = listRef.current;
@@ -182,9 +213,24 @@ export default function FindingListPanel({
       return;
     }
     const onScroll = () => setScrollTop(node.scrollTop);
+    const measure = () => setViewportHeight(node.clientHeight || DEFAULT_VIEWPORT_HEIGHT);
     node.addEventListener("scroll", onScroll, { passive: true });
-    setViewportHeight(node.clientHeight || 720);
-    return () => node.removeEventListener("scroll", onScroll);
+    measure();
+    // Замер только при включении виртуализации оставлял окно с прошлой высотой
+    // после ресайза, и часть находок не отрисовывалась.
+    if (typeof ResizeObserver === "function") {
+      const observer = new ResizeObserver(measure);
+      observer.observe(node);
+      return () => {
+        observer.disconnect();
+        node.removeEventListener("scroll", onScroll);
+      };
+    }
+    window.addEventListener("resize", measure);
+    return () => {
+      window.removeEventListener("resize", measure);
+      node.removeEventListener("scroll", onScroll);
+    };
   }, [virtualize]);
 
   useLayoutEffect(() => {
@@ -194,16 +240,15 @@ export default function FindingListPanel({
     if (!node || !indexChanged) {
       return;
     }
-    const selectedPos = flat.findIndex((row) => row.index === selectedIssueIndex);
     if (skipScrollRef.current) {
       skipScrollRef.current = false;
       pendingFocusAfterScrollRef.current = null;
       return;
     }
     if (virtualize) {
-        const nextTop = computeScrollTopToReveal(
-        selectedPos,
-        itemHeight,
+      const nextTop = computeScrollTopToRevealItem(
+        offsets,
+        selectedItemIndex,
         node.clientHeight || viewportHeight,
         node.scrollTop,
       );
@@ -218,7 +263,7 @@ export default function FindingListPanel({
       activeCard?.scrollIntoView?.({ block: "nearest" });
     }
     node.querySelector<HTMLElement>(".issue-card.active")?.focus?.();
-  }, [selectedIssueIndex, virtualize, flat, viewportHeight, itemHeight]);
+  }, [selectedIssueIndex, virtualize, offsets, selectedItemIndex, viewportHeight]);
 
   useLayoutEffect(() => {
     const pending = pendingFocusAfterScrollRef.current;
@@ -237,24 +282,35 @@ export default function FindingListPanel({
     if (Math.abs(card.offsetHeight - itemHeight) > 1) {
       setItemHeight(card.offsetHeight);
     }
-  });
+  }, [itemHeight, items]);
 
-  let visible = flat;
-  let padTop = 0;
-  let padBottom = 0;
-  if (virtualize) {
-    const selectedPos = Math.max(
-      0,
-      flat.findIndex((row) => row.index === selectedIssueIndex),
-    );
-    const visibleCount = Math.max(1, Math.ceil(viewportHeight / itemHeight));
-    let start = Math.max(0, Math.floor(scrollTop / itemHeight) - OVERSCAN);
-    let end = Math.min(flat.length, start + visibleCount + OVERSCAN * 2);
-    start = Math.min(start, Math.max(0, selectedPos - OVERSCAN));
-    end = Math.max(end, Math.min(flat.length, selectedPos + OVERSCAN + 1));
-    visible = flat.slice(start, end);
-    padTop = start * itemHeight;
-    padBottom = (flat.length - end) * itemHeight;
+  const viewWindow = virtualize
+    ? computeFindingWindow(offsets, scrollTop, viewportHeight, OVERSCAN, selectedItemIndex)
+    : { start: 0, end: items.length, padTop: 0, padBottom: 0 };
+  const visibleRuns = buildVisibleRuns(items.slice(viewWindow.start, viewWindow.end));
+  // Ссылаться на неотрисованный id нельзя: скринридер уводит фокус в пустоту.
+  const selectedRendered =
+    selectedItemIndex >= 0 &&
+    selectedItemIndex >= viewWindow.start &&
+    selectedItemIndex < viewWindow.end;
+
+  function handleSelect(nextIndex: number, nextIssue: ValidationIssue): void {
+    if (nextIndex !== selectedIssueIndex) {
+      skipScrollRef.current = true;
+    }
+    onSelectIssue(nextIndex, nextIssue);
+  }
+
+  function renderRows(rows: IndexedIssue[]) {
+    return rows.map(({ issue, index }) => (
+      <IssueCard
+        key={`${issue.rule_id}-${index}`}
+        issue={issue}
+        index={index}
+        selected={index === selectedIssueIndex}
+        onSelect={handleSelect}
+      />
+    ));
   }
 
   return (
@@ -341,53 +397,45 @@ export default function FindingListPanel({
         id="finding-list"
         role="listbox"
         aria-label={UI_COPY.findingsListAria}
-        aria-activedescendant={flat.length > 0 ? `finding-row-${selectedIssueIndex}` : undefined}
+        aria-activedescendant={selectedRendered ? `finding-row-${selectedIssueIndex}` : undefined}
       >
         {issues.length === 0 ? (
           <div className="panel-empty compact">
             {UI_COPY.noFindings}
           </div>
-        ) : virtualize ? (
-          <div style={{ paddingTop: padTop, paddingBottom: padBottom }}>
-            {visible.map(({ issue, index }) => (
-              <IssueCard
-                key={`${issue.rule_id}-${index}`}
-                issue={issue}
-                index={index}
-                selected={index === selectedIssueIndex}
-                onSelect={(nextIndex, nextIssue) => {
-                  if (nextIndex !== selectedIssueIndex) {
-                    skipScrollRef.current = true;
-                  }
-                  onSelectIssue(nextIndex, nextIssue);
-                }}
-              />
-            ))}
-          </div>
         ) : (
-          groups.map((group) => (
-            <section key={group.key || "flat"} className="finding-group">
-              {groupBy !== "none" ? (
-                <h3 className="finding-group-title">
-                  {group.key} ({group.rows.length})
-                </h3>
-              ) : null}
-              {group.rows.map(({ issue, index }) => (
-                <IssueCard
-                  key={`${issue.rule_id}-${index}`}
-                  issue={issue}
-                  index={index}
-                  selected={index === selectedIssueIndex}
-                  onSelect={(nextIndex, nextIssue) => {
-                    if (nextIndex !== selectedIssueIndex) {
-                      skipScrollRef.current = true;
-                    }
-                    onSelectIssue(nextIndex, nextIssue);
-                  }}
-                />
-              ))}
-            </section>
-          ))
+          // role="presentation" обязателен: у listbox дочерними допустимы только
+          // option и group, а распорка окна прокрутки — обычный div.
+          <div
+            role="presentation"
+            style={
+              virtualize
+                ? { paddingTop: viewWindow.padTop, paddingBottom: viewWindow.padBottom }
+                : undefined
+            }
+          >
+            {visibleRuns.map((run) =>
+              showHeaders ? (
+                <section
+                  key={run.groupKey || "flat"}
+                  className="finding-group"
+                  role="group"
+                  aria-labelledby={run.headerCount === null ? undefined : groupHeaderId(run.groupKey)}
+                >
+                  {run.headerCount === null ? null : (
+                    <h3 className="finding-group-title" id={groupHeaderId(run.groupKey)}>
+                      {run.groupKey} ({run.headerCount})
+                    </h3>
+                  )}
+                  {renderRows(run.rows)}
+                </section>
+              ) : (
+                <section key={run.groupKey || "flat"} className="finding-group" role="presentation">
+                  {renderRows(run.rows)}
+                </section>
+              ),
+            )}
+          </div>
         )}
       </div>
     </>

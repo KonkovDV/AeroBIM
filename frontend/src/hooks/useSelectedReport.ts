@@ -7,6 +7,20 @@ import { UI_COPY } from "../lib/ui-copy";
 export type RemarkSaveState = "idle" | "saving" | "saved" | "failed";
 export type HitlDecisionState = "idle" | "saving" | "accepted" | "rejected" | "failed";
 
+/**
+ * Ключ идемпотентности для событий HITL.
+ *
+ * crypto.randomUUID есть только на защищённом источнике (https или localhost).
+ * На http-хосте в лаборатории его нет, поэтому нужен запасной вариант — иначе
+ * запись решения эксперта падала уже ПОСЛЕ успешного POST.
+ */
+function newHitlIdempotencyKey(): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return `hitl-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
 export type SelectedReportState = {
   selectedReport: ValidationReport | null;
   reportLoading: boolean;
@@ -44,18 +58,24 @@ export function useSelectedReport(
   const [remarkSaveState, setRemarkSaveState] = useState<RemarkSaveState>("idle");
   const [hitlDecisionState, setHitlDecisionState] = useState<HitlDecisionState>("idle");
   const reviewEventsRef = useRef<ReviewEventRow[]>([]);
-  reviewEventsRef.current = reviewEvents;
-  const hitlIdempotencyKey = useRef(
-    typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
-      ? crypto.randomUUID()
-      : `hitl-${Date.now()}`,
-  );
+  const hitlIdempotencyKey = useRef(newHitlIdempotencyKey());
+
+  // Синхронизация ref со state — побочный эффект, а не работа тела рендера.
+  useEffect(() => {
+    reviewEventsRef.current = reviewEvents;
+  }, [reviewEvents]);
 
   useEffect(() => {
     if (selectedReportId === null) {
       setSelectedReport(null);
       setReviewEvents([]);
       setReviewEventsError(null);
+      // Без сброса ошибки баннер прошлого отчёта висел над пустым экраном,
+      // а непустой черновик держал beforeunload-предупреждение при уходе.
+      setReportError(null);
+      setRemarkDraft("");
+      setRemarkSaveState("idle");
+      setHitlDecisionState("idle");
       return;
     }
 
@@ -125,14 +145,14 @@ export function useSelectedReport(
     if (row === null) {
       return;
     }
-    setReviewEvents((current) => {
-      if (current.some((item) => item.event_id === row.event_id)) {
-        return current;
-      }
-      const next = [...current, row];
-      reviewEventsRef.current = next;
-      return next;
-    });
+    // Ref обновляем здесь, а не внутри updater: updater обязан быть чистым,
+    // React вправе вызвать его дважды (StrictMode) или отбросить результат.
+    if (!reviewEventsRef.current.some((item) => item.event_id === row.event_id)) {
+      reviewEventsRef.current = [...reviewEventsRef.current, row];
+    }
+    setReviewEvents((current) =>
+      current.some((item) => item.event_id === row.event_id) ? current : [...current, row],
+    );
   }, []);
 
   const postHitlEvent = useCallback(
@@ -148,10 +168,7 @@ export function useSelectedReport(
           finding_id: issue.finding_id ?? undefined,
           idempotency_key: hitlIdempotencyKey.current,
         });
-        hitlIdempotencyKey.current =
-          typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
-            ? crypto.randomUUID()
-            : `hitl-${Date.now()}`;
+        hitlIdempotencyKey.current = newHitlIdempotencyKey();
         rememberEvent(opened.event);
         previous = "opened";
       }
@@ -164,7 +181,9 @@ export function useSelectedReport(
         idempotency_key: hitlIdempotencyKey.current,
       });
       rememberEvent(result.event);
-      hitlIdempotencyKey.current = crypto.randomUUID();
+      // Ключ крутим только после успешного POST: повтор после сетевой ошибки
+      // должен уйти с тем же ключом, иначе бэкенд запишет дубль решения.
+      hitlIdempotencyKey.current = newHitlIdempotencyKey();
     },
     [rememberEvent, selectedReport],
   );
