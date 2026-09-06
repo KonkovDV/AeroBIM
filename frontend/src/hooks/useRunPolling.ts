@@ -26,6 +26,8 @@ export type RunPolling = {
  */
 export const JOB_POLL_INTERVAL_MS = 2000;
 export const JOB_POLL_MAX_INTERVAL_MS = 15_000;
+/** Число подряд идущих сетевых ошибок, после которых поллинг прекращается. */
+export const JOB_POLL_MAX_ERRORS = 5;
 
 export function nextJobPollInterval(currentMs: number): number {
   return Math.min(Math.round(currentMs * 1.5), JOB_POLL_MAX_INTERVAL_MS);
@@ -74,6 +76,7 @@ export function useRunPolling(onReportReady?: (reportId: string) => void): RunPo
     }
     let cancelled = false;
     let delay = 0;
+    let consecutiveErrors = 0;
     let handle = 0;
     const polledJobId = jobId;
 
@@ -84,6 +87,7 @@ export function useRunPolling(onReportReady?: (reportId: string) => void): RunPo
             if (cancelled) {
               return;
             }
+            consecutiveErrors = 0;
             setJob(snapshot);
             delay = delay === 0 ? JOB_POLL_INTERVAL_MS : nextJobPollInterval(delay);
             if (!TERMINAL_JOB_STATUSES.has(snapshot.status.toLowerCase())) {
@@ -94,7 +98,13 @@ export function useRunPolling(onReportReady?: (reportId: string) => void): RunPo
             if (cancelled) {
               return;
             }
-            setPollError(err instanceof Error ? err.message : "Не удалось опросить задание");
+            consecutiveErrors += 1;
+            const message = err instanceof Error ? err.message : "Не удалось опросить задание";
+            setPollError(message);
+            if (consecutiveErrors >= JOB_POLL_MAX_ERRORS) {
+              // Прекращаем поллинг после JOB_POLL_MAX_ERRORS подряд идущих ошибок.
+              return;
+            }
             delay = delay === 0 ? JOB_POLL_INTERVAL_MS : nextJobPollInterval(delay);
             schedule();
           });
