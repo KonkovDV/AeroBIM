@@ -58,4 +58,36 @@ describe("ExportActionsBar", () => {
       expect(screen.getByRole("button", { name: "JSON" })).toBeTruthy();
     });
   });
+
+  it("describes the pdf button by a single visible hint instead of a duplicate title", () => {
+    render(<ExportActionsBar reportId="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" />);
+    const pdfButton = screen.getByRole("button", { name: UI_COPY.exportPdf });
+    // Подсказка больше не дублируется в title.
+    expect(pdfButton.getAttribute("title")).toBeNull();
+    const hintId = pdfButton.getAttribute("aria-describedby");
+    expect(hintId).toBeTruthy();
+    expect(document.getElementById(hintId as string)?.textContent).toBe(UI_COPY.exportPdfHint);
+    expect(screen.getAllByText(UI_COPY.exportPdfHint)).toHaveLength(1);
+  });
+
+  it("marks the bar busy while an export runs", async () => {
+    const deferred: { release?: () => void } = {};
+    downloadExportMock.mockImplementationOnce(
+      () =>
+        new Promise<void>((resolve) => {
+          deferred.release = resolve;
+        }),
+    );
+    render(<ExportActionsBar reportId="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" />);
+    const bar = screen.getByTestId("export-actions");
+    expect(bar.getAttribute("aria-busy")).toBe("false");
+    fireEvent.click(screen.getByRole("button", { name: "HTML" }));
+    await waitFor(() => {
+      expect(bar.getAttribute("aria-busy")).toBe("true");
+    });
+    deferred.release?.();
+    await waitFor(() => {
+      expect(bar.getAttribute("aria-busy")).toBe("false");
+    });
+  });
 });
