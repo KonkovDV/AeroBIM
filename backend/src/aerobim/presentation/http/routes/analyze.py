@@ -144,6 +144,11 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
                 status_code=503, detail=public_service_unavailable_detail()
             ) from exc
 
+        # BE-03: log success consistent with validate_ifc for observability.
+        logger.info(
+            "analyze_project_package completed",
+            report_id=report.report_id,
+        )
         return ctx.serialize_public_report(report)
 
     @router.post("/v1/analyze/project-package/reinforcement-digest")
@@ -185,6 +190,12 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
         idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None,
     ) -> dict[str, object]:
+        # BE-02: validate cheap header constraints *before* the expensive
+        # build_project_package_request call (file-system resolution, IFC size check).
+        idem = _normalize_idempotency_key(idempotency_key)
+        if idem is not None and len(idem) > 128:
+            raise HTTPException(status_code=400, detail="Idempotency-Key must be ≤128 characters")
+
         try:
             request = ctx.build_project_package_request(
                 payload,
@@ -199,9 +210,6 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
         except ValueError as exc:
             logger.warning("submit_analyze_project_package bad request", detail=str(exc))
             raise HTTPException(status_code=400, detail=public_bad_request_detail()) from exc
-        idem = _normalize_idempotency_key(idempotency_key)
-        if idem is not None and len(idem) > 128:
-            raise HTTPException(status_code=400, detail="Idempotency-Key must be ≤128 characters")
 
         from aerobim.application.use_cases.analyze_project_package_jobs import (
             JobConcurrencyLimitError,
