@@ -229,15 +229,36 @@ export default function FindingListPanel({
     listRef.current?.querySelector<HTMLElement>(".issue-card.active")?.focus?.();
   }, [scrollTop]);
 
+  // Измеряем фактическую высоту карточки через ResizeObserver.
+  // Ранее: bare useLayoutEffect() без deps читал offsetHeight на каждом рендере
+  // (принудительный synchronous layout). Теперь: одна подписка на resize,
+  // rAF-гейт гасит burst-события, functional update не захватывает stale-значение.
   useLayoutEffect(() => {
-    const card = listRef.current?.querySelector(".issue-card");
-    if (!(card instanceof HTMLElement) || card.offsetHeight < 8) {
+    if (!virtualize) {
       return;
     }
-    if (Math.abs(card.offsetHeight - itemHeight) > 1) {
-      setItemHeight(card.offsetHeight);
+    const list = listRef.current;
+    if (!list) {
+      return;
     }
-  });
+    let rafHandle = 0;
+    const ro = new ResizeObserver(() => {
+      cancelAnimationFrame(rafHandle);
+      rafHandle = requestAnimationFrame(() => {
+        const card = list.querySelector<HTMLElement>(".issue-card");
+        if (!card || card.offsetHeight < 8) {
+          return;
+        }
+        const next = card.offsetHeight;
+        setItemHeight((prev) => (Math.abs(next - prev) > 1 ? next : prev));
+      });
+    });
+    ro.observe(list);
+    return () => {
+      ro.disconnect();
+      cancelAnimationFrame(rafHandle);
+    };
+  }, [virtualize]);
 
   let visible = flat;
   let padTop = 0;
