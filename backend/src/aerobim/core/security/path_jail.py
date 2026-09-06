@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 import re
 import stat
+import sys
 import unicodedata
 from pathlib import Path
 from typing import IO, Any
@@ -161,6 +162,8 @@ def _windows_open_write_nofollow(path: Path, mode: str) -> IO[Any]:
     ``FILE_FLAG_OPEN_REPARSE_POINT`` opens the reparse point itself so we can
     refuse it without touching the destination.
     """
+    if sys.platform != "win32":
+        raise PathJailError("Windows nofollow open is not available on this platform")
     import ctypes
     import msvcrt
     from ctypes import wintypes

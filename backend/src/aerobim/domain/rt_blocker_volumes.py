@@ -161,7 +161,8 @@ def _ifc_system_graph_rehearsal_closed(inventory: Mapping[str, Any], repo: Path)
     )
     if not isinstance(fixture, dict) or fixture.get("status") != "RUN":
         return False
-    counts = fixture.get("counts") if isinstance(fixture.get("counts"), dict) else {}
+    raw_counts = fixture.get("counts")
+    counts = raw_counts if isinstance(raw_counts, dict) else {}
     if int(counts.get("IfcSystem") or 0) < 2:
         return False
     geometry = inventory.get("geometry") if isinstance(inventory.get("geometry"), dict) else {}
@@ -206,7 +207,8 @@ def assemble_rt_blocker_volumes(repo: Path) -> dict[str, Any]:
     planted_ifc_ok = all((repo / rel).is_file() for rel in PLANTED_IFC_RELS)
     geometric = _planted_geometric_closed(planted) and planted_ifc_ok
     agr_approved = agr.get("status") == "approved" and isinstance(agr.get("approval"), dict)
-    raters = freeze.get("raters") if isinstance(freeze.get("raters"), dict) else {}
+    raw_raters = freeze.get("raters")
+    raters = raw_raters if isinstance(raw_raters, dict) else {}
     human_raters = int(raters.get("independent_human_raters") or 0)
     moexp_ids = _count_ids(repo / MOEXP_IDS_REL)
     spb_ids = _count_ids(repo / SPB_IDS_REL)
