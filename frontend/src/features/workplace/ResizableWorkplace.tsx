@@ -48,37 +48,56 @@ export default function ResizableWorkplace({ left, center, right }: ResizableWor
   const gridRef = useRef<HTMLElement | null>(null);
   const [cols, setCols] = useState<Cols>(readCols);
 
+  // REAL-04: Mirror cols into a ref so onResize can read the current value
+  // at pointerDown time without being listed as a useCallback dependency.
+  // Without this, `[cols]` in the dep array caused onResize to be recreated
+  // on every setCols call (i.e., every pointermove during a drag), making
+  // useCallback counter-productive: overhead with zero memoization benefit.
+  const colsRef = useRef(cols);
+  colsRef.current = cols;
+
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(cols));
   }, [cols]);
 
-  const onResize = useCallback((which: "left" | "right", event: PointerEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    const grid = gridRef.current;
-    if (!grid) {
-      return;
-    }
-    const startX = event.clientX;
-    const start = { ...cols };
-    const width = grid.getBoundingClientRect().width;
-
-    function move(ev: globalThis.PointerEvent): void {
-      const deltaPct = ((ev.clientX - startX) / Math.max(width, 1)) * 100;
-      if (which === "left") {
-        setCols(clampCols({ ...start, left: start.left + deltaPct, mid: start.mid - deltaPct }));
-      } else {
-        setCols(clampCols({ ...start, mid: start.mid + deltaPct, right: start.right - deltaPct }));
+  // Stable callback — created once. Reads the drag-start snapshot from
+  // colsRef.current at pointerDown time; does not close over `cols` state.
+  const onResize = useCallback(
+    (which: "left" | "right", event: PointerEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      const grid = gridRef.current;
+      if (!grid) {
+        return;
       }
-    }
+      const startX = event.clientX;
+      // Snapshot current cols at drag-start. All delta math is relative to
+      // this snapshot so intermediate frames don't compound the offset.
+      const start = { ...colsRef.current };
+      const width = grid.getBoundingClientRect().width;
 
-    function up(): void {
-      window.removeEventListener("pointermove", move);
-      window.removeEventListener("pointerup", up);
-    }
+      function move(ev: globalThis.PointerEvent): void {
+        const deltaPct = ((ev.clientX - startX) / Math.max(width, 1)) * 100;
+        if (which === "left") {
+          setCols(
+            clampCols({ ...start, left: start.left + deltaPct, mid: start.mid - deltaPct }),
+          );
+        } else {
+          setCols(
+            clampCols({ ...start, mid: start.mid + deltaPct, right: start.right - deltaPct }),
+          );
+        }
+      }
 
-    window.addEventListener("pointermove", move);
-    window.addEventListener("pointerup", up);
-  }, [cols]);
+      function up(): void {
+        window.removeEventListener("pointermove", move);
+        window.removeEventListener("pointerup", up);
+      }
+
+      window.addEventListener("pointermove", move);
+      window.addEventListener("pointerup", up);
+    },
+    [], // stable — gridRef and colsRef are refs; setCols is stable from useState
+  );
 
   return (
     <main
