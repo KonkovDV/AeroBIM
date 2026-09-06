@@ -1,0 +1,1091 @@
+/*
+ * AeroBIM Review Shell — дизайн-система.
+ *
+ * Направление бренда. Официальный брендбук ГК «Самолёт» фиксирует синий как
+ * основной цвет (фоны, логотип, акцент в графике и иконках), а ребрендинг
+ * сделал его «более светящимся и диджитальным». До этого файла продукт был
+ * собран на оранжевом акценте — это расходилось и с брендом заказчика, и с
+ * семантикой: оранжевый одновременно означал «бренд» и «внимание».
+ *
+ * Границы. Брендбук, логотип и гарнитура CoFo Sans — собственность заказчика
+ * и в репозиторий не попадают (см. комментарий в styles.css). Здесь только
+ * нейтральный токен-слой, совместимый по направлению. Реальная айдентика
+ * подключается переопределением блока «бренд» ниже — трогать компоненты не
+ * нужно.
+ *
+ * Слои токенов: примитивы → семантика → легаси-псевдонимы. Компоненты обязаны
+ * читать семантику, а не хардкод. Все пары «текст / фон» проверены на
+ * WCAG 2.2: текст ≥ 4.5:1, границы контролов и фокус ≥ 3:1 (1.4.11).
+ */
+
+:root {
+  color-scheme: light dark;
+
+  /* ── примитивы: нейтрали (холодные, под синий бренд) ──────────────── */
+  --ds-n-0: #ffffff;
+  --ds-n-25: #f6f8fb;
+  --ds-n-50: #edf1f7;
+  --ds-n-100: #e1e7f0;
+  --ds-n-200: #c8d2e0;
+  --ds-n-300: #a4b1c4;
+  --ds-n-400: #7c8aa0;
+  --ds-n-500: #5a6779;
+  --ds-n-600: #44505f;
+  --ds-n-700: #333c49;
+  --ds-n-800: #1e2632;
+  --ds-n-900: #131a24;
+  --ds-n-950: #0c1119;
+
+  /* ── примитивы: бренд ─────────────────────────────────────────────── */
+  --ds-brand-50: #eaf2ff;
+  --ds-brand-100: #d8e7ff;
+  --ds-brand-200: #aeccff;
+  --ds-brand-300: #7badff;
+  --ds-brand-400: #4c8dfa;
+  --ds-brand-500: #2c6fe8;
+  --ds-brand-600: #1b55c7;
+  --ds-brand-700: #16429b;
+  --ds-brand-800: #123472;
+
+  /* ── примитивы: статусы ───────────────────────────────────────────── */
+  --ds-red-600: #c0261c;
+  --ds-red-700: #9c1d15;
+  --ds-red-50: #fdecea;
+  --ds-amber-500: #b07a1e;
+  --ds-amber-700: #8a5a00;
+  --ds-amber-800: #6e4700;
+  --ds-amber-50: #fff2dc;
+  --ds-green-700: #0e6b45;
+  --ds-green-50: #e2f5ec;
+
+  /* ── семантика: поверхности и текст ───────────────────────────────── */
+  --ds-canvas: var(--ds-n-25);
+  --ds-surface: var(--ds-n-0);
+  --ds-surface-sunken: var(--ds-n-50);
+  --ds-surface-inverse: var(--ds-n-900);
+  --ds-text: var(--ds-n-900);
+  --ds-text-muted: var(--ds-n-500);
+  --ds-text-on-brand: var(--ds-n-0);
+  --ds-text-on-inverse: #e7ecf4;
+
+  /* Разделители декоративны (1.4.11 их не требует), контуры контролов — нет. */
+  --ds-border: var(--ds-n-100);
+  --ds-border-strong: var(--ds-n-200);
+  --ds-border-control: #8493ab; /* 3.11:1 на белом — минимум для полей */
+
+  /* ── семантика: смысловые цвета ───────────────────────────────────── */
+  --ds-accent: var(--ds-brand-600);
+  --ds-accent-hover: var(--ds-brand-700);
+  --ds-accent-text: var(--ds-brand-700);
+  --ds-accent-tint: var(--ds-brand-50);
+  --ds-accent-rail: var(--ds-brand-500);
+
+  --ds-critical: var(--ds-red-700);
+  --ds-critical-tint: var(--ds-red-50);
+  --ds-attention: var(--ds-amber-800);
+  --ds-attention-tint: var(--ds-amber-50);
+  --ds-attention-line: var(--ds-amber-500);
+  --ds-positive: var(--ds-green-700);
+  --ds-positive-tint: var(--ds-green-50);
+  --ds-neutral: var(--ds-n-600);
+  --ds-neutral-tint: var(--ds-n-50);
+
+  /* Графитовый рельс зоны человека: в темноте обязан светлеть, иначе сливается. */
+  --ds-human-rail: var(--ds-n-700);
+
+  --ds-focus: var(--ds-brand-600);
+  --ds-focus-halo: var(--ds-n-0);
+
+  /* ── форма, ритм, тень ────────────────────────────────────────────── */
+  --ds-radius-xs: 4px;
+  --ds-radius-sm: 6px;
+  --ds-radius-md: 10px;
+  --ds-radius-lg: 14px;
+  --ds-radius-pill: 999px;
+
+  --ds-s1: 4px;
+  --ds-s2: 8px;
+  --ds-s3: 12px;
+  --ds-s4: 16px;
+  --ds-s5: 20px;
+  --ds-s6: 24px;
+  --ds-s7: 32px;
+  --ds-s8: 40px;
+
+  /* Плотный инструмент: тени — подсказка о слое, а не декор. */
+  --ds-elev-0: none;
+  --ds-elev-1: 0 1px 2px rgba(12, 17, 25, 0.06);
+  --ds-elev-2: 0 2px 8px rgba(12, 17, 25, 0.08);
+  --ds-elev-3: 0 12px 32px rgba(12, 17, 25, 0.14);
+
+  --ds-text-xs: 0.6875rem;
+  --ds-text-sm: 0.75rem;
+  --ds-text-cap: 0.8125rem;
+  --ds-text-body: 0.875rem;
+  --ds-text-md: 1rem;
+  --ds-text-lg: 1.125rem;
+  --ds-text-xl: 1.375rem;
+  --ds-text-2xl: 1.75rem;
+
+  --ds-lh-tight: 1.2;
+  --ds-lh-snug: 1.35;
+  --ds-lh-body: 1.55;
+
+  --ds-dur: 120ms;
+  --ds-ease: cubic-bezier(0.2, 0, 0.13, 1);
+
+  /*
+   * Гарнитура бренда — CoFo Sans. Она коммерческая, а CSP оболочки разрешает
+   * font-src 'self' и план запрещает CDN-шрифты, поэтому подключить её здесь
+   * нельзя. Каскад повторяет её характер: нейтральный гротеск с широкой
+   * кириллицей. Если шрифт лицензируют и положат в /public — достаточно
+   * дописать его первым в этот токен.
+   */
+  --ds-font-ui: "CoFo Sans", Inter, "Segoe UI Variable", "Segoe UI", Roboto,
+    system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --ds-font-mono: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo,
+    Consolas, monospace;
+
+  /* ── легаси-псевдонимы: styles.css уже читает эти имена ───────────── */
+  --bg: var(--ds-canvas);
+  --bg-strong: var(--ds-surface-sunken);
+  --panel: var(--ds-surface);
+  --panel-border: var(--ds-border);
+  --border: var(--ds-border); /* гасит утёкшую палитру #d0d7de в kt2/coverage */
+  --text: var(--ds-text);
+  --muted: var(--ds-text-muted);
+  --accent: var(--ds-accent);
+  --accent-hot: var(--ds-brand-500);
+  --accent-strong: var(--ds-accent-text);
+  --on-accent: var(--ds-text-on-brand);
+  --ink: var(--ds-surface-inverse);
+  --danger: var(--ds-critical);
+  --danger-soft: var(--ds-critical-tint);
+  --warning: var(--ds-attention);
+  --warning-soft: var(--ds-attention-tint);
+  --pass: var(--ds-positive);
+  --pass-soft: var(--ds-positive-tint);
+  --brand-primary: var(--ds-accent);
+  --shadow: var(--ds-elev-3);
+  --shadow-soft: var(--ds-elev-1);
+  --radius: var(--ds-radius-lg);
+  --space-1: var(--ds-s1);
+  --space-2: var(--ds-s2);
+  --space-3: var(--ds-s3);
+  --space-4: var(--ds-s4);
+  --space-5: var(--ds-s6);
+  --font-ui: var(--ds-font-ui);
+  --font-mono: var(--ds-font-mono);
+}
+
+/* Тёмная тема: эксперт сидит в списке замечаний часами. Значения подобраны
+   так, чтобы смысловые цвета остались различимыми, а не просто «инвертными». */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ds-canvas: var(--ds-n-950);
+    --ds-surface: var(--ds-n-900);
+    --ds-surface-sunken: #101823;
+    --ds-surface-inverse: var(--ds-n-800);
+    --ds-text: #e7ecf4;
+    /* Не n-400: на выделенной карточке он давал 4.49:1 при норме 4.5:1. */
+    --ds-text-muted: #8795a9;
+    --ds-text-on-inverse: #e7ecf4;
+
+    --ds-border: #232e3c;
+    --ds-border-strong: #2f3c4c;
+    --ds-border-control: #5d6c7e; /* 3.26:1 на тёмной панели */
+
+    --ds-accent: var(--ds-brand-300);
+    --ds-accent-hover: var(--ds-brand-200);
+    --ds-accent-text: var(--ds-brand-300);
+    --ds-accent-tint: #16233a;
+    --ds-accent-rail: var(--ds-brand-400);
+    --ds-text-on-brand: var(--ds-n-950);
+
+    --ds-critical: #ff9c90;
+    --ds-critical-tint: #33191a;
+    --ds-attention: #f0b65c;
+    --ds-attention-tint: #2e2312;
+    --ds-attention-line: #c08b33;
+    --ds-positive: #5fd4a3;
+    --ds-positive-tint: #10281f;
+    --ds-neutral: var(--ds-n-300);
+    --ds-neutral-tint: #1b2430;
+    --ds-human-rail: var(--ds-n-400);
+
+    --ds-focus: var(--ds-brand-300);
+    --ds-focus-halo: var(--ds-n-950);
+
+    --ds-elev-1: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --ds-elev-2: 0 2px 8px rgba(0, 0, 0, 0.55);
+    --ds-elev-3: 0 12px 32px rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* ── база ───────────────────────────────────────────────────────────── */
+
+body {
+  font-family: var(--ds-font-ui);
+  font-size: var(--ds-text-body);
+  line-height: var(--ds-lh-body);
+  color: var(--ds-text);
+  background-color: var(--ds-canvas);
+  /* Плотный аналитический интерфейс не терпит декоративной заливки за
+     данными: три градиента убраны, холст нейтральный. */
+  background-image: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Фирменная линия вместо широкой оранжевой полосы. */
+body::before {
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--ds-brand-700) 0%,
+    var(--ds-brand-500) 50%,
+    var(--ds-brand-700) 100%
+  );
+}
+
+/* Двухцветное кольцо фокуса (техника W3C C40): внутренний светлый контур
+   гарантирует видимость и на белой панели, и на тёмной навигации. */
+.toolbar-button:focus-visible,
+button:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+input:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible,
+.issue-card:focus-visible,
+.report-card:focus-visible {
+  outline: 2px solid var(--ds-focus);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--ds-focus-halo);
+}
+
+/* ── шапка и идентичность ───────────────────────────────────────────── */
+
+.app-shell {
+  padding: var(--ds-s6) 0 var(--ds-s8);
+}
+
+/* Урбан-блок: модульная сетка вместо галочки — прямая отсылка к принципу
+   «конструктора» в айдентике, собрана градиентами, без файлов-ассетов. */
+.brand-mark {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--ds-radius-md);
+  background: var(--ds-brand-600);
+  box-shadow: var(--ds-elev-1);
+}
+
+.brand-mark::after {
+  content: "";
+  display: grid;
+  width: 22px;
+  height: 22px;
+  margin: 11px auto 0;
+  border: 0;
+  transform: none;
+  border-radius: 2px;
+  background-color: transparent;
+  background-image:
+    linear-gradient(var(--ds-n-0) 0 0),
+    linear-gradient(var(--ds-brand-200) 0 0),
+    linear-gradient(var(--ds-brand-200) 0 0),
+    linear-gradient(var(--ds-n-0) 0 0);
+  background-repeat: no-repeat;
+  background-size: 9px 9px;
+  background-position: 0 0, 13px 0, 0 13px, 13px 13px;
+}
+
+.eyebrow,
+.panel-kicker {
+  margin-bottom: var(--ds-s2);
+  font-size: var(--ds-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--ds-accent-text);
+}
+
+.app-header h1 {
+  font-size: clamp(1.375rem, 2.2vw, var(--ds-text-2xl));
+  line-height: var(--ds-lh-tight);
+  letter-spacing: -0.02em;
+  font-weight: 650;
+}
+
+.lede {
+  margin-top: var(--ds-s3);
+  color: var(--ds-text-muted);
+  line-height: var(--ds-lh-body);
+}
+
+.header-card,
+.panel,
+.error-banner {
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-border);
+  border-radius: var(--ds-radius-lg);
+  box-shadow: var(--ds-elev-1);
+}
+
+.header-card {
+  padding: var(--ds-s4);
+  border-left: 3px solid var(--ds-accent-rail);
+  background: var(--ds-surface);
+  font-size: var(--ds-text-cap);
+}
+
+.panel {
+  padding: var(--ds-s5);
+}
+
+.panel-header h2 {
+  font-size: var(--ds-text-lg);
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+/* ── навигация ──────────────────────────────────────────────────────── */
+
+.workspace-nav {
+  gap: var(--ds-s1);
+  padding: var(--ds-s1);
+  border-radius: var(--ds-radius-md);
+  background: var(--ds-surface-inverse);
+  box-shadow: var(--ds-elev-1);
+}
+
+.workspace-nav .toolbar-button {
+  border-radius: var(--ds-radius-sm);
+  color: #b9c4d4;
+  font-weight: 550;
+}
+
+.workspace-nav .toolbar-button:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--ds-n-0);
+  transform: none;
+}
+
+.workspace-nav .toolbar-button.active {
+  background: var(--ds-brand-600);
+  color: var(--ds-n-0);
+  box-shadow: none;
+}
+
+.nav-badge {
+  background: var(--ds-n-0);
+  color: var(--ds-brand-700);
+  font-weight: 700;
+}
+
+.workspace-nav .toolbar-button.active .nav-badge {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--ds-n-0);
+}
+
+/* ── контролы ───────────────────────────────────────────────────────── */
+
+.toolbar-button {
+  border: 1px solid var(--ds-border-strong);
+  border-radius: var(--ds-radius-sm);
+  background: var(--ds-surface);
+  color: var(--ds-text);
+  font-weight: 550;
+  padding: var(--ds-s2) var(--ds-s3);
+  transition: background var(--ds-dur) var(--ds-ease),
+    border-color var(--ds-dur) var(--ds-ease);
+}
+
+.toolbar-button:hover {
+  background: var(--ds-surface-sunken);
+  border-color: var(--ds-border-control);
+  transform: none;
+}
+
+.report-group-toggle.active,
+.toolbar-button.active {
+  background: var(--ds-accent-tint);
+  border-color: var(--ds-accent);
+  color: var(--ds-accent-text);
+}
+
+.toolbar-button-primary,
+.export-actions button,
+.export-actions a {
+  border: 1px solid transparent;
+  border-radius: var(--ds-radius-sm);
+  background: var(--ds-brand-600);
+  color: var(--ds-text-on-brand);
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  box-shadow: none;
+}
+
+.toolbar-button-primary:hover,
+.export-actions button:hover,
+.export-actions a:hover {
+  background: var(--ds-brand-700);
+  filter: none;
+}
+
+/*
+ * Одно главное действие на экран: это решение по замечанию. Три залитые
+ * кнопки выгрузки перетягивали внимание на себя.
+ */
+.export-actions button,
+.export-actions a {
+  background: var(--ds-surface);
+  border-color: var(--ds-border-strong);
+  color: var(--ds-accent-text);
+}
+
+.export-actions button:hover,
+.export-actions a:hover {
+  background: var(--ds-accent-tint);
+  border-color: var(--ds-accent);
+}
+
+.search-input,
+.filter-input,
+.filter-select,
+.report-search-input,
+.pack-switcher select,
+.role-alias select,
+.issue-search input,
+.preset-import-input,
+.remark-editor textarea {
+  border: 1px solid var(--ds-border-control);
+  border-radius: var(--ds-radius-sm);
+  background: var(--ds-surface);
+  color: var(--ds-text);
+}
+
+.search-input {
+  border-radius: var(--ds-radius-sm);
+  padding: var(--ds-s2) var(--ds-s3);
+}
+
+.grid-resizer {
+  background: var(--ds-border);
+  border-radius: var(--ds-radius-xs);
+}
+
+.grid-resizer:hover {
+  background: var(--ds-accent-rail);
+}
+
+/* ── списки: плотность вместо «карточности» ─────────────────────────── */
+
+.report-list,
+.issue-list {
+  gap: var(--ds-s2);
+}
+
+.report-card,
+.issue-card {
+  border: 1px solid var(--ds-border);
+  border-radius: var(--ds-radius-md);
+  background: var(--ds-surface);
+  box-shadow: none;
+  padding: var(--ds-s3) var(--ds-s3) var(--ds-s3) var(--ds-s4);
+  transition: background var(--ds-dur) var(--ds-ease),
+    border-color var(--ds-dur) var(--ds-ease);
+}
+
+.issue-card {
+  border-left: 3px solid var(--ds-border-strong);
+}
+
+.report-card:hover,
+.issue-card:hover {
+  background: var(--ds-surface-sunken);
+  border-color: var(--ds-border-strong);
+  transform: none;
+}
+
+.report-card.active,
+.issue-card.active {
+  background: var(--ds-accent-tint);
+  border-color: var(--ds-accent);
+  box-shadow: none;
+  transform: none;
+}
+
+.issue-card.active {
+  border-left: 3px solid var(--ds-accent-rail);
+}
+
+.issue-card p,
+.collection-card p,
+.compact-copy {
+  line-height: var(--ds-lh-snug);
+}
+
+.issue-card-meta,
+.report-card-meta,
+.collection-meta,
+.report-context {
+  font-size: var(--ds-text-cap);
+  color: var(--ds-text-muted);
+}
+
+.finding-group-title {
+  margin: var(--ds-s4) 0 var(--ds-s2);
+  font-size: var(--ds-text-xs);
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ds-text-muted);
+}
+
+/* ── статусные чипы: цвет несёт смысл, а не украшает ────────────────── */
+
+.status-pill,
+.severity-pill,
+.triage-band,
+.origin-pill,
+.confidence-pill {
+  border-radius: var(--ds-radius-xs);
+  font-size: var(--ds-text-xs);
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  padding: 3px var(--ds-s2);
+}
+
+.status-pill.pass {
+  background: var(--ds-positive-tint);
+  color: var(--ds-positive);
+}
+
+.status-pill.fail,
+.severity-pill.severity-error {
+  background: var(--ds-critical-tint);
+  color: var(--ds-critical);
+}
+
+.severity-pill.severity-warning {
+  background: var(--ds-attention-tint);
+  color: var(--ds-attention);
+}
+
+.severity-pill.severity-info {
+  color: var(--ds-accent-text);
+}
+
+/*
+ * Категория нарушения и приоритет триажа стоят рядом в одной строке.
+ * Две залитые плашки одинакового веса конкурировали за внимание и читались
+ * как дубль. Теперь категория — метка с точкой, приоритет — плотный чип.
+ */
+.severity-pill {
+  background: transparent;
+  padding: 3px 0;
+  font-weight: 600;
+}
+
+.severity-pill::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 6px;
+  border-radius: 2px;
+  background: currentColor;
+}
+
+/*
+ * Полосы триажа. Было: белый текст 11px на светлых подложках —
+ * negligible 2.92:1 и minor 3.48:1 при норме 4.5:1. Приоритет замечания
+ * читался хуже нормы именно там, где решение принимает человек.
+ */
+.triage-band {
+  color: var(--ds-n-0);
+}
+
+.triage-band.triage-band-critical {
+  background: var(--ds-red-700);
+}
+
+.triage-band.triage-band-major {
+  background: var(--ds-amber-800);
+}
+
+.triage-band.triage-band-minor {
+  background: var(--ds-brand-700);
+}
+
+.triage-band.triage-band-negligible {
+  background: var(--ds-n-600);
+}
+
+/* Цвет берётся из семантики, а не из примитива: примитив не умеет
+   переключаться между темами и в темноте давал 1.6:1. */
+.origin-pill.origin-deterministic {
+  background: var(--ds-neutral-tint);
+  color: var(--ds-neutral);
+  font-family: var(--ds-font-mono);
+}
+
+/* Гипотеза машины ≠ вердикт: пунктир и янтарь отделяют её от
+   детерминированной ошибки. Контраст поднят с 4.22:1 до 7.4:1. */
+.origin-pill.origin-advisory,
+.confidence-pill.confidence-low {
+  background: var(--ds-attention-tint);
+  color: var(--ds-attention);
+  border: 1px dashed var(--ds-attention-line);
+  font-family: var(--ds-font-mono);
+}
+
+.issue-card--advisory {
+  border-left: 3px dashed var(--ds-attention-line);
+}
+
+.outcome-badge {
+  border-radius: var(--ds-radius-xs);
+  padding: 2px var(--ds-s2);
+  font-weight: 600;
+}
+
+.outcome-badge.outcome-pass {
+  background: var(--ds-positive-tint);
+  color: var(--ds-positive);
+}
+
+.outcome-badge.outcome-warn,
+.outcome-badge.outcome-review {
+  background: var(--ds-attention-tint);
+  color: var(--ds-attention);
+  border: 1px dashed var(--ds-attention-line);
+}
+
+.outcome-badge.outcome-block {
+  background: var(--ds-critical-tint);
+  color: var(--ds-critical);
+  border: 1px dashed var(--ds-critical);
+}
+
+.outcome-badge.outcome-fail {
+  background: var(--ds-critical-tint);
+  color: var(--ds-critical);
+  border: 1px solid var(--ds-critical);
+}
+
+/* ── панели честности: это не декор, а несущая конструкция продукта ─── */
+
+.capability-top-banner,
+.role-honesty-banner,
+.pack-draft-apply-note {
+  border-radius: var(--ds-radius-md);
+  background: var(--ds-attention-tint);
+  color: var(--ds-attention);
+  border: 1px solid var(--ds-attention-line);
+}
+
+.capability-top-banner-ok {
+  background: var(--ds-positive-tint);
+  color: var(--ds-positive);
+  border-color: var(--ds-positive);
+}
+
+.capability-block-banner,
+.provenance-gap-banner,
+.upload-honesty {
+  border-radius: var(--ds-radius-md);
+  background: var(--ds-critical-tint);
+  color: var(--ds-critical);
+  border: 1px solid var(--ds-critical);
+}
+
+.provenance-ok-banner {
+  border-radius: var(--ds-radius-md);
+  background: var(--ds-positive-tint);
+  color: var(--ds-positive);
+  border: 1px solid var(--ds-positive);
+}
+
+.capability-honesty,
+.summary-tile,
+.detail-block,
+.collection-card,
+.report-group,
+.viewer-selection-card {
+  border: 1px solid var(--ds-border);
+  border-radius: var(--ds-radius-md);
+  background: var(--ds-surface);
+}
+
+.synthetic-content-mark {
+  border-left: 3px solid var(--ds-attention-line);
+  background: var(--ds-attention-tint);
+  color: var(--ds-attention);
+  border-radius: 0 var(--ds-radius-xs) var(--ds-radius-xs) 0;
+}
+
+.error-banner {
+  background: var(--ds-critical-tint);
+  border: 1px solid var(--ds-critical);
+  color: var(--ds-critical);
+  border-radius: var(--ds-radius-md);
+}
+
+.summary-tile strong {
+  font-size: var(--ds-text-xl);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.summary-tile span,
+.detail-grid dt,
+.job-status dt,
+.remark-tz-fields dt {
+  font-size: var(--ds-text-xs);
+  letter-spacing: 0.06em;
+  color: var(--ds-text-muted);
+}
+
+/* ── таблицы ────────────────────────────────────────────────────────── */
+
+.coverage-table,
+.capability-table {
+  font-size: var(--ds-text-cap);
+}
+
+.coverage-table th,
+.coverage-table td {
+  border: 1px solid var(--ds-border);
+}
+
+.coverage-table th,
+.capability-table th {
+  background: var(--ds-surface-sunken);
+  font-size: var(--ds-text-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ds-text-muted);
+}
+
+.capability-table th,
+.capability-table td {
+  border-bottom: 1px solid var(--ds-border);
+}
+
+.coverage-table .cov-no-findings,
+.coverage-table .cov-done {
+  background: var(--ds-positive-tint);
+}
+
+.coverage-table .cov-findings {
+  background: var(--ds-critical-tint);
+}
+
+.coverage-table .cov-not-checked,
+.coverage-table .cov-not-done {
+  background: var(--ds-neutral-tint);
+}
+
+.coverage-table .cov-insufficient-data,
+.coverage-table .cov-partial {
+  background: var(--ds-attention-tint);
+}
+
+.coverage-table .cov-expert-required,
+.coverage-table .cov-expert {
+  background: var(--ds-accent-tint);
+}
+
+.capability-table tr.cap-ok td:nth-child(2) code {
+  color: var(--ds-positive);
+}
+
+.capability-table tr.cap-block td:nth-child(2) code {
+  color: var(--ds-critical);
+}
+
+.capability-table tr.cap-warn td:nth-child(2) code {
+  color: var(--ds-attention);
+}
+
+/* ── шаги, конвейер, прогресс ───────────────────────────────────────── */
+
+.pack-cycle-strip {
+  border-radius: var(--ds-radius-md);
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-border);
+}
+
+.pack-cycle-step {
+  border-radius: var(--ds-radius-sm);
+  border: 1px solid var(--ds-border-strong);
+  background: var(--ds-surface);
+}
+
+.pack-cycle-step-current {
+  background: var(--ds-brand-600);
+  color: var(--ds-text-on-brand);
+  border-color: var(--ds-brand-600);
+  box-shadow: none;
+}
+
+.pack-cycle-step-ready {
+  color: var(--ds-accent-text);
+  border-color: var(--ds-accent);
+}
+
+.evidence-step,
+.analyze-stage {
+  border-radius: var(--ds-radius-sm);
+  border: 1px solid var(--ds-border-strong);
+  color: var(--ds-text-muted);
+}
+
+.evidence-step.ready,
+.analyze-stage.active {
+  background: var(--ds-accent-tint);
+  border-color: var(--ds-accent);
+  color: var(--ds-accent-text);
+}
+
+.analyze-engine {
+  border-radius: var(--ds-radius-sm);
+  border-width: 1px;
+  border-color: var(--ds-border-strong);
+}
+
+.analyze-engine-failed,
+.analyze-engine-missing {
+  border-color: var(--ds-critical);
+  background: var(--ds-critical-tint);
+}
+
+.analyze-engine-ok {
+  border-color: var(--ds-positive);
+  background: var(--ds-positive-tint);
+}
+
+.kpi-bar-track {
+  background: var(--ds-surface-sunken);
+}
+
+.kpi-bar-fill {
+  background: var(--ds-accent-rail);
+}
+
+.run-timer,
+.report-card-time,
+.issue-priority,
+.detail-grid dd {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── рабочее место эксперта ─────────────────────────────────────────── */
+
+.machine-gateway {
+  border: 1px solid var(--ds-border);
+  border-top: 3px solid var(--ds-accent-rail);
+  background: var(--ds-surface);
+  border-radius: var(--ds-radius-md);
+}
+
+/*
+ * Зона решения человека отделена от машинного шлюза графитовым рельсом,
+ * а не янтарным: янтарь в этой системе уже значит «гипотеза, нужна
+ * проверка». Синий = машина, графит = человек.
+ */
+.expert-hitl {
+  border: 1px solid var(--ds-border);
+  border-top: 3px solid var(--ds-human-rail);
+  background: var(--ds-surface);
+  border-radius: var(--ds-radius-md);
+}
+
+.viewer-stage {
+  border: 1px solid var(--ds-border);
+  border-radius: var(--ds-radius-md);
+  background: var(--ds-surface-sunken);
+}
+
+.viewer-overlay {
+  background: color-mix(in srgb, var(--ds-surface) 88%, transparent);
+  color: var(--ds-text-muted);
+}
+
+.viewer-overlay-error {
+  background: color-mix(in srgb, var(--ds-critical-tint) 92%, transparent);
+  color: var(--ds-critical);
+}
+
+.viewer-button,
+.drawing-evidence-chip {
+  border: 1px solid var(--ds-border-strong);
+  border-radius: var(--ds-radius-sm);
+  background: var(--ds-surface);
+  color: var(--ds-text);
+}
+
+.drawing-evidence-chip:hover,
+.drawing-evidence-chip.active {
+  border-color: var(--ds-accent);
+  background: var(--ds-accent-tint);
+  box-shadow: none;
+  transform: none;
+}
+
+.drawing-evidence-stage,
+.drawing-evidence-viewport {
+  border-radius: var(--ds-radius-md);
+}
+
+.drawing-evidence-rect {
+  border-color: var(--ds-red-600);
+  background: color-mix(in srgb, var(--ds-red-600) 14%, transparent);
+}
+
+.drawing-evidence-rect-region {
+  border-color: var(--ds-brand-600);
+  background: color-mix(in srgb, var(--ds-brand-600) 12%, transparent);
+}
+
+.drawing-evidence-rect-hitl {
+  border-color: var(--ds-amber-500);
+  background: color-mix(in srgb, var(--ds-amber-500) 18%, transparent);
+}
+
+.viewer-status-ready {
+  color: var(--ds-positive);
+}
+
+.viewer-status-error {
+  color: var(--ds-critical);
+}
+
+.viewer-status-loading,
+.viewer-status-initializing {
+  color: var(--ds-attention);
+}
+
+.selection-badge {
+  border-radius: var(--ds-radius-xs);
+  background: var(--ds-accent-tint);
+  color: var(--ds-accent-text);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.selection-badge-active {
+  background: var(--ds-neutral-tint);
+  color: var(--ds-text);
+}
+
+.preset-scope-badge {
+  border-radius: var(--ds-radius-xs);
+  text-transform: none;
+}
+
+.preset-scope-browser,
+.preset-scope-local {
+  background: var(--ds-neutral-tint);
+  color: var(--ds-neutral);
+}
+
+.preset-scope-file,
+.preset-scope-team {
+  background: var(--ds-accent-tint);
+  color: var(--ds-accent-text);
+}
+
+.pack-dropzone {
+  border: 1px dashed var(--ds-border-control);
+  border-radius: var(--ds-radius-md);
+  background: var(--ds-surface-sunken);
+}
+
+.pack-dropzone.dragging {
+  border-color: var(--ds-accent);
+  background: var(--ds-accent-tint);
+}
+
+.kt2-slice,
+.coverage-map {
+  border: 1px solid var(--ds-border);
+  border-radius: var(--ds-radius-md);
+  background: var(--ds-surface);
+}
+
+.kt2-slice-quote {
+  background: var(--ds-surface-sunken);
+  border-left: 3px solid var(--ds-border-strong);
+  border-radius: 0 var(--ds-radius-xs) var(--ds-radius-xs) 0;
+}
+
+.kt2-overlay-sheet {
+  background: var(--ds-surface-sunken);
+  border-color: var(--ds-border);
+}
+
+.kt2-overlay-rect {
+  border-color: var(--ds-red-600);
+  background: color-mix(in srgb, var(--ds-red-600) 12%, transparent);
+}
+
+.triage-help,
+.hotkeys-footer,
+.demo-fixture-panel {
+  border: 1px solid var(--ds-border);
+  border-radius: var(--ds-radius-md);
+  background: var(--ds-surface);
+  box-shadow: var(--ds-elev-2);
+}
+
+.demo-fixture-panel {
+  border-left: 3px solid var(--ds-accent-rail);
+  box-shadow: var(--ds-elev-1);
+}
+
+.hotkeys-footer {
+  box-shadow: none;
+  color: var(--ds-text-muted);
+  font-size: var(--ds-text-sm);
+}
+
+.hotkeys-footer .hotkeys-note {
+  color: var(--ds-accent-text);
+}
+
+button.linkish,
+.coverage-findings-link {
+  color: var(--ds-accent-text);
+}
+
+/* ── предпочтения пользователя ──────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --ds-border: var(--ds-n-300);
+    --ds-border-strong: var(--ds-n-400);
+    --ds-text-muted: var(--ds-n-600);
+  }
+
+  .issue-card,
+  .report-card,
+  .panel {
+    border-width: 1px;
+    border-color: var(--ds-border-strong);
+  }
+}
