@@ -15,6 +15,12 @@ const EXPORT_ACTIONS: readonly (ExportRequest & { label: string })[] = [
   { format: "bcf", bcfVersion: "3.0", label: "BCF 3.0" },
 ];
 
+/**
+ * Подсказка про PDF живёт ровно в одном месте — в видимом абзаце. Раньше тот же
+ * текст дублировался в title кнопки, и скринридер произносил его дважды.
+ */
+const PDF_HINT_ID = "export-pdf-hint";
+
 function actionKey(action: ExportRequest): string {
   return action.bcfVersion ? `${action.format}-${action.bcfVersion}` : action.format;
 }
@@ -38,7 +44,12 @@ export default function ExportActionsBar({ reportId }: ExportActionsBarProps) {
   const busy = pendingKey !== null;
 
   return (
-    <div className="export-actions" id="export-actions" data-testid="export-actions">
+    <div
+      className="export-actions"
+      id="export-actions"
+      data-testid="export-actions"
+      aria-busy={busy}
+    >
       {EXPORT_ACTIONS.map((action) => (
         <button
           key={actionKey(action)}
@@ -52,13 +63,15 @@ export default function ExportActionsBar({ reportId }: ExportActionsBarProps) {
       <button
         type="button"
         aria-label={UI_COPY.exportPdf}
-        title={UI_COPY.exportPdfHint}
+        aria-describedby={PDF_HINT_ID}
         disabled={busy}
         onClick={() => void run({ format: "pdf" })}
       >
         {pendingKey === "pdf" ? UI_COPY.exportInProgress : UI_COPY.exportPdf}
       </button>
-      <p className="compact-copy">{UI_COPY.exportPdfHint}</p>
+      <p className="compact-copy" id={PDF_HINT_ID}>
+        {UI_COPY.exportPdfHint}
+      </p>
       {error ? (
         <p className="compact-copy export-error" role="alert" data-testid="export-error">
           {UI_COPY.exportFailed(error)}

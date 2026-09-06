@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   cancelAnalyzeJob,
   submitAnalyzeProjectPackage,
@@ -118,10 +118,31 @@ export default function AnalyzeRunPanel({
 
   const [confirmingCancel, setConfirmingCancel] = useState(false);
 
+  /** Терминальный прогон попадает в журнал ровно один раз. */
+  const recordedJobRef = useRef<string | null>(null);
+  /*
+   * Секунды читаются через ref, а не через зависимость: таймер тикает каждую
+   * секунду, и эффект с elapsedSec в deps перезапускался столько же раз после
+   * завершения прогона.
+   */
+  const elapsedRef = useRef(elapsedSec);
+
+  useEffect(() => {
+    elapsedRef.current = elapsedSec;
+  }, [elapsedSec]);
+
   function recordJournal(snapshot: { job_id: string; status: string }, elapsed: number): void {
     if (!TERMINAL_JOB_STATUSES.has(snapshot.status.toLowerCase())) {
       return;
     }
+    /*
+     * Сторож по job_id закрывает и вторую дорогу: если отправка сразу вернула
+     * терминальный статус, запись шла и из start(), и из эффекта.
+     */
+    if (recordedJobRef.current === snapshot.job_id) {
+      return;
+    }
+    recordedJobRef.current = snapshot.job_id;
     const storage = typeof sessionStorage === "undefined" ? null : sessionStorage;
     setJournal(
       appendRunJournal(
@@ -140,9 +161,9 @@ export default function AnalyzeRunPanel({
     if (!job || !terminal) {
       return;
     }
-    recordJournal(job, elapsedSec);
+    recordJournal(job, elapsedRef.current);
     setConfirmingCancel(false);
-  }, [job, terminal, elapsedSec]);
+  }, [job, terminal]);
 
   async function start(): Promise<void> {
     if (!packDraftHasAny(draft)) {
@@ -297,9 +318,18 @@ export default function AnalyzeRunPanel({
         </ul>
       ) : null}
       <p className="compact-copy">{UI_COPY.runStagesHonesty}</p>
-      {error || pollError ? (
-        <p className="compact-copy" role="alert">
-          {error ?? pollError}
+      {/*
+        Два независимых канала. Раньше стояло {error ?? pollError}: упавшая отправка
+        навсегда прятала ошибку опроса, и потеря связи выглядела как тишина.
+      */}
+      {error ? (
+        <p className="compact-copy" role="alert" data-testid="analyze-error">
+          {error}
+        </p>
+      ) : null}
+      {pollError ? (
+        <p className="compact-copy" role="alert" data-testid="analyze-poll-error">
+          {pollError}
         </p>
       ) : null}
       <section className="run-journal" data-testid="run-journal">

@@ -82,6 +82,32 @@ describe("AnalyzeRunPanel", () => {
     expect(screen.getByText(UI_COPY.runJournalHonesty)).toBeTruthy();
   });
 
+  it("writes a terminal run to the journal once, not on every tick", async () => {
+    submitAnalyzeProjectPackageMock.mockResolvedValue({
+      job_id: "job-once-1",
+      status: "succeeded",
+      report_id: "r".repeat(32),
+    });
+    render(<AnalyzeRunPanel ifcPath="walls.ifc" />);
+    fireEvent.click(screen.getByRole("button", { name: "Запустить анализ" }));
+    const journal = await screen.findByTestId("run-journal");
+    await waitFor(() => {
+      expect(journal.textContent).toMatch(/job-once-1/);
+    });
+    // Запись шла и из start(), и из эффекта; сторож по job_id оставляет одну строку.
+    expect(journal.querySelectorAll("li")).toHaveLength(1);
+  });
+
+  it("keeps the submit error and the poll error in separate alerts", async () => {
+    submitAnalyzeProjectPackageMock.mockRejectedValueOnce(new Error("Отправка не удалась"));
+    render(<AnalyzeRunPanel ifcPath="walls.ifc" />);
+    fireEvent.click(screen.getByRole("button", { name: "Запустить анализ" }));
+    const alert = await screen.findByTestId("analyze-error");
+    expect(alert.textContent).toMatch(/Отправка не удалась/);
+    // Канал опроса независим: своя область, а не общий тернарник.
+    expect(screen.queryByTestId("analyze-poll-error")).toBeNull();
+  });
+
   it("asks before cancelling a running job", async () => {
     submitAnalyzeProjectPackageMock.mockResolvedValue({
       job_id: "job-running-1",

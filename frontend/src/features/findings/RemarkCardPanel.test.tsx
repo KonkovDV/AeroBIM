@@ -130,4 +130,41 @@ describe("RemarkCardPanel", () => {
     expect(writeText).toHaveBeenCalledWith("1XYVUKGoDDbREfVxRKsHkl");
     expect(await screen.findByText("GUID скопирован")).toBeTruthy();
   });
+
+  it("drops the copied hint when another finding becomes active", async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(window.navigator, "clipboard", {
+      configurable: true,
+      value: { writeText },
+    });
+    const { rerender } = render(
+      <RemarkCardPanel
+        activeIssue={baseIssue}
+        remarkDraft="REI"
+        remarkSaveState="idle"
+        hitlDecisionState="idle"
+        onDraftChange={() => undefined}
+        onSave={() => undefined}
+        onAccept={() => undefined}
+        onReject={() => undefined}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Копировать GUID" }));
+    expect(await screen.findByText("GUID скопирован")).toBeTruthy();
+    rerender(
+      <RemarkCardPanel
+        activeIssue={{ ...baseIssue, element_guid: "2ABCUKGoDDbREfVxRKsHkl" }}
+        remarkDraft="REI"
+        remarkSaveState="idle"
+        hitlDecisionState="idle"
+        onDraftChange={() => undefined}
+        onSave={() => undefined}
+        onAccept={() => undefined}
+        onReject={() => undefined}
+      />,
+    );
+    // Подпись относится к конкретному GUID и не должна переживать смену элемента.
+    expect(screen.queryByText("GUID скопирован")).toBeNull();
+    expect(screen.getByText("2ABCUKGoDDbREfVxRKsHkl")).toBeTruthy();
+  });
 });

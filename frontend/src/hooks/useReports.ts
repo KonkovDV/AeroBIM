@@ -1,12 +1,28 @@
-import { useDeferredValue, useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import {
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import { fetchReports } from "../lib/api";
 import type { ReportSummaryEntry } from "../lib/types";
 import { readUrlReportId } from "../lib/report-filters";
 import { UI_COPY } from "../lib/ui-copy";
 
-function reportSortWeight(report: ReportSummaryEntry): [number, string] {
-  const timestamp = Number.isNaN(Date.parse(report.created_at)) ? 0 : Date.parse(report.created_at);
-  return [-timestamp, report.report_id];
+function reportTimestamp(report: ReportSummaryEntry): number {
+  const parsed = Date.parse(report.created_at);
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+/** Новые отчёты сверху; при равной метке — стабильно по report_id. */
+function compareReports(left: ReportSummaryEntry, right: ReportSummaryEntry): number {
+  const byTimestamp = reportTimestamp(right) - reportTimestamp(left);
+  if (byTimestamp !== 0) {
+    return byTimestamp;
+  }
+  return left.report_id.localeCompare(right.report_id);
 }
 
 export type UseReportsOptions = {
@@ -106,36 +122,37 @@ export function useReports(options: UseReportsOptions): ReportsState {
     };
   }, [deferredProjectFilter, deferredDisciplineFilter, deferredStatusFilter, epoch, setSelectedReportId]);
 
-  const filteredReports = reports
-    .filter((report) => {
-      const normalizedQuery = deferredSearch.trim().toLowerCase();
-      if (!normalizedQuery) {
-        return true;
-      }
-      return (
-        report.report_id.toLowerCase().includes(normalizedQuery) ||
-        report.request_id.toLowerCase().includes(normalizedQuery)
-      );
-    })
-    .sort((left, right) => {
-      const [leftTs, leftId] = reportSortWeight(left);
-      const [rightTs, rightId] = reportSortWeight(right);
-      if (leftTs !== rightTs) {
-        return leftTs - rightTs;
-      }
-      return leftId.localeCompare(rightId);
-    });
+  /**
+   * useMemo обязателен: без него каждый рендер возвращал новый массив, а он
+   * уходит пропом в ExpertWorkplace и в зависимости эффектов ниже — фильтрация
+   * и группировка пересчитывались на каждый тик таймера прогона.
+   */
+  const filteredReports = useMemo(() => {
+    const normalizedQuery = deferredSearch.trim().toLowerCase();
+    const matched = normalizedQuery
+      ? reports.filter(
+          (report) =>
+            report.report_id.toLowerCase().includes(normalizedQuery) ||
+            report.request_id.toLowerCase().includes(normalizedQuery),
+        )
+      : reports.slice();
+    return matched.sort(compareReports);
+  }, [reports, deferredSearch]);
 
-  const groupedReports = filteredReports.reduce((groups, report) => {
-    const key = report.project_name?.trim() || UI_COPY.unspecifiedProject;
-    const existing = groups.get(key);
-    if (existing) {
-      existing.push(report);
-    } else {
-      groups.set(key, [report]);
-    }
-    return groups;
-  }, new Map<string, ReportSummaryEntry[]>());
+  const groupedReports = useMemo(
+    () =>
+      filteredReports.reduce((groups, report) => {
+        const key = report.project_name?.trim() || UI_COPY.unspecifiedProject;
+        const existing = groups.get(key);
+        if (existing) {
+          existing.push(report);
+        } else {
+          groups.set(key, [report]);
+        }
+        return groups;
+      }, new Map<string, ReportSummaryEntry[]>()),
+    [filteredReports],
+  );
 
   return { reports, reportsLoading, reportsError, filteredReports, groupedReports };
 }

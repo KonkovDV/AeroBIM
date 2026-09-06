@@ -7,7 +7,7 @@ import {
   type AuthBffSession,
 } from "./auth-bff";
 import { aerobimCsrfHeaders } from "./csrf";
-import { WASM_IFC_VIEWER_CAP_BYTES, IfcViewerCapError, assertFitsIfcViewerCap } from "./wasm-cap";
+import { WASM_IFC_VIEWER_CAP_BYTES, IfcViewerCapError } from "./wasm-cap";
 
 export type ReportListFilters = {
   project?: string;
@@ -24,36 +24,93 @@ const configuredBase = (import.meta.env.VITE_AEROBIM_API_BASE_URL as string | un
 // Never default production builds to http://localhost:8080 (RT C17).
 const apiBaseUrl = configuredBase ?? "";
 const useDevProxy = import.meta.env.DEV && !configuredBase;
+
 // Never embed a bearer token in client bundles (RTATOM-F02 / POST-05).
 // Dev auth is injected only by the Vite loopback proxy (see vite.config.ts).
-const apiBearerToken: string | undefined = undefined;
-
+// Здесь сознательно нет ветки Authorization: клиент его не отправляет вообще.
 function authHeaders(extra: Record<string, string> = {}): HeadersInit {
-  const headers: Record<string, string> = {
+  return {
     Accept: "application/json",
     ...extra,
     ...aerobimCsrfHeaders(),
   };
-  if (apiBearerToken) {
-    headers.Authorization = `Bearer ${apiBearerToken}`;
-  }
-  return headers;
 }
 
-function throwForFailedResponse(response: Response): never {
+/** Обрезка детали ошибки: в баннер не должен уезжать весь HTML страницы прокси. */
+const ERROR_DETAIL_MAX_CHARS = 400;
+
+function compactDetail(raw: string): string {
+  const detail = raw.replace(/\s+/g, " ").trim();
+  if (!detail) {
+    return "";
+  }
+  return detail.length > ERROR_DETAIL_MAX_CHARS
+    ? `${detail.slice(0, ERROR_DETAIL_MAX_CHARS)}…`
+    : detail;
+}
+
+/**
+ * Деталь из тела ответа с ошибкой.
+ *
+ * Раньше тело не читалось вообще, и эксперт видел только «завершился ошибкой 422:
+ * Unprocessable Entity» — без указания поля, из-за которого бэкенд отказал.
+ */
+async function readErrorDetail(response: Response): Promise<string> {
+  if (typeof response.text !== "function") {
+    return "";
+  }
+  let raw = "";
+  try {
+    raw = (await response.text()).trim();
+  } catch {
+    return "";
+  }
+  if (!raw) {
+    return "";
+  }
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    const record =
+      parsed !== null && typeof parsed === "object"
+        ? (parsed as Record<string, unknown>)
+        : null;
+    const candidate = record ? (record.detail ?? record.message ?? record.error) : parsed;
+    if (typeof candidate === "string") {
+      return compactDetail(candidate);
+    }
+    if (candidate !== null && candidate !== undefined) {
+      return compactDetail(JSON.stringify(candidate));
+    }
+  } catch {
+    // Не JSON — показываем текст как есть.
+  }
+  return compactDetail(raw);
+}
+
+async function withResponseDetail(response: Response, base: string): Promise<string> {
+  const detail = await readErrorDetail(response);
+  return detail ? `${base} · ${detail}` : base;
+}
+
+async function failedResponseError(response: Response): Promise<Error> {
   if (response.status === 401) {
-    throw new Error(
+    return new Error(
       import.meta.env.PROD || useDevProxy
         ? "Нет авторизации (401): сессия через OIDC BFF или обратный прокси с TLS (клиентский Bearer отключён)."
         : "Нет авторизации (401): используйте dev-прокси Vite (тот же источник), чтобы Authorization подставлялся на сервере."
     );
   }
   if (response.status === 503) {
-    throw new Error(
+    return new Error(
       "API недоступен (503): авторизация или конфигурация бэкенда не настроены вне режима разработки."
     );
   }
-  throw new Error(`Запрос завершился ошибкой ${response.status}: ${response.statusText}`);
+  return new Error(
+    await withResponseDetail(
+      response,
+      `Запрос завершился ошибкой ${response.status}: ${response.statusText}`,
+    ),
+  );
 }
 
 async function readJson<T>(url: string, init?: { signal?: AbortSignal }): Promise<T> {
@@ -64,7 +121,7 @@ async function readJson<T>(url: string, init?: { signal?: AbortSignal }): Promis
   });
 
   if (!response.ok) {
-    throwForFailedResponse(response);
+    throw await failedResponseError(response);
   }
 
   return (await response.json()) as T;
@@ -80,14 +137,36 @@ function concatBytes(chunks: Uint8Array[], total: number): Uint8Array {
   return out;
 }
 
+/** Предел на тело ответа и ошибка, которую бросаем при превышении. */
+type ByteCap = { maxBytes: number; makeError: () => Error };
+
+const IFC_VIEWER_CAP: ByteCap = {
+  maxBytes: WASM_IFC_VIEWER_CAP_BYTES,
+  makeError: () => new IfcViewerCapError(),
+};
+
+/**
+ * Предел для превью листа. Превью — это картинка или PDF одного листа, а не федерация,
+ * поэтому 64 МиБ с запасом хватает. Раньше предела не было вовсе: response.arrayBuffer()
+ * тянул в память ровно столько, сколько отдало хранилище.
+ */
+export const DRAWING_PREVIEW_CAP_BYTES = 64 * 1024 * 1024;
+
+const DRAWING_PREVIEW_CAP: ByteCap = {
+  maxBytes: DRAWING_PREVIEW_CAP_BYTES,
+  makeError: () => new Error("Превью листа больше допустимого размера и не было открыто."),
+};
+
 async function readBodyUpTo(
   response: Response,
-  maxBytes: number,
+  cap: ByteCap,
   controller: AbortController,
 ): Promise<Uint8Array> {
   if (!response.body) {
     const bytes = new Uint8Array(await response.arrayBuffer());
-    assertFitsIfcViewerCap(bytes.byteLength);
+    if (bytes.byteLength > cap.maxBytes) {
+      throw cap.makeError();
+    }
     return bytes;
   }
   const reader = response.body.getReader();
@@ -99,10 +178,10 @@ async function readBodyUpTo(
       break;
     }
     total += value.byteLength;
-    if (total > maxBytes) {
+    if (total > cap.maxBytes) {
       await reader.cancel();
       controller.abort();
-      throw new IfcViewerCapError();
+      throw cap.makeError();
     }
     chunks.push(value);
   }
@@ -111,7 +190,7 @@ async function readBodyUpTo(
 
 async function readBytes(
   url: string,
-  options?: { maxBytes?: number },
+  cap: ByteCap,
 ): Promise<{ bytes: Uint8Array; contentType: string | null }> {
   const controller = new AbortController();
   const response = await fetch(url, {
@@ -120,21 +199,16 @@ async function readBytes(
     signal: controller.signal,
   });
   if (!response.ok) {
-    throwForFailedResponse(response);
+    throw await failedResponseError(response);
   }
-  if (options?.maxBytes != null) {
-    const declared = Number(response.headers.get("content-length"));
-    if (Number.isFinite(declared) && declared > options.maxBytes) {
-      controller.abort();
-      throw new IfcViewerCapError();
-    }
-    return {
-      bytes: await readBodyUpTo(response, options.maxBytes, controller),
-      contentType: response.headers.get("Content-Type"),
-    };
+  // Number(null) === 0, поэтому отсутствующий content-length не срабатывает ложно.
+  const declared = Number(response.headers.get("content-length"));
+  if (Number.isFinite(declared) && declared > cap.maxBytes) {
+    controller.abort();
+    throw cap.makeError();
   }
   return {
-    bytes: new Uint8Array(await response.arrayBuffer()),
+    bytes: await readBodyUpTo(response, cap, controller),
     contentType: response.headers.get("Content-Type"),
   };
 }
@@ -262,9 +336,7 @@ export async function fetchReportCoverage(reportId: string): Promise<CheckCovera
 }
 
 export async function fetchReportIfcSource(reportId: string): Promise<Uint8Array> {
-  const { bytes } = await readBytes(buildReportIfcSourceUrl(reportId), {
-    maxBytes: WASM_IFC_VIEWER_CAP_BYTES,
-  });
+  const { bytes } = await readBytes(buildReportIfcSourceUrl(reportId), IFC_VIEWER_CAP);
   return bytes;
 }
 
@@ -282,7 +354,10 @@ function safePreviewBlobType(raw: string | null): string {
 }
 
 export async function fetchDrawingAssetPreviewBlobUrl(reportId: string, assetId: string): Promise<string> {
-  const { bytes, contentType } = await readBytes(buildDrawingAssetPreviewUrl(reportId, assetId));
+  const { bytes, contentType } = await readBytes(
+    buildDrawingAssetPreviewUrl(reportId, assetId),
+    DRAWING_PREVIEW_CAP,
+  );
   // Copy into a fresh ArrayBuffer-backed view for DOM Blob typing (TS 5.x BlobPart).
   const copy = Uint8Array.from(bytes);
   // Never trust image/* / octet blindly from a user-controlled store without allowlist (RTATOM-F05).
@@ -290,14 +365,25 @@ export async function fetchDrawingAssetPreviewBlobUrl(reportId: string, assetId:
   return URL.createObjectURL(blob);
 }
 
+/**
+ * Отзыв object URL сразу после click() обрывает скачивание в Firefox и Safari:
+ * браузер ещё не начал читать поток. Отдаём отзыв в таймаут, чтобы файл дошёл.
+ */
+const OBJECT_URL_TTL_MS = 60_000;
+
 function triggerBlobDownload(blob: Blob, filename: string): void {
   const objectUrl = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = objectUrl;
   anchor.download = filename;
+  anchor.rel = "noopener";
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();
+  if (typeof setTimeout === "function") {
+    setTimeout(() => URL.revokeObjectURL(objectUrl), OBJECT_URL_TTL_MS);
+    return;
+  }
   URL.revokeObjectURL(objectUrl);
 }
 
@@ -340,7 +426,12 @@ export async function downloadExport(
     credentials: "include",
   });
   if (!response.ok) {
-    throw new Error(`Экспорт завершился ошибкой ${response.status}: ${response.statusText}`);
+    throw new Error(
+      await withResponseDetail(
+        response,
+        `Экспорт завершился ошибкой ${response.status}: ${response.statusText}`,
+      ),
+    );
   }
   const extension = format === "bcf" ? "bcfzip" : format;
   await saveResponseDownload(response, `aerobim-report-${reportId}.${extension}`);
@@ -432,56 +523,64 @@ export async function postReviewEvent(
     body: JSON.stringify(body),
   });
   if (!response.ok) {
-    throw new Error(`Событие ревью завершилось ошибкой ${response.status}: ${response.statusText}`);
+    throw new Error(
+      await withResponseDetail(
+        response,
+        `Событие ревью завершилось ошибкой ${response.status}: ${response.statusText}`,
+      ),
+    );
   }
   return (await response.json()) as { event: Record<string, unknown> };
 }
 
-export async function uploadDocument(
-  file: File,
-  options?: { onProgress?: (percent: number) => void; signal?: AbortSignal },
-): Promise<{
+type UploadDocumentResult = {
   upload_id: string;
   filename: string;
   path: string;
   size_bytes: number;
   content_type: string | null;
-}> {
+};
+
+export async function uploadDocument(
+  file: File,
+  options?: { onProgress?: (percent: number) => void; signal?: AbortSignal },
+): Promise<UploadDocumentResult> {
   if (!options?.onProgress && !options?.signal) {
     const form = new FormData();
     form.append("file", file);
-    const headers: Record<string, string> = { ...aerobimCsrfHeaders() };
-    if (apiBearerToken) {
-      headers.Authorization = `Bearer ${apiBearerToken}`;
-    }
     const response = await fetch(`${apiBaseUrl}/v1/uploads`, {
       method: "POST",
-      headers,
+      headers: { ...aerobimCsrfHeaders() },
       credentials: "include",
       body: form,
     });
     if (!response.ok) {
-      throw new Error(`Загрузка завершилась ошибкой ${response.status}: ${response.statusText}`);
+      throw new Error(
+        await withResponseDetail(
+          response,
+          `Загрузка завершилась ошибкой ${response.status}: ${response.statusText}`,
+        ),
+      );
     }
-    return (await response.json()) as {
-      upload_id: string;
-      filename: string;
-      path: string;
-      size_bytes: number;
-      content_type: string | null;
-    };
+    return (await response.json()) as UploadDocumentResult;
   }
 
   return new Promise((resolve, reject) => {
+    const signal = options?.signal;
+    // Уже отменённый signal раньше игнорировался, и запрос всё равно уходил на бэкенд.
+    if (signal?.aborted) {
+      reject(new Error("Загрузка отменена"));
+      return;
+    }
     const xhr = new XMLHttpRequest();
+    const onAbortSignal = () => xhr.abort();
+    // Слушатель обязателен к снятию: signal живёт дольше запроса и накапливал ссылки.
+    const detach = () => signal?.removeEventListener("abort", onAbortSignal);
     xhr.open("POST", `${apiBaseUrl}/v1/uploads`);
     xhr.withCredentials = true;
     const csrf = aerobimCsrfHeaders();
     for (const [name, value] of Object.entries(csrf)) {
       xhr.setRequestHeader(name, value);
-    }
-    if (apiBearerToken) {
-      xhr.setRequestHeader("Authorization", `Bearer ${apiBearerToken}`);
     }
     xhr.upload.onprogress = (event) => {
       if (event.lengthComputable && options?.onProgress) {
@@ -489,21 +588,28 @@ export async function uploadDocument(
       }
     };
     xhr.onload = () => {
+      detach();
       if (xhr.status >= 200 && xhr.status < 300) {
-        resolve(JSON.parse(xhr.responseText) as {
-          upload_id: string;
-          filename: string;
-          path: string;
-          size_bytes: number;
-          content_type: string | null;
-        });
+        try {
+          resolve(JSON.parse(xhr.responseText) as UploadDocumentResult);
+        } catch {
+          reject(new Error("Загрузка прошла, но ответ бэкенда не разобран"));
+        }
         return;
       }
-      reject(new Error(`Загрузка завершилась ошибкой ${xhr.status}: ${xhr.statusText}`));
+      const base = `Загрузка завершилась ошибкой ${xhr.status}: ${xhr.statusText}`;
+      const detail = compactDetail(xhr.responseText || "");
+      reject(new Error(detail ? `${base} · ${detail}` : base));
     };
-    xhr.onerror = () => reject(new Error("Загрузка не удалась"));
-    xhr.onabort = () => reject(new Error("Загрузка отменена"));
-    options?.signal?.addEventListener("abort", () => xhr.abort());
+    xhr.onerror = () => {
+      detach();
+      reject(new Error("Загрузка не удалась"));
+    };
+    xhr.onabort = () => {
+      detach();
+      reject(new Error("Загрузка отменена"));
+    };
+    signal?.addEventListener("abort", onAbortSignal);
     const form = new FormData();
     form.append("file", file);
     xhr.send(form);
@@ -552,7 +658,7 @@ export async function submitAnalyzeProjectPackage(
     body: JSON.stringify(body),
   });
   if (!response.ok) {
-    throwForFailedResponse(response);
+    throw await failedResponseError(response);
   }
   return (await response.json()) as AnalyzeJobSnapshot;
 }
@@ -574,7 +680,7 @@ export async function cancelAnalyzeJob(jobId: string): Promise<AnalyzeJobSnapsho
     credentials: "include",
   });
   if (!response.ok) {
-    throwForFailedResponse(response);
+    throw await failedResponseError(response);
   }
   return (await response.json()) as AnalyzeJobSnapshot;
 }
@@ -625,7 +731,7 @@ export async function seedDemoFixture(): Promise<DemoSeedFixtureResponse> {
     credentials: "include",
   });
   if (!response.ok) {
-    throwForFailedResponse(response);
+    throw await failedResponseError(response);
   }
   return (await response.json()) as DemoSeedFixtureResponse;
 }

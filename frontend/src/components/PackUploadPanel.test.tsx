@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const uploadDocumentMock = vi.fn();
@@ -46,7 +46,12 @@ describe("PackUploadPanel", () => {
     const cancel = await screen.findByRole("button", { name: UI_COPY.cancelUpload });
     fireEvent.click(cancel);
     expect(capturedSignal?.aborted).toBe(true);
-    expect(await screen.findByText("Upload cancelled")).toBeTruthy();
+    await waitFor(() => {
+      expect(screen.queryByRole("button", { name: UI_COPY.cancelUpload })).toBeNull();
+    });
+    // Отмена эксперта — не сбой: английский reject из мока не должен всплыть в UI.
+    expect(screen.queryByText("Upload cancelled")).toBeNull();
+    expect(screen.queryByText(/отменена/i)).toBeNull();
   });
 
   it("shows a draft-slot replacement note when the parent reports one", () => {

@@ -116,4 +116,31 @@ describe("FindingListPanel", () => {
     expect(screen.getByTestId("issue-clause").textContent).toMatch(/СП 63/);
     expect(screen.getByTestId("clause-filter")).toBeTruthy();
   });
+
+  it("keeps group headers when the list is virtualized", () => {
+    const issues = Array.from({ length: 45 }, (_, index) =>
+      issue(index < 15 ? "RULE-A" : index < 30 ? "RULE-B" : "RULE-C", index),
+    );
+    render(
+      <FindingListPanel
+        issues={issues}
+        totalIssueCount={45}
+        selectedIssueIndex={0}
+        issueSeverityFilter="all"
+        hitlOnlyFilter={false}
+        hitlRegionCount={0}
+        groupBy="rule"
+        onSeverityChange={() => undefined}
+        onHitlOnlyChange={() => undefined}
+        onGroupByChange={() => undefined}
+        onSelectIssue={() => undefined}
+      />,
+    );
+    const titles = document.querySelectorAll(".finding-group-title");
+    expect(titles.length).toBeGreaterThan(0);
+    expect(titles[0]?.textContent).toMatch(/RULE-A/);
+    expect(titles[0]?.textContent).toMatch(/\(15\)/);
+    expect(screen.getAllByRole("group").length).toBeGreaterThan(0);
+    expect(screen.getByRole("listbox").getAttribute("aria-activedescendant")).toBe("finding-row-0");
+  });
 });

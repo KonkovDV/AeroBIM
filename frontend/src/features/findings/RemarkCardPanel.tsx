@@ -20,8 +20,17 @@ function GuidCopyRow({ guid }: { guid: string | null | undefined }) {
   }
 
   async function copyGuid(): Promise<void> {
+    /*
+     * Clipboard API есть только в защищённом контексте. Возможность проверяется явно,
+     * а не через перехват TypeError: сам GUID рядом в <code> и остаётся выделяемым вручную.
+     */
+    const clipboard = typeof navigator === "undefined" ? undefined : navigator.clipboard;
+    if (typeof clipboard?.writeText !== "function") {
+      setCopyState("failed");
+      return;
+    }
     try {
-      await navigator.clipboard.writeText(text);
+      await clipboard.writeText(text);
       setCopyState("copied");
     } catch {
       setCopyState("failed");
@@ -109,7 +118,14 @@ export default function RemarkCardPanel({
             <div>
               <dt>{UI_COPY.remarkElement}</dt>
               <dd>
-                <GuidCopyRow guid={activeIssue.element_guid} />
+                {/*
+                  key по GUID: без него React переиспользует тот же узел, и подпись
+                  «GUID скопирован» оставалась висеть при переходе к другому замечанию.
+                */}
+                <GuidCopyRow
+                  key={activeIssue.element_guid ?? "none"}
+                  guid={activeIssue.element_guid}
+                />
               </dd>
             </div>
             <div>

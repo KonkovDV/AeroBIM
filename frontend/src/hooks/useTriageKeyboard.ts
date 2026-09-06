@@ -1,6 +1,15 @@
 import { useEffect, type Dispatch, type SetStateAction } from "react";
 import type { IndexedIssue } from "../lib/issue-triage";
+import { isTextEntryTarget, resolveTriageHotkey } from "../lib/triage-hotkeys";
 
+/**
+ * Хоткеи триажа J/K/A/R/E/? — первоклассный ввод эксперта (план §3, п.10).
+ *
+ * Разбор клавиш вынесен в lib/triage-hotkeys.ts, чтобы закрыть две дыры:
+ * раскладку (на русской раскладке key === "к", а не "r") и модификаторы
+ * (Ctrl+R «перезагрузить» попадал в обработчик и записывался как отклонение
+ * замечания в журнал HITL).
+ */
 export function useTriageKeyboard({
   enabled,
   filteredIssues,
@@ -28,20 +37,23 @@ export function useTriageKeyboard({
     }
 
     function onKeyDown(event: KeyboardEvent): void {
-      const target = event.target as HTMLElement | null;
-      const tag = target?.tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target?.isContentEditable) {
-        if (event.key === "Escape") {
+      const hotkey = resolveTriageHotkey(event);
+      if (hotkey === null) {
+        return;
+      }
+      if (isTextEntryTarget(event.target)) {
+        // В поле ввода живёт только выход из справки, остальное — текст эксперта.
+        if (hotkey === "close") {
           setTriageHelpOpen(false);
         }
         return;
       }
-      if (event.key === "?" || (event.shiftKey && event.key === "/")) {
+      if (hotkey === "help") {
         event.preventDefault();
         setTriageHelpOpen((open) => !open);
         return;
       }
-      if (event.key === "Escape") {
+      if (hotkey === "close") {
         setTriageHelpOpen(false);
         return;
       }
@@ -50,46 +62,33 @@ export function useTriageKeyboard({
       }
       const currentPos = filteredIssues.findIndex(({ index }) => index === selectedIssueIndex);
       const pos = currentPos >= 0 ? currentPos : 0;
-      if (event.key === "j" || event.key === "J" || event.key === "ArrowDown") {
+      if (hotkey === "next" || hotkey === "prev") {
         event.preventDefault();
-        const next = filteredIssues[Math.min(pos + 1, filteredIssues.length - 1)];
-        if (next) {
-          setSelectedIssueIndex(next.index);
+        const target =
+          hotkey === "next"
+            ? filteredIssues[Math.min(pos + 1, filteredIssues.length - 1)]
+            : filteredIssues[Math.max(pos - 1, 0)];
+        if (target) {
+          setSelectedIssueIndex(target.index);
           setSelectedClashIndex(null);
-          setRemarkDraft(next.issue.remark?.body ?? "");
+          setRemarkDraft(target.issue.remark?.body ?? "");
         }
         return;
       }
-      if (event.key === "k" || event.key === "K" || event.key === "ArrowUp") {
-        event.preventDefault();
-        const prev = filteredIssues[Math.max(pos - 1, 0)];
-        if (prev) {
-          setSelectedIssueIndex(prev.index);
-          setSelectedClashIndex(null);
-          setRemarkDraft(prev.issue.remark?.body ?? "");
-        }
+      if (!hitlEnabled) {
         return;
       }
-      if (event.key === "a" || event.key === "A") {
-        if (!hitlEnabled) {
-          return;
-        }
+      if (hotkey === "accept") {
         event.preventDefault();
         void decideRemark("accepted");
         return;
       }
-      if (event.key === "r" || event.key === "R") {
-        if (!hitlEnabled) {
-          return;
-        }
+      if (hotkey === "reject") {
         event.preventDefault();
         void decideRemark("rejected");
         return;
       }
-      if (event.key === "e" || event.key === "E") {
-        if (!hitlEnabled) {
-          return;
-        }
+      if (hotkey === "edit") {
         event.preventDefault();
         document.getElementById("remark-editor")?.focus();
       }
