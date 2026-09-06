@@ -155,12 +155,24 @@ class AnalyzeProjectPackageJobRunner:
                 self._job_store.mark_cancelled(job_id, "Cancelled after analyze")
                 return
         except Exception as exc:
-            self._job_store.mark_failed(job_id, str(exc))
+            error_msg = str(exc)
+            try:
+                # BE-01: guard mark_failed against secondary DB / store exceptions.
+                # If the store raises here, the job stays RUNNING until
+                # reclaim_stale_running() rescues it. We log and do not re-raise.
+                self._job_store.mark_failed(job_id, error_msg)
+            except Exception as store_exc:  # pragma: no cover
+                self._logger.error(
+                    "analyze_project_package async job store.mark_failed raised",
+                    job_id=job_id,
+                    request_id=request.request_id,
+                    detail=str(store_exc),
+                )
             self._logger.error(
                 "analyze_project_package async job failed",
                 job_id=job_id,
                 request_id=request.request_id,
-                detail=str(exc),
+                detail=error_msg,
             )
             return
 
