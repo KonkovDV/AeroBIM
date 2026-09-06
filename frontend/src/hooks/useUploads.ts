@@ -23,11 +23,17 @@ export function useUploads(options?: {
   const [detail, setDetail] = useState<string | null>(null);
   const [progress, setProgress] = useState<number | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  /**
+   * Защита от второго startFile поверх первого. Без неё повторный бросок файла
+   * запускал второй XHR, перезаписывал abortRef и делал первую загрузку
+   * неотменяемой: «Отменить загрузку» останавливала только последнюю.
+   */
+  const inFlight = useRef(false);
   const onUploadedPathRef = useRef(options?.onUploadedPath);
   onUploadedPathRef.current = options?.onUploadedPath;
 
   const startFile = useCallback(async (file: File | undefined) => {
-    if (!file) {
+    if (!file || inFlight.current) {
       return;
     }
     const kind = detectPackKind(file.name);
@@ -43,6 +49,7 @@ export function useUploads(options?: {
     setProgress(0);
     const controller = new AbortController();
     abortRef.current = controller;
+    inFlight.current = true;
     try {
       const result = await uploadDocument(file, {
         onProgress: (percent) => setProgress(percent),
@@ -53,10 +60,18 @@ export function useUploads(options?: {
       setDetail(`${result.filename} → ${result.path}`);
       onUploadedPathRef.current?.(result.path, result.filename);
     } catch (error: unknown) {
+      if (controller.signal.aborted) {
+        // Отмена эксперта — не сбой загрузки, красный текст здесь врёт.
+        setStatus("idle");
+        setDetail(null);
+        setProgress(null);
+        return;
+      }
       setStatus("failed");
       setProgress(null);
       setDetail(error instanceof Error ? error.message : UI_COPY.uploadFailed);
     } finally {
+      inFlight.current = false;
       abortRef.current = null;
     }
   }, []);

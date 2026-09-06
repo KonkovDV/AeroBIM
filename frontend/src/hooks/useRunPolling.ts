@@ -27,6 +27,13 @@ export type RunPolling = {
 export const JOB_POLL_INTERVAL_MS = 2000;
 export const JOB_POLL_MAX_INTERVAL_MS = 15_000;
 
+/**
+ * Предел подряд идущих неудачных опросов. Без него ветка .catch планировала
+ * следующий опрос бесконечно: при упавшем бэкенде цикл жил до закрытия вкладки,
+ * а на экране висела первая же ошибка.
+ */
+export const JOB_POLL_MAX_FAILURES = 5;
+
 export function nextJobPollInterval(currentMs: number): number {
   return Math.min(Math.round(currentMs * 1.5), JOB_POLL_MAX_INTERVAL_MS);
 }
@@ -36,6 +43,8 @@ export function useRunPolling(onReportReady?: (reportId: string) => void): RunPo
   const [elapsedSec, setElapsedSec] = useState(0);
   const startedAt = useRef<number | null>(null);
   const notifiedReportId = useRef<string | null>(null);
+  /** job_id, для которого уже заведён отсчёт: иначе таймер продолжает прошлый прогон. */
+  const clockJobId = useRef<string | null>(null);
 
   const jobId = job?.job_id ?? null;
   const jobStatus = job?.status ?? null;
@@ -44,6 +53,12 @@ export function useRunPolling(onReportReady?: (reportId: string) => void): RunPo
   useEffect(() => {
     if (!jobId || terminal) {
       return;
+    }
+    if (clockJobId.current !== jobId) {
+      clockJobId.current = jobId;
+      startedAt.current = Date.now();
+      setElapsedSec(0);
+      notifiedReportId.current = null;
     }
     if (startedAt.current === null) {
       startedAt.current = Date.now();
@@ -75,6 +90,7 @@ export function useRunPolling(onReportReady?: (reportId: string) => void): RunPo
     let cancelled = false;
     let delay = 0;
     let handle = 0;
+    let failures = 0;
     const polledJobId = jobId;
 
     function schedule(): void {
@@ -84,6 +100,9 @@ export function useRunPolling(onReportReady?: (reportId: string) => void): RunPo
             if (cancelled) {
               return;
             }
+            // Опрос снова живой: снимаем прошлую сетевую ошибку, иначе баннер вечен.
+            failures = 0;
+            setPollError(null);
             setJob(snapshot);
             delay = delay === 0 ? JOB_POLL_INTERVAL_MS : nextJobPollInterval(delay);
             if (!TERMINAL_JOB_STATUSES.has(snapshot.status.toLowerCase())) {
@@ -94,7 +113,12 @@ export function useRunPolling(onReportReady?: (reportId: string) => void): RunPo
             if (cancelled) {
               return;
             }
+            failures += 1;
             setPollError(err instanceof Error ? err.message : "Не удалось опросить задание");
+            if (failures >= JOB_POLL_MAX_FAILURES) {
+              // Молчание ≠ успех: оставляем последнюю ошибку на экране и прекращаем цикл.
+              return;
+            }
             delay = delay === 0 ? JOB_POLL_INTERVAL_MS : nextJobPollInterval(delay);
             schedule();
           });
@@ -111,8 +135,10 @@ export function useRunPolling(onReportReady?: (reportId: string) => void): RunPo
   function trackJob(next: AnalyzeJobSnapshot | null, options?: { restartClock?: boolean }): void {
     setJob(next);
     if (options?.restartClock === true) {
+      clockJobId.current = next?.job_id ?? null;
       startedAt.current = Date.now();
       setElapsedSec(0);
+      setPollError(null);
       notifiedReportId.current = null;
     }
   }
