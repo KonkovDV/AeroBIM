@@ -75,6 +75,77 @@ and path-jail percent-decode-to-fixpoint are closed below / in tests. Checkpoint
 
 ## Closed / N/A
 
+### REAL-01 — IFC parsing on main thread → UI freeze on large files — CLOSED
+
+| Field | Value |
+|-------|-------|
+| ID | `REAL-01` |
+| Severity | **HIGH** (closed) |
+| Symptom | `IfcAPI.OpenModel` + `StreamAllMeshes` ran synchronously on the browser main thread. Loading a large IFC file blocked rendering, froze pointer events, and made the entire UI unresponsive for several seconds — the most visible UX defect during a jury demo. |
+| Root cause | `IfcSceneController` instantiated `IfcAPI` (WASM) directly on the main thread. |
+| Fix | Three new files (PR #27, 2026-09-06): `ifc-worker-protocol.ts` (message types), `ifc-parser.worker.ts` (Vite module Worker: Init, OpenModel, StreamAllMeshes, spatial index, element-props cache), updated `ifc-scene.ts` (Worker integration, Transferable typed arrays, synchronous element-props cache via `elementPropsCache` Map). Public API of `IfcSceneController` is unchanged. |
+| Files | `frontend/src/lib/ifc-worker-protocol.ts` (new), `frontend/src/workers/ifc-parser.worker.ts` (new), `frontend/src/lib/ifc-scene.ts` (modified) |
+| Status | Closed 2026-09-06. PR #27. |
+
+### BE-01 — `mark_failed()` not guarded against store exceptions — CLOSED
+
+| Field | Value |
+|-------|-------|
+| ID | `BE-01` |
+| Severity | **MEDIUM** (closed) |
+| Symptom | If the DB/store raised an exception inside `AnalyzeProjectPackageJobRunner.run()` after a domain-level failure, the secondary `mark_failed()` call was unprotected. A DB write error there would propagate to FastAPI's `BackgroundTasks` runner, leaving the job permanently stuck in `RUNNING` until `reclaim_stale_running()` rescued it at the next submit. |
+| Root cause | Missing `try/except` around `self._job_store.mark_failed(job_id, error_msg)` in the exception handler. |
+| Fix | Wrapped `mark_failed` in its own `try/except Exception`; secondary store error is logged separately (with `job_id`, `request_id`, and detail) and does not re-raise, so the outer error path always completes. `reclaim_stale_running` is still the safety net. |
+| File | `backend/src/aerobim/application/use_cases/analyze_project_package_jobs.py` |
+| Status | Closed 2026-09-06. PR #27. |
+
+### BE-02 — Idempotency-Key validated after expensive request build — CLOSED
+
+| Field | Value |
+|-------|-------|
+| ID | `BE-02` |
+| Severity | **LOW** (closed) |
+| Symptom | In `submit_analyze_project_package`, the `Idempotency-Key` header normalization and `≤128 char` validation happened **after** `ctx.build_project_package_request()` — a potentially expensive call that resolves paths, checks IFC file sizes, and validates payload. A malformed key (e.g. 200-char garbage string) incurred the full request-build cost before returning 400. |
+| Root cause | Ordering error in route handler. |
+| Fix | Moved `idem = _normalize_idempotency_key(idempotency_key)` and the length guard `HTTPException(400)` to before the `try` block that calls `build_project_package_request`. |
+| File | `backend/src/aerobim/presentation/http/routes/analyze.py` |
+| Status | Closed 2026-09-06. PR #27. |
+
+### BE-03 — sync `analyze_project_package` missing success log — CLOSED
+
+| Field | Value |
+|-------|-------|
+| ID | `BE-03` |
+| Severity | **LOW** (closed) |
+| Symptom | The synchronous `/v1/analyze/project-package` route never emitted a success log line (e.g. `report_id`), unlike `/v1/validate/ifc` which logged `validate_ifc completed` with `report_id`, `passed`, and `issues`. Operational gaps: no latency-by-`report_id` tracing from logs, no easy success/error ratio baseline. |
+| Fix | Added `logger.info("analyze_project_package completed", report_id=report.report_id)` before the `return` statement, consistent with `validate_ifc`. |
+| File | `backend/src/aerobim/presentation/http/routes/analyze.py` |
+| Status | Closed 2026-09-06. PR #27. |
+
+### REAL-04 — `useCallback([cols])` anti-pattern in `ResizableWorkplace` — CLOSED
+
+| Field | Value |
+|-------|-------|
+| ID | `REAL-04` |
+| Severity | **LOW** (closed) |
+| Symptom | `onResize` was memoised with `[cols]` in its dependency array. Because `cols` is React state that changes on every `setCols` call (i.e. every `pointermove` during a column drag), `useCallback` recreated the function reference on every drag frame. This is worse than not using `useCallback` at all: it adds memoisation overhead without ever producing a stable reference. Any `React.memo`-wrapped child receiving `onResize` as a prop would re-render on every drag event. |
+| Root cause | `onResize` captured `cols` in its closure (to snapshot drag-start state) but that capture was expressed as a `useCallback` dep instead of a ref. |
+| Fix | Added `const colsRef = useRef(cols); colsRef.current = cols;` (sync-in-render ref pattern) and changed `useCallback` deps to `[]`. `onResize` now reads `colsRef.current` at `pointerDown` time for the drag-start snapshot, staying stable for the entire component lifetime. |
+| File | `frontend/src/features/workplace/ResizableWorkplace.tsx` |
+| Status | Closed 2026-09-06. PR #27. |
+
+### REAL-05 — `useAuthBff`: no retry on BFF unavailability — CLOSED
+
+| Field | Value |
+|-------|-------|
+| ID | `REAL-05` |
+| Severity | **LOW** (closed) |
+| Symptom | `useAuthBff` fired a single `fetchAuthBff()` call inside a `void` async IIFE. If the BFF was transiently unavailable (container warm-up, network blip, reverse-proxy not ready), the thrown error was silently swallowed and the hook stayed in `DEFAULT_DISCOVERY` (`NOT_IMPLEMENTED / 501`) permanently for that page load. Auth-gated features appeared broken to the user with no log and no recovery path. |
+| Root cause | No error handling and no retry in the `useEffect` async body. The `void` IIFE suppressed the unhandled-rejection warning as well. |
+| Fix | Extracted `fetchBffWithRetry(signal: AbortSignal)`: 3 attempts with delays `[0, 1000, 3000]` ms. Abort signal checked before each retry so React StrictMode double-invoke and component unmount clean up correctly. On total failure: logs `console.warn` (operator-visible) and returns `DEFAULT_DISCOVERY` for graceful degradation. Replaced `boolean cancelled` flag with `AbortController` for future-proofing (signal-aware fetch helpers). |
+| File | `frontend/src/hooks/useAuthBff.ts` |
+| Status | Closed 2026-09-06. PR #27. |
+
 ### HD19-S3-01 — presigned GET bypasses stream cap — CLOSED
 
 | Field | Value |
