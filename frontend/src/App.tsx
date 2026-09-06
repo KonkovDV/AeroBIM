@@ -1,4 +1,4 @@
-import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, lazy, useCallback, useState } from "react";
 import { getApiBaseUrl } from "./lib/api";
 import { readUrlReportId } from "./lib/report-filters";
 import DemoFixturePanel from "./components/DemoFixturePanel";
@@ -18,7 +18,6 @@ import ErrorBanner from "./features/shell/ErrorBanner";
 import UserScreen from "./features/shell/UserScreen";
 import ViewerPlaceholder from "./features/shell/ViewerPlaceholder";
 import { persistUiRoleAlias, readUiRoleAlias, type UiRoleAlias } from "./lib/ui-role";
-import { scrollExpertWorkplaceIntoView } from "./lib/rehearsal-land";
 import { UI_COPY } from "./lib/ui-copy";
 import { useAuthBff } from "./hooks/useAuthBff";
 import { usePackDraft } from "./hooks/usePackDraft";
@@ -29,13 +28,14 @@ import { useSnapSelectionToFilter } from "./hooks/useSnapSelectionToFilter";
 import { useTriageKeyboard } from "./hooks/useTriageKeyboard";
 import { useFindingFilters } from "./hooks/useFindingFilters";
 import { useTriageView } from "./hooks/useTriageView";
+import { useWorkspaceLanding } from "./hooks/useWorkspaceLanding";
 
 const IfcViewerPanel = lazy(() => import("./components/IfcViewerPanel"));
 export default function App() {
   const [uiRole, setUiRole] = useState<UiRoleAlias>(readUiRoleAlias);
   const authBff = useAuthBff(uiRole);
   const [workspaceView, setWorkspaceView] = useState<WorkspaceView>(() =>
-    readUiRoleAlias() === "user" ? "user" : "review",
+    uiRole === "user" ? "user" : "review",
   );
   const [triageHelpOpen, setTriageHelpOpen] = useState(false);
   const [reportsEpoch, setReportsEpoch] = useState(0);
@@ -72,7 +72,11 @@ export default function App() {
     decideRemark,
   } = useSelectedReport(selectedReportId, reportsEpoch);
   const pack = usePackDraft();
-  const pendingExpertLand = useRef(false);
+  const landing = useWorkspaceLanding({
+    workspaceView,
+    hasReport: selectedReport !== null,
+    setWorkspaceView,
+  });
   const {
     activeIssue,
     filteredIssues,
@@ -104,29 +108,11 @@ export default function App() {
   });
   useSnapSelectionToFilter(filteredIssues, selectedIssueIndex, selectIssue);
 
-  useEffect(() => {
-    if (workspaceView === "remark") {
-      document.getElementById("remark-editor")?.focus();
-    }
-    if (workspaceView === "export") {
-      document.getElementById("export-actions")?.scrollIntoView({ block: "nearest" });
-    }
-    if (pendingExpertLand.current && selectedReport && workspaceView === "review") {
-      pendingExpertLand.current = false;
-      scrollExpertWorkplaceIntoView();
-    }
-  }, [workspaceView, selectedReport]);
-
   function handleSeededReport(reportId: string): void {
-    pendingExpertLand.current = true;
+    landing.landOnExpert();
     setSelectedReportId(reportId);
     setReportsEpoch((value) => value + 1);
     setWorkspaceView("review");
-  }
-
-  function navigateToFindings(): void {
-    setWorkspaceView("review");
-    document.querySelector(".issue-list")?.scrollIntoView({ behavior: "smooth" });
   }
 
   return (
@@ -186,7 +172,7 @@ export default function App() {
           selectedReportId={selectedReportId}
           selectedReport={selectedReport}
           onOpenScreen={setWorkspaceView}
-          onNavigateToFindings={navigateToFindings}
+          onNavigateToFindings={landing.landOnFindings}
         />
       ) : null}
 
@@ -265,7 +251,7 @@ export default function App() {
           onReject={() => {
             void decideActiveRemark("rejected");
           }}
-          onNavigateToFindings={navigateToFindings}
+          onNavigateToFindings={landing.landOnFindings}
           onOpenScreen={setWorkspaceView}
         />
       ) : null}
