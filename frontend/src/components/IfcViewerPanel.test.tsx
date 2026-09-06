@@ -135,6 +135,8 @@ describe("IfcViewerPanel", () => {
     );
     expect(await screen.findByTestId("viewer-overlay-error")).toBeTruthy();
     expect(screen.getByText(UI_COPY.viewerOverWasmCap)).toBeTruthy();
+    const download = screen.getByRole("link", { name: UI_COPY.viewerDownloadIfc });
+    expect(download.getAttribute("href")).toBe(`/v1/reports/${"c".repeat(32)}/source/ifc`);
     expect(loadModelMock).not.toHaveBeenCalled();
   });
 });

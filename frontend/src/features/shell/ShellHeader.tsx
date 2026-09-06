@@ -22,22 +22,25 @@ export default function ShellHeader({
 }: ShellHeaderProps) {
   return (
     <header className="app-header">
-      <div>
-        <p className="eyebrow">{UI_COPY.headerEyebrow}</p>
-        <h1>{UI_COPY.headerTitle}</h1>
-        <p className="lede">
-          {UI_COPY.headerLede.split("summary.passed").map((part, index, parts) =>
-            index < parts.length - 1 ? (
-              <span key={part}>
-                {part}
-                <code>summary.passed</code>
-              </span>
-            ) : (
-              <span key={part}>{part}</span>
-            ),
-          )}
-        </p>
-        <RoleHonestyBanner bffStatus={bffStatus} />
+      <div className="brand-lockup">
+        <span className="brand-mark" aria-hidden="true" />
+        <div className="brand-copy">
+          <p className="eyebrow">{UI_COPY.headerEyebrow}</p>
+          <h1>{UI_COPY.headerTitle}</h1>
+          <p className="lede">
+            {UI_COPY.headerLede.split("summary.passed").map((part, index, parts) =>
+              index < parts.length - 1 ? (
+                <span key={part}>
+                  {part}
+                  <code>summary.passed</code>
+                </span>
+              ) : (
+                <span key={part}>{part}</span>
+              ),
+            )}
+          </p>
+          <RoleHonestyBanner bffStatus={bffStatus} />
+        </div>
       </div>
       <div className="header-card">
         <span>{UI_COPY.apiLabel}</span>

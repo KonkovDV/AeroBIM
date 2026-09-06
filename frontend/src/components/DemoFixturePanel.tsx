@@ -52,7 +52,7 @@ export default function DemoFixturePanel({ onSeeded, hideIntro = false }: DemoFi
       )}
       <button
         type="button"
-        className="toolbar-button"
+        className="toolbar-button toolbar-button-primary"
         aria-label={UI_COPY.demoSeed}
         onClick={() => void seed()}
         disabled={status === "loading"}

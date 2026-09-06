@@ -146,7 +146,7 @@ export default function ExpertWorkplace({
                   <div className="empty-actions">
                     <button
                       type="button"
-                      className="toolbar-button"
+                      className="toolbar-button toolbar-button-primary"
                       onClick={() => onOpenScreen("projects")}
                     >
                       {UI_COPY.openProjects}

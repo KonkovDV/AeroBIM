@@ -1,6 +1,6 @@
 import { useEffect, useEffectEvent, useRef, useState } from "react";
 import type { ValidationReport } from "../lib/types";
-import { fetchReportIfcSource } from "../lib/api";
+import { buildReportIfcSourceUrl, fetchReportIfcSource } from "../lib/api";
 import { IfcSceneController } from "../lib/ifc-scene";
 import { IfcViewerCapError } from "../lib/wasm-cap";
 import type { IfcElementProps, IfcStoreyOption } from "../lib/ifc-element-props";
@@ -42,6 +42,7 @@ export default function IfcViewerPanel({
   const controllerRef = useRef<IfcSceneController | null>(null);
   const [viewerStatus, setViewerStatus] = useState<ViewerStatus>("idle");
   const [viewerError, setViewerError] = useState<string | null>(null);
+  const [viewerCapBlocked, setViewerCapBlocked] = useState(false);
   const [controllerReady, setControllerReady] = useState(false);
   const [isolateSelection, setIsolateSelection] = useState(false);
   const [elementProps, setElementProps] = useState<IfcElementProps | null>(null);
@@ -83,6 +84,7 @@ export default function IfcViewerPanel({
           return;
         }
         setViewerStatus("error");
+        setViewerCapBlocked(false);
         setViewerError(error instanceof Error ? error.message : UI_COPY.viewerInitFailed);
       });
 
@@ -105,6 +107,7 @@ export default function IfcViewerPanel({
       controller.clearModel();
       setViewerStatus("idle");
       setViewerError(null);
+      setViewerCapBlocked(false);
       setStoreys([]);
       setStoreyFilter("");
       setElementProps(null);
@@ -114,6 +117,7 @@ export default function IfcViewerPanel({
     let cancelled = false;
     setViewerStatus("loading");
     setViewerError(null);
+    setViewerCapBlocked(false);
     setIsolateSelection(false);
     setStoreyFilter("");
 
@@ -133,9 +137,11 @@ export default function IfcViewerPanel({
         }
         setViewerStatus("error");
         if (error instanceof IfcViewerCapError) {
+          setViewerCapBlocked(true);
           setViewerError(UI_COPY.viewerOverWasmCap);
           return;
         }
+        setViewerCapBlocked(false);
         setViewerError(error instanceof Error ? error.message : UI_COPY.viewerLoadFailed);
       });
 
@@ -248,8 +254,20 @@ export default function IfcViewerPanel({
           </div>
         )}
         {viewerStatus === "error" && (
-          <div className="viewer-overlay viewer-overlay-error" data-testid="viewer-overlay-error">
+          <div
+            className={`viewer-overlay viewer-overlay-error${viewerCapBlocked ? " viewer-limit-notice" : ""}`}
+            data-testid="viewer-overlay-error"
+          >
             <p>{viewerError ?? UI_COPY.viewerError}</p>
+            {viewerCapBlocked && reportId ? (
+              <a
+                className="toolbar-button toolbar-button-primary"
+                href={buildReportIfcSourceUrl(reportId)}
+                download
+              >
+                {UI_COPY.viewerDownloadIfc}
+              </a>
+            ) : null}
           </div>
         )}
       </div>

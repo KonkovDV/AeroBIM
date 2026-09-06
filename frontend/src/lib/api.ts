@@ -7,7 +7,7 @@ import {
   type AuthBffSession,
 } from "./auth-bff";
 import { aerobimCsrfHeaders } from "./csrf";
-import { WASM_IFC_VIEWER_CAP_BYTES, assertFitsIfcViewerCap } from "./wasm-cap";
+import { WASM_IFC_VIEWER_CAP_BYTES, IfcViewerCapError, assertFitsIfcViewerCap } from "./wasm-cap";
 
 export type ReportListFilters = {
   project?: string;
@@ -70,13 +70,54 @@ async function readJson<T>(url: string, init?: { signal?: AbortSignal }): Promis
   return (await response.json()) as T;
 }
 
+function concatBytes(chunks: Uint8Array[], total: number): Uint8Array {
+  const out = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    out.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return out;
+}
+
+async function readBodyUpTo(
+  response: Response,
+  maxBytes: number,
+  controller: AbortController,
+): Promise<Uint8Array> {
+  if (!response.body) {
+    const bytes = new Uint8Array(await response.arrayBuffer());
+    assertFitsIfcViewerCap(bytes.byteLength);
+    return bytes;
+  }
+  const reader = response.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) {
+      break;
+    }
+    total += value.byteLength;
+    if (total > maxBytes) {
+      await reader.cancel();
+      controller.abort();
+      throw new IfcViewerCapError();
+    }
+    chunks.push(value);
+  }
+  return concatBytes(chunks, total);
+}
+
 async function readBytes(
   url: string,
   options?: { maxBytes?: number },
 ): Promise<{ bytes: Uint8Array; contentType: string | null }> {
+  const controller = new AbortController();
   const response = await fetch(url, {
     headers: authHeaders({ Accept: "*/*" }),
     credentials: "include",
+    signal: controller.signal,
   });
   if (!response.ok) {
     throwForFailedResponse(response);
@@ -84,15 +125,16 @@ async function readBytes(
   if (options?.maxBytes != null) {
     const declared = Number(response.headers.get("content-length"));
     if (Number.isFinite(declared) && declared > options.maxBytes) {
-      assertFitsIfcViewerCap(declared);
+      controller.abort();
+      throw new IfcViewerCapError();
     }
-  }
-  const bytes = new Uint8Array(await response.arrayBuffer());
-  if (options?.maxBytes != null) {
-    assertFitsIfcViewerCap(bytes.byteLength);
+    return {
+      bytes: await readBodyUpTo(response, options.maxBytes, controller),
+      contentType: response.headers.get("Content-Type"),
+    };
   }
   return {
-    bytes,
+    bytes: new Uint8Array(await response.arrayBuffer()),
     contentType: response.headers.get("Content-Type"),
   };
 }

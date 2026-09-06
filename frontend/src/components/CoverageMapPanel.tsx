@@ -116,25 +116,29 @@ export default function CoverageMapPanel({
     );
   }
 
+  const emptySources = map.sources.length === 0;
+
   return (
     <section className="coverage-map" data-testid="coverage-map">
       <div className="coverage-map-header">
         <h3>{UI_COPY.covTitle}</h3>
-        <p className="compact-copy">{UI_COPY.covBody}</p>
-        <label className="coverage-filter">
-          {UI_COPY.covFilter}
-          <select
-            data-testid="coverage-status-filter"
-            value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value as FilterValue)}
-          >
-            {FILTER_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
-        </label>
+        <p className="compact-copy">{emptySources ? UI_COPY.covNoSources : UI_COPY.covBody}</p>
+        {emptySources ? null : (
+          <label className="coverage-filter">
+            {UI_COPY.covFilter}
+            <select
+              data-testid="coverage-status-filter"
+              value={statusFilter}
+              onChange={(event) => setStatusFilter(event.target.value as FilterValue)}
+            >
+              {FILTER_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
       </div>
 
       {map.tz_gaps && map.tz_gaps.length > 0 && (
@@ -171,7 +175,7 @@ export default function CoverageMapPanel({
         </ul>
       )}
 
-      {filteredSources.length === 0 ? (
+      {emptySources ? null : filteredSources.length === 0 ? (
         <p className="compact-copy">{UI_COPY.covEmptyFilter}</p>
       ) : (
         <table className="coverage-table">

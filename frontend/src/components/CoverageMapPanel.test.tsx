@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { CheckCoverageMap } from "../lib/api";
+import { UI_COPY } from "../lib/ui-copy";
 import CoverageMapPanel from "./CoverageMapPanel";
 
 const { fetchReportCoverageMock } = vi.hoisted(() => ({
@@ -176,5 +177,20 @@ describe("CoverageMapPanel", () => {
     fetchReportCoverageMock.mockResolvedValue(buildMap());
     render(<CoverageMapPanel reportId={"r".repeat(32)} />);
     await screen.findByText(/no MEP discipline package/i);
+  });
+
+  it("does not render an empty coverage table as success", async () => {
+    fetchReportCoverageMock.mockResolvedValue(buildMap({ sources: [], tz_gaps: [] }));
+    render(<CoverageMapPanel reportId={"r".repeat(32)} />);
+    expect(await screen.findByText(UI_COPY.covNoSources)).toBeTruthy();
+    expect(screen.queryByRole("table")).toBeNull();
+  });
+
+  it("keeps TZ-gap rows when sources are empty", async () => {
+    fetchReportCoverageMock.mockResolvedValue(buildMap({ sources: [] }));
+    render(<CoverageMapPanel reportId={"r".repeat(32)} />);
+    expect(await screen.findByText(UI_COPY.covNoSources)).toBeTruthy();
+    expect(screen.getByTestId("coverage-tz-gaps")).toBeTruthy();
+    expect(screen.queryByText("model.ifc")).toBeNull();
   });
 });

@@ -30,4 +30,9 @@ describe("review shell html security", () => {
     expect(viteConfig).toContain("wasm-unsafe-eval");
     expect(viteConfig).toContain("aerobim-html-security");
   });
+
+  it("allows Vite's injected style tag in DEV_CSP only", () => {
+    expect(viteConfig).toMatch(/style-src 'self' 'unsafe-inline'/);
+    expect(html).not.toMatch(/style-src 'self' 'unsafe-inline'/);
+  });
 });

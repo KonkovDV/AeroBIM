@@ -213,6 +213,7 @@ export const RU_COPY = {
   viewerLoadFailed: "Не удалось загрузить IFC выбранного отчёта.",
   viewerOverWasmCap:
     "Модель больше 256 МиБ. Вьюер не открывает её во вкладке. Дальше — диск на сервере. Это ошибка вьюера, не вердикт комплекта.",
+  viewerDownloadIfc: "Скачать IFC без открытия во вьюере",
   viewerReport: (id: string) => `Отчёт ${id}`,
   viewerStatusIdle: "ожидание",
   viewerStatusInitializing: "инициализация",
@@ -504,6 +505,8 @@ export const RU_COPY = {
   covColStatus: "Статус",
   covColReason: "Причина",
   covEmptyFilter: "Нет строк для выбранного фильтра.",
+  covNoSources:
+    "В карте покрытия нет источников. Пустая таблица не успех и не вердикт комплекта.",
   covColSource: "Источник",
   covFindingsLink: (op: string) => `${op} → находки`,
   runStart: "Запустить анализ",
