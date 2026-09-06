@@ -1,26 +1,41 @@
+/**
+ * IfcSceneController — Three.js viewer controller (REAL-01 refactor).
+ *
+ * All web-ifc / WASM work (OpenModel, StreamAllMeshes, storey indexing,
+ * element-props extraction) now runs inside ifc-parser.worker.ts.
+ *
+ * Main-thread responsibilities:
+ *   • Three.js scene, meshes, camera, controls, ResizeObserver
+ *   • Receiving geometry batches via postMessage (Transferable, zero-copy)
+ *   • Synchronous GUID → expressId lookup via elementPropsCache
+ *   • Selection highlight, storey filter, camera framing
+ *
+ * Public API is 100% backward-compatible with IfcViewerPanel.tsx:
+ *   init(), loadModel(), clearModel(), setSelectedGuids(),
+ *   setIsolateSelection(), listStoreys(), setStoreyFilter(),
+ *   getElementProps(), resetView(), dispose()
+ */
+
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { IfcAPI, IFCBUILDINGSTOREY, IFCRELCONTAINEDINSPATIALSTRUCTURE, type FlatMesh, type PlacedGeometry } from "web-ifc";
 import webIfcWasmUrl from "web-ifc/web-ifc.wasm?url";
-import { maxIndexValue } from "./typed-array-max";
 import { assertFitsIfcViewerCap } from "./wasm-cap";
-import {
-  indexContainedInStorey,
-  iterateIdVector,
-  unwrapString,
-  type IfcElementProps,
-  type IfcStoreyOption,
-  type SpatialRelationLine,
+import type {
+  IfcElementProps,
+  IfcStoreyOption,
 } from "./ifc-element-props";
+import type {
+  SerializedMesh,
+  WorkerInMsg,
+  WorkerOutMsg,
+} from "./ifc-worker-protocol";
 
-function getVertexStride(vertices: Float32Array, indices: Uint32Array): number {
-  if (indices.length === 0) {
-    return 6;
-  }
-  const vertexCount = maxIndexValue(indices) + 1;
-  const stride = vertices.length / vertexCount;
-  return Number.isInteger(stride) && stride >= 3 ? stride : 6;
-}
+// Vite resolves the worker URL and bundles it as a separate chunk.
+// Using new URL(…) is the only form Vite understands for module workers.
+const createIfcWorker = (): Worker =>
+  new Worker(new URL("../workers/ifc-parser.worker.ts", import.meta.url), {
+    type: "module",
+  });
 
 function expandSelectionBox(meshes: THREE.Mesh[]): THREE.Box3 {
   const box = new THREE.Box3();
@@ -31,6 +46,7 @@ function expandSelectionBox(meshes: THREE.Mesh[]): THREE.Box3 {
 }
 
 export class IfcSceneController {
+  // ─ Three.js ───────────────────────────────────────────────────────────────
   private readonly container: HTMLElement;
   private readonly renderer: THREE.WebGLRenderer;
   private readonly scene: THREE.Scene;
@@ -39,15 +55,28 @@ export class IfcSceneController {
   private readonly modelRoot = new THREE.Group();
   private readonly resizeObserver: ResizeObserver;
   private animationHandle: number | null = null;
-  private ifcApi: IfcAPI | null = null;
-  private modelId: number | null = null;
+  private readonly reducedMotion: boolean;
+
+  // ─ Selection state ─────────────────────────────────────────────────────
   private selectedExpressIds: number[] = [];
   private isolateSelection = false;
   private readonly expressMeshes = new Map<number, THREE.Mesh[]>();
-  private readonly reducedMotion: boolean;
   private storeyVisibleIds: Set<number> | null = null;
+
+  // ─ Spatial / element data (populated from Worker) ───────────────────────
   private storeys: IfcStoreyOption[] = [];
   private elementToStorey = new Map<number, number>();
+  /**
+   * GUID → IfcElementProps cache built during LOAD_MODEL (Phase 3).
+   * Allows getElementProps() to remain synchronous after the model is loaded.
+   */
+  private readonly elementPropsCache = new Map<string, IfcElementProps>();
+
+  // ─ Worker ───────────────────────────────────────────────────────────────
+  private worker: Worker | null = null;
+  private workerReady = false;
+  private pendingInit: { resolve: () => void; reject: (e: Error) => void } | null = null;
+  private pendingLoad: { resolve: () => void; reject: (e: Error) => void } | null = null;
 
   constructor(container: HTMLElement) {
     this.container = container;
@@ -87,65 +116,78 @@ export class IfcSceneController {
     this.resize();
   }
 
+  // ─────────────────────────────────────────────────────────────────────────────────
+  // Public API
+  // ─────────────────────────────────────────────────────────────────────────────────
+
+  /**
+   * Initialise the IFC Worker and WASM runtime.
+   * Idempotent: safe to call multiple times. Awaits Worker INIT_OK.
+   */
   async init(): Promise<void> {
-    if (this.ifcApi !== null) {
+    if (this.workerReady) {
       return;
     }
-    const ifcApi = new IfcAPI();
-    await ifcApi.Init((path, prefix) => (path.endsWith(".wasm") ? webIfcWasmUrl : `${prefix}${path}`), true);
-    this.ifcApi = ifcApi;
+    await new Promise<void>((resolve, reject) => {
+      this.pendingInit = { resolve, reject };
+      const worker = createIfcWorker();
+      this.worker = worker;
+
+      worker.onmessage = (event: MessageEvent<WorkerOutMsg>) => {
+        this.handleWorkerMessage(event.data);
+      };
+      worker.onerror = (event: ErrorEvent) => {
+        const error = new Error(
+          event.message || "IFC Worker failed to start",
+        );
+        this.pendingInit?.reject(error);
+        this.pendingInit = null;
+        this.pendingLoad?.reject(error);
+        this.pendingLoad = null;
+      };
+
+      this.postWorkerMsg({ type: "INIT", wasmUrl: webIfcWasmUrl });
+    });
     this.startRenderLoop();
   }
 
+  /**
+   * Load an IFC model. Transfers the ArrayBuffer to the Worker (zero-copy).
+   * Resolves when LOAD_COMPLETE is received (all mesh batches + props cached).
+   */
   async loadModel(ifcBytes: Uint8Array): Promise<void> {
     await this.init();
-    this.clearModel();
+    this.clearThreeJsModel();
     assertFitsIfcViewerCap(ifcBytes.byteLength);
 
-    const ifcApi = this.ifcApi;
-    if (ifcApi === null) {
-      throw new Error("IFC API was not initialized.");
-    }
+    // Slice to get an independently-owned buffer before transferring.
+    const buffer = ifcBytes.buffer.slice(
+      ifcBytes.byteOffset,
+      ifcBytes.byteOffset + ifcBytes.byteLength,
+    );
 
-    const modelId = ifcApi.OpenModel(ifcBytes, {
-      COORDINATE_TO_ORIGIN: true,
-      // Cap WASM IFC memory (RTATOM-F07); aligned with backend default 256 MiB.
-      MEMORY_LIMIT: 256 * 1024 * 1024,
+    return new Promise<void>((resolve, reject) => {
+      this.pendingLoad = { resolve, reject };
+      this.postWorkerMsg(
+        { type: "LOAD_MODEL", buffer, memoryLimit: 256 * 1024 * 1024 },
+        [buffer],
+      );
     });
-    if (modelId < 0) {
-      throw new Error("web-ifc failed to open the selected model.");
-    }
-    this.modelId = modelId;
-
-    ifcApi.StreamAllMeshes(modelId, (flatMesh) => {
-      this.addFlatMesh(modelId, flatMesh);
-      flatMesh.delete();
-    });
-
-    this.rebuildSpatialIndex();
-    this.fitCameraToBox(new THREE.Box3().setFromObject(this.modelRoot));
   }
 
+  /**
+   * Clear the current model.
+   * Three.js state is reset synchronously; Worker CloseModel is fire-and-forget.
+   */
   clearModel(): void {
-    if (this.ifcApi !== null && this.modelId !== null) {
-      this.ifcApi.CloseModel(this.modelId);
-    }
-    this.modelId = null;
-    this.selectedExpressIds = [];
-    this.isolateSelection = false;
-    this.expressMeshes.clear();
-    this.storeyVisibleIds = null;
-    this.storeys = [];
-    this.elementToStorey.clear();
-
-    for (const child of [...this.modelRoot.children]) {
-      this.disposeObject(child);
-      this.modelRoot.remove(child);
-    }
+    this.clearThreeJsModel();
+    // Fire-and-forget — Worker handles CloseModel at the start of the next
+    // LOAD_MODEL anyway, so CLEAR_MODEL is mostly for explicit idle resets.
+    this.postWorkerMsg({ type: "CLEAR_MODEL" });
   }
 
   setSelectedGuids(guids: readonly string[]): void {
-    if (this.ifcApi === null || this.modelId === null || guids.length === 0) {
+    if (guids.length === 0) {
       this.selectedExpressIds = [];
       this.applySelectionState();
       return;
@@ -153,11 +195,13 @@ export class IfcSceneController {
 
     const nextSelection: number[] = [];
     const seen = new Set<number>();
+
     for (const guid of guids) {
-      const expressId = this.ifcApi.GetExpressIdFromGuid(this.modelId, guid);
-      if (typeof expressId === "number" && expressId >= 0 && !seen.has(expressId)) {
-        seen.add(expressId);
-        nextSelection.push(expressId);
+      // Synchronous O(1) lookup — no IfcAPI round-trip needed.
+      const cached = this.elementPropsCache.get(guid);
+      if (cached !== undefined && !seen.has(cached.expressId)) {
+        seen.add(cached.expressId);
+        nextSelection.push(cached.expressId);
       }
     }
 
@@ -192,33 +236,16 @@ export class IfcSceneController {
     this.applySelectionState();
   }
 
+  /**
+   * Returns element props synchronously from the in-memory cache.
+   * Cache is populated during LOAD_MODEL (Worker Phase 3).
+   * Returns null before the model is loaded or if GUID is unknown.
+   */
   getElementProps(guid: string | null | undefined): IfcElementProps | null {
-    if (!guid || this.ifcApi === null || this.modelId === null) {
+    if (!guid) {
       return null;
     }
-    const expressId = this.ifcApi.GetExpressIdFromGuid(this.modelId, guid);
-    if (typeof expressId !== "number" || expressId < 0) {
-      return null;
-    }
-    let typeName = "";
-    let name: string | null = null;
-    try {
-      const typeCode = this.ifcApi.GetLineType(this.modelId, expressId);
-      typeName = this.ifcApi.GetNameFromTypeCode(typeCode) || "";
-      const line = this.ifcApi.GetLine(this.modelId, expressId) as { Name?: unknown };
-      name = unwrapString(line?.Name);
-    } catch {
-      typeName = "";
-    }
-    const storeyId = this.elementToStorey.get(expressId) ?? null;
-    const storey = storeyId === null ? null : (this.storeys.find((row) => row.expressId === storeyId) ?? null);
-    return {
-      guid,
-      expressId,
-      typeName: typeName || "IFC",
-      name,
-      storeyName: storey?.name ?? null,
-    };
+    return this.elementPropsCache.get(guid) ?? null;
   }
 
   resetView(): void {
@@ -230,7 +257,7 @@ export class IfcSceneController {
   }
 
   dispose(): void {
-    this.clearModel();
+    this.clearThreeJsModel();
     this.stopRenderLoop();
     this.controls.removeEventListener("change", this.renderOnce);
     this.resizeObserver.disconnect();
@@ -239,68 +266,140 @@ export class IfcSceneController {
     if (this.renderer.domElement.parentElement === this.container) {
       this.container.removeChild(this.renderer.domElement);
     }
-    if (this.ifcApi !== null) {
-      this.ifcApi.Dispose();
-      this.ifcApi = null;
+    if (this.worker !== null) {
+      this.worker.terminate();
+      this.worker = null;
+    }
+    this.workerReady = false;
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────────
+  // Private — Worker communication
+  // ─────────────────────────────────────────────────────────────────────────────────
+
+  private postWorkerMsg(msg: WorkerInMsg, transfer?: Transferable[]): void {
+    if (this.worker === null) return;
+    if (transfer && transfer.length > 0) {
+      this.worker.postMessage(msg, transfer);
+    } else {
+      this.worker.postMessage(msg);
     }
   }
 
-  private addFlatMesh(modelId: number, flatMesh: FlatMesh): void {
-    const placedGeometries = flatMesh.geometries;
-    const expressId = flatMesh.expressID;
+  private handleWorkerMessage(msg: WorkerOutMsg): void {
+    switch (msg.type) {
+      case "INIT_OK":
+        this.workerReady = true;
+        this.pendingInit?.resolve();
+        this.pendingInit = null;
+        break;
 
-    for (let index = 0; index < placedGeometries.size(); index += 1) {
-      const placedGeometry = placedGeometries.get(index);
-      const mesh = this.createMeshFromGeometry(modelId, expressId, placedGeometry);
-      this.modelRoot.add(mesh);
+      case "INIT_ERROR": {
+        const initErr = new Error(msg.message);
+        this.pendingInit?.reject(initErr);
+        this.pendingInit = null;
+        break;
+      }
 
-      const existingMeshes = this.expressMeshes.get(expressId) ?? [];
-      existingMeshes.push(mesh);
-      this.expressMeshes.set(expressId, existingMeshes);
-    }
-  }
+      case "MESH_BATCH":
+        for (const serialized of msg.meshes) {
+          this.addSerializedMesh(serialized);
+        }
+        // Render after each batch for progressive display.
+        this.renderOnce();
+        break;
 
-  private createMeshFromGeometry(modelId: number, expressId: number, placedGeometry: PlacedGeometry): THREE.Mesh {
-    const ifcApi = this.ifcApi;
-    if (ifcApi === null) {
-      throw new Error("IFC API is unavailable during geometry creation.");
-    }
+      case "SPATIAL_INDEX":
+        this.storeys = msg.storeys;
+        this.elementToStorey = new Map(msg.elementToStorey);
+        break;
 
-    const ifcGeometry = ifcApi.GetGeometry(modelId, placedGeometry.geometryExpressID);
-    const vertices = ifcApi.GetVertexArray(ifcGeometry.GetVertexData(), ifcGeometry.GetVertexDataSize());
-    const indices = ifcApi.GetIndexArray(ifcGeometry.GetIndexData(), ifcGeometry.GetIndexDataSize());
-    const stride = getVertexStride(vertices, indices);
-    const vertexCount = Math.floor(vertices.length / stride);
+      case "ELEMENT_PROPS_CACHE": {
+        this.elementPropsCache.clear();
+        for (const [expressId, guid, typeName, name] of msg.entries) {
+          const storeyId = this.elementToStorey.get(expressId) ?? null;
+          const storey =
+            storeyId === null
+              ? null
+              : (this.storeys.find((s) => s.expressId === storeyId) ?? null);
+          this.elementPropsCache.set(guid, {
+            guid,
+            expressId,
+            typeName: typeName || "IFC",
+            name,
+            storeyName: storey?.name ?? null,
+          });
+        }
+        break;
+      }
 
-    const positions = new Float32Array(vertexCount * 3);
-    const normals = new Float32Array(vertexCount * 3);
-    for (let vertexIndex = 0; vertexIndex < vertexCount; vertexIndex += 1) {
-      const sourceOffset = vertexIndex * stride;
-      const targetOffset = vertexIndex * 3;
-      positions[targetOffset] = vertices[sourceOffset];
-      positions[targetOffset + 1] = vertices[sourceOffset + 1];
-      positions[targetOffset + 2] = vertices[sourceOffset + 2];
-      if (stride >= 6) {
-        normals[targetOffset] = vertices[sourceOffset + 3];
-        normals[targetOffset + 1] = vertices[sourceOffset + 4];
-        normals[targetOffset + 2] = vertices[sourceOffset + 5];
+      case "LOAD_COMPLETE":
+        this.fitCameraToBox(new THREE.Box3().setFromObject(this.modelRoot));
+        this.pendingLoad?.resolve();
+        this.pendingLoad = null;
+        break;
+
+      case "LOAD_ERROR": {
+        const loadErr = new Error(msg.message);
+        this.pendingLoad?.reject(loadErr);
+        this.pendingLoad = null;
+        break;
+      }
+
+      case "CLEAR_OK":
+        // Nothing to do — Three.js was already cleared synchronously.
+        break;
+
+      case "WORKER_ERROR": {
+        const workerErr = new Error(msg.message);
+        this.pendingInit?.reject(workerErr);
+        this.pendingInit = null;
+        this.pendingLoad?.reject(workerErr);
+        this.pendingLoad = null;
+        break;
+      }
+
+      default: {
+        // TypeScript exhaustive check.
+        const _exhaustive: never = msg;
+        console.warn("[IfcSceneController] unknown worker message", _exhaustive);
       }
     }
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────────
+  // Private — Three.js mesh creation from serialized Worker data
+  // ─────────────────────────────────────────────────────────────────────────────────
+
+  private addSerializedMesh(data: SerializedMesh): void {
+    const {
+      expressId,
+      positions,
+      normals,
+      indices,
+      colorR,
+      colorG,
+      colorB,
+      colorA,
+      flatTransformation,
+    } = data;
 
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-    if (stride >= 6) {
+
+    // Use transferred normals if non-zero, otherwise compute.
+    if (normals.some((v) => v !== 0)) {
       geometry.setAttribute("normal", new THREE.BufferAttribute(normals, 3));
     } else {
       geometry.computeVertexNormals();
     }
     geometry.setIndex(new THREE.BufferAttribute(indices, 1));
 
-    const baseColor = new THREE.Color(placedGeometry.color.x, placedGeometry.color.y, placedGeometry.color.z);
+    const baseColor = new THREE.Color(colorR, colorG, colorB);
     const material = new THREE.MeshStandardMaterial({
       color: baseColor,
-      transparent: placedGeometry.color.w < 1,
-      opacity: placedGeometry.color.w,
+      transparent: colorA < 1,
+      opacity: colorA,
       metalness: 0.05,
       roughness: 0.9,
       side: THREE.DoubleSide,
@@ -308,16 +407,36 @@ export class IfcSceneController {
 
     const mesh = new THREE.Mesh(geometry, material);
     const matrix = new THREE.Matrix4();
-    matrix.fromArray(placedGeometry.flatTransformation);
+    matrix.fromArray(flatTransformation);
     mesh.matrix.copy(matrix);
     mesh.matrixAutoUpdate = false;
-    mesh.userData = {
-      expressId,
-      baseColor,
-    };
+    mesh.userData = { expressId, baseColor };
 
-    ifcGeometry.delete();
-    return mesh;
+    this.modelRoot.add(mesh);
+
+    const existing = this.expressMeshes.get(expressId) ?? [];
+    existing.push(mesh);
+    this.expressMeshes.set(expressId, existing);
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────────
+  // Private — Three.js scene management
+  // ─────────────────────────────────────────────────────────────────────────────────
+
+  /** Synchronously clear all Three.js model state. Does NOT touch the Worker. */
+  private clearThreeJsModel(): void {
+    this.selectedExpressIds = [];
+    this.isolateSelection = false;
+    this.expressMeshes.clear();
+    this.storeyVisibleIds = null;
+    this.storeys = [];
+    this.elementToStorey.clear();
+    this.elementPropsCache.clear();
+
+    for (const child of [...this.modelRoot.children]) {
+      this.disposeObject(child);
+      this.modelRoot.remove(child);
+    }
   }
 
   private applySelectionState(): void {
@@ -330,7 +449,11 @@ export class IfcSceneController {
         const material = mesh.material as THREE.MeshStandardMaterial;
         const baseColor = mesh.userData.baseColor as THREE.Color;
         material.color.copy(baseColor);
-        material.emissive.set(isSelected ? selectionPalette[selectionIndex % selectionPalette.length] : "#000000");
+        material.emissive.set(
+          isSelected
+            ? selectionPalette[selectionIndex % selectionPalette.length]
+            : "#000000",
+        );
         material.emissiveIntensity = isSelected ? 0.6 : 0;
         mesh.visible = this.isMeshVisible(expressId, isSelected);
       }
@@ -339,7 +462,11 @@ export class IfcSceneController {
   }
 
   private isMeshVisible(expressId: number, isSelected: boolean): boolean {
-    if (this.isolateSelection && this.selectedExpressIds.length > 0 && !isSelected) {
+    if (
+      this.isolateSelection &&
+      this.selectedExpressIds.length > 0 &&
+      !isSelected
+    ) {
       return false;
     }
     if (this.storeyVisibleIds === null) {
@@ -348,42 +475,10 @@ export class IfcSceneController {
     return this.storeyVisibleIds.has(expressId);
   }
 
-  private rebuildSpatialIndex(): void {
-    this.storeys = [];
-    this.elementToStorey.clear();
-    this.storeyVisibleIds = null;
-    if (this.ifcApi === null || this.modelId === null) {
-      return;
-    }
-    const storeyIds = iterateIdVector(this.ifcApi.GetLineIDsWithType(this.modelId, IFCBUILDINGSTOREY));
-    const storeySet = new Set(storeyIds);
-    for (const expressId of storeyIds) {
-      let name: string | null = null;
-      let guid: string | null = null;
-      try {
-        const line = this.ifcApi.GetLine(this.modelId, expressId) as { Name?: unknown; GlobalId?: unknown };
-        name = unwrapString(line?.Name);
-        guid = unwrapString(line?.GlobalId);
-      } catch {
-        name = null;
-      }
-      this.storeys.push({ expressId, name, guid });
-    }
-    const relationIds = iterateIdVector(
-      this.ifcApi.GetLineIDsWithType(this.modelId, IFCRELCONTAINEDINSPATIALSTRUCTURE),
-    );
-    const relations: SpatialRelationLine[] = relationIds.map((id) => {
-      try {
-        return this.ifcApi!.GetLine(this.modelId!, id) as SpatialRelationLine;
-      } catch {
-        return {};
-      }
-    });
-    this.elementToStorey = indexContainedInStorey(relations, storeySet);
-  }
-
   private frameExpressIds(expressIds: readonly number[]): void {
-    const meshes = expressIds.flatMap((expressId) => this.expressMeshes.get(expressId) ?? []);
+    const meshes = expressIds.flatMap(
+      (expressId) => this.expressMeshes.get(expressId) ?? [],
+    );
     if (meshes.length === 0) {
       return;
     }
@@ -397,10 +492,13 @@ export class IfcSceneController {
     const center = box.getCenter(new THREE.Vector3());
     const size = box.getSize(new THREE.Vector3());
     const maxDimension = Math.max(size.x, size.y, size.z, 1);
-    const distance = (maxDimension * 1.5) / Math.tan((Math.PI * this.camera.fov) / 360);
+    const distance =
+      (maxDimension * 1.5) / Math.tan((Math.PI * this.camera.fov) / 360);
     const direction = new THREE.Vector3(1, 0.85, 1).normalize();
 
-    this.camera.position.copy(center.clone().add(direction.multiplyScalar(distance)));
+    this.camera.position.copy(
+      center.clone().add(direction.multiplyScalar(distance)),
+    );
     this.camera.near = Math.max(distance / 1000, 0.1);
     this.camera.far = Math.max(distance * 20, 1000);
     this.camera.updateProjectionMatrix();
