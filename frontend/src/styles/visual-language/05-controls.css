@@ -1,0 +1,211 @@
+/* --- Полосы инструментов --- */
+
+.report-toolbar,
+.issue-toolbar,
+.viewer-toolbar,
+.drawing-zoom-toolbar,
+.remark-actions,
+.export-actions,
+.empty-actions,
+.report-filters,
+.report-presets,
+.remark-tz-fields,
+.expert-pack-bar,
+.pack-switcher {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--vl-space-2);
+  padding: var(--vl-space-3) var(--vl-space-4);
+}
+
+.report-filters,
+.report-presets,
+.drawing-zoom-toolbar {
+  background: var(--vl-sunken);
+  border-bottom: 1px solid var(--vl-line);
+}
+
+/* --- Поля ввода --- */
+
+input[type="text"],
+input[type="search"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+select,
+textarea,
+.search-input,
+.filter-input,
+.filter-select,
+.report-search-input,
+.issue-search,
+.issue-priority,
+.coverage-filter,
+.preset-scope-select,
+.remark-editor {
+  font: inherit;
+  font-size: var(--vl-text-sm);
+  color: var(--vl-text);
+  background: var(--vl-surface);
+  border: 1px solid var(--vl-line-control);
+  border-radius: var(--vl-radius-sm);
+  padding: var(--vl-space-2) var(--vl-space-3);
+  transition: border-color var(--vl-dur-fast) var(--vl-ease);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--vl-text-muted);
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+  border-color: var(--vl-n500);
+}
+
+.search-input,
+.report-search-input,
+.issue-search,
+.filter-input {
+  flex: 1 1 180px;
+  min-width: 0;
+}
+
+.remark-editor {
+  width: 100%;
+  min-height: 96px;
+  resize: vertical;
+  line-height: var(--vl-leading-normal);
+}
+
+/* --- Кнопки --- */
+
+.toolbar-button,
+.viewer-button,
+.drawing-region-button,
+.report-group-toggle,
+.preset-file-upload {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--vl-space-2);
+  padding: var(--vl-space-2) var(--vl-space-3);
+  font: inherit;
+  font-size: var(--vl-text-sm);
+  font-weight: 500;
+  color: var(--vl-text-secondary);
+  background: var(--vl-surface);
+  border: 1px solid var(--vl-line-control);
+  border-radius: var(--vl-radius-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--vl-dur-fast) var(--vl-ease),
+    border-color var(--vl-dur-fast) var(--vl-ease),
+    color var(--vl-dur-fast) var(--vl-ease);
+}
+
+.toolbar-button:hover,
+.viewer-button:hover,
+.drawing-region-button:hover,
+.report-group-toggle:hover,
+.preset-file-upload:hover {
+  background: var(--vl-sunken);
+  color: var(--vl-text);
+}
+
+/* Два класса в селекторе обязательны: иначе контекстное правило базового слоя
+   перебивает заливку, и главная кнопка выглядит по-разному в разных полосах. */
+.toolbar-button.toolbar-button-primary {
+  background: var(--vl-accent);
+  border-color: var(--vl-accent);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.toolbar-button.toolbar-button-primary:hover {
+  background: var(--vl-accent-hover);
+  border-color: var(--vl-accent-hover);
+  color: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  .toolbar-button.toolbar-button-primary,
+  .toolbar-button.toolbar-button-primary:hover {
+    background: var(--vl-blue300);
+    border-color: var(--vl-blue300);
+    color: #0c1119;
+  }
+}
+
+.toolbar-button[disabled],
+.viewer-button[disabled],
+.drawing-region-button[disabled],
+.preset-file-upload[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.toolbar-button[aria-pressed="true"],
+.viewer-button[aria-pressed="true"],
+.drawing-region-button[aria-pressed="true"] {
+  background: var(--vl-accent-soft);
+  border-color: var(--vl-accent);
+  color: var(--vl-accent-hover);
+  font-weight: 600;
+}
+
+button.linkish,
+.coverage-findings-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: inherit;
+  color: var(--vl-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+  cursor: pointer;
+}
+
+button.linkish:hover,
+.coverage-findings-link:hover {
+  color: var(--vl-accent-hover);
+  text-decoration-thickness: 2px;
+}
+
+/* --- Фокус ---
+   Двухцветное кольцо по методике W3C C40: внутренний контур цвета
+   поверхности отделяет акцентное кольцо от любого фона, поэтому оно
+   видно и на белом, и на голубой выделенной карточке.
+   Прозрачный outline оставлен специально: в режиме принудительных
+   цветов тени не рисуются, а обводка остаётся. */
+:is(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow:
+    0 0 0 2px var(--vl-surface),
+    0 0 0 4px var(--vl-accent);
+}
+
+.report-card:focus-visible,
+.issue-card:focus-visible,
+.collection-card:focus-visible {
+  box-shadow:
+    0 0 0 2px var(--vl-surface),
+    0 0 0 4px var(--vl-accent);
+}
+
+/* --- Движение --- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
