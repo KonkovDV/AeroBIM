@@ -15,7 +15,7 @@ import {
   type PackDraft,
 } from "../lib/pack-draft";
 import { appendRunJournal, readRunJournal, type RunJournalEntry } from "../lib/run-journal";
-import { formatMmss, TERMINAL_JOB_STATUSES, useRunPolling } from "../hooks/useRunPolling";
+import { formatMmss, TERMINAL_JOB_STATUSES, useRunPolling, type RunPolling } from "../hooks/useRunPolling";
 
 export type AnalyzeRunPanelProps = {
   ifcPath: string | null;
@@ -26,6 +26,8 @@ export type AnalyzeRunPanelProps = {
   capabilities?: ReportCapabilities | null;
   /** report_id, которому принадлежат capabilities; иначе матрица прошлого отчёта скрыта. */
   capabilitiesReportId?: string | null;
+  /** Поднятый опрос из App: F5 восстанавливает job_id. Без пропа хук живёт в панели. */
+  polling?: RunPolling;
 };
 
 function capabilitiesForActiveJob(
@@ -130,10 +132,12 @@ export default function AnalyzeRunPanel({
   onContinueToExpert,
   capabilities,
   capabilitiesReportId,
+  polling,
 }: AnalyzeRunPanelProps) {
   const draft = packDraft ?? packDraftFromIfc(ifcPath);
+  const owned = useRunPolling(polling ? undefined : onReportReady);
   const { job, trackJob, pollError, setPollError, elapsedSec, terminal, resumePolling } =
-    useRunPolling(onReportReady);
+    polling ?? owned;
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [journal, setJournal] = useState<RunJournalEntry[]>(() =>

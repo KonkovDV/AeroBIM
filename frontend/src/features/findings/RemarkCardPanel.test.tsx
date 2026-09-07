@@ -167,4 +167,45 @@ describe("RemarkCardPanel", () => {
     expect(screen.queryByText("GUID скопирован")).toBeNull();
     expect(screen.getByText("2ABCUKGoDDbREfVxRKsHkl")).toBeTruthy();
   });
+
+  it("disables save, accept and reject while a HITL write is in flight", () => {
+    render(
+      <RemarkCardPanel
+        activeIssue={baseIssue}
+        remarkDraft="REI"
+        remarkSaveState="saving"
+        hitlDecisionState="idle"
+        onDraftChange={() => undefined}
+        onSave={() => undefined}
+        onAccept={() => undefined}
+        onReject={() => undefined}
+      />,
+    );
+    expect((screen.getByRole("button", { name: "Сохраняем…" }) as HTMLButtonElement).disabled).toBe(true);
+    expect((screen.getByRole("button", { name: "Подтвердить замечание" }) as HTMLButtonElement).disabled).toBe(
+      true,
+    );
+    expect((screen.getByRole("button", { name: "Отклонить замечание" }) as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  it("does not save from Ctrl+Enter while decision history is still loading", () => {
+    const onSave = vi.fn();
+    render(
+      <RemarkCardPanel
+        activeIssue={baseIssue}
+        remarkDraft="REI"
+        remarkSaveState="idle"
+        hitlDecisionState="idle"
+        historyPending
+        onDraftChange={() => undefined}
+        onSave={onSave}
+        onAccept={() => undefined}
+        onReject={() => undefined}
+      />,
+    );
+    expect(screen.getByText("Загружаем историю решений")).toBeTruthy();
+    fireEvent.keyDown(screen.getByLabelText("Текст замечания"), { key: "Enter", ctrlKey: true });
+    expect(onSave).not.toHaveBeenCalled();
+    expect((screen.getByRole("button", { name: "Сохранить правку" }) as HTMLButtonElement).disabled).toBe(true);
+  });
 });

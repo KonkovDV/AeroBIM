@@ -1,4 +1,5 @@
 import { useEffect, type Dispatch, type SetStateAction } from "react";
+import type { ValidationIssue } from "../lib/types";
 import type { IndexedIssue } from "../lib/issue-triage";
 import { isTextEntryTarget, resolveTriageHotkey } from "../lib/triage-hotkeys";
 
@@ -16,9 +17,7 @@ export function useTriageKeyboard({
   selectedIssueIndex,
   hitlEnabled,
   setTriageHelpOpen,
-  setSelectedIssueIndex,
-  setSelectedClashIndex,
-  setRemarkDraft,
+  selectIssue,
   decideRemark,
 }: {
   enabled: boolean;
@@ -26,9 +25,7 @@ export function useTriageKeyboard({
   selectedIssueIndex: number;
   hitlEnabled: boolean;
   setTriageHelpOpen: Dispatch<SetStateAction<boolean>>;
-  setSelectedIssueIndex: Dispatch<SetStateAction<number>>;
-  setSelectedClashIndex: Dispatch<SetStateAction<number | null>>;
-  setRemarkDraft: Dispatch<SetStateAction<string>>;
+  selectIssue: (index: number, issue: ValidationIssue) => void;
   decideRemark: (eventType: "accepted" | "rejected") => Promise<void>;
 }): void {
   useEffect(() => {
@@ -42,7 +39,6 @@ export function useTriageKeyboard({
         return;
       }
       if (isTextEntryTarget(event.target)) {
-        // В поле ввода живёт только выход из справки, остальное — текст эксперта.
         if (hotkey === "close") {
           setTriageHelpOpen(false);
         }
@@ -69,9 +65,7 @@ export function useTriageKeyboard({
             ? filteredIssues[Math.min(pos + 1, filteredIssues.length - 1)]
             : filteredIssues[Math.max(pos - 1, 0)];
         if (target) {
-          setSelectedIssueIndex(target.index);
-          setSelectedClashIndex(null);
-          setRemarkDraft(target.issue.remark?.body ?? "");
+          selectIssue(target.index, target.issue);
         }
         return;
       }
@@ -102,9 +96,7 @@ export function useTriageKeyboard({
     selectedIssueIndex,
     hitlEnabled,
     setTriageHelpOpen,
-    setSelectedIssueIndex,
-    setSelectedClashIndex,
-    setRemarkDraft,
+    selectIssue,
     decideRemark,
   ]);
 }

@@ -39,6 +39,8 @@ export type ExpertWorkplaceProps = {
   hitlEnabled: boolean;
   reviewEvents: ReviewEventRow[];
   reviewEventsError: string | null;
+  historyPending?: boolean;
+  conflictMessage?: string | null;
   spatialViewer: ReactNode;
   onSelectReport: (reportId: string) => void;
   onSeverityChange: (value: "all" | "error" | "warning" | "info") => void;
@@ -79,6 +81,8 @@ export default function ExpertWorkplace({
   hitlEnabled,
   reviewEvents,
   reviewEventsError,
+  historyPending = false,
+  conflictMessage = null,
   spatialViewer,
   onSelectReport,
   onSeverityChange,
@@ -256,6 +260,8 @@ export default function ExpertWorkplace({
                   hitlEnabled={hitlEnabled}
                   reviewEvents={reviewEvents}
                   reviewEventsError={reviewEventsError}
+                  historyPending={historyPending}
+                  conflictMessage={conflictMessage}
                   onDraftChange={onDraftChange}
                   onSave={onSave}
                   onAccept={onAccept}

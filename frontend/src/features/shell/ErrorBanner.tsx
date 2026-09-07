@@ -10,8 +10,8 @@ export default function ErrorBanner({ onRetry }: ErrorBannerProps) {
   return (
     <section className="error-banner product-error" role="alert" data-testid="error-banner">
       <div>
-        <strong>Не удалось получить данные</strong>
-        <p>Проверьте соединение и повторите попытку. Если ошибка остаётся, обратитесь к администратору.</p>
+        <strong>{UI_COPY.errorBannerTitle}</strong>
+        <p>{UI_COPY.errorBannerBody}</p>
       </div>
       <button type="button" className="toolbar-button" onClick={onRetry}>{UI_COPY.retry}</button>
     </section>

@@ -9,6 +9,16 @@ import {
 import { aerobimCsrfHeaders } from "./csrf";
 import { WASM_IFC_VIEWER_CAP_BYTES, IfcViewerCapError } from "./wasm-cap";
 
+export class ApiHttpError extends Error {
+  readonly status: number;
+
+  constructor(status: number, message: string) {
+    super(message);
+    this.name = "ApiHttpError";
+    this.status = status;
+  }
+}
+
 export type ReportListFilters = {
   project?: string;
   discipline?: string;
@@ -94,18 +104,36 @@ async function withResponseDetail(response: Response, base: string): Promise<str
 
 async function failedResponseError(response: Response): Promise<Error> {
   if (response.status === 401) {
-    return new Error(
+    return new ApiHttpError(
+      401,
       import.meta.env.PROD || useDevProxy
         ? "Нет авторизации (401): сессия через OIDC BFF или обратный прокси с TLS (клиентский Bearer отключён)."
-        : "Нет авторизации (401): используйте dev-прокси Vite (тот же источник), чтобы Authorization подставлялся на сервере."
+        : "Нет авторизации (401): используйте dev-прокси Vite (тот же источник), чтобы Authorization подставлялся на сервере.",
+    );
+  }
+  if (response.status === 403) {
+    return new ApiHttpError(403, "Недостаточно прав (403).");
+  }
+  if (response.status === 404) {
+    return new ApiHttpError(404, "Объект не найден (404).");
+  }
+  if (response.status === 409) {
+    return new ApiHttpError(
+      409,
+      await withResponseDetail(
+        response,
+        "Конфликт версии (409). Черновик на карточке сохранён; сравните с сервером и повторите.",
+      ),
     );
   }
   if (response.status === 503) {
-    return new Error(
-      "API недоступен (503): авторизация или конфигурация бэкенда не настроены вне режима разработки."
+    return new ApiHttpError(
+      503,
+      "Сервис временно недоступен (503). Это не обязательно ошибка входа: обработка модели или диск могут быть недоступны.",
     );
   }
-  return new Error(
+  return new ApiHttpError(
+    response.status,
     await withResponseDetail(
       response,
       `Запрос завершился ошибкой ${response.status}: ${response.statusText}`,

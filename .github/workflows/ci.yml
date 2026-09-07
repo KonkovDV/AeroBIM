@@ -268,6 +268,8 @@ jobs:
     # (JUnit from `test`, vitest from `frontend`). Extras allows skips;
     # `test` is the coverage/JUnit pin.
     needs:
+      - lint
+      - typecheck
       - test
       - pytest-readme-extras
       - frontend
@@ -308,6 +310,8 @@ jobs:
         run: |
           # Do NOT --run-gates here: this job has no frontend node_modules, and re-pytest
           # is flaky under ifcopenshell teardown. Upstream needs: jobs already passed.
+          # lint and typecheck are needs so ruff=PASS / mypy=PASS are not written unless
+          # those jobs succeeded. They are not attested metric sources (no JUnit/vitest).
           # Generate BEFORE the drift check: when the committed artifact drifts, the check
           # still fails the job (alarm intact), but the refreshed CI-attested artifact is
           # produced first and uploaded below, so the maintainer can commit it. A stale

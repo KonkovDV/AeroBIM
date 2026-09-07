@@ -66,6 +66,20 @@
       "lock_version": "12.3.0"
     },
     {
+      "name": "reportlab",
+      "scope": "core",
+      "installed_version": "4.5.1",
+      "license_metadata": "BSD-3-Clause",
+      "spdx_guess": "BSD-3-Clause",
+      "risk_class": "permissive",
+      "verified": true,
+      "legal_review_required": false,
+      "usage": "report PDF export with vendored OFL Liberation Sans (Cyrillic); not PyMuPDF",
+      "mitigation_options": "",
+      "lock_version": "4.5.1",
+      "verification_note": "PyPI / BSD-3-Clause; hashed lock 2026-09-07 after uv pip compile"
+    },
+    {
       "name": "ifcopenshell",
       "scope": "core",
       "installed_version": "0.8.5",

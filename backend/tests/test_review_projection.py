@@ -119,8 +119,11 @@ class ReviewProjectionUnitTests(unittest.TestCase):
         self.assertIn("effective=T1", html)
         self.assertIn("machine=T0", html)
         pdf = render_report_pdf_bytes("r" * 32, data)
-        self.assertIn(b"T1", pdf)
-        self.assertIn(b"T0", pdf)
+        from test_report_pdf_coverage import extract_pdf_text
+
+        text = extract_pdf_text(pdf)
+        self.assertIn("T1", text)
+        self.assertIn("T0", text)
 
 
 class ReviewProjectionHttpTests(unittest.TestCase):
@@ -215,7 +218,9 @@ class ReviewProjectionHttpTests(unittest.TestCase):
 
             pdf = client.get(f"/v1/reports/{report_id}/export/pdf", headers=headers)
             self.assertEqual(pdf.status_code, 200, pdf.text)
-            self.assertIn(b"T1", pdf.content)
+            from test_report_pdf_coverage import extract_pdf_text
+
+            self.assertIn("T1", extract_pdf_text(pdf.content))
 
             bcf = client.get(f"/v1/reports/{report_id}/export/bcf", headers=headers)
             self.assertEqual(bcf.status_code, 200, bcf.text)

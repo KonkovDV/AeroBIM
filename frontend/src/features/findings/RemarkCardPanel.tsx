@@ -58,6 +58,8 @@ export type RemarkCardPanelProps = {
   hitlEnabled?: boolean;
   reviewEvents?: ReviewEventRow[];
   reviewEventsError?: string | null;
+  historyPending?: boolean;
+  conflictMessage?: string | null;
   onDraftChange: (value: string) => void;
   onSave: () => void;
   onAccept: () => void;
@@ -73,6 +75,8 @@ export default function RemarkCardPanel({
   hitlEnabled = true,
   reviewEvents = [],
   reviewEventsError = null,
+  historyPending = false,
+  conflictMessage = null,
   onDraftChange,
   onSave,
   onAccept,
@@ -82,6 +86,8 @@ export default function RemarkCardPanel({
     ? reviewEvents.filter((event) => eventMatchesIssue(event, activeIssue))
     : [];
   const historyError = reportId ? reviewEventsError : null;
+  const hitlLocked =
+    historyPending || remarkSaveState === "saving" || hitlDecisionState === "saving";
 
   return (
     <article className="detail-block" data-testid="remark-card">
@@ -158,7 +164,9 @@ export default function RemarkCardPanel({
                 onKeyDown={(event) => {
                   if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
                     event.preventDefault();
-                    onSave();
+                    if (!hitlLocked) {
+                      onSave();
+                    }
                   }
                 }}
                 spellCheck
@@ -168,7 +176,7 @@ export default function RemarkCardPanel({
                 <button
                   type="button"
                   onClick={onSave}
-                  disabled={remarkSaveState === "saving"}
+                  disabled={hitlLocked}
                   title={UI_COPY.remarkSaveHotkey}
                 >
                   {remarkSaveState === "saving" ? UI_COPY.savingRemark : UI_COPY.saveRemark}
@@ -176,19 +184,24 @@ export default function RemarkCardPanel({
                 <button
                   type="button"
                   onClick={onAccept}
-                  disabled={hitlDecisionState === "saving"}
+                  disabled={hitlLocked}
                 >
                   {UI_COPY.confirmRemark}
                 </button>
                 <button
                   type="button"
                   onClick={onReject}
-                  disabled={hitlDecisionState === "saving"}
+                  disabled={hitlLocked}
                 >
                   {UI_COPY.rejectRemark}
                 </button>
                 {remarkSaveState === "saved" ? <span className="compact-copy">{UI_COPY.remarkSaved}</span> : null}
                 {remarkSaveState === "failed" ? <span className="compact-copy">{UI_COPY.remarkSaveFailed}</span> : null}
+                {conflictMessage ? (
+                  <p className="compact-copy" role="alert" data-testid="hitl-conflict">
+                    {conflictMessage}
+                  </p>
+                ) : null}
                 {hitlDecisionState === "accepted" ? <span className="compact-copy">{UI_COPY.confirmed}</span> : null}
                 {hitlDecisionState === "rejected" ? <span className="compact-copy">{UI_COPY.rejected}</span> : null}
                 {hitlDecisionState === "failed" ? <span className="compact-copy">{UI_COPY.remarkDecisionFailed}</span> : null}
@@ -201,8 +214,9 @@ export default function RemarkCardPanel({
           )}
           <div className="review-history" data-testid="review-history">
             <h4>{UI_COPY.hitlHistory}</h4>
+            {historyPending ? <p className="compact-copy">{UI_COPY.historyLoading}</p> : null}
             {historyError ? <p className="compact-copy">{historyError}</p> : null}
-            {history.length === 0 ? (
+            {historyPending ? null : history.length === 0 ? (
               <p className="compact-copy">{UI_COPY.noEvents}</p>
             ) : (
               <ol className="kpi-list">

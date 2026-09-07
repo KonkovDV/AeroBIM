@@ -6,6 +6,7 @@ import {
   EMPTY_PACK_DRAFT,
   packCompositionLine,
   packDraftHasAny,
+  reassignPackDraftRole,
   toAnalyzeSubmitBody,
 } from "./pack-draft";
 
@@ -33,11 +34,13 @@ describe("pack-draft", () => {
   });
 
   it("renders the pack composition line without claiming a processed pack", () => {
-    expect(packCompositionLine(EMPTY_PACK_DRAFT)).toBe("IFC — · IDS — · листы 0 · ТЗ — · расчёт —");
+    expect(packCompositionLine(EMPTY_PACK_DRAFT)).toBe(
+      "IFC — · IDS — · листы 0 · ТЗ — · спец. — · расчёт —",
+    );
     let draft = applyUploadedFile(EMPTY_PACK_DRAFT, "models/walls.ifc", "walls.ifc");
     draft = applyUploadedFile(draft, "sheets/a101.pdf", "A-101.pdf");
     draft = applyUploadedFile(draft, "sheets/a102.pdf", "A-102.pdf");
-    expect(packCompositionLine(draft)).toBe("IFC ✓ · IDS — · листы 2 · ТЗ — · расчёт —");
+    expect(packCompositionLine(draft)).toBe("IFC ✓ · IDS — · листы 2 · ТЗ — · спец. — · расчёт —");
   });
 
   it("routes .ifczip into the IFC slot", () => {
@@ -59,5 +62,29 @@ describe("pack-draft", () => {
     expect(draft).toEqual(EMPTY_PACK_DRAFT);
     expect(note).toEqual({ kind: "not_in_draft", packKind: "zip" });
     expect(describePackDraftApplyNote(note)).toMatch(/не попал/);
+  });
+
+  it("does not treat a waltz PDF as a TZ requirement", () => {
+    const { draft } = applyUploadedFileResult(EMPTY_PACK_DRAFT, "sheets/waltz.pdf", "waltz.pdf");
+    expect(draft.requirementPath).toBeNull();
+    expect(draft.drawings).toEqual([{ path: "sheets/waltz.pdf", filename: "waltz.pdf" }]);
+  });
+
+  it("hints PDF role from the filename and lets the operator reassign it", () => {
+    const tz = applyUploadedFileResult(EMPTY_PACK_DRAFT, "docs/tz.pdf", "TZ-01.pdf");
+    expect(tz.draft.requirementPath).toBe("docs/tz.pdf");
+    expect(tz.draft.drawings).toEqual([]);
+    const lira = applyUploadedFileResult(tz.draft, "calc/note.pdf", "lira-arm.pdf");
+    expect(lira.draft.calculationPath).toBe("calc/note.pdf");
+    const spec = applyUploadedFileResult(lira.draft, "spec/q.docx", "specification.docx");
+    expect(spec.draft.technicalSpecPath).toBe("spec/q.docx");
+    const reassigned = reassignPackDraftRole(spec.draft, "docs/tz.pdf", "TZ-01.pdf", "drawing");
+    expect(reassigned.draft.requirementPath).toBeNull();
+    expect(reassigned.draft.drawings).toEqual([{ path: "docs/tz.pdf", filename: "TZ-01.pdf" }]);
+    expect(toAnalyzeSubmitBody(reassigned.draft)).toMatchObject({
+      calculation_path: "calc/note.pdf",
+      technical_spec_path: "spec/q.docx",
+      drawings: [{ path: "docs/tz.pdf" }],
+    });
   });
 });

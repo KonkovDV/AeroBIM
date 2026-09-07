@@ -3,6 +3,7 @@ import PackUploadPanel from "../../components/PackUploadPanel";
 import type { WorkspaceView } from "../../components/WorkspaceNav";
 import type { ReportCapabilities } from "../../lib/types";
 import type { usePackDraft } from "../../hooks/usePackDraft";
+import type { RunPolling } from "../../hooks/useRunPolling";
 
 type PackScreensProps = {
   workspaceView: "upload" | "run";
@@ -11,6 +12,7 @@ type PackScreensProps = {
   capabilitiesReportId: string | null;
   onReportReady: (reportId: string) => void;
   onNavigate: (view: WorkspaceView) => void;
+  runPolling?: RunPolling;
 };
 
 /** Экраны «Загрузка» и «Прогон»: приём файлов комплекта и запуск анализа. */
@@ -21,8 +23,9 @@ export default function PackScreens({
   capabilitiesReportId,
   onReportReady,
   onNavigate,
+  runPolling,
 }: PackScreensProps) {
-  const { packDraft, draftApplyNote, applyUpload } = pack;
+  const { packDraft, draftApplyNote, pendingRole, applyUpload, chooseRole } = pack;
 
   if (workspaceView === "upload") {
     return (
@@ -30,11 +33,10 @@ export default function PackScreens({
         <PackUploadPanel
           draftApplyNote={draftApplyNote}
           packDraft={packDraft}
+          pendingRole={pendingRole}
+          onChooseRole={chooseRole}
           onUploadedPath={(path, filename) => {
-            const note = applyUpload(path, filename);
-            if (note.kind === "filled" && note.slot === "ifc") {
-              onNavigate("run");
-            }
+            applyUpload(path, filename);
           }}
           onContinueToRun={() => onNavigate("run")}
         />
@@ -52,6 +54,7 @@ export default function PackScreens({
         onContinueToExpert={() => onNavigate("review")}
         capabilities={capabilities}
         capabilitiesReportId={capabilitiesReportId}
+        polling={runPolling}
       />
     </div>
   );

@@ -517,6 +517,7 @@ export const RU_COPY = {
   runStart: "Запустить анализ",
   runStarting: "Запускаем…",
   runResumePoll: "Возобновить проверку статуса",
+  runPollFailed: "Не удалось опросить задание",
   runCancel: "Отменить",
   runCancelFailed: "Не удалось отменить задание",
   runNeedUpload: "Сначала загрузите IFC или документы. Нативные RVT/NWD/DWG — жёсткий отказ.",

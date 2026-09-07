@@ -1,6 +1,19 @@
 import { useCallback, useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
-import { fetchReport, fetchReviewEvents, postReviewEvent, type ReviewEventRow, type ReviewEventType } from "../lib/api";
-import { asReviewEventRow, effectiveRemarkText, hitlOperationFingerprint, latestHitlState, latestReviewSequence } from "../lib/hitl-state";
+import {
+  ApiHttpError,
+  fetchReport,
+  fetchReviewEvents,
+  postReviewEvent,
+  type ReviewEventRow,
+  type ReviewEventType,
+} from "../lib/api";
+import {
+  asReviewEventRow,
+  effectiveRemarkText,
+  hitlOperationFingerprint,
+  latestHitlState,
+  latestReviewSequence,
+} from "../lib/hitl-state";
 import type { ValidationIssue, ValidationReport } from "../lib/types";
 import { UI_COPY } from "../lib/ui-copy";
 
@@ -21,26 +34,56 @@ function newHitlIdempotencyKey(): string {
   return `hitl-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
+export type PendingFindingSelect = { index: number; issue: ValidationIssue };
+
 export type SelectedReportState = {
   selectedReport: ValidationReport | null;
   reportLoading: boolean;
   reportError: string | null;
   reviewEvents: ReviewEventRow[];
   reviewEventsError: string | null;
+  historyPending: boolean;
   selectedIssueIndex: number;
   selectedClashIndex: number | null;
   remarkDraft: string;
   remarkSaveState: RemarkSaveState;
   hitlDecisionState: HitlDecisionState;
+  pendingSelect: PendingFindingSelect | null;
+  conflictMessage: string | null;
   setSelectedIssueIndex: Dispatch<SetStateAction<number>>;
   setSelectedClashIndex: Dispatch<SetStateAction<number | null>>;
   setRemarkDraft: Dispatch<SetStateAction<string>>;
   setRemarkSaveState: Dispatch<SetStateAction<RemarkSaveState>>;
   setHitlDecisionState: Dispatch<SetStateAction<HitlDecisionState>>;
-  selectIssue: (index: number, issue: ValidationIssue) => void;
-  saveRemarkEdit: (issue: ValidationIssue | null) => Promise<void>;
+  selectIssue: (index: number, issue: ValidationIssue, options?: { force?: boolean }) => void;
+  confirmPendingSelect: (mode: "save" | "discard") => Promise<void>;
+  dismissPendingSelect: () => void;
+  saveRemarkEdit: (issue: ValidationIssue | null) => Promise<boolean>;
   decideRemark: (eventType: "accepted" | "rejected", issue: ValidationIssue | null) => Promise<void>;
+  isDirty: boolean;
 };
+
+function resetEditor(
+  setSelectedReport: Dispatch<SetStateAction<ValidationReport | null>>,
+  setReviewEvents: Dispatch<SetStateAction<ReviewEventRow[]>>,
+  setReviewEventsError: Dispatch<SetStateAction<string | null>>,
+  setReportError: Dispatch<SetStateAction<string | null>>,
+  setRemarkDraft: Dispatch<SetStateAction<string>>,
+  setRemarkSaveState: Dispatch<SetStateAction<RemarkSaveState>>,
+  setHitlDecisionState: Dispatch<SetStateAction<HitlDecisionState>>,
+  setPendingSelect: Dispatch<SetStateAction<PendingFindingSelect | null>>,
+  setConflictMessage: Dispatch<SetStateAction<string | null>>,
+): void {
+  setSelectedReport(null);
+  setReviewEvents([]);
+  setReviewEventsError(null);
+  setReportError(null);
+  setRemarkDraft("");
+  setRemarkSaveState("idle");
+  setHitlDecisionState("idle");
+  setPendingSelect(null);
+  setConflictMessage(null);
+}
 
 /** Выбранный отчёт: загрузка, выбор замечания/клэша, черновик HITL-замечания и решения. */
 export function useSelectedReport(
@@ -52,35 +95,67 @@ export function useSelectedReport(
   const [reportError, setReportError] = useState<string | null>(null);
   const [reviewEvents, setReviewEvents] = useState<ReviewEventRow[]>([]);
   const [reviewEventsError, setReviewEventsError] = useState<string | null>(null);
+  const [historyPending, setHistoryPending] = useState(false);
   const [selectedIssueIndex, setSelectedIssueIndex] = useState(0);
   const [selectedClashIndex, setSelectedClashIndex] = useState<number | null>(null);
   const [remarkDraft, setRemarkDraft] = useState("");
   const [remarkSaveState, setRemarkSaveState] = useState<RemarkSaveState>("idle");
   const [hitlDecisionState, setHitlDecisionState] = useState<HitlDecisionState>("idle");
+  const [pendingSelect, setPendingSelect] = useState<PendingFindingSelect | null>(null);
+  const [conflictMessage, setConflictMessage] = useState<string | null>(null);
   const reviewEventsRef = useRef<ReviewEventRow[]>([]);
+  const selectedReportRef = useRef<ValidationReport | null>(null);
+  const selectedIssueIndexRef = useRef(0);
+  const remarkDraftRef = useRef("");
+  const remarkSaveStateRef = useRef<RemarkSaveState>("idle");
   const hitlOpRef = useRef<{ fingerprint: string; key: string } | null>(null);
+  const hitlBusyRef = useRef(false);
+  const historyPendingRef = useRef(false);
 
-  // Синхронизация ref со state — побочный эффект, а не работа тела рендера.
+  selectedReportRef.current = selectedReport;
+  selectedIssueIndexRef.current = selectedIssueIndex;
+  remarkDraftRef.current = remarkDraft;
+  remarkSaveStateRef.current = remarkSaveState;
+
   useEffect(() => {
     reviewEventsRef.current = reviewEvents;
   }, [reviewEvents]);
 
   useEffect(() => {
     if (selectedReportId === null) {
-      setSelectedReport(null);
-      setReviewEvents([]);
-      setReviewEventsError(null);
-      // Без сброса ошибки баннер прошлого отчёта висел над пустым экраном,
-      // а непустой черновик держал beforeunload-предупреждение при уходе.
-      setReportError(null);
-      setRemarkDraft("");
-      setRemarkSaveState("idle");
-      setHitlDecisionState("idle");
+      resetEditor(
+        setSelectedReport,
+        setReviewEvents,
+        setReviewEventsError,
+        setReportError,
+        setRemarkDraft,
+        setRemarkSaveState,
+        setHitlDecisionState,
+        setPendingSelect,
+        setConflictMessage,
+      );
+      setReportLoading(false);
+      historyPendingRef.current = false;
+      setHistoryPending(false);
       return;
     }
 
     const controller = new AbortController();
     let cancelled = false;
+    historyPendingRef.current = true;
+    setHistoryPending(true);
+    resetEditor(
+      setSelectedReport,
+      setReviewEvents,
+      setReviewEventsError,
+      setReportError,
+      setRemarkDraft,
+      setRemarkSaveState,
+      setHitlDecisionState,
+      setPendingSelect,
+      setConflictMessage,
+    );
+    selectedReportRef.current = null;
     setReportLoading(true);
     const eventsPromise = fetchReviewEvents(selectedReportId, { signal: controller.signal }).then(
       (payload) => ({ ok: true as const, payload }),
@@ -92,6 +167,7 @@ export function useSelectedReport(
           return;
         }
         setSelectedReport(report);
+        selectedReportRef.current = report;
         setReportError(null);
         setSelectedIssueIndex(0);
         setSelectedClashIndex(null);
@@ -99,6 +175,7 @@ export function useSelectedReport(
         setRemarkDraft(firstIssue ? effectiveRemarkText(firstIssue, []) : "");
         setRemarkSaveState("idle");
         setHitlDecisionState("idle");
+        setReportLoading(false);
         const eventsResult = await eventsPromise;
         if (cancelled || controller.signal.aborted) {
           return;
@@ -106,8 +183,12 @@ export function useSelectedReport(
         if (eventsResult.ok) {
           setReviewEvents(eventsResult.payload.events);
           setReviewEventsError(null);
-          if (firstIssue) {
-            setRemarkDraft(effectiveRemarkText(firstIssue, eventsResult.payload.events));
+          const current = selectedReportRef.current?.issues[selectedIssueIndexRef.current];
+          if (current) {
+            const withoutEvents = effectiveRemarkText(current, []);
+            if (remarkDraftRef.current === withoutEvents) {
+              setRemarkDraft(effectiveRemarkText(current, eventsResult.payload.events));
+            }
           }
         } else {
           setReviewEvents([]);
@@ -115,6 +196,8 @@ export function useSelectedReport(
             eventsResult.error instanceof Error ? eventsResult.error.message : UI_COPY.historyFailed,
           );
         }
+        historyPendingRef.current = false;
+        setHistoryPending(false);
       })
       .catch((error: unknown) => {
         if (cancelled || controller.signal.aborted) {
@@ -122,7 +205,10 @@ export function useSelectedReport(
         }
         setReportError(error instanceof Error ? error.message : UI_COPY.loadReportFailed);
         setSelectedReport(null);
+        selectedReportRef.current = null;
         setReviewEvents([]);
+        historyPendingRef.current = false;
+        setHistoryPending(false);
       })
       .finally(() => {
         if (!cancelled && !controller.signal.aborted) {
@@ -136,21 +222,38 @@ export function useSelectedReport(
     };
   }, [selectedReportId, reloadEpoch]);
 
-  const selectIssue = useCallback((index: number, issue: ValidationIssue) => {
+  const applySelect = useCallback((index: number, issue: ValidationIssue) => {
     setSelectedIssueIndex(index);
     setSelectedClashIndex(null);
     setRemarkDraft(effectiveRemarkText(issue, reviewEventsRef.current));
     setRemarkSaveState("idle");
     setHitlDecisionState("idle");
+    setPendingSelect(null);
+    setConflictMessage(null);
   }, []);
 
-  const rememberEvent = useCallback((event: Record<string, unknown>) => {
+  const selectIssue = useCallback(
+    (index: number, issue: ValidationIssue, options?: { force?: boolean }) => {
+      const current = selectedReportRef.current?.issues[selectedIssueIndexRef.current];
+      const original = current ? effectiveRemarkText(current, reviewEventsRef.current) : "";
+      const dirty = remarkDraftRef.current !== original && remarkSaveStateRef.current !== "saved";
+      if (dirty && options?.force !== true) {
+        setPendingSelect({ index, issue });
+        return;
+      }
+      applySelect(index, issue);
+    },
+    [applySelect],
+  );
+
+  const rememberEvent = useCallback((event: Record<string, unknown>, reportId: string) => {
+    if (selectedReportRef.current?.report_id !== reportId) {
+      return;
+    }
     const row = asReviewEventRow(event);
     if (row === null) {
       return;
     }
-    // Ref обновляем здесь, а не внутри updater: updater обязан быть чистым,
-    // React вправе вызвать его дважды (StrictMode) или отбросить результат.
     if (!reviewEventsRef.current.some((item) => item.event_id === row.event_id)) {
       reviewEventsRef.current = [...reviewEventsRef.current, row];
     }
@@ -169,22 +272,19 @@ export function useSelectedReport(
   };
 
   const postHitlEvent = useCallback(
-    async (issue: ValidationIssue, eventType: ReviewEventType, note: string) => {
-      if (!selectedReport) {
-        return;
-      }
+    async (issue: ValidationIssue, eventType: ReviewEventType, note: string, reportId: string) => {
       let previous = latestHitlState(reviewEventsRef.current, issue);
       if (previous === null && eventType !== "opened") {
         const openedVersion = latestReviewSequence(reviewEventsRef.current, issue) ?? 0;
         const openedFingerprint = hitlOperationFingerprint({
-          reportId: selectedReport.report_id,
+          reportId,
           findingId: issue.finding_id ?? "",
           eventType: "opened",
           note: "",
           previousState: "",
           expectedReviewVersion: openedVersion,
         });
-        const opened = await postReviewEvent(selectedReport.report_id, {
+        const opened = await postReviewEvent(reportId, {
           event_type: "opened",
           issue_rule_id: issue.rule_id,
           finding_id: issue.finding_id ?? undefined,
@@ -192,19 +292,19 @@ export function useSelectedReport(
           expected_review_version: openedVersion,
         });
         hitlOpRef.current = null;
-        rememberEvent(opened.event);
+        rememberEvent(opened.event, reportId);
         previous = "opened";
       }
       const expectedReviewVersion = latestReviewSequence(reviewEventsRef.current, issue) ?? 0;
       const fingerprint = hitlOperationFingerprint({
-        reportId: selectedReport.report_id,
+        reportId,
         findingId: issue.finding_id ?? "",
         eventType,
         note,
         previousState: previous ?? "",
         expectedReviewVersion,
       });
-      const result = await postReviewEvent(selectedReport.report_id, {
+      const result = await postReviewEvent(reportId, {
         event_type: eventType,
         issue_rule_id: issue.rule_id,
         finding_id: issue.finding_id ?? undefined,
@@ -213,48 +313,111 @@ export function useSelectedReport(
         idempotency_key: keyForFingerprint(fingerprint),
         expected_review_version: expectedReviewVersion,
       });
-      rememberEvent(result.event);
+      rememberEvent(result.event, reportId);
       hitlOpRef.current = null;
     },
-    [rememberEvent, selectedReport],
+    [rememberEvent],
   );
 
+  const stillOnFinding = (reportId: string, issue: ValidationIssue): boolean => {
+    if (selectedReportRef.current?.report_id !== reportId) {
+      return false;
+    }
+    const current = selectedReportRef.current?.issues[selectedIssueIndexRef.current];
+    return (current?.finding_id ?? current?.rule_id) === (issue.finding_id ?? issue.rule_id);
+  };
+
   const saveRemarkEdit = useCallback(
-    async (issue: ValidationIssue | null) => {
-      if (!selectedReport || !issue) {
-        return;
+    async (issue: ValidationIssue | null): Promise<boolean> => {
+      const report = selectedReportRef.current;
+      if (!report || !issue || reportLoading || historyPendingRef.current || hitlBusyRef.current) {
+        return false;
       }
-      if (!remarkDraft.trim()) {
-        return;
+      const draft = remarkDraftRef.current;
+      if (!draft.trim()) {
+        return false;
       }
+      const reportId = report.report_id;
+      hitlBusyRef.current = true;
       setRemarkSaveState("saving");
       try {
-        await postHitlEvent(issue, "edited_remark", remarkDraft);
+        await postHitlEvent(issue, "edited_remark", draft, reportId);
+        if (!stillOnFinding(reportId, issue)) {
+          return true;
+        }
         setRemarkSaveState("saved");
-      } catch {
+        setConflictMessage(null);
+        return true;
+      } catch (error: unknown) {
+        if (!stillOnFinding(reportId, issue)) {
+          return false;
+        }
         setRemarkSaveState("failed");
+        if (error instanceof ApiHttpError && error.status === 409) {
+          setConflictMessage(UI_COPY.hitlConflict);
+        }
+        return false;
+      } finally {
+        hitlBusyRef.current = false;
       }
     },
-    [postHitlEvent, remarkDraft, selectedReport],
+    [postHitlEvent, reportLoading],
   );
 
   const decideRemark = useCallback(
     async (eventType: "accepted" | "rejected", issue: ValidationIssue | null) => {
-      if (!selectedReport || !issue) {
+      const report = selectedReportRef.current;
+      if (!report || !issue || reportLoading || historyPendingRef.current || hitlBusyRef.current) {
         return;
       }
+      const reportId = report.report_id;
+      const draft = remarkDraftRef.current;
+      hitlBusyRef.current = true;
       setHitlDecisionState("saving");
       try {
-        const note =
-          eventType === "rejected" && !remarkDraft.trim() ? UI_COPY.rejectDefaultNote : remarkDraft;
-        await postHitlEvent(issue, eventType, note);
+        const note = eventType === "rejected" && !draft.trim() ? UI_COPY.rejectDefaultNote : draft;
+        await postHitlEvent(issue, eventType, note, reportId);
+        if (!stillOnFinding(reportId, issue)) {
+          return;
+        }
         setHitlDecisionState(eventType);
-      } catch {
+        setConflictMessage(null);
+      } catch (error: unknown) {
+        if (!stillOnFinding(reportId, issue)) {
+          return;
+        }
         setHitlDecisionState("failed");
+        if (error instanceof ApiHttpError && error.status === 409) {
+          setConflictMessage(UI_COPY.hitlConflict);
+        }
+      } finally {
+        hitlBusyRef.current = false;
       }
     },
-    [postHitlEvent, remarkDraft, selectedReport],
+    [postHitlEvent, reportLoading],
   );
+
+  const confirmPendingSelect = useCallback(
+    async (mode: "save" | "discard") => {
+      const pending = pendingSelect;
+      if (!pending) {
+        return;
+      }
+      if (mode === "save") {
+        const current = selectedReportRef.current?.issues[selectedIssueIndexRef.current] ?? null;
+        const saved = await saveRemarkEdit(current);
+        if (!saved) {
+          return;
+        }
+      }
+      applySelect(pending.index, pending.issue);
+    },
+    [applySelect, pendingSelect, saveRemarkEdit],
+  );
+
+  const dismissPendingSelect = useCallback(() => {
+    setPendingSelect(null);
+  }, []);
 
   useEffect(() => {
     const selectedIssue = selectedReport?.issues[selectedIssueIndex];
@@ -271,24 +434,34 @@ export function useSelectedReport(
     return () => window.removeEventListener("beforeunload", onBeforeUnload);
   }, [remarkDraft, remarkSaveState, reviewEvents, selectedIssueIndex, selectedReport]);
 
+  const selectedIssue = selectedReport?.issues[selectedIssueIndex];
+  const originalRemark = selectedIssue ? effectiveRemarkText(selectedIssue, reviewEvents) : "";
+  const isDirty = remarkDraft !== originalRemark && remarkSaveState !== "saved";
+
   return {
     selectedReport,
     reportLoading,
     reportError,
     reviewEvents,
     reviewEventsError,
+    historyPending,
     selectedIssueIndex,
     selectedClashIndex,
     remarkDraft,
     remarkSaveState,
     hitlDecisionState,
+    pendingSelect,
+    conflictMessage,
     setSelectedIssueIndex,
     setSelectedClashIndex,
     setRemarkDraft,
     setRemarkSaveState,
     setHitlDecisionState,
     selectIssue,
+    confirmPendingSelect,
+    dismissPendingSelect,
     saveRemarkEdit,
     decideRemark,
+    isDirty,
   };
 }

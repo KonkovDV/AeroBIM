@@ -11,11 +11,15 @@ const { submitAnalyzeProjectPackageMock, cancelAnalyzeJobMock, fetchAnalyzeJobMo
   fetchAnalyzeJobMock: vi.fn(),
 }));
 
-vi.mock("../lib/api", () => ({
-  submitAnalyzeProjectPackage: (...args: unknown[]) => submitAnalyzeProjectPackageMock(...args),
-  cancelAnalyzeJob: (...args: unknown[]) => cancelAnalyzeJobMock(...args),
-  fetchAnalyzeJob: (...args: unknown[]) => fetchAnalyzeJobMock(...args),
-}));
+vi.mock("../lib/api", async () => {
+  const actual = await vi.importActual<typeof import("../lib/api")>("../lib/api");
+  return {
+    ...actual,
+    submitAnalyzeProjectPackage: (...args: unknown[]) => submitAnalyzeProjectPackageMock(...args),
+    cancelAnalyzeJob: (...args: unknown[]) => cancelAnalyzeJobMock(...args),
+    fetchAnalyzeJob: (...args: unknown[]) => fetchAnalyzeJobMock(...args),
+  };
+});
 
 describe("AnalyzeRunPanel", () => {
   beforeEach(() => {
@@ -105,6 +109,11 @@ describe("AnalyzeRunPanel", () => {
     fireEvent.click(screen.getByTestId("analyze-resume-poll"));
     expect(submitAnalyzeProjectPackageMock).toHaveBeenCalledTimes(1);
     expect(fetchAnalyzeJobMock.mock.calls.some((call) => call[0] === "job-resume-1")).toBe(true);
+    expect(
+      fetchAnalyzeJobMock.mock.calls.some(
+        (call) => call[0] === "job-resume-1" && call[1] && typeof (call[1] as { signal?: AbortSignal }).signal?.aborted === "boolean",
+      ),
+    ).toBe(true);
   });
 
   it("records a finished job in the tab journal without calling it a CDE audit", async () => {

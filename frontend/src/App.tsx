@@ -2,6 +2,7 @@ import { Suspense, lazy, useCallback, useState } from "react";
 import { getApiBaseUrl } from "./lib/api";
 import { readUrlReportId } from "./lib/report-filters";
 import DemoFixturePanel from "./components/DemoFixturePanel";
+import DirtyLeaveDialog from "./components/DirtyLeaveDialog";
 import KeyboardHelpDialog from "./components/KeyboardHelpDialog";
 import { persistTriageShortcuts, readTriageShortcuts } from "./lib/triage-preferences";
 import VersionDiffPanel from "./components/VersionDiffPanel";
@@ -25,6 +26,7 @@ import { useAuthBff } from "./hooks/useAuthBff";
 import { usePackDraft } from "./hooks/usePackDraft";
 import { useReportFilters } from "./hooks/useReportFilters";
 import { useReports } from "./hooks/useReports";
+import { useRunPolling } from "./hooks/useRunPolling";
 import { useSelectedReport } from "./hooks/useSelectedReport";
 import { useSnapSelectionToFilter } from "./hooks/useSnapSelectionToFilter";
 import { useTriageKeyboard } from "./hooks/useTriageKeyboard";
@@ -43,6 +45,11 @@ export default function App() {
   const [triageShortcutsEnabled, setTriageShortcutsEnabled] = useState(readTriageShortcuts);
   const [reportsEpoch, setReportsEpoch] = useState(0);
   const [selectedReportId, setSelectedReportId] = useState<string | null>(readUrlReportId);
+  const [pendingNav, setPendingNav] = useState<
+    | { kind: "report"; reportId: string; thenView?: WorkspaceView }
+    | { kind: "view"; view: WorkspaceView }
+    | null
+  >(null);
   const findings = useFindingFilters();
 
   const reportFilters = useReportFilters(selectedReportId);
@@ -65,14 +72,19 @@ export default function App() {
     hitlDecisionState,
     reviewEvents,
     reviewEventsError,
-    setSelectedIssueIndex,
+    historyPending,
     setSelectedClashIndex,
     setRemarkDraft,
     setRemarkSaveState,
     setHitlDecisionState,
     selectIssue,
+    pendingSelect,
+    conflictMessage,
+    confirmPendingSelect,
+    dismissPendingSelect,
     saveRemarkEdit,
     decideRemark,
+    isDirty,
   } = useSelectedReport(selectedReportId, reportsEpoch);
   const pack = usePackDraft();
   const landing = useWorkspaceLanding({
@@ -104,19 +116,83 @@ export default function App() {
     selectedIssueIndex,
     hitlEnabled: authBff.hitlEnabled,
     setTriageHelpOpen,
-    setSelectedIssueIndex,
-    setSelectedClashIndex,
-    setRemarkDraft,
+    selectIssue,
     decideRemark: decideActiveRemark,
   });
   useSnapSelectionToFilter(filteredIssues, selectedIssueIndex, selectIssue);
 
-  function handleSeededReport(reportId: string): void {
+  const handleSeededReport = useCallback((reportId: string): void => {
     landing.landOnExpert();
+    if (isDirty) {
+      if (reportId !== selectedReportId) {
+        setPendingNav({ kind: "report", reportId, thenView: "review" });
+      }
+      return;
+    }
     setSelectedReportId(reportId);
     setReportsEpoch((value) => value + 1);
     setWorkspaceView("review");
-  }
+  }, [isDirty, landing, selectedReportId]);
+
+  const requestWorkspaceView = useCallback(
+    (view: WorkspaceView) => {
+      if (view === workspaceView) {
+        return;
+      }
+      if (isDirty) {
+        setPendingNav({ kind: "view", view });
+        return;
+      }
+      setWorkspaceView(view);
+    },
+    [isDirty, workspaceView],
+  );
+
+  const requestSelectReport = useCallback(
+    (reportId: string) => {
+      if (reportId === selectedReportId) {
+        return;
+      }
+      if (isDirty) {
+        setPendingNav({ kind: "report", reportId });
+        return;
+      }
+      setSelectedReportId(reportId);
+    },
+    [isDirty, selectedReportId],
+  );
+
+  const resolveLeave = useCallback(
+    async (mode: "save" | "discard") => {
+      if (pendingSelect) {
+        await confirmPendingSelect(mode);
+        return;
+      }
+      if (!pendingNav) {
+        return;
+      }
+      if (mode === "save") {
+        const saved = await saveRemarkEdit(activeIssue);
+        if (!saved) {
+          return;
+        }
+      }
+      const nav = pendingNav;
+      setPendingNav(null);
+      if (nav.kind === "report") {
+        setSelectedReportId(nav.reportId);
+        setReportsEpoch((value) => value + 1);
+        if (nav.thenView) {
+          setWorkspaceView(nav.thenView);
+        }
+      } else {
+        setWorkspaceView(nav.view);
+      }
+    },
+    [activeIssue, confirmPendingSelect, pendingNav, pendingSelect, saveRemarkEdit],
+  );
+
+  const runPolling = useRunPolling(handleSeededReport, authBff.discovery.status !== "LOADING");
 
   return (
     <div className="app-shell">
@@ -142,14 +218,14 @@ export default function App() {
 
       <WorkspaceNav
         workspaceView={workspaceView}
-        onChange={setWorkspaceView}
+        onChange={requestWorkspaceView}
         reviewFindingsCount={selectedReport ? selectedReport.issues.length : null}
       />
       <PackCycleStrip
         workspaceView={workspaceView}
         packDraft={pack.packDraft}
         hasReport={selectedReportId !== null}
-        onChange={setWorkspaceView}
+        onChange={requestWorkspaceView}
       />
       {import.meta.env.DEV ? (
         <DemoFixturePanel onSeeded={handleSeededReport} hideIntro={selectedReport !== null} />
@@ -165,7 +241,8 @@ export default function App() {
           capabilities={selectedReport?.capabilities ?? null}
           capabilitiesReportId={selectedReport?.report_id ?? selectedReportId}
           onReportReady={handleSeededReport}
-          onNavigate={setWorkspaceView}
+          onNavigate={requestWorkspaceView}
+          runPolling={runPolling}
         />
       ) : null}
 
@@ -175,7 +252,7 @@ export default function App() {
         <UserScreen
           selectedReportId={selectedReportId}
           selectedReport={selectedReport}
-          onOpenScreen={setWorkspaceView}
+          onOpenScreen={requestWorkspaceView}
           onNavigateToFindings={landing.landOnFindings}
         />
       ) : null}
@@ -188,6 +265,14 @@ export default function App() {
           groupedReports={groupedReports}
           selectedReportId={selectedReportId}
           onSelectReport={(reportId) => {
+            if (reportId === selectedReportId) {
+              requestWorkspaceView("review");
+              return;
+            }
+            if (isDirty) {
+              setPendingNav({ kind: "report", reportId, thenView: "review" });
+              return;
+            }
             setSelectedReportId(reportId);
             setWorkspaceView("review");
           }}
@@ -218,6 +303,8 @@ export default function App() {
           hitlEnabled={authBff.hitlEnabled}
           reviewEvents={reviewEvents}
           reviewEventsError={reviewEventsError}
+          historyPending={historyPending}
+          conflictMessage={conflictMessage}
           spatialViewer={
             <Suspense fallback={<ViewerPlaceholder message={UI_COPY.viewerLoading} />}>
               {selectedReport ? (
@@ -233,7 +320,7 @@ export default function App() {
               )}
             </Suspense>
           }
-          onSelectReport={setSelectedReportId}
+          onSelectReport={requestSelectReport}
           onSeverityChange={findings.setIssueSeverityFilter}
           onHitlOnlyChange={findings.setHitlOnlyFilter}
           onSearchChange={findings.setIssueSearch}
@@ -256,20 +343,35 @@ export default function App() {
             void decideActiveRemark("rejected");
           }}
           onNavigateToFindings={landing.landOnFindings}
-          onOpenScreen={setWorkspaceView}
+          onOpenScreen={requestWorkspaceView}
         />
       ) : null}
 
       {TRIAGE_KEYBOARD_VIEWS.has(workspaceView) ? (
         <footer className="hotkeys-footer" data-testid="hotkeys-footer">
-          <span>{triageShortcutsEnabled ? UI_COPY.keyboardFooter : "Быстрые клавиши отключены"}</span>
+          <span>{triageShortcutsEnabled ? UI_COPY.keyboardFooter : UI_COPY.keyboardShortcutsOff}</span>
           <span className="hotkeys-note">{UI_COPY.keyboardFooterNote}</span>
           <button type="button" className="toolbar-button keyboard-help-trigger"
             aria-haspopup="dialog" aria-expanded={triageHelpOpen}
             onClick={() => setTriageHelpOpen(true)}>
-            Справка и клавиши
+            {UI_COPY.keyboardHelpTrigger}
           </button>
         </footer>
+      ) : null}
+
+      {pendingSelect || pendingNav ? (
+        <DirtyLeaveDialog
+          onSave={() => {
+            void resolveLeave("save");
+          }}
+          onDiscard={() => {
+            void resolveLeave("discard");
+          }}
+          onStay={() => {
+            dismissPendingSelect();
+            setPendingNav(null);
+          }}
+        />
       ) : null}
 
       {triageHelpOpen ? (

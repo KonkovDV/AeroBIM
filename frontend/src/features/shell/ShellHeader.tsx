@@ -47,7 +47,7 @@ export default function ShellHeader({
       <div className="product-context">
         <RoleHonestyBanner bffStatus={bffStatus} />
         <details className="scope-disclosure product-scope">
-          <summary>Область проверки и ограничения</summary>
+            <summary>{UI_COPY.scopeDisclosure}</summary>
           <p className="lede">{UI_COPY.headerLede}</p>
         </details>
       </div>

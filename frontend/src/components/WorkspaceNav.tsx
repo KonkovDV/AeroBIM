@@ -43,7 +43,7 @@ export default function WorkspaceNav({ workspaceView, onChange, reviewFindingsCo
   return (
     <nav className="workspace-nav product-nav" aria-label={UI_COPY.navAria} data-testid="workspace-nav">
       <label className="product-mobile-nav">
-        <span>Раздел рабочего места</span>
+        <span>{UI_COPY.mobileNavLabel}</span>
         <select value={workspaceView} onChange={(event) => {
           const next = WORKSPACE_NAV.find(({ id }) => id === event.target.value);
           if (next) onChange(next.id);

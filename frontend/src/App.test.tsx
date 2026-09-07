@@ -9,6 +9,7 @@ const {
   fetchReviewEventsMock,
   uploadDocumentMock,
   submitAnalyzeProjectPackageMock,
+  fetchAnalyzeJobMock,
   fetchAuthBffMock,
   fetchAuthSessionMock,
   seedDemoFixtureMock,
@@ -19,6 +20,7 @@ const {
   fetchReviewEventsMock: vi.fn(),
   uploadDocumentMock: vi.fn(),
   submitAnalyzeProjectPackageMock: vi.fn(),
+  fetchAnalyzeJobMock: vi.fn(),
   fetchAuthBffMock: vi.fn(),
   fetchAuthSessionMock: vi.fn(),
   seedDemoFixtureMock: vi.fn(),
@@ -38,6 +40,7 @@ vi.mock("./lib/api", async () => {
     fetchReviewEvents: fetchReviewEventsMock,
     uploadDocument: uploadDocumentMock,
     submitAnalyzeProjectPackage: submitAnalyzeProjectPackageMock,
+    fetchAnalyzeJob: (...args: unknown[]) => fetchAnalyzeJobMock(...args),
     fetchAuthBff: fetchAuthBffMock,
     fetchAuthSession: fetchAuthSessionMock,
     seedDemoFixture: seedDemoFixtureMock,
@@ -68,6 +71,7 @@ vi.mock("./components/IfcViewerPanel", () => ({
 
 import App from "./App";
 import { UI_COPY } from "./lib/ui-copy";
+import { ACTIVE_JOB_STORAGE_KEY } from "./lib/active-job";
 const REPORT_FILTERS_STORAGE_KEY = "aerobim-report-filters-v1";
 const REPORT_FILTER_PRESETS_STORAGE_KEY = "aerobim-report-filter-presets-v1";
 
@@ -126,6 +130,7 @@ function buildIssue(overrides: Partial<ValidationIssue>): ValidationIssue {
     source_id: overrides.source_id ?? "drawing:A-102",
     evidence_refs: overrides.evidence_refs ?? ["drawing:A-102#sheet:A-102"],
     evidence_modality: overrides.evidence_modality ?? "drawing",
+    review: overrides.review,
   };
 }
 
@@ -151,6 +156,8 @@ function buildReport(): ValidationReport {
       buildIssue({}),
       buildIssue({
         rule_id: "DRAW-SECOND",
+        finding_id: "fid-draw-second",
+        source_id: "drawing:A-101",
         message: "Second drawing issue",
         target_ref: "SLAB-02",
         element_guid: null,
@@ -229,6 +236,22 @@ describe("App", () => {
   beforeEach(() => {
     window.history.replaceState({}, "", "/");
     window.localStorage.clear();
+    sessionStorage.removeItem(ACTIVE_JOB_STORAGE_KEY);
+    const dialogProto = HTMLDialogElement.prototype;
+    Object.defineProperties(dialogProto, {
+      showModal: {
+        configurable: true,
+        value: function (this: HTMLDialogElement) {
+          this.setAttribute("open", "");
+        },
+      },
+      close: {
+        configurable: true,
+        value: function (this: HTMLDialogElement) {
+          this.removeAttribute("open");
+        },
+      },
+    });
     Object.defineProperty(window.navigator, "clipboard", {
       configurable: true,
       value: {
@@ -279,6 +302,8 @@ describe("App", () => {
     fetchReviewEventsMock.mockResolvedValue({ events: [], count: 0 });
     uploadDocumentMock.mockReset();
     submitAnalyzeProjectPackageMock.mockReset();
+    fetchAnalyzeJobMock.mockReset();
+    fetchAnalyzeJobMock.mockResolvedValue({ job_id: "idle", status: "running" });
     seedDemoFixtureMock.mockReset();
     fetchReportsMock.mockResolvedValue({
       reports: [toReportSummary(report)],
@@ -1035,7 +1060,9 @@ describe("App", () => {
     });
     render(<App />);
     const editor = await screen.findByLabelText(UI_COPY.editRemark);
-    expect((editor as HTMLTextAreaElement).value).toBe("T1");
+    await waitFor(() => {
+      expect((editor as HTMLTextAreaElement).value).toBe("T1");
+    });
     expect(report.summary.passed).toBe(false);
   });
 
@@ -1098,6 +1125,112 @@ describe("App", () => {
     expect(screen.queryByTestId("export-preview")).toBeNull();
   });
 
+  it("asks what to do with an unsaved remark before changing the finding", async () => {
+    render(<App />);
+    const editor = await screen.findByLabelText(UI_COPY.editRemark);
+    fireEvent.change(editor, { target: { value: "Черновик эксперта" } });
+    const cards = screen.getAllByTestId("issue-card");
+    expect(cards.length).toBeGreaterThan(1);
+    fireEvent.click(cards[1]);
+    expect(await screen.findByTestId("dirty-leave-dialog")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: UI_COPY.dirtyLeaveStay }));
+    expect(screen.queryByTestId("dirty-leave-dialog")).toBeNull();
+    expect((screen.getByLabelText(UI_COPY.editRemark) as HTMLTextAreaElement).value).toBe(
+      "Черновик эксперта",
+    );
+    fireEvent.click(cards[1]);
+    fireEvent.click(await screen.findByRole("button", { name: UI_COPY.dirtyLeaveDiscard }));
+    await waitFor(() => {
+      expect(screen.queryByTestId("dirty-leave-dialog")).toBeNull();
+    });
+    expect((screen.getByLabelText(UI_COPY.editRemark) as HTMLTextAreaElement).value).not.toBe(
+      "Черновик эксперта",
+    );
+  });
+
+  it("does not let a late history response overwrite a finding the expert already left", async () => {
+    let releaseEvents: (payload: { events: unknown[]; count: number }) => void = () => undefined;
+    fetchReviewEventsMock.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          releaseEvents = resolve;
+        }),
+    );
+    render(<App />);
+    await screen.findByLabelText(UI_COPY.editRemark);
+    fireEvent.click(await screen.findByRole("option", { name: /DRAW-SECOND/i }));
+    releaseEvents({
+      events: [
+        {
+          event_id: "late-t1",
+          event_type: "edited_remark",
+          created_at: "2026-09-07T00:00:00Z",
+          issue_rule_id: "DRAW-001",
+          finding_id: "fid-draw-001",
+          note: "T1-late",
+          resulting_state: "edited",
+        },
+      ],
+      count: 1,
+    });
+    await waitFor(() => {
+      expect(fetchReviewEventsMock).toHaveBeenCalled();
+    });
+    expect((screen.getByLabelText(UI_COPY.editRemark) as HTMLTextAreaElement).value).not.toBe("T1-late");
+  });
+
+  it("shows findings and keeps HITL writes locked until history arrives", async () => {
+    fetchReviewEventsMock.mockImplementation(() => new Promise(() => {}));
+    render(<App />);
+    expect(await screen.findByRole("option", { name: /DRAW-SECOND/i })).toBeTruthy();
+    expect((screen.getByRole("button", { name: UI_COPY.saveRemark }) as HTMLButtonElement).disabled).toBe(true);
+    expect((screen.getByRole("button", { name: UI_COPY.confirmRemark }) as HTMLButtonElement).disabled).toBe(
+      true,
+    );
+    expect((screen.getByRole("button", { name: UI_COPY.rejectRemark }) as HTMLButtonElement).disabled).toBe(true);
+    expect(screen.getByText(UI_COPY.historyLoading)).toBeTruthy();
+    fireEvent.keyDown(window, { key: "a" });
+    expect(postReviewEventMock).not.toHaveBeenCalled();
+  });
+
+  it("asks before switching pack when the remark draft is dirty", async () => {
+    const first = buildReport();
+    const second = buildSecondReport();
+    fetchReportsMock.mockResolvedValue({
+      reports: [toReportSummary(first), toReportSummary(second)],
+      count: 2,
+    });
+    fetchReportMock.mockImplementation(async (reportId: string) =>
+      reportId === second.report_id ? second : first,
+    );
+    render(<App />);
+    const editor = await screen.findByLabelText(UI_COPY.editRemark);
+    fireEvent.change(editor, { target: { value: "Черновик перед сменой комплекта" } });
+    fireEvent.change(screen.getByLabelText(UI_COPY.selectedPack), {
+      target: { value: second.report_id },
+    });
+    expect(await screen.findByTestId("dirty-leave-dialog")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: UI_COPY.dirtyLeaveStay }));
+    expect((screen.getByLabelText(UI_COPY.selectedPack) as HTMLSelectElement).value).toBe(first.report_id);
+    expect((screen.getByLabelText(UI_COPY.editRemark) as HTMLTextAreaElement).value).toBe(
+      "Черновик перед сменой комплекта",
+    );
+  });
+
+  it("asks before leaving the expert screen when the remark draft is dirty", async () => {
+    render(<App />);
+    const editor = await screen.findByLabelText(UI_COPY.editRemark);
+    fireEvent.change(editor, { target: { value: "Черновик перед сменой раздела" } });
+    fireEvent.click(screen.getByRole("button", { name: "Загрузка" }));
+    expect(await screen.findByTestId("dirty-leave-dialog")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: UI_COPY.dirtyLeaveStay }));
+    expect(screen.getByTestId("expert-workplace")).toBeTruthy();
+    expect((screen.getByLabelText(UI_COPY.editRemark) as HTMLTextAreaElement).value).toBe(
+      "Черновик перед сменой раздела",
+    );
+  });
+
+
   it("walks the commission route upload → run onto the expert screen without extra tabs", async () => {
     const packed = buildReport();
     uploadDocumentMock.mockResolvedValue({
@@ -1119,6 +1252,9 @@ describe("App", () => {
     fireEvent.change(input, {
       target: { files: [new File(["IFC"], "walls.ifc", { type: "application/octet-stream" })] },
     });
+    expect(await screen.findByRole("button", { name: UI_COPY.toRun })).toBeTruthy();
+    expect(screen.queryByTestId("analyze-run-panel")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: UI_COPY.toRun }));
     expect(await screen.findByTestId("analyze-run-panel")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Запустить анализ" }));
     expect(await screen.findByTestId("expert-workplace")).toBeTruthy();

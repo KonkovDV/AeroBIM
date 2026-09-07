@@ -54,6 +54,19 @@ describe("PackUploadPanel", () => {
     expect(screen.queryByText(/отменена/i)).toBeNull();
   });
 
+  it("lets the operator pick a document role before the run", () => {
+    const onChooseRole = vi.fn();
+    render(
+      <PackUploadPanel
+        pendingRole={{ path: "docs/plan.pdf", filename: "plan.pdf", role: "drawing" }}
+        onChooseRole={onChooseRole}
+      />,
+    );
+    expect(screen.getByTestId("pack-role-picker")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: UI_COPY.packRoleRequirement }));
+    expect(onChooseRole).toHaveBeenCalledWith("requirement");
+  });
+
   it("shows a draft-slot replacement note when the parent reports one", () => {
     render(<PackUploadPanel draftApplyNote="Слот IFC заменён (было models/a.ifc)." />);
     expect(screen.getByTestId("pack-draft-apply-note").textContent).toMatch(/заменён/);

@@ -1,7 +1,8 @@
 import { useState, type DragEvent } from "react";
 import { UI_COPY } from "../lib/ui-copy";
-import { packCompositionLine, packDraftHasAny, type PackDraft } from "../lib/pack-draft";
+import { packCompositionLine, packDraftHasAny, type PackDocumentRole, type PackDraft } from "../lib/pack-draft";
 import { useUploads } from "../hooks/useUploads";
+import type { PackRoleChoice } from "../hooks/usePackDraft";
 
 export type PackUploadPanelProps = {
   onUploadedPath?: (path: string, filename: string) => void;
@@ -10,6 +11,8 @@ export type PackUploadPanelProps = {
   draftApplyNote?: string | null;
   /** Текущий draft комплекта: состав виден до перехода к прогону. */
   packDraft?: PackDraft;
+  pendingRole?: PackRoleChoice | null;
+  onChooseRole?: (role: PackDocumentRole) => void;
 };
 
 export default function PackUploadPanel({
@@ -17,6 +20,8 @@ export default function PackUploadPanel({
   onContinueToRun,
   draftApplyNote,
   packDraft,
+  pendingRole = null,
+  onChooseRole,
 }: PackUploadPanelProps) {
   const { status, detail, progress, honesty, startFile, cancel } = useUploads({ onUploadedPath });
   const [dragging, setDragging] = useState(false);
@@ -94,6 +99,29 @@ export default function PackUploadPanel({
         <p className="compact-copy" data-testid="pack-composition">
           {UI_COPY.packComposition}: {packCompositionLine(packDraft)}
         </p>
+      ) : null}
+      {pendingRole && onChooseRole ? (
+        <div className="pack-role-picker" data-testid="pack-role-picker" role="group" aria-label={UI_COPY.packRoleAria}>
+          <p className="compact-copy">{UI_COPY.packRoleHint(pendingRole.filename)}</p>
+          {(
+            [
+              ["drawing", UI_COPY.packRoleDrawing],
+              ["requirement", UI_COPY.packRoleRequirement],
+              ["technical_spec", UI_COPY.packRoleSpec],
+              ["calculation", UI_COPY.packRoleCalculation],
+            ] as const
+          ).map(([role, label]) => (
+            <button
+              key={role}
+              type="button"
+              className={`toolbar-button ${pendingRole.role === role ? "active" : ""}`}
+              aria-pressed={pendingRole.role === role}
+              onClick={() => onChooseRole(role)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       ) : null}
       {status === "uploading" && progress === null ? <p className="compact-copy">{UI_COPY.uploading}</p> : null}
       {status === "ok" ? (

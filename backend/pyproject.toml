@@ -33,6 +33,7 @@ dependencies = [
   "defusedxml>=0.7.1",
   "python-docx>=1.1,<2.0",
   "openpyxl>=3.1,<4.0",
+  "reportlab>=4.2,<5.0",
 ]
 
 [project.urls]
@@ -104,6 +105,9 @@ enterprise = [
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+"aerobim.presentation.http.fonts" = ["*.ttf", "OFL.txt"]
+
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
@@ -167,6 +171,8 @@ module = [
   "defusedxml.*",
   "pypdfium2",
   "pypdfium2.*",
+  "reportlab",
+  "reportlab.*",
   "pdfminer",
   "pdfminer.*",
   "pymupdf",

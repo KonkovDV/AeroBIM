@@ -315,9 +315,13 @@ class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
         self.assertGreater(defaults_start, needs_start)
         needs_block = job[needs_start:defaults_start]
         self.assertIn("- pytest-readme-extras", needs_block)
+        self.assertIn("- lint", needs_block)
+        self.assertIn("- typecheck", needs_block)
         for gate in sorted(_REQUIRED_GATES_ATTESTED):
             self.assertIn(f"- {gate}", needs_block, gate)
         self.assertNotIn("pytest-readme-extras", _REQUIRED_GATES_ATTESTED)
+        self.assertNotIn("lint", _REQUIRED_GATES_ATTESTED)
+        self.assertNotIn("typecheck", _REQUIRED_GATES_ATTESTED)
 
         attested = re.findall(
             r"AEROBIM_GATES_ATTESTED:\s*>-\s*\n\s+([^\n]+)",
@@ -329,6 +333,8 @@ class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
             names = {part.strip() for part in csv.split(",") if part.strip()}
             self.assertEqual(names, expected)
             self.assertNotIn("pytest-readme-extras", names)
+            self.assertNotIn("lint", names)
+            self.assertNotIn("typecheck", names)
 
         extras_start = workflow.find("\n  pytest-readme-extras:")
         extras_end = workflow.find("\n  test:", extras_start)

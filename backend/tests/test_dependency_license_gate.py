@@ -105,7 +105,7 @@ def test_pymupdf_dual_license_is_acknowledged() -> None:
 
 def test_core_pdf_stack_is_permissive() -> None:
     inventory = _inventory()
-    for name in ("pypdfium2", "pdfminer.six", "pillow"):
+    for name in ("pypdfium2", "pdfminer.six", "pillow", "reportlab"):
         item = inventory[name]
         assert item["risk_class"] == "permissive", name
         assert item["scope"] == "core", name

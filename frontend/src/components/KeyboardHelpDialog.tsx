@@ -64,12 +64,11 @@ export default function KeyboardHelpDialog({ onClose, shortcutsEnabled, onShortc
       <header className="keyboard-help-heading">
         <h2 id="keyboard-help-title">{UI_COPY.keyboardHelpAria}</h2>
         <button ref={closeRef} type="button" className="toolbar-button" onClick={onClose}>
-          Закрыть
+          {UI_COPY.keyboardHelpClose}
         </button>
       </header>
       <p id="keyboard-help-description">
-        Проверяйте доказательства, затем принимайте решение. Команды подтверждения и отклонения
-        доступны только при разрешённых правах эксперта.
+        {UI_COPY.keyboardHelpIntro}
       </p>
       <dl className="keyboard-help-commands">
         {COMMANDS.map(([keys, description]) => (
@@ -79,11 +78,10 @@ export default function KeyboardHelpDialog({ onClose, shortcutsEnabled, onShortc
       <label className="keyboard-help-preference">
         <input type="checkbox" checked={shortcutsEnabled}
           onChange={(event) => onShortcutsChange(event.target.checked)} />
-        Быстрые клавиши триажа
+        {UI_COPY.keyboardHelpEnable}
       </label>
       <p className="keyboard-help-note">
-        Отключите их при голосовом вводе или диктовке. Кнопки, переходы по Tab и сохранение
-        из редактора остаются доступны. В справке клавиши не подтверждают и не отклоняют замечания.
+        {UI_COPY.keyboardHelpNote}
       </p>
     </dialog>
   );
