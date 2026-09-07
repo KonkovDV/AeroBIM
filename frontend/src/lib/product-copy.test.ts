@@ -9,7 +9,7 @@ describe("product copy safety boundaries", () => {
   });
   it("does not equate empty filtered results with complete validation", () => {
     expect(UI_COPY.noFindings).toContain("фильтрам");
-    expect(UI_COPY.noFindings).toContain("полноту".replace("п", "П"));
+    expect(UI_COPY.noFindings).toContain("Полноту");
     expect(UI_COPY.diffNote).toContain("не доказывает исправление");
     expect(UI_COPY.capabilityMissing).toContain("неизвестна");
   });
