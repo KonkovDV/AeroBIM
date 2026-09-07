@@ -31,8 +31,8 @@ describe("AnalyzeRunPanel", () => {
   it("shows elapsed-timer copy without claiming SLA", () => {
     render(<AnalyzeRunPanel ifcPath="walls.ifc" />);
     const timer = screen.getByTestId("analyze-elapsed");
-    expect(timer.textContent).toMatch(/Цель ТЗ записана как 30:00/);
-    expect(timer.textContent).toMatch(/SLA не заявляем/);
+    expect(timer.textContent).toMatch(/Цель ТЗ — до 30 минут/);
+    expect(timer.textContent).toMatch(/на данных заказчика ещё не подтверждена/);
     expect(screen.getByTestId("analyze-size-honesty").textContent).toMatch(/256 МиБ/);
     expect(screen.getByTestId("analyze-size-honesty").textContent).toMatch(/1,5 ГБ/);
   });
@@ -89,7 +89,7 @@ describe("AnalyzeRunPanel", () => {
     fireEvent.click(screen.getByRole("button", { name: "Запустить анализ" }));
     expect(await screen.findByTestId("analyze-job-status")).toBeTruthy();
     expect(screen.getByTestId("analyze-engine-groups").textContent).toMatch(/модель: ожидание/);
-    expect(screen.getByTestId("run-status-strip").textContent).toMatch(/матрицы возможностей ещё нет/);
+    expect(screen.getByTestId("run-status-strip").textContent).toContain(UI_COPY.runEvidenceNone);
     expect(screen.getByRole("button", { name: "Запустить анализ" })).toHaveProperty("disabled", true);
   });
 

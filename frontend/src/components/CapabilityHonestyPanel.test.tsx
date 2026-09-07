@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import CapabilityHonestyPanel from "./CapabilityHonestyPanel";
 import type { ReportCapabilities } from "../lib/types";
+import { UI_COPY } from "../lib/ui-copy";
 
 const baseCapabilities: ReportCapabilities = {
   clash: { status: "ok", reason: "ifcclash" },
@@ -34,7 +35,7 @@ describe("CapabilityHonestyPanel", () => {
     expect(screen.getByTestId("capability-honesty")).toBeTruthy();
     expect(screen.getByText(/Блокирующие статусы \(1\)/i)).toBeTruthy();
     expect(screen.getByText(/DWG: не выполнена/i)).toBeTruthy();
-    expect(screen.getByTestId("capability-skip-banner").textContent).toMatch(/Тишина ≠ успех/i);
+    expect(screen.getByTestId("capability-skip-banner").textContent).toContain(UI_COPY.silenceIsNotSuccess);
     expect(screen.getByTestId("divergence-list").textContent).toMatch(/engine_wins/);
   });
 
