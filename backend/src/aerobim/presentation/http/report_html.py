@@ -167,7 +167,8 @@ def _build_issue_rows(issues: list[dict[str, Any]]) -> str:
             if machine and machine != effective:
                 review_bits.append(f"machine={_esc(str(machine))}")
             if review_bits:
-                detail_html = f"{detail_html}<br><small class='review'>{' · '.join(review_bits)}</small>"
+                bits = " · ".join(review_bits)
+                detail_html = f"{detail_html}<br><small class='review'>{bits}</small>"
         clause = issue_clause_label(issue)
         clause_html = _esc(clause) if clause else "нет пункта"
         rows += (

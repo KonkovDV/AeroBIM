@@ -42,9 +42,8 @@ def render_report_pdf_bytes(report_id: str, data: dict[str, Any]) -> bytes:
         if isinstance(review, dict):
             effective = review.get("effective_text")
             if effective:
-                lines.append(
-                    f"    review={review.get('state') or '—'}: {str(effective)[:200]}"
-                )
+                state = review.get("state") or "—"
+                lines.append(f"    review={state}: {str(effective)[:200]}")
             machine = review.get("machine_text")
             if machine and machine != effective:
                 lines.append(f"    machine={str(machine)[:200]}")

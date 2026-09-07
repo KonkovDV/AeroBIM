@@ -189,16 +189,12 @@ class FilesystemReviewEventStore:
         if event_id in existing_ids:
             existing_event = next(e for e in existing if e.event_id == event_id)
             if stored_event_payload_fingerprint(existing_event) != append_payload_fingerprint(spec):
-                raise HitlStateConflictError(
-                    "idempotency key reused with a different payload"
-                )
+                raise HitlStateConflictError("idempotency key reused with a different payload")
             return existing_event
         if idem and idem in existing_keys:
             existing_event = next(e for e in existing if e.idempotency_key == idem)
             if stored_event_payload_fingerprint(existing_event) != append_payload_fingerprint(spec):
-                raise HitlStateConflictError(
-                    "idempotency key reused with a different payload"
-                )
+                raise HitlStateConflictError("idempotency key reused with a different payload")
             return existing_event
 
         server_state = latest_hitl_state(
