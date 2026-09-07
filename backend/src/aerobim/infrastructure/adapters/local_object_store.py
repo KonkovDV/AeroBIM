@@ -34,6 +34,29 @@ class LocalObjectStore:
         target.write_bytes(payload)
         return self._normalise_key(key)
 
+    def put_file(
+        self,
+        key: str,
+        path: Path,
+        *,
+        content_type: str | None = None,
+    ) -> str:
+        del content_type
+        source = Path(path)
+        if not source.is_file():
+            raise FileNotFoundError(f"Object source is not a file: {source}")
+        target = self._resolve_key(key)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if source.resolve() == target.resolve():
+            return self._normalise_key(key)
+        with source.open("rb") as src, target.open("wb") as dst:
+            while True:
+                chunk = src.read(DEFAULT_GET_CHUNK_BYTES)
+                if not chunk:
+                    break
+                dst.write(chunk)
+        return self._normalise_key(key)
+
     def get_bytes(self, key: str) -> bytes | None:
         target = self._resolve_key(key)
         if not target.exists() or not target.is_file():

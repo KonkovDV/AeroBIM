@@ -1,7 +1,8 @@
 """Multipart document upload route (storage jail + quarantine + quotas)."""
 
+import asyncio
 import hashlib
-from typing import Annotated
+from typing import Annotated, cast
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile
@@ -20,6 +21,7 @@ from aerobim.core.security.upload_content import (
 from aerobim.core.security.upload_quota import UploadQuotaExceeded
 from aerobim.core.security.zip_limits import ZipBombError, inspect_zip_path, verify_zip_inflate
 from aerobim.domain.object_acl import AuthPrincipal
+from aerobim.domain.ports import ObjectStore
 from aerobim.presentation.http.context import (
     UPLOAD_HASH_CHUNK,
     UPLOAD_SNIFF_BYTES,
@@ -231,18 +233,34 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
                 detail=public_upload_promote_failed_detail(),
             ) from exc
 
-        if ctx.object_store is not None:
-            try:
-                payload = target.read_bytes()
-                ctx.object_store.put_bytes(
-                    relative_path.replace("\\", "/"),
-                    payload,
-                    content_type=sniffed.mime or file.content_type,
-                )
-                del payload
-            except Exception as exc:
+        maybe_store = cast(ObjectStore | None, ctx.object_store)
+        if maybe_store is not None:
+            store: ObjectStore = maybe_store
+            object_key = relative_path.replace("\\", "/")
+            content_type = sniffed.mime or file.content_type
+
+            def _put_object() -> str:
+                return store.put_file(object_key, target, content_type=content_type)
+
+            def _cleanup_failed_put() -> None:
                 target.unlink(missing_ok=True)
+                try:
+                    store.delete(object_key)
+                except Exception as cleanup_exc:
+                    logger.warning(
+                        "object store delete after failed put failed",
+                        key=object_key,
+                        detail=str(cleanup_exc),
+                    )
                 _drop_quota()
+
+            try:
+                await asyncio.to_thread(_put_object)
+            except asyncio.CancelledError:
+                _cleanup_failed_put()
+                raise
+            except Exception as exc:
+                _cleanup_failed_put()
                 logger.error("object store put failed", detail=str(exc))
                 raise HTTPException(
                     status_code=500,

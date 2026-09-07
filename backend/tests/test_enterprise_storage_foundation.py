@@ -70,6 +70,42 @@ class LocalObjectStoreTests(unittest.TestCase):
             store.delete(key)
             self.assertIsNone(store.get_bytes(key))
 
+    def test_put_file_copies_in_chunks_without_read_bytes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            store = LocalObjectStore(root / "objects")
+            source = root / "source.bin"
+            payload = b"chunked-object-store-bytes"
+            source.write_bytes(payload)
+
+            def _forbid_source_read_bytes(self: Path) -> bytes:
+                if self.resolve() == source.resolve():
+                    raise AssertionError("put_file must not call Path.read_bytes on the source")
+                return original_read_bytes(self)
+
+            original_read_bytes = Path.read_bytes
+            with patch.object(Path, "read_bytes", _forbid_source_read_bytes):
+                key = store.put_file(
+                    "ifc-sources/model.ifc",
+                    source,
+                    content_type="application/x-step",
+                )
+
+            self.assertEqual(key, "ifc-sources/model.ifc")
+            self.assertEqual(store.get_bytes(key), payload)
+
+    def test_put_file_same_path_is_idempotent(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            store = LocalObjectStore(root)
+            target = root / "tenants" / "t1" / "uploads" / "a.ifc"
+            target.parent.mkdir(parents=True)
+            target.write_bytes(b"ISO-10303-21;")
+            key = store.put_file("tenants/t1/uploads/a.ifc", target)
+            self.assertEqual(key, "tenants/t1/uploads/a.ifc")
+            self.assertEqual(target.read_bytes(), b"ISO-10303-21;")
+            self.assertEqual(store.get_bytes(key), b"ISO-10303-21;")
+
     def test_get_bytes_rejects_oversized_file(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             store = LocalObjectStore(Path(tmpdir), max_get_bytes=8)
@@ -129,6 +165,17 @@ class S3ObjectStoreTests(unittest.TestCase):
             def put_object(self, *, Bucket: str, Key: str, Body: bytes, **_: object) -> None:
                 stored_objects[Key] = Body
 
+            def upload_file(
+                self,
+                Filename: str,
+                Bucket: str,
+                Key: str,
+                ExtraArgs: dict[str, object] | None = None,
+                **_: object,
+            ) -> None:
+                del Bucket, ExtraArgs
+                stored_objects[Key] = Path(Filename).read_bytes()
+
             def get_object(self, *, Bucket: str, Key: str) -> dict[str, object]:
                 if Key not in stored_objects:
                     raise NoSuchKeyError()
@@ -182,6 +229,22 @@ class S3ObjectStoreTests(unittest.TestCase):
 
             store.delete(key)
             self.assertIsNone(store.get_bytes(key))
+
+    def test_put_file_uses_upload_file_not_put_object_body(self) -> None:
+        stored_objects: dict[str, bytes] = {}
+        with self._patch_fake_client(stored_objects):
+            store = S3ObjectStore(bucket="bucket", region="ru-test-1", prefix="aerobim")
+            with tempfile.TemporaryDirectory() as tmpdir:
+                source = Path(tmpdir) / "model.ifc"
+                source.write_bytes(b"ifc-from-disk")
+                key = store.put_file(
+                    "ifc-sources/report-1/model.ifc",
+                    source,
+                    content_type="application/x-step",
+                )
+            self.assertEqual(key, "aerobim/ifc-sources/report-1/model.ifc")
+            self.assertEqual(stored_objects[key], b"ifc-from-disk")
+            self.assertEqual(store.get_bytes(key), b"ifc-from-disk")
 
     def test_get_bytes_rejects_oversized_content_length(self) -> None:
         stored_objects: dict[str, bytes] = {}
