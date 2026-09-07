@@ -4,6 +4,7 @@ import type { AuthBffDiscoveryStatus } from "../../lib/auth-bff";
 import RoleHonestyBanner from "../honesty/RoleHonestyBanner";
 
 export type ShellHeaderProps = {
+  /** Kept for caller compatibility; service addresses never appear in product UI. */
   apiBase: string;
   reportCount: number;
   uiRole: UiRoleAlias;
@@ -13,7 +14,6 @@ export type ShellHeaderProps = {
 };
 
 export default function ShellHeader({
-  apiBase,
   reportCount,
   uiRole,
   onRoleChange,
@@ -21,48 +21,35 @@ export default function ShellHeader({
   roleLocked = false,
 }: ShellHeaderProps) {
   return (
-    <header className="app-header">
-      <div className="brand-lockup">
+    <header className="app-header product-header">
+      <div className="product-identity">
         <span className="brand-mark" aria-hidden="true" />
-        <div className="brand-copy">
-          <p className="eyebrow">{UI_COPY.headerEyebrow}</p>
+        <div className="product-title">
+          <p className="product-wordmark">{UI_COPY.headerEyebrow}</p>
           <h1>{UI_COPY.headerTitle}</h1>
-          <details className="scope-disclosure">
-            <summary>Область проверки и ограничения</summary>
-            <p className="lede">
-              {UI_COPY.headerLede.split("summary.passed").map((part, index, parts) =>
-                index < parts.length - 1 ? (
-                  <span key={part}>
-                    {part}
-                    <code>summary.passed</code>
-                  </span>
-                ) : (
-                  <span key={part}>{part}</span>
-                ),
-              )}
-            </p>
-          </details>
-          <RoleHonestyBanner bffStatus={bffStatus} />
         </div>
       </div>
-      <div className="header-card">
-        <span>{UI_COPY.apiLabel}</span>
-        <strong>{apiBase || UI_COPY.sameOriginApi}</strong>
-        <span>{UI_COPY.reportsLoaded(reportCount)}</span>
-        <label className="role-alias">
-          {UI_COPY.roleSelectLabel}
+      <div className="product-toolbar">
+        <span className="product-report-count">{UI_COPY.reportsLoaded(reportCount)}</span>
+        <label className="product-role">
+          <span>{UI_COPY.roleSelectLabel}</span>
           <select
             aria-label={UI_COPY.roleSelectLabel}
             value={uiRole}
             disabled={roleLocked}
-            onChange={(event) => {
-              onRoleChange(event.target.value === "user" ? "user" : "expert");
-            }}
+            onChange={(event) => onRoleChange(event.target.value === "user" ? "user" : "expert")}
           >
             <option value="expert">{UI_COPY.roleExpert}</option>
             <option value="user">{UI_COPY.roleUser}</option>
           </select>
         </label>
+      </div>
+      <div className="product-context">
+        <RoleHonestyBanner bffStatus={bffStatus} />
+        <details className="scope-disclosure product-scope">
+          <summary>Область проверки и ограничения</summary>
+          <p className="lede">{UI_COPY.headerLede}</p>
+        </details>
       </div>
     </header>
   );
