@@ -54,7 +54,8 @@ python -m aerobim.tools.run_federated_mep_inventory --samolet-demo-copyleft
 
 VERIFIED 2026-07-31 lock SSOT historically `pymupdf==1.28.0` (dual AGPL/Artifex).
 **Owner decision 2026-07-31: Option B** — production core PDF path uses
-`pypdfium2` + `pdfminer.six` (+ Pillow). PyMuPDF remains only as optional
+`pypdfium2` + `pdfminer.six` (+ Pillow). ReportLab (BSD-3-Clause) renders the
+export PDF with a vendored OFL font; it is not PyMuPDF. PyMuPDF remains only as optional
 `pdf-agpl` (dev/tools), absent from `requirements-lock.txt` / Docker runtime.
 
 | Опция | Стоимость | Эффект | Статус |

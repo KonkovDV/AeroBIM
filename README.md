@@ -502,10 +502,10 @@ Use [`CITATION.cff`](CITATION.cff) (GitHub “Cite this repository”) or [`docs
 
 ## Stack
 
-Python 3.12+ with FastAPI and Uvicorn. The buildingSMART toolchain — IfcOpenShell, IfcTester, IfcClash — does the IFC work; web-ifc and Three.js drive the browser review shell; pypdfium2 and pdfminer.six handle PDF, with PyMuPDF, RapidOCR and Docling as optional extras. Five-layer Clean Architecture, constructor injection, Protocol ports.
+Python 3.12+ with FastAPI and Uvicorn. The buildingSMART toolchain — IfcOpenShell, IfcTester, IfcClash — does the IFC work; web-ifc and Three.js drive the browser review shell; pypdfium2 and pdfminer.six handle PDF, reportlab renders the export PDF, with PyMuPDF, RapidOCR and Docling as optional extras. Five-layer Clean Architecture, constructor injection, Protocol ports.
 
 ## License
 
-MIT for code authored in this repository. Third-party components keep their own licences: pypdfium2, pdfminer.six and Pillow are permissive; IfcOpenShell and IfcTester are LGPL-3.0-or-later; web-ifc is MPL-2.0; PyMuPDF is dual AGPL-3.0 / Artifex commercial and therefore stays an optional extra, absent from the runtime lock and the Docker image.
+MIT for code authored in this repository. Third-party components keep their own licences: pypdfium2, pdfminer.six, Pillow and reportlab are permissive; IfcOpenShell and IfcTester are LGPL-3.0-or-later; web-ifc is MPL-2.0; PyMuPDF is dual AGPL-3.0 / Artifex commercial and therefore stays an optional extra, absent from the runtime lock and the Docker image.
 
 Machine-readable inventory: [`audit/dependency_license_inventory.json`](audit/dependency_license_inventory.json) · policy: [`docs/license-policy-2026.md`](docs/license-policy-2026.md). This is not a legal opinion, and the product as a whole must not be described as MIT without disclosing third-party components.
