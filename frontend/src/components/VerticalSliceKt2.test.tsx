@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import VerticalSliceKt2, { formatPackageOutcome, outcomeClass, overlayRectStyle } from "./VerticalSliceKt2";
 import type { ValidationIssue, ValidationReport } from "../lib/types";
+import { UI_COPY } from "../lib/ui-copy";
 
 /** KT#2 demo contract: stamp/title finding is visible with evidence + fail-closed verdict. */
 const stampFinding: ValidationIssue = {
@@ -81,7 +82,7 @@ describe("KT#2 vertical-slice UI contract", () => {
     expect(screen.getByTestId("kt2-overlay-bbox")).toBeTruthy();
     expect(screen.getByText(/детерминированный bbox, не CV/i)).toBeTruthy();
     const badge = screen.getByTestId("kt2-outcome");
-    expect(badge.textContent).toMatch(/FAILED/);
+    expect(badge.textContent).toBe(UI_COPY.outcomeFailed);
     expect(badge.className).toContain("outcome-fail");
     expect(badge.className).not.toContain("outcome-pass");
     expect(screen.getByText(/Вердикт не PASS/i)).toBeTruthy();
@@ -96,7 +97,7 @@ describe("KT#2 vertical-slice UI contract", () => {
   it("does not treat summary.passed as Published authorization", () => {
     expect(formatPackageOutcome("pass", true)).not.toMatch(/Published/i);
     expect(formatPackageOutcome("blocked", true)).not.toMatch(/Published/i);
-    expect(formatPackageOutcome(undefined, true)).toBe("Гейт: pass (устаревший отчёт)");
+    expect(formatPackageOutcome(undefined, true)).toBe(UI_COPY.outcomeLegacyPass);
     expect(formatPackageOutcome(undefined, true)).not.toMatch(/Published/i);
   });
 
