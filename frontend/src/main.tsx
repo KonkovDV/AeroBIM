@@ -4,6 +4,7 @@ import App from "./App";
 import "./styles.css";
 import "./styles/design-system.css";
 import "./styles/visual-language.css";
+import "./styles/review-ergonomics.css";
 
 const container = document.getElementById("root");
 
