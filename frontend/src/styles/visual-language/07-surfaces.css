@@ -1,0 +1,455 @@
+/* --- Панели честности.
+   Это ядро продукта, а не служебная сноска: они оформлены как видные
+   врезки с цветным рельсом и нигде не приглушаются. --- */
+
+.capability-block-banner,
+.provenance-gap-banner,
+.provenance-ok-banner,
+.capability-top-banner,
+.role-honesty-banner,
+.upload-honesty,
+.hitl-readonly-note,
+.viewer-limit-notice,
+.pack-draft-apply-note,
+.synthetic-content-mark {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--vl-space-2);
+  padding: var(--vl-space-3) var(--vl-space-4);
+  border: 1px solid var(--vl-line-strong);
+  border-left-width: 3px;
+  border-radius: var(--vl-radius-md);
+  background: var(--vl-sunken);
+  font-size: var(--vl-text-sm);
+  line-height: var(--vl-leading-snug);
+  color: var(--vl-text-secondary);
+}
+
+.capability-block-banner,
+.provenance-gap-banner,
+.capability-top-banner {
+  background: var(--vl-amber-soft);
+  border-color: var(--vl-amber700);
+  color: var(--vl-amber800);
+  font-weight: 500;
+}
+
+.provenance-ok-banner,
+.capability-top-banner-ok {
+  background: var(--vl-green-soft);
+  border-color: var(--vl-green700);
+  color: var(--vl-green700);
+}
+
+.synthetic-content-mark {
+  padding: 1px var(--vl-space-2);
+  border-radius: var(--vl-radius-xs);
+  border-left-width: 1px;
+  border-style: dashed;
+  font-size: var(--vl-text-3xs);
+  font-weight: 600;
+  letter-spacing: var(--vl-track-caps);
+  text-transform: uppercase;
+  display: inline-flex;
+}
+
+.divergence-block,
+.detail-block {
+  padding: var(--vl-space-3) var(--vl-space-4);
+  border-top: 1px solid var(--vl-line);
+}
+
+.detail-grid,
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--vl-space-3);
+  padding: var(--vl-space-3) var(--vl-space-4);
+}
+
+/* Показатель: подпись мелкая и капителью, значение крупное и табличными цифрами. */
+.summary-tile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--vl-space-1);
+  padding: var(--vl-space-3);
+  background: var(--vl-sunken);
+  border: 1px solid var(--vl-line);
+  border-radius: var(--vl-radius-md);
+}
+
+.summary-tile > span:first-child {
+  font-size: var(--vl-text-3xs);
+  font-weight: 600;
+  letter-spacing: var(--vl-track-caps);
+  text-transform: uppercase;
+  color: var(--vl-text-muted);
+}
+
+.summary-tile > strong {
+  font-size: var(--vl-text-md);
+  font-weight: 700;
+  letter-spacing: var(--vl-track-tight);
+  color: var(--vl-text);
+}
+
+/* --- Состояния --- */
+
+.panel-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--vl-space-2);
+  padding: var(--vl-space-6) var(--vl-space-4);
+  font-size: var(--vl-text-sm);
+  color: var(--vl-text-muted);
+}
+
+.panel-empty.compact {
+  padding: var(--vl-space-3) var(--vl-space-4);
+}
+
+.error-banner,
+.export-error,
+.preset-transfer-status-failed,
+.share-link-status-failed {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--vl-space-2);
+  padding: var(--vl-space-3) var(--vl-space-4);
+  border: 1px solid var(--vl-red600);
+  border-left-width: 3px;
+  border-radius: var(--vl-radius-md);
+  background: var(--vl-red-soft);
+  font-size: var(--vl-text-sm);
+  font-weight: 500;
+  color: var(--vl-red600);
+}
+
+.error-banner {
+  margin: var(--vl-space-3) var(--vl-space-6) 0;
+}
+
+.preset-transfer-status-exported,
+.preset-transfer-status-imported,
+.share-link-status-copied {
+  font-size: var(--vl-text-xs);
+  font-weight: 600;
+  color: var(--vl-green700);
+}
+
+/* --- Прогон --- */
+
+.run-status-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  gap: 1px;
+  background: var(--vl-line);
+  border: 1px solid var(--vl-line);
+  border-radius: var(--vl-radius-md);
+  overflow: hidden;
+}
+
+.run-status-cell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--vl-space-1);
+  padding: var(--vl-space-3);
+  background: var(--vl-surface);
+}
+
+.run-status-value {
+  font-size: var(--vl-text-sm);
+  font-weight: 600;
+  color: var(--vl-text);
+}
+
+/* Секундомер не должен шевелить соседние элементы каждую секунду. */
+.run-timer,
+.analyze-elapsed {
+  font-variant-numeric: tabular-nums slashed-zero;
+  font-feature-settings: "tnum" 1;
+  min-width: 7ch;
+  display: inline-block;
+}
+
+.run-journal,
+.review-history {
+  max-height: 200px;
+  overflow-y: auto;
+  margin: 0;
+  padding: var(--vl-space-2) var(--vl-space-4);
+  list-style: none;
+  font-size: var(--vl-text-xs);
+  color: var(--vl-text-secondary);
+}
+
+.run-journal li,
+.review-history li {
+  padding: var(--vl-space-1) 0;
+  border-bottom: 1px solid var(--vl-line);
+}
+
+.analyze-stages,
+.analyze-engines,
+.evidence-stepper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vl-space-2);
+  padding: var(--vl-space-3) var(--vl-space-4);
+}
+
+.analyze-stage,
+.evidence-step {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--vl-space-2);
+  padding: var(--vl-space-1) var(--vl-space-3);
+  border: 1px solid var(--vl-line-strong);
+  border-radius: var(--vl-radius-pill);
+  background: var(--vl-surface);
+  font-size: var(--vl-text-xs);
+  color: var(--vl-text-muted);
+}
+
+.analyze-stage.active {
+  border-color: var(--vl-accent);
+  background: var(--vl-accent-soft);
+  color: var(--vl-accent-hover);
+  font-weight: 600;
+}
+
+.evidence-step.ready {
+  border-color: var(--vl-green700);
+  color: var(--vl-green700);
+  font-weight: 600;
+}
+
+.analyze-error,
+.analyze-poll-error {
+  margin: 0 var(--vl-space-4) var(--vl-space-3);
+  padding: var(--vl-space-2) var(--vl-space-3);
+  border-left: 3px solid var(--vl-red600);
+  border-radius: var(--vl-radius-xs);
+  background: var(--vl-red-soft);
+  font-size: var(--vl-text-sm);
+  color: var(--vl-red600);
+}
+
+/* --- Подвал и подсказка --- */
+
+.hotkeys-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--vl-space-3);
+  padding: var(--vl-space-3) var(--vl-space-6);
+  border-top: 1px solid var(--vl-line);
+  background: var(--vl-surface);
+  font-size: var(--vl-text-xs);
+  color: var(--vl-text-muted);
+}
+
+.hotkeys-note {
+  color: var(--vl-text-muted);
+}
+
+/* Клавиши в тексте подсказки выглядят как клавиши. */
+.hotkeys-footer kbd,
+.triage-help kbd {
+  display: inline-block;
+  min-width: 18px;
+  padding: 1px 5px;
+  border: 1px solid var(--vl-line-control);
+  border-bottom-width: 2px;
+  border-radius: var(--vl-radius-xs);
+  background: var(--vl-surface);
+  font-size: var(--vl-text-3xs);
+  font-weight: 600;
+  color: var(--vl-text-secondary);
+  text-align: center;
+}
+
+.triage-help {
+  position: fixed;
+  right: var(--vl-space-6);
+  bottom: var(--vl-space-6);
+  z-index: 60;
+  max-width: 340px;
+  padding: var(--vl-space-4);
+  background: var(--vl-raised);
+  border: 1px solid var(--vl-line-strong);
+  border-radius: var(--vl-radius-lg);
+  box-shadow: var(--vl-shadow-overlay);
+  font-size: var(--vl-text-sm);
+  color: var(--vl-text-secondary);
+}
+
+/* --- Просмотрщик и доказательства --- */
+
+.viewer-stage,
+.drawing-evidence-panel-stage {
+  position: relative;
+  background: var(--vl-sunken);
+  border-top: 1px solid var(--vl-line);
+  border-bottom: 1px solid var(--vl-line);
+  overflow: hidden;
+}
+
+/* Сетка на подложке сцены читается как чертёжный планшет и даёт ощущение масштаба. */
+.viewer-viewport,
+.drawing-evidence-panel-viewport {
+  position: relative;
+  background-color: var(--vl-sunken);
+  background-image:
+    linear-gradient(var(--vl-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--vl-line) 1px, transparent 1px);
+  background-size: 24px 24px, 24px 24px;
+}
+
+.viewer-overlay,
+.viewer-overlay-error {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--vl-space-2);
+  padding: var(--vl-space-4);
+  text-align: center;
+  font-size: var(--vl-text-sm);
+  color: var(--vl-text-secondary);
+  background: color-mix(in srgb, var(--vl-sunken) 88%, transparent);
+}
+
+.viewer-overlay-error {
+  color: var(--vl-red600);
+  font-weight: 500;
+}
+
+.viewer-meta,
+.viewer-caption,
+.drawing-evidence-panel-caption,
+.drawing-evidence-panel-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vl-space-1) var(--vl-space-3);
+  padding: var(--vl-space-2) var(--vl-space-4);
+  font-size: var(--vl-text-xs);
+  color: var(--vl-text-muted);
+}
+
+.viewer-status-ready {
+  color: var(--vl-green700);
+  font-weight: 600;
+}
+
+.viewer-status-error {
+  color: var(--vl-red600);
+  font-weight: 600;
+}
+
+.viewer-status-loading,
+.viewer-status-initializing {
+  color: var(--vl-amber800);
+  font-weight: 600;
+}
+
+/* Рамки на чертеже: тип отличается и цветом, и рисунком линии. */
+.drawing-evidence-panel-rect {
+  position: absolute;
+  border: 2px solid var(--vl-accent);
+  border-radius: var(--vl-radius-xs);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7);
+}
+
+.drawing-evidence-panel-rect-region {
+  border-color: var(--vl-accent);
+}
+
+.drawing-evidence-panel-rect-hitl {
+  border-color: var(--vl-green700);
+  border-style: dashed;
+}
+
+.drawing-evidence-panel-rect-stamp {
+  border-color: var(--vl-amber700);
+  border-style: dotted;
+}
+
+.drawing-evidence-panel-rect-title {
+  position: absolute;
+  top: -9px;
+  left: -1px;
+  padding: 0 4px;
+  border-radius: var(--vl-radius-xs);
+  background: var(--vl-accent);
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.viewer-selection-card,
+.viewer-element-props,
+.kt2-slice-quote {
+  padding: var(--vl-space-3) var(--vl-space-4);
+  border-top: 1px solid var(--vl-line);
+  font-size: var(--vl-text-xs);
+  color: var(--vl-text-secondary);
+}
+
+.kt2-slice-quote {
+  border-left: 3px solid var(--vl-accent-line);
+  border-top: 0;
+  background: var(--vl-accent-soft);
+  font-style: italic;
+}
+
+.evidence-ref-list {
+  margin: 0;
+  padding: var(--vl-space-2) var(--vl-space-4) var(--vl-space-3) var(--vl-space-6);
+  font-size: var(--vl-text-xs);
+  color: var(--vl-text-secondary);
+}
+
+/* --- Зона загрузки --- */
+
+.pack-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--vl-space-2);
+  padding: var(--vl-space-6);
+  border: 2px dashed var(--vl-line-control);
+  border-radius: var(--vl-radius-lg);
+  background: var(--vl-sunken);
+  font-size: var(--vl-text-sm);
+  color: var(--vl-text-secondary);
+  text-align: center;
+  transition: border-color var(--vl-dur-fast) var(--vl-ease),
+    background var(--vl-dur-fast) var(--vl-ease);
+}
+
+.pack-dropzone.dragging {
+  border-color: var(--vl-accent);
+  background: var(--vl-accent-soft);
+  color: var(--vl-accent-hover);
+}
+
+/* --- Служебная панель стенда (только в режиме разработки) --- */
+
+.demo-fixture-panel,
+.demo-fixture-compact {
+  border-style: dashed;
+  background: var(--vl-surface);
+}
+
+.compact-copy {
+  font-size: var(--vl-text-xs);
+  color: var(--vl-text-muted);
+}

@@ -38,7 +38,7 @@ export default function CapabilityTopBanner({
 
   return (
     <p className="capability-top-banner" role="status" data-testid="capability-top-banner">
-      {[...blocking, ...skipped].map(humanCapabilityLine).join(". ")}. Тишина ≠ успех.
+      {[...blocking, ...skipped].map(humanCapabilityLine).join(". ")}. {UI_COPY.silenceIsNotSuccess}
     </p>
   );
 }

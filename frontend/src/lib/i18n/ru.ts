@@ -16,6 +16,7 @@ export const RU_COPY = {
     "Матрица возможностей отсутствует в этом отчёте. Тишина ≠ успех. Checkpoint GO; customer_go false. UI не пишет summary.passed.",
   capabilityOkBanner:
     "FAILED/MISSING на сервере блокируют summary.passed. UI флаг не пишет (ADR-001). Checkpoint GO; customer_go false.",
+  silenceIsNotSuccess: "Тишина ≠ успех.",
   roleBanner:
     "Демо-режим: роль не проверяется сервером. Переключатель в шапке — макет экрана, не разграничение доступа. GET /v1/auth/bff = 501 (не OIDC). HITL на сервере: expert/reviewer; user/viewer и общий Bearer → 403.",
   roleBannerLab:

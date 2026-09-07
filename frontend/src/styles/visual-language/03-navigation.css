@@ -1,0 +1,242 @@
+/* --- Навигация --- */
+
+.workspace-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--vl-space-1);
+  padding: var(--vl-space-2) var(--vl-space-6);
+  background: var(--vl-surface);
+  border-bottom: 1px solid var(--vl-line);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.workspace-nav button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--vl-space-2);
+  padding: var(--vl-space-2) var(--vl-space-3);
+  border: 1px solid transparent;
+  border-radius: var(--vl-radius-sm);
+  background: transparent;
+  font: inherit;
+  font-size: var(--vl-text-sm);
+  font-weight: 500;
+  color: var(--vl-text-secondary);
+  cursor: pointer;
+  transition: background var(--vl-dur-fast) var(--vl-ease),
+    color var(--vl-dur-fast) var(--vl-ease);
+}
+
+.workspace-nav button:hover {
+  background: var(--vl-sunken);
+  color: var(--vl-text);
+}
+
+/* Активный раздел помечен сразу тремя признаками: заливкой, весом
+   и линией снизу. Одного цвета было бы недостаточно по WCAG 1.4.1. */
+.workspace-nav button[aria-current="page"],
+.workspace-nav button[aria-pressed="true"] {
+  background: var(--vl-accent-soft);
+  color: var(--vl-accent-hover);
+  font-weight: 600;
+}
+
+.workspace-nav button[aria-current="page"]::after,
+.workspace-nav button[aria-pressed="true"]::after {
+  content: "";
+  position: absolute;
+  left: var(--vl-space-3);
+  right: var(--vl-space-3);
+  bottom: -9px;
+  height: 2px;
+  border-radius: 2px 2px 0 0;
+  background: var(--vl-accent);
+}
+
+.nav-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: var(--vl-radius-pill);
+  background: var(--vl-accent);
+  color: #ffffff;
+  font-size: var(--vl-text-3xs);
+  font-weight: 700;
+  line-height: 1;
+}
+
+@media (prefers-color-scheme: dark) {
+  .nav-badge {
+    background: var(--vl-blue300);
+    color: #0c1119;
+  }
+}
+
+.workspace-alt {
+  margin-left: auto;
+  font-size: var(--vl-text-xs);
+  color: var(--vl-text-muted);
+}
+
+/* --- Цикл пакета --- */
+
+.pack-cycle-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--vl-space-1);
+  padding: var(--vl-space-3) var(--vl-space-6);
+  background: var(--vl-sunken);
+  border-bottom: 1px solid var(--vl-line);
+}
+
+.pack-cycle-step-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--vl-space-1);
+}
+
+.pack-cycle-step {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--vl-space-2);
+  padding: var(--vl-space-1) var(--vl-space-3);
+  border: 1px solid var(--vl-line-strong);
+  border-radius: var(--vl-radius-pill);
+  background: var(--vl-surface);
+  font-size: var(--vl-text-xs);
+  font-weight: 500;
+  color: var(--vl-text-muted);
+  white-space: nowrap;
+}
+
+.pack-cycle-step-ready {
+  border-color: var(--vl-green700);
+  color: var(--vl-green700);
+  font-weight: 600;
+}
+
+/* Текущий шаг ведёт взгляд: заливка, вес и мягкое кольцо. */
+.pack-cycle-step-current {
+  background: var(--vl-accent);
+  border-color: var(--vl-accent);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 0 0 3px var(--vl-accent-soft);
+}
+
+@media (prefers-color-scheme: dark) {
+  .pack-cycle-step-current {
+    background: var(--vl-blue300);
+    border-color: var(--vl-blue300);
+    color: #0c1119;
+  }
+}
+
+.pack-cycle-arrow {
+  color: var(--vl-n300);
+  font-size: var(--vl-text-xs);
+  user-select: none;
+}
+
+.pack-cycle-caption {
+  flex-basis: 100%;
+  margin-top: var(--vl-space-1);
+}
+
+/* --- Панели --- */
+
+.panel,
+.issue-panel,
+.viewer-panel,
+.provenance-panel,
+.coverage-map,
+.capability-honesty,
+.remark-card,
+.drawing-evidence-panel,
+.demo-fixture-panel,
+.kt2-slice,
+.export-preview,
+.machine-gateway,
+.expert-hitl {
+  background: var(--vl-surface);
+  border: 1px solid var(--vl-line);
+  border-radius: var(--vl-radius-lg);
+  box-shadow: var(--vl-shadow-raised);
+}
+
+.panel-header,
+.viewer-header,
+.coverage-map-header,
+.capability-honesty-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--vl-space-3);
+  padding: var(--vl-space-3) var(--vl-space-4);
+  border-bottom: 1px solid var(--vl-line);
+}
+
+.panel-header h2,
+.panel-header h3,
+.viewer-header h2,
+.viewer-header h3,
+.coverage-map-header h3,
+.capability-honesty-header h3 {
+  margin: 0;
+  font-size: var(--vl-text-sm);
+  font-weight: 600;
+  letter-spacing: var(--vl-track-tight);
+  color: var(--vl-text);
+}
+
+/* --- Рабочая сетка --- */
+
+.workspace-grid,
+.expert-workplace,
+.machine-human-split {
+  padding: var(--vl-space-4) var(--vl-space-6) var(--vl-space-6);
+  gap: var(--vl-space-4);
+}
+
+.side-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--vl-space-4);
+  min-width: 0;
+}
+
+/* Разделитель колонок: зона захвата шире видимой линии,
+   чтобы по ней было легко попасть мышью. */
+.grid-resizer {
+  position: relative;
+  border: 0;
+  padding: 0;
+  width: 10px;
+  background: transparent;
+  cursor: col-resize;
+}
+
+.grid-resizer::before {
+  content: "";
+  position: absolute;
+  top: var(--vl-space-2);
+  bottom: var(--vl-space-2);
+  left: 50%;
+  width: 2px;
+  transform: translateX(-50%);
+  border-radius: 2px;
+  background: var(--vl-line-strong);
+  transition: background var(--vl-dur-fast) var(--vl-ease);
+}
+
+.grid-resizer:hover::before {
+  background: var(--vl-accent);
+}

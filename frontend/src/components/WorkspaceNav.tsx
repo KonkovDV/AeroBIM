@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { UI_COPY } from "../lib/ui-copy";
+import { isTextEntryTarget } from "../lib/triage-hotkeys";
 
 export type WorkspaceView =
   | "projects"
@@ -52,12 +53,10 @@ export default function WorkspaceNav({
 }: WorkspaceNavProps) {
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent): void {
-      if (!event.altKey || event.ctrlKey || event.metaKey) {
+      if (!event.altKey || event.ctrlKey || event.metaKey || event.repeat || event.isComposing || event.defaultPrevented) {
         return;
       }
-      const target = event.target as HTMLElement | null;
-      const tag = target?.tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target?.isContentEditable) {
+      if (isTextEntryTarget(event.target)) {
         return;
       }
       const index = Number(event.key) - 1;

@@ -1,0 +1,164 @@
+/* --- Списки и карточки --- */
+
+.report-list,
+.issue-list,
+.collection-stack,
+.provenance-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--vl-space-1);
+  padding: var(--vl-space-2);
+  margin: 0;
+  list-style: none;
+}
+
+.finding-group-title,
+.report-group-title {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: var(--vl-space-2) var(--vl-space-2) var(--vl-space-1);
+  background: var(--vl-surface);
+}
+
+/* Карточка замечания. Рельс выбора присутствует всегда, просто
+   прозрачен: при переборе с клавиатуры J/K текст не смещается ни на пиксель. */
+.report-card,
+.issue-card,
+.collection-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--vl-space-1);
+  padding: var(--vl-space-3);
+  padding-left: calc(var(--vl-space-3) + 3px);
+  border: 1px solid var(--vl-line);
+  border-radius: var(--vl-radius-md);
+  background: var(--vl-surface);
+  cursor: pointer;
+  transition: background var(--vl-dur-fast) var(--vl-ease),
+    border-color var(--vl-dur-fast) var(--vl-ease);
+}
+
+.report-card::before,
+.issue-card::before,
+.collection-card::before {
+  content: "";
+  position: absolute;
+  top: var(--vl-space-2);
+  bottom: var(--vl-space-2);
+  left: 0;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: transparent;
+}
+
+.report-card:hover,
+.issue-card:hover,
+.collection-card:hover {
+  background: var(--vl-sunken);
+  border-color: var(--vl-line-strong);
+}
+
+.report-card[aria-selected="true"],
+.issue-card[aria-selected="true"],
+.collection-card[aria-selected="true"],
+.report-card.selected,
+.issue-card.selected,
+.collection-card.selected {
+  background: var(--vl-selected);
+  border-color: var(--vl-accent-line);
+}
+
+.report-card[aria-selected="true"]::before,
+.issue-card[aria-selected="true"]::before,
+.collection-card[aria-selected="true"]::before,
+.report-card.selected::before,
+.issue-card.selected::before,
+.collection-card.selected::before {
+  background: var(--vl-accent);
+}
+
+.report-card-row,
+.issue-card-row,
+.collection-card-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--vl-space-2);
+  min-width: 0;
+}
+
+.report-card-row > strong,
+.issue-card-row > strong,
+.collection-card-row > strong {
+  font-size: var(--vl-text-sm);
+  font-weight: 600;
+  letter-spacing: var(--vl-track-tight);
+  color: var(--vl-text);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.report-card-meta,
+.issue-card-meta,
+.collection-meta,
+.report-card-time {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vl-space-1) var(--vl-space-3);
+  font-size: var(--vl-text-xs);
+  color: var(--vl-text-muted);
+}
+
+/* Советующее замечание отличается рисунком границы, а не только оттенком. */
+.issue-card--advisory {
+  border-style: dashed;
+}
+
+.issue-card-location {
+  font-size: var(--vl-text-xs);
+  color: var(--vl-text-secondary);
+  overflow-wrap: anywhere;
+}
+
+.issue-location-missing {
+  font-style: italic;
+  color: var(--vl-text-muted);
+}
+
+.guid-copy-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--vl-space-2);
+  font-size: var(--vl-text-xs);
+  color: var(--vl-text-muted);
+}
+
+.guid-copy-row code {
+  padding: 1px 5px;
+  border: 1px solid var(--vl-line);
+  border-radius: var(--vl-radius-xs);
+  background: var(--vl-sunken);
+  color: var(--vl-text-secondary);
+  overflow-wrap: anywhere;
+}
+
+.selection-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--vl-space-1);
+  padding: 1px var(--vl-space-2);
+  border: 1px solid var(--vl-line-strong);
+  border-radius: var(--vl-radius-pill);
+  font-size: var(--vl-text-3xs);
+  font-weight: 600;
+  color: var(--vl-text-muted);
+}
+
+.selection-badge-active {
+  border-color: var(--vl-accent);
+  background: var(--vl-accent-soft);
+  color: var(--vl-accent-hover);
+}
