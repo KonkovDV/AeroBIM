@@ -361,6 +361,11 @@ export default function App() {
 
       {pendingSelect || pendingNav ? (
         <DirtyLeaveDialog
+          busy={remarkSaveState === "saving"}
+          saveDisabled={historyPending || !remarkDraft.trim()}
+          errorMessage={
+            remarkSaveState === "failed" ? conflictMessage ?? UI_COPY.remarkSaveFailed : null
+          }
           onSave={() => {
             void resolveLeave("save");
           }}
