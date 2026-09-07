@@ -1,0 +1,233 @@
+/* --- Финальная сцена: служебное отступает, содержание выходит вперёд ---
+   Правило: ни одна панель честности здесь не скрывается и не приглушается.
+   Приглушается только техническая телеметрия (адрес API, счётчики),
+   потому что на защите она конкурирует за внимание с результатом проверки. */
+
+.header-card > span {
+  font-size: var(--vl-text-2xs);
+  color: var(--vl-text-muted);
+  letter-spacing: var(--vl-track-tight);
+}
+
+/* Адрес API - это статус подключения, а не отладочный вывод: оформляем
+   как компактный чип, чтобы он читался служебной сноской, а не заголовком. */
+.header-card > strong {
+  align-self: start;
+  max-width: 100%;
+  padding: 2px var(--vl-space-2);
+  font-family: var(--vl-font-mono);
+  font-size: var(--vl-text-2xs);
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--vl-text-secondary);
+  background: var(--vl-sunken);
+  border: 1px solid var(--vl-line);
+  border-radius: var(--vl-radius-pill);
+  overflow-wrap: anywhere;
+}
+
+.role-alias {
+  font-size: var(--vl-text-2xs);
+  color: var(--vl-text-muted);
+}
+
+.role-alias select {
+  font-size: var(--vl-text-xs);
+  padding: 3px var(--vl-space-2);
+}
+
+/* Стенд с демо-данными существует только в режиме разработки. Помечаем его
+   пунктиром и утопленным фоном, чтобы его нельзя было спутать с рабочей
+   панелью, если сборку случайно запустят в dev-режиме. */
+.demo-fixture-panel {
+  border-style: dashed;
+  border-color: var(--vl-line-strong);
+  background: var(--vl-sunken);
+}
+
+/* --- Микрополировка по практикам ---
+   Селекторы завёрнуты в :where(), чтобы их вес был нулевым: базовые слои
+   styles.css и design-system.css должны иметь возможность перебить их
+   без гонки !important. */
+
+:where(html) {
+  -webkit-text-size-adjust: 100%;
+  /* Полоса прокрутки появляется при росте списка и сдвигает всю сетку;
+     зарезервированное место убирает этот скачок. */
+  scrollbar-gutter: stable;
+}
+
+/* Заголовки не должны заканчиваться висячим словом, а абзацы - висячей
+   строкой: это дешёвая типографская опрятность, которую видно на защите. */
+:where(h1, h2, h3, h4, .panel-header h2, .report-group-title, .finding-group-title) {
+  text-wrap: balance;
+}
+
+:where(.lede, .panel-empty, .triage-help p, .capability-top-banner, .role-honesty-banner) {
+  text-wrap: pretty;
+}
+
+:where(img, svg, canvas, video) {
+  max-inline-size: 100%;
+}
+
+/* Клавиши J/K прокручивают список к строке, а липкий заголовок группы
+   накрывает её сверху. Запас прокрутки держит строку под заголовком. */
+:where(.issue-card, .report-card, .collection-card, [id^="finding-row-"]) {
+  scroll-margin-block: 44px var(--vl-space-4);
+}
+
+:where(.panel, .issue-panel, .viewer-panel, .provenance-panel) {
+  scroll-margin-block-start: 92px;
+}
+
+/* Прокрутка внутри списка не должна уводить страницу целиком. */
+:where(
+  .report-list,
+  .issue-list,
+  .issue-list-virtual,
+  .provenance-stack,
+  .collection-stack,
+  .run-journal,
+  .review-history,
+  .viewer-selection-list
+) {
+  overscroll-behavior: contain;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :where(.report-list, .issue-list, .issue-list-virtual, .run-journal, .review-history) {
+    scroll-behavior: smooth;
+  }
+}
+
+:where(input, textarea) {
+  caret-color: var(--vl-accent);
+}
+
+/* Числа в редактируемых полях тоже табличные: иначе при вводе GUID и
+   номеров пунктов строка дёргается. */
+:where(input, textarea, select) {
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+/* --- Повышенный контраст ---
+   Пользователь системы попросил больше контраста: усиливаем линии,
+   не трогая палитру текста, которая уже прошла проверку. */
+@media (prefers-contrast: more) {
+  :root {
+    --vl-line: var(--vl-n300);
+    --vl-line-strong: var(--vl-n500);
+    --vl-line-control: var(--vl-n600);
+    --vl-text-muted: var(--vl-text-secondary);
+  }
+
+  .status-pill,
+  .severity-pill,
+  .origin-pill,
+  .confidence-pill,
+  .outcome-badge,
+  .triage-band,
+  .nav-badge,
+  .preset-scope-badge {
+    border-width: 1px;
+    border-style: solid;
+  }
+}
+
+/* --- Принудительные цвета (высокая контрастность Windows) ---
+   В этом режиме браузер выбрасывает фоны и тени, поэтому смысл, который
+   мы кодировали заливкой, должен дублироваться рамкой и системным цветом. */
+@media (forced-colors: active) {
+  .status-pill,
+  .severity-pill,
+  .origin-pill,
+  .confidence-pill,
+  .outcome-badge,
+  .triage-band,
+  .nav-badge,
+  .preset-scope-badge,
+  .selection-badge,
+  .report-card,
+  .issue-card,
+  .panel,
+  .summary-tile,
+  .kpi-bar-track {
+    border: 1px solid CanvasText;
+  }
+
+  .kpi-bar-fill {
+    background: Highlight;
+    forced-color-adjust: none;
+  }
+
+  .capability-top-banner,
+  .capability-block-banner,
+  .provenance-gap-banner,
+  .provenance-ok-banner,
+  .role-honesty-banner,
+  .upload-honesty,
+  .hitl-readonly-note,
+  .viewer-limit-notice,
+  .pack-draft-apply-note {
+    border: 1px solid CanvasText;
+    border-left-width: 3px;
+  }
+
+  :is(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  .issue-card[aria-selected="true"],
+  .report-card[aria-selected="true"],
+  .issue-card.selected,
+  .report-card.selected {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+}
+
+/* --- Узкий экран ---
+   На ноутбуке 13" и на планшете колонки рабочего места складываются в поток,
+   иначе появляется горизонтальная прокрутка - на защите это выглядит как
+   поломка, хотя это всего лишь плотная сетка. */
+@media (max-width: 1100px) {
+  .machine-human-split,
+  .workspace-grid,
+  .expert-workplace {
+    grid-template-columns: 1fr !important;
+  }
+
+  .grid-resizer {
+    display: none !important;
+  }
+
+  .side-stack {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-header {
+    padding: var(--vl-space-4);
+  }
+
+  .header-card {
+    min-width: 0;
+    width: 100%;
+  }
+
+  h1 {
+    font-size: var(--vl-text-lg);
+  }
+
+  .workspace-nav {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .workspace-nav::-webkit-scrollbar {
+    display: none;
+  }
+}
