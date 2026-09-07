@@ -155,11 +155,7 @@ class UploadObjectStoreStreamTests(unittest.TestCase):
             self.assertEqual(response.status_code, 500, response.text)
             self.assertEqual(response.json()["detail"], public_upload_object_store_failed_detail())
             self.assertEqual(len(store.deleted), 1)
-            leftover = [
-                path
-                for path in root.rglob("*.ifc")
-                if "quarantine" not in path.parts
-            ]
+            leftover = [path for path in root.rglob("*.ifc") if "quarantine" not in path.parts]
             self.assertEqual(leftover, [])
             quota = FilesystemUploadQuotaStore(root).snapshot(LAB_ANONYMOUS_TENANT_ID)
             holds = list((root / "quotas").glob("*/holds/*.json"))
@@ -220,11 +216,7 @@ class UploadObjectStoreEventLoopTests(unittest.IsolatedAsyncioTestCase):
                     await upload_task
                 store.release.set()
                 await asyncio.sleep(0.05)
-            leftover = [
-                path
-                for path in root.rglob("*.ifc")
-                if "quarantine" not in path.parts
-            ]
+            leftover = [path for path in root.rglob("*.ifc") if "quarantine" not in path.parts]
             self.assertEqual(leftover, [])
             self.assertEqual(len(store.deleted), 1)
             quota = FilesystemUploadQuotaStore(root).snapshot(LAB_ANONYMOUS_TENANT_ID)
