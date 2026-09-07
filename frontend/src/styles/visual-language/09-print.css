@@ -1,0 +1,183 @@
+/* --- Печать: версия для ИТ-ментора и жюри ---
+   Отчёт печатают и вкладывают в дело, поэтому лист должен быть читаемым
+   без интерфейса: управляющие элементы убираются, содержание разворачивается
+   в одну колонку, панели честности остаются на месте. */
+
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+
+  /* Тёмная тема на бумаге - это залитый тонером лист, поэтому на печати
+     поверхности принудительно светлые, а текст - чёрный. */
+  :root {
+    --vl-canvas: #ffffff;
+    --vl-sunken: #ffffff;
+    --vl-surface: #ffffff;
+    --vl-raised: #ffffff;
+    --vl-text: #111111;
+    --vl-text-secondary: #2b2b2b;
+    --vl-text-muted: #3d3d3d;
+    --vl-line: #cccccc;
+    --vl-line-strong: #999999;
+    --vl-line-control: #999999;
+    --vl-accent: #16429b;
+    --vl-accent-hover: #16429b;
+    --vl-accent-soft: #ffffff;
+    --vl-accent-line: #999999;
+    --vl-selected: #ffffff;
+    --vl-red-soft: #ffffff;
+    --vl-amber-soft: #ffffff;
+    --vl-green-soft: #ffffff;
+    --vl-shadow-raised: none;
+    --vl-shadow-overlay: none;
+    --vl-shadow-inset: none;
+  }
+
+  body {
+    background: #ffffff;
+    color: #111111;
+  }
+
+  /* Управляющие элементы на бумаге бесполезны. */
+  .workspace-nav,
+  .pack-cycle-strip,
+  .report-toolbar,
+  .issue-toolbar,
+  .viewer-toolbar,
+  .drawing-zoom-toolbar,
+  .report-filters,
+  .report-presets,
+  .remark-actions,
+  .export-actions,
+  .empty-actions,
+  .expert-pack-bar,
+  .pack-switcher,
+  .remark-tz-fields,
+  .pack-dropzone,
+  .grid-resizer,
+  .hotkeys-footer,
+  .triage-help,
+  .demo-fixture-panel,
+  .role-alias,
+  /* Телеметрия (адрес службы, счётчики, выбор роли) на бумаге не нужна. */
+  .header-card,
+  .coverage-filter {
+    display: none !important;
+  }
+
+  /* Колонки рабочего места на листе A4 не помещаются: разворачиваем в поток. */
+  .app-shell,
+  .workspace-grid,
+  .machine-human-split,
+  .expert-workplace,
+  .machine-gateway,
+  .expert-hitl,
+  .export-preview,
+  .side-stack {
+    display: block !important;
+    width: auto !important;
+    max-width: none !important;
+  }
+
+  /* Прокручиваемые области на бумаге обрезали бы содержание. */
+  .report-list,
+  .issue-list,
+  .issue-list-virtual,
+  .provenance-stack,
+  .collection-stack,
+  .run-journal,
+  .review-history,
+  .viewer-selection-list,
+  .evidence-ref-list {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .panel,
+  .issue-panel,
+  .viewer-panel,
+  .provenance-panel,
+  .coverage-map,
+  .capability-honesty,
+  .drawing-evidence-panel,
+  .report-card,
+  .issue-card,
+  .summary-tile,
+  .detail-block,
+  .divergence-block,
+  .remark-card {
+    box-shadow: none !important;
+    border: 1px solid #cccccc !important;
+    break-inside: avoid;
+  }
+
+  .panel-header,
+  .viewer-header,
+  .report-group-title,
+  .finding-group-title {
+    position: static !important;
+    break-after: avoid;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    break-after: avoid;
+  }
+
+  table {
+    break-inside: auto;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tr,
+  .kpi-bar-row,
+  .coverage-table tr,
+  .capability-table tr {
+    break-inside: avoid;
+  }
+
+  /* Панели честности печатаются всегда и в полную силу: на бумаге признание
+     ограничений так же обязательно, как на экране. */
+  .capability-top-banner,
+  .capability-top-banner-ok,
+  .capability-block-banner,
+  .provenance-gap-banner,
+  .provenance-ok-banner,
+  .role-honesty-banner,
+  .upload-honesty,
+  .hitl-readonly-note,
+  .viewer-limit-notice,
+  .pack-draft-apply-note,
+  .synthetic-content-mark,
+  .analyze-error,
+  .analyze-poll-error,
+  .error-banner {
+    display: block !important;
+    color: #111111 !important;
+    background: #ffffff !important;
+    border-left: 3px solid #111111 !important;
+    break-inside: avoid;
+  }
+
+  /* Трёхмерная сцена и растровые подложки на печати дают серый прямоугольник:
+     оставляем подпись, которая объясняет, что именно было на экране. */
+  .viewer-stage,
+  .viewer-viewport,
+  .viewer-canvas,
+  .drawing-evidence-viewport {
+    display: none !important;
+  }
+
+  .viewer-caption,
+  .drawing-evidence-caption {
+    display: block !important;
+    color: #111111 !important;
+  }
+}
