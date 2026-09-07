@@ -31,8 +31,8 @@ describe("AnalyzeRunPanel", () => {
   it("shows elapsed-timer copy without claiming SLA", () => {
     render(<AnalyzeRunPanel ifcPath="walls.ifc" />);
     const timer = screen.getByTestId("analyze-elapsed");
-    expect(timer.textContent).toMatch(/Цель ТЗ — до 30 минут/);
-    expect(timer.textContent).toMatch(/на данных заказчика ещё не подтверждена/);
+    expect(timer.textContent).toMatch(/Цель ТЗ записана как 30:00/);
+    expect(timer.textContent).toMatch(/SLA не заявляем/);
     expect(screen.getByTestId("analyze-size-honesty").textContent).toMatch(/256 МиБ/);
     expect(screen.getByTestId("analyze-size-honesty").textContent).toMatch(/1,5 ГБ/);
   });

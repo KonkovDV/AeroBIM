@@ -16,7 +16,10 @@ describe("product copy safety boundaries", () => {
   it("keeps browser limits, customer approval and timing uncertainty explicit", () => {
     expect(UI_COPY.viewerOverWasmCap).toContain("256 МиБ");
     expect(UI_COPY.runSizeHonesty).toContain("специальной настройки");
-    expect(UI_COPY.runTimer("00:30")).toContain("ещё не подтверждена");
+    expect(UI_COPY.runTimer("00:30")).toContain("Цель ТЗ записана как 30:00");
+    expect(UI_COPY.runTimer("00:30")).toContain("SLA не заявляем");
+    expect(UI_COPY.runTimer("00:30")).not.toMatch(/до\s*30\s*мин/);
+    expect(UI_COPY.headerLede).not.toMatch(/до\s*30\s*мин/);
     expect(UI_COPY.headerLede).toContain("Внедрение у заказчика ещё не подтверждено");
     expect(UI_COPY.trainingRulesBanner).toContain("ещё не согласован");
   });

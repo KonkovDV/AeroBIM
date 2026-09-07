@@ -2,7 +2,9 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { EVIDENCE_COPY } from "./evidence";
 import { RU_COPY } from "./ru";
+import { WORKPLACE_COPY } from "./workplace";
 import {
   TS_ERROR_ONLY_FILES,
   TS_SCAN_FILES,
@@ -78,5 +80,23 @@ describe("UI3 P0.1: русификация — страж латиницы", () 
     expect(RU_COPY.runTimer("01:23")).toContain("SLA не заявляем");
     expect(RU_COPY.runTimerIdle).toContain("SLA не заявляем");
     expect(RU_COPY.runTimer("01:23")).not.toMatch(/до\s*30\s*мин/);
+    expect(EVIDENCE_COPY.runTimer("01:23")).toContain("Цель ТЗ записана как 30:00");
+    expect(EVIDENCE_COPY.runTimer("01:23")).toContain("SLA не заявляем");
+    expect(EVIDENCE_COPY.runTimerIdle).toContain("SLA не заявляем");
+    expect(EVIDENCE_COPY.runTimer("01:23")).not.toMatch(/до\s*30\s*мин/);
+    expect(WORKPLACE_COPY.headerLede).not.toMatch(/до\s*30\s*мин/);
+  });
+
+  it("модульные словари workplace/evidence не содержат латинской прозы", () => {
+    const violations: string[] = [];
+    for (const [file, dict] of [
+      ["lib/i18n/workplace.ts", WORKPLACE_COPY],
+      ["lib/i18n/evidence.ts", EVIDENCE_COPY],
+    ] as const) {
+      for (const [key, value] of Object.entries(dict)) {
+        violations.push(...scanDictionaryValue(resolveCopyValue(value), file, key));
+      }
+    }
+    expect(violations).toEqual([]);
   });
 });

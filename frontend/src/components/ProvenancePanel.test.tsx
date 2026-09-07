@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import ProvenancePanel, { isFindingAuditReady } from "./ProvenancePanel";
 import type { ValidationIssue } from "../lib/types";
+import { UI_COPY } from "../lib/ui-copy";
 
 function issue(overrides: Partial<ValidationIssue> = {}): ValidationIssue {
   return {
@@ -46,14 +47,14 @@ describe("ProvenancePanel", () => {
   it("marks incomplete provenance when evidence_refs missing", () => {
     expect(isFindingAuditReady(issue({ evidence_refs: [] }))).toBe(false);
     render(<ProvenancePanel activeIssue={issue({ evidence_refs: [] })} />);
-    expect(screen.getByText(/Трассировка неполная/i)).toBeTruthy();
+    expect(screen.getByText(UI_COPY.provenanceGap)).toBeTruthy();
     expect(screen.getByText("ID находки")).toBeTruthy();
   });
 
   it("shows audit-ready banner and GlobalId when complete", () => {
     expect(isFindingAuditReady(issue())).toBe(true);
     render(<ProvenancePanel activeIssue={issue()} />);
-    expect(screen.getByText(/Трассировка полная/i)).toBeTruthy();
+    expect(screen.getByText(UI_COPY.provenanceOk)).toBeTruthy();
     expect(screen.getByText("2O2Fr$t4X7Zf8NOew3FLOH")).toBeTruthy();
     expect(screen.getByText(/pkg-ifc-main@r1#ifc:/i)).toBeTruthy();
     expect(screen.getByText(/SAM-NP-001/)).toBeTruthy();
