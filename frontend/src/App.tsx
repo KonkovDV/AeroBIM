@@ -2,6 +2,8 @@ import { Suspense, lazy, useCallback, useState } from "react";
 import { getApiBaseUrl } from "./lib/api";
 import { readUrlReportId } from "./lib/report-filters";
 import DemoFixturePanel from "./components/DemoFixturePanel";
+import KeyboardHelpDialog from "./components/KeyboardHelpDialog";
+import { persistTriageShortcuts, readTriageShortcuts } from "./lib/triage-preferences";
 import VersionDiffPanel from "./components/VersionDiffPanel";
 import WorkspaceNav, {
   EXPERT_SHELL_VIEWS,
@@ -38,6 +40,7 @@ export default function App() {
     uiRole === "user" ? "user" : "review",
   );
   const [triageHelpOpen, setTriageHelpOpen] = useState(false);
+  const [triageShortcutsEnabled, setTriageShortcutsEnabled] = useState(readTriageShortcuts);
   const [reportsEpoch, setReportsEpoch] = useState(0);
   const [selectedReportId, setSelectedReportId] = useState<string | null>(readUrlReportId);
   const findings = useFindingFilters();
@@ -96,7 +99,7 @@ export default function App() {
   );
 
   useTriageKeyboard({
-    enabled: TRIAGE_KEYBOARD_VIEWS.has(workspaceView),
+    enabled: TRIAGE_KEYBOARD_VIEWS.has(workspaceView) && !triageHelpOpen && triageShortcutsEnabled,
     filteredIssues,
     selectedIssueIndex,
     hitlEnabled: authBff.hitlEnabled,
@@ -258,15 +261,25 @@ export default function App() {
 
       {TRIAGE_KEYBOARD_VIEWS.has(workspaceView) ? (
         <footer className="hotkeys-footer" data-testid="hotkeys-footer">
-          <span>{UI_COPY.keyboardFooter}</span>
+          <span>{triageShortcutsEnabled ? UI_COPY.keyboardFooter : "Быстрые клавиши отключены"}</span>
           <span className="hotkeys-note">{UI_COPY.keyboardFooterNote}</span>
+          <button type="button" className="toolbar-button keyboard-help-trigger"
+            aria-haspopup="dialog" aria-expanded={triageHelpOpen}
+            onClick={() => setTriageHelpOpen(true)}>
+            Справка и клавиши
+          </button>
         </footer>
       ) : null}
 
       {triageHelpOpen ? (
-        <aside className="triage-help" role="dialog" aria-label={UI_COPY.keyboardHelpAria}>
-          <p>{UI_COPY.keyboardHelp}</p>
-        </aside>
+        <KeyboardHelpDialog
+          onClose={() => setTriageHelpOpen(false)}
+          shortcutsEnabled={triageShortcutsEnabled}
+          onShortcutsChange={(enabled) => {
+            setTriageShortcutsEnabled(enabled);
+            persistTriageShortcuts(enabled);
+          }}
+        />
       ) : null}
     </div>
   );

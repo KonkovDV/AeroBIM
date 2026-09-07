@@ -1,0 +1,159 @@
+/* Compact correction layer after visual-language.css. No verdict/coverage changes. */
+@media screen {
+  body { font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif; font-size: 1rem; line-height: 1.5; }
+  :root {
+    --vl-font-sans: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+    --vl-text-3xs: .875rem;
+    --vl-text-2xs: .875rem;
+    --vl-text-xs: .875rem;
+    --vl-text-sm: .9375rem;
+    --vl-text-base: 1rem;
+    --vl-text-md: 1.125rem;
+    --vl-text-lg: 1.375rem;
+    --vl-text-xl: 1.75rem;
+    --vl-leading-tight: 1.25;
+    --vl-leading-snug: 1.45;
+    --vl-text-muted: #536176;
+    --ds-text-xs: .875rem;
+    --ds-text-sm: .875rem;
+    --ds-text-cap: .875rem;
+    --ds-text-body: 1rem;
+    --ds-text-muted: var(--vl-text-muted);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --vl-text-muted: #a9b7ca; }
+  }
+  .app-header h1 { max-inline-size: 34ch; text-wrap: balance; }
+  .panel-header h2 { font-size: var(--vl-text-md); }
+  .eyebrow, .panel-kicker, .pack-cycle-caption {
+    text-transform: none;
+    letter-spacing: .015em;
+  }
+  .toolbar-button, .viewer-button,
+  .pack-cycle-step, .remark-actions > button, .preset-file-upload {
+    min-block-size: 44px;
+    min-inline-size: 44px;
+  }
+  .app-shell :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select),
+  .app-shell textarea {
+    font-size: 1rem;
+    min-block-size: 44px;
+    max-inline-size: 100%;
+    border-color: var(--vl-line-control);
+  }
+  .toolbar-button { white-space: normal; overflow-wrap: anywhere; }
+  .hitl-filter { min-block-size: 44px; cursor: pointer; }
+  /* These classes belong to containers, not to the controls inside them. */
+  .issue-toolbar .issue-search, .detail-block .remark-editor {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    padding: 0;
+    min-height: 0;
+    resize: none;
+  }
+  .issue-toolbar .issue-search { display: grid; gap: 8px; }
+  .issue-search input { min-inline-size: 0; inline-size: 100%; }
+  .keyboard-help-heading .toolbar-button { width: auto; }
+  .remark-editor textarea { inline-size: 100%; min-block-size: 160px; resize: vertical; }
+  .remark-tz-fields { display: grid; grid-template-columns: minmax(0, 1fr); padding: 0; gap: 12px; }
+  .remark-tz-fields > div { min-inline-size: 0; }
+  .remark-tz-fields dd { margin-inline-start: 0; overflow-wrap: anywhere; }
+  .guid-copy-row code, .detail-block code { font-size: .875rem; overflow-wrap: anywhere; }
+  .remark-actions { padding-inline: 0; align-items: flex-start; }
+  .nav-badge { min-inline-size: 24px; block-size: 24px; }
+  .workspace-nav .toolbar-button { color: var(--vl-text-secondary); }
+  .workspace-nav .toolbar-button:hover { color: var(--vl-text); background: var(--vl-sunken); }
+  .workspace-nav .toolbar-button.active,
+  .workspace-nav .toolbar-button.active:hover {
+    color: var(--vl-accent-hover);
+    background: var(--vl-accent-soft);
+    border-color: var(--vl-accent-line);
+  }
+  .workspace-nav .toolbar-button.active .nav-badge {
+    color: var(--vl-surface);
+    background: var(--vl-accent-hover);
+  }
+  .expert-workplace > .workspace-grid { padding: 0; }
+  .workspace-grid > * { min-inline-size: 0; }
+  .scope-disclosure { margin-block-start: 8px; }
+  .scope-disclosure summary {
+    min-block-size: 44px;
+    display: list-item;
+    align-content: center;
+    cursor: pointer;
+    color: var(--vl-text-secondary);
+  }
+  .hotkeys-footer { position: static; }
+  .keyboard-help-trigger { margin-inline-start: auto; }
+  @media (max-width: 760px) {
+    .app-header, .expert-workplace { padding: 16px; }
+    .brand-lockup { flex-basis: 100%; }
+    .app-header h1 { font-size: 1.5rem; }
+    .role-alias { flex-wrap: wrap; }
+    .workspace-nav { position: static; flex-wrap: wrap; padding: 8px 16px; gap: 8px; overflow: visible; }
+    .workspace-nav button { flex: 1 1 120px; justify-content: center; }
+    .workspace-nav button[aria-current="page"]::after { bottom: 2px; }
+    .pack-cycle-strip, .hotkeys-footer { padding: 12px 16px; }
+    .header-card { box-sizing: border-box; }
+    .keyboard-help-trigger { margin-inline-start: 0; }
+  }
+}
+
+.keyboard-help-dialog {
+  box-sizing: border-box;
+  inline-size: min(640px, calc(100vw - 32px));
+  max-block-size: calc(100dvh - 32px);
+  margin: auto;
+  padding: 24px;
+  border: 1px solid var(--vl-line-control, #7c8aa0);
+  border-radius: 12px;
+  background: var(--vl-surface, #fff);
+  color: var(--vl-text, #131a24);
+  font: 1rem/1.5 system-ui, sans-serif;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  box-shadow: 0 16px 48px #0003;
+}
+.keyboard-help-dialog::backdrop { background: #0c1119b3; }
+.keyboard-help-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.keyboard-help-heading h2 { margin: 0; font-size: 1.375rem; line-height: 1.35; text-wrap: balance; }
+.keyboard-help-heading button { flex-shrink: 0; }
+.keyboard-help-dialog p { margin: 16px 0; }
+.keyboard-help-commands { margin: 24px 0; }
+.keyboard-help-commands > div {
+  display: grid;
+  grid-template-columns: minmax(152px, .8fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+  padding-block: 10px;
+  border-bottom: 1px solid var(--vl-line, #e1e7f0);
+}
+.keyboard-help-commands dd { margin: 0; }
+.keyboard-help-commands kbd {
+  display: inline-block;
+  font-size: .875rem;
+  padding: 4px 8px;
+  border: 1px solid var(--vl-line-control, #7c8aa0);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--vl-sunken, #edf1f7);
+}
+.keyboard-help-preference { display: flex; align-items: center; gap: 12px; min-block-size: 44px; cursor: pointer; }
+.keyboard-help-preference input { inline-size: 24px; block-size: 24px; accent-color: var(--vl-accent, #1b55c7); }
+.keyboard-help-dialog .keyboard-help-note { font-size: .875rem; color: var(--vl-text-secondary, #44505f); }
+.keyboard-help-dialog :is(button, input):focus-visible {
+  outline: 2px solid var(--vl-accent, #1b55c7);
+  outline-offset: 3px;
+}
+@media (max-width: 480px) {
+  .keyboard-help-dialog { padding: 16px; }
+  .keyboard-help-commands > div { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+}
+@media (forced-colors: active) {
+  .keyboard-help-dialog { border: 2px solid CanvasText; }
+  .keyboard-help-dialog :is(button, input):focus-visible { outline-color: Highlight; }
+}
+@media print {
+  .keyboard-help-dialog, .keyboard-help-trigger { display: none !important; }
+}
