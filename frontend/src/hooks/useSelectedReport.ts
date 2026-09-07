@@ -107,7 +107,6 @@ export function useSelectedReport(
   const selectedReportRef = useRef<ValidationReport | null>(null);
   const selectedIssueIndexRef = useRef(0);
   const remarkDraftRef = useRef("");
-  const remarkSaveStateRef = useRef<RemarkSaveState>("idle");
   const hitlOpRef = useRef<{ fingerprint: string; key: string } | null>(null);
   const hitlBusyRef = useRef(false);
   const historyPendingRef = useRef(false);
@@ -115,7 +114,6 @@ export function useSelectedReport(
   selectedReportRef.current = selectedReport;
   selectedIssueIndexRef.current = selectedIssueIndex;
   remarkDraftRef.current = remarkDraft;
-  remarkSaveStateRef.current = remarkSaveState;
 
   useEffect(() => {
     reviewEventsRef.current = reviewEvents;
@@ -236,7 +234,7 @@ export function useSelectedReport(
     (index: number, issue: ValidationIssue, options?: { force?: boolean }) => {
       const current = selectedReportRef.current?.issues[selectedIssueIndexRef.current];
       const original = current ? effectiveRemarkText(current, reviewEventsRef.current) : "";
-      const dirty = remarkDraftRef.current !== original && remarkSaveStateRef.current !== "saved";
+      const dirty = remarkDraftRef.current !== original;
       if (dirty && options?.force !== true) {
         setPendingSelect({ index, issue });
         return;
@@ -345,9 +343,11 @@ export function useSelectedReport(
         if (!stillOnFinding(reportId, issue)) {
           return true;
         }
-        setRemarkSaveState("saved");
+        // The response confirms the submitted draft, not text typed while saving.
+        const draftUnchanged = remarkDraftRef.current === draft;
+        setRemarkSaveState(draftUnchanged ? "saved" : "idle");
         setConflictMessage(null);
-        return true;
+        return draftUnchanged;
       } catch (error: unknown) {
         if (!stillOnFinding(reportId, issue)) {
           return false;
@@ -422,7 +422,7 @@ export function useSelectedReport(
   useEffect(() => {
     const selectedIssue = selectedReport?.issues[selectedIssueIndex];
     const original = selectedIssue ? effectiveRemarkText(selectedIssue, reviewEvents) : "";
-    const dirty = remarkDraft !== original && remarkSaveState !== "saved";
+    const dirty = remarkDraft !== original;
     if (!dirty) {
       return;
     }
@@ -432,11 +432,11 @@ export function useSelectedReport(
     }
     window.addEventListener("beforeunload", onBeforeUnload);
     return () => window.removeEventListener("beforeunload", onBeforeUnload);
-  }, [remarkDraft, remarkSaveState, reviewEvents, selectedIssueIndex, selectedReport]);
+  }, [remarkDraft, reviewEvents, selectedIssueIndex, selectedReport]);
 
   const selectedIssue = selectedReport?.issues[selectedIssueIndex];
   const originalRemark = selectedIssue ? effectiveRemarkText(selectedIssue, reviewEvents) : "";
-  const isDirty = remarkDraft !== originalRemark && remarkSaveState !== "saved";
+  const isDirty = remarkDraft !== originalRemark;
 
   return {
     selectedReport,
