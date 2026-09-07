@@ -27,18 +27,21 @@ export default function ShellHeader({
         <div className="brand-copy">
           <p className="eyebrow">{UI_COPY.headerEyebrow}</p>
           <h1>{UI_COPY.headerTitle}</h1>
-          <p className="lede">
-            {UI_COPY.headerLede.split("summary.passed").map((part, index, parts) =>
-              index < parts.length - 1 ? (
-                <span key={part}>
-                  {part}
-                  <code>summary.passed</code>
-                </span>
-              ) : (
-                <span key={part}>{part}</span>
-              ),
-            )}
-          </p>
+          <details className="scope-disclosure">
+            <summary>Область проверки и ограничения</summary>
+            <p className="lede">
+              {UI_COPY.headerLede.split("summary.passed").map((part, index, parts) =>
+                index < parts.length - 1 ? (
+                  <span key={part}>
+                    {part}
+                    <code>summary.passed</code>
+                  </span>
+                ) : (
+                  <span key={part}>{part}</span>
+                ),
+              )}
+            </p>
+          </details>
           <RoleHonestyBanner bffStatus={bffStatus} />
         </div>
       </div>
