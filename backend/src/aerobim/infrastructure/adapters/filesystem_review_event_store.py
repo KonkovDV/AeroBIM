@@ -16,7 +16,13 @@ from pathlib import Path
 
 from aerobim.core.security.path_jail import safe_storage_token
 from aerobim.domain.models import ReviewEvent
-from aerobim.domain.review_event_append import HitlStateConflictError, ReviewEventAppendSpec
+from aerobim.domain.review_event_append import (
+    HitlStateConflictError,
+    ReviewEventAppendSpec,
+    append_payload_fingerprint,
+    latest_finding_sequence,
+    stored_event_payload_fingerprint,
+)
 from aerobim.domain.review_event_chain import genesis_previous_hash, review_event_content_hash
 from aerobim.domain.review_state_machine import (
     HitlTransitionError,
@@ -181,15 +187,35 @@ class FilesystemReviewEventStore:
             raise ValueError("event_id or idempotency_key is required")
 
         if event_id in existing_ids:
-            return next(e for e in existing if e.event_id == event_id)
+            existing_event = next(e for e in existing if e.event_id == event_id)
+            if stored_event_payload_fingerprint(existing_event) != append_payload_fingerprint(spec):
+                raise HitlStateConflictError(
+                    "idempotency key reused with a different payload"
+                )
+            return existing_event
         if idem and idem in existing_keys:
-            return next(e for e in existing if e.idempotency_key == idem)
+            existing_event = next(e for e in existing if e.idempotency_key == idem)
+            if stored_event_payload_fingerprint(existing_event) != append_payload_fingerprint(spec):
+                raise HitlStateConflictError(
+                    "idempotency key reused with a different payload"
+                )
+            return existing_event
 
         server_state = latest_hitl_state(
             existing,
             spec.finding_id,
             spec.issue_rule_id,
         )
+        if spec.expected_review_version is not None:
+            current_version = latest_finding_sequence(
+                existing,
+                finding_id=spec.finding_id,
+                issue_rule_id=spec.issue_rule_id,
+            )
+            if (current_version or 0) != spec.expected_review_version:
+                raise HitlStateConflictError(
+                    "expected_review_version does not match finding sequence"
+                )
         resulting_state: str | None = None
         if spec.event_type not in _NORM_PACK_EVENT_TYPES:
             client_previous = (spec.previous_state or "").strip() or None

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import { fetchReport, fetchReviewEvents, postReviewEvent, type ReviewEventRow, type ReviewEventType } from "../lib/api";
-import { asReviewEventRow, latestHitlState } from "../lib/hitl-state";
+import { asReviewEventRow, effectiveRemarkText, hitlOperationFingerprint, latestHitlState, latestReviewSequence } from "../lib/hitl-state";
 import type { ValidationIssue, ValidationReport } from "../lib/types";
 import { UI_COPY } from "../lib/ui-copy";
 
@@ -58,7 +58,7 @@ export function useSelectedReport(
   const [remarkSaveState, setRemarkSaveState] = useState<RemarkSaveState>("idle");
   const [hitlDecisionState, setHitlDecisionState] = useState<HitlDecisionState>("idle");
   const reviewEventsRef = useRef<ReviewEventRow[]>([]);
-  const hitlIdempotencyKey = useRef(newHitlIdempotencyKey());
+  const hitlOpRef = useRef<{ fingerprint: string; key: string } | null>(null);
 
   // Синхронизация ref со state — побочный эффект, а не работа тела рендера.
   useEffect(() => {
@@ -95,7 +95,8 @@ export function useSelectedReport(
         setReportError(null);
         setSelectedIssueIndex(0);
         setSelectedClashIndex(null);
-        setRemarkDraft(report.issues[0]?.remark?.body ?? "");
+        const firstIssue = report.issues[0];
+        setRemarkDraft(firstIssue ? effectiveRemarkText(firstIssue, []) : "");
         setRemarkSaveState("idle");
         setHitlDecisionState("idle");
         const eventsResult = await eventsPromise;
@@ -105,6 +106,9 @@ export function useSelectedReport(
         if (eventsResult.ok) {
           setReviewEvents(eventsResult.payload.events);
           setReviewEventsError(null);
+          if (firstIssue) {
+            setRemarkDraft(effectiveRemarkText(firstIssue, eventsResult.payload.events));
+          }
         } else {
           setReviewEvents([]);
           setReviewEventsError(
@@ -135,7 +139,7 @@ export function useSelectedReport(
   const selectIssue = useCallback((index: number, issue: ValidationIssue) => {
     setSelectedIssueIndex(index);
     setSelectedClashIndex(null);
-    setRemarkDraft(issue.remark?.body ?? "");
+    setRemarkDraft(effectiveRemarkText(issue, reviewEventsRef.current));
     setRemarkSaveState("idle");
     setHitlDecisionState("idle");
   }, []);
@@ -155,6 +159,15 @@ export function useSelectedReport(
     );
   }, []);
 
+  const keyForFingerprint = (fingerprint: string): string => {
+    if (hitlOpRef.current?.fingerprint === fingerprint) {
+      return hitlOpRef.current.key;
+    }
+    const key = newHitlIdempotencyKey();
+    hitlOpRef.current = { fingerprint, key };
+    return key;
+  };
+
   const postHitlEvent = useCallback(
     async (issue: ValidationIssue, eventType: ReviewEventType, note: string) => {
       if (!selectedReport) {
@@ -162,28 +175,46 @@ export function useSelectedReport(
       }
       let previous = latestHitlState(reviewEventsRef.current, issue);
       if (previous === null && eventType !== "opened") {
+        const openedVersion = latestReviewSequence(reviewEventsRef.current, issue) ?? 0;
+        const openedFingerprint = hitlOperationFingerprint({
+          reportId: selectedReport.report_id,
+          findingId: issue.finding_id ?? "",
+          eventType: "opened",
+          note: "",
+          previousState: "",
+          expectedReviewVersion: openedVersion,
+        });
         const opened = await postReviewEvent(selectedReport.report_id, {
           event_type: "opened",
           issue_rule_id: issue.rule_id,
           finding_id: issue.finding_id ?? undefined,
-          idempotency_key: hitlIdempotencyKey.current,
+          idempotency_key: keyForFingerprint(openedFingerprint),
+          expected_review_version: openedVersion,
         });
-        hitlIdempotencyKey.current = newHitlIdempotencyKey();
+        hitlOpRef.current = null;
         rememberEvent(opened.event);
         previous = "opened";
       }
+      const expectedReviewVersion = latestReviewSequence(reviewEventsRef.current, issue) ?? 0;
+      const fingerprint = hitlOperationFingerprint({
+        reportId: selectedReport.report_id,
+        findingId: issue.finding_id ?? "",
+        eventType,
+        note,
+        previousState: previous ?? "",
+        expectedReviewVersion,
+      });
       const result = await postReviewEvent(selectedReport.report_id, {
         event_type: eventType,
         issue_rule_id: issue.rule_id,
         finding_id: issue.finding_id ?? undefined,
         note,
         previous_state: previous ?? undefined,
-        idempotency_key: hitlIdempotencyKey.current,
+        idempotency_key: keyForFingerprint(fingerprint),
+        expected_review_version: expectedReviewVersion,
       });
       rememberEvent(result.event);
-      // Ключ крутим только после успешного POST: повтор после сетевой ошибки
-      // должен уйти с тем же ключом, иначе бэкенд запишет дубль решения.
-      hitlIdempotencyKey.current = newHitlIdempotencyKey();
+      hitlOpRef.current = null;
     },
     [rememberEvent, selectedReport],
   );
@@ -191,6 +222,9 @@ export function useSelectedReport(
   const saveRemarkEdit = useCallback(
     async (issue: ValidationIssue | null) => {
       if (!selectedReport || !issue) {
+        return;
+      }
+      if (!remarkDraft.trim()) {
         return;
       }
       setRemarkSaveState("saving");
@@ -223,7 +257,8 @@ export function useSelectedReport(
   );
 
   useEffect(() => {
-    const original = selectedReport?.issues[selectedIssueIndex]?.remark?.body ?? "";
+    const selectedIssue = selectedReport?.issues[selectedIssueIndex];
+    const original = selectedIssue ? effectiveRemarkText(selectedIssue, reviewEvents) : "";
     const dirty = remarkDraft !== original && remarkSaveState !== "saved";
     if (!dirty) {
       return;
@@ -234,7 +269,7 @@ export function useSelectedReport(
     }
     window.addEventListener("beforeunload", onBeforeUnload);
     return () => window.removeEventListener("beforeunload", onBeforeUnload);
-  }, [remarkDraft, remarkSaveState, selectedIssueIndex, selectedReport]);
+  }, [remarkDraft, remarkSaveState, reviewEvents, selectedIssueIndex, selectedReport]);
 
   return {
     selectedReport,

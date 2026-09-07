@@ -1,6 +1,6 @@
 /** Разбор GET /v1/auth/bff и /v1/auth/session. 200 LAB ≠ промышленный SSO. */
 
-export type AuthBffDiscoveryStatus = "NOT_IMPLEMENTED" | "LAB" | "UNKNOWN";
+export type AuthBffDiscoveryStatus = "NOT_IMPLEMENTED" | "LAB" | "UNKNOWN" | "LOADING";
 
 export type AuthBffDiscovery = {
   httpStatus: number;

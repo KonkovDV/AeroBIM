@@ -12,8 +12,8 @@ export type AuthBffShellState = {
 };
 
 const DEFAULT_DISCOVERY: AuthBffDiscovery = {
-  httpStatus: 501,
-  status: "NOT_IMPLEMENTED",
+  httpStatus: 0,
+  status: "LOADING",
 };
 
 /** Discovery BFF + сессия. 200 LAB не промышленный SSO. */

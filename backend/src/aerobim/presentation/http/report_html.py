@@ -151,6 +151,23 @@ def _build_issue_rows(issues: list[dict[str, Any]]) -> str:
             f"<br><small class='audit'>{' · '.join(audit_bits)}</small>" if audit_bits else ""
         )
         detail_html = f"{pz_html}{audit_html}" or "—"
+        review = issue.get("review")
+        if isinstance(review, dict):
+            review_bits: list[str] = []
+            state = review.get("state")
+            if state:
+                review_bits.append(f"state={_esc(str(state))}")
+            actor = review.get("actor")
+            if actor:
+                review_bits.append(f"actor={_esc(str(actor))}")
+            effective = review.get("effective_text")
+            machine = review.get("machine_text")
+            if effective:
+                review_bits.append(f"effective={_esc(str(effective))}")
+            if machine and machine != effective:
+                review_bits.append(f"machine={_esc(str(machine))}")
+            if review_bits:
+                detail_html = f"{detail_html}<br><small class='review'>{' · '.join(review_bits)}</small>"
         clause = issue_clause_label(issue)
         clause_html = _esc(clause) if clause else "нет пункта"
         rows += (

@@ -113,6 +113,7 @@ class ReviewEventRequest(BaseModel):
     previous_state: str | None = Field(default=None, max_length=64)
     finding_id: str | None = Field(default=None, max_length=64)
     idempotency_key: str | None = Field(default=None, max_length=128)
+    expected_review_version: int | None = Field(default=None, ge=0, le=1_000_000)
 
 
 class NormRuleHitlEventRequest(BaseModel):

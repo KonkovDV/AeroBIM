@@ -87,7 +87,7 @@ def build_reports_router(ctx: ApiContext) -> APIRouter:
     ) -> dict[str, object]:
         ctx.validate_report_id(report_id)
         report = ctx.load_authorized_report(report_id, principal)
-        return ctx.serialize_public_report(report)
+        return ctx.serialize_public_report(report, include_review=True)
 
     @router.get("/v1/reports/{report_id}/coverage")
     def get_report_coverage(
@@ -109,12 +109,24 @@ def build_reports_router(ctx: ApiContext) -> APIRouter:
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
     ) -> dict[str, object]:
         from aerobim.domain.object_acl import principal_may_append_hitl_event
-        from aerobim.domain.review_event_append import HitlStateConflictError, ReviewEventAppendSpec
+        from aerobim.domain.review_event_append import (
+            HitlStateConflictError,
+            ReviewEventAppendSpec,
+            assert_review_target_in_report,
+        )
         from aerobim.domain.review_state_machine import HitlTransitionError
         from aerobim.presentation.http.errors import public_hitl_forbidden_detail
 
         ctx.validate_report_id(report_id)
-        ctx.load_authorized_report(report_id, principal)
+        report = ctx.load_authorized_report(report_id, principal)
+        try:
+            assert_review_target_in_report(
+                report,
+                finding_id=payload.finding_id,
+                issue_rule_id=payload.issue_rule_id,
+            )
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=public_bad_request_detail()) from exc
         if not principal_may_append_hitl_event(
             enforce_hitl_reviewer_auth=settings.enforce_hitl_reviewer_auth,
             require_hitl_reviewer_roles=settings.require_hitl_reviewer_roles,
@@ -153,6 +165,7 @@ def build_reports_router(ctx: ApiContext) -> APIRouter:
                     previous_state=payload.previous_state,
                     idempotency_key=idem,
                     event_id=event_id,
+                    expected_review_version=payload.expected_review_version,
                 )
             )
         except HitlStateConflictError as exc:

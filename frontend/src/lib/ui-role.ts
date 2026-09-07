@@ -53,5 +53,8 @@ export function hitlEnabledForShell(input: {
       roleAliasFromOidcRoles(input.session.roles) === "expert"
     );
   }
-  return input.uiRole === "expert";
+  if (input.bffStatus === "NOT_IMPLEMENTED") {
+    return input.uiRole === "expert";
+  }
+  return false;
 }

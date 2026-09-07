@@ -65,6 +65,48 @@ describe("AnalyzeRunPanel", () => {
     expect(list.textContent).toMatch(/документы: не выполнена/);
   });
 
+  it("hides the previous report matrix while a new job is still running", async () => {
+    const capabilities = {
+      ifc_schema: { status: "ok" },
+      ifc_validation: { status: "ok" },
+      unit_scale: { status: "ok" },
+      ids: { status: "ok" },
+      clash: { status: "ok" },
+      raster: { status: "ok" },
+    } as ReportCapabilities;
+    submitAnalyzeProjectPackageMock.mockResolvedValue({
+      job_id: "job-running-cap",
+      status: "running",
+    });
+    render(
+      <AnalyzeRunPanel
+        ifcPath="walls.ifc"
+        capabilities={capabilities}
+        capabilitiesReportId={"a".repeat(32)}
+      />,
+    );
+    expect(screen.getByTestId("analyze-engine-groups").textContent).toMatch(/модель: выполнена/);
+    fireEvent.click(screen.getByRole("button", { name: "Запустить анализ" }));
+    expect(await screen.findByTestId("analyze-job-status")).toBeTruthy();
+    expect(screen.getByTestId("analyze-engine-groups").textContent).toMatch(/модель: ожидание/);
+    expect(screen.getByTestId("run-status-strip").textContent).toMatch(/матрицы возможностей ещё нет/);
+    expect(screen.getByRole("button", { name: "Запустить анализ" })).toHaveProperty("disabled", true);
+  });
+
+  it("resumes GET of the same job after a poll error without a second POST", async () => {
+    submitAnalyzeProjectPackageMock.mockResolvedValue({
+      job_id: "job-resume-1",
+      status: "running",
+    });
+    fetchAnalyzeJobMock.mockRejectedValue(new Error("Нет связи с сервером"));
+    render(<AnalyzeRunPanel ifcPath="walls.ifc" />);
+    fireEvent.click(screen.getByRole("button", { name: "Запустить анализ" }));
+    expect(await screen.findByTestId("analyze-poll-error")).toBeTruthy();
+    fireEvent.click(screen.getByTestId("analyze-resume-poll"));
+    expect(submitAnalyzeProjectPackageMock).toHaveBeenCalledTimes(1);
+    expect(fetchAnalyzeJobMock.mock.calls.some((call) => call[0] === "job-resume-1")).toBe(true);
+  });
+
   it("records a finished job in the tab journal without calling it a CDE audit", async () => {
     sessionStorage.removeItem(RUN_JOURNAL_STORAGE_KEY);
     submitAnalyzeProjectPackageMock.mockResolvedValue({

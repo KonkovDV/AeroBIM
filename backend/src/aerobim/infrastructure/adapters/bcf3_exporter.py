@@ -34,7 +34,7 @@ implementation (BCF API and document references are out of scope). Root
 ``extensions.xml`` is emitted from topic vocabularies in use. Not CDE-ready BCF.
 
 Public API:
-    export_bcf3(report: ValidationReport) -> bytes
+    export_bcf3(report: ValidationReport, *, review_events=None) -> bytes
 """
 
 from __future__ import annotations
@@ -43,16 +43,19 @@ import hashlib
 import io
 import uuid
 import zipfile
+from collections.abc import Sequence
 from dataclasses import dataclass
 from xml.etree.ElementTree import Element, SubElement, tostring
 
 from aerobim.domain.clash_triage import TriagedClash, triage_clash_results
 from aerobim.domain.models import (
     FindingCategory,
+    ReviewEvent,
     Severity,
     ValidationIssue,
     ValidationReport,
 )
+from aerobim.domain.review_projection import effective_text_for_issue
 from aerobim.infrastructure.adapters.bcf_report_exporter import bcf_topic_zip_dir
 
 _BCF30_VERSION = "3.0"
@@ -80,14 +83,18 @@ class _Bcf3TopicPayload:
     topic_index: int | None = None
 
 
-def export_bcf3(report: ValidationReport) -> bytes:
+def export_bcf3(
+    report: ValidationReport,
+    *,
+    review_events: Sequence[ReviewEvent] | None = None,
+) -> bytes:
     """Return a BCF 3.0 ZIP archive as raw bytes."""
     buf = io.BytesIO()
 
     with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
         zf.writestr("bcf.version", _bcf3_version_xml())
 
-        topics = _collect_topics(report)
+        topics = _collect_topics(report, review_events=review_events)
         if topics:
             zf.writestr("extensions.xml", _extensions_xml(topics))
         for topic in topics:
@@ -139,7 +146,11 @@ def _extensions_xml(topics: list[_Bcf3TopicPayload]) -> str:
     return _to_xml_str(root)
 
 
-def _collect_topics(report: ValidationReport) -> list[_Bcf3TopicPayload]:
+def _collect_topics(
+    report: ValidationReport,
+    *,
+    review_events: Sequence[ReviewEvent] | None = None,
+) -> list[_Bcf3TopicPayload]:
     topics: list[_Bcf3TopicPayload] = []
 
     for issue in report.issues:
@@ -180,7 +191,11 @@ def _collect_topics(report: ValidationReport) -> list[_Bcf3TopicPayload]:
                 selected_guids = mep_guids
         else:
             topic_type = "Error" if issue.severity == Severity.ERROR else "Warning"
-        base = issue.message or ""
+        base = (
+            effective_text_for_issue(issue, review_events)
+            if review_events
+            else (issue.message or "")
+        )
         extras = [
             line
             for line in (

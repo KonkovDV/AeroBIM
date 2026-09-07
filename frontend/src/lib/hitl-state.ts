@@ -18,13 +18,36 @@ const EVENT_TO_STATE: Record<string, string> = {
 const NORM_PACK_EVENT_TYPES = new Set(["norm_rule_proposed", "norm_rule_edited"]);
 
 export function eventMatchesIssue(event: ReviewEventRow, issue: ValidationIssue): boolean {
-  if (event.finding_id && issue.finding_id) {
-    return event.finding_id === issue.finding_id;
+  if (NORM_PACK_EVENT_TYPES.has(event.event_type)) {
+    return false;
   }
-  if (event.issue_rule_id) {
-    return event.issue_rule_id === issue.rule_id;
+  const fid = issue.finding_id?.trim() || null;
+  const eventFid = event.finding_id?.trim() || null;
+  if (fid !== null) {
+    return eventFid === fid;
   }
-  return false;
+  const rid = issue.rule_id?.trim() || null;
+  const eventRid = event.issue_rule_id?.trim() || null;
+  return rid !== null && eventRid === rid;
+}
+
+export function effectiveRemarkText(
+  issue: ValidationIssue,
+  events: readonly ReviewEventRow[],
+): string {
+  let latest = issue.review?.effective_text ?? issue.remark?.body ?? "";
+  for (const event of events) {
+    if (!eventMatchesIssue(event, issue)) {
+      continue;
+    }
+    if (
+      (event.event_type === "edited_remark" || event.event_type === "edited") &&
+      event.note?.trim()
+    ) {
+      latest = event.note;
+    }
+  }
+  return latest;
 }
 
 export function latestHitlState(
@@ -59,6 +82,40 @@ export function latestHitlState(
   return latest;
 }
 
+export function latestReviewSequence(
+  events: readonly ReviewEventRow[],
+  issue: ValidationIssue,
+): number | null {
+  let latest: number | null = null;
+  for (const event of events) {
+    if (!eventMatchesIssue(event, issue)) {
+      continue;
+    }
+    if (typeof event.sequence_number === "number") {
+      latest = event.sequence_number;
+    }
+  }
+  return latest;
+}
+
+export function hitlOperationFingerprint(input: {
+  reportId: string;
+  findingId: string;
+  eventType: string;
+  note: string;
+  previousState: string;
+  expectedReviewVersion: number;
+}): string {
+  return [
+    input.reportId,
+    input.findingId,
+    input.eventType,
+    input.note,
+    input.previousState,
+    String(input.expectedReviewVersion),
+  ].join("\0");
+}
+
 export function asReviewEventRow(event: Record<string, unknown>): ReviewEventRow | null {
   if (typeof event.event_id !== "string" || typeof event.event_type !== "string") {
     return null;
@@ -73,5 +130,6 @@ export function asReviewEventRow(event: Record<string, unknown>): ReviewEventRow
     actor: typeof event.actor === "string" ? event.actor : null,
     resulting_state: typeof event.resulting_state === "string" ? event.resulting_state : null,
     previous_state: typeof event.previous_state === "string" ? event.previous_state : null,
+    sequence_number: typeof event.sequence_number === "number" ? event.sequence_number : null,
   };
 }

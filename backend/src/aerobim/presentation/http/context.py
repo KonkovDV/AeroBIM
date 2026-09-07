@@ -558,7 +558,9 @@ class ApiContext:
             "loin_information_level": loin.information_level,
         }
 
-    def serialize_public_report(self, report: ValidationReport) -> dict[str, Any]:
+    def serialize_public_report(
+        self, report: ValidationReport, *, include_review: bool = False
+    ) -> dict[str, Any]:
         data = asdict(report)
         data.pop("ifc_path", None)
         data.pop("ifc_object_key", None)
@@ -572,6 +574,13 @@ class ApiContext:
             self._enrich_issue_export(issue) if isinstance(issue, dict) else issue
             for issue in data.get("issues", ())
         ]
+        if include_review and self.container.is_registered(Tokens.REVIEW_EVENT_STORE):
+            from aerobim.domain.review_projection import attach_review_projection
+
+            events = self.container.resolve(Tokens.REVIEW_EVENT_STORE).list_for_report(
+                report.report_id
+            )
+            data["issues"] = attach_review_projection(list(data.get("issues") or []), events)
         data["iso19650"] = enrich_iso19650_metadata(report)
         return data
 

@@ -37,7 +37,7 @@ from aerobim.domain.review_state_machine import (
 EXPECTED_ALLOWED: dict[str, set[str]] = {
     "escalated": {"opened", "superseded"},
     "opened": {"accepted", "rejected", "edited", "waived", "superseded"},
-    "edited": {"accepted", "rejected", "waived", "opened", "superseded"},
+    "edited": {"accepted", "rejected", "edited", "waived", "opened", "superseded"},
     "accepted": {"superseded"},
     "rejected": {"opened", "superseded"},
     "waived": {"superseded"},

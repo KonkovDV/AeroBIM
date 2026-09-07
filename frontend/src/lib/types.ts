@@ -55,6 +55,13 @@ export interface ValidationIssue {
   unit: string | null;
   element_guid: string | null;
   problem_zone: ProblemZone | null;
+  review?: {
+    effective_text?: string | null;
+    state?: string | null;
+    actor?: string | null;
+    event_id?: string | null;
+    machine_text?: string | null;
+  } | null;
   remark: {
     title: string;
     body: string;

@@ -458,6 +458,7 @@ export type ReviewEventRow = {
   actor?: string | null;
   resulting_state?: string | null;
   previous_state?: string | null;
+  sequence_number?: number | null;
 };
 
 export async function fetchReviewEvents(
@@ -514,6 +515,7 @@ export async function postReviewEvent(
     previous_state?: string;
     finding_id?: string;
     idempotency_key?: string;
+    expected_review_version?: number;
   },
 ): Promise<{ event: Record<string, unknown> }> {
   const response = await fetch(`${apiBaseUrl}/v1/reports/${reportId}/review-events`, {

@@ -8,6 +8,7 @@ type PackScreensProps = {
   workspaceView: "upload" | "run";
   pack: ReturnType<typeof usePackDraft>;
   capabilities: ReportCapabilities | null;
+  capabilitiesReportId: string | null;
   onReportReady: (reportId: string) => void;
   onNavigate: (view: WorkspaceView) => void;
 };
@@ -17,6 +18,7 @@ export default function PackScreens({
   workspaceView,
   pack,
   capabilities,
+  capabilitiesReportId,
   onReportReady,
   onNavigate,
 }: PackScreensProps) {
@@ -49,6 +51,7 @@ export default function PackScreens({
         onNeedUpload={() => onNavigate("upload")}
         onContinueToExpert={() => onNavigate("review")}
         capabilities={capabilities}
+        capabilitiesReportId={capabilitiesReportId}
       />
     </div>
   );

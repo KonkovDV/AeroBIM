@@ -172,6 +172,17 @@ class HitlStateMachineTests(unittest.TestCase):
             "edited",
         )
 
+    def test_second_edit_from_edited_is_allowed(self) -> None:
+        self.assertEqual(
+            assert_hitl_transition(
+                current="edited",
+                event_type="edited_remark",
+                actor="expert-1",
+                note="T2",
+            ),
+            "edited",
+        )
+
     def test_rejected_requires_reason(self) -> None:
         with self.assertRaises(HitlTransitionError):
             assert_hitl_transition(current="opened", event_type="rejected", actor="expert-1")

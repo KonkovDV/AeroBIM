@@ -986,6 +986,58 @@ describe("App", () => {
     expect(postReviewEventMock).not.toHaveBeenCalled();
   });
 
+  it("keeps HITL closed while BFF discovery is still loading", async () => {
+    fetchAuthBffMock.mockImplementation(() => new Promise(() => {}));
+    render(<App />);
+    expect(await screen.findByTestId("hitl-readonly-note")).toBeTruthy();
+    expect(screen.getByTestId("role-honesty-banner").textContent).toMatch(/Проверяем сессию/);
+    expect(screen.queryByRole("button", { name: /подтвердить замечание/i })).toBeNull();
+  });
+
+  it("does not treat UNKNOWN discovery as a localStorage expert", async () => {
+    fetchAuthBffMock.mockResolvedValue({ httpStatus: 0, status: "UNKNOWN" });
+    render(<App />);
+    expect(await screen.findByTestId("hitl-readonly-note")).toBeTruthy();
+    expect(screen.getByTestId("role-honesty-banner").textContent).toMatch(/Не удалось проверить права/);
+    expect(screen.queryByRole("button", { name: /подтвердить замечание/i })).toBeNull();
+    fireEvent.keyDown(window, { key: "a" });
+    expect(postReviewEventMock).not.toHaveBeenCalled();
+  });
+
+  it("loads the saved expert remark T1 instead of machine T0", async () => {
+    const report = buildReport();
+    report.issues[0] = buildIssue({
+      remark: { title: "Машина", body: "T0" },
+      review: {
+        effective_text: "T1",
+        machine_text: "T0",
+        state: "edited",
+        actor: "expert-1",
+      },
+    });
+    fetchReportMock.mockResolvedValue(report);
+    fetchReviewEventsMock.mockResolvedValue({
+      events: [
+        {
+          event_id: "evt-t1",
+          event_type: "edited_remark",
+          created_at: "2026-09-07T00:00:00Z",
+          issue_rule_id: "DRAW-001",
+          finding_id: "fid-draw-001",
+          note: "T1",
+          actor: "expert-1",
+          resulting_state: "edited",
+          previous_state: "opened",
+        },
+      ],
+      count: 1,
+    });
+    render(<App />);
+    const editor = await screen.findByLabelText(UI_COPY.editRemark);
+    expect((editor as HTMLTextAreaElement).value).toBe("T1");
+    expect(report.summary.passed).toBe(false);
+  });
+
   it("migrates a legacy team preset chip to JSON file exchange", async () => {
     window.localStorage.setItem(
       REPORT_FILTER_PRESETS_STORAGE_KEY,

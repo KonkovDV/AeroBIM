@@ -163,6 +163,7 @@ export default function App() {
           workspaceView={workspaceView}
           pack={pack}
           capabilities={selectedReport?.capabilities ?? null}
+          capabilitiesReportId={selectedReport?.report_id ?? selectedReportId}
           onReportReady={handleSeededReport}
           onNavigate={setWorkspaceView}
         />

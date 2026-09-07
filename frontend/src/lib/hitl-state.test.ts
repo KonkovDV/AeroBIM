@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { asReviewEventRow, eventMatchesIssue, latestHitlState } from "./hitl-state";
+import { asReviewEventRow, effectiveRemarkText, eventMatchesIssue, hitlOperationFingerprint, latestHitlState } from "./hitl-state";
 import type { ReviewEventRow } from "./api";
 import type { ValidationIssue } from "./types";
 
@@ -52,6 +52,59 @@ describe("hitl-state", () => {
       row({ finding_id: "fid-2", event_type: "accepted", resulting_state: "accepted" }),
     ];
     expect(latestHitlState(events, issue)).toBeNull();
+  });
+
+  it("does not apply another finding's edited_remark by shared rule_id", () => {
+    const events = [
+      row({
+        finding_id: "fid-2",
+        event_type: "edited_remark",
+        note: "T-other",
+        resulting_state: "edited",
+      }),
+    ];
+    expect(eventMatchesIssue(events[0]!, issue)).toBe(false);
+    expect(effectiveRemarkText(issue, events)).toBe("");
+  });
+
+  it("prefers the last edited_remark over machine T0", () => {
+    const withRemark: ValidationIssue = {
+      ...issue,
+      remark: {
+        title: "t",
+        body: "T0",
+      },
+    };
+    const events = [
+      row({ event_id: "e1", event_type: "opened", resulting_state: "opened" }),
+      row({
+        event_id: "e2",
+        event_type: "edited_remark",
+        note: "T1",
+        resulting_state: "edited",
+      }),
+    ];
+    expect(effectiveRemarkText(withRemark, events)).toBe("T1");
+  });
+
+  it("builds a new fingerprint when finding or payload changes", () => {
+    const a = hitlOperationFingerprint({
+      reportId: "r1",
+      findingId: "fid-1",
+      eventType: "edited_remark",
+      note: "T1",
+      previousState: "opened",
+      expectedReviewVersion: 1,
+    });
+    const b = hitlOperationFingerprint({
+      reportId: "r1",
+      findingId: "fid-2",
+      eventType: "edited_remark",
+      note: "T1",
+      previousState: "opened",
+      expectedReviewVersion: 1,
+    });
+    expect(a).not.toBe(b);
   });
 
   it("parses a posted event payload", () => {

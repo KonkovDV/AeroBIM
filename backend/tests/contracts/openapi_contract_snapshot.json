@@ -1000,6 +1000,19 @@
             "title": "Event Type",
             "type": "string"
           },
+          "expected_review_version": {
+            "anyOf": [
+              {
+                "maximum": 1000000.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Review Version"
+          },
           "finding_id": {
             "anyOf": [
               {

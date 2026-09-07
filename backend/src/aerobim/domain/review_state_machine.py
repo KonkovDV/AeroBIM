@@ -41,7 +41,7 @@ _EVENT_TO_STATE: dict[str, HitlReviewState] = {
 _ALLOWED_TRANSITIONS: dict[str, frozenset[str]] = {
     "escalated": frozenset({"opened", "superseded"}),
     "opened": frozenset({"accepted", "rejected", "edited", "waived", "superseded"}),
-    "edited": frozenset({"accepted", "rejected", "waived", "opened", "superseded"}),
+    "edited": frozenset({"accepted", "rejected", "edited", "waived", "opened", "superseded"}),
     "accepted": frozenset({"superseded"}),
     "rejected": frozenset({"opened", "superseded"}),
     "waived": frozenset({"superseded"}),

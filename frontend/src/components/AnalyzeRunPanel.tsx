@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   cancelAnalyzeJob,
   submitAnalyzeProjectPackage,
+  type AnalyzeJobSnapshot,
 } from "../lib/api";
 import type { ReportCapabilities } from "../lib/types";
 import { BLOCKING_STATES, capabilityRows, engineGroupStatus, formatEngineGroupStatus, humanCapabilityLine, RUN_ENGINE_GROUPS } from "../lib/capability-copy";
@@ -23,7 +24,28 @@ export type AnalyzeRunPanelProps = {
   onNeedUpload?: () => void;
   onContinueToExpert?: () => void;
   capabilities?: ReportCapabilities | null;
+  /** report_id, которому принадлежат capabilities; иначе матрица прошлого отчёта скрыта. */
+  capabilitiesReportId?: string | null;
 };
+
+function capabilitiesForActiveJob(
+  capabilities: ReportCapabilities | null | undefined,
+  capabilitiesReportId: string | null | undefined,
+  job: AnalyzeJobSnapshot | null,
+  terminal: boolean,
+): ReportCapabilities | null | undefined {
+  if (job === null) {
+    return capabilities;
+  }
+  const jobReportId = job.report_id ?? null;
+  if (!terminal || !jobReportId) {
+    return null;
+  }
+  if (capabilitiesReportId && jobReportId !== capabilitiesReportId) {
+    return null;
+  }
+  return capabilities;
+}
 
 const COARSE_STAGES = [
   UI_COPY.runStageAccepted,
@@ -107,9 +129,11 @@ export default function AnalyzeRunPanel({
   onNeedUpload,
   onContinueToExpert,
   capabilities,
+  capabilitiesReportId,
 }: AnalyzeRunPanelProps) {
   const draft = packDraft ?? packDraftFromIfc(ifcPath);
-  const { job, trackJob, pollError, setPollError, elapsedSec, terminal } = useRunPolling(onReportReady);
+  const { job, trackJob, pollError, setPollError, elapsedSec, terminal, resumePolling } =
+    useRunPolling(onReportReady);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [journal, setJournal] = useState<RunJournalEntry[]>(() =>
@@ -165,7 +189,19 @@ export default function AnalyzeRunPanel({
     setConfirmingCancel(false);
   }, [job, terminal]);
 
+  const jobInFlight = job !== null && !terminal;
+  const startLocked = busy || jobInFlight;
+  const scopedCapabilities = capabilitiesForActiveJob(
+    capabilities,
+    capabilitiesReportId,
+    job,
+    terminal,
+  );
+
   async function start(): Promise<void> {
+    if (startLocked) {
+      return;
+    }
     if (!packDraftHasAny(draft)) {
       setError(UI_COPY.runNeedUpload);
       return;
@@ -216,10 +252,10 @@ export default function AnalyzeRunPanel({
         elapsedSec={elapsedSec}
         terminal={terminal}
         draft={draft}
-        capabilities={capabilities}
+        capabilities={scopedCapabilities}
       />
       <div className="remark-actions">
-        <button type="button" onClick={() => void start()} disabled={busy || !packDraftHasAny(draft)}>
+        <button type="button" onClick={() => void start()} disabled={startLocked || !packDraftHasAny(draft)}>
           {busy ? UI_COPY.runStarting : UI_COPY.runStart}
         </button>
         {confirmingCancel ? (
@@ -302,7 +338,7 @@ export default function AnalyzeRunPanel({
       ) : null}
       <ol className="analyze-engines" data-testid="analyze-engine-groups">
         {RUN_ENGINE_GROUPS.map((group) => {
-          const status = engineGroupStatus(capabilities, group.keys);
+          const status = engineGroupStatus(scopedCapabilities, group.keys);
           return (
             <li key={group.id} className={`analyze-engine analyze-engine-${status}`}>
               {group.title}: {formatEngineGroupStatus(status)}
@@ -310,9 +346,9 @@ export default function AnalyzeRunPanel({
           );
         })}
       </ol>
-      {job?.status.toLowerCase() === "succeeded" && capabilities ? (
+      {job?.status.toLowerCase() === "succeeded" && scopedCapabilities ? (
         <ul className="kpi-list" data-testid="analyze-capability-map">
-          {capabilityRows(capabilities).map((row) => (
+          {capabilityRows(scopedCapabilities).map((row) => (
             <li key={row.key}>{humanCapabilityLine(row)}</li>
           ))}
         </ul>
@@ -331,6 +367,11 @@ export default function AnalyzeRunPanel({
         <p className="compact-copy" role="alert" data-testid="analyze-poll-error">
           {pollError}
         </p>
+      ) : null}
+      {pollError && jobInFlight ? (
+        <button type="button" onClick={resumePolling} data-testid="analyze-resume-poll">
+          {UI_COPY.runResumePoll}
+        </button>
       ) : null}
       <section className="run-journal" data-testid="run-journal">
         <h3>{UI_COPY.runJournalTitle}</h3>

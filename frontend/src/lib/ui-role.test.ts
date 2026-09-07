@@ -55,4 +55,13 @@ describe("hitlEnabledForShell", () => {
       }),
     ).toBe(true);
   });
+
+  it("does not grant HITL from localStorage while discovery is LOADING or UNKNOWN", () => {
+    expect(
+      hitlEnabledForShell({ bffStatus: "LOADING", session: null, uiRole: "expert" }),
+    ).toBe(false);
+    expect(
+      hitlEnabledForShell({ bffStatus: "UNKNOWN", session: null, uiRole: "expert" }),
+    ).toBe(false);
+  });
 });

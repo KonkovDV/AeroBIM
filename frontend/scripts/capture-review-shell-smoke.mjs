@@ -8,6 +8,7 @@ import { pathToFileURL } from "node:url";
 import { parseArgs, validateExportLinks } from "./capture-review-shell-smoke-helpers.mjs";
 
 export { parseArgs, validateExportLinks };
+export { buildSmokePayload };
 
 async function artifactMetadata(filePath) {
   const fileBuffer = await readFile(filePath);
@@ -207,25 +208,20 @@ async function main() {
     }
 
     await context.tracing.stop({ path: tracePath });
-    console.log(
-      JSON.stringify(
-        buildSmokePayload(
-          options,
-          {
-            issueScreenshotPath,
-            clashScreenshotPath: capturedClashScreenshotPath,
-            tracePath,
-          },
-          {
-            issue: issueChecks,
-            clash: clashChecks,
-            presets: presetChecks,
-          },
-        ),
-        null,
-        2,
-      ),
+    const smokePayload = await buildSmokePayload(
+      options,
+      {
+        issueScreenshotPath,
+        clashScreenshotPath: capturedClashScreenshotPath,
+        tracePath,
+      },
+      {
+        issue: issueChecks,
+        clash: clashChecks,
+        presets: presetChecks,
+      },
     );
+    console.log(JSON.stringify(smokePayload, null, 2));
   } finally {
     await browser.close();
   }

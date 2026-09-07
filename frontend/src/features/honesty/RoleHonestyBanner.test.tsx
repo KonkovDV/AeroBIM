@@ -21,4 +21,18 @@ describe("RoleHonestyBanner", () => {
     expect(banner.textContent).not.toMatch(/OIDC live/i);
     expect(banner.textContent).not.toMatch(/501/);
   });
+
+  it("keeps expert actions closed while discovery is loading", () => {
+    render(<RoleHonestyBanner bffStatus="LOADING" />);
+    const banner = screen.getByTestId("role-honesty-banner");
+    expect(banner.textContent).toMatch(/Проверяем сессию/);
+    expect(banner.textContent).not.toMatch(/501/);
+  });
+
+  it("does not treat UNKNOWN as a demo expert", () => {
+    render(<RoleHonestyBanner bffStatus="UNKNOWN" />);
+    const banner = screen.getByTestId("role-honesty-banner");
+    expect(banner.textContent).toMatch(/Не удалось проверить права/);
+    expect(banner.textContent).toMatch(/не открывает запись/);
+  });
 });

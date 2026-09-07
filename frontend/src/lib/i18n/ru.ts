@@ -21,6 +21,10 @@ export const RU_COPY = {
     "Демо-режим: роль не проверяется сервером. Переключатель в шапке — макет экрана, не разграничение доступа. GET /v1/auth/bff = 501 (не OIDC). HITL на сервере: expert/reviewer; user/viewer и общий Bearer → 403.",
   roleBannerLab:
     "Лабораторный BFF: GET /v1/auth/bff = LAB, не промышленный SSO. HITL только при проверенной сессии эксперта. user/viewer → 403. Переключатель шапки — макет, пока сессия не зафиксировала роль.",
+  roleBannerLoading:
+    "Проверяем сессию. Правка и решения эксперта закрыты, пока сервер не ответил.",
+  roleBannerUnknown:
+    "Не удалось проверить права. Повторите запрос. Макет роли в шапке не открывает запись.",
   roleSelectLabel: "Макет экрана (не доступ)",
   roleExpert: "Эксперт",
   roleUser: "Пользователь",
@@ -512,6 +516,7 @@ export const RU_COPY = {
   covFindingsLink: (op: string) => `${op} → находки`,
   runStart: "Запустить анализ",
   runStarting: "Запускаем…",
+  runResumePoll: "Возобновить проверку статуса",
   runCancel: "Отменить",
   runCancelFailed: "Не удалось отменить задание",
   runNeedUpload: "Сначала загрузите IFC или документы. Нативные RVT/NWD/DWG — жёсткий отказ.",

@@ -18,6 +18,7 @@ export type RunPolling = {
   setPollError: (message: string | null) => void;
   elapsedSec: number;
   terminal: boolean;
+  resumePolling: () => void;
 };
 
 /**
@@ -41,6 +42,7 @@ export function useRunPolling(onReportReady?: (reportId: string) => void): RunPo
   const [job, setJob] = useState<AnalyzeJobSnapshot | null>(null);
   const [pollError, setPollError] = useState<string | null>(null);
   const [elapsedSec, setElapsedSec] = useState(0);
+  const [resumeNonce, setResumeNonce] = useState(0);
   const startedAt = useRef<number | null>(null);
   const notifiedReportId = useRef<string | null>(null);
   /** job_id, для которого уже заведён отсчёт: иначе таймер продолжает прошлый прогон. */
@@ -130,7 +132,7 @@ export function useRunPolling(onReportReady?: (reportId: string) => void): RunPo
       cancelled = true;
       window.clearTimeout(handle);
     };
-  }, [jobId, jobStatus, terminal]);
+  }, [jobId, jobStatus, terminal, resumeNonce]);
 
   function trackJob(next: AnalyzeJobSnapshot | null, options?: { restartClock?: boolean }): void {
     setJob(next);
@@ -143,5 +145,13 @@ export function useRunPolling(onReportReady?: (reportId: string) => void): RunPo
     }
   }
 
-  return { job, trackJob, pollError, setPollError, elapsedSec, terminal };
+  function resumePolling(): void {
+    if (!jobId || terminal) {
+      return;
+    }
+    setPollError(null);
+    setResumeNonce((n) => n + 1);
+  }
+
+  return { job, trackJob, pollError, setPollError, elapsedSec, terminal, resumePolling };
 }

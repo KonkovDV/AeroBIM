@@ -30,16 +30,19 @@ import hashlib
 import io
 import uuid
 import zipfile
+from collections.abc import Sequence
 from dataclasses import dataclass
 from xml.etree.ElementTree import Element, SubElement, tostring
 
 from aerobim.domain.clash_triage import TriagedClash, triage_clash_results
 from aerobim.domain.models import (
     FindingCategory,
+    ReviewEvent,
     Severity,
     ValidationIssue,
     ValidationReport,
 )
+from aerobim.domain.review_projection import effective_text_for_issue
 
 
 @dataclass(frozen=True)
@@ -77,14 +80,18 @@ def bcf_topic_zip_dir(topic_guid: str) -> str:
         raise ValueError(f"BCF topic guid is not a UUID: {topic_guid!r}") from exc
 
 
-def export_bcf(report: ValidationReport) -> bytes:
+def export_bcf(
+    report: ValidationReport,
+    *,
+    review_events: Sequence[ReviewEvent] | None = None,
+) -> bytes:
     """Return a BCF 2.1 ZIP archive as raw bytes."""
     buf = io.BytesIO()
 
     with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
         zf.writestr("bcf.version", _bcf_version_xml())
 
-        for topic in _collect_topics(report):
+        for topic in _collect_topics(report, review_events=review_events):
             topic_dir = bcf_topic_zip_dir(topic.topic_guid)
             zf.writestr(f"{topic_dir}/", "")
             zf.writestr(f"{topic_dir}/markup.bcf", _build_markup(topic))
@@ -100,12 +107,20 @@ def _bcf_version_xml() -> str:
     return _to_xml_str(root)
 
 
-def collect_bcf_topics(report: ValidationReport) -> list[_BcfTopicPayload]:
+def collect_bcf_topics(
+    report: ValidationReport,
+    *,
+    review_events: Sequence[ReviewEvent] | None = None,
+) -> list[_BcfTopicPayload]:
     """Public topic enumeration shared by BCF ZIP export and BCF API push."""
-    return _collect_topics(report)
+    return _collect_topics(report, review_events=review_events)
 
 
-def _collect_topics(report: ValidationReport) -> list[_BcfTopicPayload]:
+def _collect_topics(
+    report: ValidationReport,
+    *,
+    review_events: Sequence[ReviewEvent] | None = None,
+) -> list[_BcfTopicPayload]:
     topics: list[_BcfTopicPayload] = []
 
     for issue in report.issues:
@@ -155,7 +170,11 @@ def _collect_topics(report: ValidationReport) -> list[_BcfTopicPayload]:
             )
         else:
             topic_type = "Error" if issue.severity == Severity.ERROR else "CoordinationWarning"
-        base_description = issue.remark.body if issue.remark is not None else (issue.message or "")
+        base_description = (
+            effective_text_for_issue(issue, review_events)
+            if review_events
+            else (issue.remark.body if issue.remark is not None else (issue.message or ""))
+        )
         ai_generated = bool(issue.remark is not None and issue.remark.ai_generated)
         provenance_lines = [
             f"finding_id={issue.finding_id}" if issue.finding_id else None,
@@ -183,6 +202,10 @@ def _collect_topics(report: ValidationReport) -> list[_BcfTopicPayload]:
         ]
         description = base_description
         extras = [line for line in provenance_lines if line]
+        if review_events:
+            machine = issue.remark.body if issue.remark is not None else (issue.message or "")
+            if base_description != machine:
+                extras.append(f"machine_text={machine}")
         if extras:
             description = f"{base_description}\n\n" + "\n".join(extras)
         title = issue.rule_id or "Validation Issue"

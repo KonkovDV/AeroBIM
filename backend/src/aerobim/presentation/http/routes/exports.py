@@ -34,7 +34,7 @@ def build_exports_router(ctx: ApiContext) -> APIRouter:
         ctx.validate_report_id(report_id)
         report = ctx.load_authorized_report(report_id, principal)
         return JSONResponse(
-            content=ctx.serialize_public_report(report),
+            content=ctx.serialize_public_report(report, include_review=True),
             headers={"Content-Disposition": attachment_content_disposition(f"{report_id}.json")},
         )
 
@@ -45,7 +45,7 @@ def build_exports_router(ctx: ApiContext) -> APIRouter:
     ) -> HTMLResponse:
         ctx.validate_report_id(report_id)
         report = ctx.load_authorized_report(report_id, principal)
-        data: dict[str, Any] = ctx.serialize_public_report(report)
+        data: dict[str, Any] = ctx.serialize_public_report(report, include_review=True)
         scope = derive_report_scope(report)
         data["coverage"] = coverage_from_report(report, scope=scope).to_dict(report=report)
         html = render_report_html(report_id, data)
@@ -61,7 +61,7 @@ def build_exports_router(ctx: ApiContext) -> APIRouter:
     ) -> Response:
         ctx.validate_report_id(report_id)
         report = ctx.load_authorized_report(report_id, principal)
-        data: dict[str, Any] = ctx.serialize_public_report(report)
+        data: dict[str, Any] = ctx.serialize_public_report(report, include_review=True)
         scope = derive_report_scope(report)
         data["coverage"] = coverage_from_report(report, scope=scope).to_dict(report=report)
         pdf_bytes = render_report_pdf_bytes(report_id, data)
@@ -85,15 +85,20 @@ def build_exports_router(ctx: ApiContext) -> APIRouter:
         """
         ctx.validate_report_id(report_id)
         report = ctx.load_authorized_report(report_id, principal)
+        review_events = ()
+        if ctx.container.is_registered(Tokens.REVIEW_EVENT_STORE):
+            review_events = tuple(
+                ctx.container.resolve(Tokens.REVIEW_EVENT_STORE).list_for_report(report_id)
+            )
         normalized = (version or "").strip()
         if normalized in {"3", "3.0"}:
             from aerobim.infrastructure.adapters.bcf3_exporter import export_bcf3
 
-            bcf_bytes = export_bcf3(report)
+            bcf_bytes = export_bcf3(report, review_events=review_events)
         elif normalized in {"2.1", "2"}:
             from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
 
-            bcf_bytes = export_bcf(report)
+            bcf_bytes = export_bcf(report, review_events=review_events)
         else:
             raise HTTPException(
                 status_code=400,
