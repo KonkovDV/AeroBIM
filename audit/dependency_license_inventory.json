@@ -120,7 +120,7 @@
     {
       "name": "uvicorn",
       "scope": "core",
-      "installed_version": "0.51.0",
+      "installed_version": "0.52.4",
       "license_metadata": "BSD-3-Clause",
       "spdx_guess": "BSD-3-Clause",
       "risk_class": "permissive",
@@ -128,7 +128,7 @@
       "legal_review_required": false,
       "usage": "server",
       "mitigation_options": "",
-      "lock_version": "0.51.0"
+      "lock_version": "0.52.4"
     },
     {
       "name": "pydantic",

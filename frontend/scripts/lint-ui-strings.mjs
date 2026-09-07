@@ -36,7 +36,7 @@ for (const file of walk(SRC_ROOT)) {
   violations.push(...scanTsxSource(readFileSync(file, "utf8"), rel));
 }
 
-for (const rel of TS_SCAN_FILES) {
+for (const rel of new Set([...TS_SCAN_FILES, "lib/i18n/workplace.ts", "lib/i18n/evidence.ts"])) {
   violations.push(...scanTsSource(readFileSync(join(SRC_ROOT, rel), "utf8"), rel));
 }
 

@@ -5,6 +5,8 @@ import "./styles.css";
 import "./styles/design-system.css";
 import "./styles/visual-language.css";
 import "./styles/review-ergonomics.css";
+import "./styles/product-header.css";
+import "./styles/product-workplace.css";
 
 const container = document.getElementById("root");
 

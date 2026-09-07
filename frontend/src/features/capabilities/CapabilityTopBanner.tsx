@@ -11,7 +11,8 @@ export default function CapabilityTopBanner({
 }: {
   capabilities?: ReportCapabilities | null;
 }) {
-  if (!capabilities) {
+  const rows = capabilities ? capabilityRows(capabilities) : [];
+  if (rows.length === 0) {
     return (
       <p className="capability-top-banner" role="status" data-testid="capability-top-banner">
         {UI_COPY.capabilityMissing}
@@ -19,7 +20,6 @@ export default function CapabilityTopBanner({
     );
   }
 
-  const rows = capabilityRows(capabilities);
   const blocking = rows.filter((row) => BLOCKING_STATES.has(row.status));
   const skipped = rows.filter(
     (row) =>

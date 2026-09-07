@@ -91,7 +91,7 @@ describe("DrawingEvidencePanel", () => {
     render(<DrawingEvidencePanel report={buildReport()} activeIssue={null} />);
 
     expect(screen.getByRole("img", { name: /Превью чертежа a-101/i })).toBeTruthy();
-    expect(screen.getByText(/простого просмотра листа/i)).toBeTruthy();
+    expect(screen.getByText(/простой просмотр сохранённого чертежа/i)).toBeTruthy();
   });
 
   it("renders a problem-zone overlay rectangle after the preview image loads", async () => {

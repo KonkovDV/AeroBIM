@@ -291,9 +291,9 @@ describe("App", () => {
     render(<App />);
 
     expect(await screen.findByRole("img", { name: /Превью чертежа a-102/i })).toBeTruthy();
-    expect(screen.getByTestId("role-honesty-banner").textContent).toMatch(/не разграничение доступа/);
-    expect(screen.getByTestId("training-rules-banner").textContent).toMatch(/учебном наборе правил/);
-    expect(screen.getAllByText(/BLOCKED/).length).toBeGreaterThan(0);
+    expect(screen.getByTestId("role-honesty-banner").textContent).toBe(UI_COPY.roleBanner);
+    expect(screen.getByTestId("training-rules-banner").textContent).toBe(UI_COPY.trainingRulesBanner);
+    expect(screen.getAllByText(UI_COPY.outcomeBlocked).length).toBeGreaterThan(0);
     const viewer = await screen.findByTestId("viewer-stub");
     expect(within(viewer).getByText("DRAW-001")).toBeTruthy();
     expect(within(viewer).getByText("issue")).toBeTruthy();
@@ -322,7 +322,8 @@ describe("App", () => {
     });
     render(<App />);
     expect(await screen.findByTestId("error-banner")).toBeTruthy();
-    expect(screen.getByTestId("error-banner").textContent).toMatch(/API down/);
+    expect(screen.getByTestId("error-banner").textContent).toMatch(/Не удалось получить данные/);
+    expect(screen.getByTestId("error-banner").textContent).not.toMatch(/API down/);
     fireEvent.click(screen.getByRole("button", { name: UI_COPY.retry }));
     expect(await screen.findByLabelText(UI_COPY.searchFindings)).toBeTruthy();
   });
@@ -823,7 +824,7 @@ describe("App", () => {
 
     render(<App />);
 
-    const badges = await screen.findAllByText(/REVIEW_REQUIRED/);
+    const badges = await screen.findAllByText(UI_COPY.outcomeReview);
     expect(badges.length).toBeGreaterThan(0);
     for (const badge of badges) {
       expect(badge.className).toContain("outcome-review");
@@ -839,7 +840,7 @@ describe("App", () => {
     fetchReportMock.mockResolvedValue(failed);
 
     const { unmount } = render(<App />);
-    const failBadges = await screen.findAllByText(/FAILED —/);
+    const failBadges = await screen.findAllByText(UI_COPY.outcomeFailed);
     expect(failBadges.length).toBeGreaterThan(0);
     for (const badge of failBadges) {
       expect(badge.className).toContain("outcome-fail");
@@ -851,7 +852,7 @@ describe("App", () => {
     blocked.summary = { ...blocked.summary, outcome: "blocked", passed: false };
     fetchReportMock.mockResolvedValue(blocked);
     render(<App />);
-    const blockBadges = await screen.findAllByText(/BLOCKED —/);
+    const blockBadges = await screen.findAllByText(UI_COPY.outcomeBlocked);
     expect(blockBadges.length).toBeGreaterThan(0);
     for (const badge of blockBadges) {
       expect(badge.className).toContain("outcome-block");
@@ -916,7 +917,7 @@ describe("App", () => {
     }
     fireEvent.click(screen.getByRole("button", { name: "Версии" }));
     expect(screen.getByTestId("version-diff-panel")).toBeTruthy();
-    expect(screen.getByText(/«Не воспроизведено» ≠ исправлено/)).toBeTruthy();
+    expect(screen.getByText(UI_COPY.diffNote)).toBeTruthy();
   });
 
   it("keeps the report index on Проекты and the TZ three-pane on Эксперт", async () => {
@@ -953,7 +954,7 @@ describe("App", () => {
   it("treats the header role switch as a screen mock, not HITL access", async () => {
     render(<App />);
     expect(await screen.findByRole("button", { name: /подтвердить замечание/i })).toBeTruthy();
-    expect(screen.getByTestId("role-honesty-banner").textContent).toMatch(/не проверяется сервером/);
+    expect(screen.getByTestId("role-honesty-banner").textContent).toContain("не предоставляет права доступа");
     fireEvent.change(screen.getByLabelText(UI_COPY.roleSelectLabel), { target: { value: "user" } });
     fireEvent.click(screen.getByRole("button", { name: "Эксперт" }));
     // UI3 P0.4: роль «Пользователь» не видит и не может вызвать правку/подтверждение/отклонение.
@@ -975,8 +976,8 @@ describe("App", () => {
     });
     render(<App />);
     expect(await screen.findByTestId("hitl-readonly-note")).toBeTruthy();
-    expect(screen.getByTestId("role-honesty-banner").textContent).toMatch(/не промышленный SSO/);
-    expect(screen.getByTestId("role-honesty-banner").textContent).toMatch(/LAB/);
+    expect(screen.getByTestId("role-honesty-banner").textContent).toContain("Промышленный вход ещё не подключён");
+    expect(screen.getByTestId("role-honesty-banner").textContent).toContain("Лабораторный режим");
     expect(screen.queryByRole("button", { name: /подтвердить замечание/i })).toBeNull();
     expect((screen.getByLabelText(UI_COPY.roleSelectLabel) as HTMLSelectElement).disabled).toBe(
       true,

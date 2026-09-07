@@ -51,7 +51,7 @@ describe("issue-triage", () => {
   });
 
   it("does not invent a clause from empty norm fields", () => {
-    expect(clauseLine(issue({}))).toMatch(/обязательное поле ТЗ/);
+    expect(clauseLine(issue({}))).toMatch(/Пункт нормы не указан/);
     expect(clauseLine(issue({ norm_source: "СП 63", norm_clause: "7.1" }))).toBe("СП 63 · 7.1");
   });
 

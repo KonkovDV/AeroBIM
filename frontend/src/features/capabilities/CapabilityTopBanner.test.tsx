@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import CapabilityTopBanner from "./CapabilityTopBanner";
 import type { ReportCapabilities } from "../../lib/types";
+import { UI_COPY } from "../../lib/ui-copy";
 
 const capabilities: ReportCapabilities = {
   clash: { status: "skipped", reason: "no tessellation" },
@@ -18,7 +19,7 @@ describe("CapabilityTopBanner", () => {
     render(<CapabilityTopBanner capabilities={capabilities} />);
     const text = screen.getByTestId("capability-top-banner").textContent ?? "";
     expect(text).toMatch(/коллизии/);
-    expect(text).toMatch(/тишина ≠ успех/i);
+    expect(text).toContain(UI_COPY.silenceIsNotSuccess);
     expect(text).toMatch(/DWG/);
     expect(text).not.toMatch(/\bskipped\b|\bfailed\b/);
   });
@@ -36,5 +37,19 @@ describe("CapabilityTopBanner", () => {
     expect(text).toMatch(/коллизий инженерных сетей/);
     expect(text).toMatch(/сети в IFC не переданы/);
     expect(text).not.toMatch(/not_verified/);
+  });
+
+  it("does not label an empty capability response as complete", () => {
+    render(<CapabilityTopBanner capabilities={{} as ReportCapabilities} />);
+    const banner = screen.getByTestId("capability-top-banner");
+    expect(banner.textContent).toBe(UI_COPY.capabilityMissing);
+    expect(banner.className).not.toContain("capability-top-banner-ok");
+  });
+
+  it("keeps the complete nonempty case distinct", () => {
+    render(<CapabilityTopBanner capabilities={{ ...capabilities, clash: { status: "ok" }, dwg_dxf: { status: "ok" } }} />);
+    const banner = screen.getByTestId("capability-top-banner");
+    expect(banner.textContent).toBe(UI_COPY.capabilityOkBanner);
+    expect(banner.className).toContain("capability-top-banner-ok");
   });
 });

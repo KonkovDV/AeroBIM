@@ -1,17 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useId } from "react";
 import { UI_COPY } from "../lib/ui-copy";
 import { isTextEntryTarget } from "../lib/triage-hotkeys";
+import WorkspaceIcon from "./WorkspaceIcon";
 
-export type WorkspaceView =
-  | "projects"
-  | "upload"
-  | "run"
-  | "review"
-  | "remark"
-  | "export"
-  | "diff"
-  | "user";
-
+export type WorkspaceView = "projects" | "upload" | "run" | "review" | "remark" | "export" | "diff" | "user";
 export const WORKSPACE_NAV: readonly { id: WorkspaceView; label: string }[] = [
   { id: "projects", label: UI_COPY.navProjects },
   { id: "upload", label: UI_COPY.navUpload },
@@ -22,48 +14,25 @@ export const WORKSPACE_NAV: readonly { id: WorkspaceView; label: string }[] = [
   { id: "diff", label: UI_COPY.navDiff },
   { id: "user", label: UI_COPY.navUser },
 ];
-
-export const EXPERT_SHELL_VIEWS: ReadonlySet<WorkspaceView> = new Set([
-  "review",
-  "remark",
-  "export",
-]);
-
-export const TRIAGE_KEYBOARD_VIEWS: ReadonlySet<WorkspaceView> = new Set([
-  "review",
-  "remark",
-  "export",
-]);
-
+export const EXPERT_SHELL_VIEWS: ReadonlySet<WorkspaceView> = new Set(["review", "remark", "export"]);
+export const TRIAGE_KEYBOARD_VIEWS: ReadonlySet<WorkspaceView> = new Set(["review", "remark", "export"]);
 export function formatNavBadgeCount(count: number): string {
   return count > 99 ? "99+" : String(count);
 }
-
 export type WorkspaceNavProps = {
   workspaceView: WorkspaceView;
   onChange: (view: WorkspaceView) => void;
-  /** Число находок выбранного отчёта на кнопке «Эксперт». Не точность продукта. */
   reviewFindingsCount?: number | null;
 };
 
-export default function WorkspaceNav({
-  workspaceView,
-  onChange,
-  reviewFindingsCount = null,
-}: WorkspaceNavProps) {
+export default function WorkspaceNav({ workspaceView, onChange, reviewFindingsCount = null }: WorkspaceNavProps) {
+  const countId = useId();
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent): void {
-      if (!event.altKey || event.ctrlKey || event.metaKey || event.repeat || event.isComposing || event.defaultPrevented) {
-        return;
-      }
-      if (isTextEntryTarget(event.target)) {
-        return;
-      }
-      const index = Number(event.key) - 1;
-      const next = WORKSPACE_NAV[index];
-      if (!next) {
-        return;
-      }
+      if (!event.altKey || event.ctrlKey || event.metaKey || event.repeat || event.isComposing || event.defaultPrevented) return;
+      if (isTextEntryTarget(event.target)) return;
+      const next = WORKSPACE_NAV[Number(event.key) - 1];
+      if (!next) return;
       event.preventDefault();
       onChange(next.id);
     }
@@ -72,28 +41,36 @@ export default function WorkspaceNav({
   }, [onChange]);
 
   return (
-    <nav className="workspace-nav" aria-label={UI_COPY.navAria} data-testid="workspace-nav">
-      {WORKSPACE_NAV.map(({ id, label }) => (
-        <button
-          key={id}
-          type="button"
-          className={`toolbar-button ${workspaceView === id ? "active" : ""}`}
-          aria-current={workspaceView === id ? "page" : undefined}
-          onClick={() => onChange(id)}
-        >
-          {label}
-          {id === "review" && reviewFindingsCount !== null ? (
-            <span
-              className="nav-badge"
-              data-testid="nav-review-badge"
-              title={UI_COPY.navReviewCount(reviewFindingsCount)}
-              aria-hidden="true"
-            >
-              {formatNavBadgeCount(reviewFindingsCount)}
-            </span>
-          ) : null}
-        </button>
-      ))}
+    <nav className="workspace-nav product-nav" aria-label={UI_COPY.navAria} data-testid="workspace-nav">
+      <label className="product-mobile-nav">
+        <span>Раздел рабочего места</span>
+        <select value={workspaceView} onChange={(event) => {
+          const next = WORKSPACE_NAV.find(({ id }) => id === event.target.value);
+          if (next) onChange(next.id);
+        }}>
+          {WORKSPACE_NAV.map(({ id, label }) => <option key={id} value={id}>{label}</option>)}
+        </select>
+      </label>
+      <div className="product-nav-links">
+        {WORKSPACE_NAV.map(({ id, label }, index) => (
+          <button key={id} type="button"
+            className={`toolbar-button ${workspaceView === id ? "active" : ""}`}
+            aria-current={workspaceView === id ? "page" : undefined}
+            aria-keyshortcuts={`Alt+${index + 1}`}
+            aria-describedby={id === "review" && reviewFindingsCount !== null ? countId : undefined}
+            onClick={() => onChange(id)}>
+            <WorkspaceIcon name={id} />
+            {label}
+            {id === "review" && reviewFindingsCount !== null ? (
+              <span className="nav-badge" data-testid="nav-review-badge"
+                title={UI_COPY.navReviewCount(reviewFindingsCount)} aria-hidden="true">
+                {formatNavBadgeCount(reviewFindingsCount)}
+              </span>
+            ) : null}
+          </button>
+        ))}
+      </div>
+      {reviewFindingsCount !== null ? <span id={countId} className="product-sr-only">{UI_COPY.navReviewCount(reviewFindingsCount)}</span> : null}
     </nav>
   );
 }

@@ -89,7 +89,7 @@ describe("AnalyzeRunPanel", () => {
     fireEvent.click(screen.getByRole("button", { name: "Запустить анализ" }));
     expect(await screen.findByTestId("analyze-job-status")).toBeTruthy();
     expect(screen.getByTestId("analyze-engine-groups").textContent).toMatch(/модель: ожидание/);
-    expect(screen.getByTestId("run-status-strip").textContent).toMatch(/матрицы возможностей ещё нет/);
+    expect(screen.getByTestId("run-status-strip").textContent).toContain(UI_COPY.runEvidenceNone);
     expect(screen.getByRole("button", { name: "Запустить анализ" })).toHaveProperty("disabled", true);
   });
 
