@@ -1,0 +1,139 @@
+/* AeroBIM Review Shell - визуальный язык.
+   Слой поверх styles.css и styles/design-system.css: типографика, поверхности,
+   плотность, состояния. Базовые токены и исправления контраста не тронуты.
+
+   1. Плотность - цель: шаг 4px, отступы 8-12px, а не 16-24px.
+   2. Иерархия через вес и насыщенность, не через кегль.
+   3. Цифры табличные через font-variant-numeric, без подмены на monospace.
+   4. Подъём: свет - тень и волосяная граница, тьма - шаг светлоты поверхности.
+   5. Движение только сообщает состояние.
+   6. Панели честности не скрываются и не приглушаются. */
+
+:root {
+  --vl-space-1: 4px;
+  --vl-space-2: 8px;
+  --vl-space-3: 12px;
+  --vl-space-4: 16px;
+  --vl-space-5: 20px;
+  --vl-space-6: 24px;
+
+  --vl-radius-xs: 4px;
+  --vl-radius-sm: 6px;
+  --vl-radius-md: 8px;
+  --vl-radius-lg: 12px;
+  --vl-radius-pill: 999px;
+
+  --vl-font-sans: "Segoe UI", system-ui, -apple-system, "Liberation Sans", Arial, sans-serif;
+  --vl-font-mono: "Cascadia Mono", Consolas, "Liberation Mono", ui-monospace, monospace;
+
+  --vl-text-3xs: 10.5px;
+  --vl-text-2xs: 11.5px;
+  --vl-text-xs: 12.5px;
+  --vl-text-sm: 13.5px;
+  --vl-text-base: 14.5px;
+  --vl-text-md: 16.5px;
+  --vl-text-lg: 20px;
+  --vl-text-xl: 25px;
+
+  --vl-leading-tight: 1.18;
+  --vl-leading-snug: 1.34;
+  --vl-leading-normal: 1.5;
+
+  --vl-track-tighter: -0.022em;
+  --vl-track-tight: -0.012em;
+  --vl-track-caps: 0.085em;
+
+  --vl-n0: #ffffff;
+  --vl-n25: #f6f8fb;
+  --vl-n50: #edf1f7;
+  --vl-n100: #e1e7f0;
+  --vl-n200: #c8d2e0;
+  --vl-n300: #a4b1c4;
+  --vl-n500: #5a6779;
+  --vl-n600: #44505f;
+  --vl-n900: #131a24;
+
+  --vl-blue50: #eaf2ff;
+  --vl-blue200: #aeccff;
+  --vl-blue300: #7badff;
+  --vl-blue400: #4c8dfa;
+  --vl-blue500: #2c6fe8;
+  --vl-blue600: #1b55c7;
+  --vl-blue700: #16429b;
+
+  --vl-red600: #c0261c;
+  --vl-red-soft: #fdecea;
+  --vl-amber700: #8a5a00;
+  --vl-amber800: #6e4700;
+  --vl-amber-soft: #fff2dc;
+  --vl-green700: #0e6b45;
+  --vl-green-soft: #e2f5ec;
+
+  --vl-canvas: var(--vl-n25);
+  --vl-sunken: var(--vl-n50);
+  --vl-surface: var(--vl-n0);
+  --vl-raised: var(--vl-n0);
+
+  --vl-text: var(--vl-n900);
+  --vl-text-secondary: var(--vl-n600);
+  --vl-text-muted: var(--vl-n500);
+
+  --vl-line: var(--vl-n100);
+  --vl-line-strong: var(--vl-n200);
+
+  /* Граница полей держит 3:1 не только на белом, но и на утопленной
+     поверхности, где стоят полосы фильтров: светлее было бы 2.75:1. */
+  --vl-line-control: #7c8aa0;
+
+  --vl-accent: var(--vl-blue600);
+  --vl-accent-hover: var(--vl-blue700);
+  --vl-accent-soft: var(--vl-blue50);
+  --vl-accent-line: var(--vl-blue200);
+  --vl-selected: var(--vl-blue50);
+
+  --vl-shadow-raised: 0 1px 2px rgba(19, 26, 36, 0.05), 0 2px 6px -2px rgba(19, 26, 36, 0.09);
+  --vl-shadow-overlay: 0 2px 4px rgba(19, 26, 36, 0.07), 0 14px 30px -14px rgba(19, 26, 36, 0.26);
+  --vl-shadow-inset: inset 0 1px 2px rgba(19, 26, 36, 0.05);
+
+  --vl-ease: cubic-bezier(0.2, 0, 0.2, 1);
+  --vl-dur-fast: 110ms;
+  --vl-dur: 160ms;
+}
+
+/* В темноте тень практически не читается, поэтому уровни различаются
+   светлотой поверхности и границей, а не глубиной тени. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --vl-canvas: #0c1119;
+    --vl-sunken: #101823;
+    --vl-surface: #131a24;
+    --vl-raised: #1b2430;
+
+    --vl-text: #e7ecf4;
+    --vl-text-secondary: #b9c4d4;
+    --vl-text-muted: #8795a9;
+
+    --vl-line: #232e3c;
+    --vl-line-strong: #2f3c4c;
+    /* На выделенной карточке тёмной темы более тёмная граница давала 2.93:1. */
+    --vl-line-control: #6a798c;
+
+    --vl-accent: var(--vl-blue300);
+    --vl-accent-hover: var(--vl-blue200);
+    --vl-accent-soft: #16233a;
+    --vl-accent-line: #24456f;
+    --vl-selected: #16233a;
+
+    --vl-red600: #ff9c90;
+    --vl-red-soft: #33191a;
+    --vl-amber700: #f0b65c;
+    --vl-amber800: #ffd79a;
+    --vl-amber-soft: #2e2312;
+    --vl-green700: #5fd4a3;
+    --vl-green-soft: #10281f;
+
+    --vl-shadow-raised: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --vl-shadow-overlay: 0 16px 34px -16px rgba(0, 0, 0, 0.7);
+    --vl-shadow-inset: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+}

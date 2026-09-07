@@ -1,0 +1,14 @@
+/* AeroBIM Review Shell - визуальный язык.
+
+   Слой поверх styles.css и styles/design-system.css. Базовый слой и его
+   исправления контраста не переписываются: этот файл только уточняет
+   типографику, поверхности, плотность и состояния.
+
+   Порядок частей значим: токены объявляются раньше, чем используются. */
+@import "./visual-language/01-tokens.css";
+@import "./visual-language/02-base.css";
+@import "./visual-language/03-navigation.css";
+@import "./visual-language/04-lists.css";
+@import "./visual-language/05-controls.css";
+@import "./visual-language/06-indicators.css";
+@import "./visual-language/07-surfaces.css";
