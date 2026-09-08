@@ -365,9 +365,7 @@ def scoring_snapshot() -> dict[str, Any]:
         "oral_advisors_score_k1": False,
         "system_a": "regulation_appendix_2_via_order_protocol_form",
         "system_b": "regulation_appendix_3_owner_copy_pdf_not_in_git",
-        "points_bound_to_criteria_not_members": (
-            points_bound_to_criteria_not_members()
-        ),
+        "points_bound_to_criteria_not_members": (points_bound_to_criteria_not_members()),
         "finalist_criteria": [
             {"code": code, "max_points": points, "name": name}
             for code, points, name in FINALIST_CRITERIA
