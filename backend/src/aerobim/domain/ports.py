@@ -197,10 +197,20 @@ class BsiValidationService(Protocol):
 
 
 class ObjectStore(Protocol):
+    """Blob store. ``put_bytes`` is for small payloads; upload ingest uses ``put_file``."""
+
     def put_bytes(
         self,
         key: str,
         payload: bytes,
+        *,
+        content_type: str | None = None,
+    ) -> str: ...
+
+    def put_file(
+        self,
+        key: str,
+        path: Path,
         *,
         content_type: str | None = None,
     ) -> str: ...

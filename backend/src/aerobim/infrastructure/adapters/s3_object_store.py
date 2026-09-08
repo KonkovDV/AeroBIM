@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any, cast
 
 from aerobim.core.security.object_limits import (
@@ -70,6 +71,31 @@ class S3ObjectStore:
         if content_type:
             kwargs["ContentType"] = content_type
         client.put_object(**kwargs)
+        return object_key
+
+    def put_file(
+        self,
+        key: str,
+        path: Path,
+        *,
+        content_type: str | None = None,
+    ) -> str:
+        source = Path(path)
+        if not source.is_file():
+            raise FileNotFoundError(f"Object source is not a file: {source}")
+        client = self._build_client()
+        object_key = self._qualify_key(key)
+        extra: dict[str, str] = {}
+        if content_type:
+            extra["ContentType"] = content_type
+        kwargs: dict[str, object] = {
+            "Filename": str(source),
+            "Bucket": self._bucket,
+            "Key": object_key,
+        }
+        if extra:
+            kwargs["ExtraArgs"] = extra
+        client.upload_file(**kwargs)
         return object_key
 
     def get_bytes(self, key: str) -> bytes | None:

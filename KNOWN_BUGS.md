@@ -68,6 +68,7 @@
 | JOB-01 | Analyze **runner** is in-process FastAPI `BackgroundTasks`. Redis stores job **records**, not execution. | Not a Shared-gate writer. Do not claim durable workers. |
 | XML-POSTPARSE-01 | Element/depth/text caps run after defusedxml builds a tree. Byte cap (16 MiB) applies **before** parse. | Availability inside the cap, not XXE. |
 | IFC-ISO-01 | IfcOpenShell opens in the API process (1.5 GB disk band). Pdfium stays isolated. | Crash/OOM ≠ silent `summary.passed=true`. Not MEP delivered. |
+| UPLOAD-OS-01 | Upload object-store path uses `put_file` + `asyncio.to_thread`. RSS of this branch was not measured. | Not an OOM-closed claim. IFC caps unchanged. |
 
 S3 presign cap, S3 dial pin, Windows pdfium Job Object, BFF token-exchange body cap,
 and path-jail percent-decode-to-fixpoint are closed below / in tests. Checkpoint
