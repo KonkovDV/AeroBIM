@@ -4,7 +4,7 @@ title: "План развития фронтенда (для ИИ-исполни
 date: "2026-09-03"
 last_updated: "2026-09-08"
 status: active
-version: "1.5.0"
+version: "1.5.1"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -411,9 +411,24 @@ lazy-чанком, Playwright только `smoke:browser`. Роутера не�
 дефект тестом или прогоном, и только потом правит. Правка без
 воспроизведения не принимается.
 
+### 8.0.1. Снимок веток и issues на вечер 08.09 (не закрытие WP)
+
+`main` после pin `c7def504` (артефакт run `34214872108` на `73e35321`). WP-FE-23…33 **не** done.
+Восемь экранов остаются `partial`. `customer_go` false.
+
+| Объект | Состояние | Что это не закрывает |
+|---|---|---|
+| [#42](https://github.com/KonkovDV/AeroBIM/pull/42) draft | workflow `frontend-plan.yml`: `npm test` / `lint` / `build`, Claims Lock ×4, ruff, mypy, полный pytest. Fail-closed denylist после `pip`. | Не WP-FE-23…33 |
+| [#43](https://github.com/KonkovDV/AeroBIM/pull/43) draft, база #42 | `App.tsx` 227 строк на `5e6a660`; логика в `hooks/useReviewShell.ts`; страж `summary.passed` не ослаблен. На `main` по-прежнему 374 строки. | Не WP-FE-23…33; ErrorBanner по-прежнему не показывает категорию отказа |
+| [#39](https://github.com/KonkovDV/AeroBIM/issues/39) | Шаг 0: одинаковый баннер при 403 и обрыве сети (изолированный SSR, blob `7788be6`) | Исправления в коде нет |
+| [#40](https://github.com/KonkovDV/AeroBIM/issues/40) | Репетиция не проводилась | Не заменять сканом |
+| [#41](https://github.com/KonkovDV/AeroBIM/issues/41) | Выгрузки confirmed vs draft не сняты | OA-21 открыт |
+
+`baseline-integrity` на прогоне [34235204903](https://github.com/KonkovDV/AeroBIM/actions/runs/34235204903) (PR #42) и на [34214872108](https://github.com/KonkovDV/AeroBIM/actions/runs/34214872108) (`main` `73e35321`): остальные джобы зелёные. Лог упавшего шага: `Baseline drift for backend_src_loc: artifact=95660 live=96099` и `backend_test_loc: artifact=62759 live=63082`. Это отставание pin `d3862717`, не обход публикации. В git перенесён CI-артефакт `c7def504` (`attested_by=ci`, `publishable=true`, run `34214872108`); локальный pytest pin не чеканился.
+
 ### Волна A. До загрузки 14.09 (жюри и OA-21)
 
-#### WP-FE-23. Экспорт подтверждённого замечания ≠ черновик (P0, OA-21)
+#### WP-FE-23. Экспорт подтверждённого замечания ≠ черновик (P0, OA-21, [#41](https://github.com/KonkovDV/AeroBIM/issues/41))
 
 Единственный пункт волны A, который закрывает строку владельца
 [`../OWNER_ACTIONS_2026_09.md`](../OWNER_ACTIONS_2026_09.md) OA-21.
@@ -439,7 +454,7 @@ lazy-чанком, Playwright только `smoke:browser`. Роутера не�
 - Запреты: не выдавать наличие файла за импорт в СОД заказчика (NOT_VERIFIED);
   не добавлять XLSX; PDF остаётся черновиком покрытия, не ГОСТ.
 
-#### WP-FE-24. Баннер ошибки говорит, что случилось (P0)
+#### WP-FE-24. Баннер ошибки говорит, что случилось (P0, [#39](https://github.com/KonkovDV/AeroBIM/issues/39))
 
 `features/shell/ErrorBanner.tsx` принимает `message`, но **не отображает его**:
 компонент деструктурирует только `onRetry` (строка 9), а `App.tsx` передаёт
@@ -474,7 +489,7 @@ lazy-чанком, Playwright только `smoke:browser`. Роутера не�
 - Запреты: не выдумывать брендбук (RT-UI-THEME); неон запрещён; переключателя
   темы в оболочке не заводить.
 
-#### WP-FE-26. Репетиция на чужом офлайн-ноутбуке (P0)
+#### WP-FE-26. Репетиция на чужом офлайн-ноутбуке (P0, [#40](https://github.com/KonkovDV/AeroBIM/issues/40))
 
 - Шаг 1: пустой `AEROBIM_STORAGE_DIR` (RT-UI-STORE-NOISE), бэкенд локально,
   `npm run smoke:browser`, снимки в `frontend/artifacts/`.
