@@ -30,7 +30,7 @@
     },
     "architecture_inventory": {
       "public_domain_protocols": 48,
-      "adapter_modules": 72,
+      "adapter_modules": 75,
       "di_tokens": 63
     },
     "quality_gates": {

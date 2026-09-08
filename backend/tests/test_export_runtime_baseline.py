@@ -743,7 +743,7 @@ class ArchitectureInventoryTests(unittest.TestCase):
         repo = backend.parent
         live = _live_architecture_inventory(repo)
         self.assertEqual(live["public_domain_protocols"], 48)
-        self.assertEqual(live["adapter_modules"], 72)
+        self.assertEqual(live["adapter_modules"], 75)
         self.assertEqual(live["di_tokens"], 63)
         # Without architecture_inventory in a temp artifact, check still validates README.
         errors = _check_architecture_inventory(repo)

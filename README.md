@@ -221,7 +221,7 @@ infrastructure/  Adapters: IfcOpenShell, IfcTester, Docling, IfcClash, BCF, stor
 presentation/    FastAPI HTTP layer, correlation middleware
 ```
 
-**48 domain Protocol ports** wire to **72 infrastructure adapter modules** through **63 DI tokens** in `bootstrap_container()`. These counts are live inventory: they are regenerated into [`docs/evidence/runtime-baseline-latest.json`](docs/evidence/runtime-baseline-latest.json) and verified in CI against both READMEs, so they cannot be edited by hand.
+**48 domain Protocol ports** wire to **75 infrastructure adapter modules** through **63 DI tokens** in `bootstrap_container()`. These counts are live inventory: they are regenerated into [`docs/evidence/runtime-baseline-latest.json`](docs/evidence/runtime-baseline-latest.json) and verified in CI against both READMEs, so they cannot be edited by hand.
 
 Artifacts sit behind an `ObjectStore` port, so local storage and S3-compatible buckets are the same code path. Report summaries are additionally indexed in Postgres when `AEROBIM_DB_URL` is set; that path is acceptable for a pilot but expects schema migration out of band before production use.
 
