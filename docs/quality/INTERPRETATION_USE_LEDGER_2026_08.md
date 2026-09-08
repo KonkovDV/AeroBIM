@@ -2,6 +2,7 @@
 ---
 title: "Interpretation/Use ledger — Самолёт × трекер × Техлаб/МИК × отрасль"
 date: "2026-09-04"
+last_updated: "2026-09-08"
 status: active
 version: "1.2.1"
 closes_rt001: false
