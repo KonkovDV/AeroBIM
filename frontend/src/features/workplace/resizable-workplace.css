@@ -15,12 +15,14 @@
   font-weight: 500;
 }
 .workspace-layout-fields {
-  display: flex;
+  display: none;
   flex-wrap: wrap;
   align-items: center;
   gap: 16px 24px;
   padding: 8px 16px 0;
 }
+.workspace-layout-controls[open] > .workspace-layout-fields { display: flex; }
+.workspace-layout-controls:not([open]) > :not(summary) { display: none; }
 .workspace-layout-fields > label { flex: 1 1 220px; min-inline-size: 0; font-size: .875rem; }
 .workspace-layout-fields label > span { display: flex; justify-content: space-between; gap: 16px; }
 .workspace-layout-fields output { font-variant-numeric: tabular-nums; }

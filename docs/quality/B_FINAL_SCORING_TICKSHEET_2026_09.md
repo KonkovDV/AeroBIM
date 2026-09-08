@@ -2,24 +2,25 @@
 ---
 title: "System B final scoring ticksheet — bands, not a prize forecast"
 date: "2026-08-30"
-last_updated: "2026-09-02"
+last_updated: "2026-09-08"
 status: active
-version: "1.0.1"
+version: "1.1.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
 claim_boundary: >
-  Findability pack for attributed System B weights (order briefing, not
-  Regulation Appendix 3). Band arithmetic is not a predicted AeroBIM total.
+  Findability pack for attributed System B weights (owner-copy Appendix 3,
+  PDF not in git). Band arithmetic is not a predicted AeroBIM total.
   Not partner validation metrics. Checkpoint GO; customer_go false.
 ---
 
 # Система B: лист Б1–Б5 (не прогноз)
 
 `predicted_aerobim_total() is None`. Это не прогноз нашего балла. Финал в
-приказе — **итоговая сумма**; таблица Приложения 3 к Положению **в git нет**.
-Веса ниже — attributed briefing приказа, не `attested_by=ci`.
-`finalist_weights_are_regulation_appendix_3() == False`.
+июньском порядке — **среднее арифметическое**, не историческая **итоговая сумма**.
+Таблица Приложения 3 к Положению **в git нет** (перенос с копий владельца).
+Веса ниже совпадают с копиями; не `attested_by=ci`.
+`finalist_weights_are_regulation_appendix_3() == True`.
 `confirmed_partner_validation_metrics() == False`.
 
 Задача Самолёта — **№6** (приложение 4). Комиссия — **№7**. Историческое «07»
@@ -36,9 +37,9 @@ claim_boundary: >
 | Б5 | 10 | BOM; LICENSE MIT; карта прозрачности | Соглашение о правах по п. 6.3 | MIT сейчас; развилка прав — вопрос организаторам, не обещание | [`KT3_DELIVERY_BOM_2026_08.md`](KT3_DELIVERY_BOM_2026_08.md) · [`ADR-004-prize-ip-mit-fork-2026.md`](../architecture/ADR-004-prize-ip-mit-fork-2026.md) | Передача исключительных прав |
 
 Шкала процентов — та же, что у отбора (0–20 очень низкий … 81–100 очень высокий).
-Баллы критерия = процент × максимум. Итог финала — **сумма**, не среднее.
-Порог приза «не менее 50»: знаменатель невиденной таблицы **неизвестен**.
-`prize_floor_denominator_known() == False`.
+Баллы критерия = процент × максимум. Итог финала — **среднее** экспертных оценок,
+не сумма. Порог приза «не менее 50» из максимума 100; формулировка остаётся
+двусмысленной. `prize_floor_denominator_known() == True`.
 
 ## Полосы сейчас (арифметика полос, не прогноз)
 

@@ -102,7 +102,7 @@ claim_boundary: >-
 | TL-14 | techlab | Seat briefs and application paste without a git roster | One paragraph per role; mean of sitting seats; 0.60 cover is sign-ready | Sitting FIO in git / predicted score from paste / protocol already signed | `operational_hygiene` |
 | MIK-10 | mik | Band identity 16+36.6=52.6 is not a predicted AeroBIM total | reachable_inside_low_k1_if_rest_high is arithmetic; prize floor stays 50 | Quote 'floor reachable' / 52.6 as the team's expected score | `protocol_planning` |
 | TL-15 | techlab | Public task-page names and sponsor quote vs signed commission | Catalog FIO are publication; sponsor quote is not attested chair | Those names sit the jury / fill K1 / chair the commission | `operational_hygiene` |
-| MIK-11 | mik | Order p.2.1 selection is a mean; p.2.2 final is a sum; App 3 unseen | K1-K5 recovered from the order protocol form; Regulation Appendix 3 not in git; prize floor 50 has unknown max if the sum table is unseen | B1-B5 are Regulation Appendix 3 / final scored as a mean / 50 of 100 known | `protocol_planning` |
+| MIK-11 | mik | June order: both rounds are a mean; App 3 transcribed, PDF not in git | K1-K5 Appendix 2; B1-B5 match owner-supplied Appendix 3 copies; points bind to criteria not seats; working floor 50 of 100; wording ambiguous | PDF is in git / attested_by=ci / three seats own 65 / final is a sum / predicted total | `protocol_planning` |
 | MIK-12 | mik | K4 after partner 1H2026 IFRS: zero entry, not a CAPEX ask | Pay-on-result speech is not a signed SKU; IFRS loss is not our saving; 200M AI program is theirs, not AeroBIM | Invest in us / we offset the IFRS loss / RAS +31% is group IFRS | `protocol_planning` |
 | TL-16 | techlab | Four catalog cards are filtered survivors, not all applicants | Neighbor-task 46 teams is a different Partner in the same first stream; peer card claims are not audited public fact | Four cards = everyone who applied / 15 pilots and 600+ norms are verified | `operational_hygiene` |
 | IND-26 | industry | Stand-alone RAS 1H2026 revenue +31% is not group IFRS -31% | Opposite signs on the same window; mixing them drops tech-customer trust | Cite RAS growth as the group IFRS picture / one figure two signs | `protocol_planning` |
@@ -198,7 +198,7 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 | TL-14 | Keep partner_kpis_agreed_in_writing False; person cells stay empty |
 | MIK-10 | Keep predicted_aerobim_total None |
 | TL-15 | Keep sponsor_quote_is_commission_chair False |
-| MIK-11 | Keep regulation_appendix_3_in_git False; ask organizers for the Regulation |
+| MIK-11 | Keep regulation_appendix_3_in_git False; keep partner_nominal_criteria_weight None |
 | MIK-12 | Keep k4_asks_customer_capex and k4_offsets_partner_ifrs_loss False |
 | TL-16 | Keep catalog_four_are_all_applicants False |
 | IND-26 | Keep ras_ifrs_signs_are_the_same False |

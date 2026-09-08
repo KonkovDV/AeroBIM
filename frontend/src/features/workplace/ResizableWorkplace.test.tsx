@@ -51,7 +51,10 @@ describe("workspace columns", () => {
   });
   it("exposes range controls and a reversible reset", () => {
     mount();
+    const details = document.querySelector(".workspace-layout-controls");
+    expect(details?.hasAttribute("open")).toBe(false);
     fireEvent.click(screen.getByText("Ширина панелей"));
+    expect(details?.hasAttribute("open")).toBe(true);
     fireEvent.change(screen.getByLabelText("Ширина списка, проценты"), { target: { value: "40.5" } });
     expect(value(0)).toBe(40.5);
     fireEvent.click(screen.getByRole("button", { name: "Сбросить ширину" }));

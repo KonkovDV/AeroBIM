@@ -16,9 +16,11 @@ from aerobim.domain.checkpoint import CHECKPOINT
 
 CLAIM_LEVEL: Final = "attributed_program_arithmetic"
 CLAIM_BOUNDARY: Final = (
-    "Attributed TechLab commission weights. Selection uses the order "
-    "protocol form (K1-K5). Regulation Appendix 3 (final table) is not in "
-    "git. Not a predicted AeroBIM total. Checkpoint GO "
+    "Attributed TechLab commission weights. Selection uses Regulation "
+    "Appendix 2 (K1-K5). Final uses Appendix 3 (B1-B5) transcribed from "
+    "owner-supplied copies; PDFs are not in git. June order: arithmetic "
+    "mean of expert scores. Points are bound to criteria, not seats. Not a "
+    "predicted AeroBIM total. Checkpoint GO "
     "(regulatory_measurement_mvp); customer_go false."
 )
 
@@ -35,9 +37,8 @@ CRITERIA: Final[tuple[tuple[str, int, str], ...]] = (
     ("K5", 10, "work_plan_feasibility"),
 )
 
-# System A = Regulation Appendix 2, recovered from the order protocol form.
-# System B weights below are an owner briefing of the order, NOT Regulation
-# Appendix 3 (final criteria). That appendix has not been seen.
+# System A = Regulation Appendix 2. System B = Appendix 3 transcribed from
+# owner-supplied copies dated 2026-09-08. The PDFs themselves are not in git.
 FINALIST_CRITERIA: Final[tuple[tuple[str, int, str], ...]] = (
     ("B1", 30, "fit_to_partner_task_and_requirements"),
     ("B2", 20, "prototype_quality_and_confirmed_metrics"),
@@ -48,18 +49,18 @@ FINALIST_CRITERIA: Final[tuple[tuple[str, int, str], ...]] = (
 
 PRIZE_FLOOR: Final = 50
 MAX_TOTAL: Final = 100
-# Order p.2.1 selection = mean; p.2.2 final = sum of scores. Different maths.
+# June order: both rounds use the arithmetic mean of expert scores.
+# Criteria tables differ (Appendix 2 vs Appendix 3). Points are not owned
+# by individual seats.
 AGGREGATION: Final = "arithmetic_mean"
-FINALIST_AGGREGATION: Final = "sum"
+FINALIST_AGGREGATION: Final = "arithmetic_mean"
 QUORUM_MIN_MEMBERS: Final = 3
 NOMINAL_SEATS: Final = 5
 MIK_STAFF_SEATS: Final = 2
 PARTNER_SEATS_BY_AGREEMENT: Final = 3
-PARTNER_NOMINAL_CRITERIA: Final[tuple[str, ...]] = ("K1", "K3", "K5")
-MIK_STAFF_NOMINAL_CRITERIA: Final[tuple[str, ...]] = ("K2", "K4")
 TIE_BREAK_ORDER: Final[tuple[str, ...]] = ("K3", "K4")
 FINALIST_TIE_BREAK_ORDER: Final[tuple[str, ...]] = ("B1",)
-FINAL_ROUND_WIDER_THAN_NOMINAL: Final = True
+FINAL_ROUND_WIDER_THAN_NOMINAL: Final = False
 # Attributed: Appendix 4 lists the Partner task as №6; commission №7.
 # Historical handout "07" in filenames is not the regulation number.
 TASK_APPENDIX_4_NUMBER: Final = 6
@@ -125,16 +126,22 @@ def criteria_max(code: str) -> int:
     raise KeyError(code)
 
 
-def partner_nominal_criteria_weight() -> int:
-    """Nominal max points on partner-attributed seats (K1+K3+K5). Not a forecast."""
+def partner_nominal_criteria_weight() -> int | None:
+    """Do not map partner seats onto K1+K3+K5=65. Copies do not assign criteria to seats."""
 
-    return sum(criteria_max(code) for code in PARTNER_NOMINAL_CRITERIA)
+    return None
 
 
-def mik_staff_nominal_criteria_weight() -> int:
-    """Nominal max points on Fund staff seats (K2+K4). Not a forecast."""
+def mik_staff_nominal_criteria_weight() -> int | None:
+    """Do not map Fund seats onto K2+K4=35. Points stay on criteria, not chairs."""
 
-    return sum(criteria_max(code) for code in MIK_STAFF_NOMINAL_CRITERIA)
+    return None
+
+
+def points_bound_to_criteria_not_members() -> bool:
+    """June order: scores attach to criteria. Three partner seats do not own 65 points."""
+
+    return True
 
 
 def finalist_criteria_max(code: str) -> int:
@@ -244,15 +251,15 @@ def tam_horizon_is_our_revenue() -> bool:
 
 
 def regulation_appendix_3_in_git() -> bool:
-    """Regulation Appendix 3 (final criteria table) has not been seen."""
+    """Regulation Appendix 3 PDF is not committed. Weights are transcribed copies."""
 
     return False
 
 
 def finalist_weights_are_regulation_appendix_3() -> bool:
-    """B1-B5 in this module are an order briefing, not the unseen table."""
+    """B1-B5 match the owner-supplied Appendix 3 copy. PDF still not in git."""
 
-    return False
+    return True
 
 
 def k4_asks_customer_capex() -> bool:
@@ -286,9 +293,9 @@ def peer_card_claims_externally_verified() -> bool:
 
 
 def prize_floor_denominator_known() -> bool:
-    """Final prize floor 50: max of the unseen Regulation App 3 is unknown."""
+    """Appendix 3 max is 100. Working floor is 50 of 100; wording stays ambiguous."""
 
-    return False
+    return True
 
 
 def predicted_aerobim_total() -> int | None:
@@ -357,7 +364,10 @@ def scoring_snapshot() -> dict[str, Any]:
         "application_roster_is_k1_object": True,
         "oral_advisors_score_k1": False,
         "system_a": "regulation_appendix_2_via_order_protocol_form",
-        "system_b": "regulation_appendix_3_unseen",
+        "system_b": "regulation_appendix_3_owner_copy_pdf_not_in_git",
+        "points_bound_to_criteria_not_members": (
+            points_bound_to_criteria_not_members()
+        ),
         "finalist_criteria": [
             {"code": code, "max_points": points, "name": name}
             for code, points, name in FINALIST_CRITERIA
@@ -449,6 +459,7 @@ __all__ = [
     "criteria_max",
     "partner_nominal_criteria_weight",
     "mik_staff_nominal_criteria_weight",
+    "points_bound_to_criteria_not_members",
     "finalist_criteria_max",
     "k1_low_band_points",
     "low_k1_high_rest_total",

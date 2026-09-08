@@ -45,7 +45,7 @@ claim_boundary: "Jury pack only. Checkpoint GO; customer_go false until RT-001/0
 | [ADR-001](architecture/ADR-001-verdict-ownership-2026.md) | Кто пишет `summary.passed`; Iversen/Fuchs — LLM на маршруте, у нас черновик |
 | [Заявление о данных](evidence/DATA_STATEMENT_2026_08.md) | Что есть; открытые бенчи ≠ RT-001 |
 | [Глоссарий жюри](partners/GLOSSARY_JURY_RU_2026_08.md) | Термины для нетехнического члена жюри |
-| [Арифметика комиссии МИК](quality/MIK_COMMISSION_SCORING_2026_08.md) | Отбор — среднее; финал — сумма; Приложение 3 Положения не в git |
+| [Арифметика комиссии МИК](quality/MIK_COMMISSION_SCORING_2026_08.md) | Отбор и финал — среднее; PDF Приложения 3 Положения не в git |
 | [Обложка валидации фикстуры](quality/KT3_FIXTURE_VALIDATION_COVER_2026_08.md) | Pytest/CLI ≠ метрики партнёра; fixture SLA не representative |
 | [Перечень поставки КТ#3](quality/KT3_DELIVERY_BOM_2026_08.md) | Что входит / не входит; MIT; п. 6.3 не закрыт |
 | [Допущения эффекта A1–A8](partners/ECONOMIC_MODEL_LABELED_ASSUMPTIONS_2026_08.md) | Часы пустые; ≥20% — гипотеза |
@@ -73,7 +73,7 @@ claim_boundary: "Jury pack only. Checkpoint GO; customer_go false until RT-001/0
 | [Путь К4](quality/K4_COMMERCIAL_PATH_2026_08.md) | Нулевой вход; МСФО ≠ РСБУ; TAM ≠ SAM; −72% не наш |
 | [Новизна К2 vs витрина](quality/K2_NOVELTY_VS_PEERS_2026_08.md) | Четыре пункта методики; карточка ≠ публичный след |
 | [ПНСТ 841](quality/PNST_841_AI_QUALITY_EVAL_2026.md) | Карта на протокол 0,60; не SQuaRE-сертификат |
-| [Брифы кресел](quality/MIK_SEAT_BRIEFS_2026_08.md) | Роли, не ФИО; отбор — среднее; финал — сумма |
+| [Брифы кресел](quality/MIK_SEAT_BRIEFS_2026_08.md) | Роли, не ФИО; отбор и финал — среднее; кресла не владеют 65 |
 | [Playbook комиссии](quality/MIK_COMMISSION_SEAT_PLAYBOOK_2026_09.md) | Удары, три письма, двухчастная защита; ФИО [Г] |
 | [Шесть вопросов Самолёту](partners/SAMOLET_QUESTIONS_GROUNDED_2026_09_03.md) | Блокеры ТЗ; не NDA; не формы Фонда |
 | [Пороги заказчика](quality/CUSTOMER_THRESHOLD_VS_ACTUAL_2026_08.md) | Целевое vs фактическое; 256 МиБ; cap не поднимаем |

@@ -207,17 +207,27 @@ export default function FindingListPanel({
     [items, selectedIssueIndex],
   );
 
+  function applyMeasuredGeometry(node: HTMLDivElement): void {
+    setViewportHeight(node.clientHeight || DEFAULT_VIEWPORT_HEIGHT);
+    const card = node.querySelector(".issue-card");
+    if (!(card instanceof HTMLElement) || card.offsetHeight < 8) {
+      return;
+    }
+    const next = card.offsetHeight;
+    setItemHeight((current) => (Math.abs(next - current) > 1 ? next : current));
+  }
+
   useEffect(() => {
     const node = listRef.current;
     if (!node || !virtualize) {
       return;
     }
     const onScroll = () => setScrollTop(node.scrollTop);
-    const measure = () => setViewportHeight(node.clientHeight || DEFAULT_VIEWPORT_HEIGHT);
+    const measure = () => applyMeasuredGeometry(node);
     node.addEventListener("scroll", onScroll, { passive: true });
     measure();
-    // Замер только при включении виртуализации оставлял окно с прошлой высотой
-    // после ресайза, и часть находок не отрисовывалась.
+    // Ширина панели меняет перенос текста; offsets нельзя оставлять на старой
+    // высоте строки, иначе после ресайза появляются пропуски и наложения.
     if (typeof ResizeObserver === "function") {
       const observer = new ResizeObserver(measure);
       observer.observe(node);
@@ -275,14 +285,12 @@ export default function FindingListPanel({
   }, [scrollTop]);
 
   useLayoutEffect(() => {
-    const card = listRef.current?.querySelector(".issue-card");
-    if (!(card instanceof HTMLElement) || card.offsetHeight < 8) {
+    const node = listRef.current;
+    if (!node) {
       return;
     }
-    if (Math.abs(card.offsetHeight - itemHeight) > 1) {
-      setItemHeight(card.offsetHeight);
-    }
-  }, [itemHeight, items]);
+    applyMeasuredGeometry(node);
+  }, [itemHeight, items, viewportHeight]);
 
   const viewWindow = virtualize
     ? computeFindingWindow(offsets, scrollTop, viewportHeight, OVERSCAN, selectedItemIndex)
@@ -397,6 +405,7 @@ export default function FindingListPanel({
         id="finding-list"
         role="listbox"
         aria-label={UI_COPY.findingsListAria}
+        data-item-height={itemHeight}
         aria-activedescendant={selectedRendered ? `finding-row-${selectedIssueIndex}` : undefined}
       >
         {issues.length === 0 ? (

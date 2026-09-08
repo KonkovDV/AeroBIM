@@ -1,6 +1,6 @@
-<!-- claims-lint: allow-file reason="Seat briefs; roles not FIO; selection mean vs final sum; NO_GO" -->
+<!-- claims-lint: allow-file reason="Seat briefs; roles not FIO; both rounds mean; NO_GO" -->
 ---
-title: "MIK seat briefs — selection mean, final sum, roles not names"
+title: "MIK seat briefs — selection and final are means; roles not names"
 date: "2026-08-29"
 last_updated: "2026-09-03"
 status: active
@@ -13,12 +13,12 @@ claim_boundary: >
   Three partner seats are by agreement. Checkpoint GO; customer_go false.
 ---
 
-# Кресла: отбор — среднее; финал — сумма
+# Кресла: отбор и финал — среднее арифметическое
 
-Отбор: среднее сидящих, кворум ≥3. Финал: сумма по таблице, которую мы **не
-видели**, плюс представители Партнёра и Организатора. Три кресла партнёра
-**по согласованию**. Готовить три штатных оптики Фонда+ИМ, как будто
-партнёрские могут не сесть.
+Отбор и финал: среднее сидящих, кворум ≥3. PDF Приложения 3 в git **не
+видели**; веса Б1–Б5 переписаны с копий владельца. Три кресла партнёра
+**по согласованию** — они не владеют 65 баллами шкалы. Готовить три штатных
+оптики Фонда+ИМ, как будто партнёрские могут не сесть.
 
 Развёрнутый playbook (удары, kill-фразы, три письма):
 [`MIK_COMMISSION_SEAT_PLAYBOOK_2026_09.md`](MIK_COMMISSION_SEAT_PLAYBOOK_2026_09.md).

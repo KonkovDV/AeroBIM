@@ -916,12 +916,12 @@ LEDGER: tuple[InferenceRow, ...] = (
     _row(
         "MIK-11",
         "mik",
-        "Order p.2.1 selection is a mean; p.2.2 final is a sum; App 3 unseen",
-        "K1-K5 recovered from the order protocol form; Regulation Appendix 3 "
-        "not in git; prize floor 50 has unknown max if the sum table is unseen",
-        "B1-B5 are Regulation Appendix 3 / final scored as a mean / 50 of 100 known",
+        "June order: both rounds are a mean; App 3 transcribed, PDF not in git",
+        "K1-K5 Appendix 2; B1-B5 match owner-supplied Appendix 3 copies; "
+        "points bind to criteria not seats; working floor 50 of 100; wording ambiguous",
+        "PDF is in git / attested_by=ci / three seats own 65 / final is a sum / predicted total",
         "docs/quality/MIK_COMMISSION_SCORING_2026_08.md",
-        "Keep regulation_appendix_3_in_git False; ask organizers for the Regulation",
+        "Keep regulation_appendix_3_in_git False; keep partner_nominal_criteria_weight None",
         "protocol_planning",
     ),
     _row(
