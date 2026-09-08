@@ -56,6 +56,7 @@ export type ExpertWorkplaceProps = {
   onReject: () => void;
   onNavigateToFindings: () => void;
   onOpenScreen?: (view: WorkspaceView) => void;
+  unsavedRemark?: boolean;
 };
 
 export default function ExpertWorkplace({
@@ -98,6 +99,7 @@ export default function ExpertWorkplace({
   onReject,
   onNavigateToFindings,
   onOpenScreen,
+  unsavedRemark = false,
 }: ExpertWorkplaceProps) {
   const showExportExtras = workspaceView === "export";
 
@@ -120,7 +122,11 @@ export default function ExpertWorkplace({
                 ))}
               </select>
             </label>
-            <ExportActionsBar reportId={selectedReport.report_id} />
+            <ExportActionsBar
+              reportId={selectedReport.report_id}
+              unsavedRemark={unsavedRemark}
+              showLimits={showExportExtras}
+            />
           </div>
           <p className="compact-copy" data-testid="rehearsal-one-click">
             {UI_COPY.rehearsalOneClick}

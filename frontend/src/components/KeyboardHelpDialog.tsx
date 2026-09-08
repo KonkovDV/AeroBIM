@@ -8,14 +8,18 @@ type Props = {
 };
 
 const COMMANDS = [
-  ["J / ↓", "Следующая находка"],
-  ["K / ↑", "Предыдущая находка"],
-  ["E", "Перейти к тексту замечания"],
-  ["A", "Подтвердить замечание"],
-  ["R", "Отклонить замечание"],
-  ["Ctrl / Cmd + Enter", "Сохранить текст из редактора"],
-  ["?", "Открыть справку"],
-  ["Esc", "Закрыть справку"],
+  ["J / ↓", UI_COPY.keyboardHelpNext],
+  ["K / ↑", UI_COPY.keyboardHelpPrev],
+  ["PageDown", UI_COPY.keyboardHelpPageDown],
+  ["PageUp", UI_COPY.keyboardHelpPageUp],
+  ["Home", UI_COPY.keyboardHelpHome],
+  ["End", UI_COPY.keyboardHelpEnd],
+  ["E", UI_COPY.keyboardHelpEdit],
+  ["A", UI_COPY.keyboardHelpAccept],
+  ["R", UI_COPY.keyboardHelpReject],
+  ["Ctrl / Cmd + Enter", UI_COPY.keyboardHelpSave],
+  ["?", UI_COPY.keyboardHelpOpen],
+  ["Esc", UI_COPY.keyboardHelpEsc],
 ] as const;
 
 /** Native modal: focus containment, inert background and focus return, without a dependency. */

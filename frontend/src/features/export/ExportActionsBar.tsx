@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { downloadExport, type ExportFormat } from "../../lib/api";
+import { classifyRequestFailure, type RequestFailureKind } from "../../lib/request-failure";
+import { requestFailureBody } from "../../lib/request-failure-copy";
 import { UI_COPY } from "../../lib/ui-copy";
 
 export type ExportActionsBarProps = {
   reportId: string;
+  unsavedRemark?: boolean;
+  showLimits?: boolean;
 };
 
 type ExportRequest = { format: ExportFormat; bcfVersion?: "2.1" | "3.0" };
@@ -25,17 +29,24 @@ function actionKey(action: ExportRequest): string {
   return action.bcfVersion ? `${action.format}-${action.bcfVersion}` : action.format;
 }
 
-export default function ExportActionsBar({ reportId }: ExportActionsBarProps) {
+export default function ExportActionsBar({
+  reportId,
+  unsavedRemark = false,
+  showLimits = false,
+}: ExportActionsBarProps) {
   const [pendingKey, setPendingKey] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [errorKind, setErrorKind] = useState<RequestFailureKind | null>(null);
 
   async function run(action: ExportRequest): Promise<void> {
+    if (unsavedRemark && !window.confirm(UI_COPY.exportUnsavedConfirm)) {
+      return;
+    }
     setPendingKey(actionKey(action));
-    setError(null);
+    setErrorKind(null);
     try {
       await downloadExport(reportId, action.format, { bcfVersion: action.bcfVersion });
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : UI_COPY.exportFailedGeneric);
+      setErrorKind(classifyRequestFailure(err));
     } finally {
       setPendingKey(null);
     }
@@ -50,31 +61,37 @@ export default function ExportActionsBar({ reportId }: ExportActionsBarProps) {
       data-testid="export-actions"
       aria-busy={busy}
     >
-      {EXPORT_ACTIONS.map((action) => (
+      <div className="export-actions-row">
+        {EXPORT_ACTIONS.map((action) => (
+          <button
+            key={actionKey(action)}
+            type="button"
+            disabled={busy}
+            onClick={() => void run(action)}
+          >
+            {pendingKey === actionKey(action) ? UI_COPY.exportInProgress : action.label}
+          </button>
+        ))}
         <button
-          key={actionKey(action)}
           type="button"
+          aria-label={UI_COPY.exportPdf}
+          aria-describedby={PDF_HINT_ID}
           disabled={busy}
-          onClick={() => void run(action)}
+          onClick={() => void run({ format: "pdf" })}
         >
-          {pendingKey === actionKey(action) ? UI_COPY.exportInProgress : action.label}
+          {pendingKey === "pdf" ? UI_COPY.exportInProgress : UI_COPY.exportPdf}
         </button>
-      ))}
-      <button
-        type="button"
-        aria-label={UI_COPY.exportPdf}
-        aria-describedby={PDF_HINT_ID}
-        disabled={busy}
-        onClick={() => void run({ format: "pdf" })}
-      >
-        {pendingKey === "pdf" ? UI_COPY.exportInProgress : UI_COPY.exportPdf}
-      </button>
-      <p className="compact-copy" id={PDF_HINT_ID}>
-        {UI_COPY.exportPdfHint}
-      </p>
-      {error ? (
-        <p className="compact-copy export-error" role="alert" data-testid="export-error">
-          {UI_COPY.exportFailed(error)}
+      </div>
+      <aside className="export-honesty">
+        <p className="compact-copy" id={PDF_HINT_ID}>
+          {UI_COPY.exportPdfHint}
+        </p>
+        <p className="compact-copy">{UI_COPY.exportSavedOnlyHint}</p>
+        {showLimits ? <p className="compact-copy">{UI_COPY.xlsxNotMvp}</p> : null}
+      </aside>
+      {errorKind ? (
+        <p className="compact-copy export-error" role="alert" data-testid="export-error" data-kind={errorKind}>
+          {requestFailureBody(errorKind)}
         </p>
       ) : null}
     </div>

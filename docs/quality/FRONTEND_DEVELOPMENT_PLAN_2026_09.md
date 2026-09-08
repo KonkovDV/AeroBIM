@@ -4,7 +4,7 @@ title: "План развития фронтенда (для ИИ-исполни
 date: "2026-09-03"
 last_updated: "2026-09-08"
 status: active
-version: "1.5.1"
+version: "1.5.2"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -349,7 +349,7 @@ SPF 256 МиБ, bSI 256 MB, WASM 256 МиБ, диск 1,5 ГБ на жёстко
 | До 11.09 | WP-FE-18, WP-FE-19, WP-FE-20 | done 04.09 |
 | 04.09 вечер | WP-FE-21 | done 04.09 |
 | 04.09 | WP-FE-22 | done 04.09 |
-| 08.09 | WP-FE-23 … WP-FE-33 | открыты, см. §8 |
+| 08.09 | WP-FE-23 … WP-FE-33 | смешанный: 24/25/27/28/30/31/33 done; 23/29 partial; 26 не репетировали; 32 ESLint не ставили |
 | Пока нет IdP заказчика | WP-FE-15 | HOLD |
 
 Гейты: `npm test` — 41 файл / 170 тестов; `npm run lint` — чисто; `npm run build` — чисто.
@@ -396,7 +396,7 @@ SPF 256 МиБ, bSI 256 MB, WASM 256 МиБ, диск 1,5 ГБ на жёстко
 
 | Гейт | Команда | Результат 08.09 |
 |---|---|---|
-| Тесты | `npm test` | 60 файлов / **301** тест, зелено |
+| Тесты | `npm test` | 64 файла / **312** тестов, зелено |
 | Латиница | `npm run lint` | чисто |
 | Типы и сборка | `npm run build` | чисто; предупреждение о размере `vendor-web-ifc` — исходное, не регрессия |
 
@@ -413,22 +413,23 @@ lazy-чанком, Playwright только `smoke:browser`. Роутера не�
 
 ### 8.0.1. Снимок веток и issues на вечер 08.09 (не закрытие WP)
 
-`main` после pin `c7def504` (артефакт run `34214872108` на `73e35321`). WP-FE-23…33 **не** done.
-Восемь экранов остаются `partial`. `customer_go` false.
+`main` после merge [#42](https://github.com/KonkovDV/AeroBIM/pull/42) и [#43](https://github.com/KonkovDV/AeroBIM/pull/43) (`d3729f44`) плюс волна UI. WP-FE-24/25/27/28/30/31 done; 23 и 29 **partial**; 26 не проводилась; 32 ESLint не ставили. Восемь экранов остаются `partial`. `customer_go` false.
 
 | Объект | Состояние | Что это не закрывает |
 |---|---|---|
-| [#42](https://github.com/KonkovDV/AeroBIM/pull/42) draft | workflow `frontend-plan.yml`: `npm test` / `lint` / `build`, Claims Lock ×4, ruff, mypy, полный pytest. Fail-closed denylist после `pip`. | Не WP-FE-23…33 |
-| [#43](https://github.com/KonkovDV/AeroBIM/pull/43) draft, база #42 | `App.tsx` 227 строк на `5e6a660`; логика в `hooks/useReviewShell.ts`; страж `summary.passed` не ослаблен. На `main` по-прежнему 374 строки. | Не WP-FE-23…33; ErrorBanner по-прежнему не показывает категорию отказа |
-| [#39](https://github.com/KonkovDV/AeroBIM/issues/39) | Шаг 0: одинаковый баннер при 403 и обрыве сети (изолированный SSR, blob `7788be6`) | Исправления в коде нет |
-| [#40](https://github.com/KonkovDV/AeroBIM/issues/40) | Репетиция не проводилась | Не заменять сканом |
-| [#41](https://github.com/KonkovDV/AeroBIM/issues/41) | Выгрузки confirmed vs draft не сняты | OA-21 открыт |
+| [#42](https://github.com/KonkovDV/AeroBIM/pull/42) | merged в `main` | Не WP-FE-23…33 |
+| [#43](https://github.com/KonkovDV/AeroBIM/pull/43) | merged в `main`; `App.tsx` ниже порога 300 | Не OA-21 |
+| [#39](https://github.com/KonkovDV/AeroBIM/issues/39) | Код: категории баннера `network` / `forbidden` / `not_found` / `server` / `unknown` | Не репетиция офлайн-ноутбука |
+| [#40](https://github.com/KonkovDV/AeroBIM/issues/40) | Репетиция `smoke:browser` на пустом `AEROBIM_STORAGE_DIR` **не** проводилась | Не заменять сканом |
+| [#41](https://github.com/KonkovDV/AeroBIM/issues/41) | UI предупреждает о черновике; живые файлы confirmed vs draft не сняты | OA-21 открыт |
 
 `baseline-integrity` на прогоне [34235204903](https://github.com/KonkovDV/AeroBIM/actions/runs/34235204903) (PR #42) и на [34214872108](https://github.com/KonkovDV/AeroBIM/actions/runs/34214872108) (`main` `73e35321`): остальные джобы зелёные. Лог упавшего шага: `Baseline drift for backend_src_loc: artifact=95660 live=96099` и `backend_test_loc: artifact=62759 live=63082`. Это отставание pin `d3862717`, не обход публикации. В git перенесён CI-артефакт `c7def504` (`attested_by=ci`, `publishable=true`, run `34214872108`); локальный pytest pin не чеканился.
 
 ### Волна A. До загрузки 14.09 (жюри и OA-21)
 
 #### WP-FE-23. Экспорт подтверждённого замечания ≠ черновик (P0, OA-21, [#41](https://github.com/KonkovDV/AeroBIM/issues/41))
+
+**Статус: partial, 08.09.** UI предупреждает о несохранённом черновике (`window.confirm`). JSON/HTML/PDF уже несут `issue.review` с сервера (`include_review=True`); BCF — `review_events`. Живые файлы до/после подтверждения в `.local/` **не** сняты; OA-21 не закрыт.
 
 Единственный пункт волны A, который закрывает строку владельца
 [`../OWNER_ACTIONS_2026_09.md`](../OWNER_ACTIONS_2026_09.md) OA-21.
@@ -456,6 +457,8 @@ lazy-чанком, Playwright только `smoke:browser`. Роутера не�
 
 #### WP-FE-24. Баннер ошибки говорит, что случилось (P0, [#39](https://github.com/KonkovDV/AeroBIM/issues/39))
 
+**Статус: done, 08.09.** Категории `network` / `forbidden` / `not_found` / `server` / `unknown`. URL и стек в DOM не попадают.
+
 `features/shell/ErrorBanner.tsx` принимает `message`, но **не отображает его**:
 компонент деструктурирует только `onRetry` (строка 9), а `App.tsx` передаёт
 `reportsError ?? reportError`. Эксперт видит один и тот же текст при обрыве
@@ -472,6 +475,8 @@ lazy-чанком, Playwright только `smoke:browser`. Роутера не�
 - Запреты: не печатать URL, порт, стек и тело ответа.
 
 #### WP-FE-25. Тёмная тема чужого ноутбука (P0, риск демонстрации)
+
+**Статус: done, 08.09.** Оболочка фиксирована светлой: `color-scheme: light` + `force-light.css` переопределяет семантику в `@media (prefers-color-scheme: dark)`. Не брендбук.
 
 `src/styles.css` строка 2 задаёт `color-scheme: light`, а
 `src/styles/design-system.css` строка 22 — `light dark`, плюс тёмные ветки в
@@ -491,6 +496,8 @@ lazy-чанком, Playwright только `smoke:browser`. Роутера не�
 
 #### WP-FE-26. Репетиция на чужом офлайн-ноутбуке (P0, [#40](https://github.com/KonkovDV/AeroBIM/issues/40))
 
+**Статус: not done, 08.09.** Прогон `npm run smoke:browser` на пустом хранилище не выполнялся. Сканер и vitest это не заменяют.
+
 - Шаг 1: пустой `AEROBIM_STORAGE_DIR` (RT-UI-STORE-NOISE), бэкенд локально,
   `npm run smoke:browser`, снимки в `frontend/artifacts/`.
 - Шаг 2: подтвердить, что внешних запросов нет — ни `fonts.googleapis.com`,
@@ -504,6 +511,8 @@ lazy-чанком, Playwright только `smoke:browser`. Роутера не�
 ### Волна B. Доступность по факту, а не по заявке
 
 #### WP-FE-27. Вкладки листов: `tablist` без `tab` (P1)
+
+**Статус: done, 08.09.** `role="group"` + `aria-pressed` на чипах листа. Не имитация клавиатурных вкладок.
 
 `components/DrawingEvidencePanel.tsx` строка 331 — контейнер
 `role="tablist"`, а внутри обычные `<button>` без `role="tab"` и без
@@ -519,6 +528,8 @@ lazy-чанком, Playwright только `smoke:browser`. Роутера не�
 
 #### WP-FE-28. Область вьюера без имени (P1)
 
+**Статус: done, 08.09.** `role="img"` + имя; честная подпись, что осмотр модели — мышью.
+
 `components/IfcViewerPanel.tsx` строка 240 — `<div ref={viewportRef}
 className="viewer-viewport" />` без роли и без доступного имени. Для диктора
 это пустой контейнер.
@@ -530,6 +541,8 @@ className="viewer-viewport" />` без роли и без доступного �
 - Файлы: `components/IfcViewerPanel.tsx`, `lib/i18n/ru.ts`, тест рядом.
 
 #### WP-FE-29. axe на всех восьми экранах (P1)
+
+**Статус: partial, 08.09.** axe в jsdom расширен на шапку, навигацию, баннер, экспорт, загрузку, заглушку вьюера и карту возможностей. Контраст светлых токенов считается отдельно (`token-contrast.test.ts`). Правило color-contrast в axe выключено. Это не восемь экранов и не сертификат WCAG.
 
 Сейчас `src/test/a11y-smoke.test.tsx` покрывает **две** панели (список находок
 и карточку замечания), правило контраста выключено (строки 34–37).
@@ -547,6 +560,8 @@ className="viewer-viewport" />` без роли и без доступного �
 
 #### WP-FE-30. Список находок: Home / End / страница (P2)
 
+**Статус: done, 08.09.** Home/End/PageUp/PageDown; шаг страницы 10. Не перехватываются в поле ввода.
+
 `ArrowUp` / `ArrowDown` уже разобраны в `lib/triage-hotkeys.ts` (строки 80–85),
 роль `listbox`, `aria-activedescendant` и roving `tabIndex` на месте. Не хватает
 `Home` / `End` / `PageUp` / `PageDown` на сотнях строк.
@@ -559,6 +574,8 @@ className="viewer-viewport" />` без роли и без доступного �
 ### Волна C. Копирайт и инструменты
 
 #### WP-FE-31. Хвосты русского копирайта (P1)
+
+**Статус: done, 08.09.** Ресайз и справка через `UI_COPY`; зона замечания / уверенность по-русски; заголовок вкладки русский; честное отсутствие XLSX рядом с экспортом.
 
 Сканер латиницы пропускает капс-акронимы и идентификаторы, поэтому эти строки
 он не ловит — их надо снять руками:
@@ -576,6 +593,8 @@ className="viewer-viewport" />` без роли и без доступного �
 
 #### WP-FE-32. ESLint + правила доступности как devDependency (P2, решение)
 
+**Статус: skipped, 08.09.** ESLint не ставили: спор о форматировании к показу не относится. Гейт `npm run lint` остаётся сканером латиницы.
+
 Сейчас ESLint, Prettier и плагина доступности в проекте **нет**; `npm run lint`
 проверяет только латиницу в видимых строках. Прецедент `axe-core` показывает,
 что инструмент тестов допустим.
@@ -589,6 +608,8 @@ className="viewer-viewport" />` без роли и без доступного �
 - Запреты: не разворачивать TanStack / Storybook / Tailwind (RT-UI-STACK-CLAIM).
 
 #### WP-FE-33. Расхождение версий типов и строгость конфигов (P2)
+
+**Статус: done, 08.09.** `tsconfig.node.json` со `strict`. `@types/three` поднят к `0.185.1` под рантайм `three`. `noUncheckedIndexedAccess` не включали.
 
 - `@types/three` 0.183.1 при `three` 0.185.1 — типы отстают от рантайма;
   поднять типы или зафиксировать расхождение причиной.

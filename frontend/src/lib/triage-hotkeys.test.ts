@@ -37,9 +37,11 @@ describe("resolveTriageHotkey", () => {
 		);
 	});
 
-	it("читает стрелки", () => {
-		expect(resolveTriageHotkey(press({ key: "ArrowDown" }))).toBe("next");
-		expect(resolveTriageHotkey(press({ key: "ArrowUp" }))).toBe("prev");
+	it("читает Home End и страницу", () => {
+		expect(resolveTriageHotkey(press({ key: "Home" }))).toBe("first");
+		expect(resolveTriageHotkey(press({ key: "End" }))).toBe("last");
+		expect(resolveTriageHotkey(press({ key: "PageDown" }))).toBe("pageNext");
+		expect(resolveTriageHotkey(press({ key: "PageUp" }))).toBe("pagePrev");
 	});
 
 	it("работает на русской раскладке по физической клавише", () => {

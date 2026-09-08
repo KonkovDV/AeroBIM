@@ -454,12 +454,7 @@ export async function downloadExport(
     credentials: "include",
   });
   if (!response.ok) {
-    throw new Error(
-      await withResponseDetail(
-        response,
-        `Экспорт завершился ошибкой ${response.status}: ${response.statusText}`,
-      ),
-    );
+    throw await failedResponseError(response);
   }
   const extension = format === "bcf" ? "bcfzip" : format;
   await saveResponseDownload(response, `aerobim-report-${reportId}.${extension}`);

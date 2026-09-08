@@ -103,19 +103,19 @@ export default function ResizableWorkplace({ left, center, right }: ResizableWor
 
   return <>
     <details className="workspace-layout-controls">
-      <summary>Ширина панелей</summary>
+      <summary>{UI_COPY.workspaceWidthSummary}</summary>
       <div className="workspace-layout-fields">
-        <label><span>Список <output aria-hidden="true">{cols.left}%</output></span>
-          <input type="range" aria-label="Ширина списка, проценты" min={MIN_PCT} max={maximum("left")}
+        <label><span>{UI_COPY.workspaceWidthList} <output aria-hidden="true">{cols.left}%</output></span>
+          <input type="range" aria-label={UI_COPY.workspaceWidthListAria} min={MIN_PCT} max={maximum("left")}
             step="0.1" value={cols.left} onChange={(event) => setCols(resizeCols(cols, "left", event.target.valueAsNumber))} />
         </label>
-        <label><span>Карточка <output aria-hidden="true">{cols.right}%</output></span>
-          <input type="range" aria-label="Ширина карточки, проценты" min={MIN_PCT} max={maximum("right")}
+        <label><span>{UI_COPY.workspaceWidthCard} <output aria-hidden="true">{cols.right}%</output></span>
+          <input type="range" aria-label={UI_COPY.workspaceWidthCardAria} min={MIN_PCT} max={maximum("right")}
             step="0.1" value={cols.right} onChange={(event) => setCols(resizeCols(cols, "right", event.target.valueAsNumber))} />
         </label>
-        <button type="button" className="toolbar-button" onClick={() => setCols({ ...DEFAULT_COLS })}>Сбросить ширину</button>
+        <button type="button" className="toolbar-button" onClick={() => setCols({ ...DEFAULT_COLS })}>{UI_COPY.workspaceWidthReset}</button>
       </div>
-      <p id={`${id}-help`}>Нажмите на шкалу без перетаскивания. На разделителе: ←/→ — шаг 2%, <kbd>SHIFT</kbd> — 10%, <kbd>HOME</kbd>/<kbd>END</kbd> — минимум/максимум ширины. <kbd>ESC</kbd> — отмена жеста.</p>
+      <p id={`${id}-help`}>{UI_COPY.workspaceWidthHelp}</p>
     </details>
     <main ref={gridRef} className="workspace-grid" data-testid="workspace-grid"
       style={{ ["--col-left" as string]: `${cols.left}fr`, ["--col-mid" as string]: `${cols.mid}fr`, ["--col-right" as string]: `${cols.right}fr` }}>

@@ -65,7 +65,7 @@ export default function App() {
 
       {reportsState.reportsError || review.reportError ? (
         <ErrorBanner
-          message={reportsState.reportsError ?? review.reportError ?? ""}
+          kind={reportsState.reportsError ?? review.reportError ?? "unknown"}
           onRetry={retryReports}
         />
       ) : null}
@@ -183,6 +183,7 @@ export default function App() {
           }}
           onNavigateToFindings={landing.landOnFindings}
           onOpenScreen={requestWorkspaceView}
+          unsavedRemark={review.isDirty}
         />
       ) : null}
 

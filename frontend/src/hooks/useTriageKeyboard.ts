@@ -11,6 +11,8 @@ import { isTextEntryTarget, resolveTriageHotkey } from "../lib/triage-hotkeys";
  * (Ctrl+R «перезагрузить» попадал в обработчик и записывался как отклонение
  * замечания в журнал HITL).
  */
+export const TRIAGE_PAGE_SIZE = 10;
+
 export function useTriageKeyboard({
   enabled,
   filteredIssues,
@@ -58,12 +60,22 @@ export function useTriageKeyboard({
       }
       const currentPos = filteredIssues.findIndex(({ index }) => index === selectedIssueIndex);
       const pos = currentPos >= 0 ? currentPos : 0;
-      if (hotkey === "next" || hotkey === "prev") {
+      if (hotkey === "next" || hotkey === "prev" || hotkey === "first" || hotkey === "last" || hotkey === "pageNext" || hotkey === "pagePrev") {
         event.preventDefault();
-        const target =
-          hotkey === "next"
-            ? filteredIssues[Math.min(pos + 1, filteredIssues.length - 1)]
-            : filteredIssues[Math.max(pos - 1, 0)];
+        const last = filteredIssues.length - 1;
+        const nextPos =
+          hotkey === "first"
+            ? 0
+            : hotkey === "last"
+              ? last
+              : hotkey === "pageNext"
+                ? Math.min(pos + TRIAGE_PAGE_SIZE, last)
+                : hotkey === "pagePrev"
+                  ? Math.max(pos - TRIAGE_PAGE_SIZE, 0)
+                  : hotkey === "next"
+                    ? Math.min(pos + 1, last)
+                    : Math.max(pos - 1, 0);
+        const target = filteredIssues[nextPos];
         if (target) {
           selectIssue(target.index, target.issue);
         }

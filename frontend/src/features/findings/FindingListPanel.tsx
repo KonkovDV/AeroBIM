@@ -113,7 +113,7 @@ function IssueCard({
         {band ? <span className={`triage-band triage-band-${band}`}>{triageBandLabel(band)}</span> : null}
         <strong>{issue.rule_id}</strong>
         {issue.rule_id === "AEROBIM-DRAWING-REGION-HITL" ? (
-          <span className="issue-priority">HITL</span>
+          <span className="issue-priority" title={UI_COPY.hitlBadgeHint}>{UI_COPY.hitlBadge}</span>
         ) : null}
         {issue.origin === "advisory" ? (
           <span

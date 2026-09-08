@@ -19,7 +19,7 @@
  */
 
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
 
   /* ── примитивы: нейтрали (холодные, под синий бренд) ──────────────── */
   --ds-n-0: #ffffff;

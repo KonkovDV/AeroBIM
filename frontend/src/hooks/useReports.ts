@@ -9,6 +9,7 @@ import {
 import { fetchReports } from "../lib/api";
 import type { ReportSummaryEntry } from "../lib/types";
 import { readUrlReportId } from "../lib/report-filters";
+import { classifyRequestFailure, type RequestFailureKind } from "../lib/request-failure";
 import { UI_COPY } from "../lib/ui-copy";
 
 function reportTimestamp(report: ReportSummaryEntry): number {
@@ -37,7 +38,7 @@ export type UseReportsOptions = {
 export type ReportsState = {
   reports: ReportSummaryEntry[];
   reportsLoading: boolean;
-  reportsError: string | null;
+  reportsError: RequestFailureKind | null;
   filteredReports: ReportSummaryEntry[];
   groupedReports: Map<string, ReportSummaryEntry[]>;
 };
@@ -54,7 +55,7 @@ export function useReports(options: UseReportsOptions): ReportsState {
   } = options;
   const [reports, setReports] = useState<ReportSummaryEntry[]>([]);
   const [reportsLoading, setReportsLoading] = useState(true);
-  const [reportsError, setReportsError] = useState<string | null>(null);
+  const [reportsError, setReportsError] = useState<RequestFailureKind | null>(null);
 
   const deferredSearch = useDeferredValue(search);
   const deferredProjectFilter = useDeferredValue(projectFilter);
@@ -108,7 +109,7 @@ export function useReports(options: UseReportsOptions): ReportsState {
         if (cancelled || controller.signal.aborted) {
           return;
         }
-        setReportsError(error instanceof Error ? error.message : UI_COPY.loadReportsFailed);
+        setReportsError(classifyRequestFailure(error));
       })
       .finally(() => {
         if (!cancelled && !controller.signal.aborted) {

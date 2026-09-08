@@ -12,6 +12,8 @@ describe("review shell html security", () => {
   it("declares Russian as the document language", () => {
     expect(html).toMatch(/<html lang="ru">/);
     expect(html).not.toMatch(/<html lang="en">/);
+    expect(html).toMatch(/<title>AeroBIM — проверка комплекта<\/title>/);
+    expect(html).toMatch(/name="color-scheme" content="light"/);
   });
 
   it("pins referrer, nosniff, permissions, and a self CSP with wasm-unsafe-eval only", () => {

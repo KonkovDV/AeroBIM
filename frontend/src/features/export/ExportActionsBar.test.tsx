@@ -29,12 +29,19 @@ describe("ExportActionsBar", () => {
     expect(screen.queryByRole("button", { name: /XLSX/i })).toBeNull();
   });
 
-  it("shows an alert instead of swallowing a failed export", async () => {
-    downloadExportMock.mockRejectedValueOnce(new Error("Экспорт завершился ошибкой 500"));
+  it("shows a category alert without leaking export diagnostics", async () => {
+    downloadExportMock.mockRejectedValueOnce(Object.assign(new Error("http://secret-host/trace"), { status: 500 }));
     render(<ExportActionsBar reportId="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" />);
     fireEvent.click(screen.getByRole("button", { name: "HTML" }));
-    const alert = await screen.findByTestId("export-error");
-    expect(alert.textContent).toContain("500");
+    const serverAlert = await screen.findByTestId("export-error");
+    expect(serverAlert.textContent).toBe(UI_COPY.errorBannerServer);
+    expect(serverAlert.textContent).not.toMatch(/500|http|secret-host|trace/i);
+
+    downloadExportMock.mockRejectedValueOnce(new TypeError("Failed to fetch http://private-host"));
+    fireEvent.click(screen.getByRole("button", { name: "JSON" }));
+    const networkAlert = await screen.findByTestId("export-error");
+    expect(networkAlert.textContent).toBe(UI_COPY.errorBannerNetwork);
+    expect(networkAlert.textContent).not.toMatch(/fetch|http|private-host/i);
   });
 
   it("disables buttons while a download is in flight", async () => {
@@ -68,6 +75,33 @@ describe("ExportActionsBar", () => {
     expect(hintId).toBeTruthy();
     expect(document.getElementById(hintId as string)?.textContent).toBe(UI_COPY.exportPdfHint);
     expect(screen.getAllByText(UI_COPY.exportPdfHint)).toHaveLength(1);
+  });
+
+  it("warns before exporting when the remark draft is unsaved", async () => {
+    const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(false);
+    render(<ExportActionsBar reportId="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" unsavedRemark />);
+    fireEvent.click(screen.getByRole("button", { name: "JSON" }));
+    expect(confirmSpy).toHaveBeenCalledTimes(1);
+    expect(downloadExportMock).not.toHaveBeenCalled();
+    confirmSpy.mockReturnValue(true);
+    fireEvent.click(screen.getByRole("button", { name: "JSON" }));
+    await waitFor(() => {
+      expect(downloadExportMock).toHaveBeenCalledTimes(1);
+    });
+    confirmSpy.mockRestore();
+  });
+
+  it("does not claim a spreadsheet export exists", () => {
+    render(<ExportActionsBar reportId="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" showLimits />);
+    expect(screen.getByText(UI_COPY.xlsxNotMvp)).toBeTruthy();
+    expect(screen.getByText(UI_COPY.exportSavedOnlyHint)).toBeTruthy();
+    expect(UI_COPY.exportSavedOnlyHint).not.toMatch(/исправлено/);
+  });
+
+  it("keeps the spreadsheet limit off the review toolbar", () => {
+    render(<ExportActionsBar reportId="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" />);
+    expect(screen.queryByText(UI_COPY.xlsxNotMvp)).toBeNull();
+    expect(screen.getByText(UI_COPY.exportSavedOnlyHint)).toBeTruthy();
   });
 
   it("marks the bar busy while an export runs", async () => {

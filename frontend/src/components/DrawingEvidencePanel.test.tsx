@@ -177,7 +177,8 @@ describe("DrawingEvidencePanel", () => {
     ];
     render(<DrawingEvidencePanel report={report} activeIssue={null} />);
     expect(screen.getByLabelText(UI_COPY.hitlRegionsAria)).toBeTruthy();
-    expect(screen.getByText(/low_confidence_ocr/i)).toBeTruthy();
+    expect(screen.getByText(UI_COPY.hitlRequiredLabel)).toBeTruthy();
+    expect(screen.getByText(UI_COPY.regionConfidence("0.41"))).toBeTruthy();
     expect(screen.getByText(UI_COPY.hitlRegions(1))).toBeTruthy();
   });
 

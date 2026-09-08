@@ -101,7 +101,8 @@ describe("IfcViewerPanel", () => {
     );
     expect(await screen.findByText("Wall-1")).toBeTruthy();
     expect(screen.getByTestId("viewer-element-props").textContent).toMatch(/IfcWall/);
-    expect(screen.getByRole("combobox", { name: UI_COPY.storeyFilter })).toBeTruthy();
+    expect(screen.getByRole("img", { name: UI_COPY.viewerViewportAria })).toBeTruthy();
+    expect(screen.getByText(UI_COPY.viewerMouseOnly)).toBeTruthy();
     expect(fetchReportIfcSourceMock).toHaveBeenCalledTimes(1);
     expect(loadModelMock).toHaveBeenCalledTimes(1);
 

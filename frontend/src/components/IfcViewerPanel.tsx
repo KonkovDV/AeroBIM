@@ -237,7 +237,7 @@ export default function IfcViewerPanel({
       </div>
 
       <div className="viewer-stage">
-        <div ref={viewportRef} className="viewer-viewport" />
+        <div ref={viewportRef} className="viewer-viewport" role="img" aria-label={UI_COPY.viewerViewportAria} />
         {viewerStatus === "idle" && (
           <div className="viewer-overlay">
             <p>{UI_COPY.viewerNeedReport}</p>
@@ -271,6 +271,7 @@ export default function IfcViewerPanel({
           </div>
         )}
       </div>
+      <p className="compact-copy">{UI_COPY.viewerMouseOnly}</p>
 
       <section className="viewer-element-props" data-testid="viewer-element-props">
         <h3>{UI_COPY.elementPropsTitle}</h3>

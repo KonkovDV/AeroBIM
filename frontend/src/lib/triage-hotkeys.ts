@@ -17,6 +17,10 @@ export type TriageHotkey =
 	| "close"
 	| "next"
 	| "prev"
+	| "first"
+	| "last"
+	| "pageNext"
+	| "pagePrev"
 	| "accept"
 	| "reject"
 	| "edit";
@@ -69,8 +73,16 @@ export function resolveTriageHotkey(event: HotkeyEvent): TriageHotkey | null {
 		return null;
 	}
 	// Удержание навигации допустимо; повтор решения или справки — нет.
-	if (event.repeat && event.key !== "ArrowDown" && event.key !== "ArrowUp" &&
-		!matches(event, "j", "KeyJ") && !matches(event, "k", "KeyK")) return null;
+	const navRepeat =
+		event.key === "ArrowDown" ||
+		event.key === "ArrowUp" ||
+		event.key === "Home" ||
+		event.key === "End" ||
+		event.key === "PageDown" ||
+		event.key === "PageUp" ||
+		matches(event, "j", "KeyJ") ||
+		matches(event, "k", "KeyK");
+	if (event.repeat && !navRepeat) return null;
 	if (
 		event.key === "?" ||
 		(event.shiftKey === true && (event.key === "/" || event.code === "Slash"))
@@ -82,6 +94,18 @@ export function resolveTriageHotkey(event: HotkeyEvent): TriageHotkey | null {
 	}
 	if (event.key === "ArrowUp" || matches(event, "k", "KeyK")) {
 		return "prev";
+	}
+	if (event.key === "Home") {
+		return "first";
+	}
+	if (event.key === "End") {
+		return "last";
+	}
+	if (event.key === "PageDown") {
+		return "pageNext";
+	}
+	if (event.key === "PageUp") {
+		return "pagePrev";
 	}
 	if (matches(event, "a", "KeyA")) {
 		return "accept";

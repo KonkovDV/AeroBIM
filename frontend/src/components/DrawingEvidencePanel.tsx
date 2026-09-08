@@ -238,7 +238,7 @@ export default function DrawingEvidencePanel({
       ? {
           key: "problem-zone",
           className: "drawing-evidence-rect",
-          label: "problem_zone",
+          label: UI_COPY.problemZoneLabel,
           style: {
             left: `${(normalizedZone.x / coordinateWidth) * imageMetrics.width}px`,
             top: `${(normalizedZone.y / coordinateHeight) * imageMetrics.height}px`,
@@ -320,15 +320,15 @@ export default function DrawingEvidencePanel({
                 <li key={`${region.sheet_id}-${index}`}>
                   <strong>{region.sheet_id}</strong>
                   <span>{region.modality}</span>
-                  <span>{region.hitl_reason ?? "hitl_required"}</span>
-                  <span>conf={region.confidence.toFixed(2)}</span>
+                  <span>{UI_COPY.hitlRequiredLabel}</span>
+                  <span>{UI_COPY.regionConfidence(region.confidence.toFixed(2))}</span>
                 </li>
               ))}
             </ul>
           )}
 
           {drawingAssets.length > 1 && (
-            <div className="drawing-evidence-selector" role="tablist" aria-label={UI_COPY.drawingAssetsAria}>
+            <div className="drawing-evidence-selector" role="group" aria-label={UI_COPY.drawingAssetsAria}>
               {drawingAssets.map((asset) => {
                 const isActive = selectedAsset?.asset_id === asset.asset_id;
                 const isMatch = matchedAsset?.asset_id === asset.asset_id;
@@ -337,6 +337,7 @@ export default function DrawingEvidencePanel({
                     key={asset.asset_id}
                     type="button"
                     className={`drawing-evidence-chip ${isActive ? "active" : ""}`}
+                    aria-pressed={isActive}
                     onClick={() => {
                       setSelectedAssetId(asset.asset_id);
                     }}

@@ -14,6 +14,7 @@ import {
   latestHitlState,
   latestReviewSequence,
 } from "../lib/hitl-state";
+import { classifyRequestFailure, type RequestFailureKind } from "../lib/request-failure";
 import type { ValidationIssue, ValidationReport } from "../lib/types";
 import { UI_COPY } from "../lib/ui-copy";
 
@@ -39,7 +40,7 @@ export type PendingFindingSelect = { index: number; issue: ValidationIssue };
 export type SelectedReportState = {
   selectedReport: ValidationReport | null;
   reportLoading: boolean;
-  reportError: string | null;
+  reportError: RequestFailureKind | null;
   reviewEvents: ReviewEventRow[];
   reviewEventsError: string | null;
   historyPending: boolean;
@@ -67,7 +68,7 @@ function resetEditor(
   setSelectedReport: Dispatch<SetStateAction<ValidationReport | null>>,
   setReviewEvents: Dispatch<SetStateAction<ReviewEventRow[]>>,
   setReviewEventsError: Dispatch<SetStateAction<string | null>>,
-  setReportError: Dispatch<SetStateAction<string | null>>,
+  setReportError: Dispatch<SetStateAction<RequestFailureKind | null>>,
   setRemarkDraft: Dispatch<SetStateAction<string>>,
   setRemarkSaveState: Dispatch<SetStateAction<RemarkSaveState>>,
   setHitlDecisionState: Dispatch<SetStateAction<HitlDecisionState>>,
@@ -92,7 +93,7 @@ export function useSelectedReport(
 ): SelectedReportState {
   const [selectedReport, setSelectedReport] = useState<ValidationReport | null>(null);
   const [reportLoading, setReportLoading] = useState(false);
-  const [reportError, setReportError] = useState<string | null>(null);
+  const [reportError, setReportError] = useState<RequestFailureKind | null>(null);
   const [reviewEvents, setReviewEvents] = useState<ReviewEventRow[]>([]);
   const [reviewEventsError, setReviewEventsError] = useState<string | null>(null);
   const [historyPending, setHistoryPending] = useState(false);
@@ -201,7 +202,7 @@ export function useSelectedReport(
         if (cancelled || controller.signal.aborted) {
           return;
         }
-        setReportError(error instanceof Error ? error.message : UI_COPY.loadReportFailed);
+        setReportError(classifyRequestFailure(error));
         setSelectedReport(null);
         selectedReportRef.current = null;
         setReviewEvents([]);

@@ -1,0 +1,82 @@
+/* Jury/demo lock: OS dark theme must not mix design-system dark tokens with
+   legacy light --bg/--text. Not a brand book. color-scheme stays light. */
+:root {
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: light;
+    --bg: #fff4e8;
+    --bg-strong: #ffd9b0;
+    --panel: #ffffff;
+    --text: #1a120c;
+    --muted: #6b5344;
+    --ink: #14110f;
+    --ds-canvas: var(--ds-n-25);
+    --ds-surface: var(--ds-n-0);
+    --ds-surface-sunken: var(--ds-n-50);
+    --ds-text: var(--ds-n-900);
+    --ds-text-muted: var(--ds-n-500);
+    --ds-border: var(--ds-n-100);
+    --ds-border-strong: var(--ds-n-200);
+    --ds-border-control: #8493ab;
+    --ds-accent: var(--ds-brand-600);
+    --ds-accent-hover: var(--ds-brand-700);
+    --ds-accent-text: var(--ds-brand-700);
+    --ds-accent-tint: var(--ds-brand-50);
+    --ds-text-on-brand: var(--ds-n-0);
+    --vl-canvas: var(--vl-n25);
+    --vl-sunken: var(--vl-n50);
+    --vl-surface: var(--vl-n0);
+    --vl-raised: var(--vl-n0);
+    --vl-text: var(--vl-n900);
+    --vl-text-secondary: var(--vl-n600);
+    --vl-text-muted: var(--vl-n500);
+    --vl-line: var(--vl-n100);
+    --vl-line-strong: var(--vl-n200);
+    --vl-line-control: #7c8aa0;
+    --vl-accent: var(--vl-blue600);
+    --vl-accent-hover: var(--vl-blue700);
+    --vl-accent-soft: var(--vl-blue50);
+    --vl-accent-line: var(--vl-blue200);
+    --vl-selected: var(--vl-blue50);
+  }
+
+  /* Component rules in earlier files still use this media query with hardcoded
+     dark hex. Reassert the light recipe so a dark OS cannot mix palettes. */
+  ::selection {
+    background: var(--vl-blue200);
+    color: var(--vl-n900);
+  }
+
+  .nav-badge {
+    background: var(--vl-accent);
+    color: #ffffff;
+  }
+
+  .toolbar-button.toolbar-button-primary,
+  .toolbar-button.toolbar-button-primary:hover {
+    background: var(--vl-accent);
+    border-color: var(--vl-accent);
+    color: #ffffff;
+  }
+
+  .toolbar-button.toolbar-button-primary:hover {
+    background: var(--vl-accent-hover);
+    border-color: var(--vl-accent-hover);
+  }
+
+  .pack-cycle-step-current {
+    background: var(--vl-accent);
+    border-color: var(--vl-accent);
+    color: #ffffff;
+  }
+
+  .keyboard-help-dialog.dirty-leave-dialog {
+    --leave-primary: #1b55c7;
+    --leave-on-primary: #fff;
+    --leave-danger: #b42318;
+    --leave-error-bg: #fff4f2;
+  }
+}
