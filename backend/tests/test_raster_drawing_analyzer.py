@@ -6,7 +6,10 @@ from pathlib import Path
 
 from pdf_fixtures import write_text_pdf
 
-from aerobim.infrastructure.adapters.raster_drawing_analyzer import RasterDrawingAnalyzer
+from aerobim.infrastructure.adapters.raster_drawing_analyzer import (
+    RasterDrawingAnalyzer,
+    _TextRegion,
+)
 
 
 class _FakeOcrResult:
@@ -141,12 +144,100 @@ class RasterDrawingAnalyzerTests(unittest.TestCase):
         )
         if not path.is_file():
             self.skipTest("committed scan PNG fixture missing")
-        annotations = RasterDrawingAnalyzer().analyze_image(path, sheet_id="A-201")
+        try:
+            annotations = RasterDrawingAnalyzer().analyze_image(path, sheet_id="A-201")
+        except (ImportError, OSError) as exc:
+            self.skipTest(f"rapidocr extra present but engine import failed: {exc}")
         texts = " ".join(f"{a.target_ref} {a.observed_value}" for a in annotations)
         self.assertTrue(
             any(a.observed_value == "220" for a in annotations),
             f"RapidOCR did not recover 220 mm from fixture: {texts!r}",
         )
+
+    def test_same_annotation_different_bbox_keeps_two_evidence_locations(self) -> None:
+        analyzer = RasterDrawingAnalyzer()
+        annotations = []
+        for index in range(20):
+            region = _TextRegion(
+                text="WALL-01 thickness 250 mm",
+                page_number=1,
+                x=10.0 + index * 15.0,
+                y=20.0,
+                width=100.0,
+                height=40.0,
+            )
+            annotations.extend(analyzer._extract_annotations_from_region(region, "A-101"))
+        kept = analyzer._deduplicate_annotations(annotations)
+        self.assertEqual(len(kept), 20)
+        ids = {item.annotation_id for item in kept}
+        self.assertEqual(len(ids), 20)
+
+    def test_same_annotation_same_bbox_is_deduplicated(self) -> None:
+        analyzer = RasterDrawingAnalyzer()
+        region = _TextRegion(
+            text="WALL-01 thickness 250 mm",
+            page_number=1,
+            x=10.0,
+            y=20.0,
+            width=100.0,
+            height=40.0,
+        )
+        first = analyzer._extract_annotations_from_region(region, "A-101")
+        second = analyzer._extract_annotations_from_region(region, "A-101")
+        kept = analyzer._deduplicate_annotations([*first, *second])
+        self.assertEqual(len(kept), 1)
+
+    def test_stamp_and_explication_same_text_keep_two_locations(self) -> None:
+        analyzer = RasterDrawingAnalyzer()
+        stamp = _TextRegion(
+            text="WALL-01 thickness 250 mm",
+            page_number=1,
+            x=40.0,
+            y=20.0,
+            width=80.0,
+            height=12.0,
+        )
+        explication = _TextRegion(
+            text="WALL-01 thickness 250 mm",
+            page_number=1,
+            x=40.0,
+            y=400.0,
+            width=180.0,
+            height=20.0,
+        )
+        kept = analyzer._deduplicate_annotations(
+            [
+                *analyzer._extract_annotations_from_region(stamp, "A-101"),
+                *analyzer._extract_annotations_from_region(explication, "A-101"),
+            ]
+        )
+        self.assertEqual(len(kept), 2)
+
+    def test_negative_and_large_coords_stay_distinct(self) -> None:
+        analyzer = RasterDrawingAnalyzer()
+        negative = _TextRegion(
+            text="WALL-01 thickness 250 mm",
+            page_number=1,
+            x=-50.0,
+            y=-10.0,
+            width=100.0,
+            height=40.0,
+        )
+        large = _TextRegion(
+            text="WALL-01 thickness 250 mm",
+            page_number=1,
+            x=1_000_000.0,
+            y=20.0,
+            width=100.0,
+            height=40.0,
+        )
+        kept = analyzer._deduplicate_annotations(
+            [
+                *analyzer._extract_annotations_from_region(negative, "A-101"),
+                *analyzer._extract_annotations_from_region(large, "A-101"),
+            ]
+        )
+        self.assertEqual(len(kept), 2)
 
 
 if __name__ == "__main__":
