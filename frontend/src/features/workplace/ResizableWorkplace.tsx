@@ -115,7 +115,7 @@ export default function ResizableWorkplace({ left, center, right }: ResizableWor
         </label>
         <button type="button" className="toolbar-button" onClick={() => setCols({ ...DEFAULT_COLS })}>Сбросить ширину</button>
       </div>
-      <p id={`${id}-help`}>Нажмите на шкалу без перетаскивания. На разделителе: ←/→ — шаг 2%, Shift — 10%, Home/End — минимум/максимум ширины. Esc — отмена жеста.</p>
+      <p id={`${id}-help`}>Нажмите на шкалу без перетаскивания. На разделителе: ←/→ — шаг 2%, <kbd>SHIFT</kbd> — 10%, <kbd>HOME</kbd>/<kbd>END</kbd> — минимум/максимум ширины. <kbd>ESC</kbd> — отмена жеста.</p>
     </details>
     <main ref={gridRef} className="workspace-grid" data-testid="workspace-grid"
       style={{ ["--col-left" as string]: `${cols.left}fr`, ["--col-mid" as string]: `${cols.mid}fr`, ["--col-right" as string]: `${cols.right}fr` }}>
