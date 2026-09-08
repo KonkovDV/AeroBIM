@@ -2,9 +2,9 @@
 ---
 title: "Owner actions — what git does not close (September 2026)"
 date: "2026-08-30"
-last_updated: "2026-09-04"
+last_updated: "2026-09-08"
 status: active
-version: "1.3.8"
+version: "1.3.9"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -38,6 +38,8 @@ claim_boundary: >
 | OA-17 | Исходящие вопросы партнёру: Telegram (шифр эталона вне git) + пакет через организаторов ([`partners/SAMOLET_QUESTIONS_GROUNDED_2026_09_03.md`](partners/SAMOLET_QUESTIONS_GROUNDED_2026_09_03.md)); ответ к **08.09**; план Б **09.09** | К3; SIG-05 | отправка **04.09** | Исходящее с датой и строкой про резерв; git не отправляет |
 | OA-18 | Слот научного консультанта: 5 простых вопросов гиперплана §8; фиксация в лабораторном журнале владельца | протокол измерения; не подпись «точности» | **03.09** | Заметки владельца; не выдавать за подписанный протокол без его текста |
 | OA-19 | Третье исходящее: письмо **менеджеру МИК** (M2/M7/M8, программа испытаний) — **не** в одном документе с A–G Самолёту | К5; процедура пилота | отправить **04.09** | Исходящее с датой; шаблон [`partners/MIK_OPERATOR_LETTER_REQUEST_2026_09.md`](partners/MIK_OPERATOR_LETTER_REQUEST_2026_09.md); playbook [`quality/MIK_COMMISSION_SEAT_PLAYBOOK_2026_09.md`](quality/MIK_COMMISSION_SEAT_PLAYBOOK_2026_09.md) |
+| OA-20 | Письменная сверка формулировки порога («не менее 50» vs «менее 50») и оценочного листа с организатором | attributed → verified порог | до речи, где порог называют фактом приказа | Ответ организатора; колонка PDF в ORDER_WEIGHTS не UNVERIFIED |
+| OA-21 | Сквозной прогон: комплект → проверка → правка/подтверждение → экспорт JSON/HTML/PDF/BCF; финальный файл ≠ черновик | Б2/Б5; п. 2.2.1 ТЗ | до загрузки **14.09** | Запись: confirmed text, ревизия, локация, история; нет ложного «исправлено» |
 
 Обложка письма: [`partners/PARTNER_PROTOCOL_SIGNREADY_COVER_2026_08.md`](partners/PARTNER_PROTOCOL_SIGNREADY_COVER_2026_08.md).
 Шаблон К1: [`partners/K1_ROLE_MATRIX_TEMPLATE_2026_08.md`](partners/K1_ROLE_MATRIX_TEMPLATE_2026_08.md).

@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM — карта для жюри Техлаба и МИК"
 status: active
-version: "4.8.36"
+version: "4.8.37"
 last_updated: "2026-09-08"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint GO; customer_go false until RT-001/002/003. Eng readiness ≠ customer GO."
@@ -9,7 +9,7 @@ claim_boundary: "Jury pack only. Checkpoint GO; customer_go false until RT-001/0
 
 # Карта для жюри Техлаба и МИК
 
-**Checkpoint `GO` (regulatory_measurement_mvp).** `customer_go` **false**. Стадия МИК — **доработка**. На учебном комплекте проверка запускается. Измерений (κ, held-out, два разметчика) на комплекте Самолёта **в git** нет. Канал 25.08 получен — **не** говорить «нет данных заказчика»; хеш-пакет в репозитории отсутствует. Блокеры: [реестр](../audit/reports/CRITICAL_BLOCKERS.md). Граница заявлений: [что проверено](pilot-claim-boundary-2026.md). Кто ставит технический статус: [ADR-001](architecture/ADR-001-verdict-ownership-2026.md). План в репо: [работа после 25.08](quality/KT3_IN_REPO_WORKPLAN_2026_08_27.md).
+**Checkpoint `GO` (regulatory_measurement_mvp).** `customer_go` **false**. Стадия МИК — **доработка**. На учебном комплекте проверка запускается. Измерений (κ, held-out, два разметчика) на комплекте Самолёта **в git** нет. Канал 25.08 получен — **не** говорить «нет данных заказчика»; хеш-пакет в репозитории отсутствует. Частные тех+UX аудиты, переписка и вложения в публичный GitHub **не** переносятся. Блокеры: [реестр](../audit/reports/CRITICAL_BLOCKERS.md). Граница заявлений: [что проверено](pilot-claim-boundary-2026.md). Кто ставит технический статус: [ADR-001](architecture/ADR-001-verdict-ownership-2026.md). План в репо: [работа после 25.08](quality/KT3_IN_REPO_WORKPLAN_2026_08_27.md).
 
 **Формула стадии (дословно; источник — [карточка речи](demo/KT2_JURY_FAQ_2026_08_12.md)):** Мы на стадии доработки контура заказчика. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение у назначающей стороны ещё не начались. Checkpoint `GO` — регуляторно-измерительный MVP. `customer_go` остаётся false, пока нет независимого размеченного корпуса, двух разметчиков, подписанного профиля назначающей стороны и подтверждения импорта в СОД.
 

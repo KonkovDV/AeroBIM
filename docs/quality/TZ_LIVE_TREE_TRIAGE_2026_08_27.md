@@ -4,7 +4,7 @@ title: "Live-tree Red Team triage — 2026-08-27"
 date: "2026-08-27"
 last_updated: "2026-09-08"
 status: active
-version: "1.25.0"
+version: "1.26.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -38,6 +38,8 @@ PR-diff к `main` на первом проходе 27.08 был пустой. Э
 Проход 26: extra README ≠ extra CI; kitchen HMAC-тесты skip на чистом клоне; AST `test_functions` ≠ pytest `tests_collected`; ingest 1,5 ГБ ≠ analyze 256 МиБ. Кап analyze не поднимаем.
 
 Проход 27: SPF RAM ~8–10× диска (IfcOpenShell #7116); 1,5 ГБ ingest ≈ лимит toolkit экспорта Revit. RocksDB wired over SPF cap. WASM 256 МиБ.
+
+Проход 28: частный тех+UX аудит 07–08.09 (SHA `05485596`, Draft PR #38) — исторический снимок. Текущий `main` слил панели и стабильные ID чертежей. PDF приказов и вложения в git **не** кладём. Кейс Tangl/10D — не KPI AeroBIM.
 
 Checkpoint **`GO`**; `customer_go` false. `detected_count: 0`.
 
@@ -158,6 +160,8 @@ Checkpoint **`GO`**; `customer_go` false. `detected_count: 0`.
 | RT-PIN-DRIFT | Исторические счётчики CRITICAL_BLOCKERS или HEAD pytest как живой пин | SSOT: `runtime-baseline-latest.json`; HEAD может быть впереди |
 | RT-INGEST-ANALYZE | 1,5 ГБ ingest заказчика = кап WASM / SPF RAM | SPF 256 МиБ; RocksDB до 1,5 ГБ; WASM 256 МиБ |
 | RT-SPF-10X | Поднять default SPF cap до 1,5 ГБ — это строка в settings | SPF ~8–10× диск; 1,5 ГБ путь = RocksDB, не `open(.ifc)` |
+| RT-AUDIT-SHA-STALE | Частный аудит 07.09 (`05485596`, Draft PR #38) как текущий HEAD | HISTORICAL_PIN; панели слиты; ID чертежей изолированы |
+| RT-TANGL-KPI | Метрики кейса Tangl/10D как KPI AeroBIM / Б4 | Маркетинг поставщика 10.02.2025; часы партнёра пустые |
 
 ## HOLD (не чиним в этом коммите)
 

@@ -797,6 +797,18 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "attack": "Raise default analyze cap to 1.5 GB; it is only a settings line",
         "brake": "SPF RAM ~8–10x disk (#7116); RocksDB is the 1.5 GB path, not SPF open",
     },
+    {
+        "id": "RT-AUDIT-SHA-STALE",
+        "verdict": "KILL",
+        "attack": "Treat a private 07.09 audit SHA or Draft PR #38 as current HEAD",
+        "brake": "That snapshot is HISTORICAL_PIN; workplace PR merged; drawing IDs isolated",
+    },
+    {
+        "id": "RT-TANGL-KPI",
+        "verdict": "KILL",
+        "attack": "Copy Tangl/10D vendor-case metrics into AeroBIM KPI or B4",
+        "brake": "Vendor marketing 10.02.2025 is not a partner measurement; B4 stays empty hours",
+    },
 )
 
 

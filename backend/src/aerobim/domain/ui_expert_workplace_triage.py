@@ -365,6 +365,18 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "attack": "Vite shared bearer plus header Expert mock confirms remarks",
         "brake": "POST review-events 403 when is_service_token; localStorage is not ACL",
     },
+    {
+        "id": "RT-UI-WCAG-CERT",
+        "verdict": "KILL",
+        "attack": "Treat the isolated resize stand or green CI as WCAG sign-off",
+        "brake": "Native sliders plus keyboard; not a screen-reader cert",
+    },
+    {
+        "id": "RT-UI-PR38-DRAFT",
+        "verdict": "KILL",
+        "attack": "Treat workplace resize as an unmerged Draft of four files at 490cb41",
+        "brake": "PR #38 merged on main; list remasures card height after pane resize",
+    },
 )
 
 

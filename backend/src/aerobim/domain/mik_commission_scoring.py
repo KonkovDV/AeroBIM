@@ -298,6 +298,12 @@ def prize_floor_denominator_known() -> bool:
     return True
 
 
+def tangl_vendor_case_is_aerobim_kpi() -> bool:
+    """Published Tangl/10D vendor case is not an AeroBIM or partner measurement."""
+
+    return False
+
+
 def predicted_aerobim_total() -> int | None:
     """No licensed numeric forecast. Git does not score the application."""
 
@@ -425,6 +431,7 @@ def scoring_snapshot() -> dict[str, Any]:
         "catalog_four_are_all_applicants": catalog_four_are_all_applicants(),
         "peer_card_claims_externally_verified": (peer_card_claims_externally_verified()),
         "prize_floor_denominator_known": prize_floor_denominator_known(),
+        "tangl_vendor_case_is_aerobim_kpi": tangl_vendor_case_is_aerobim_kpi(),
         "customer_thresholds": CUSTOMER_THRESHOLDS,
         "b_final_ticksheet": B_FINAL_TICKSHEET,
         "lab_before_after": LAB_BEFORE_AFTER,
@@ -486,5 +493,6 @@ __all__ = [
     "catalog_four_are_all_applicants",
     "peer_card_claims_externally_verified",
     "prize_floor_denominator_known",
+    "tangl_vendor_case_is_aerobim_kpi",
     "trl_5_claimed",
 ]

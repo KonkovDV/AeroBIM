@@ -128,6 +128,8 @@ class LiveTreeTriageTests(unittest.TestCase):
             "RT-PIN-DRIFT",
             "RT-INGEST-ANALYZE",
             "RT-SPF-10X",
+            "RT-AUDIT-SHA-STALE",
+            "RT-TANGL-KPI",
         ):
             self.assertIn(row_id, ids)
 

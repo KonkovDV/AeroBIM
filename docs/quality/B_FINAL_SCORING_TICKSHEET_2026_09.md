@@ -4,7 +4,7 @@ title: "System B final scoring ticksheet — bands, not a prize forecast"
 date: "2026-08-30"
 last_updated: "2026-09-08"
 status: active
-version: "1.1.0"
+version: "1.1.1"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -30,7 +30,7 @@ claim_boundary: >
 
 | Код | Макс | Что на руках | Чего нет | Говорить вслух | Артефакт git | Git не закрывает |
 |---|---:|---|---|---|---|---|
-| Б1 | 30 | Посадка на карточку: ассистент ПД/РД, HITL, fail-closed native CAD, cap 256 МиБ | Подписанные KPI партнёра | Соответствуем запросу openBIM; native RVT/NWD/DWG закрыты явно | [`K3_PARTNER_FIT_TICKSHEET_2026_08.md`](K3_PARTNER_FIT_TICKSHEET_2026_08.md) · TIER0 | Письмо с KPI; «коллизии >90% сданы» |
+| Б1 | 30 | Посадка на карточку: ассистент ПД/РД, HITL, fail-closed native CAD, cap 256 МиБ | Подписанные KPI партнёра; матрица ТЗ → функция → приёмочный сценарий | Соответствуем запросу openBIM; native RVT/NWD/DWG закрыты явно | [`K3_PARTNER_FIT_TICKSHEET_2026_08.md`](K3_PARTNER_FIT_TICKSHEET_2026_08.md) · TIER0 | Письмо с KPI; «коллизии >90% сданы» |
 | Б2 | 20 | Обложка фикстуры; протокол 0,60; CI pin; план инъекций | Dual-rater и метрики на комплекте партнёра | Pytest — регрессия движка, не валидация партнёра | [`KT3_FIXTURE_VALIDATION_COVER_2026_08.md`](KT3_FIXTURE_VALIDATION_COVER_2026_08.md) · [`DEFECT_INJECTION_RECALL_PLAN_2026_09.md`](../evidence/DEFECT_INJECTION_RECALL_PLAN_2026_09.md) | `confirmed_partner_validation_metrics` |
 | Б3 | 20 | Загрузка + BCF ZIP; п. 2.2.2 файловый обмен; RocksDB analyze до 1,5 ГБ | SSO; импорт в СОД | MVP без интеграции в контур | TIER0 · BCF ladder · [`IFC_ANALYZE_VS_INGEST_CAP_2026_08.md`](IFC_ANALYZE_VS_INGEST_CAP_2026_08.md) | CDE-ready; OIDC 501; SPF/WASM остаются 256 МиБ |
 | Б4 | 20 | Пустые A1–A8; методика; journal только `t_tool_ms` на git-стенке | Часы партнёра; `t_manual_s`; подписанный до/после | Лабораторный замер ≠ часы Самолёта; −72,1% не наш | [`BEFORE_AFTER_MEASUREMENT_PROTOCOL_2026_09.md`](../partners/BEFORE_AFTER_MEASUREMENT_PROTOCOL_2026_09.md) · [`ECONOMIC_MODEL_LABELED_ASSUMPTIONS_2026_08.md`](../partners/ECONOMIC_MODEL_LABELED_ASSUMPTIONS_2026_08.md) · [`lab-before-after-fixture-tool-only-latest.json`](../evidence/lab-before-after-fixture-tool-only-latest.json) | Эффект для партнёра |
@@ -54,7 +54,7 @@ claim_boundary: >
 | Б4 | очень низкая (0–20 % от 20) | A1–A8 пустые; нет часов партнёра |
 | Б5 | средняя (41–60 % от 10) | BOM и MIT на руках; п. 6.3 не закрыт |
 
-`NO_GO` **не** лицензирует «Б2 высокий».
+`NO_GO` **не** лицензирует «Б2 высокий». Кейс Tangl/10D от 10.02.2025 **не** поднимает Б4.
 
 ## Полосы после трёх действий (тоже не прогноз)
 

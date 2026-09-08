@@ -135,6 +135,7 @@ class MikCommissionScoringTests(unittest.TestCase):
         self.assertFalse(snap["regulation_appendix_3_in_git"])
         self.assertTrue(snap["finalist_weights_are_regulation_appendix_3"])
         self.assertTrue(snap["prize_floor_denominator_known"])
+        self.assertFalse(snap["tangl_vendor_case_is_aerobim_kpi"])
 
     def test_low_k1_top_plus_rest_high_lo_clears_floor_identity(self) -> None:
         from aerobim.domain.mik_commission_scoring import (

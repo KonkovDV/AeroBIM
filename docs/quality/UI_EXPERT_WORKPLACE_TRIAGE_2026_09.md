@@ -2,9 +2,9 @@
 ---
 title: "UI expert-workplace Red Team triage — 2026-09-01"
 date: "2026-09-01"
-last_updated: "2026-09-02"
+last_updated: "2026-09-08"
 status: active
-version: "1.0.7"
+version: "1.0.8"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -24,7 +24,9 @@ claim_boundary: >
 
 Checkpoint **`GO`**; `customer_go` false. `detected_count: 0`. UI **не** закрывает RT-001 / RT-002 / RT-003.
 
-Позиционирование (не модель-чекер против Tangl/10D): согласованность **комплекта** (модель ↔ чертежи ↔ ТЗ ↔ расчёты ↔ смежные разделы) и файловый выход BCF/HTML/JSON. Импорт в СОД заказчика — **NOT_VERIFIED**.
+Позиционирование (не модель-чекер против Tangl/10D): проверяемая цепочка **несоответствие → пункт нормы → файл/версия → ось/этаж/элемент → решение эксперта → согласованный экспорт**. Импорт в СОД заказчика — **NOT_VERIFIED**. Кейс Tangl от 10.02.2025 — маркетинг поставщика, не KPI AeroBIM.
+
+PR #38 (ресайз панелей, нативные шкалы, пересчёт виртуального списка) **слит** в `main`. Изолированный стенд 08.09 и зелёная CI **не** WCAG и не приёмка на данных заказчика.
 
 Связанные: [`FORMAT_INGEST_TRIAGE_2026_09.md`](FORMAT_INGEST_TRIAGE_2026_09.md) · [`../architecture/ADR-001-verdict-ownership-2026.md`](../architecture/ADR-001-verdict-ownership-2026.md) · [`../tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md`](../tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md) · [`TRACKER_EIGHT_TASKS_2026_08.md`](TRACKER_EIGHT_TASKS_2026_08.md) · [`FRONTEND_DEVELOPMENT_PLAN_2026_09.md`](FRONTEND_DEVELOPMENT_PLAN_2026_09.md) (исполняемый план WP-FE для ИИ).
 
@@ -95,6 +97,8 @@ Checkpoint **`GO`**; `customer_go` false. `detected_count: 0`. UI **не** за�
 | RT-UI-EXPERT-PANE | Индекс отчётов как левая панель эксперта | Три панели ТЗ: находки / 2D-3D / замечание |
 | RT-UI-INTAKE-WIRE | Эффект прячет RT-001/002/003 | GET /v1/system/capabilities; UI ворота не пишет |
 | RT-UI-INTAKE-GREEN | true_gates как RT CLOSED / customer_go | customer_go false; PrecisionClaim.publishable |
+| RT-UI-WCAG-CERT | Изолированный стенд панелей / зелёный frontend CI = WCAG или UX-подпись Самолёта | Шкалы + клавиатура; не сертификат диктора; брендбука нет |
+| RT-UI-PR38-DRAFT | Ресайз панелей как несведённый Draft из четырёх файлов на `490cb41` | PR #38 на `main`; список пересчитывает высоту карточки |
 
 ## Что UI не закроет
 
