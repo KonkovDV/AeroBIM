@@ -2,7 +2,7 @@
 ---
 title: "MIK criterion → git evidence map"
 date: "2026-08-29"
-last_updated: "2026-08-30"
+last_updated: "2026-09-08"
 status: active
 version: "1.4.1"
 closes_rt001: false

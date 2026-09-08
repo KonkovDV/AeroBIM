@@ -2,7 +2,7 @@
 title: "AeroBIM — карта для жюри Техлаба и МИК"
 status: active
 version: "4.8.36"
-last_updated: "2026-09-05"
+last_updated: "2026-09-08"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint GO; customer_go false until RT-001/002/003. Eng readiness ≠ customer GO."
 ---

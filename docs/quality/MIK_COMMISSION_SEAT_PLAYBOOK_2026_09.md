@@ -2,7 +2,7 @@
 ---
 title: "Комиссия МИК №7 — playbook по креслам (03.09.2026)"
 date: "2026-09-03"
-last_updated: "2026-09-03"
+last_updated: "2026-09-08"
 status: active
 version: "1.0.1"
 closes_rt001: false

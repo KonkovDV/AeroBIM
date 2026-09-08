@@ -2,7 +2,7 @@
 ---
 title: "Customer thresholds vs actual — honesty table, not a fail sheet"
 date: "2026-08-30"
-last_updated: "2026-08-30"
+last_updated: "2026-09-08"
 status: active
 version: "1.0.2"
 closes_rt001: false

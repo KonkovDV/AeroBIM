@@ -2,7 +2,7 @@
 ---
 title: "Самодостаточный аудиторский корпус — Checkpoint GO × ТЗ Самолёта × Техлаб/МИК"
 date: "2026-09-04"
-last_updated: "2026-09-05"
+last_updated: "2026-09-08"
 status: active
 version: "2.1.0"
 standalone: true

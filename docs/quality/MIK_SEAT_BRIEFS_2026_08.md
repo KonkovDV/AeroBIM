@@ -2,7 +2,7 @@
 ---
 title: "MIK seat briefs — selection and final are means; roles not names"
 date: "2026-08-29"
-last_updated: "2026-09-03"
+last_updated: "2026-09-08"
 status: active
 version: "1.1.2"
 closes_rt001: false

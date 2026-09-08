@@ -2,7 +2,7 @@
 ---
 title: "КТ#3 — пакет допроса доказательной базы (P0 03.09.2026)"
 date: "2026-09-03"
-last_updated: "2026-09-03"
+last_updated: "2026-09-08"
 status: active
 version: "1.3.0"
 closes_rt001: false

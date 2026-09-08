@@ -2,7 +2,7 @@
 ---
 title: "Live-tree Red Team triage — 2026-08-27"
 date: "2026-08-27"
-last_updated: "2026-08-30"
+last_updated: "2026-09-08"
 status: active
 version: "1.25.0"
 closes_rt001: false
