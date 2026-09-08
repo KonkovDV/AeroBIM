@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import FindingListPanel from "./FindingListPanel";
 import type { ValidationIssue } from "../../lib/types";
@@ -142,5 +142,46 @@ describe("FindingListPanel", () => {
     expect(titles[0]?.textContent).toMatch(/\(15\)/);
     expect(screen.getAllByRole("group").length).toBeGreaterThan(0);
     expect(screen.getByRole("listbox").getAttribute("aria-activedescendant")).toBe("finding-row-0");
+  });
+
+  it("remeasures virtual row height after the list viewport resizes", async () => {
+    let notify: ResizeObserverCallback = () => undefined;
+    vi.stubGlobal(
+      "ResizeObserver",
+      class {
+        constructor(callback: ResizeObserverCallback) {
+          notify = callback;
+        }
+        observe(): void {}
+        disconnect(): void {}
+        unobserve(): void {}
+      },
+    );
+    const issues = Array.from({ length: 45 }, (_, index) => issue(`R${index}`, index));
+    render(
+      <FindingListPanel
+        issues={issues}
+        totalIssueCount={45}
+        selectedIssueIndex={0}
+        issueSeverityFilter="all"
+        hitlOnlyFilter={false}
+        hitlRegionCount={0}
+        groupBy="none"
+        onSeverityChange={() => undefined}
+        onHitlOnlyChange={() => undefined}
+        onGroupByChange={() => undefined}
+        onSelectIssue={() => undefined}
+      />,
+    );
+    const list = screen.getByRole("listbox");
+    const card = screen.getAllByTestId("issue-card")[0];
+    expect(list.getAttribute("data-item-height")).toBe("148");
+    Object.defineProperty(card, "offsetHeight", { configurable: true, value: 220 });
+    notify([], {} as ResizeObserver);
+    try {
+      await waitFor(() => expect(list.getAttribute("data-item-height")).toBe("220"));
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 });

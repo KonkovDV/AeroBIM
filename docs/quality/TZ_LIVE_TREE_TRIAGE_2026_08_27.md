@@ -2,7 +2,7 @@
 ---
 title: "Live-tree Red Team triage — 2026-08-27"
 date: "2026-08-27"
-last_updated: "2026-08-30"
+last_updated: "2026-09-08"
 status: active
 version: "1.25.0"
 closes_rt001: false
@@ -31,7 +31,7 @@ PR-diff к `main` на первом проходе 27.08 был пустой. Э
 
 Проход 23: identity 52,6 ≠ прогноз балла; цитата спонсора ≠ председатель; 25,1 млрд к 2030 ≠ наша выручка; paste ≠ выставленный балл.
 
-Проход 24: Приложение 3 Положения не в git; финал — сумма, не среднее; К4 не CAPEX; МСФО убыток не наш эффект; РСБУ ≠ МСФО; четыре карточки ≠ все заявители; пилоты соседей не аудированы.
+Проход 24: Приложение 3 Положения не в git (перенос с копий); финал — среднее, не сумма; три кресла не владеют 65; К4 не CAPEX; МСФО убыток не наш эффект; РСБУ ≠ МСФО; четыре карточки ≠ все заявители; пилоты соседей не аудированы.
 
 Проход 25: окно КТ#3 — OIDC 501 единственный code-path риск к 21.09; скоуп space-efficiency OPEN; RT-002a ≠ «нет норм»; Wilson n=6 не показывать; ODA Sustaining ≠ BimRv; CADSoftTools 1660 устарело; TBD — подтвердить редакцию v2; производные пакета не в git до письменного режима.
 
@@ -138,8 +138,9 @@ Checkpoint **`GO`**; `customer_go` false. `detected_count: 0`.
 | RT-MIK-SPONSOR-CHAIR | Цитата спонсора с витрины = председатель / состав К1 | `sponsor_quote_is_commission_chair=False` |
 | RT-MIK-25B-REV | 25,1 млрд ₽ к 2030 как выручка / SAM AeroBIM | `tam_horizon_is_our_revenue=False` |
 | RT-MIK-PASTE-SCORE | Вставка в заявку = уже выставленный балл / состав | Тексты полей; ячейки «кто» пустые |
-| RT-MIK-APP3-UNSEEN | Б1–Б5 в git = Приложение 3 к Положению | `regulation_appendix_3_in_git=False` |
-| RT-MIK-FINAL-MEAN | Финал считается средним, как отбор | `FINALIST_AGGREGATION=sum`; знаменатель 50 неизвестен |
+| RT-MIK-APP3-UNSEEN | Б1–Б5 как PDF-в-git / `attested_by=ci` | `regulation_appendix_3_in_git=False`; перенос с копий |
+| RT-MIK-FINAL-MEAN | Финал считается суммой, не как отбор | `FINALIST_AGGREGATION=arithmetic_mean`; знаменатель 50 из 100 |
+| RT-MIK-PARTNER-65 | Три кресла партнёра владеют 65 баллами | `partner_nominal_criteria_weight is None`; баллы за критериями |
 | RT-MIK-INVEST-K4 | «Инвестируйте» / CAPEX / лицензионная стена | `k4_asks_customer_capex=False`; нулевой вход |
 | RT-MIK-SAVE-PNL | Убыток МСФО 22,3 млрд как наш эффект | `k4_offsets_partner_ifrs_loss=False` |
 | RT-MIK-RAS-IFRS | РСБУ +31% как картина группы МСФО | `ras_ifrs_signs_are_the_same=False` |

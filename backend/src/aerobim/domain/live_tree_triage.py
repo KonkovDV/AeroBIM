@@ -51,7 +51,8 @@ Pass 22: TAM BIM is not SAM; 72% analog is not ours; other MIK 500M is not K4;
 PNST 841 is not a SQuaRE certificate.
 Pass 23: 52.6 identity is not a score; sponsor quote is not the chair;
 25.1 bn by 2030 is not our revenue; paste is not a scored roster.
-Pass 24: Regulation Appendix 3 unseen; final is a sum not a mean; K4 is
+Pass 24: Regulation Appendix 3 PDF not in git (owner-copy transcription);
+final is a mean like selection; three seats do not own 65; K4 is
 zero-entry not CAPEX; IFRS loss is not our saving; RAS is not IFRS;
 four catalog cards are not all applicants; peer pilots unverified.
 Pass 25: KT#3 window — OIDC 501 is the only code-path miss risk by 21.09;
@@ -643,14 +644,20 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
     {
         "id": "RT-MIK-APP3-UNSEEN",
         "verdict": "KILL",
-        "attack": "Treat B1-B5 in git as Regulation Appendix 3 or a seen final table",
-        "brake": "regulation_appendix_3_in_git False; weights are not App 3",
+        "attack": "Treat B1-B5 transcription as PDF-in-git or attested_by=ci",
+        "brake": "regulation_appendix_3_in_git False; attested_by stays owner_briefing",
     },
     {
         "id": "RT-MIK-FINAL-MEAN",
         "verdict": "KILL",
-        "attack": "Score the final round as an arithmetic mean like selection",
-        "brake": "Order p.2.2 is a sum; prize_floor_denominator_known False",
+        "attack": "Score the final round as a sum unlike selection",
+        "brake": "June order: both rounds arithmetic_mean; prize_floor_denominator_known True",
+    },
+    {
+        "id": "RT-MIK-PARTNER-65",
+        "verdict": "KILL",
+        "attack": "Three Partner seats control 65 points (K1+K3+K5) or Fund seats control 35",
+        "brake": "points_bound_to_criteria_not_members; partner_nominal_criteria_weight is None",
     },
     {
         "id": "RT-MIK-INVEST-K4",

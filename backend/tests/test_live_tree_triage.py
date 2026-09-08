@@ -110,6 +110,7 @@ class LiveTreeTriageTests(unittest.TestCase):
             "RT-MIK-PASTE-SCORE",
             "RT-MIK-APP3-UNSEEN",
             "RT-MIK-FINAL-MEAN",
+            "RT-MIK-PARTNER-65",
             "RT-MIK-INVEST-K4",
             "RT-MIK-SAVE-PNL",
             "RT-MIK-RAS-IFRS",

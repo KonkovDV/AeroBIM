@@ -44,11 +44,13 @@ class MikCommissionScoringTests(unittest.TestCase):
         self.assertEqual(criteria_max("K2") + criteria_max("K5"), 30)
 
     def test_partner_and_mik_nominal_criteria_weights(self) -> None:
-        self.assertEqual(partner_nominal_criteria_weight(), 65)
-        self.assertEqual(mik_staff_nominal_criteria_weight(), 35)
+        self.assertIsNone(partner_nominal_criteria_weight())
+        self.assertIsNone(mik_staff_nominal_criteria_weight())
         snap = scoring_snapshot()
-        self.assertEqual(snap["partner_nominal_criteria_weight"], 65)
-        self.assertEqual(snap["mik_staff_nominal_criteria_weight"], 35)
+        self.assertIsNone(snap["partner_nominal_criteria_weight"])
+        self.assertIsNone(snap["mik_staff_nominal_criteria_weight"])
+        self.assertTrue(snap["points_bound_to_criteria_not_members"])
+        self.assertFalse(snap["final_round_wider_than_nominal"])
         self.assertIn("seat_playbook", snap)
         self.assertIn("mik_operator_letter", snap)
         repo = Path(__file__).resolve().parents[2]
@@ -59,7 +61,7 @@ class MikCommissionScoringTests(unittest.TestCase):
         from aerobim.domain.mik_commission_scoring import FINALIST_AGGREGATION
 
         self.assertEqual(AGGREGATION, "arithmetic_mean")
-        self.assertEqual(FINALIST_AGGREGATION, "sum")
+        self.assertEqual(FINALIST_AGGREGATION, "arithmetic_mean")
         self.assertEqual(TIE_BREAK_ORDER, ("K3", "K4"))
         self.assertNotIn("K2", TIE_BREAK_ORDER)
         self.assertNotIn("K1", TIE_BREAK_ORDER)
@@ -127,12 +129,12 @@ class MikCommissionScoringTests(unittest.TestCase):
         self.assertIn("etu.ru", snap["appendix_4_public_source"])
         self.assertEqual(snap["task_appendix_4_number"], 6)
         self.assertEqual(snap["aggregation"], "arithmetic_mean")
-        self.assertEqual(snap["finalist_aggregation"], "sum")
+        self.assertEqual(snap["finalist_aggregation"], "arithmetic_mean")
         self.assertEqual(snap["system_a"], "regulation_appendix_2_via_order_protocol_form")
-        self.assertEqual(snap["system_b"], "regulation_appendix_3_unseen")
+        self.assertEqual(snap["system_b"], "regulation_appendix_3_owner_copy_pdf_not_in_git")
         self.assertFalse(snap["regulation_appendix_3_in_git"])
-        self.assertFalse(snap["finalist_weights_are_regulation_appendix_3"])
-        self.assertFalse(snap["prize_floor_denominator_known"])
+        self.assertTrue(snap["finalist_weights_are_regulation_appendix_3"])
+        self.assertTrue(snap["prize_floor_denominator_known"])
 
     def test_low_k1_top_plus_rest_high_lo_clears_floor_identity(self) -> None:
         from aerobim.domain.mik_commission_scoring import (
@@ -360,6 +362,8 @@ class Kt3CommissionPackTests(unittest.TestCase):
         self.assertIn("итоговая сумма", scoring)
         self.assertIn("приложение 3 к положению", scoring)
         self.assertIn("не видели", scoring)
+        self.assertIn("arithmetic_mean", scoring)
+        self.assertIn("points_bound_to_criteria_not_members", scoring)
 
     def test_system_b_ticksheet_exists_and_does_not_forecast(self) -> None:
         from aerobim.domain.mik_commission_scoring import B_FINAL_TICKSHEET
