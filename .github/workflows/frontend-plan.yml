@@ -62,6 +62,10 @@ jobs:
           python -m pip install --upgrade "pip==25.2"
           python -m pip install --require-hashes -r requirements-dev-lock.txt
           python -m pip install -e . --no-deps
+      - uses: ./.github/actions/materialize-kitchen-denylist
+        env:
+          AEROBIM_KITCHEN_DENYLIST_B64: ${{ secrets.AEROBIM_KITCHEN_DENYLIST_B64 }}
+          AEROBIM_KITCHEN_HMAC_KEY: ${{ secrets.AEROBIM_KITCHEN_HMAC_KEY }}
       - run: python ../scripts/lint_claims.py
       - run: python ../scripts/lint_claims.py --full-docs
       - run: python ../scripts/lint_claims.py --matrix-guard
@@ -70,3 +74,8 @@ jobs:
       - run: python -m ruff format --check src tests
       - run: python -m mypy src/aerobim --strict --ignore-missing-imports
       - run: python -m pytest tests -q --tb=short
+      - name: Remove temporary publication-gate material
+        if: always()
+        run: |
+          rm -f "${RUNNER_TEMP:?}/aerobim-kitchen/denylist.txt" \
+            "${RUNNER_TEMP:?}/aerobim-kitchen/hmac.key"
