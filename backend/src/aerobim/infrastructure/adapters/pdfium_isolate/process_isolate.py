@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import subprocess
 import sys
 import tempfile
@@ -16,6 +17,7 @@ from typing import Any
 
 _DEFAULT_TIMEOUT_S = 30.0
 _WORKER_MODULE = "aerobim.infrastructure.adapters.pdfium_isolate.render_worker"
+_SRC_ROOT = Path(__file__).resolve().parents[4]
 # Address-space / process-memory cap for the isolate (Python + PDFium).
 _POSIX_RLIMIT_AS_BYTES = 1024 * 1024 * 1024
 _POSIX_RLIMIT_CPU_SECONDS = 30
@@ -180,6 +182,75 @@ def _windows_job_close(job: Any) -> None:
     kernel32.CloseHandle(job)
 
 
+def _isolate_env() -> dict[str, str]:
+    """Ensure ``python -m aerobim...`` resolves without an editable install."""
+
+    env = os.environ.copy()
+    existing = env.get("PYTHONPATH", "")
+    src = str(_SRC_ROOT)
+    env["PYTHONPATH"] = src if not existing else src + os.pathsep + existing
+    return env
+
+
+def run_isolated_argv(
+    argv: list[str],
+    *,
+    timeout_s: float,
+    timeout_message: str,
+) -> tuple[int, bytes]:
+    """Run ``argv`` in a child process. Kill on wall-clock timeout.
+
+    Returns ``(returncode, stderr)``. Isolation is the subprocess boundary, not
+    a thread Future. Does not fall back to in-process work if spawn fails.
+    """
+
+    popen_kwargs: dict[str, Any] = {
+        "stdout": subprocess.PIPE,
+        "stderr": subprocess.PIPE,
+        "env": _isolate_env(),
+    }
+    job = None
+    if sys.platform != "win32":
+        popen_kwargs["preexec_fn"] = _apply_posix_rlimits
+    else:
+        job = _windows_job_create()
+
+    try:
+        try:
+            if sys.platform == "win32":
+                proc = subprocess.Popen(  # noqa: S603 — argv is sys.executable + our module
+                    argv,
+                    creationflags=_CREATE_BREAKAWAY_FROM_JOB,
+                    **popen_kwargs,
+                )
+            else:
+                proc = subprocess.Popen(  # noqa: S603
+                    argv,
+                    **popen_kwargs,
+                )
+        except OSError:
+            if sys.platform != "win32":
+                raise
+            proc = subprocess.Popen(argv, **popen_kwargs)  # noqa: S603
+        if job is not None and not _windows_job_assign(job, proc.pid):
+            _LOGGER.warning(
+                "pdfium isolate: AssignProcessToJobObject failed; timeout-only fallback"
+            )
+            _windows_job_close(job)
+            job = None
+        try:
+            _stdout, stderr = proc.communicate(timeout=timeout_s)
+        except subprocess.TimeoutExpired as exc:
+            proc.kill()
+            proc.communicate()
+            raise TimeoutError(timeout_message) from exc
+        returncode = 0 if proc.returncode is None else proc.returncode
+    finally:
+        _windows_job_close(job)
+
+    return returncode, stderr or b""
+
+
 def run_pdfium_crop_isolated(
     spec: dict[str, Any],
     *,
@@ -200,52 +271,15 @@ def run_pdfium_crop_isolated(
             "--output",
             str(out_path),
         ]
-        popen_kwargs: dict[str, Any] = {
-            "stdout": subprocess.PIPE,
-            "stderr": subprocess.PIPE,
-        }
-        job = None
-        if sys.platform != "win32":
-            popen_kwargs["preexec_fn"] = _apply_posix_rlimits
-        else:
-            job = _windows_job_create()
-
         try:
-            try:
-                if sys.platform == "win32":
-                    proc = subprocess.Popen(  # noqa: S603 — argv is sys.executable + our module
-                        argv,
-                        creationflags=_CREATE_BREAKAWAY_FROM_JOB,
-                        **popen_kwargs,
-                    )
-                else:
-                    proc = subprocess.Popen(  # noqa: S603
-                        argv,
-                        **popen_kwargs,
-                    )
-            except OSError:
-                if sys.platform != "win32":
-                    raise
-                proc = subprocess.Popen(argv, **popen_kwargs)  # noqa: S603
-            if job is not None and not _windows_job_assign(job, proc.pid):
-                _LOGGER.warning(
-                    "pdfium isolate: AssignProcessToJobObject failed; timeout-only fallback"
-                )
-                _windows_job_close(job)
-                job = None
-            try:
-                _stdout, stderr = proc.communicate(timeout=timeout_s)
-            except subprocess.TimeoutExpired as exc:
-                proc.kill()
-                proc.communicate()
-                raise RuntimeError(
-                    f"pdfium isolated render timed out after {timeout_s:.0f}s"
-                ) from exc
-            returncode = 0 if proc.returncode is None else proc.returncode
-        finally:
-            _windows_job_close(job)
-
-        err = (stderr or b"").decode("utf-8", errors="replace").strip()
+            returncode, stderr = run_isolated_argv(
+                argv,
+                timeout_s=timeout_s,
+                timeout_message=(f"pdfium isolated render timed out after {timeout_s:.0f}s"),
+            )
+        except TimeoutError as exc:
+            raise RuntimeError(str(exc)) from exc
+        err = stderr.decode("utf-8", errors="replace").strip()
         if returncode == 2:
             raise ValueError(err or "pdfium crop rejected")
         if returncode != 0:
@@ -255,4 +289,4 @@ def run_pdfium_crop_isolated(
         return out_path.read_bytes()
 
 
-__all__ = ["run_pdfium_crop_isolated"]
+__all__ = ["run_isolated_argv", "run_pdfium_crop_isolated"]
