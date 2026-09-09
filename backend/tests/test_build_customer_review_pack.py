@@ -71,9 +71,7 @@ class CustomerReviewPackTests(unittest.TestCase):
         pack = build_customer_review_pack(
             _report(),
             top_k=2,
-            known_findings_payload={
-                "findings": [{"rule_id": "CC-2", "target_ref": "IfcWall:42"}]
-            },
+            known_findings_payload={"findings": [{"rule_id": "CC-2", "target_ref": "IfcWall:42"}]},
             generated_at="2026-09-09T20:00:00+00:00",
         )
         findings = pack["findings"]

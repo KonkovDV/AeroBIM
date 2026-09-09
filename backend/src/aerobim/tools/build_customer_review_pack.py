@@ -19,9 +19,7 @@ CLAIM_BOUNDARY: Final = (
     "customer SLA, CDE import, or contractual fitness."
 )
 TERMINAL: Final = frozenset({"rejected", "waived", "superseded"})
-UNVERIFIED: Final = frozenset(
-    {"failed", "missing", "not_implemented", "not_verified", "skipped"}
-)
+UNVERIFIED: Final = frozenset({"failed", "missing", "not_implemented", "not_verified", "skipped"})
 _PATHS: Final = (
     re.compile(r"(?<!\w)[A-Za-z]:[\\/][^\s|;,]+"),
     re.compile(r"(?<![\w:/])/(?:home|Users|data|tmp|var|opt|srv|mnt)/[^\s|;,]+"),
@@ -165,9 +163,7 @@ def _baseline(payload: Mapping[str, Any] | None) -> list[Mapping[str, Any]]:
         return []
     direct = _rows(payload.get("findings"))
     return direct or [
-        finding
-        for case in _rows(payload.get("cases"))
-        for finding in _rows(case.get("findings"))
+        finding for case in _rows(payload.get("cases")) for finding in _rows(case.get("findings"))
     ]
 
 
@@ -184,9 +180,7 @@ def build_customer_review_pack(
         raise ValueError("top_k must be between 1 and 100")
     summary = _map(report_payload.get("summary"))
     all_findings = [_project(row) for row in _rows(report_payload.get("issues"))]
-    active = [
-        row for row in all_findings if _map(row.get("review")).get("status") not in TERMINAL
-    ]
+    active = [row for row in all_findings if _map(row.get("review")).get("status") not in TERMINAL]
     active.sort(key=_rank)
     baseline = _baseline(known_findings_payload)
     baseline_keys = {key for row in baseline for key in _keys(row)}
@@ -272,16 +266,10 @@ def render_customer_review_markdown(pack: Mapping[str, Any]) -> str:
     lines = [
         "# AeroBIM — пакет экспертного ревью",
         "",
-        (
-            "> Это shortlist для решения эксперта, не акт приёмки "
-            "и не метрика точности."
-        ),
+        ("> Это shortlist для решения эксперта, не акт приёмки и не метрика точности."),
         "",
         f"- Проект: {_md(scope.get('project_name'))}",
-        (
-            "- Машинный результат: "
-            f"`passed={str(bool(machine.get('passed'))).lower()}`"
-        ),
+        (f"- Машинный результат: `passed={str(bool(machine.get('passed'))).lower()}`"),
         f"- Customer acceptance: `{pack.get('customer_acceptance')}`",
         f"- Accuracy / SLA: `{pack.get('accuracy_claim')}` / `{pack.get('sla_claim')}`",
         "",
