@@ -13,6 +13,7 @@ import os
 import time
 from dataclasses import asdict, replace
 from pathlib import Path
+from typing import NoReturn
 
 from aerobim.core.security.path_jail import safe_storage_token
 from aerobim.domain.models import ReviewEvent
@@ -33,10 +34,17 @@ from aerobim.domain.review_state_machine import (
 _logger = logging.getLogger(__name__)
 
 _MAX_LINE_BYTES = 256 * 1024
-_LOCK_ATTEMPTS = 50
+# 80 × backoff ≈ 5 s. 50 × 20 ms was 1 s — under CPU starvation a writer that
+# lost the race exhausted the budget and raised RuntimeError instead of conflict.
+_LOCK_ATTEMPTS = 80
 _LOCK_SLEEP_S = 0.02
+_LOCK_SLEEP_MAX_S = 0.25
 _LOCK_STALE_S = 60.0
 _NORM_PACK_EVENT_TYPES = frozenset({"norm_rule_proposed", "norm_rule_edited"})
+
+
+def _lock_backoff_s(attempt: int) -> float:
+    return min(_LOCK_SLEEP_S * (1.2**attempt), _LOCK_SLEEP_MAX_S)
 
 
 class AuditEventCorruptionError(RuntimeError):
@@ -127,7 +135,7 @@ class FilesystemReviewEventStore:
 
         target = self._path(spec.report_id)
         lock_path = target.with_suffix(target.suffix + ".lock")
-        for _ in range(_LOCK_ATTEMPTS):
+        for attempt in range(_LOCK_ATTEMPTS):
             try:
                 fd = _acquire_excl_lock(lock_path)
                 try:
@@ -139,8 +147,8 @@ class FilesystemReviewEventStore:
                 finally:
                     lock_path.unlink(missing_ok=True)
             except (FileExistsError, SequenceClaimError):
-                time.sleep(_LOCK_SLEEP_S)
-        raise RuntimeError(f"Could not acquire review-event lock for {target.name}")
+                time.sleep(_lock_backoff_s(attempt))
+        self._raise_after_lock_timeout(target, spec)
 
     def list_for_report(self, report_id: str) -> list[ReviewEvent]:
         return list(self._iter_events(report_id=report_id, raise_on_corrupt=self._fail_closed))
@@ -150,7 +158,7 @@ class FilesystemReviewEventStore:
 
         target = self._path(report_id)
         lock_path = target.with_suffix(target.suffix + ".lock")
-        for _ in range(_LOCK_ATTEMPTS):
+        for attempt in range(_LOCK_ATTEMPTS):
             try:
                 fd = _acquire_excl_lock(lock_path)
                 try:
@@ -167,7 +175,7 @@ class FilesystemReviewEventStore:
                 finally:
                     lock_path.unlink(missing_ok=True)
             except FileExistsError:
-                time.sleep(_LOCK_SLEEP_S)
+                time.sleep(_lock_backoff_s(attempt))
         raise RuntimeError(f"Could not acquire review-event lock for discard {target.name}")
 
     def _append_api_under_lock(self, target: Path, spec: ReviewEventAppendSpec) -> ReviewEvent:
@@ -267,7 +275,7 @@ class FilesystemReviewEventStore:
 
         lock_path = target.with_suffix(target.suffix + ".lock")
         report_id = event.report_id
-        for _ in range(_LOCK_ATTEMPTS):
+        for attempt in range(_LOCK_ATTEMPTS):
             try:
                 fd = _acquire_excl_lock(lock_path)
                 try:
@@ -312,7 +320,43 @@ class FilesystemReviewEventStore:
                 finally:
                     lock_path.unlink(missing_ok=True)
             except (FileExistsError, SequenceClaimError):
-                time.sleep(_LOCK_SLEEP_S)
+                time.sleep(_lock_backoff_s(attempt))
+        raise RuntimeError(f"Could not acquire review-event lock for {target.name}")
+
+    def _raise_after_lock_timeout(self, target: Path, spec: ReviewEventAppendSpec) -> NoReturn:
+        """A lost race must surface as HITL conflict, not a generic lock timeout.
+
+        Under CPU starvation the retry budget can expire after another writer
+        already committed. Re-read the journal: if the transition is no
+        longer legal, that is a conflict. Only a still-legal append with a
+        stuck lock is a RuntimeError.
+        """
+
+        existing = self._iter_events(
+            report_id=spec.report_id,
+            raise_on_corrupt=self._fail_closed,
+        )
+        server_state = latest_hitl_state(
+            existing,
+            spec.finding_id,
+            spec.issue_rule_id,
+        )
+        client_previous = (spec.previous_state or "").strip() or None
+        if spec.event_type not in _NORM_PACK_EVENT_TYPES:
+            if server_state is not None and client_previous != server_state:
+                raise HitlStateConflictError(
+                    f"previous_state does not match server HITL state "
+                    f"(server={server_state!r}, client={client_previous!r})"
+                )
+            try:
+                assert_hitl_transition(
+                    current=server_state,
+                    event_type=spec.event_type,
+                    actor=spec.actor,
+                    note=spec.note,
+                )
+            except HitlTransitionError as exc:
+                raise HitlStateConflictError(str(exc)) from exc
         raise RuntimeError(f"Could not acquire review-event lock for {target.name}")
 
     def _iter_events(self, *, report_id: str, raise_on_corrupt: bool) -> list[ReviewEvent]:

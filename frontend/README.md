@@ -80,8 +80,16 @@ npm run smoke:decision
 ```
 
 It needs a freshly seeded report: a finding that already carries a decision is
-not editable, and the script says so instead of hanging. Its artifacts land next
-to the ones above, also gitignored.
+not editable, and the script says so instead of hanging. Re-running
+`python -m aerobim.tools.seed_smoke_report` (or `run_live_review_smoke`) wipes
+the HITL journal for that report so the rehearsal is repeatable. Artifacts
+land next to the ones above, also gitignored.
+
+Playwright Chromium belongs in the default user cache
+(`%LOCALAPPDATA%\ms-playwright` on Windows). `npx playwright install chromium`
+from `frontend/`. Do not pin `PLAYWRIGHT_BROWSERS_PATH` at a Cursor TEMP
+sandbox — that directory disappears, and `run_live_review_smoke` already
+drops the inherited variable.
 
 ## Honesty limits
 

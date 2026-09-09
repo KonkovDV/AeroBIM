@@ -90,12 +90,17 @@ def build_backend_env(
     env["AEROBIM_ALLOW_ANONYMOUS_DEV"] = "true"
     # Must equal the tenant stamped on the seeded report, or «Проекты» is empty.
     env["AEROBIM_API_TENANT_ID"] = tenant_id
+    env["AEROBIM_PRIORITY_PROFILE"] = "samolet"
+    env["AEROBIM_REMARK_LOCALE"] = "ru"
     return env
 
 
 def build_frontend_env(base_env: Mapping[str, str], backend_base_url: str) -> dict[str, str]:
     env = dict(base_env)
     env["VITE_AEROBIM_API_BASE_URL"] = backend_base_url
+    # Cursor Agent sessions pin PLAYWRIGHT_BROWSERS_PATH at a TEMP sandbox
+    # cache. That directory vanishes; the rehearsal must use the user cache.
+    env.pop("PLAYWRIGHT_BROWSERS_PATH", None)
     return env
 
 
@@ -119,8 +124,50 @@ def extract_json_payload(raw_output: str) -> dict[str, object]:
     return candidate
 
 
+def extract_decision_payload(raw_output: str) -> dict[str, object]:
+    decoder = json.JSONDecoder()
+    candidate: dict[str, object] | None = None
+    for index, char in enumerate(raw_output):
+        if char != "{":
+            continue
+        try:
+            payload, _end_index = decoder.raw_decode(raw_output[index:])
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(payload, dict):
+            continue
+        if payload.get("ok") is True and "externalOrigins" in payload:
+            candidate = payload
+
+    if candidate is None:
+        raise ValueError("No decision-smoke JSON payload found in command output")
+    return candidate
+
+
 def npm_command() -> str:
     return "npm.cmd" if os.name == "nt" else "npm"
+
+
+def run_captured_command(
+    command: list[str],
+    *,
+    cwd: Path,
+    env: Mapping[str, str],
+    label: str,
+) -> subprocess.CompletedProcess[str]:
+    result = subprocess.run(
+        command,
+        cwd=cwd,
+        env=dict(env),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(
+            f"{label} failed (exit {result.returncode}):\n{result.stderr}\n{result.stdout}"
+        )
+    return result
 
 
 def open_http_url(url: str, timeout: float = 5.0) -> Any:
@@ -153,6 +200,18 @@ def wait_for_http_ok(
 
 def terminate_process(process: subprocess.Popen[str] | None) -> None:
     if process is None or process.poll() is not None:
+        return
+    if os.name == "nt":
+        # npm.cmd / Vite spawn children; terminate() leaves them on the port.
+        subprocess.run(
+            ["taskkill", "/PID", str(process.pid), "/T", "/F"],
+            capture_output=True,
+            check=False,
+        )
+        try:
+            process.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            process.kill()
         return
     process.terminate()
     try:
@@ -222,13 +281,27 @@ def run_live_review_smoke(
             "--output-dir",
             str(target_output_dir),
         ]
-        smoke_result = subprocess.run(
+        smoke_result = run_captured_command(
             smoke_command,
             cwd=frontend_dir(),
             env=frontend_env,
-            capture_output=True,
-            text=True,
-            check=True,
+            label="review-shell smoke",
+        )
+
+        decision_output_dir = target_output_dir / "decision"
+        decision_command = [
+            "node",
+            str(frontend_dir() / "scripts" / "capture-review-decision-smoke.mjs"),
+            "--base-url",
+            frontend_base_url,
+            "--output-dir",
+            str(decision_output_dir),
+        ]
+        decision_result = run_captured_command(
+            decision_command,
+            cwd=frontend_dir(),
+            env=frontend_env,
+            label="review-decision smoke",
         )
 
         return {
@@ -242,6 +315,7 @@ def run_live_review_smoke(
             },
             "seeded_report": build_cli_payload(report),
             "browser_smoke": extract_json_payload(smoke_result.stdout),
+            "decision_smoke": extract_decision_payload(decision_result.stdout),
         }
     finally:
         terminate_process(frontend_process)

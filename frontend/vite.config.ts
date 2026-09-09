@@ -13,7 +13,7 @@ const SHELL_SECURITY_HEADERS = {
 
 /** Dev-only: Vite injects CSS as a `<style>` tag. Production `index.html` keeps style-src 'self' (hashed CSS file). */
 const DEV_CSP =
-  "default-src 'self'; script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; connect-src 'self' ws: wss: http://127.0.0.1:* http://localhost:*; font-src 'self'; worker-src 'self' blob:; child-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
+  "default-src 'self'; script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; connect-src 'self' ws: wss: http://127.0.0.1:* http://localhost:*; font-src 'self'; worker-src 'self' blob:; child-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'";
 
 function aerobimHtmlSecurity(): Plugin {
   return {

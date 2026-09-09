@@ -9,6 +9,7 @@ import threading
 import time
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from aerobim.domain.review_event_append import ReviewEventAppendSpec
 from aerobim.infrastructure.adapters.filesystem_review_event_store import (
@@ -223,6 +224,121 @@ class ConcurrentReviewEventAppendTests(unittest.TestCase):
             self.assertIn("opened", slot.read_text(encoding="utf-8"))
             with self.assertRaises(SequenceClaimError):
                 _write_event_exclusive(target, event, sequence=1)
+
+    def test_lock_timeout_after_peer_won_is_conflict(self) -> None:
+        """A writer that exhausted retries after a peer accepted must not 500."""
+
+        import aerobim.infrastructure.adapters.filesystem_review_event_store as store_mod
+
+        with tempfile.TemporaryDirectory() as tmp:
+            store = FilesystemReviewEventStore(Path(tmp), fail_closed=True)
+            report_id = "f" * 32
+            store.append_api_event(
+                ReviewEventAppendSpec(
+                    report_id=report_id,
+                    event_type="opened",
+                    created_at="2026-08-09T12:00:00+00:00",
+                    issue_rule_id="R1",
+                    actor="seed",
+                    note="seed",
+                    latency_ms=1,
+                    finding_id="f1",
+                    previous_state=None,
+                    idempotency_key="seed",
+                    event_id=None,
+                )
+            )
+            store.append_api_event(
+                ReviewEventAppendSpec(
+                    report_id=report_id,
+                    event_type="accepted",
+                    created_at="2026-08-09T12:00:01+00:00",
+                    issue_rule_id="R1",
+                    actor="winner",
+                    note="accept",
+                    latency_ms=1,
+                    finding_id="f1",
+                    previous_state="opened",
+                    idempotency_key="winner",
+                    event_id=None,
+                )
+            )
+            target = Path(tmp) / "review-events" / f"{report_id}.jsonl"
+            lock_path = target.with_suffix(target.suffix + ".lock")
+            fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+            try:
+                with (
+                    mock.patch.object(store_mod, "_LOCK_ATTEMPTS", 2),
+                    mock.patch.object(store_mod, "_lock_backoff_s", lambda _attempt: 0.0),
+                ):
+                    with self.assertRaises(HitlStateConflictError):
+                        store.append_api_event(
+                            ReviewEventAppendSpec(
+                                report_id=report_id,
+                                event_type="accepted",
+                                created_at="2026-08-09T12:00:02+00:00",
+                                issue_rule_id="R1",
+                                actor="late",
+                                note="accept",
+                                latency_ms=1,
+                                finding_id="f1",
+                                previous_state="opened",
+                                idempotency_key="late",
+                                event_id=None,
+                            )
+                        )
+            finally:
+                os.close(fd)
+                lock_path.unlink(missing_ok=True)
+
+    def test_lock_timeout_without_peer_is_runtime_error(self) -> None:
+        import aerobim.infrastructure.adapters.filesystem_review_event_store as store_mod
+
+        with tempfile.TemporaryDirectory() as tmp:
+            store = FilesystemReviewEventStore(Path(tmp), fail_closed=True)
+            report_id = "g" * 32
+            store.append_api_event(
+                ReviewEventAppendSpec(
+                    report_id=report_id,
+                    event_type="opened",
+                    created_at="2026-08-09T12:00:00+00:00",
+                    issue_rule_id="R1",
+                    actor="seed",
+                    note="seed",
+                    latency_ms=1,
+                    finding_id="f1",
+                    previous_state=None,
+                    idempotency_key="seed",
+                    event_id=None,
+                )
+            )
+            target = Path(tmp) / "review-events" / f"{report_id}.jsonl"
+            lock_path = target.with_suffix(target.suffix + ".lock")
+            fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+            try:
+                with (
+                    mock.patch.object(store_mod, "_LOCK_ATTEMPTS", 2),
+                    mock.patch.object(store_mod, "_lock_backoff_s", lambda _attempt: 0.0),
+                ):
+                    with self.assertRaises(RuntimeError):
+                        store.append_api_event(
+                            ReviewEventAppendSpec(
+                                report_id=report_id,
+                                event_type="accepted",
+                                created_at="2026-08-09T12:00:01+00:00",
+                                issue_rule_id="R1",
+                                actor="blocked",
+                                note="accept",
+                                latency_ms=1,
+                                finding_id="f1",
+                                previous_state="opened",
+                                idempotency_key="blocked",
+                                event_id=None,
+                            )
+                        )
+            finally:
+                os.close(fd)
+                lock_path.unlink(missing_ok=True)
 
 
 if __name__ == "__main__":

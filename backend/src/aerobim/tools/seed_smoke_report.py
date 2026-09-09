@@ -23,6 +23,9 @@ from aerobim.domain.models import (
 )
 from aerobim.domain.object_acl import LAB_ANONYMOUS_TENANT_ID
 from aerobim.infrastructure.adapters.filesystem_audit_store import FilesystemAuditStore
+from aerobim.infrastructure.adapters.filesystem_review_event_store import (
+    FilesystemReviewEventStore,
+)
 
 SMOKE_REPORT_ID = "9" * 32
 SMOKE_REQUEST_ID = "runtime-smoke-seed"
@@ -207,6 +210,10 @@ def seed_smoke_report(
 
     store = FilesystemAuditStore(storage_dir)
     store.save(report)
+    # Re-seed must wipe the HITL journal: store.save overwrites report JSON but
+    # review-events live in a sibling tree. A leftover accepted finding makes
+    # smoke:decision time out on «Правка сохранена».
+    FilesystemReviewEventStore(storage_dir).discard_report(report.report_id)
     return store.get(report.report_id) or report
 
 

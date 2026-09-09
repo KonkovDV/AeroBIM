@@ -78,6 +78,49 @@ export function externalOrigins(origins) {
   });
 }
 
+/** GET /v1/auth/bff = 501 is the documented default (not customer SSO). */
+export function isExpectedHonestyFailure(row) {
+  if (row.status !== 501) {
+    return false;
+  }
+  try {
+    return new URL(row.url).pathname === "/v1/auth/bff";
+  } catch {
+    return /\/v1\/auth\/bff(?:\?|$)/.test(String(row.url));
+  }
+}
+
+export function unexpectedHttpFailures(rows) {
+  return rows.filter((row) => !isExpectedHonestyFailure(row));
+}
+
+export function unexpectedConsoleErrors(messages) {
+  return messages.filter((text) => {
+    if (/501/.test(text) && /auth\/bff|Failed to load resource/i.test(text)) {
+      return false;
+    }
+    if (/frame-ancestors/.test(text)) {
+      return false;
+    }
+    return true;
+  });
+}
+
+async function launchBrowser() {
+  const launchOptions = { headless: true };
+  try {
+    return await chromium.launch(launchOptions);
+  } catch (error) {
+    if (process.platform === "win32") {
+      return chromium.launch({ ...launchOptions, channel: "msedge" });
+    }
+    throw new Error(
+      "Playwright Chromium is missing. From frontend/: npx playwright install chromium",
+      { cause: error },
+    );
+  }
+}
+
 async function paneWidths(page) {
   const widths = {};
   for (const testId of PANE_TEST_IDS) {
@@ -104,7 +147,7 @@ async function main() {
   const options = parseArgs(process.argv.slice(2));
   await mkdir(options.outputDir, { recursive: true });
 
-  const browser = await chromium.launch({ headless: true });
+  const browser = await launchBrowser();
   const context = await browser.newContext({ viewport: { width: 1366, height: 768 } });
 
   const requestOrigins = new Set();
@@ -268,6 +311,14 @@ async function main() {
 
     if (external.length > 0) {
       throw new Error(`Rehearsal must stay on loopback, saw: ${external.join(", ")}`);
+    }
+    const unexpected = unexpectedHttpFailures(failedResponses);
+    if (unexpected.length > 0) {
+      throw new Error(`Unexpected HTTP failures: ${JSON.stringify(unexpected)}`);
+    }
+    const noisy = unexpectedConsoleErrors(consoleErrors);
+    if (noisy.length > 0) {
+      throw new Error(`Unexpected console errors: ${JSON.stringify(noisy)}`);
     }
     console.log(
       JSON.stringify({ ok: true, consoleErrors, failedResponses, externalOrigins: external }, null, 2),

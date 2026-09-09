@@ -63,17 +63,36 @@ class LiveReviewSmokeHelperTests(unittest.TestCase):
         self.assertEqual(env["AEROBIM_ENV"], "development")
         self.assertEqual(env["AEROBIM_ALLOW_ANONYMOUS_DEV"], "true")
         self.assertEqual(env["AEROBIM_API_TENANT_ID"], SMOKE_TENANT_ID)
+        self.assertEqual(env["AEROBIM_PRIORITY_PROFILE"], "samolet")
+        self.assertEqual(env["AEROBIM_REMARK_LOCALE"], "ru")
         # An inherited token disables the anonymous branch; the browser calls the
         # backend directly and has no way to present one.
         self.assertNotIn("AEROBIM_API_BEARER_TOKEN", env)
 
     def test_build_frontend_env_points_at_backend_base_url(self) -> None:
         env = build_frontend_env(
-            base_env={"PATH": "example"}, backend_base_url="http://127.0.0.1:8081"
+            base_env={
+                "PATH": "example",
+                "PLAYWRIGHT_BROWSERS_PATH": "C:\\tmp\\cursor-sandbox-cache\\playwright",
+            },
+            backend_base_url="http://127.0.0.1:8081",
         )
 
         self.assertEqual(env["PATH"], "example")
         self.assertEqual(env["VITE_AEROBIM_API_BASE_URL"], "http://127.0.0.1:8081")
+        self.assertNotIn("PLAYWRIGHT_BROWSERS_PATH", env)
+
+    def test_extract_decision_payload_ignores_step_logs(self) -> None:
+        from aerobim.tools.run_live_review_smoke import extract_decision_payload
+
+        mixed = (
+            '[decision-smoke] findings-list {"issueCards":1}\n'
+            '{\n  "ok": true,\n  "externalOrigins": []\n}\n'
+            "browser warning line\n"
+        )
+        payload = extract_decision_payload(mixed)
+        self.assertEqual(payload["ok"], True)
+        self.assertEqual(payload["externalOrigins"], [])
 
     def test_extract_json_payload_ignores_prefix_lines(self) -> None:
         prefixed_payload = (

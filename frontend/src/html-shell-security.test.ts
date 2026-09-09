@@ -26,6 +26,10 @@ describe("review shell html security", () => {
     expect(csp?.[1]).toContain("script-src 'self' 'wasm-unsafe-eval'");
     expect(csp?.[1]).not.toContain("unsafe-inline");
     expect(csp?.[1]).not.toContain("script-src 'self' 'unsafe-eval'");
+    // frame-ancestors in a <meta> is ignored by the spec and prints a console
+    // error on every load. Clickjacking is X-Frame-Options on the API.
+    expect(csp?.[1]).not.toContain("frame-ancestors");
+    expect(viteConfig).not.toMatch(/frame-ancestors/);
   });
 
   it("documents that Vite HMR may add unsafe-eval only in the dev transform", () => {

@@ -79,3 +79,36 @@ class SeedSmokeReportTests(unittest.TestCase):
 
             self.assertIsNone(report.tenant_id)
             self.assertTrue(preview_dir(storage_dir, report.report_id, None).exists())
+
+    def test_reseed_discards_prior_hitl_journal(self) -> None:
+        """Re-running the seed must not leave an accepted finding in the journal."""
+
+        from aerobim.domain.review_event_append import ReviewEventAppendSpec
+        from aerobim.infrastructure.adapters.filesystem_review_event_store import (
+            FilesystemReviewEventStore,
+        )
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            storage_dir = Path(tmpdir)
+            report = seed_smoke_report(storage_dir)
+            events = FilesystemReviewEventStore(storage_dir)
+            events.append_api_event(
+                ReviewEventAppendSpec(
+                    report_id=report.report_id,
+                    event_type="opened",
+                    created_at="2026-09-09T00:00:00+00:00",
+                    issue_rule_id="SMOKE-DRAW-001",
+                    actor="seed-test",
+                    note="prior run",
+                    latency_ms=1,
+                    finding_id=None,
+                    previous_state=None,
+                    idempotency_key="prior-open",
+                    event_id=None,
+                )
+            )
+            self.assertEqual(len(events.list_for_report(report.report_id)), 1)
+
+            seed_smoke_report(storage_dir)
+
+            self.assertEqual(events.list_for_report(report.report_id), [])
