@@ -8,6 +8,7 @@
     "build": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json && vite build",
     "lint": "node scripts/lint-ui-strings.mjs",
     "smoke:browser": "node scripts/capture-review-shell-smoke.mjs",
+    "smoke:decision": "node scripts/capture-review-decision-smoke.mjs",
     "test": "vitest run",
     "preview": "vite preview"
   },

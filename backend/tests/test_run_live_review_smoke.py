@@ -15,6 +15,7 @@ from aerobim.tools.run_live_review_smoke import (
     extract_json_payload,
     open_http_url,
 )
+from aerobim.tools.seed_smoke_report import SMOKE_TENANT_ID
 
 
 class LiveReviewSmokeHelperTests(unittest.TestCase):
@@ -50,6 +51,21 @@ class LiveReviewSmokeHelperTests(unittest.TestCase):
         self.assertEqual(env["AEROBIM_PORT"], "8081")
         self.assertEqual(env["AEROBIM_DEBUG"], "true")
         self.assertEqual(env["AEROBIM_CORS_ORIGINS"], "http://127.0.0.1:3000")
+
+    def test_build_backend_env_binds_the_dev_principal_to_the_seeded_tenant(self) -> None:
+        env = build_backend_env(
+            base_env={"AEROBIM_API_BEARER_TOKEN": "inherited-token"},
+            storage_dir=Path("c:/tmp/live-smoke"),
+            port=8081,
+            frontend_origin="http://127.0.0.1:3000",
+        )
+
+        self.assertEqual(env["AEROBIM_ENV"], "development")
+        self.assertEqual(env["AEROBIM_ALLOW_ANONYMOUS_DEV"], "true")
+        self.assertEqual(env["AEROBIM_API_TENANT_ID"], SMOKE_TENANT_ID)
+        # An inherited token disables the anonymous branch; the browser calls the
+        # backend directly and has no way to present one.
+        self.assertNotIn("AEROBIM_API_BEARER_TOKEN", env)
 
     def test_build_frontend_env_points_at_backend_base_url(self) -> None:
         env = build_frontend_env(

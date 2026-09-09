@@ -21,11 +21,20 @@ from aerobim.domain.models import (
     ValidationReport,
     ValidationSummary,
 )
+from aerobim.domain.object_acl import LAB_ANONYMOUS_TENANT_ID
 from aerobim.infrastructure.adapters.filesystem_audit_store import FilesystemAuditStore
 
 SMOKE_REPORT_ID = "9" * 32
 SMOKE_REQUEST_ID = "runtime-smoke-seed"
 SMOKE_RULE_ID = "SMOKE-DRAW-001"
+SMOKE_TENANT_ID = LAB_ANONYMOUS_TENANT_ID
+"""Tenant stamped on the seeded report.
+
+``GET /v1/reports`` scopes the catalogue to the principal tenant (F-03) and an
+untenanted report matches no principal, so a report seeded without a tenant is
+readable by id yet invisible on «Проекты». The rehearsal stack binds its dev
+principal to this same tenant.
+"""
 
 
 def repo_root() -> Path:
@@ -85,7 +94,12 @@ def _create_smoke_pdf(storage_dir: Path) -> Path:
     return pdf_path.resolve()
 
 
-def seed_smoke_report(storage_dir: Path, source_ifc_path: Path | None = None) -> ValidationReport:
+def seed_smoke_report(
+    storage_dir: Path,
+    source_ifc_path: Path | None = None,
+    *,
+    tenant_id: str | None = SMOKE_TENANT_ID,
+) -> ValidationReport:
     storage_dir = storage_dir.resolve()
     storage_dir.mkdir(parents=True, exist_ok=True)
 
@@ -188,6 +202,7 @@ def seed_smoke_report(storage_dir: Path, source_ifc_path: Path | None = None) ->
         ),
         project_name="Smoke Demo Project",
         discipline="architecture",
+        tenant_id=(tenant_id or "").strip() or None,
     )
 
     store = FilesystemAuditStore(storage_dir)
@@ -200,6 +215,7 @@ def build_cli_payload(report: ValidationReport) -> dict[str, object]:
     return {
         "report_id": report.report_id,
         "request_id": report.request_id,
+        "tenant_id": report.tenant_id,
         "project_name": report.project_name,
         "discipline": report.discipline,
         "ifc_path": str(report.ifc_path),
@@ -236,9 +252,21 @@ def main() -> None:
     parser.add_argument(
         "--ifc-fixture", type=Path, default=None, help="Override the default IFC fixture path"
     )
+    parser.add_argument(
+        "--tenant-id",
+        default=SMOKE_TENANT_ID,
+        help=(
+            "Tenant stamped on the seeded report; must match the principal tenant "
+            "or GET /v1/reports will not list it"
+        ),
+    )
     args = parser.parse_args()
 
-    report = seed_smoke_report(args.storage_dir or default_storage_dir(), args.ifc_fixture)
+    report = seed_smoke_report(
+        args.storage_dir or default_storage_dir(),
+        args.ifc_fixture,
+        tenant_id=args.tenant_id,
+    )
     print(json.dumps(build_cli_payload(report), ensure_ascii=False, indent=2))
 
 

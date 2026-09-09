@@ -27,7 +27,7 @@ Filter presets are **browser storage** or **JSON file exchange**. Legacy `team` 
 
 ## Stack
 
-Fact, not a roadmap: React 19, TypeScript, Vite 7, Three.js, web-ifc (lazy chunk), vitest 4 + Testing Library. Playwright is only `smoke:browser`. TanStack / Storybook / Tailwind are not in this tree.
+Fact, not a roadmap: React 19, TypeScript, Vite 7, Three.js, web-ifc (lazy chunk), vitest 4 + Testing Library. Playwright is only `smoke:browser` and `smoke:decision`. TanStack / Storybook / Tailwind are not in this tree.
 
 Visible copy goes through `src/lib/i18n/ru.ts`. CDN fonts are not loaded.
 
@@ -70,6 +70,18 @@ The script checks live export links, overlay presence, preset JSON-file exchange
 - `artifacts/browser-smoke/review-shell-smoke.trace.zip`
 
 If Vite moved off `5173`: `npm run smoke:browser -- --base-url http://127.0.0.1:3001`.
+
+Decision half of the same rehearsal — remark card to `accepted`, the
+draft-vs-confirmed JSON pair, loopback-only traffic, 1366×768 / 1280×800 and the
+print stylesheet:
+
+```bash
+npm run smoke:decision
+```
+
+It needs a freshly seeded report: a finding that already carries a decision is
+not editable, and the script says so instead of hanging. Its artifacts land next
+to the ones above, also gitignored.
 
 ## Honesty limits
 

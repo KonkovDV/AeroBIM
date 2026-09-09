@@ -43,7 +43,12 @@ describe("useRunPolling restore", () => {
       created_at: created,
     });
     render(<Probe restoreWhen />);
-    expect((await screen.findByTestId("job-id")).textContent).toBe(jobId);
+    // Узел с job-id существует с первого рендера, поэтому findByTestId вернулся бы
+    // мгновенно и сравнивал «none» с ожиданием до того, как промис восстановления
+    // успел обновить состояние. Ждём именно содержимое.
+    await waitFor(() => {
+      expect(screen.getByTestId("job-id").textContent).toBe(jobId);
+    });
     const elapsed = Number(screen.getByTestId("elapsed").textContent);
     expect(elapsed).toBeGreaterThanOrEqual(89);
     expect(elapsed).toBeLessThanOrEqual(92);

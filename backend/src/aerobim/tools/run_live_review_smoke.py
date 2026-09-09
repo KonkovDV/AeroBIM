@@ -13,7 +13,12 @@ from urllib.error import URLError
 from urllib.parse import urlparse
 from urllib.request import ProxyHandler, build_opener, urlopen
 
-from aerobim.tools.seed_smoke_report import build_cli_payload, repo_root, seed_smoke_report
+from aerobim.tools.seed_smoke_report import (
+    SMOKE_TENANT_ID,
+    build_cli_payload,
+    repo_root,
+    seed_smoke_report,
+)
 
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_BACKEND_PORTS = (8080, 8081)
@@ -65,12 +70,26 @@ def build_backend_env(
     storage_dir: Path,
     port: int,
     frontend_origin: str,
+    tenant_id: str = SMOKE_TENANT_ID,
 ) -> dict[str, str]:
+    """Env for the throwaway rehearsal backend. Development only.
+
+    The page is served with ``VITE_AEROBIM_API_BASE_URL``, so it calls the
+    backend directly and no Vite proxy injects ``Authorization``. Anonymous dev
+    access is therefore the only way the stack can answer, and an inherited
+    ``AEROBIM_API_BEARER_TOKEN`` would switch that branch off and return 401.
+    """
+
     env = dict(base_env)
+    env.pop("AEROBIM_API_BEARER_TOKEN", None)
     env["AEROBIM_STORAGE_DIR"] = str(storage_dir)
     env["AEROBIM_PORT"] = str(port)
     env["AEROBIM_DEBUG"] = "true"
     env["AEROBIM_CORS_ORIGINS"] = frontend_origin
+    env["AEROBIM_ENV"] = "development"
+    env["AEROBIM_ALLOW_ANONYMOUS_DEV"] = "true"
+    # Must equal the tenant stamped on the seeded report, or «Проекты» is empty.
+    env["AEROBIM_API_TENANT_ID"] = tenant_id
     return env
 
 
@@ -176,7 +195,7 @@ def run_live_review_smoke(
         )
         wait_for_http_ok(f"{backend_base_url}/health")
 
-        report = seed_smoke_report(target_storage_dir)
+        report = seed_smoke_report(target_storage_dir, tenant_id=SMOKE_TENANT_ID)
 
         frontend_process = subprocess.Popen(
             [
