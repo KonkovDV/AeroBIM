@@ -27,13 +27,15 @@ _PATHS: Final = (
 
 
 def _map(value: object) -> Mapping[str, Any]:
-    return value if isinstance(value, Mapping) else {}
+    if not isinstance(value, Mapping):
+        return {}
+    return {str(key): item for key, item in value.items()}
 
 
 def _rows(value: object) -> list[Mapping[str, Any]]:
     if not isinstance(value, Sequence) or isinstance(value, str | bytes | bytearray):
         return []
-    return [row for row in value if isinstance(row, Mapping)]
+    return [_map(row) for row in value if isinstance(row, Mapping)]
 
 
 def _text(value: object, limit: int = 4_000) -> str | None:
@@ -46,7 +48,7 @@ def _text(value: object, limit: int = 4_000) -> str | None:
 
 
 def _number(value: object) -> float | None:
-    if isinstance(value, bool) or value is None:
+    if isinstance(value, bool) or not isinstance(value, int | float | str):
         return None
     try:
         result = float(value)
@@ -62,13 +64,24 @@ def _integer(value: object) -> int:
         return 0
 
 
+def _safe_texts(value: object, limit: int = 1_000) -> list[str]:
+    if not isinstance(value, Sequence) or isinstance(value, str | bytes | bytearray):
+        return []
+    texts: set[str] = set()
+    for item in value:
+        text = _text(item, limit)
+        if text is not None:
+            texts.add(text)
+    return sorted(texts)
+
+
 def _location(issue: Mapping[str, Any]) -> dict[str, Any]:
     zone, remark = _map(issue.get("problem_zone")), _map(issue.get("remark"))
-    bbox = {
-        key: number
-        for key in ("x", "y", "width", "height")
-        if (number := _number(zone.get(key))) is not None
-    }
+    bbox: dict[str, float] = {}
+    for key in ("x", "y", "width", "height"):
+        number = _number(zone.get(key))
+        if number is not None:
+            bbox[key] = number
     return {
         "source_id": _text(issue.get("source_id"), 1_000),
         "sheet_id": _text(zone.get("sheet_id") or remark.get("sheet_id"), 1_000),
@@ -85,12 +98,6 @@ def _project(issue: Mapping[str, Any]) -> dict[str, Any]:
     review, remark = _map(issue.get("review")), _map(issue.get("remark"))
     state = (_text(review.get("state"), 64) or "pending").lower()
     machine = _text(remark.get("body") or issue.get("message"))
-    refs = issue.get("evidence_refs")
-    safe_refs = (
-        sorted({_text(value, 1_000) for value in refs if _text(value, 1_000)})
-        if isinstance(refs, Sequence) and not isinstance(refs, str | bytes | bytearray)
-        else []
-    )
     return {
         "finding_id": _text(issue.get("finding_id"), 256),
         "rule_id": _text(issue.get("rule_id"), 512),
@@ -112,7 +119,7 @@ def _project(issue: Mapping[str, Any]) -> dict[str, Any]:
             "approval_status": _text(issue.get("approval_status"), 64),
             "approval_ref": _text(issue.get("approval_ref"), 1_000),
         },
-        "evidence_refs": safe_refs,
+        "evidence_refs": _safe_texts(issue.get("evidence_refs")),
         "confidence": {
             "value": _number(issue.get("confidence")),
             "calibrated": issue.get("confidence_calibrated") is True,
@@ -138,10 +145,12 @@ def _keys(row: Mapping[str, Any]) -> set[str]:
         or location.get("element_guid"),
         1_000,
     )
-    result = {f"finding:{finding_id}"} if finding_id else set()
+    keys: set[str] = set()
+    if finding_id:
+        keys.add(f"finding:{finding_id}")
     if rule_id and target:
-        result.add(f"rule-target:{rule_id}|{target}")
-    return result
+        keys.add(f"rule-target:{rule_id}|{target}")
+    return keys
 
 
 def _rank(row: Mapping[str, Any]) -> tuple[int, int, int, int, int, float, str]:
@@ -165,6 +174,23 @@ def _baseline(payload: Mapping[str, Any] | None) -> list[Mapping[str, Any]]:
     return direct or [
         finding for case in _rows(payload.get("cases")) for finding in _rows(case.get("findings"))
     ]
+
+
+def _capabilities(report_payload: Mapping[str, Any]) -> tuple[dict[str, Any], list[str]]:
+    declared = _map(report_payload.get("capabilities"))
+    capabilities: dict[str, Any] = {}
+    unverified: list[str] = []
+    for name in sorted(declared):
+        raw = declared.get(name)
+        item = _map(raw)
+        status = (_text(item.get("status") if item else raw, 64) or "unknown").lower()
+        capabilities[name] = {
+            "status": status,
+            "reason": _text(item.get("reason"), 2_000) if item else None,
+        }
+        if status in UNVERIFIED:
+            unverified.append(name)
+    return capabilities, unverified
 
 
 def build_customer_review_pack(
@@ -195,17 +221,7 @@ def build_customer_review_pack(
             if known_findings_payload is not None
             else "not_compared"
         )
-    capabilities: dict[str, Any] = {}
-    unverified: list[str] = []
-    for name, raw in sorted(_map(report_payload.get("capabilities")).items()):
-        item = _map(raw)
-        status = (_text(item.get("status") if item else raw, 64) or "unknown").lower()
-        capabilities[str(name)] = {
-            "status": status,
-            "reason": _text(item.get("reason"), 2_000) if item else None,
-        }
-        if status in UNVERIFIED:
-            unverified.append(str(name))
+    capabilities, unverified = _capabilities(report_payload)
     selected = active[:top_k]
     return {
         "artifact_type": "aerobim_customer_review_pack",
@@ -266,10 +282,10 @@ def render_customer_review_markdown(pack: Mapping[str, Any]) -> str:
     lines = [
         "# AeroBIM — пакет экспертного ревью",
         "",
-        ("> Это shortlist для решения эксперта, не акт приёмки и не метрика точности."),
+        "> Это shortlist для решения эксперта, не акт приёмки и не метрика точности.",
         "",
         f"- Проект: {_md(scope.get('project_name'))}",
-        (f"- Машинный результат: `passed={str(bool(machine.get('passed'))).lower()}`"),
+        f"- Машинный результат: `passed={str(bool(machine.get('passed'))).lower()}`",
         f"- Customer acceptance: `{pack.get('customer_acceptance')}`",
         f"- Accuracy / SLA: `{pack.get('accuracy_claim')}` / `{pack.get('sla_claim')}`",
         "",
@@ -309,6 +325,13 @@ def _sha(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def _load_object(path: Path) -> dict[str, Any]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError(f"{path.name} must contain a JSON object")
+    return {str(key): value for key, value in payload.items()}
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--report-json", required=True, type=Path)
@@ -316,32 +339,29 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--top-k", default=20, type=int)
     parser.add_argument("--known-findings-json", type=Path)
     args = parser.parse_args(argv)
+    report_path: Path = args.report_json
+    output_dir: Path = args.output_dir
+    known_path: Path | None = args.known_findings_json
+    top_k: int = int(args.top_k)
     try:
-        report_bytes = args.report_json.read_bytes()
-        report = json.loads(report_bytes.decode())
-        known = (
-            json.loads(args.known_findings_json.read_text(encoding="utf-8"))
-            if args.known_findings_json
-            else None
-        )
-        if not isinstance(report, dict) or (known is not None and not isinstance(known, dict)):
-            raise ValueError("inputs must contain JSON objects")
+        report = _load_object(report_path)
+        known = _load_object(known_path) if known_path is not None else None
         pack = build_customer_review_pack(
             report,
-            top_k=args.top_k,
+            top_k=top_k,
             known_findings_payload=known,
-            source_report_sha256=_sha(report_bytes),
+            source_report_sha256=_sha(report_path.read_bytes()),
         )
-    except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as exc:
+    except (OSError, UnicodeError, ValueError) as exc:
         print(f"customer review pack failed: {exc}", file=sys.stderr)
         return 2
-    args.output_dir.mkdir(parents=True, exist_ok=True)
+    output_dir.mkdir(parents=True, exist_ok=True)
     outputs = {
         "customer-review.json": json.dumps(pack, ensure_ascii=False, indent=2) + "\n",
         "customer-review.md": render_customer_review_markdown(pack),
     }
     for name, content in outputs.items():
-        (args.output_dir / name).write_text(content, encoding="utf-8", newline="\n")
+        (output_dir / name).write_text(content, encoding="utf-8", newline="\n")
     manifest = {
         "artifact_type": "aerobim_customer_review_pack_manifest",
         "schema_version": SCHEMA_VERSION,
@@ -352,12 +372,13 @@ def main(argv: list[str] | None = None) -> int:
             for name, content in outputs.items()
         },
     }
-    (args.output_dir / "manifest.json").write_text(
+    (output_dir / "manifest.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
         newline="\n",
     )
-    print(json.dumps({"ok": True, "selected": len(pack["findings"])}))
+    selected = len(_rows(pack.get("findings")))
+    print(json.dumps({"ok": True, "selected": selected}))
     return 0
 
 
