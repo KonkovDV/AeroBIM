@@ -156,7 +156,11 @@ def extract_decision_payload(raw_output: str) -> dict[str, object]:
             continue
         if not isinstance(payload, dict):
             continue
-        if payload.get("ok") is True and "externalOrigins" in payload and payload.get("demoSeed") is not True:
+        if (
+            payload.get("ok") is True
+            and "externalOrigins" in payload
+            and payload.get("demoSeed") is not True
+        ):
             candidate = payload
 
     if candidate is None:
