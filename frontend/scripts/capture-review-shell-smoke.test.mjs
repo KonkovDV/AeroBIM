@@ -60,6 +60,7 @@ describe("buildSmokePayload", () => {
     expect(JSON.stringify(pending)).toBe("{}");
     const payload = await pending;
     expect(payload.checks.issue.ok).toBe(true);
+    expect(payload.stack).toBe("vite-dev");
     expect(payload.artifact_integrity.trace.sha256).toMatch(/^[a-f0-9]{64}$/);
   });
 

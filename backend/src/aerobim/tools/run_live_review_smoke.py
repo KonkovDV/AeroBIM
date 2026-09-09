@@ -124,6 +124,26 @@ def extract_json_payload(raw_output: str) -> dict[str, object]:
     return candidate
 
 
+def extract_demo_payload(raw_output: str) -> dict[str, object]:
+    decoder = json.JSONDecoder()
+    candidate: dict[str, object] | None = None
+    for index, char in enumerate(raw_output):
+        if char != "{":
+            continue
+        try:
+            payload, _end_index = decoder.raw_decode(raw_output[index:])
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(payload, dict):
+            continue
+        if payload.get("ok") is True and payload.get("demoSeed") is True:
+            candidate = payload
+
+    if candidate is None:
+        raise ValueError("No demo-seed JSON payload found in command output")
+    return candidate
+
+
 def extract_decision_payload(raw_output: str) -> dict[str, object]:
     decoder = json.JSONDecoder()
     candidate: dict[str, object] | None = None
@@ -136,7 +156,7 @@ def extract_decision_payload(raw_output: str) -> dict[str, object]:
             continue
         if not isinstance(payload, dict):
             continue
-        if payload.get("ok") is True and "externalOrigins" in payload:
+        if payload.get("ok") is True and "externalOrigins" in payload and payload.get("demoSeed") is not True:
             candidate = payload
 
     if candidate is None:
@@ -227,6 +247,7 @@ def run_live_review_smoke(
     host: str = DEFAULT_HOST,
     backend_port: int | None = None,
     frontend_port: int | None = None,
+    skip_demo_seed: bool = False,
 ) -> dict[str, object]:
     target_storage_dir = (storage_dir or default_storage_dir()).resolve()
     target_output_dir = (output_dir or default_output_dir()).resolve()
@@ -304,7 +325,36 @@ def run_live_review_smoke(
             label="review-decision smoke",
         )
 
+        demo_payload: dict[str, object]
+        if skip_demo_seed:
+            demo_payload = {
+                "ok": True,
+                "demoSeed": False,
+                "skipped": True,
+                "note": "Call-path demo seed skipped by flag. Overlay fixture is a different track.",
+            }
+        else:
+            demo_output_dir = target_output_dir / "demo"
+            demo_command = [
+                "node",
+                str(frontend_dir() / "scripts" / "capture-demo-seed-smoke.mjs"),
+                "--base-url",
+                frontend_base_url,
+                "--output-dir",
+                str(demo_output_dir),
+            ]
+            demo_result = run_captured_command(
+                demo_command,
+                cwd=frontend_dir(),
+                env=frontend_env,
+                label="demo-seed smoke",
+            )
+            demo_payload = extract_demo_payload(demo_result.stdout)
+
         return {
+            "stack": "vite-dev",
+            "jury_cli": "python -m aerobim.tools.run_kt3_jury",
+            "demo_seed_ui": "vite-dev-only",
             "backend": {
                 "base_url": backend_base_url,
                 "storage_dir": str(target_storage_dir),
@@ -316,6 +366,7 @@ def run_live_review_smoke(
             "seeded_report": build_cli_payload(report),
             "browser_smoke": extract_json_payload(smoke_result.stdout),
             "decision_smoke": extract_decision_payload(decision_result.stdout),
+            "demo_seed_smoke": demo_payload,
         }
     finally:
         terminate_process(frontend_process)
@@ -340,6 +391,14 @@ def main() -> None:
     parser.add_argument(
         "--frontend-port", type=int, default=None, help="Override the frontend port"
     )
+    parser.add_argument(
+        "--skip-demo-seed",
+        action="store_true",
+        help=(
+            "Skip the 15.09 call-path button (POST /v1/demo/seed-fixture). "
+            "The overlay fixture from seed_smoke_report is a different track."
+        ),
+    )
     args = parser.parse_args()
 
     payload = run_live_review_smoke(
@@ -348,6 +407,7 @@ def main() -> None:
         host=args.host,
         backend_port=args.backend_port,
         frontend_port=args.frontend_port,
+        skip_demo_seed=args.skip_demo_seed,
     )
     print(json.dumps(payload, ensure_ascii=False, indent=2))
 

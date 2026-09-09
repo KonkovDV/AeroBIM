@@ -1,23 +1,41 @@
 /**
  * Second half of the expert-workplace rehearsal, after
  * capture-review-shell-smoke.mjs has proved the list -> drawing -> card path:
- * the decision itself, plus the draft-vs-confirmed export pair (OA-21) and the
- * jury-laptop checks from WP-FE-26 (loopback-only traffic, 1366x768 / 1280x800,
- * print stylesheet).
+ * the decision itself, plus the draft-vs-confirmed export pair (OA-21) across
+ * HTML / JSON / BCF 2.1 / PDF, and the jury-laptop checks from WP-FE-26
+ * (loopback-only traffic, 1366x768 / 1280x800, print stylesheet).
  *
- * Local rehearsal against a throwaway dev stack. Not a customer SLA, not a
- * measurement of product accuracy.
+ * Local rehearsal against a throwaway Vite-dev stack. Not a customer SLA, not
+ * a measurement of product accuracy, not `python -m aerobim.tools.run_kt3_jury`.
  */
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import { pathToFileURL } from "node:url";
-import { chromium } from "playwright";
 
-const LOOPBACK_HOSTS = new Set(["127.0.0.1", "localhost", "[::1]"]);
+import {
+  COPY,
+  EXPORT_UNSAVED_CONFIRM,
+  OA21_NEEDLE,
+  STACK_VITE_DEV,
+  assertForcedLight,
+  assertHonestyOnExpertScreen,
+  assertLoopbackAndQuiet,
+  assertUnsavedDialogs,
+  attachNetworkGuards,
+  captureExportBundle,
+  exerciseTriageKeys,
+  externalOrigins,
+  hideSaveFilePicker,
+  inspectExportBundle,
+  isExpectedHonestyFailure,
+  launchChromium,
+  unexpectedConsoleErrors,
+  unexpectedHttpFailures,
+  waitForViewerReady,
+} from "./capture-review-smoke-shared.mjs";
 
-const COPY = {
-  projects: "Проекты",
+const ACTION = {
   saveRemark: "Сохранить правку",
   confirmRemark: "Подтвердить замечание",
   remarkSaved: "Правка сохранена",
@@ -64,62 +82,7 @@ export function diffPaths(left, right, prefix = "<root>") {
   return changed;
 }
 
-/**
- * Only network schemes can leave the laptop. `blob:` (the export download) and
- * `data:` carry an empty host and must not be read as an external origin.
- */
-export function externalOrigins(origins) {
-  return [...origins].filter((origin) => {
-    if (!origin.startsWith("http:") && !origin.startsWith("https:")) {
-      return false;
-    }
-    const host = origin.replace(/^https?:\/\//, "").replace(/:\d+$/, "");
-    return !LOOPBACK_HOSTS.has(host);
-  });
-}
-
-/** GET /v1/auth/bff = 501 is the documented default (not customer SSO). */
-export function isExpectedHonestyFailure(row) {
-  if (row.status !== 501) {
-    return false;
-  }
-  try {
-    return new URL(row.url).pathname === "/v1/auth/bff";
-  } catch {
-    return /\/v1\/auth\/bff(?:\?|$)/.test(String(row.url));
-  }
-}
-
-export function unexpectedHttpFailures(rows) {
-  return rows.filter((row) => !isExpectedHonestyFailure(row));
-}
-
-export function unexpectedConsoleErrors(messages) {
-  return messages.filter((text) => {
-    if (/501/.test(text) && /auth\/bff|Failed to load resource/i.test(text)) {
-      return false;
-    }
-    if (/frame-ancestors/.test(text)) {
-      return false;
-    }
-    return true;
-  });
-}
-
-async function launchBrowser() {
-  const launchOptions = { headless: true };
-  try {
-    return await chromium.launch(launchOptions);
-  } catch (error) {
-    if (process.platform === "win32") {
-      return chromium.launch({ ...launchOptions, channel: "msedge" });
-    }
-    throw new Error(
-      "Playwright Chromium is missing. From frontend/: npx playwright install chromium",
-      { cause: error },
-    );
-  }
-}
+export { externalOrigins, isExpectedHonestyFailure, unexpectedConsoleErrors, unexpectedHttpFailures };
 
 async function paneWidths(page) {
   const widths = {};
@@ -130,60 +93,25 @@ async function paneWidths(page) {
   return widths;
 }
 
-async function exportJson(page, target) {
-  const [download] = await Promise.all([
-    page.waitForEvent("download", { timeout: 30_000 }),
-    page.getByTestId("export-actions").getByRole("button", { name: "JSON", exact: true }).click(),
-  ]);
-  await download.saveAs(target);
-  const errorBanner = page.getByTestId("export-error");
-  if ((await errorBanner.count()) > 0) {
-    throw new Error(`Export reported a failure: ${await errorBanner.first().textContent()}`);
-  }
-  return JSON.parse(await readFile(target, "utf8"));
-}
-
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   await mkdir(options.outputDir, { recursive: true });
 
-  const browser = await launchBrowser();
-  const context = await browser.newContext({ viewport: { width: 1366, height: 768 } });
+  const browser = await launchChromium();
+  const context = await browser.newContext({
+    viewport: { width: 1366, height: 768 },
+    colorScheme: "dark",
+  });
 
-  const requestOrigins = new Set();
+  const { requestOrigins, failedResponses, consoleErrors } = attachNetworkGuards(context);
   const dialogMessages = [];
-  const consoleErrors = [];
-  const failedResponses = [];
   const steps = [];
   const note = (step, detail) => {
     steps.push({ step, ...detail });
     console.log(`[decision-smoke] ${step} ${JSON.stringify(detail)}`);
   };
 
-  context.on("request", (request) => {
-    try {
-      const url = new URL(request.url());
-      requestOrigins.add(url.host ? `${url.protocol}//${url.host}` : url.protocol);
-    } catch {
-      requestOrigins.add("<unparsed>");
-    }
-  });
-  context.on("response", (response) => {
-    if (response.status() >= 400) {
-      failedResponses.push({ status: response.status(), url: response.url() });
-    }
-  });
-
-  // saveResponseDownload prefers the File System Access picker, a native dialog
-  // that headless Chromium cannot present. Hiding it selects the blob fallback,
-  // which is the same production path browsers without that API already take.
-  await context.addInitScript(() => {
-    Object.defineProperty(window, "showSaveFilePicker", {
-      value: undefined,
-      configurable: true,
-    });
-  });
-
+  await context.addInitScript(hideSaveFilePicker);
   await context.tracing.start({ screenshots: true, snapshots: true, sources: true });
   const page = await context.newPage();
   page.on("console", (message) => {
@@ -198,6 +126,9 @@ async function main() {
 
   try {
     await page.goto(options.baseUrl, { waitUntil: "domcontentloaded", timeout: 30_000 });
+    const colorScheme = await assertForcedLight(page);
+    note("color-scheme", { emulated: "dark", computed: colorScheme });
+
     await page.getByRole("button", { name: COPY.projects, exact: true }).click();
     await page.locator(".report-card").first().waitFor({ state: "visible", timeout: 30_000 });
     await page.locator(".report-card").first().click();
@@ -207,6 +138,15 @@ async function main() {
     note("findings-list", { issueCards: await issueCards.count() });
     await issueCards.first().click();
     await page.screenshot({ path: path.join(options.outputDir, "01-findings.png"), fullPage: true });
+
+    const honesty = await assertHonestyOnExpertScreen(page);
+    note("honesty", honesty);
+
+    const viewer = await waitForViewerReady(page);
+    note("viewer", viewer);
+
+    const keys = await exerciseTriageKeys(page);
+    note("triage-keys", keys);
 
     const evidencePanel = page.locator(".drawing-evidence-panel");
     await evidencePanel.locator(".drawing-evidence-image").waitFor({ state: "visible", timeout: 30_000 });
@@ -219,20 +159,24 @@ async function main() {
     const editor = page.locator("#remark-editor");
     await editor.waitFor({ state: "visible", timeout: 30_000 });
     const savedText = await editor.inputValue();
-    const draftText = `${savedText}\nРепетиция стенда: правка эксперта до сохранения.`;
+    const draftText = `${savedText}\n${OA21_NEEDLE}: правка эксперта до сохранения.`;
     await editor.fill(draftText);
     note("remark-draft", { savedLength: savedText.length, draftLength: draftText.length });
     await page.screenshot({ path: path.join(options.outputDir, "03-card-draft.png"), fullPage: true });
 
-    const draftExport = await exportJson(page, path.join(options.outputDir, "export-draft.json"));
-    note("export-while-dirty", { warnings: [...dialogMessages] });
+    const draftBundle = await captureExportBundle(page, options.outputDir, "draft");
+    assertUnsavedDialogs(dialogMessages);
+    const draftInspect = inspectExportBundle({ ...draftBundle, phase: "draft" });
+    note("export-while-dirty", {
+      warnings: [...dialogMessages],
+      confirmCopy: EXPORT_UNSAVED_CONFIRM,
+      formats: draftInspect,
+    });
 
-    await page.getByRole("button", { name: COPY.saveRemark, exact: true }).click();
-    // A report that already carries a decision refuses further edits, so surface
-    // that instead of timing out: the rehearsal needs a freshly seeded report.
-    const savedMarker = page.getByText(COPY.remarkSaved, { exact: true }).first();
+    await page.getByRole("button", { name: ACTION.saveRemark, exact: true }).click();
+    const savedMarker = page.getByText(ACTION.remarkSaved, { exact: true }).first();
     const conflictMarker = page.getByTestId("hitl-conflict");
-    const failureMarker = page.getByText(COPY.remarkSaveFailed, { exact: true }).first();
+    const failureMarker = page.getByText(ACTION.remarkSaveFailed, { exact: true }).first();
     await Promise.race([
       savedMarker.waitFor({ timeout: 30_000 }),
       conflictMarker.waitFor({ timeout: 30_000 }),
@@ -245,8 +189,11 @@ async function main() {
           "Re-seed the storage dir: an already-decided finding is not editable.",
       );
     }
-    await page.getByRole("button", { name: COPY.confirmRemark, exact: true }).click();
-    await page.getByText(COPY.confirmed, { exact: true }).first().waitFor({ timeout: 30_000 });
+    await page.getByRole("button", { name: ACTION.confirmRemark, exact: true }).click();
+    await page.getByText(ACTION.confirmed, { exact: true }).first().waitFor({ timeout: 30_000 });
+    await page.getByTestId("machine-human-split").getByText(COPY.hitlConfirmed).waitFor({
+      timeout: 15_000,
+    });
 
     const historyRows = page.getByTestId("review-history").locator("li");
     await historyRows.first().waitFor({ state: "visible", timeout: 30_000 });
@@ -256,15 +203,15 @@ async function main() {
     await page.screenshot({ path: path.join(options.outputDir, "04-decision.png"), fullPage: true });
 
     const dialogsBeforeCleanExport = dialogMessages.length;
-    const confirmedExport = await exportJson(
-      page,
-      path.join(options.outputDir, "export-confirmed.json"),
-    );
-    note("export-after-decision", {
-      extraWarnings: dialogMessages.length - dialogsBeforeCleanExport,
-    });
+    const confirmedBundle = await captureExportBundle(page, options.outputDir, "confirmed");
+    const extraWarnings = dialogMessages.length - dialogsBeforeCleanExport;
+    if (extraWarnings !== 0) {
+      throw new Error(`clean export raised ${extraWarnings} unexpected confirm(s)`);
+    }
+    const confirmedInspect = inspectExportBundle({ ...confirmedBundle, phase: "confirmed" });
+    note("export-after-decision", { extraWarnings, formats: confirmedInspect });
     note("export-diff", {
-      changedPaths: [...new Set(diffPaths(draftExport, confirmedExport))].sort(),
+      changedPaths: [...new Set(diffPaths(draftBundle.json, confirmedBundle.json))].sort(),
     });
 
     const viewportChecks = [];
@@ -290,18 +237,19 @@ async function main() {
     });
     await page.emulateMedia({ media: "screen" });
 
-    const external = externalOrigins(requestOrigins);
-    note("network", { origins: [...requestOrigins].sort(), external });
+    const network = assertLoopbackAndQuiet({ requestOrigins, failedResponses, consoleErrors });
+    note("network", { origins: [...requestOrigins].sort(), external: network.externalOrigins });
 
     await context.tracing.stop({ path: path.join(options.outputDir, "review-decision.trace.zip") });
     const summary = {
       baseUrl: options.baseUrl,
       outputDir: options.outputDir,
       generatedAt: new Date().toISOString(),
+      stack: STACK_VITE_DEV,
       steps,
       consoleErrors,
       failedResponses,
-      externalOrigins: external,
+      externalOrigins: network.externalOrigins,
     };
     await writeFile(
       path.join(options.outputDir, "review-decision-summary.json"),
@@ -309,19 +257,19 @@ async function main() {
       "utf8",
     );
 
-    if (external.length > 0) {
-      throw new Error(`Rehearsal must stay on loopback, saw: ${external.join(", ")}`);
-    }
-    const unexpected = unexpectedHttpFailures(failedResponses);
-    if (unexpected.length > 0) {
-      throw new Error(`Unexpected HTTP failures: ${JSON.stringify(unexpected)}`);
-    }
-    const noisy = unexpectedConsoleErrors(consoleErrors);
-    if (noisy.length > 0) {
-      throw new Error(`Unexpected console errors: ${JSON.stringify(noisy)}`);
-    }
     console.log(
-      JSON.stringify({ ok: true, consoleErrors, failedResponses, externalOrigins: external }, null, 2),
+      JSON.stringify(
+        {
+          ok: true,
+          stack: STACK_VITE_DEV,
+          oa21: { draft: draftInspect, confirmed: confirmedInspect },
+          consoleErrors,
+          failedResponses,
+          externalOrigins: network.externalOrigins,
+        },
+        null,
+        2,
+      ),
     );
   } finally {
     await browser.close();

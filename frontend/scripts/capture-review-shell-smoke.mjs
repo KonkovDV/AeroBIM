@@ -6,6 +6,13 @@ import process from "node:process";
 import { pathToFileURL } from "node:url";
 
 import { parseArgs, validateExportLinks } from "./capture-review-shell-smoke-helpers.mjs";
+import {
+  STACK_VITE_DEV,
+  assertForcedLight,
+  assertHonestyOnExpertScreen,
+  launchChromium,
+  waitForViewerReady,
+} from "./capture-review-smoke-shared.mjs";
 
 export { parseArgs, validateExportLinks };
 export { buildSmokePayload };
@@ -34,6 +41,7 @@ async function buildSmokePayload(options, artifactPaths, checks) {
     baseUrl: options.baseUrl,
     reportPrefix: options.reportPrefix,
     generatedAt: new Date().toISOString(),
+    stack: STACK_VITE_DEV,
     screenshots: {
       issue: artifactPaths.issueScreenshotPath,
       clash: artifactPaths.clashScreenshotPath,
@@ -42,28 +50,6 @@ async function buildSmokePayload(options, artifactPaths, checks) {
     artifact_integrity: integrity,
     checks,
   };
-}
-
-async function loadPlaywright() {
-  try {
-    return await import("playwright");
-  } catch {
-    throw new Error(
-      "Playwright is required for browser smoke capture. Install it in the workspace root or frontend environment before running npm run smoke:browser.",
-    );
-  }
-}
-
-async function launchBrowser(playwright) {
-  const launchOptions = { headless: true };
-  try {
-    return await playwright.chromium.launch(launchOptions);
-  } catch (error) {
-    if (process.platform === "win32") {
-      return playwright.chromium.launch({ ...launchOptions, channel: "msedge" });
-    }
-    throw error;
-  }
 }
 
 async function clickIfVisible(locator) {
@@ -106,6 +92,7 @@ async function assertIssueReviewState(page) {
   return {
     exportButtons: ["html", "json", "bcf", "pdf"],
     overlayVisible: true,
+    xlsxRendered: false,
     activeIssueRuleId: await getLocatorText(page.locator(".drawing-evidence-caption strong").first(), "active issue rule id"),
   };
 }
@@ -161,9 +148,11 @@ async function assertClashReviewState(page, clashCard) {
 
 async function main() {
   const options = parseArgs(process.argv.slice(2));
-  const playwright = await loadPlaywright();
-  const browser = await launchBrowser(playwright);
-  const context = await browser.newContext({ viewport: { width: 1600, height: 1600 } });
+  const browser = await launchChromium();
+  const context = await browser.newContext({
+    viewport: { width: 1600, height: 1600 },
+    colorScheme: "dark",
+  });
 
   await mkdir(options.outputDir, { recursive: true });
 
@@ -176,6 +165,7 @@ async function main() {
 
   try {
     await page.goto(options.baseUrl, { waitUntil: "domcontentloaded", timeout: 30_000 });
+    const colorScheme = await assertForcedLight(page);
     // Shell opens on the expert workplace; the report index lives on «Проекты».
     await page.getByRole("button", { name: "Проекты", exact: true }).click();
     await page.locator(".report-card").first().waitFor({ state: "visible", timeout: 30_000 });
@@ -196,6 +186,8 @@ async function main() {
       timeout: 30_000,
     });
     const issueChecks = await assertIssueReviewState(page);
+    const honesty = await assertHonestyOnExpertScreen(page);
+    const viewer = await waitForViewerReady(page);
     await page.screenshot({ path: issueScreenshotPath, fullPage: true });
 
     const clashCard = page.locator(".collection-card-button").first();
@@ -219,6 +211,9 @@ async function main() {
         issue: issueChecks,
         clash: clashChecks,
         presets: presetChecks,
+        honesty,
+        viewer,
+        colorScheme: { emulated: "dark", computed: colorScheme },
       },
     );
     console.log(JSON.stringify(smokePayload, null, 2));

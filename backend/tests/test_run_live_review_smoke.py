@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import io
 import socket
 import sys
 import unittest
+import zipfile
 from pathlib import Path
 from unittest.mock import Mock, patch
 
@@ -82,6 +84,18 @@ class LiveReviewSmokeHelperTests(unittest.TestCase):
         self.assertEqual(env["VITE_AEROBIM_API_BASE_URL"], "http://127.0.0.1:8081")
         self.assertNotIn("PLAYWRIGHT_BROWSERS_PATH", env)
 
+    def test_python_deflated_zip_writes_sizes_in_the_local_header(self) -> None:
+        """OA-21 BCF scan in Node rejects data-descriptor zips; Python BCF uses this shape."""
+        buffer = io.BytesIO()
+        with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as archive:
+            archive.writestr("guid/markup.bcf", "<Description>Репетиция стенда</Description>")
+        data = buffer.getvalue()
+        self.assertEqual(int.from_bytes(data[0:4], "little"), 0x04034B50)
+        flags = int.from_bytes(data[6:8], "little")
+        self.assertEqual(flags & 0x8, 0)
+        compressed_size = int.from_bytes(data[18:22], "little")
+        self.assertGreater(compressed_size, 0)
+
     def test_extract_decision_payload_ignores_step_logs(self) -> None:
         from aerobim.tools.run_live_review_smoke import extract_decision_payload
 
@@ -93,6 +107,28 @@ class LiveReviewSmokeHelperTests(unittest.TestCase):
         payload = extract_decision_payload(mixed)
         self.assertEqual(payload["ok"], True)
         self.assertEqual(payload["externalOrigins"], [])
+
+    def test_extract_decision_payload_ignores_demo_seed_payload(self) -> None:
+        from aerobim.tools.run_live_review_smoke import extract_decision_payload
+
+        mixed = (
+            '{"ok": true, "demoSeed": true, "externalOrigins": []}\n'
+            '{"ok": true, "externalOrigins": ["blob:"], "oa21": {"draft": {}}}\n'
+        )
+        payload = extract_decision_payload(mixed)
+        self.assertIn("oa21", payload)
+        self.assertNotEqual(payload.get("demoSeed"), True)
+
+    def test_extract_demo_payload_requires_demo_seed_flag(self) -> None:
+        from aerobim.tools.run_live_review_smoke import extract_demo_payload
+
+        mixed = (
+            '{"ok": true, "externalOrigins": []}\n'
+            '{"ok": true, "demoSeed": true, "overlayPresent": false, "issueCount": 2}\n'
+        )
+        payload = extract_demo_payload(mixed)
+        self.assertTrue(payload["demoSeed"])
+        self.assertEqual(payload["issueCount"], 2)
 
     def test_extract_json_payload_ignores_prefix_lines(self) -> None:
         prefixed_payload = (
