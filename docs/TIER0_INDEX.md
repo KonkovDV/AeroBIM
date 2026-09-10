@@ -1,7 +1,7 @@
 ---
 title: "AeroBIM — карта для жюри Техлаба и МИК"
 status: active
-version: "4.8.47"
+version: "4.8.48"
 last_updated: "2026-09-10"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint GO; customer_go false until RT-001/002/003. Eng readiness ≠ customer GO."
@@ -83,6 +83,7 @@ claim_boundary: "Jury pack only. Checkpoint GO; customer_go false until RT-001/0
 | [Триаж HD23 10.09 вечер](quality/HEAD_TRIAGE_HD23_2026_09_10.md) | Оболочка на `main`; #48 не merge; #40/#41/#44 OPEN |
 | [Триаж HD24 10.09 вечер](quality/HEAD_TRIAGE_HD24_2026_09_10.md) | Входящий переаудит vs git; 0/6 не 0/8; 14.09 ≠ SBOM; #44 OPEN |
 | [Триаж HD25 10.09 вечер](quality/HEAD_TRIAGE_HD25_2026_09_10.md) | #49/#50 влиты; FE-DRIFT-01; D-05 не «нет виртуализации»; #40/#41 OPEN |
+| [Триаж HD26 10.09 ночь](quality/HEAD_TRIAGE_HD26_2026_09_10.md) | CI venv-KILL; PR #51 HOLD до 11.09; #40/#41/#44 OPEN |
 | [Ранбук показа ИТ-ментору 11.09](quality/FRONTEND_MENTOR_DEMO_2026_09_11.md) | Review shell; красная черта списком; FE-CRUFT-02 не закрывать без смоука |
 | [Поставка 14.09: три отчёта + trial](partners/KT3_CUSTOMER_DELIVERY_14_09.md) | GitHub не канал; демо-seed не отчёт |
 | [Пакет ревью 10–25 карточек](partners/CUSTOMER_REVIEW_PACK_RUNBOOK_2026_09.md) | CLI shortlist; не точность; git не шлёт Самолёту |
