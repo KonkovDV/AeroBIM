@@ -83,6 +83,7 @@ export default function App() {
         hasReport={selectedReportId !== null}
         onChange={requestWorkspaceView}
       />
+      <div id="work-area" tabIndex={-1} className="skip-to-work-target" />
       {import.meta.env.DEV ? (
         <DemoFixturePanel
           onSeeded={handleSeededReport}

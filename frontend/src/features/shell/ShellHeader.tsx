@@ -1,3 +1,4 @@
+import DensityToggle from "../../components/DensityToggle";
 import { UI_COPY } from "../../lib/ui-copy";
 import type { UiRoleAlias } from "../../lib/ui-role";
 import type { AuthBffDiscoveryStatus } from "../../lib/auth-bff";
@@ -22,6 +23,9 @@ export default function ShellHeader({
 }: ShellHeaderProps) {
   return (
     <header className="app-header product-header">
+      <a className="skip-to-work" href="#work-area" data-testid="skip-to-work">
+        {UI_COPY.skipToWork}
+      </a>
       <div className="product-identity">
         <span className="brand-mark" aria-hidden="true" />
         <div className="product-title">
@@ -31,6 +35,7 @@ export default function ShellHeader({
       </div>
       <div className="product-toolbar">
         <span className="product-report-count">{UI_COPY.reportsLoaded(reportCount)}</span>
+        <DensityToggle />
         <label className="product-role">
           <span>{UI_COPY.roleSelectLabel}</span>
           <select
