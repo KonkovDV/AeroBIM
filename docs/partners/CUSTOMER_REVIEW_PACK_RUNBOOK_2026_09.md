@@ -1,7 +1,7 @@
 ---
 title: "Customer review pack — compact delivery runbook"
 status: active
-version: "1.1.0"
+version: "1.1.1"
 last_updated: "2026-09-10"
 claim_boundary: >
   Operator runbook only. A generated shortlist is not customer acceptance,
@@ -53,7 +53,9 @@ Optional flags:
 - `customer-review.json` — whitelisted machine-readable cards;
 - `customer-review-form.csv` — one decision row per finding, semicolon
   separated and UTF-8 with BOM so it opens directly in Excel; the reviewer
-  fills `decision`, `comment`, `reviewer`, `decided_at`;
+  fills `decision`, `comment`, `reviewer`, `decided_at`. `source_a` /
+  `source_b` are `evidence_refs[0]` and `[1]` when present, not a guaranteed
+  file+GUID versus sheet/expected pair;
 - `manifest.json` — source-report digest and output SHA-256 values.
 
 The generator excludes terminal `rejected`, `waived`, and `superseded`
@@ -82,10 +84,15 @@ only `full` findings are safe to argue against a normative clause.
 
 ## Data gaps are not defects
 
-`needs_data` collects findings with no statement or no locator. Typical causes
-are export defects rather than design errors: empty `NetFloorArea`, a missing
-`IfcGrid`, or a translator that drops property sets. Send that list to the
-model authors. Never show it to a reviewer as a confirmed defect.
+`needs_data` collects findings with **no statement or no locator**
+(`evidence_completeness=insufficient`). That is an export or input gap, not a
+confirmed design defect. Send that list to the model authors. Never show it to
+a reviewer as a confirmed defect.
+
+Empty `NetFloorArea=0` or a missing `IfcGrid` still looks like a reviewable
+card when the finding already has a statement and a locator. This generator
+does not reclassify those as `needs_data`. Treat them as BIM-export questions
+in the expert comment, not as automatic data-gap routing.
 
 ## Known-findings coverage
 
@@ -95,13 +102,20 @@ active candidates and not only the shortlist. It is not recall, not precision
 and not accuracy: identity keys differ between authoring tools, and a remark
 book written by a human rarely carries machine identity at all. Present it as
 "overlap with the remarks you already know" and keep
-`accuracy_claim=NOT_ESTABLISHED`.
+`accuracy_claim=NOT_ESTABLISHED`. The one-pager says «совпало … по
+identity-ключу (не recall)» on purpose.
+
+`similar_count` is family size **including** the representative card, not
+«ещё N». A unique finding has `similar_count=1`.
 
 ## Expert decisions
 
 Use only `confirmed`, `false_positive`, `needs_context`, or `already_known`.
-`candidate_not_in_baseline` means only that no deterministic identity key
-matched. It must never be described as a new defect until an expert confirms it.
+The generator leaves `customer_decision.status` empty. HITL `accepted` /
+`pending` is a ranking signal on `review.status` and must not pre-fill the
+expert form. CSV `decision` starts blank. `candidate_not_in_baseline` means
+only that no deterministic identity key matched. It must never be described as
+a new defect until an expert confirms it.
 
 Use one expert for all top-K findings now, in a single 60-90 minute pass. Use a
 second reviewer or adjudicator for a random/disputed subset in the 30-60 day

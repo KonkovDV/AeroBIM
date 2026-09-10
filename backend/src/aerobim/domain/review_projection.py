@@ -7,7 +7,7 @@ and are projected as ``issue["review"]`` for GET /v1/reports and final exports.
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from typing import Any
+from typing import Any, Literal
 
 from aerobim.domain.models import ReviewEvent, ValidationIssue
 
@@ -131,9 +131,72 @@ def effective_text_for_issue(
     return machine
 
 
+ReviewPartition = Literal["confirmed", "rejected", "edited", "untouched"]
+
+
+def partition_from_state(state: str | None) -> ReviewPartition:
+    """Map a review overlay state onto the four export buckets."""
+
+    if state == "rejected":
+        return "rejected"
+    if state == "edited":
+        return "edited"
+    if state == "accepted":
+        return "confirmed"
+    return "untouched"
+
+
+def review_partition_of(issue: Any) -> ReviewPartition:
+    """Partition one serialized issue (or ValidationIssue) by expert state."""
+
+    if isinstance(issue, Mapping):
+        review = issue.get("review")
+        state = str(review.get("state") or "") if isinstance(review, Mapping) else ""
+        return partition_from_state(state or None)
+    review = getattr(issue, "review", None)
+    if isinstance(review, Mapping):
+        return partition_from_state(str(review.get("state") or "") or None)
+    return "untouched"
+
+
+def review_partition(issues: Sequence[Any]) -> dict[ReviewPartition, list[Any]]:
+    """Split issues into confirmed / rejected / edited / untouched lists."""
+
+    buckets: dict[ReviewPartition, list[Any]] = {
+        "confirmed": [],
+        "rejected": [],
+        "edited": [],
+        "untouched": [],
+    }
+    for item in issues:
+        buckets[review_partition_of(item)].append(item)
+    return buckets
+
+
+def issue_is_rejected(
+    issue: ValidationIssue,
+    events: Sequence[ReviewEvent] | None,
+) -> bool:
+    """True when the latest review event for this finding is a rejection."""
+
+    if not events:
+        return False
+    overlay = project_issue_review(
+        finding_id=issue.finding_id,
+        rule_id=issue.rule_id,
+        machine_text=issue.remark.body if issue.remark is not None else None,
+        events=events,
+    )
+    return partition_from_state(str(overlay.get("state") or "") or None) == "rejected"
+
+
 __all__ = [
     "attach_review_projection",
     "effective_text_for_issue",
     "event_belongs_to_finding",
+    "issue_is_rejected",
+    "partition_from_state",
     "project_issue_review",
+    "review_partition",
+    "review_partition_of",
 ]

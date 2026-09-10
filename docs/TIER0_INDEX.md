@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM — карта для жюри Техлаба и МИК"
 status: active
-version: "4.8.37"
-last_updated: "2026-09-08"
+version: "4.8.42"
+last_updated: "2026-09-10"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint GO; customer_go false until RT-001/002/003. Eng readiness ≠ customer GO."
 ---
@@ -76,6 +76,11 @@ claim_boundary: "Jury pack only. Checkpoint GO; customer_go false until RT-001/0
 | [Брифы кресел](quality/MIK_SEAT_BRIEFS_2026_08.md) | Роли, не ФИО; отбор и финал — среднее; кресла не владеют 65 |
 | [Playbook комиссии](quality/MIK_COMMISSION_SEAT_PLAYBOOK_2026_09.md) | Удары, три письма, двухчастная защита; ФИО [Г] |
 | [Шесть вопросов Самолёту](partners/SAMOLET_QUESTIONS_GROUNDED_2026_09_03.md) | Блокеры ТЗ; не NDA; не формы Фонда |
+| [Целостность доставки пакета](partners/DELIVERY_INTEGRITY_2026_09.md) | Git не отправляет почту; P0 канала |
+| [Триаж созвона 09.09](quality/CALL_09_09_TRIAGE_2026_09.md) | Engineering vs customer readiness; не 90% |
+| [Поставка 14.09: три отчёта + trial](partners/KT3_CUSTOMER_DELIVERY_14_09.md) | GitHub не канал; демо-seed не отчёт |
+| [Пакет ревью 10–25 карточек](partners/CUSTOMER_REVIEW_PACK_RUNBOOK_2026_09.md) | CLI shortlist; не точность; git не шлёт Самолёту |
+| [Ответ организаторам 14.09](partners/KT3_ORGANIZER_REPLY_14_09.md) | Единственный канал; 14.09 финал; нет прямого контакта |
 | [Пороги заказчика](quality/CUSTOMER_THRESHOLD_VS_ACTUAL_2026_08.md) | Целевое vs фактическое; 256 МиБ; cap не поднимаем |
 | [Обложка 0,60](partners/PARTNER_PROTOCOL_SIGNREADY_COVER_2026_08.md) | Письмо «готово подписать»; не 90% |
 

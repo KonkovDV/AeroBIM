@@ -2,9 +2,9 @@
 ---
 title: "TZ seam coverage map — local NDA rehearsal × literature 2026-08-26"
 date: "2026-08-26"
-last_updated: "2026-08-31"
+last_updated: "2026-09-09"
 status: active
-version: "1.2.5"
+version: "1.2.9"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -23,7 +23,7 @@ claim_boundary: >
 
 **Method.** Messick (1995) aspects + Kane (2013) Interpretation/Use Argument. Rule classes: Solihin & Eastman (2015). Pack facts are `coverage_map_only` (entity/property presence), not TP/FP. NDA binaries, GUIDs, remark text, and file hashes are not in git.
 
-**Checkpoint:** **`NO_GO`**. `closes_rt001/002/003: false`. `detected_count: 0`.
+**Checkpoint:** **`GO`** (regulatory-measurement MVP). `customer_go` false. `closes_rt001/002/003: false`. `detected_count: 0`.
 
 ## 0. Verdict
 
@@ -87,7 +87,7 @@ Completeness engine, pairing off, discipline codes PZ/AR/KR: **structural pass**
 | 3 | Layouts across stages | 2–3 | AEC-Bench spec–drawing | AR spaces; KR spaces=0; no RD IFC | No area QTO | 001 open |
 | 4 | Layouts ↔ IRD / TZ | document | EGCC | Design TZ extracted as notes; engine hits **0** | Cross-doc on fixture | 002 open |
 | 5 | AR/KR/PB/MEP | 3 + document | *Buildings* 16(13):2623 | AR+KR IFC; MEP = PDF | Generic clash optional; MEP-CLASH-001 fail-closed | **003 OPEN** |
-| 6 | Resubmit ↔ remarks | process | AEC-Bench submittal-like | OEP xlsx + expertise letters in zip | HITL exists; no gold map | 001 open |
+| 6 | Resubmit ↔ remarks | process | AEC-Bench submittal-like | 15 filled review books + 2 empty requirement templates (structure, not filename); RD checklist rows, not IFC findings | HITL + ingest parser + requirement crosswalk protocol; gold map still absent; unit of compare = requirement row | 001 open |
 | 7 | Rebar ↔ calc maps | **4** | no open RU bench; LIRA BIM is commercial | `.lir` on disk; **0** bars | Declared-source match only | honesty |
 
 ## 4. Literature used (August 2026 window)
@@ -148,6 +148,28 @@ OSINT for speech (not a pitch): NKP **A.ru / stable** as of **20.03.2026** **[П
 | RT-PACK-GIB | Uncompressed NDA byte totals in git | **KILL** | OA-9; `uncompressed_gib_in_git=false`; majority boolean only |
 | RT-PACK-LIRA | Named `.lir`/f74 count ⇒ solver / «пересчитали» | **KILL** | `parse_lira=false`; shortlist is Office, not binaries |
 | RT-PACK-TOKEN | 6 docx / 46 xlsx ⇒ CC-2/CC-4 MATCH | **KILL** | `is_cc2_match=false`; owner-canonical note |
+| RT-REC-01 | Their book comparison = product accuracy | **KILL** | One adjudicator; `publishable: false` |
+| RT-REC-02 | 23 machine records = 23 remarks | **KILL** | Layers: pack finding vs coverage/service/advisory |
+| RT-REC-03 | A customer comment not found ⇒ our miss | **KILL** | FN only where coverage was `checked` before ingest |
+| RT-REC-04 | We auto-matched remarks to findings | **KILL** | `matched_finding_id` stays empty |
+| RT-REC-05 | Comparison on their pack ⇒ RT-001 CLOSED | **KILL** | Dual human raters still zero |
+| RT-REC-06 | Rejected findings missing from the report ⇒ deleted | **KILL** | Rejected section + full machine log |
+| RT-REC-07 | Demo-seed compared to the channel review book | **KILL** | Different pack (`RT-PLAN-19`) |
+| RT-REC-08 | Unpack pin 6408 = live tree 09.09 | **KILL** | Pin is stale (`RT-PLAN-20`) |
+| RT-REC-09 | Their remark and our finding are the same unit | **KILL** | Requirement row vs IFC-addressed finding |
+| RT-REC-10 | Typical-error xlsx = what the customer already found | **KILL** | Empty templates (`RT-PLAN-26`) |
+| RT-REC-11 | 152 commented rows = 152 customer remarks | **KILL** | Rounds and SHA duplicates (`RT-PLAN-24`) |
+| RT-REC-12 | We closed their RD acceptance checklist | **KILL** | Closed share of machine-verifiable rows, named as coverage |
+| RT-REC-13 | Third-party checker = Gold Standard | **KILL** | Baseline until a written etalon |
+| RT-REC-14 | One customer expert = product precision | **KILL** | Single-expert packet review ≠ RT-001 |
+| RT-REC-15 | Hide low-confidence findings | **KILL** | Hidden FN; advisory stays visible |
+| RT-REC-16 | Checkpoint is currently NO_GO | **KILL** | GO = regulatory-measurement MVP; customer_go false |
+| RT-REC-17 | 90% and 30 min are measured results | **KILL** | Pilot goals (21.07), not scores |
+| RT-REC-18 | Silence = scope reduction approved | **KILL** | Written owner decision required |
+| RT-REC-19 | GitHub URL = delivery of the three pack reports | **KILL** | Organizers channel; `.local/` |
+| RT-REC-20 | Screen-share = independent trial | **KILL** | on-prem Docker or time-boxed HTTPS |
+| RT-REC-21 | Demo-seed = report on a sent customer pack | **KILL** | Overlay/fixture id rejected in delivery index |
+| RT-REC-22 | 15.09 call = Samolet delivery / second chance | **KILL** | No direct contact; 14.09 via organizers is final |
 
 Живое дерево 27.08 (бриф v1 + inject): [`TZ_LIVE_TREE_TRIAGE_2026_08_27.md`](TZ_LIVE_TREE_TRIAGE_2026_08_27.md). Исполнение плана (unsigned OOS, inventory `.local/`): [`OWNER_AI_PLAN_EXECUTION_2026_08_27.md`](OWNER_AI_PLAN_EXECUTION_2026_08_27.md).
 
@@ -155,4 +177,4 @@ OSINT for speech (not a pitch): NKP **A.ru / stable** as of **20.03.2026** **[П
 
 Does not close RT. Does not commit NDA. Does not run Harbor. Does not compute κ. Does not parse RVT/NWD/LIRA. Does not change `AEROBIM_MAX_IFC_BYTES`. Does not set `customer_approved`. Does not write `summary.passed`.
 
-Checkpoint stays **`NO_GO`**.
+Checkpoint stays **`GO`** (regulatory-measurement MVP). `customer_go` false.

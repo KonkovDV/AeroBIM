@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM Capability Claim Matrix 2026"
 status: active
-version: "1.4.4"
-last_updated: "2026-09-05"
+version: "1.4.8"
+last_updated: "2026-09-09"
 claim_boundary: "Sync with CLAIMS_LOCK. Checkpoint GO; customer_go false until RT-001/002/003. Eng readiness ≠ customer GO."
 ---
 
@@ -55,6 +55,15 @@ API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_
 | OIDC BFF / SSO ready | POST-05 production IdP | Phase 2 stubs + Phase 3 lab; `auth_bff.status=NOT_IMPLEMENTED` |
 | УКЭП / trust chain verified | crypto adapter missing | Envelope presence/hash audit only; `trust_chain=not_verified` |
 | Wilson interim planner output = publishable customer precision | RT-001 | WP-07 `demonstrates_interim_target_publishable=false`; protocol only |
+| Recall on customer pack measured | RT-001 | Fixture/open-corpus numbers only, each with `corpus_kind` and n; customer recall stays unmeasured |
+| полнота подтверждена заказчиком | RT-001 | Completeness of remark *shape* (2.1.5) and requirement-row coverage; not customer-confirmed completeness |
+| One named expert = product precision / κ | RT-001 | Single-expert packet review is operational only; `publishable` stays false |
+| Third-party checker is Gold Standard | RT-001 | Baseline / overlap table until a written etalon |
+| Hide low-confidence findings to look stable | RT-001 | Advisory / SKIPPED / NOT_VERIFIED stay in the brief |
+| GitHub hosts the three customer reports | OA-22 / contour | Organizers channel + `.local/`; public git is not the NDA tree |
+| Screen-share = independent trial on control data | organizer letter 09.09 | operator HTTPS or on-prem; seed-fixture off |
+| 15.09 call = Samolet delivery | OA-24 | 14.09 via organizers is final; mentor slot is not customer delivery |
+| Direct Samolet mail/Telegram is the delivery channel | OA-24 | No Samolet contact; organizers only |
 
 ## Allowed with evidence pointers
 

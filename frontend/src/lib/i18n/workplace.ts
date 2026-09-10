@@ -14,6 +14,10 @@ export const WORKPLACE_COPY = {
   capabilityMissing: "Полнота проверки неизвестна: сведения о выполненных проверках отсутствуют. Не считайте такой отчёт подтверждением соответствия.",
   capabilityOkBanner: "Перечисленные проверки выполнены. Наличие замечаний и решение эксперта показаны отдельно; это не приёмка проекта.",
   silenceIsNotSuccess: "Отсутствие результата не означает, что проверка пройдена.",
+  capabilityIncompleteSummary: (n: number, total: number) =>
+    `Не выполнено проверок: ${n} из ${total}`,
+  advisorySection: (n: number) => `Кандидаты ИИ, не вердикт (${n})`,
+  auditProvenance: "Происхождение для аудита",
   noReportSelected: "Выберите готовый отчёт или загрузите новый комплект документов.",
   noFindings: "По выбранным фильтрам замечаний нет. Полноту выполненных проверок смотрите в карте покрытия.",
   shownCount: (shown: number, total: number, _virtualize: boolean) => `Показано ${shown} из ${total}`,

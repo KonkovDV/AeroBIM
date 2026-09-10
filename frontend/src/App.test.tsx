@@ -803,14 +803,14 @@ describe("App", () => {
 
     render(<App />);
 
-    const advisoryCard = await screen.findByRole("option", { name: /ADV-CAND-001/i });
+    const advisoryCard = await screen.findByTestId("advisory-candidate-card");
     const deterministicCard = screen.getByRole("option", { name: /DET-CONF-001/i });
 
-    // Advisory observation is visually marked as a candidate needing review — §12:
-    // it must not read as a confirmed verdict/error.
     expect(advisoryCard.className).toContain("issue-card--advisory");
     expect(within(advisoryCard).getByText(UI_COPY.advisory)).toBeTruthy();
     expect(within(advisoryCard).getByTitle(/не подтверждённый вердикт/i)).toBeTruthy();
+    expect(screen.queryByRole("option", { name: /ADV-CAND-001/i })).toBeNull();
+    expect(screen.getByTestId("advisory-candidates").textContent).toContain("ADV-CAND-001");
 
     // A deterministic finding carries no advisory-candidate cue.
     expect(deterministicCard.className).not.toContain("issue-card--advisory");
@@ -1207,11 +1207,11 @@ describe("App", () => {
     const editor = await screen.findByLabelText(UI_COPY.editRemark);
     fireEvent.change(editor, { target: { value: "Черновик перед сменой комплекта" } });
     fireEvent.change(screen.getByLabelText(UI_COPY.selectedPack), {
-      target: { value: second.report_id },
+      target: { value: first.report_id },
     });
     expect(await screen.findByTestId("dirty-leave-dialog")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: UI_COPY.dirtyLeaveStay }));
-    expect((screen.getByLabelText(UI_COPY.selectedPack) as HTMLSelectElement).value).toBe(first.report_id);
+    expect((screen.getByLabelText(UI_COPY.selectedPack) as HTMLSelectElement).value).toBe(second.report_id);
     expect((screen.getByLabelText(UI_COPY.editRemark) as HTMLTextAreaElement).value).toBe(
       "Черновик перед сменой комплекта",
     );

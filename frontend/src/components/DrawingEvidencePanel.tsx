@@ -378,7 +378,7 @@ export default function DrawingEvidencePanel({
             <p className="compact-copy">{UI_COPY.drawingZoomHint}</p>
           </div>
           {regionNote ? (
-            <p className="compact-copy" role="status" data-testid="drawing-region-note">
+            <p className="compact-copy" role="note" data-testid="drawing-region-note">
               {regionNote}
             </p>
           ) : null}

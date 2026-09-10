@@ -1,8 +1,8 @@
-<!-- claims-lint: allow-file reason="Injection recall run; synthetic mutation test; NO_GO" -->
+<!-- claims-lint: allow-file reason="Injection recall run; synthetic mutation test; GO; customer_go false" -->
 ---
 title: "Defect-injection recall run — mutation-kill, synthetic-only"
 date: "2026-09-03"
-last_updated: "2026-09-03"
+last_updated: "2026-09-10"
 status: active
 version: "1.0.1"
 closes_rt001: false

@@ -91,12 +91,11 @@ export default function RemarkCardPanel({
 
   return (
     <article className="detail-block" data-testid="remark-card">
-      <h3>{UI_COPY.remarkHeading}</h3>
       {activeIssue ? (
         <div className="remark-editor">
           <EvidenceStepper issue={activeIssue} />
           {activeIssue.remark?.ai_generated ? (
-            <p className="synthetic-content-mark" role="status">
+            <p className="synthetic-content-mark" role="note">
               {UI_COPY.syntheticMark}
             </p>
           ) : null}
@@ -134,23 +133,38 @@ export default function RemarkCardPanel({
                 />
               </dd>
             </div>
-            <div>
-              <dt>{UI_COPY.provFindingId}</dt>
-              <dd>
-                <code>{dash(activeIssue.finding_id)}</code>
-              </dd>
-            </div>
-            <div>
-              <dt>{UI_COPY.provSourceId}</dt>
-              <dd>
-                <code>{dash(activeIssue.source_id)}</code>
-              </dd>
-            </div>
-            <div>
-              <dt>{UI_COPY.provEvidenceRefs}</dt>
-              <dd>{activeIssue.evidence_refs?.length ? activeIssue.evidence_refs.join(" · ") : "—"}</dd>
-            </div>
           </dl>
+          {activeIssue.completeness && !activeIssue.completeness.full_triad ? (
+            <p className="compact-copy" role="note">
+              {UI_COPY.remarkIncomplete}
+            </p>
+          ) : null}
+          {activeIssue.completeness?.full_triad ? (
+            <p className="compact-copy" role="note">
+              {UI_COPY.remarkFullTriad}
+            </p>
+          ) : null}
+          <details className="remark-audit-details">
+            <summary>{UI_COPY.auditProvenance}</summary>
+            <dl className="remark-tz-fields">
+              <div>
+                <dt>{UI_COPY.provFindingId}</dt>
+                <dd>
+                  <code>{dash(activeIssue.finding_id)}</code>
+                </dd>
+              </div>
+              <div>
+                <dt>{UI_COPY.provSourceId}</dt>
+                <dd>
+                  <code>{dash(activeIssue.source_id)}</code>
+                </dd>
+              </div>
+              <div>
+                <dt>{UI_COPY.provEvidenceRefs}</dt>
+                <dd>{activeIssue.evidence_refs?.length ? activeIssue.evidence_refs.join(" · ") : "—"}</dd>
+              </div>
+            </dl>
+          </details>
           <p className="compact-copy">
             <strong>{activeIssue.remark?.title ?? UI_COPY.generatedRemark}</strong>
           </p>

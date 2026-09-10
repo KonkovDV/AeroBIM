@@ -72,13 +72,6 @@
   line-height: 1;
 }
 
-@media (prefers-color-scheme: dark) {
-  .nav-badge {
-    background: var(--vl-blue300);
-    color: #0c1119;
-  }
-}
-
 .workspace-alt {
   margin-left: auto;
   font-size: var(--vl-text-xs);
@@ -130,14 +123,6 @@
   color: #ffffff;
   font-weight: 600;
   box-shadow: 0 0 0 3px var(--vl-accent-soft);
-}
-
-@media (prefers-color-scheme: dark) {
-  .pack-cycle-step-current {
-    background: var(--vl-blue300);
-    border-color: var(--vl-blue300);
-    color: #0c1119;
-  }
 }
 
 .pack-cycle-arrow {

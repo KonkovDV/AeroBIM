@@ -47,7 +47,7 @@ export default function CapabilityHonestyPanel({
       </div>
 
       {blocking.length > 0 && (
-        <p className="capability-block-banner" role="status">
+        <p className="capability-block-banner" role="note">
           {UI_COPY.capBlocking(
             blocking.length,
             blocking.map(capabilityStatusPhrase).join("; "),
@@ -56,7 +56,7 @@ export default function CapabilityHonestyPanel({
       )}
 
       {skipped.length > 0 && (
-        <p className="capability-skip-banner" role="status" data-testid="capability-skip-banner">
+        <p className="capability-skip-banner" role="note" data-testid="capability-skip-banner">
           {UI_COPY.capSkipped(
             skipped.map(capabilityStatusPhrase).join("; "),
           )}

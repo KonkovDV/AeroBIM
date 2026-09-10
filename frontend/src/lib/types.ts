@@ -40,6 +40,12 @@ export interface ParsedRequirement {
   evidence_modality: string | null;
 }
 
+export type FindingLayer =
+  | "pack_finding"
+  | "coverage_note"
+  | "service_record"
+  | "advisory_candidate";
+
 export interface ValidationIssue {
   rule_id: string;
   severity: "info" | "warning" | "error";
@@ -106,6 +112,15 @@ export interface ValidationIssue {
   storey_name?: string | null;
   /** IfcGridAxis.AxisTag. Never invented from OCR. */
   grid_axis?: string | null;
+  /** Presentation layer from the API (WP-R4). Not a verdict. */
+  layer?: FindingLayer;
+  completeness?: {
+    has_essence: boolean;
+    has_clause: boolean;
+    has_location: boolean;
+    has_object: boolean;
+    full_triad: boolean;
+  };
 }
 
 export interface DrawingAnnotation {

@@ -14,6 +14,7 @@ import {
   latestHitlState,
   latestReviewSequence,
 } from "../lib/hitl-state";
+import { pickLandingIssueIndex } from "../lib/issue-triage";
 import { classifyRequestFailure, type RequestFailureKind } from "../lib/request-failure";
 import type { ValidationIssue, ValidationReport } from "../lib/types";
 import { UI_COPY } from "../lib/ui-copy";
@@ -168,10 +169,12 @@ export function useSelectedReport(
         setSelectedReport(report);
         selectedReportRef.current = report;
         setReportError(null);
-        setSelectedIssueIndex(0);
+        const landingIndex = pickLandingIssueIndex(report.issues);
+        selectedIssueIndexRef.current = landingIndex;
+        setSelectedIssueIndex(landingIndex);
         setSelectedClashIndex(null);
-        const firstIssue = report.issues[0];
-        setRemarkDraft(firstIssue ? effectiveRemarkText(firstIssue, []) : "");
+        const landingIssue = report.issues[landingIndex];
+        setRemarkDraft(landingIssue ? effectiveRemarkText(landingIssue, []) : "");
         setRemarkSaveState("idle");
         setHitlDecisionState("idle");
         setReportLoading(false);

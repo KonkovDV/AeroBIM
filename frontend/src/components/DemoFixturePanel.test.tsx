@@ -45,6 +45,40 @@ describe("DemoFixturePanel", () => {
     expect(screen.getByTestId("demo-fixture-panel").getAttribute("data-compact")).toBe("true");
   });
 
+  it("announces seed start before POST so the list cannot snap to the overlay fixture", async () => {
+    const onSeeded = vi.fn();
+    const onSeedStarted = vi.fn();
+    let release: (value: {
+      fixture: boolean;
+      checkpoint: string;
+      closes_rt001: boolean;
+      report_id: string;
+      issue_count: number;
+      note: string;
+    }) => void = () => undefined;
+    seedDemoFixtureMock.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          release = resolve;
+        }),
+    );
+    render(<DemoFixturePanel onSeeded={onSeeded} onSeedStarted={onSeedStarted} />);
+    fireEvent.click(screen.getByRole("button", { name: UI_COPY.demoSeed }));
+    expect(onSeedStarted).toHaveBeenCalledTimes(1);
+    expect(onSeeded).not.toHaveBeenCalled();
+    release({
+      fixture: true,
+      checkpoint: "GO",
+      closes_rt001: false,
+      report_id: "c".repeat(32),
+      issue_count: 3,
+      note: "Git fixture",
+    });
+    await waitFor(() => {
+      expect(onSeeded).toHaveBeenCalledWith("c".repeat(32));
+    });
+  });
+
   it("hides the essay when the expert already has a report", () => {
     render(<DemoFixturePanel onSeeded={vi.fn()} hideIntro />);
     expect(screen.getByTestId("demo-fixture-panel").getAttribute("data-compact")).toBe("true");

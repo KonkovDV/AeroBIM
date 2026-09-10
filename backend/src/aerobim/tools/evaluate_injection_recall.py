@@ -39,7 +39,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from aerobim.domain.checkpoint import CHECKPOINT
+from aerobim.domain.checkpoint import CHECKPOINT, checkpoint_fields
 from aerobim.domain.study_design import wilson_interval
 from aerobim.tools._cli_base import run_cli
 
@@ -246,41 +246,46 @@ def build_artifact(
     source_label: str,
     generated_at: str | None = None,
 ) -> dict[str, Any]:
-    return {
+    payload: dict[str, Any] = {
         "schema_version": SCHEMA_VERSION,
         "artifact_type": "defect_injection_recall_run",
         "claim_level": "synthetic_only",
         "claim_boundary": CLAIM_BOUNDARY,
-        "checkpoint": CHECKPOINT,
-        "closes_rt001": False,
-        "closes_rt002": False,
-        "closes_rt003": False,
-        "generated_at": generated_at or datetime.now(UTC).isoformat(),
-        "git_commit": git_commit,
-        "seed": manifest.get("seed"),
-        "source_label": source_label,
-        "source_path_sha256": _source_tree_hash(manifest),
-        "source_content_hashed": False,
-        "manifest_sha256": _sha256_file(manifest_path),
-        "frozen_formula": (
-            f"On the frozen source {source_label} (path-string hash only; IFC "
-            f"bytes not in git) at commit {git_commit or 'UNVERIFIED'} with "
-            f"seed {manifest.get('seed')} the mutation-kill recall below was "
-            "obtained."
-        ),
-        "detection_proxy": (
-            "killed = issue multiset of the mutated variant differs from the "
-            "unmutated CONTROL variant (novel or vanished findings). Direction "
-            "is reported per class; a vanished alarm is recorded as a hide, "
-            "not as confirmation of the intended defect."
-        ),
-        "plan_deviation": PLAN_DEVIATION,
-        "determinism_check": determinism_check,
-        "per_class": evaluation["rows"],
-        "not_applied_classes": evaluation["not_applied_classes"],
-        "control_issue_count": evaluation["control_issue_count"],
-        "aggregate": evaluation["aggregate"],
     }
+    payload.update(checkpoint_fields())
+    payload.update(
+        {
+            "closes_rt001": False,
+            "closes_rt002": False,
+            "closes_rt003": False,
+            "generated_at": generated_at or datetime.now(UTC).isoformat(),
+            "git_commit": git_commit,
+            "seed": manifest.get("seed"),
+            "source_label": source_label,
+            "source_path_sha256": _source_tree_hash(manifest),
+            "source_content_hashed": False,
+            "manifest_sha256": _sha256_file(manifest_path),
+            "frozen_formula": (
+                f"On the frozen source {source_label} (path-string hash only; IFC "
+                f"bytes not in git) at commit {git_commit or 'UNVERIFIED'} with "
+                f"seed {manifest.get('seed')} the mutation-kill recall below was "
+                "obtained."
+            ),
+            "detection_proxy": (
+                "killed = issue multiset of the mutated variant differs from the "
+                "unmutated CONTROL variant (novel or vanished findings). Direction "
+                "is reported per class; a vanished alarm is recorded as a hide, "
+                "not as confirmation of the intended defect."
+            ),
+            "plan_deviation": PLAN_DEVIATION,
+            "determinism_check": determinism_check,
+            "per_class": evaluation["rows"],
+            "not_applied_classes": evaluation["not_applied_classes"],
+            "control_issue_count": evaluation["control_issue_count"],
+            "aggregate": evaluation["aggregate"],
+        }
+    )
+    return payload
 
 
 def _source_tree_hash(manifest: Mapping[str, Any]) -> str | None:
@@ -296,7 +301,7 @@ def render_markdown(artifact: Mapping[str, Any]) -> str:
     aggregate = artifact["aggregate"]
     wilson = aggregate.get("wilson_95") or {}
     lines = [
-        '<!-- claims-lint: allow-file reason="Injection recall run; synthetic mutation test; NO_GO" -->',
+        '<!-- claims-lint: allow-file reason="Injection recall run; synthetic mutation test; GO; customer_go false" -->',
         "---",
         'title: "Defect-injection recall run — mutation-kill, synthetic-only"',
         'date: "2026-09-03"',

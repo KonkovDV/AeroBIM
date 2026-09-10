@@ -2,9 +2,9 @@
 ---
 title: "Eight tracker tasks (29.08) — git SSOT for KT#3"
 date: "2026-08-30"
-last_updated: "2026-09-05"
+last_updated: "2026-09-09"
 status: active
-version: "1.2.0"
+version: "1.3.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -77,5 +77,9 @@ Checkpoint **`GO`**; `customer_go` false. Пакет канала **не** в gi
 ## Сдача 19–21.09 (честный состав)
 
 Реестр вне git · объём находок (не %) · классификатор ≥20 · стенд двух ролей **если** BFF не 501 · записка ЛИРА · одностраничник RVT/NWD · журнал писем. Если эталона нет — **NO_GO** с работающим ядром, не перекрашивать.
+
+## Дополнение 09.09 вечер (не восьмая задача трекера)
+
+Письмо организаторов: к **14.09** заказчику нужны **три отчёта** по направленным комплектам и **самостоятельный** прогон. Это не SIG-01…08. Прямого контакта с Самолётом нет — единственный канал организаторы. **14.09 финальная** для заказчика; слот **15.09** — менторы, не вторая сдача. GitHub не канал. Демо-seed не отчёт. Ответ организаторам — [`../partners/KT3_ORGANIZER_REPLY_14_09.md`](../partners/KT3_ORGANIZER_REPLY_14_09.md) (`OA-23`). Поставка — [`../partners/KT3_CUSTOMER_DELIVERY_14_09.md`](../partners/KT3_CUSTOMER_DELIVERY_14_09.md) (`OA-22`). Пустой индекс `ready_for_deadline=false` — правильное состояние, пока владелец не отправил.
 
 Связанные: [`KT3_WINDOW_CRITICAL_PATH_2026_09.md`](KT3_WINDOW_CRITICAL_PATH_2026_09.md) · [`OWNER_ACTIONS_2026_09.md`](../OWNER_ACTIONS_2026_09.md) · [`KT3_HYPERPLAN_TRIAGE_RT_WH_2026_09.md`](KT3_HYPERPLAN_TRIAGE_RT_WH_2026_09.md).

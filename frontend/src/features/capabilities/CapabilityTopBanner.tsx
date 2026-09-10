@@ -14,7 +14,7 @@ export default function CapabilityTopBanner({
   const rows = capabilities ? capabilityRows(capabilities) : [];
   if (rows.length === 0) {
     return (
-      <p className="capability-top-banner" role="status" data-testid="capability-top-banner">
+      <p className="capability-top-banner" role="note" data-testid="capability-top-banner">
         {UI_COPY.capabilityMissing}
       </p>
     );
@@ -30,15 +30,21 @@ export default function CapabilityTopBanner({
 
   if (blocking.length === 0 && skipped.length === 0) {
     return (
-      <p className="capability-top-banner capability-top-banner-ok" role="status" data-testid="capability-top-banner">
+      <p className="capability-top-banner capability-top-banner-ok" role="note" data-testid="capability-top-banner">
         {UI_COPY.capabilityOkBanner}
       </p>
     );
   }
 
+  const incomplete = [...blocking, ...skipped];
   return (
-    <p className="capability-top-banner" role="status" data-testid="capability-top-banner">
-      {[...blocking, ...skipped].map(humanCapabilityLine).join(". ")}. {UI_COPY.silenceIsNotSuccess}
-    </p>
+    <div className="capability-top-banner" role="note" data-testid="capability-top-banner">
+      <details>
+        <summary>
+          {UI_COPY.capabilityIncompleteSummary(incomplete.length, rows.length)}. {UI_COPY.silenceIsNotSuccess}
+        </summary>
+        <p className="capability-top-banner-lines">{incomplete.map(humanCapabilityLine).join(". ")}</p>
+      </details>
+    </div>
   );
 }

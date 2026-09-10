@@ -41,6 +41,20 @@
   color: var(--vl-green700);
 }
 
+.capability-top-banner details {
+  flex: 1;
+  min-width: 0;
+}
+
+.capability-top-banner summary {
+  cursor: pointer;
+}
+
+.capability-top-banner-lines {
+  margin: var(--vl-space-2) 0 0;
+  font-weight: 400;
+}
+
 .synthetic-content-mark {
   padding: 1px var(--vl-space-2);
   border-radius: var(--vl-radius-xs);

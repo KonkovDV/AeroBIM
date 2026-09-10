@@ -14,7 +14,9 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Final
 
-SCHEMA_VERSION: Final = "1.1.0"
+from aerobim.domain.checkpoint import checkpoint_fields
+
+SCHEMA_VERSION: Final = "1.1.1"
 CLAIM_BOUNDARY: Final = (
     "Customer-review shortlist only. Machine verdict is copied unchanged. "
     "Human review does not establish package acceptance, product accuracy, "
@@ -163,7 +165,8 @@ def _project(issue: Mapping[str, Any]) -> dict[str, Any]:
             "actor": _text(review.get("actor"), 256),
             "event_id": _text(review.get("event_id"), 256),
         },
-        "customer_decision": {"status": state, "comment": None},
+        # Expert form starts empty. HITL accepted/pending is ranking input only.
+        "customer_decision": {"status": None, "comment": None},
     }
 
 
@@ -300,6 +303,27 @@ def _capabilities(report_payload: Mapping[str, Any]) -> tuple[dict[str, Any], li
     return capabilities, unverified
 
 
+def _looks_like_timeout(text: str) -> bool:
+    lowered = text.lower()
+    return any(marker in lowered for marker in ("timeout", "timed out", "timed_out", "таймаут"))
+
+
+def _timeout_notes(capabilities: Mapping[str, Any], report_payload: Mapping[str, Any]) -> list[str]:
+    """List drawing/PDF timeouts declared on the report; never invent them."""
+    notes: list[str] = []
+    for name in sorted(capabilities):
+        item = _map(capabilities.get(name))
+        reason = _text(item.get("reason"), 500) or ""
+        if _looks_like_timeout(f"{name} {reason}"):
+            notes.append(f"{name}: {reason}" if reason else name)
+    summary = _map(report_payload.get("summary"))
+    for key in ("warnings", "notes", "errors"):
+        for warning in _safe_texts(summary.get(key), 500):
+            if _looks_like_timeout(warning):
+                notes.append(warning)
+    return notes
+
+
 def _tally(rows: Sequence[Mapping[str, Any]], key: str, limit: int = 10) -> dict[str, int]:
     counts: dict[str, int] = {}
     for row in rows:
@@ -359,14 +383,16 @@ def build_customer_review_pack(
             representative["similar_count"] = _integer(representative.get("similar_count")) + 1
             collapsed += 1
             continue
-        row["similar_count"] = 1
+        row["similar_count"] = 1  # family size including this representative
         families[family] = row
         shortlist.append(row)
     selected = shortlist[:top_k]
     capabilities, unverified = _capabilities(report_payload)
+    timeout_notes = _timeout_notes(capabilities, report_payload)
     return {
         "artifact_type": "aerobim_customer_review_pack",
         "schema_version": SCHEMA_VERSION,
+        **checkpoint_fields(),
         "generated_at": generated_at or datetime.now(tz=UTC).isoformat(),
         "source_report_id": _text(report_payload.get("report_id"), 256),
         "source_report_sha256": source_report_sha256,
@@ -450,6 +476,7 @@ def build_customer_review_pack(
         ),
         "capabilities": capabilities,
         "not_evaluated_or_unverified": unverified,
+        "drawing_timeouts": timeout_notes,
         "findings": selected,
     }
 
@@ -483,7 +510,7 @@ def render_customer_review_markdown(pack: Mapping[str, Any]) -> str:
         f"- Accuracy / SLA: `{pack.get('accuracy_claim')}` / `{pack.get('sla_claim')}`",
         f"- На ревью: {_integer(counts.get('selected'))}"
         f" из {_integer(counts.get('total_findings'))} машинных находок",
-        f"- Совпало с известными замечаниями: {covered}",
+        f"- Совпало с известными замечаниями по identity-ключу (не recall): {covered}",
         "",
         "## Как получен shortlist",
         "",
@@ -504,6 +531,11 @@ def render_customer_review_markdown(pack: Mapping[str, Any]) -> str:
             "- " + (", ".join(unverified) if unverified else "нет отдельных ограничений в отчёте"),
             "- Пропуски данных вынесены отдельно: "
             f"{_integer(_map(pack.get('needs_data')).get('count'))} находок",
+            "- Таймауты PDF-чертежей: "
+            + (
+                "; ".join(_safe_texts(pack.get("drawing_timeouts"), 240))
+                or "в исходном отчёте отдельной строки нет; это не доказательство, что таймаутов не было"
+            ),
             "",
             "## Находки на решение",
             "",

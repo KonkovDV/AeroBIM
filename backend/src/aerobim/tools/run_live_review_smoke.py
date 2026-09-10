@@ -98,7 +98,7 @@ def build_backend_env(
 def build_frontend_env(base_env: Mapping[str, str], backend_base_url: str) -> dict[str, str]:
     env = dict(base_env)
     env["VITE_AEROBIM_API_BASE_URL"] = backend_base_url
-    # Cursor Agent sessions pin PLAYWRIGHT_BROWSERS_PATH at a TEMP sandbox
+    # IDE session agent sessions pin PLAYWRIGHT_BROWSERS_PATH at a TEMP sandbox
     # cache. That directory vanishes; the rehearsal must use the user cache.
     env.pop("PLAYWRIGHT_BROWSERS_PATH", None)
     return env

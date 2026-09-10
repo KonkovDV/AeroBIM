@@ -1,8 +1,8 @@
 ---
 title: "Поле «Презентация» — дека, речь, запреты"
 status: active
-version: "1.1.1"
-last_updated: "2026-09-04"
+version: "1.1.2"
+last_updated: "2026-09-10"
 claim_boundary: >
   Main deck files are still aerobim_kt2.pptx / aerobim_kt2.pdf until the
   KT#3 rebuild (P2, not this commit). Slide copy in slides.md.
@@ -14,6 +14,9 @@ claim_boundary: >
 # Презентация
 
 **Основная дека для формы (бинарь пока с меткой КТ#2):** [`aerobim_kt2.pptx`](aerobim_kt2.pptx) · [`aerobim_kt2.pdf`](aerobim_kt2.pdf).
+Текстовый каркас — [`slides.md`](slides.md). Если бинарь отсутствует в
+клоне, для речи использовать FAQ, не выдумывать слайды. Пересборка pptx
+под КТ#3 — P2 **до 18.09**, не этот коммит.
 
 Речь КТ#3 (SSOT, не слайд-файл): [`../../docs/demo/KT3_JURY_FAQ_2026_08_25.md`](../../docs/demo/KT3_JURY_FAQ_2026_08_25.md) · runbook: [`../../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md`](../../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md). Пересборка pptx под КТ#3 — P2 до 18.09, не этот коммит. Ролик 2–3 мин **не записываем и не прилагаем.** Показ продукта — живой CLI, не mp4 и не снимок HTML.
 

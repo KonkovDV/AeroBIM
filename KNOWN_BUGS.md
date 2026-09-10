@@ -65,7 +65,7 @@
 
 | ID | Kind | Honesty |
 |----|------|---------|
-| JOB-01 | Analyze **runner** is in-process FastAPI `BackgroundTasks`. Redis stores job **records**, not execution. Same idempotency key returns the live/succeeded job; different payload with the same key is not fingerprint-conflicted. | Not a Shared-gate writer. Do not claim durable workers. |
+| JOB-01 | Analyze **runner** is in-process FastAPI `BackgroundTasks`. Redis stores job **records**, not execution. Same key + same payload fingerprint returns the live/succeeded job; same key + different fingerprint → HTTP 409. | Not a Shared-gate writer. Do not claim durable workers. Fingerprint is path/id identity, not file-bytes. |
 | XML-POSTPARSE-01 | Element/depth/text caps run after defusedxml builds a tree. Byte cap (16 MiB) applies **before** parse. | Availability inside the cap, not XXE. |
 | IFC-ISO-01 | IfcOpenShell opens in the API process (1.5 GB disk band). Pdfium crop and pdfminer drawing extract run in a child process with wall-clock kill. Windows Job Object is CPU/memory, not a network jail. | Crash/OOM ≠ silent `summary.passed=true`. Not MEP delivered. |
 | UPLOAD-OS-01 | Upload object-store path uses `put_file` + `asyncio.to_thread`. RSS of this branch was not measured. | Not an OOM-closed claim. IFC caps unchanged. |

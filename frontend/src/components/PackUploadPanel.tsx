@@ -86,7 +86,7 @@ export default function PackUploadPanel({
         </p>
       ) : null}
       {honesty ? (
-        <p className="upload-honesty" role="status" data-testid="pack-kind-honesty">
+        <p className="upload-honesty" role="note" data-testid="pack-kind-honesty">
           {honesty}
         </p>
       ) : null}

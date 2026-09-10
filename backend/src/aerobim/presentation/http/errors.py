@@ -27,6 +27,7 @@ _PUBLIC_STORAGE_BOUNDARY = "Stored object escapes storage boundary"
 _PUBLIC_NOT_FOUND = "Object not found"
 _PUBLIC_EXPORT_UNAVAILABLE = "Export service unavailable"
 _PUBLIC_CSRF_HEADER_REQUIRED = "CSRF header required"
+_PUBLIC_IDEMPOTENCY_PAYLOAD_CONFLICT = "Idempotency-Key already used with a different payload"
 
 
 def public_bad_request_detail() -> str:
@@ -123,6 +124,12 @@ def public_csrf_header_required_detail() -> str:
     return _PUBLIC_CSRF_HEADER_REQUIRED
 
 
+def public_idempotency_payload_conflict_detail() -> str:
+    """Stable 409 when the same Idempotency-Key is reused with a different payload."""
+
+    return _PUBLIC_IDEMPOTENCY_PAYLOAD_CONFLICT
+
+
 __all__ = [
     "public_analyze_concurrency_limit_detail",
     "public_bad_request_detail",
@@ -133,6 +140,7 @@ __all__ = [
     "public_ifc_disk_backend_detail",
     "public_hitl_forbidden_detail",
     "public_hitl_state_conflict_detail",
+    "public_idempotency_payload_conflict_detail",
     "public_not_found_detail",
     "public_service_unavailable_detail",
     "public_storage_boundary_detail",

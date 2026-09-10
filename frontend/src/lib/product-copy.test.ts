@@ -15,6 +15,8 @@ describe("product copy safety boundaries", () => {
   });
   it("keeps browser limits, customer approval and timing uncertainty explicit", () => {
     expect(UI_COPY.viewerOverWasmCap).toContain("256 МиБ");
+    expect(UI_COPY.uploadSizeHonesty).toMatch(/1,5 ГБ/);
+    expect(UI_COPY.uploadSizeHonesty).toMatch(/256 МиБ/);
     expect(UI_COPY.runSizeHonesty).toContain("специальной настройки");
     expect(UI_COPY.runTimer("00:30")).toContain("Цель ТЗ записана как 30:00");
     expect(UI_COPY.runTimer("00:30")).toContain("SLA не заявляем");

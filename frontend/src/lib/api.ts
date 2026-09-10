@@ -719,6 +719,8 @@ export type DemoSeedFixtureResponse = {
   note: string;
   report_id: string;
   issue_count: number;
+  drawing_asset_id?: string | null;
+  finding_id?: string | null;
 };
 
 export type SystemCapabilitiesPayload = {

@@ -9,6 +9,21 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import Any
 
+from aerobim.domain.finding_layer import (
+    FINDING_LAYER_ORDER,
+    HITL_RULE_ID,
+    FindingLayer,
+    TzSection,
+    classify_finding_layer,
+    classify_tz_section,
+    layer_counts,
+    layer_labels,
+    layer_notes,
+    tz_section_labels,
+)
+from aerobim.domain.remark_completeness import completeness_table, incomplete_marker
+from aerobim.domain.review_projection import review_partition_of
+
 
 def issue_clause_label(issue: dict[str, Any]) -> str:
     """ИТЗ / СТО / СП stamp. Empty means the field is missing, not invented."""
@@ -24,6 +39,82 @@ def issue_clause_label(issue: dict[str, Any]) -> str:
         if part and str(part).strip()
     ]
     return " · ".join(parts)
+
+
+def issue_display_text(issue: dict[str, Any]) -> str:
+    """Russian (or overlaid) essence; mirrors frontend ``findingListTitle``."""
+
+    review = issue.get("review")
+    if isinstance(review, dict):
+        state = str(review.get("state") or "")
+        effective = str(review.get("effective_text") or "").strip()
+        if state == "edited" and effective:
+            return effective
+    remark = issue.get("remark")
+    if isinstance(remark, dict):
+        essence = str(remark.get("essence") or "").strip()
+        if essence and not essence.startswith("["):
+            return essence
+        title = str(remark.get("title") or "").strip()
+        if title:
+            colon = title.find(": ")
+            rest = title[colon + 2 :] if colon >= 0 else title
+            for suffix in (" [приоритет", " [priority"):
+                cut = rest.find(suffix)
+                if cut >= 0:
+                    rest = rest[:cut]
+            rest = rest.strip()
+            if rest and not rest.startswith("["):
+                return rest
+    return str(issue.get("message") or "")
+
+
+def issue_location_line(issue: dict[str, Any]) -> str:
+    remark = issue.get("remark")
+    if isinstance(remark, dict):
+        line = str(remark.get("location_line") or "").strip()
+        if line:
+            return line
+    bits: list[str] = []
+    storey = issue.get("storey_name")
+    if storey:
+        bits.append(str(storey))
+    axis = issue.get("grid_axis")
+    if axis:
+        bits.append(str(axis))
+    zone = issue.get("problem_zone")
+    if isinstance(zone, dict) and zone.get("sheet_id"):
+        bits.append(str(zone.get("sheet_id")))
+    guid = issue.get("element_guid")
+    if guid:
+        bits.append(str(guid))
+    return "; ".join(bits)
+
+
+def collapse_hitl_with_multiplicity(
+    issues: list[dict[str, Any]],
+) -> list[tuple[dict[str, Any], int]]:
+    """One HITL row per sheet; multiplicity is shown, rows are not dropped."""
+
+    out: list[tuple[dict[str, Any], int]] = []
+    index_by_key: dict[str, int] = {}
+    for issue in issues:
+        if str(issue.get("rule_id") or "") != HITL_RULE_ID:
+            out.append((issue, 1))
+            continue
+        zone = issue.get("problem_zone")
+        sheet = ""
+        if isinstance(zone, dict):
+            sheet = str(zone.get("sheet_id") or "").strip()
+        key = sheet or str(issue.get("message") or "")
+        seen = index_by_key.get(key)
+        if seen is not None:
+            first, count = out[seen]
+            out[seen] = (first, count + 1)
+            continue
+        index_by_key[key] = len(out)
+        out.append((issue, 1))
+    return out
 
 
 def _esc(value: str) -> str:
@@ -363,6 +454,82 @@ def _claim_boundary_banner(release: object) -> str:
     )
 
 
+def _executive_brief_section(data: dict[str, Any], *, locale: str) -> str:
+    """One-page operational brief. Does not hide skipped or advisory rows."""
+
+    from aerobim.domain.executive_brief import executive_brief
+
+    brief = data.get("executive_brief")
+    if not isinstance(brief, dict):
+        brief = executive_brief(data)
+    ru = locale != "en"
+    title = "Краткая выжимка" if ru else "Executive brief"
+    mode = (
+        "режим: один назначенный эксперт проверяет выданные находки "
+        "(не precision/recall, не двойная разметка)"
+        if ru
+        else "mode: named-expert review of issued findings (not precision/recall)"
+    )
+    rows = (
+        ("pack_findings", "замечаний к комплекту" if ru else "pack findings"),
+        ("confirmed", "подтверждено экспертом" if ru else "confirmed"),
+        ("edited", "текст эксперта" if ru else "expert text"),
+        ("rejected", "отклонено" if ru else "rejected"),
+        ("unresolved_review", "ещё без решения эксперта" if ru else "unresolved review"),
+        ("advisory_candidates", "кандидаты (не в знаменателе)" if ru else "advisory candidates"),
+        ("coverage_notes", "проверки без объектов" if ru else "coverage notes"),
+        ("service_records", "служебные записи" if ru else "service records"),
+        ("machine_records", "всего машинных записей" if ru else "machine records"),
+        ("coverage_not_checked", "ячеек покрытия not_checked" if ru else "coverage not_checked"),
+        ("mep_system_clash", "MEP system clash"),
+        ("native_dwg", "native DWG"),
+        ("calculation_correctness", "calculation correctness"),
+        (
+            "run_duration_ms",
+            "длительность прогона, мс (не SLA)" if ru else "run duration ms (not SLA)",
+        ),
+    )
+    body = ""
+    for key, label in rows:
+        body += f"<tr><td>{_esc(label)}</td><td>{_esc(str(brief.get(key)))}</td></tr>\n"
+    neg = brief.get("negative_capabilities") or ()
+    neg_html = ""
+    for item in neg:
+        if isinstance(item, dict):
+            neg_html += (
+                f"<tr><td>{_esc(str(item.get('name')))}</td>"
+                f"<td>{_esc(str(item.get('status')))}</td></tr>\n"
+            )
+    if not neg_html:
+        neg_html = (
+            "<tr><td colspan='2'>"
+            + _esc(
+                "именованные пробелы: MEP / DWG / calculation в таблице выше"
+                if ru
+                else "named gaps listed above"
+            )
+            + "</td></tr>\n"
+        )
+    disclaimer = str(brief.get("claim_boundary") or "")
+    return (
+        "<section class='exec-brief' id='executive-brief'>"
+        f"<h2>{_esc(title)}</h2>"
+        f"<p class='overlay-note'>{_esc(mode)}. hides_negative="
+        f"{_esc(str(brief.get('hides_negative')).lower())} · "
+        f"is_accuracy={_esc(str(brief.get('is_accuracy')).lower())} · "
+        f"is_sla={_esc(str(brief.get('is_sla')).lower())} · "
+        f"review_mode={_esc(str(brief.get('review_mode')))}</p>"
+        f"<p class='overlay-note'>{_esc(disclaimer)}</p>"
+        "<table><thead><tr><th>поле</th><th>значение</th></tr></thead>"
+        f"<tbody>{body}</tbody></table>"
+        "<p class='overlay-note'>"
+        + ("Пропуски и NOT_VERIFIED не скрыты." if ru else "SKIPPED and NOT_VERIFIED stay visible.")
+        + "</p>"
+        "<table><thead><tr><th>capability</th><th>status</th></tr></thead>"
+        f"<tbody>{neg_html}</tbody></table></section>\n"
+    )
+
+
 def _kt2_release_section(release: object) -> str:
     if not isinstance(release, dict) or not release:
         return ""
@@ -440,11 +607,346 @@ def _overlay_section(overlay_image_href: str | None) -> str:
     )
 
 
+def _review_badge(issue: dict[str, Any], *, locale: str) -> str:
+    state = review_partition_of(issue)
+    if state == "confirmed":
+        label = "подтверждено экспертом" if locale != "en" else "confirmed by expert"
+        return f" <span class='review-badge confirmed'>{_esc(label)}</span>"
+    if state == "edited":
+        label = "текст эксперта" if locale != "en" else "expert text"
+        return f" <span class='review-badge edited'>{_esc(label)}</span>"
+    return ""
+
+
+def _build_layer_issue_rows(
+    issues: list[dict[str, Any]],
+    *,
+    locale: str,
+    collapse_hitl: bool = False,
+) -> str:
+    rows = ""
+    pairs: list[tuple[dict[str, Any], int]]
+    if collapse_hitl:
+        pairs = collapse_hitl_with_multiplicity(issues)
+    else:
+        pairs = [(issue, 1) for issue in issues]
+    pairs = sorted(pairs, key=lambda pair: pair[0].get("priority", 0), reverse=True)
+    for issue, multiplicity in pairs:
+        sev = issue.get("severity", "")
+        pri = issue.get("priority", 0)
+        pri_class = "pri-high" if pri >= 45 else "pri-med" if pri >= 25 else "pri-low"
+        band = _triage_band(issue)
+        band_html = f" <span class='band band-{band}'>{_esc(band)}</span>" if band else ""
+        display = issue_display_text(issue)
+        clause = issue_clause_label(issue)
+        clause_html = _esc(clause) if clause else ("нет пункта" if locale != "en" else "no clause")
+        location = issue_location_line(issue) or ("—" if locale != "en" else "—")
+        marker = incomplete_marker(issue, locale=locale)
+        marker_html = f" <span class='incomplete'>{_esc(marker)}</span>" if marker else ""
+        multi_html = f" <span class='hitl-n'>×{multiplicity}</span>" if multiplicity > 1 else ""
+        finding_id = issue.get("finding_id") or ""
+        machine = str(issue.get("message") or "")
+        review = issue.get("review") if isinstance(issue.get("review"), dict) else {}
+        if isinstance(review, dict) and review.get("machine_text"):
+            machine_line = str(review.get("machine_text") or "")
+        else:
+            machine_line = machine
+        audit = f"finding_id={_esc(str(finding_id))}" if finding_id else ""
+        origin = issue.get("origin")
+        if origin:
+            audit = (
+                f"{audit} · origin={_esc(str(origin))}" if audit else f"origin={_esc(str(origin))}"
+            )
+        gate = issue.get("gate_class")
+        if gate:
+            audit = f"{audit} · gate={_esc(str(gate))}" if audit else f"gate={_esc(str(gate))}"
+        if isinstance(review, dict):
+            actor = review.get("actor")
+            if actor:
+                audit = (
+                    f"{audit} · actor={_esc(str(actor))}" if audit else f"actor={_esc(str(actor))}"
+                )
+            state = review.get("state")
+            if state:
+                audit = (
+                    f"{audit} · state={_esc(str(state))}" if audit else f"state={_esc(str(state))}"
+                )
+        rows += (
+            f"<tr><td class='sev {_esc(sev)}'>{_esc(sev)}{band_html}</td>"
+            f"<td class='{pri_class}'>{pri}</td>"
+            f"<td>{_esc(str(issue.get('rule_id', '')))}</td>"
+            f"<td class='essence'>{_esc(display)}{_review_badge(issue, locale=locale)}"
+            f"{multi_html}{marker_html}</td>"
+            f"<td class='clause'>{clause_html}</td>"
+            f"<td>{_esc(location)}</td>"
+            f"<td>{_esc(str(issue.get('element_guid') or ''))}</td></tr>\n"
+            f"<tr class='detail'><td colspan='7'>"
+            f"<small class='audit'>{audit}</small>"
+            f"<br><small class='machine'>machine={_esc(machine_line)}</small>"
+            f"</td></tr>\n"
+        )
+    return rows
+
+
+def _issues_table(
+    issues: list[dict[str, Any]],
+    *,
+    locale: str,
+    collapse_hitl: bool = False,
+) -> str:
+    essence = "Суть замечания" if locale != "en" else "Essence"
+    clause = "Пункт нормы" if locale != "en" else "Clause"
+    location = "Локация" if locale != "en" else "Location"
+    severity = "Серьёзность" if locale != "en" else "Severity"
+    priority = "Приоритет" if locale != "en" else "Priority"
+    rule = "Правило" if locale != "en" else "Rule"
+    return (
+        "<table><thead><tr>"
+        f"<th>{severity}</th><th>{priority}</th><th>{rule}</th>"
+        f"<th>{essence}</th><th>{clause}</th><th>{location}</th><th>GUID</th>"
+        "</tr></thead>"
+        f"<tbody>{_build_layer_issue_rows(issues, locale=locale, collapse_hitl=collapse_hitl)}"
+        "</tbody></table>"
+    )
+
+
+def _group_by_tz(issues: list[dict[str, Any]]) -> dict[TzSection, list[dict[str, Any]]]:
+    grouped: dict[TzSection, list[dict[str, Any]]] = defaultdict(list)
+    for issue in issues:
+        grouped[classify_tz_section(issue)].append(issue)
+    return grouped
+
+
+def _build_layer_sections(issues: list[dict[str, Any]], *, locale: str) -> str:
+    labels = layer_labels(locale)
+    notes = layer_notes(locale)
+    tz_labels = tz_section_labels(locale)
+    rejected = [item for item in issues if review_partition_of(item) == "rejected"]
+    active = [item for item in issues if review_partition_of(item) != "rejected"]
+    by_layer: dict[FindingLayer, list[dict[str, Any]]] = {
+        layer: [item for item in active if classify_finding_layer(item) == layer]
+        for layer in FINDING_LAYER_ORDER
+    }
+    html = ""
+    for layer in FINDING_LAYER_ORDER:
+        layer_issues = by_layer[layer]
+        heading = labels[layer]
+        note = notes[layer]
+        if layer in {"pack_finding", "advisory_candidate"}:
+            html += (
+                f"<section class='layer' id='layer-{layer}'>"
+                f"<h2>{_esc(heading)} ({len(layer_issues)})</h2>"
+                f"<p class='overlay-note'>{_esc(note)}</p>"
+            )
+            grouped = _group_by_tz(layer_issues)
+            for section in tz_section_labels(locale):
+                bucket = grouped.get(section) or []
+                if not bucket:
+                    continue
+                html += (
+                    f"<h3>{_esc(tz_labels[section])} ({len(bucket)})</h3>"
+                    f"{_issues_table(bucket, locale=locale)}"
+                )
+            html += "</section>\n"
+            continue
+        collapse = layer == "service_record"
+        html += (
+            f"<section class='layer' id='layer-{layer}'>"
+            f"<h2>{_esc(heading)} ({len(layer_issues)})</h2>"
+            f"<p class='overlay-note'>{_esc(note)}</p>"
+            f"{_issues_table(layer_issues, locale=locale, collapse_hitl=collapse)}"
+            "</section>\n"
+        )
+    if rejected:
+        rejected_h = "Отклонено экспертом" if locale != "en" else "Rejected by expert"
+        html += (
+            f"<section class='layer' id='layer-rejected'>"
+            f"<h2>{_esc(rejected_h)} ({len(rejected)})</h2>"
+            "<p class='overlay-note'>"
+            + (
+                "Запись сохранена для аудита и не входит в список замечаний."
+                if locale != "en"
+                else "Kept for audit; not in the pack-finding list."
+            )
+            + "</p>"
+            f"{_issues_table(rejected, locale=locale)}"
+            "</section>\n"
+        )
+    return html
+
+
+def _passport_section(data: dict[str, Any], *, locale: str) -> str:
+    passport = data.get("run_passport")
+    if not isinstance(passport, dict):
+        return ""
+    title = "Паспорт прогона" if locale != "en" else "Run passport"
+    disclaimer = str(passport.get("disclaimer") or "")
+    rows = ""
+    for stage in passport.get("stages") or ():
+        if not isinstance(stage, dict):
+            continue
+        rows += (
+            f"<tr><td>{_esc(str(stage.get('name')))}</td>"
+            f"<td>{_esc(str(stage.get('duration_ms')))}</td>"
+            f"<td>{_esc(str(stage.get('cumulative_ms')))}</td></tr>\n"
+        )
+    coverage_raw = passport.get("format_coverage")
+    coverage = coverage_raw if isinstance(coverage_raw, dict) else {}
+    fmt_rows = ""
+    for row in coverage.get("rows") or ():
+        if not isinstance(row, dict):
+            continue
+        fmt_rows += (
+            f"<tr><td>{_esc(str(row.get('suffix')))}</td>"
+            f"<td>{_esc(str(row.get('disposition')))}</td>"
+            f"<td>{_esc(str(row.get('reason')))}</td></tr>\n"
+        )
+    submitted = coverage.get("submitted", "—")
+    read = coverage.get("read", "—")
+    rejected = coverage.get("rejected", "—")
+    return (
+        "<section class='passport' id='run-passport'>"
+        f"<h2>{_esc(title)}</h2>"
+        f"<p class='overlay-note'>{_esc(disclaimer)} is_sla=false</p>"
+        "<table><thead><tr><th>stage</th><th>ms</th><th>cumulative</th></tr></thead>"
+        f"<tbody>{rows}</tbody></table>"
+        f"<p class='overlay-note'>formats: submitted={_esc(str(submitted))} · "
+        f"read={_esc(str(read))} · rejected={_esc(str(rejected))}</p>"
+        f"<table><thead><tr><th>suffix</th><th>disposition</th><th>reason</th></tr></thead>"
+        f"<tbody>{fmt_rows}</tbody></table></section>\n"
+    )
+
+
+def _calculation_export_section(data: dict[str, Any], *, locale: str) -> str:
+    section = data.get("calculation_section")
+    if not isinstance(section, dict):
+        return ""
+    title = "Сверка с расчётом" if locale != "en" else "Calculation compare"
+    note = (
+        "Сверка заявленных значений между документом и моделью; независимый пересчёт вне scope MVP."
+        if locale != "en"
+        else "Declared-value compare; independent recalculation is out of MVP scope."
+    )
+    rows = ""
+    for row in section.get("rows") or ():
+        if not isinstance(row, dict):
+            continue
+        rows += (
+            f"<tr><td>{_esc(str(row.get('id')))}</td>"
+            f"<td>{_esc(str(row.get('label')))}</td>"
+            f"<td>{_esc(str(row.get('status')))}</td>"
+            f"<td>{_esc(str(row.get('note')))}</td></tr>\n"
+        )
+    return (
+        "<section class='calc' id='calculation-compare'>"
+        f"<h2>{_esc(title)}</h2>"
+        f"<p class='overlay-note'>{_esc(note)}</p>"
+        "<table><thead><tr><th>id</th><th>check</th><th>status</th><th>note</th></tr></thead>"
+        f"<tbody>{rows}</tbody></table></section>\n"
+    )
+
+
+def _revision_section(data: dict[str, Any], *, locale: str) -> str:
+    diff = data.get("revision_diff")
+    if not isinstance(diff, dict):
+        return ""
+    title = "Сравнение с ревизией" if locale != "en" else "Revision compare"
+    honesty = (
+        "«не воспроизведено» не означает «исправлено»: проверка могла не выполниться повторно."
+        if locale != "en"
+        else "'no longer reported' does not mean 'fixed'; the check may not have re-run."
+    )
+
+    def _lis(key: str) -> str:
+        values = diff.get(key) or []
+        if not isinstance(values, list):
+            return ""
+        return "".join(f"<li>{_esc(str(item))}</li>" for item in values)
+
+    newly = "новые" if locale != "en" else "newly_reported"
+    still = "ещё есть" if locale != "en" else "still_reported"
+    gone = "не воспроизведено" if locale != "en" else "no_longer_reported"
+    return (
+        "<section class='revision' id='revision-diff'>"
+        f"<h2>{_esc(title)}</h2>"
+        f"<p class='overlay-note'>{_esc(honesty)}</p>"
+        f"<h3>{_esc(newly)}</h3><ul>{_lis('newly_reported')}</ul>"
+        f"<h3>{_esc(still)}</h3><ul>{_lis('still_reported')}</ul>"
+        f"<h3>{_esc(gone)}</h3><ul>{_lis('no_longer_reported')}</ul>"
+        "</section>\n"
+    )
+
+
+def _completeness_section(issues: list[dict[str, Any]], *, locale: str) -> str:
+    table = completeness_table(issues)
+    title = "Полнота замечания (формат 2.1.5)" if locale != "en" else "Remark completeness (2.1.5)"
+    note = (
+        "Доля строк слоя «замечания к комплекту» с сутью, пунктом и локацией. Не точность продукта."
+        if locale != "en"
+        else "Share of pack-finding rows with essence, clause and location. Not product accuracy."
+    )
+    return (
+        "<section class='completeness' id='remark-completeness'>"
+        f"<h2>{_esc(title)}</h2>"
+        f"<p class='overlay-note'>{_esc(note)} "
+        f"claim_level={_esc(str(table['claim_level']))} · is_accuracy=false</p>"
+        "<table><thead><tr>"
+        f"<th>{'Показатель' if locale != 'en' else 'Metric'}</th>"
+        f"<th>{'Значение' if locale != 'en' else 'Value'}</th>"
+        "</tr></thead><tbody>"
+        f"<tr><td>pack_finding</td><td>{_esc_count(table['pack_finding_count'])}</td></tr>"
+        f"<tr><td>full_triad</td><td>{_esc_count(table['full_triad_count'])}</td></tr>"
+        f"<tr><td>share_full_triad</td><td>{_esc(str(table['share_full_triad']))}</td></tr>"
+        "</tbody></table></section>\n"
+    )
+
+
+def _layer_header(issues: list[dict[str, Any]], *, locale: str) -> str:
+    counts = layer_counts(issues)
+    rejected = sum(1 for item in issues if review_partition_of(item) == "rejected")
+    confirmed = sum(
+        1
+        for item in issues
+        if classify_finding_layer(item) == "pack_finding"
+        and review_partition_of(item) == "confirmed"
+    )
+    pack_shown = sum(
+        1
+        for item in issues
+        if classify_finding_layer(item) == "pack_finding"
+        and review_partition_of(item) != "rejected"
+    )
+    if locale == "en":
+        return (
+            "<p class='layer-break' id='layer-breakdown'>"
+            f"pack findings: {_esc_count(pack_shown)} · "
+            f"confirmed: {_esc_count(confirmed)} · "
+            f"rejected: {_esc_count(rejected)} · "
+            f"coverage notes: {_esc_count(counts['coverage_note'])} · "
+            f"service records: {_esc_count(counts['service_record'])} · "
+            f"candidates: {_esc_count(counts['advisory_candidate'])} · "
+            f"machine records: {_esc_count(len(issues))}"
+            "</p>\n"
+        )
+    return (
+        "<p class='layer-break' id='layer-breakdown'>"
+        f"замечаний к комплекту: {_esc_count(pack_shown)} · "
+        f"подтверждено экспертом: {_esc_count(confirmed)} · "
+        f"отклонено: {_esc_count(rejected)} · "
+        f"проверок без объектов: {_esc_count(counts['coverage_note'])} · "
+        f"служебных записей: {_esc_count(counts['service_record'])} · "
+        f"кандидатов: {_esc_count(counts['advisory_candidate'])} · "
+        f"всего машинных записей: {_esc_count(len(issues))}"
+        "</p>\n"
+    )
+
+
 def render_report_html(
     report_id: str,
     data: dict[str, Any],
     *,
     overlay_image_href: str | None = None,
+    locale: str = "ru",
 ) -> str:
     """Render the serialized public report payload as a standalone HTML page."""
     summary: dict[str, Any] = data["summary"]
@@ -512,10 +1014,33 @@ def render_report_html(
     kt2_release = data.get("kt2_release")
     kt2_release_html = _kt2_release_section(kt2_release)
     claim_banner = _claim_boundary_banner(kt2_release)
+    issue_rows = [item for item in data.get("issues") or () if isinstance(item, dict)]
+    normalized_locale = "en" if str(locale).strip().lower().startswith("en") else "ru"
+    html_lang = "en" if normalized_locale == "en" else "ru"
+    page_title = "Validation Report"
+    heading = "Отчёт проверки" if normalized_locale != "en" else "Validation Report"
+    appendix_title = (
+        "Приложение: полный машинный лог"
+        if normalized_locale != "en"
+        else "Appendix: full machine log"
+    )
+    layer_html = _build_layer_sections(issue_rows, locale=normalized_locale)
+    completeness_html = _completeness_section(issue_rows, locale=normalized_locale)
+    passport_html = _passport_section(data, locale=normalized_locale)
+    calculation_html = _calculation_export_section(data, locale=normalized_locale)
+    revision_html = _revision_section(data, locale=normalized_locale)
+    breakdown_html = _layer_header(issue_rows, locale=normalized_locale)
+    brief_html = _executive_brief_section(data, locale=normalized_locale)
+    appendix_html = (
+        f"<section class='appendix' id='machine-log'><h2>{_esc(appendix_title)}</h2>"
+        f"{category_sections}</section>\n"
+        if category_sections
+        else ""
+    )
 
     return f"""<!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8">
-<title>Validation Report {_esc(report_id)}</title>
+<html lang="{html_lang}"><head><meta charset="utf-8">
+<title>{page_title} {_esc(report_id)}</title>
 <style>
 :root{{--error:#c00;--warning:#b58900;--info:#555;--bg-pass:#d4edda;--bg-fail:#f8d7da}}
 body{{font-family:system-ui,sans-serif;margin:2em;color:#222;line-height:1.5}}
@@ -524,7 +1049,7 @@ h2{{font-size:1.1em;margin:1.2em 0 .5em}}
 .summary{{margin:1em 0;padding:1em;border-radius:6px;font-size:1.05em}}
 .pass{{background:var(--bg-pass);color:#155724}}
 .fail{{background:var(--bg-fail);color:#721c24}}
-section.cat{{margin-top:1.5em}}
+section.cat,section.layer,section.appendix{{margin-top:1.5em}}
 table{{border-collapse:collapse;width:100%;margin-top:.5em;font-size:.95em}}
 th,td{{border:1px solid #ccc;padding:.4em .8em;text-align:left;vertical-align:top}}
 th{{background:#f5f5f5}}
@@ -555,9 +1080,17 @@ font-weight:700;vertical-align:middle}}
 .overlay-note{{font-size:.9em;color:#555}}
 .claim-boundary{{margin:1em 0;padding:.75em 1em;border:1px solid #b58900;
 background:#fff8e1;font-size:.95em}}
+.exec-brief{{margin:1em 0;padding:.75em 1em;border:1px solid #ccc;background:#fafafa}}
+.layer-break{{margin:.75em 0;font-size:.95em}}
+.incomplete{{display:inline-block;margin-left:.4em;color:#721c24;font-size:.8em}}
+.review-badge{{display:inline-block;margin-left:.4em;padding:0 .4em;border-radius:8px;
+font-size:.75em;background:#e8f5e9}}
+.review-badge.edited{{background:#e3f2fd}}
+.hitl-n{{font-weight:700}}
 </style></head><body>
-<h1>Validation Report</h1>
+<h1>{heading}</h1>
 {claim_banner}
+{brief_html}
 <div class="summary {status_class}">
 <strong>{status_label}</strong> &mdash;
 summary.passed={_esc(str(passed).lower())} &middot;
@@ -566,7 +1099,8 @@ summary.outcome={_esc(str(outcome_text))} &middot;
 {_esc_count(summary["warning_count"])} warning(s) &middot;
 {_esc_count(summary["requirement_count"])} requirement(s)
 </div>
-{overlay_html}{text_evidence_html}{coverage_html}{gates_html}{capabilities_html}{kt2_release_html}{iso_section}{category_sections}
+{breakdown_html}
+{overlay_html}{text_evidence_html}{coverage_html}{passport_html}{calculation_html}{revision_html}{completeness_html}{layer_html}{gates_html}{capabilities_html}{kt2_release_html}{iso_section}{appendix_html}
 <p class="meta">
 Report ID: {_esc(report_id)} &middot;
 Project: {_esc(str(data.get("project_name") or "—"))} &middot;

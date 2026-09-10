@@ -77,6 +77,11 @@ export default defineConfig(({ mode }) => {
     server: {
       host: env.AEROBIM_VITE_HOST || "127.0.0.1",
       port: 5173,
+      watch: {
+        // Smoke and exports write under frontend/artifacts; a page reload
+        // mid-demo is worse than a stale artifact on disk.
+        ignored: ["**/artifacts/**"],
+      },
       headers: { ...SHELL_SECURITY_HEADERS },
       proxy: {
         "/v1": {

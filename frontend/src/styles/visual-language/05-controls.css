@@ -129,15 +129,6 @@ textarea:hover {
   color: #ffffff;
 }
 
-@media (prefers-color-scheme: dark) {
-  .toolbar-button.toolbar-button-primary,
-  .toolbar-button.toolbar-button-primary:hover {
-    background: var(--vl-blue300);
-    border-color: var(--vl-blue300);
-    color: #0c1119;
-  }
-}
-
 .toolbar-button[disabled],
 .viewer-button[disabled],
 .drawing-region-button[disabled],

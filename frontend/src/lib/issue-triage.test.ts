@@ -1,13 +1,21 @@
 import { describe, expect, it } from "vitest";
 import {
   clauseLine,
+  collapseDuplicateHitl,
   essenceLine,
   filterTriageIssues,
+  findingCategoryLabel,
+  findingListTitle,
   findIssueForDrawingRegion,
   groupFindings,
   HITL_RULE_ID,
+  isAdvisoryIssue,
+  isDocumentFinding,
+  pickLandingIssueIndex,
+  isEngineCapabilityIssue,
   isHitlClickableRegion,
   issueMatchesSearch,
+  issueLayer,
   snapIssueIndexToVisible,
   spatialOrMissing,
   uniqueClauseKeys,
@@ -60,6 +68,20 @@ describe("issue-triage", () => {
       "Стена REI",
     );
     expect(essenceLine(issue({}))).toBe("First sentence.");
+  });
+
+  it("labels known categories in Russian and prefers essence as the list title", () => {
+    expect(findingCategoryLabel("ids-validation")).toBe("IDS");
+    expect(findingCategoryLabel("drawing-validation")).toBe("чертёж");
+    expect(findingCategoryLabel("mystery-bucket")).toBe("mystery-bucket");
+    expect(
+      findingListTitle(
+        issue({
+          message: "English engine message",
+          remark: { title: "IDS-Wall: FireRating", body: "", essence: "Стена без REI60" },
+        }),
+      ),
+    ).toBe("Стена без REI60");
   });
 
   it("groups by axis and category without inventing tags", () => {
@@ -198,5 +220,81 @@ describe("issue-triage", () => {
     expect(isHitlClickableRegion({ ...region, layout_role: "stamp" })).toBe(false);
     expect(findIssueForDrawingRegion([hitl, other], region)?.index).toBe(0);
     expect(findIssueForDrawingRegion([other], region)).toBeNull();
+  });
+
+  it("hides engine capability rows and collapses HITL duplicates", () => {
+    const rows = [
+      { issue: issue({ rule_id: "REQ-FIRE-001" }), index: 0 },
+      { issue: issue({ rule_id: "AEROBIM-CLASH-CAPABILITY" }), index: 1 },
+      { issue: issue({ rule_id: HITL_RULE_ID, problem_zone: { sheet_id: "A-101", page_number: 1, x: 0, y: 0, width: 1, height: 1, element_guid: null } }), index: 2 },
+      { issue: issue({ rule_id: HITL_RULE_ID, message: "other hitl", problem_zone: { sheet_id: "A-101", page_number: 1, x: 2, y: 2, width: 1, height: 1, element_guid: null } }), index: 3 },
+      { issue: issue({ rule_id: "ADV-1", origin: "advisory" as const }), index: 4 },
+    ];
+    const documentRows = collapseDuplicateHitl(rows.filter((row) => isDocumentFinding(row.issue)));
+    expect(documentRows.map((row) => row.issue.rule_id)).toEqual(["REQ-FIRE-001", HITL_RULE_ID]);
+    expect(documentRows[1]?.index).toBe(2);
+    expect(isAdvisoryIssue(rows[4]!.issue)).toBe(true);
+    expect(isEngineCapabilityIssue(rows[1]!.issue)).toBe(true);
+  });
+
+  it("lands on the fire-rating GUID finding instead of an IfcSpace coverage note", () => {
+    const space = issue({
+      rule_id: "IDS-Space",
+      message: "No elements found for entity IFCSPACE",
+      element_guid: null,
+    });
+    const fire = issue({
+      rule_id: "IDS-Wall Fire Rating Multi",
+      message: "Pset_WallCommon.FireRating: expected REI60, observed REI30",
+      property_name: "FireRating",
+      element_guid: "1XYVUKGoDDbREfVxRKsHkl",
+    });
+    const reqFire = issue({
+      rule_id: "REQ-FIRE-001",
+      message: "Property Pset_WallCommon.FireRating does not match",
+      element_guid: "other-guid",
+    });
+    expect(pickLandingIssueIndex([space, reqFire, fire])).toBe(2);
+    expect(pickLandingIssueIndex([fire, space])).toBe(0);
+  });
+
+  it("prefers API layer over the local fallback and covers the ten volume classes", () => {
+    expect(issueLayer(issue({ layer: "coverage_note", element_guid: "g1" }))).toBe("coverage_note");
+    const fixtures: Array<{ layer: string; patch: Partial<ValidationIssue> }> = [
+      {
+        layer: "pack_finding",
+        patch: {
+          rule_id: "REQ-FIRE-001",
+          message: "Property Pset_WallCommon.FireRating does not match the expected value",
+          target_ref: "Wall-01",
+        },
+      },
+      {
+        layer: "advisory_candidate",
+        patch: { rule_id: "AEROBIM-SPACE-EFFICIENCY-CANDIDATE", origin: "advisory" },
+      },
+      { layer: "service_record", patch: { rule_id: HITL_RULE_ID } },
+      {
+        layer: "coverage_note",
+        patch: { rule_id: "REQ-FIRE-001", message: "No elements found for entity IFCWALL" },
+      },
+      { layer: "coverage_note", patch: { rule_id: "SAM-AR-001", message: "coverage" } },
+      {
+        layer: "coverage_note",
+        patch: {
+          rule_id: "REQ-FIRE-001",
+          message: "Property Pset_WallCommon.FireRating does not match the expected value",
+          element_guid: null,
+          target_ref: null,
+        },
+      },
+      { layer: "pack_finding", patch: { rule_id: "SAM-AR-020", element_guid: "g1" } },
+      { layer: "service_record", patch: { rule_id: "AEROBIM-CLASH-CAPABILITY" } },
+      { layer: "advisory_candidate", patch: { origin: "advisory", rule_id: "ADV-X" } },
+      { layer: "coverage_note", patch: { rule_id: "AEROBIM-LOAD-FORMAT", element_guid: null } },
+    ];
+    for (const row of fixtures) {
+      expect(issueLayer(issue(row.patch))).toBe(row.layer);
+    }
   });
 });

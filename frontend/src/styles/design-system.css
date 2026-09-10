@@ -178,49 +178,8 @@
   --font-mono: var(--ds-font-mono);
 }
 
-/* Тёмная тема: эксперт сидит в списке замечаний часами. Значения подобраны
-   так, чтобы смысловые цвета остались различимыми, а не просто «инвертными». */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --ds-canvas: var(--ds-n-950);
-    --ds-surface: var(--ds-n-900);
-    --ds-surface-sunken: #101823;
-    --ds-surface-inverse: var(--ds-n-800);
-    --ds-text: #e7ecf4;
-    /* Не n-400: на выделенной карточке он давал 4.49:1 при норме 4.5:1. */
-    --ds-text-muted: #8795a9;
-    --ds-text-on-inverse: #e7ecf4;
-
-    --ds-border: #232e3c;
-    --ds-border-strong: #2f3c4c;
-    --ds-border-control: #5d6c7e; /* 3.26:1 на тёмной панели */
-
-    --ds-accent: var(--ds-brand-300);
-    --ds-accent-hover: var(--ds-brand-200);
-    --ds-accent-text: var(--ds-brand-300);
-    --ds-accent-tint: #16233a;
-    --ds-accent-rail: var(--ds-brand-400);
-    --ds-text-on-brand: var(--ds-n-950);
-
-    --ds-critical: #ff9c90;
-    --ds-critical-tint: #33191a;
-    --ds-attention: #f0b65c;
-    --ds-attention-tint: #2e2312;
-    --ds-attention-line: #c08b33;
-    --ds-positive: #5fd4a3;
-    --ds-positive-tint: #10281f;
-    --ds-neutral: var(--ds-n-300);
-    --ds-neutral-tint: #1b2430;
-    --ds-human-rail: var(--ds-n-400);
-
-    --ds-focus: var(--ds-brand-300);
-    --ds-focus-halo: var(--ds-n-950);
-
-    --ds-elev-1: 0 1px 2px rgba(0, 0, 0, 0.5);
-    --ds-elev-2: 0 2px 8px rgba(0, 0, 0, 0.55);
-    --ds-elev-3: 0 12px 32px rgba(0, 0, 0, 0.6);
-  }
-}
+/* Тёмная ветка токенов снята: оболочка жюри зафиксирована светлой
+   (`force-light.css`). Не брендбук и не переключатель темы. */
 
 /* ── база ───────────────────────────────────────────────────────────── */
 

@@ -148,6 +148,22 @@ _BUILTIN_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
         "forbidden_integrated_customer_platform",
         re.compile(r"(?i)интегрированы\s+с\s+платформой\s+заказчика"),
     ),
+    (
+        "forbidden_customer_pack_recall_measured",
+        re.compile(r"(?i)recall.{0,24}(комплект\w*\s+заказчик|customer\s+pack).{0,16}измер"),
+    ),
+    (
+        "forbidden_completeness_confirmed_by_customer",
+        re.compile(r"полнота\s+подтверждена\s+заказчиком"),
+    ),
+    (
+        "forbidden_single_expert_precision",
+        re.compile(r"(?i)один\s+эксперт\s+подтвердил\s+точность"),
+    ),
+    (
+        "forbidden_norm_checker_as_gold",
+        re.compile(r"(?i)норм\s+чекер.{0,24}эталон"),
+    ),
 ]
 
 _KITCHEN_PATH_PREFIXES = (

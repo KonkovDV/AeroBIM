@@ -61,4 +61,15 @@ describe("forced light color-scheme for jury laptops", () => {
     expect(lock).toContain(".pack-cycle-step-current");
     expect(lock).toContain(".keyboard-help-dialog.dirty-leave-dialog");
   });
+
+  it("keeps OS-dark overrides only in force-light.css so leftover tokens cannot leak", () => {
+    const files = [ROOT_CSS, ...walkCss(STYLES_ROOT)].filter((file) => file !== FORCE_LIGHT);
+    const hits: string[] = [];
+    for (const file of files) {
+      if (stripComments(readFileSync(file, "utf8")).includes("prefers-color-scheme: dark")) {
+        hits.push(file.replace(/\\/g, "/"));
+      }
+    }
+    expect(hits).toEqual([]);
+  });
 });

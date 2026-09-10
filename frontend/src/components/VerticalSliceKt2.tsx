@@ -122,11 +122,11 @@ export default function VerticalSliceKt2({
         </strong>
       </p>
       {looksLikePass ? (
-        <p className="compact-copy" role="status">
+        <p className="compact-copy" role="note">
           {UI_COPY.kt2UnexpectedPass}
         </p>
       ) : (
-        <p className="compact-copy" role="status">
+        <p className="compact-copy" role="note">
           {UI_COPY.kt2NotPass}
         </p>
       )}

@@ -64,7 +64,7 @@ export default function BlockerHonestyPanel() {
       </ul>
       {loading ? <p className="compact-copy">{UI_COPY.blockersLoading}</p> : null}
       {error ? (
-        <p className="compact-copy" role="status">
+        <p className="compact-copy" role="note">
           {UI_COPY.blockersSnapshotFailed(error)}
         </p>
       ) : null}

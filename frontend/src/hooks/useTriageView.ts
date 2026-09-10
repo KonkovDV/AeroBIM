@@ -1,8 +1,11 @@
 import { useDeferredValue, useMemo } from "react";
 import {
   buildViewerFocus,
+  collapseDuplicateHitl,
   filterTriageIssues,
   findMatchingRequirements,
+  isAdvisoryIssue,
+  isDocumentFinding,
   type IndexedIssue,
   type TriageSeverityFilter,
   type ViewerFocus,
@@ -12,6 +15,7 @@ import type { ClashResult, ParsedRequirement, ValidationIssue, ValidationReport 
 export type TriageView = {
   activeIssue: ValidationIssue | null;
   filteredIssues: IndexedIssue[];
+  advisoryIssues: IndexedIssue[];
   hitlRegionCount: number;
   activeClash: ClashResult | null;
   matchingRequirements: ParsedRequirement[];
@@ -36,7 +40,7 @@ export function useTriageView(
       selectedReport && selectedReport.issues.length > 0
         ? selectedReport.issues[Math.min(selectedIssueIndex, selectedReport.issues.length - 1)]
         : null;
-    const filteredIssues =
+    const allFiltered =
       selectedReport === null
         ? []
         : filterTriageIssues(selectedReport, {
@@ -45,6 +49,8 @@ export function useTriageView(
             search: deferredSearch,
             clause: filters.clause,
           });
+    const filteredIssues = collapseDuplicateHitl(allFiltered.filter((row) => isDocumentFinding(row.issue)));
+    const advisoryIssues = allFiltered.filter((row) => isAdvisoryIssue(row.issue));
     const hitlRegionCount = selectedReport
       ? (selectedReport.drawing_regions ?? []).filter((region) => region.hitl_required === true).length
       : 0;
@@ -61,6 +67,7 @@ export function useTriageView(
     return {
       activeIssue,
       filteredIssues,
+      advisoryIssues,
       hitlRegionCount,
       activeClash,
       matchingRequirements,

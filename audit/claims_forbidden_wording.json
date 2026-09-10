@@ -71,7 +71,11 @@
     "интегрированы с платформой заказчика",
     "заменяем валидатор buildingsmart",
     "шаблон сп 63 утверждён заказчиком",
-    "aerobim replaces the bsi validation service"
+    "aerobim replaces the bsi validation service",
+    "recall на комплекте заказчика измерен",
+    "полнота подтверждена заказчиком",
+    "один эксперт подтвердил точность",
+    "норм чекер является эталоном"
   ],
   "negation_markers": [
     "not claimed",

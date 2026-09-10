@@ -546,6 +546,11 @@ class ApiContext:
                 **remark,
                 "content_marking": remark.get("content_marking") or _AI_CONTENT_MARKING,
             }
+        from aerobim.domain.finding_layer import classify_finding_layer
+        from aerobim.domain.remark_completeness import remark_completeness
+
+        enriched["layer"] = classify_finding_layer(enriched)
+        enriched["completeness"] = remark_completeness(enriched)
         rule_id = str(enriched.get("rule_id", ""))
         loin = LOIN_RESOLVER.resolve(rule_id)
         if loin is None:
@@ -581,6 +586,39 @@ class ApiContext:
                 report.report_id
             )
             data["issues"] = attach_review_projection(list(data.get("issues") or []), events)
+            data["issues"] = [
+                self._enrich_issue_export(issue) if isinstance(issue, dict) else issue
+                for issue in data.get("issues", ())
+            ]
+        from aerobim.domain.calculation_report_section import calculation_section
+        from aerobim.domain.finding_volume import volume_from_findings
+        from aerobim.domain.remark_completeness import completeness_table
+        from aerobim.domain.run_passport import (
+            build_run_passport,
+            passport_from_traces,
+            sources_from_report,
+        )
+
+        data["finding_volume"] = volume_from_findings(
+            [issue for issue in data.get("issues") or () if isinstance(issue, dict)]
+        )
+        data["remark_completeness"] = completeness_table(
+            [issue for issue in data.get("issues") or () if isinstance(issue, dict)]
+        )
+        stored_passport = passport_from_traces(getattr(report, "tool_traces", ()) or ())
+        if stored_passport is not None:
+            data["run_passport"] = stored_passport
+        else:
+            data["run_passport"] = build_run_passport(
+                sources=sources_from_report(report),
+                report_id=report.report_id,
+                rules_version=str(report.schema_version or ""),
+                timing_basis="sources_only",
+            )
+        data["calculation_section"] = calculation_section()
+        from aerobim.domain.executive_brief import executive_brief
+
+        data["executive_brief"] = executive_brief(data)
         data["iso19650"] = enrich_iso19650_metadata(report)
         return data
 

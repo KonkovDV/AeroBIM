@@ -3,11 +3,12 @@
 from dataclasses import asdict
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Body, Depends, HTTPException
+from fastapi import APIRouter, Body, Depends, HTTPException, Query
 from fastapi.responses import HTMLResponse, JSONResponse, Response
 
 from aerobim.core.di.tokens import Tokens
 from aerobim.domain.check_coverage import coverage_from_report, derive_report_scope
+from aerobim.domain.models import ValidationReport
 from aerobim.domain.object_acl import AuthPrincipal
 from aerobim.presentation.http.context import (
     BCF_PROJECT_ID_RE,
@@ -22,6 +23,51 @@ from aerobim.presentation.http.report_html import render_report_html
 from aerobim.presentation.http.report_pdf import render_report_pdf_bytes
 from aerobim.presentation.http.schemas import PushBcfApiRequest
 
+_EXPORT_LOCALES = frozenset({"ru", "en"})
+
+
+def _parse_export_locale(locale: str | None) -> str:
+    value = (locale or "ru").strip().lower()
+    if value not in _EXPORT_LOCALES:
+        raise HTTPException(status_code=400, detail="locale must be ru or en")
+    return value
+
+
+def _overlay_export_locale(
+    report: ValidationReport, data: dict[str, Any], locale: str
+) -> dict[str, Any]:
+    data["export_locale"] = locale
+    if locale != "en":
+        return data
+    from aerobim.infrastructure.adapters.template_remark_generator import TemplateRemarkGenerator
+
+    generator = TemplateRemarkGenerator(locale="en")
+    by_id = {issue.finding_id: issue for issue in report.issues if issue.finding_id}
+    for item in data.get("issues") or []:
+        if not isinstance(item, dict):
+            continue
+        finding_id = item.get("finding_id")
+        if not isinstance(finding_id, str) or not finding_id:
+            continue
+        source = by_id.get(finding_id)
+        if source is None:
+            item["remark_locale"] = "machine_fallback"
+            continue
+        try:
+            english = generator.generate(source)
+        except ValueError:
+            item["remark_locale"] = "machine_fallback"
+            continue
+        remark = dict(item.get("remark") or {})
+        remark["essence"] = english.essence
+        remark["title"] = english.title
+        remark["clause_cite"] = english.clause_cite
+        remark["location_line"] = english.location_line
+        remark["detail"] = english.detail
+        item["remark"] = remark
+        item["remark_locale"] = "en"
+    return data
+
 
 def build_exports_router(ctx: ApiContext) -> APIRouter:
     router = APIRouter()
@@ -30,11 +76,16 @@ def build_exports_router(ctx: ApiContext) -> APIRouter:
     def export_report_json(
         report_id: str,
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
+        locale: str = Query("ru"),
     ) -> JSONResponse:
         ctx.validate_report_id(report_id)
         report = ctx.load_authorized_report(report_id, principal)
+        chosen = _parse_export_locale(locale)
+        payload = _overlay_export_locale(
+            report, ctx.serialize_public_report(report, include_review=True), chosen
+        )
         return JSONResponse(
-            content=ctx.serialize_public_report(report, include_review=True),
+            content=payload,
             headers={"Content-Disposition": attachment_content_disposition(f"{report_id}.json")},
         )
 
@@ -42,13 +93,25 @@ def build_exports_router(ctx: ApiContext) -> APIRouter:
     def export_report_html(
         report_id: str,
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
+        locale: str = Query("ru"),
+        against: str | None = Query(None),
     ) -> HTMLResponse:
         ctx.validate_report_id(report_id)
         report = ctx.load_authorized_report(report_id, principal)
+        chosen = _parse_export_locale(locale)
         data: dict[str, Any] = ctx.serialize_public_report(report, include_review=True)
         scope = derive_report_scope(report)
         data["coverage"] = coverage_from_report(report, scope=scope).to_dict(report=report)
-        html = render_report_html(report_id, data)
+        data = _overlay_export_locale(report, data, chosen)
+        if against:
+            ctx.validate_report_id(against)
+            if against == report_id:
+                raise HTTPException(status_code=400, detail="against must be a different report_id")
+            other = ctx.load_authorized_report(against, principal)
+            from aerobim.domain.revision_diff import compare_report_revisions
+
+            data["revision_diff"] = compare_report_revisions(report, other).to_dict()
+        html = render_report_html(report_id, data, locale=chosen)
         return HTMLResponse(
             content=html,
             headers={"Content-Disposition": attachment_content_disposition(f"{report_id}.html")},
@@ -58,13 +121,16 @@ def build_exports_router(ctx: ApiContext) -> APIRouter:
     def export_report_pdf(
         report_id: str,
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
+        locale: str = Query("ru"),
     ) -> Response:
         ctx.validate_report_id(report_id)
         report = ctx.load_authorized_report(report_id, principal)
+        chosen = _parse_export_locale(locale)
         data: dict[str, Any] = ctx.serialize_public_report(report, include_review=True)
         scope = derive_report_scope(report)
         data["coverage"] = coverage_from_report(report, scope=scope).to_dict(report=report)
-        pdf_bytes = render_report_pdf_bytes(report_id, data)
+        data = _overlay_export_locale(report, data, chosen)
+        pdf_bytes = render_report_pdf_bytes(report_id, data, locale=chosen)
         return Response(
             content=pdf_bytes,
             media_type="application/pdf",

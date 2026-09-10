@@ -2,6 +2,7 @@ import {
   useDeferredValue,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type Dispatch,
   type SetStateAction,
@@ -9,22 +10,13 @@ import {
 import { fetchReports } from "../lib/api";
 import type { ReportSummaryEntry } from "../lib/types";
 import { readUrlReportId } from "../lib/report-filters";
+import {
+  compareReports,
+  OVERLAY_FIXTURE_REPORT_ID,
+  pickSelectedReportId,
+} from "../lib/report-selection";
 import { classifyRequestFailure, type RequestFailureKind } from "../lib/request-failure";
 import { UI_COPY } from "../lib/ui-copy";
-
-function reportTimestamp(report: ReportSummaryEntry): number {
-  const parsed = Date.parse(report.created_at);
-  return Number.isNaN(parsed) ? 0 : parsed;
-}
-
-/** Новые отчёты сверху; при равной метке — стабильно по report_id. */
-function compareReports(left: ReportSummaryEntry, right: ReportSummaryEntry): number {
-  const byTimestamp = reportTimestamp(right) - reportTimestamp(left);
-  if (byTimestamp !== 0) {
-    return byTimestamp;
-  }
-  return left.report_id.localeCompare(right.report_id);
-}
 
 export type UseReportsOptions = {
   projectFilter: string;
@@ -33,6 +25,8 @@ export type UseReportsOptions = {
   search: string;
   epoch: number;
   setSelectedReportId: Dispatch<SetStateAction<string | null>>;
+  /** Demo seed POST in flight: do not auto-select the overlay fixture. */
+  seedInFlight?: boolean;
 };
 
 export type ReportsState = {
@@ -52,15 +46,27 @@ export function useReports(options: UseReportsOptions): ReportsState {
     search,
     epoch,
     setSelectedReportId,
+    seedInFlight = false,
   } = options;
   const [reports, setReports] = useState<ReportSummaryEntry[]>([]);
   const [reportsLoading, setReportsLoading] = useState(true);
   const [reportsError, setReportsError] = useState<RequestFailureKind | null>(null);
+  const seedInFlightRef = useRef(seedInFlight);
+  seedInFlightRef.current = seedInFlight;
 
   const deferredSearch = useDeferredValue(search);
   const deferredProjectFilter = useDeferredValue(projectFilter);
   const deferredDisciplineFilter = useDeferredValue(disciplineFilter);
   const deferredStatusFilter = useDeferredValue(statusFilter);
+
+  useEffect(() => {
+    if (!seedInFlight) {
+      return;
+    }
+    setSelectedReportId((current) =>
+      current === OVERLAY_FIXTURE_REPORT_ID ? null : current,
+    );
+  }, [seedInFlight, setSelectedReportId]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -85,25 +91,14 @@ export function useReports(options: UseReportsOptions): ReportsState {
         }
         setReports(response.reports);
         setReportsError(null);
-        setSelectedReportId((current) => {
-          const fromUrl = readUrlReportId();
-          if (fromUrl) {
-            if (current === fromUrl) {
-              return fromUrl;
-            }
-            if (!current || response.reports.some((report) => report.report_id === fromUrl)) {
-              return fromUrl;
-            }
-          }
-          if (current && response.reports.some((report) => report.report_id === current)) {
-            return current;
-          }
-          // Keep a just-seeded id while GET /reports lags; GET /reports/{id} still loads it.
-          if (current) {
-            return current;
-          }
-          return response.reports[0]?.report_id ?? null;
-        });
+        setSelectedReportId((current) =>
+          pickSelectedReportId({
+            current,
+            reports: response.reports,
+            fromUrl: readUrlReportId(),
+            seedInFlight: seedInFlightRef.current,
+          }),
+        );
       })
       .catch((error: unknown) => {
         if (cancelled || controller.signal.aborted) {

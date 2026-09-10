@@ -129,6 +129,26 @@ class RemarkShapeSchemaTests(unittest.TestCase):
         self.assertEqual(merged.detail, draft.body)
         self.assertEqual(validate_remark_shape(shape_from_remark(merged).as_payload()), [])
 
+    def test_ids_structured_fields_become_russian_essence(self) -> None:
+        issue = _issue(
+            rule_id="IDS-Wall",
+            message=(
+                '[IDS] Wall: Property — FireRating data shall be REI60 (The property value "REI30")'
+            ),
+            category=FindingCategory.IDS_VALIDATION,
+            property_set="Pset_WallCommon",
+            property_name="FireRating",
+            expected_value="REI60",
+            observed_value="REI30",
+        )
+        ru = TemplateRemarkGenerator(locale="ru").generate(issue)
+        self.assertIn("ожидалось REI60", ru.essence)
+        self.assertIn("факт REI30", ru.essence)
+        self.assertNotIn("[IDS]", ru.essence)
+        self.assertIn(
+            "Area mismatch", TemplateRemarkGenerator(locale="ru").generate(_issue()).essence
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

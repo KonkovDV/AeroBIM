@@ -103,7 +103,7 @@ class RedTeamSignoffRemediationTests(unittest.TestCase):
         self.assertNotIn("req.__dict__", uc_text)
         self.assertNotIn("issue.__dict__", uc_text)
         self.assertIn("replace(req, confidence=", orch_text)
-        self.assertIn("from dataclasses import dataclass, replace", orch_text)
+        self.assertIn("from dataclasses import dataclass, field, replace", orch_text)
         self.assertIn("priority=compute_issue_priority", orch_text)
         self.assertIn("replace(", orch_text)
 

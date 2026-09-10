@@ -1,6 +1,7 @@
 /**
  * Call-path rehearsal: the 15.09 agenda button «Загрузить демонстрационный
- * комплект» runs POST /v1/demo/seed-fixture (git walls+IDS). That report is
+ * комплект» runs POST /v1/demo/seed-fixture (git vertical-slice pack:
+ * IFC + IDS + ТЗ + чертёж A-101 via AnalyzeProjectPackage). That report is
  * not the overlay fixture from seed_smoke_report. Overlay absence is
  * recorded, not treated as a defect of this track.
  *

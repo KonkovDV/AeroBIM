@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "accuracy_answer",
+  "checkpoint": "GO",
+  "customer_go": false,
+  "precision_claim_publishable": false,
+  "is_accuracy": false,
+  "claim_level": "coverage_map_only",
+  "claim_boundary": "Numbers below are fixture, synthetic, or open-corpus measurements. Not product accuracy. Not TZ >90%. Not customer-pack recall. Checkpoint GO; customer_go false. LLM is not a rater (ADR-001).",
+  "closes_rt001": false,
+  "closes_rt002": false,
+  "closes_rt003": false,
+  "rows": [
+    {
+      "id": "fixture_aabb_clash",
+      "metric": "precision_recall",
+      "precision": 1.0,
+      "recall": 1.0,
+      "n": 6,
+      "corpus_kind": "fixture",
+      "corpus_id": "aerobim-extent-clash-fixture-2026-08-11",
+      "wilson_95": {
+        "successes": 6,
+        "n": 6,
+        "point": 1.0,
+        "wilson_95_lower": 0.6096657120978348,
+        "wilson_95_upper": 1.0,
+        "method": "wilson_score"
+      },
+      "is_product_accuracy": false,
+      "publishable": false,
+      "not": "customer corpus; TZ clash accuracy >90%; IfcClash mesh product",
+      "source": "docs/evidence/clash-measurement-slice-2026-08/precision-recall.json"
+    },
+    {
+      "id": "defect_injection_recall",
+      "metric": "mutation_kill_recall",
+      "recall": 0.125,
+      "n": 8,
+      "killed": 1,
+      "corpus_kind": "synthetic",
+      "wilson_95": {
+        "defined": true,
+        "successes": 1,
+        "trials": 8,
+        "alpha": 0.05,
+        "point": 0.125,
+        "lower": 0.022417,
+        "upper": 0.470888,
+        "half_width": 0.224235,
+        "method": "wilson_score"
+      },
+      "is_product_accuracy": false,
+      "publishable": false,
+      "not": "semantic TP; customer-pack recall",
+      "source": "docs/evidence/defect-injection-recall-run-fixture-latest.json"
+    },
+    {
+      "id": "open_corpus_binary_match",
+      "metric": "binary_match_rate",
+      "fixture_n": 7,
+      "fixture_matched": 7,
+      "bsi_ids_n": 290,
+      "corpus_kind": "open_corpus",
+      "is_product_accuracy": false,
+      "publishable": false,
+      "not": "TP/FP; product accuracy; summary.passed as a quality score",
+      "source": "docs/evidence/sprint3-open-corpus-battery-2026-08.md"
+    },
+    {
+      "id": "dual_rater_simulation",
+      "metric": "agreement",
+      "cohens_kappa": 0.705263,
+      "krippendorff_alpha": 0.706927,
+      "gwet_ac1": 0.869413,
+      "n": 28,
+      "corpus_kind": "synthetic",
+      "independent_human_raters": 0,
+      "labelled": "simulation",
+      "is_product_accuracy": false,
+      "publishable": false,
+      "not": "two human raters; LLM-as-rater; RT-001 closed",
+      "source": "docs/evidence/rt001-dual-rater-simulation-2026-09.json"
+    },
+    {
+      "id": "typical_error_class_coverage",
+      "metric": "class_coverage",
+      "n": 26,
+      "customer_confirmed_patterns": 0,
+      "corpus_kind": "synthetic",
+      "is_product_accuracy": false,
+      "publishable": false,
+      "not": "precision; customer-confirmed typical-error gold",
+      "source": "samples/benchmarks/samolet-typical-errors-catalog.json"
+    }
+  ],
+  "why_not_transferable": [
+    "Customer pack has no dual-rater gold and no frozen detection labels.",
+    "Their books are an RD acceptance checklist; the unit is a requirement row, not an IFC finding.",
+    "Fixture n is small; Wilson lower bound must be spoken with the point estimate.",
+    "Simulated raters are not humans. LLM is not a rater."
+  ],
+  "needed_to_measure_on_customer_corpus": [
+    "labeled customer corpus with finding-level gold",
+    "two named human raters",
+    "blinding / independent passes",
+    "held-out split",
+    "coverage map hash frozen before labels"
+  ]
+}

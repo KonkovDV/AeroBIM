@@ -114,7 +114,31 @@ class TemplateRemarkGenerator:
             return head.rstrip(".")
         return stripped.rstrip(".")
 
+    def _structured_essence_ru(self, issue: ValidationIssue) -> str:
+        expected = (issue.expected_value or "").strip()
+        observed = (issue.observed_value or "").strip()
+        field = self._build_field_name(issue)
+        if expected and observed:
+            return f"{field}: ожидалось {expected}, факт {observed}"
+        if expected:
+            return f"{field}: ожидалось {expected}, значение отсутствует"
+        return ""
+
+    def _structured_essence_en(self, issue: ValidationIssue) -> str:
+        expected = (issue.expected_value or "").strip()
+        observed = (issue.observed_value or "").strip()
+        field = self._build_field_name(issue)
+        if expected and observed:
+            return f"{field}: expected {expected}, observed {observed}"
+        if expected:
+            return f"{field}: expected {expected}, value missing"
+        return ""
+
     def _build_essence_ru(self, issue: ValidationIssue) -> str:
+        if issue.category is FindingCategory.IDS_VALIDATION:
+            structured = self._structured_essence_ru(issue)
+            if structured:
+                return structured
         message = self._first_sentence(issue.message or "")
         if message:
             return message
@@ -125,6 +149,10 @@ class TemplateRemarkGenerator:
         return f"Расхождение по {self._build_field_name(issue)}"
 
     def _build_essence_en(self, issue: ValidationIssue) -> str:
+        if issue.category is FindingCategory.IDS_VALIDATION:
+            structured = self._structured_essence_en(issue)
+            if structured:
+                return structured
         message = self._first_sentence(issue.message or "")
         if message:
             return message

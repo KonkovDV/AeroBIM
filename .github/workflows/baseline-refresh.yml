@@ -20,8 +20,6 @@ jobs:
     name: Re-run the gates and mint the runtime baseline pin
     runs-on: ubuntu-latest
     timeout-minutes: 45
-    env:
-      AEROBIM_GATES_ATTESTED: test,frontend,supply-chain-audit,sprint-2-1-gates,security-regression,offline-bundle-smoke,openapi-contract
     steps:
       - name: Check out the dispatched ref
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -66,6 +64,8 @@ jobs:
           npm run build
 
       - name: Mint the pin and align both README snippets
+        env:
+          AEROBIM_GATES_ATTESTED: test,frontend,supply-chain-audit,sprint-2-1-gates,security-regression,offline-bundle-smoke,openapi-contract
         run: |
           set -euo pipefail
           python -m aerobim.tools.export_runtime_baseline --help > /tmp/baseline-help.txt
@@ -110,6 +110,8 @@ jobs:
           PY
 
       - name: Verify the refreshed pin the same way CI does
+        env:
+          AEROBIM_GATES_ATTESTED: test,frontend,supply-chain-audit,sprint-2-1-gates,security-regression,offline-bundle-smoke,openapi-contract
         run: |
           set -euo pipefail
           CHECK=(--out /tmp/runtime-baseline.ci-generated.json)

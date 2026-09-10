@@ -87,7 +87,7 @@ land next to the ones above, also gitignored.
 
 Playwright Chromium belongs in the default user cache
 (`%LOCALAPPDATA%\ms-playwright` on Windows). `npx playwright install chromium`
-from `frontend/`. Do not pin `PLAYWRIGHT_BROWSERS_PATH` at a Cursor TEMP
+from `frontend/`. Do not pin `PLAYWRIGHT_BROWSERS_PATH` at a IDE session TEMP
 sandbox — that directory disappears, and `run_live_review_smoke` already
 drops the inherited variable.
 
