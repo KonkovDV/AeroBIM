@@ -21,6 +21,7 @@ import {
   assertForcedLight,
   assertHonestyOnExpertScreen,
   assertLoopbackAndQuiet,
+  assertNoNativeDialogs,
   assertUnsavedDialogs,
   attachNetworkGuards,
   captureExportBundle,
@@ -104,7 +105,10 @@ async function main() {
   });
 
   const { requestOrigins, failedResponses, consoleErrors } = attachNetworkGuards(context);
+  /** Warnings read from the in-app dialog (FE-CRUFT-02). */
   const dialogMessages = [];
+  /** Native browser modals: after FE-CRUFT-02 the expected count is zero. */
+  const nativeDialogs = [];
   const steps = [];
   const note = (step, detail) => {
     steps.push({ step, ...detail });
@@ -120,8 +124,9 @@ async function main() {
     }
   });
   page.on("dialog", (dialog) => {
-    dialogMessages.push(dialog.message());
-    void dialog.accept();
+    // Recorded and dismissed: the run must not hang, but the modal is a failure.
+    nativeDialogs.push(dialog.message());
+    void dialog.dismiss();
   });
 
   try {
@@ -164,12 +169,16 @@ async function main() {
     note("remark-draft", { savedLength: savedText.length, draftLength: draftText.length });
     await page.screenshot({ path: path.join(options.outputDir, "03-card-draft.png"), fullPage: true });
 
-    const draftBundle = await captureExportBundle(page, options.outputDir, "draft");
+    const draftBundle = await captureExportBundle(page, options.outputDir, "draft", {
+      unsavedMessages: dialogMessages,
+    });
     assertUnsavedDialogs(dialogMessages);
+    assertNoNativeDialogs(nativeDialogs);
     const draftInspect = inspectExportBundle({ ...draftBundle, phase: "draft" });
     note("export-while-dirty", {
       warnings: [...dialogMessages],
       confirmCopy: EXPORT_UNSAVED_CONFIRM,
+      nativeDialogs: [...nativeDialogs],
       formats: draftInspect,
     });
 
@@ -202,14 +211,17 @@ async function main() {
     });
     await page.screenshot({ path: path.join(options.outputDir, "04-decision.png"), fullPage: true });
 
-    const dialogsBeforeCleanExport = dialogMessages.length;
-    const confirmedBundle = await captureExportBundle(page, options.outputDir, "confirmed");
-    const extraWarnings = dialogMessages.length - dialogsBeforeCleanExport;
-    if (extraWarnings !== 0) {
-      throw new Error(`clean export raised ${extraWarnings} unexpected confirm(s)`);
+    /** Fresh list: on a saved card the shell must not ask anything at all. */
+    const cleanMessages = [];
+    const confirmedBundle = await captureExportBundle(page, options.outputDir, "confirmed", {
+      unsavedMessages: cleanMessages,
+    });
+    if (cleanMessages.length !== 0) {
+      throw new Error(`clean export raised ${cleanMessages.length} unexpected confirm(s)`);
     }
+    assertNoNativeDialogs(nativeDialogs);
     const confirmedInspect = inspectExportBundle({ ...confirmedBundle, phase: "confirmed" });
-    note("export-after-decision", { extraWarnings, formats: confirmedInspect });
+    note("export-after-decision", { extraWarnings: cleanMessages.length, formats: confirmedInspect });
     note("export-diff", {
       changedPaths: [...new Set(diffPaths(draftBundle.json, confirmedBundle.json))].sort(),
     });
@@ -249,6 +261,7 @@ async function main() {
       steps,
       consoleErrors,
       failedResponses,
+      nativeDialogs,
       externalOrigins: network.externalOrigins,
     };
     await writeFile(
@@ -265,6 +278,7 @@ async function main() {
           oa21: { draft: draftInspect, confirmed: confirmedInspect },
           consoleErrors,
           failedResponses,
+          nativeDialogs,
           externalOrigins: network.externalOrigins,
         },
         null,

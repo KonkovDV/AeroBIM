@@ -16,6 +16,18 @@ export const LOOPBACK_HOSTS = new Set(["127.0.0.1", "localhost", "[::1]"]);
 export const EXPORT_UNSAVED_CONFIRM =
   "В карточке есть несохранённый текст. В файл попадёт последняя записанная на сервере версия, не текущий черновик. Продолжить выгрузку?";
 
+/** Confirm button of the same dialog — must match UI_COPY.exportUnsavedContinue (FE-DRIFT-01). */
+export const EXPORT_UNSAVED_CONTINUE = "Продолжить выгрузку";
+
+/**
+ * FE-CRUFT-02: the warning is a page element now, not a browser modal, so the
+ * rehearsal addresses it by markup hooks. The pairing with the component is
+ * pinned by src/export-confirm-copy-drift.test.ts — a renamed hook would make
+ * this script silently accept a dirty export.
+ */
+export const EXPORT_UNSAVED_DIALOG = "export-unsaved-dialog";
+export const EXPORT_UNSAVED_MESSAGE = "export-unsaved-message";
+
 /** Saved expert text used as the OA-21 needle. Must not leak into the dirty export. */
 export const OA21_NEEDLE = "Репетиция стенда";
 
@@ -284,15 +296,48 @@ export function inspectExportBundle({ json, html, bcfBytes, pdfBytes, phase, nee
   };
 }
 
-export async function downloadNamedExport(page, { name, target }) {
+/**
+ * FE-CRUFT-02: the unsaved-card warning is now an in-app dialog, so the
+ * rehearsal reads it instead of intercepting a browser modal.
+ *
+ * Absence of the dialog is not an error here: on a saved card the shell must
+ * not ask anything at all. Whether the warning was required is decided by the
+ * caller through assertUnsavedDialogs, exactly as before.
+ */
+export async function settleUnsavedExportDialog(page, messages = [], { timeout = 2_000 } = {}) {
+  const dialog = page.getByTestId(EXPORT_UNSAVED_DIALOG);
+  try {
+    await dialog.waitFor({ state: "visible", timeout });
+  } catch {
+    return null;
+  }
+  const message = ((await dialog.getByTestId(EXPORT_UNSAVED_MESSAGE).textContent()) ?? "").trim();
+  messages.push(message);
+  await dialog.getByRole("button", { name: EXPORT_UNSAVED_CONTINUE, exact: true }).click();
+  await dialog.waitFor({ state: "hidden", timeout: 15_000 });
+  return message;
+}
+
+/**
+ * Native modals cannot be styled, cannot be labelled and print the bench origin
+ * in the window title. After FE-CRUFT-02 any of them is a rehearsal failure,
+ * not an expected step of the scenario.
+ */
+export function assertNoNativeDialogs(messages) {
+  if (messages.length > 0) {
+    throw new Error(`shell raised a native browser dialog: ${JSON.stringify(messages)}`);
+  }
+}
+
+export async function downloadNamedExport(page, { name, target, unsavedMessages }) {
   const button = page.getByTestId("export-actions").getByRole("button", {
     name,
     exact: typeof name === "string",
   });
-  const [download] = await Promise.all([
-    page.waitForEvent("download", { timeout: 30_000 }),
-    button.click(),
-  ]);
+  const downloadPromise = page.waitForEvent("download", { timeout: 30_000 });
+  await button.click();
+  await settleUnsavedExportDialog(page, unsavedMessages ?? []);
+  const download = await downloadPromise;
   await download.saveAs(target);
   const errorBanner = page.getByTestId("export-error");
   if ((await errorBanner.count()) > 0) {
@@ -301,15 +346,15 @@ export async function downloadNamedExport(page, { name, target }) {
   return target;
 }
 
-export async function captureExportBundle(page, dir, tag) {
+export async function captureExportBundle(page, dir, tag, { unsavedMessages } = {}) {
   const jsonPath = path.join(dir, `export-${tag}.json`);
   const htmlPath = path.join(dir, `export-${tag}.html`);
   const bcfPath = path.join(dir, `export-${tag}.bcfzip`);
   const pdfPath = path.join(dir, `export-${tag}.pdf`);
-  await downloadNamedExport(page, { name: "JSON", target: jsonPath });
-  await downloadNamedExport(page, { name: "HTML", target: htmlPath });
-  await downloadNamedExport(page, { name: "BCF", target: bcfPath });
-  await downloadNamedExport(page, { name: /PDF/, target: pdfPath });
+  await downloadNamedExport(page, { name: "JSON", target: jsonPath, unsavedMessages });
+  await downloadNamedExport(page, { name: "HTML", target: htmlPath, unsavedMessages });
+  await downloadNamedExport(page, { name: "BCF", target: bcfPath, unsavedMessages });
+  await downloadNamedExport(page, { name: /PDF/, target: pdfPath, unsavedMessages });
   const json = JSON.parse(await readFile(jsonPath, "utf8"));
   const html = await readFile(htmlPath, "utf8");
   const bcfBytes = await readFile(bcfPath);
