@@ -1,7 +1,7 @@
 ---
 title: "Remediation plan P0-P2 — evidence before features"
 status: active
-version: "1.0.0"
+version: "1.1.0"
 last_updated: "2026-09-10"
 claim_boundary: >
   Planning document only. Nothing here is customer acceptance, product
@@ -18,18 +18,53 @@ Current honest status stays unchanged until matching evidence exists:
 `checkpoint=GO`, `go_kind=regulatory_measurement_mvp`, `customer_go=false`,
 `market_go=false`.
 
+## Calendar this plan is measured against
+
+| Date | Commitment | Artifact that proves it |
+| --- | --- | --- |
+| 14.09 | working stand, 10-25 findings, two-page summary | review pack delivered with a receipt |
+| 18.09 | feature freeze | only fixes, docs and evidence land after this point |
+| 19.09 | rehearsal run | recorded run log, no live improvisation |
+| 19-21.09 | versioned delivery set | offline bundle, checksums, SBOM, format matrix, recovery scenario |
+| 22.09 | demonstration day | deck that repeats the current checkpoint wording |
+
+The review window is a review milestone, not completion of the full
+specification. That has to be said in writing before the date, not after it.
+
 ## P0 — make one delivery reviewable
 
 | Step | Acceptance criterion | State |
 | --- | --- | --- |
 | Compact review pack generator | Deterministic top-K shortlist, redacted paths, SHA-256 manifest, unit tests, runbook | done in this branch |
 | Known-findings comparison | Identity match by `finding_id` or `rule_id` + target, never labelled a new defect | done in this branch |
+| Triage funnel and data-gap split | Funnel counts in every pack; findings with no statement or locator routed to the model authors, not the reviewer | done in this branch |
+| Expert decision form | One semicolon-separated CSV per delivery, four allowed decisions, one expert in 60-90 minutes | done in this branch |
+| Manual baseline refresh workflow | Dispatch-only job that re-runs ruff, mypy, pytest, vitest and build fatally before minting the pin | done in this branch |
 | Defect-injection rerun on current HEAD | Recall run recorded with input digests and `source_content_hashed=true` | open |
 | Intake and export blockers | Live artifacts from a clean-storage rehearsal, not code reading | open |
+| Delivery with a receipt | Named recipient, timestamp and channel stored next to the pack digest | open |
 | One expert decision round | 10-25 findings delivered, decisions returned per finding | open |
+| Public wording alignment | Repository description and deck repeat the checkpoint wording used here | open |
 
 P0 exit condition: one customer expert has returned decisions for a delivered
 shortlist, and those decisions are stored with the source report digest.
+
+## Facts to quote correctly
+
+Misquoting our own evidence is the fastest way to lose a technical reviewer.
+
+- the runtime baseline pin is minted only in CI; quote the pinned commit from
+  `docs/evidence/runtime-baseline-latest.json` and never a local run;
+- the backend suite collects 3040 tests and passes 3020 with 20 skipped; say
+  "collected" and "skipped" out loud;
+- the defect-injection experiment covered part of the planned mutation classes
+  and produced a recall point estimate of 0.0 with a Wilson upper bound near
+  0.39; it is an unfinished experiment, not a measured recall;
+- MEP system clash stays `NOT_VERIFIED`: the counts are axis-aligned bounding
+  box overlaps, the ring is bounded and off by default, and geometric
+  intersection is not claimed;
+- heavy jobs still run as in-process background tasks, so a crash loses
+  in-flight work; that is an open P1 gap, not a solved problem.
 
 ## P1 — make the delivery defensible
 
@@ -67,6 +102,8 @@ rejected as false positives. Only a completed protocol may change
   accuracy.
 - A BCF archive is not a CDE import; a queue in memory is not durable
   execution; raw overlap counts are not verified clashes.
+- Baseline overlap is not recall, and a shortlist is not an acceptance act.
+- A pack that was generated but not delivered counts as not delivered.
 - `summary.passed` is a machine outcome and never customer acceptance.
 - No blocker closes on inspection alone; each needs an artifact produced by a
   run that a reviewer can repeat.
