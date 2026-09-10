@@ -1,5 +1,5 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import ExportActionsBar from "./ExportActionsBar";
 import { downloadExport } from "../../lib/api";
 import { UI_COPY } from "../../lib/ui-copy";
@@ -10,10 +10,44 @@ vi.mock("../../lib/api", () => ({
 
 const downloadExportMock = vi.mocked(downloadExport);
 
+/**
+ * jsdom не реализует верхний слой: `showModal` бросает исключение, а `close`
+ * не снимает атрибут. Подменяем ровно эти два метода — фокус, обход по Tab
+ * и отмена остаются настоящими. Изоляцию верхнего слоя проверяет браузерная
+ * репетиция, а не jsdom.
+ */
+const dialogProto = HTMLDialogElement.prototype;
+const nativeShowModal = Object.getOwnPropertyDescriptor(dialogProto, "showModal");
+const nativeClose = Object.getOwnPropertyDescriptor(dialogProto, "close");
+
 describe("ExportActionsBar", () => {
   beforeEach(() => {
     downloadExportMock.mockReset();
     downloadExportMock.mockResolvedValue(undefined);
+    Object.defineProperties(dialogProto, {
+      showModal: {
+        configurable: true,
+        value: function showModal(this: HTMLDialogElement) {
+          this.setAttribute("open", "");
+        },
+      },
+      close: {
+        configurable: true,
+        value: function close(this: HTMLDialogElement) {
+          this.removeAttribute("open");
+        },
+      },
+    });
+  });
+
+  afterEach(() => {
+    cleanup();
+    if (nativeShowModal) {
+      Object.defineProperty(dialogProto, "showModal", nativeShowModal);
+    }
+    if (nativeClose) {
+      Object.defineProperty(dialogProto, "close", nativeClose);
+    }
   });
 
   it("exposes html json bcf and pdf; xlsx is not rendered at all", () => {
@@ -77,18 +111,62 @@ describe("ExportActionsBar", () => {
     expect(screen.getAllByText(UI_COPY.exportPdfHint)).toHaveLength(1);
   });
 
-  it("warns before exporting when the remark draft is unsaved", async () => {
-    const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(false);
+  it("asks in the shell dialog instead of a native browser modal (FE-CRUFT-02)", async () => {
+    const confirmSpy = vi.spyOn(window, "confirm");
     render(<ExportActionsBar reportId="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" unsavedRemark />);
     fireEvent.click(screen.getByRole("button", { name: "JSON" }));
-    expect(confirmSpy).toHaveBeenCalledTimes(1);
+
+    const dialog = await screen.findByRole("alertdialog", { name: UI_COPY.exportUnsavedTitle });
+    const messageId = dialog.getAttribute("aria-describedby");
+    expect(messageId).toBeTruthy();
+    expect(document.getElementById(messageId as string)?.textContent).toBe(
+      UI_COPY.exportUnsavedConfirm,
+    );
+    expect(screen.getByTestId("export-unsaved-format").textContent).toBe(
+      UI_COPY.exportUnsavedFormat("JSON"),
+    );
     expect(downloadExportMock).not.toHaveBeenCalled();
-    confirmSpy.mockReturnValue(true);
+
+    fireEvent.click(screen.getByRole("button", { name: UI_COPY.exportUnsavedCancel }));
+    await waitFor(() => {
+      expect(screen.queryByTestId("export-unsaved-dialog")).toBeNull();
+    });
+    expect(downloadExportMock).not.toHaveBeenCalled();
+
     fireEvent.click(screen.getByRole("button", { name: "JSON" }));
+    fireEvent.click(await screen.findByRole("button", { name: UI_COPY.exportUnsavedContinue }));
     await waitFor(() => {
       expect(downloadExportMock).toHaveBeenCalledTimes(1);
     });
+    expect(downloadExportMock).toHaveBeenCalledWith("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "json", {
+      bcfVersion: undefined,
+    });
+    // Служебное окно браузера не поднимается ни при каком исходе.
+    expect(confirmSpy).not.toHaveBeenCalled();
     confirmSpy.mockRestore();
+  });
+
+  it("exports exactly the format the question was asked about", async () => {
+    render(<ExportActionsBar reportId="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" unsavedRemark />);
+    fireEvent.click(screen.getByRole("button", { name: "BCF 3.0" }));
+    expect(screen.getByTestId("export-unsaved-format").textContent).toBe(
+      UI_COPY.exportUnsavedFormat("BCF 3.0"),
+    );
+    fireEvent.click(screen.getByRole("button", { name: UI_COPY.exportUnsavedContinue }));
+    await waitFor(() => {
+      expect(downloadExportMock).toHaveBeenCalledWith("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "bcf", {
+        bcfVersion: "3.0",
+      });
+    });
+  });
+
+  it("never interrupts an export when the remark draft is saved", async () => {
+    render(<ExportActionsBar reportId="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" />);
+    fireEvent.click(screen.getByRole("button", { name: "JSON" }));
+    expect(screen.queryByTestId("export-unsaved-dialog")).toBeNull();
+    await waitFor(() => {
+      expect(downloadExportMock).toHaveBeenCalledTimes(1);
+    });
   });
 
   it("does not claim a spreadsheet export exists", () => {
