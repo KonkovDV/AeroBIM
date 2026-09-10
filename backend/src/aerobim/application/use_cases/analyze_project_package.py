@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+from dataclasses import replace
 from pathlib import Path
 
 from aerobim.application.services.analyze_orchestrators import (
@@ -244,19 +245,8 @@ class AnalyzeProjectPackageUseCase:
 
     def execute(self, request: ValidationRequest) -> ValidationReport:
         collector: PackageTraceCollector | None = self._package_trace_collector
-        if collector is None and self._hard_signoff_profile:
-            collector = PackageTraceCollector(enforce_timeouts=True)
         if collector is None:
-            ingested = self._ingestion.run(request)
-            request = ingested.request
-            if not ingested.requirements and request.ids_path is None:
-                raise ValueError(
-                    "No requirements were extracted or synthesized from the provided sources"
-                )
-            deterministic = self._deterministic.run(request, ingested)
-            advisory = self._advisory.run(request, deterministic, ingested)
-            return self._evidence.assemble(request, ingested, deterministic, advisory)
-
+            collector = PackageTraceCollector(enforce_timeouts=bool(self._hard_signoff_profile))
         with collector.span(Contour.INGESTION):
             ingested = self._ingestion.run(request)
         request = ingested.request
@@ -269,7 +259,49 @@ class AnalyzeProjectPackageUseCase:
         with collector.span(Contour.AI_ADVISORY):
             advisory = self._advisory.run(request, deterministic, ingested)
         with collector.span(Contour.EVIDENCE_REPORTING):
-            return self._evidence.assemble(request, ingested, deterministic, advisory)
+            report = self._evidence.assemble(request, ingested, deterministic, advisory)
+        nested = dict(deterministic.stage_ms or {})
+        stage_ms = {
+            "ingest": int(collector.elapsed(Contour.INGESTION) * 1000),
+            "ifc": int(nested.get("ifc") or 0),
+            "ids": int(nested.get("ids") or 0),
+            "drawing": int(nested.get("drawing") or 0),
+            "cross-doc": int(nested.get("cross-doc") or 0),
+            "clash": int(nested.get("clash") or 0),
+            "report": int(collector.elapsed(Contour.EVIDENCE_REPORTING) * 1000),
+        }
+        from aerobim.domain.run_passport import (
+            SPF_CAP_BYTES,
+            build_run_passport,
+            passport_trace,
+        )
+
+        sources: list[dict[str, object]] = []
+        if request.ifc_path is not None:
+            size = request.ifc_path.stat().st_size if request.ifc_path.exists() else None
+            source: dict[str, object] = {"name": request.ifc_path.name, "size_bytes": size}
+            if size is not None and size > SPF_CAP_BYTES:
+                source["disposition"] = "read"
+                source["reason"] = "opened on disk (RocksDB); over SPF RAM cap; not a silent skip"
+            sources.append(source)
+        if request.ids_path is not None:
+            sources.append({"name": request.ids_path.name})
+        for drawing in request.drawing_sources:
+            name = drawing.path.name if drawing.path is not None else (drawing.format or "drawing")
+            sources.append({"name": str(name)})
+        passport = build_run_passport(
+            sources=sources,
+            stage_timings_ms=stage_ms,
+            report_id=report.report_id,
+            rules_version=str(report.schema_version or ""),
+            timing_basis="per_engine",
+        )
+        report = replace(
+            report,
+            tool_traces=(*report.tool_traces, passport_trace(passport)),
+        )
+        self._audit_report_store.save(report)
+        return report
 
     def _cross_doc_detector(self) -> CrossDocumentContradictionDetector:
         # Built on demand: tests construct partial instances and mutate _tolerance.

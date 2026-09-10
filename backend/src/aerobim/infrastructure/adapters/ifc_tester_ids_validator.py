@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import tempfile
 from pathlib import Path
 from typing import Any
@@ -15,6 +16,55 @@ from aerobim.domain.ids_schema_gate import (
     skipped_spec_fail_closed_rule_id,
 )
 from aerobim.domain.models import FindingCategory, Severity, ValidationIssue
+
+_IDS_PSET_PROP = re.compile(r"\b((?:Pset|Qto)_\w+)\.(\w+)\b")
+_IDS_DATASET = re.compile(r"\bdataset\s+(\S+)", re.IGNORECASE)
+_IDS_EXPECTED = re.compile(r"(?:shall|must)\s+be\s+([^\s,;]+)", re.IGNORECASE)
+_IDS_QUOTED_VALUE = re.compile(
+    r'(?:property value|value)\s+"([^"]+)"',
+    re.IGNORECASE,
+)
+_IDS_VALUE_IS = re.compile(r"\bvalue\s+is\s+([^\s,;]+)", re.IGNORECASE)
+_IDS_NAME_SKIP = frozenset({"the", "property", "a", "an", "requirement"})
+
+
+def ids_structured_fields(
+    description: str,
+    entity_reason: str,
+) -> tuple[str | None, str | None, str | None, str | None]:
+    """Parse IfcTester prose into pset / property / expected / observed.
+
+    ``issue.message`` stays the English IfcTester dump. These fields feed
+    Russian remark essence without translating the stored message.
+    """
+
+    blob = f"{description} {entity_reason}".strip()
+    property_set: str | None = None
+    property_name: str | None = None
+    dotted = _IDS_PSET_PROP.search(blob)
+    if dotted:
+        property_set = dotted.group(1)
+        property_name = dotted.group(2)
+    else:
+        dataset = _IDS_DATASET.search(blob)
+        if dataset:
+            property_set = dataset.group(1).rstrip(".,;")
+        token = description.strip().split()[0].rstrip(".,;:") if description.strip() else ""
+        if token and token[0].isalpha() and token.lower() not in _IDS_NAME_SKIP:
+            property_name = token
+    expected: str | None = None
+    expected_match = _IDS_EXPECTED.search(blob)
+    if expected_match:
+        expected = expected_match.group(1).rstrip(".,;")
+    observed: str | None = None
+    quoted = _IDS_QUOTED_VALUE.search(entity_reason) or _IDS_QUOTED_VALUE.search(blob)
+    if quoted:
+        observed = quoted.group(1)
+    else:
+        value_is = _IDS_VALUE_IS.search(entity_reason)
+        if value_is:
+            observed = value_is.group(1).rstrip(".,;")
+    return property_set, property_name, expected, observed
 
 
 class IfcTesterIdsValidator:
@@ -281,12 +331,20 @@ class IfcTesterIdsValidator:
         if entity_reason:
             base_message = f"{base_message} ({entity_reason})"
 
+        property_set, property_name, expected, observed = ids_structured_fields(
+            description,
+            entity_reason,
+        )
         return ValidationIssue(
             rule_id=f"IDS-{spec_name}",
             severity=Severity.ERROR,
             message=base_message,
             category=FindingCategory.IDS_VALIDATION,
             element_guid=self._extract_guid(entity_element),
+            property_set=property_set,
+            property_name=property_name,
+            expected_value=expected,
+            observed_value=observed,
         )
 
     def _extract_guid(self, element_repr: object) -> str | None:

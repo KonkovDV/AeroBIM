@@ -333,6 +333,8 @@ export const RU_COPY = {
   remarkStorey: "Этаж",
   remarkAxis: "Ось",
   remarkElement: "Элемент / GUID",
+  remarkIncomplete: "Неполное замечание: нет пункта или локации. Пункт не выдумывается.",
+  remarkFullTriad: "Суть, пункт и локация заполнены (формат 2.1.5). Не точность продукта.",
   diffKicker: "Версии",
   diffTitle: "Сравнение версий комплекта",
   diffNote:
@@ -369,7 +371,7 @@ export const RU_COPY = {
   blockersBody:
     "Этот экран помогает пилоту, но не скрывает checkpoint. UI не переключает гейты. Два независимых эксперта и подписанный профиль живут вне этой оболочки. κ/α считается на бэкенде, когда появится корпус. Checkpoint GO; customer_go false.",
   blockersGateClosed: "гейты закрыты (канал принял, пакета нет в git)",
-  blockersLoading: "Загружаем GET /v1/system/capabilities…",
+  blockersLoading: "Загружаем снимок приёмки…",
   blockersSnapshotFailed: (error: string) =>
     `Живой снимок гейтов недоступен (${error}). Статичный список ниже остаётся ОТКРЫТЫМ.`,
   blockersIntake: "Приём",
@@ -472,7 +474,7 @@ export const RU_COPY = {
   demoKicker: "Демо для ментора",
   demoTitle: "Учебный комплект",
   demoBody:
-    "Одна кнопка: git IFC+IDS (стены, огнестойкость). Дальше — эксперт на одном экране, без вкладки «Экспорт». Не пакет заказчика. Не точность продукта. Ожидаемый исход — находки, summary.passed=false с сервера. Checkpoint GO; customer_go false.",
+    "Одна кнопка: учебный git-пакет (IFC, IDS огнестойкости, ТЗ и лист A-101). Дальше — эксперт на одном экране, без вкладки «Экспорт». Не пакет заказчика. Не точность продукта. Ожидаемый исход — находки, summary.passed=false с сервера. Checkpoint GO; customer_go false.",
   demoSeed: "Загрузить демонстрационный комплект",
   demoRepeat: "Повторить учебный комплект",
   demoSeeding: "Готовим фикстуру…",

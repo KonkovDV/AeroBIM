@@ -56,14 +56,6 @@
   .keyboard-help-dialog.dirty-leave-dialog { padding: 20px; }
   .dirty-leave-actions { flex-direction: column; }
 }
-@media (prefers-color-scheme: dark) {
-  .keyboard-help-dialog.dirty-leave-dialog {
-    --leave-primary: #bcd5ff;
-    --leave-on-primary: #10233f;
-    --leave-danger: #fda29b;
-    --leave-error-bg: #341c23;
-  }
-}
 @media (forced-colors: active) {
   .dirty-leave-actions .toolbar-button { background: ButtonFace; border-color: ButtonText; color: ButtonText; }
   .dirty-leave-actions .toolbar-button:focus-visible { outline-color: Highlight; }

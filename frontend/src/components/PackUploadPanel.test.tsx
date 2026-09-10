@@ -25,6 +25,7 @@ describe("PackUploadPanel", () => {
     expect(uploadDocumentMock).not.toHaveBeenCalled();
     expect(screen.getByTestId("pack-dropzone")).toBeTruthy();
     expect(screen.getByTestId("upload-size-honesty").textContent).toMatch(/256 МиБ/);
+    expect(screen.getByTestId("upload-size-honesty").textContent).toMatch(/1,5 ГБ/);
     expect(screen.getByTestId("upload-size-honesty").textContent).toMatch(/отправить заново/i);
   });
 

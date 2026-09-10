@@ -58,13 +58,6 @@ pre {
   color: var(--vl-n900);
 }
 
-@media (prefers-color-scheme: dark) {
-  ::selection {
-    background: #24456f;
-    color: #e7ecf4;
-  }
-}
-
 /* В плотном интерфейсе штатная полоса прокрутки съедает ширину колонки. */
 .issue-list,
 .report-list,

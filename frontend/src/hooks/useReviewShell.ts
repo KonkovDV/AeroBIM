@@ -25,6 +25,7 @@ export function useReviewShell() {
   const [triageHelpOpen, setTriageHelpOpen] = useState(false);
   const [triageShortcutsEnabled, setTriageShortcutsEnabled] = useState(readTriageShortcuts);
   const [reportsEpoch, setReportsEpoch] = useState(0);
+  const [demoSeedInFlight, setDemoSeedInFlight] = useState(false);
   const [selectedReportId, setSelectedReportId] = useState<string | null>(readUrlReportId);
   const [pendingNav, setPendingNav] = useState<
     | { kind: "report"; reportId: string; thenView?: WorkspaceView }
@@ -41,6 +42,7 @@ export function useReviewShell() {
     search: reportFilters.search,
     epoch: reportsEpoch,
     setSelectedReportId,
+    seedInFlight: demoSeedInFlight,
   });
   const review = useSelectedReport(selectedReportId, reportsEpoch);
   const {
@@ -78,7 +80,17 @@ export function useReviewShell() {
   });
   useSnapSelectionToFilter(filteredIssues, selectedIssueIndex, selectIssue);
 
+  const beginDemoSeed = useCallback((): void => {
+    setDemoSeedInFlight(true);
+  }, []);
+
+  const failDemoSeed = useCallback((): void => {
+    setDemoSeedInFlight(false);
+    setReportsEpoch((value) => value + 1);
+  }, []);
+
   const handleSeededReport = useCallback((reportId: string): void => {
+    setDemoSeedInFlight(false);
     landing.landOnExpert();
     if (isDirty) {
       if (reportId !== selectedReportId) {
@@ -204,6 +216,8 @@ export function useReviewShell() {
     landing,
     triage,
     handleSeededReport,
+    beginDemoSeed,
+    failDemoSeed,
     requestWorkspaceView,
     requestSelectReport,
     resolveLeave,

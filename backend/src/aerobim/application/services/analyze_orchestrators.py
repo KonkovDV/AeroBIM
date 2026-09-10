@@ -8,9 +8,10 @@ coordinate phases and make contour boundaries testable in isolation.
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 from datetime import UTC, datetime
 from pathlib import Path
+from time import perf_counter
 from typing import TYPE_CHECKING
 from uuid import uuid4
 
@@ -107,6 +108,7 @@ class DeterministicBundle:
     signature_issues: tuple[ValidationIssue, ...] = ()
     package_completeness_capability: CapabilityStatus | None = None
     package_completeness_issues: tuple[ValidationIssue, ...] = ()
+    stage_ms: dict[str, int] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -208,8 +210,20 @@ class DeterministicValidationOrchestrator:
     ) -> DeterministicBundle:
         requirements = ingested.requirements
         if request.ifc_path is None:
-            return self._run_document_only(request, ingested)
+            started = perf_counter()
+            bundle = self._run_document_only(request, ingested)
+            return replace(
+                bundle,
+                stage_ms={
+                    "ifc": 0,
+                    "ids": 0,
+                    "drawing": 0,
+                    "cross-doc": max(0, int((perf_counter() - started) * 1000)),
+                    "clash": 0,
+                },
+            )
 
+        t0 = perf_counter()
         schema_issues = list(self._host._ids_runner().collect_schema_issues(request.ifc_path))
         schema_request_id, schema_remote_issues = self._host._ids_runner().submit_bsi_validation(
             request.ifc_path
@@ -218,11 +232,15 @@ class DeterministicValidationOrchestrator:
         schema_issues_t = tuple(schema_issues)
         ids_audit_issues = tuple(self._host._ids_runner().collect_ids_audit_issues(request))
         ids_issues = tuple(self._host._ids_runner().collect_ids_issues(request))
+        ids_ms = max(0, int((perf_counter() - t0) * 1000))
+        t1 = perf_counter()
         ifc_issues = (
             tuple(self._host._ifc_validator.validate(request.ifc_path, requirements))
             if requirements
             else ()
         )
+        ifc_ms = max(0, int((perf_counter() - t1) * 1000))
+        t2 = perf_counter()
         drawing_issues = tuple(
             self._host._annotation_validator().validate(requirements, ingested.drawing_annotations)
         )
@@ -235,6 +253,8 @@ class DeterministicValidationOrchestrator:
                 ),
             ]
         )
+        drawing_ms = max(0, int((perf_counter() - t2) * 1000))
+        t3 = perf_counter()
         cross_document_issues = tuple(self._host._cross_doc_detector().detect(requirements))
         revision_merge_issues = tuple(
             detect_revision_merge_conflicts(
@@ -254,6 +274,7 @@ class DeterministicValidationOrchestrator:
                 reinforcement_mode,
             )
         )
+        t4 = perf_counter()
         clash_results, clash_capability, clash_issues = (
             self._host._clash_runner().run_clash_detection(request.ifc_path)
         )
@@ -261,6 +282,7 @@ class DeterministicValidationOrchestrator:
         quantity_issues, quantity_capability = self._host._clash_runner().run_quantity_consistency(
             request.ifc_path, requirements
         )
+        clash_ms = max(0, int((perf_counter() - t4) * 1000))
         load_issues, calculation_match = self._host._clash_runner().run_load_evidence(request)
         logic_issues = self._host._clash_runner().run_logic_consistency(request)
         signature_capability, signature_issues = self._host._signature_runner().run_signature_audit(
@@ -269,6 +291,7 @@ class DeterministicValidationOrchestrator:
         package_completeness_capability, package_completeness_issues = (
             self._host._signature_runner().run_package_completeness(request)
         )
+        cross_ms = max(0, int((perf_counter() - t3) * 1000) - clash_ms)
         engine_issues = tuple(
             [
                 *schema_issues_t,
@@ -293,7 +316,7 @@ class DeterministicValidationOrchestrator:
                 *package_completeness_issues,
             ]
         )
-        return DeterministicBundle(
+        bundle = DeterministicBundle(
             schema_issues=schema_issues_t,
             schema_request_id=schema_request_id,
             ids_audit_issues=ids_audit_issues,
@@ -320,7 +343,15 @@ class DeterministicValidationOrchestrator:
             signature_issues=tuple(signature_issues),
             package_completeness_capability=package_completeness_capability,
             package_completeness_issues=tuple(package_completeness_issues),
+            stage_ms={
+                "ifc": ifc_ms,
+                "ids": ids_ms,
+                "drawing": drawing_ms,
+                "cross-doc": max(0, cross_ms),
+                "clash": clash_ms,
+            },
         )
+        return bundle
 
     def _run_document_only(
         self,

@@ -80,10 +80,6 @@ export default function PackCycleStrip({
           </span>
         );
       })}
-      <p className="pack-cycle-caption">
-        Загрузка → прогон → покрытие ТЗ → триаж → отчёт. Не измеренный SLA. UI не пишет{" "}
-        <code>summary.passed</code>.
-      </p>
     </nav>
   );
 }

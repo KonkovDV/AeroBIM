@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import MagicMock
@@ -10,6 +11,7 @@ from aerobim.application.use_cases.analyze_project_package_jobs import (
     AnalyzeProjectPackageJobRunner,
     SubmitAnalyzeProjectPackageJobUseCase,
 )
+from aerobim.domain.analyze_job_idempotency import IdempotencyPayloadConflictError
 from aerobim.domain.architecture import DEFAULT_PACKAGE_STAGE_BUDGET, StageBudget
 from aerobim.domain.models import (
     AnalyzeProjectPackageJob,
@@ -58,6 +60,36 @@ class JobIdempotencyTests(unittest.TestCase):
         second = submit.execute(self._request(), idempotency_key="client-key-1")
         self.assertEqual(first.job_id, second.job_id)
         self.assertEqual(first.idempotency_key, "client-key-1")
+        self.assertEqual(first.payload_fingerprint, second.payload_fingerprint)
+        self.assertIsNotNone(first.payload_fingerprint)
+
+    def test_submit_rejects_same_key_different_payload(self) -> None:
+        store = InMemoryAnalyzeProjectPackageJobStore()
+        submit = SubmitAnalyzeProjectPackageJobUseCase(store)
+        first = submit.execute(self._request(), idempotency_key="client-key-1")
+        other = ValidationRequest(
+            request_id="req-idem-2",
+            ifc_path=Path("other.ifc"),
+            requirement_source=RequirementSource(
+                text="height = 3 m",
+                source_kind=SourceKind.STRUCTURED_TEXT,
+            ),
+        )
+        with self.assertRaises(IdempotencyPayloadConflictError):
+            submit.execute(other, idempotency_key="client-key-1")
+        self.assertEqual(store.get(first.job_id).request_id, "req-idem-1")  # type: ignore[union-attr]
+
+    def test_payload_fingerprint_survives_snapshot(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            snapshot = Path(tmp) / "jobs.snapshot.json"
+            store = InMemoryAnalyzeProjectPackageJobStore(snapshot_path=snapshot)
+            submit = SubmitAnalyzeProjectPackageJobUseCase(store)
+            job = submit.execute(self._request(), idempotency_key="snap-key")
+            recovered = InMemoryAnalyzeProjectPackageJobStore(snapshot_path=snapshot)
+            loaded = recovered.get(job.job_id)
+            assert loaded is not None
+            self.assertEqual(loaded.payload_fingerprint, job.payload_fingerprint)
+            self.assertEqual(loaded.idempotency_key, "snap-key")
 
     def test_runner_skips_when_job_not_claimable(self) -> None:
         store = InMemoryAnalyzeProjectPackageJobStore()

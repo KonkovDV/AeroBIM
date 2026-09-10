@@ -17,6 +17,7 @@ from aerobim.presentation.http.context import ApiContext
 from aerobim.presentation.http.errors import (
     public_analyze_concurrency_limit_detail,
     public_bad_request_detail,
+    public_idempotency_payload_conflict_detail,
     public_ifc_analyze_cap_body,
     public_ifc_disk_backend_detail,
     public_not_found_detail,
@@ -206,6 +207,7 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
         from aerobim.application.use_cases.analyze_project_package_jobs import (
             JobConcurrencyLimitError,
         )
+        from aerobim.domain.analyze_job_idempotency import IdempotencyPayloadConflictError
 
         submit_job_use_case = ctx.container.resolve(
             Tokens.SUBMIT_ANALYZE_PROJECT_PACKAGE_JOB_USE_CASE
@@ -221,6 +223,11 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
             raise HTTPException(
                 status_code=429,
                 detail=public_analyze_concurrency_limit_detail(),
+            ) from exc
+        except IdempotencyPayloadConflictError as exc:
+            raise HTTPException(
+                status_code=409,
+                detail=public_idempotency_payload_conflict_detail(),
             ) from exc
         if job.status.value == "queued":
             # JOB-01: FastAPI BackgroundTasks in this API process — not a durable worker.

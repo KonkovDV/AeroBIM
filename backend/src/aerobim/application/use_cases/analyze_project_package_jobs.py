@@ -4,6 +4,11 @@ from datetime import UTC, datetime
 from uuid import uuid4
 
 from aerobim.application.use_cases.analyze_project_package import AnalyzeProjectPackageUseCase
+from aerobim.domain.analyze_job_idempotency import (
+    IdempotencyPayloadConflictError,
+    analyze_job_payload_fingerprint,
+    fingerprints_conflict,
+)
 from aerobim.domain.logging import StructuredLogger
 from aerobim.domain.models import AnalyzeProjectPackageJob, JobStatus, ValidationRequest
 from aerobim.domain.ports import AnalyzeProjectPackageJobStore, AuditReportStore
@@ -30,6 +35,7 @@ class SubmitAnalyzeProjectPackageJobUseCase:
     ) -> AnalyzeProjectPackageJob:
         tenant_id = (request.tenant_id or "").strip() or None
         idempotency_key = (idempotency_key or "").strip() or None
+        fingerprint = analyze_job_payload_fingerprint(request)
         # Opportunistic reclaim before concurrency accounting / create.
         # JOB-01: QUEUED rows whose runner never started (API process died) fail closed.
         self._job_store.reclaim_stale_running()
@@ -44,6 +50,10 @@ class SubmitAnalyzeProjectPackageJobUseCase:
                 JobStatus.RUNNING,
                 JobStatus.SUCCEEDED,
             }:
+                if fingerprints_conflict(existing.payload_fingerprint, fingerprint):
+                    raise IdempotencyPayloadConflictError(
+                        "Idempotency-Key already used with a different payload"
+                    )
                 return existing
         if max_concurrent_per_tenant is not None and max_concurrent_per_tenant > 0:
             # RT D09: deny anonymous/null tenant when a concurrency limit is configured.
@@ -65,11 +75,16 @@ class SubmitAnalyzeProjectPackageJobUseCase:
             created_at=_now_iso(),
             idempotency_key=idempotency_key,
             tenant_id=tenant_id,
+            payload_fingerprint=fingerprint,
         )
         created_id = self._job_store.create(job)
         if created_id != job.job_id:
             recovered = self._job_store.get(created_id)
             if recovered is not None:
+                if fingerprints_conflict(recovered.payload_fingerprint, fingerprint):
+                    raise IdempotencyPayloadConflictError(
+                        "Idempotency-Key already used with a different payload"
+                    )
                 return recovered
         return job
 

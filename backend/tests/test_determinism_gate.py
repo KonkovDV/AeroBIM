@@ -42,6 +42,21 @@ class DeterminismGateTests(unittest.TestCase):
         self.assertEqual(len(divergences), 1)
         self.assertEqual(divergences[0].resolution, "engine_wins")
 
+    def test_advisory_prefix_is_not_doubled(self) -> None:
+        advisory = [
+            ValidationIssue(
+                rule_id="AI-1",
+                severity=Severity.ERROR,
+                message="[advisory] Quantity tool skipped",
+                category=FindingCategory.SPATIAL,
+                finding_id="a1",
+            )
+        ]
+        merged, _divergences = self.gate.reconcile(engine_issues=(), advisory_issues=advisory)
+        self.assertEqual(merged[0].message.count("[advisory"), 1)
+        self.assertTrue(merged[0].message.startswith("[advisory-only]"))
+        self.assertNotIn("[advisory] Quantity", merged[0].message)
+
     def test_divergence_keeps_engine_and_emits_warning(self) -> None:
         engine = [
             ValidationIssue(

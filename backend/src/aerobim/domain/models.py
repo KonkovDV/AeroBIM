@@ -740,6 +740,8 @@ class AnalyzeProjectPackageJob:
     cancel_requested: bool = False
     tenant_id: str | None = None
     """Owning tenant; required for object ACL on job get/cancel."""
+    payload_fingerprint: str | None = None
+    """SHA-256 of the analyze request identity. Same Idempotency-Key, different hash → 409."""
 
 
 @dataclass(frozen=True)

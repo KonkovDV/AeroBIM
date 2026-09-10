@@ -42,7 +42,7 @@ from aerobim.domain.models import (
     ValidationIssue,
     ValidationReport,
 )
-from aerobim.domain.review_projection import effective_text_for_issue
+from aerobim.domain.review_projection import effective_text_for_issue, issue_is_rejected
 
 
 @dataclass(frozen=True)
@@ -125,6 +125,8 @@ def _collect_topics(
 
     for issue in report.issues:
         if not _should_export_issue_as_bcf_topic(issue):
+            continue
+        if issue_is_rejected(issue, review_events):
             continue
 
         reference_links = tuple(

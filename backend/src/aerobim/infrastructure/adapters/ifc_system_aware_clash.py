@@ -16,6 +16,8 @@ class IfcSystemAwareClash:
     """Probe IfcSystem assignments + generic pairwise proximity (clearance scaffold).
 
     Without ``scope_memo_ref`` or systems in the model, fails closed — never empty-as-OK.
+    Opt-in (disabled by default). Builds a ring of adjacent pairs among the first
+    ``≤20`` systems — not a full pair matrix. Geometry intersection is not claimed.
     """
 
     def __init__(

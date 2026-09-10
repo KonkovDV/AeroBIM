@@ -1,6 +1,8 @@
 """Sprint 3 maximal open-corpus battery — regression, BSI, IFC-Bench, schema suite.
 
-Writes committed evidence under ``docs/evidence/`` and ``audit/evidence/``.
+CLI writes sprint3 battery evidence under ``docs/evidence/`` and
+``audit/evidence/``. The ifc-release-benchmark files are rewritten only with
+``--write-docs-evidence`` so pytest does not mutate committed evidence.
 Claim boundary: fixture/open-bench regression and timing only — NOT product accuracy.
 """
 
@@ -159,11 +161,6 @@ def run_battery(
         storage_dir=None,
         group_by="schema",
     )
-    write_ifc_release_evidence(
-        schema_payload,
-        json_path=root / "audit" / "evidence" / "ifc-release-benchmark-2026-08.json",
-        markdown_path=root / "docs" / "evidence" / "ifc-release-benchmark-2026-08.md",
-    )
 
     internal: dict[str, Any] = {}
     if run_internal and INTERNAL_DATA.is_dir():
@@ -207,6 +204,14 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Skip aerobim-internal-data runner scripts",
     )
+    parser.add_argument(
+        "--write-docs-evidence",
+        action="store_true",
+        help=(
+            "Also rewrite committed ifc-release-benchmark-2026-08 JSON/MD. "
+            "Default leaves those files untouched (pytest must not rewrite them)."
+        ),
+    )
     args = parser.parse_args(argv)
 
     payload = run_battery(
@@ -217,6 +222,12 @@ def main(argv: list[str] | None = None) -> int:
     json_path = root / "audit" / "evidence" / "sprint3-open-corpus-battery-2026-08.json"
     md_path = root / "docs" / "evidence" / "sprint3-open-corpus-battery-2026-08.md"
     _write_evidence(payload, json_path=json_path, markdown_path=md_path)
+    if args.write_docs_evidence:
+        write_ifc_release_evidence(
+            payload["ifc_schema_suite"],
+            json_path=root / "audit" / "evidence" / "ifc-release-benchmark-2026-08.json",
+            markdown_path=root / "docs" / "evidence" / "ifc-release-benchmark-2026-08.md",
+        )
     print(json.dumps({"battery_pass": payload["battery_pass"], "json": str(json_path)}, indent=2))
     return 0 if payload["battery_pass"] else 2
 

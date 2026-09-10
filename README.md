@@ -11,7 +11,7 @@
 
 **AeroBIM catches disagreements between files in a construction pack: a schedule area against the IFC area, a PD elevation against an RD elevation, a brief requirement against what the files actually contain — and it does this against public machine-readable examination requirements. Each file opens cleanly on its own. The defect lives in the seam and usually surfaces on site.**
 
-From 2 April 2026, Moscow requires an AGR CIM in IFC: Moscow Government decree № 17-ПП of 16 January 2026 set that filing date; the joint DIT/DGP order № ДГП-Р-1/26/64-16-6/26 of the same day approved the IFC materials. That is a **city filing rule**, not a Samolet-signed acceptance profile and not a product accuracy claim.
+From 2 April 2026, Moscow requires an AGR CIM in IFC: Moscow Government decree № 17-ПП of 16 January 2026 set that filing date; the joint DIT/DGP order № ДГП-Р-1/26/64-16-6/26 of the same day approved the IFC materials. From 18 August 2026 the joint DGP/DIT order № ДГП-Р-56/26/64-16-473/26 updates requirements for three-dimensional models placed in Moscow information systems (DGP page on mos.ru). Those are **city filing rules**, not a Samolet-signed acceptance profile and not a product accuracy claim. City AGR IFC mapping/export tooling is published for Revit (stroimprosto.mos.ru); AeroBIM does not ingest native RVT. For a developer whose pipeline is RVT, IFC export quality is a regulatory filing risk; AeroBIM sits on the pack-check seam before filing and does not compete with a model checker (Tangl) or a CDE (10D).
 
 IFC + IDS + sheets + specification texts go in. Findings you can follow to a sheet and a GUID come out — HTML, JSON, a PDF coverage draft, and BCF. The reviewer still decides. AeroBIM is not a CDE, not a model viewer, and not a replacement for the expert.
 
@@ -192,7 +192,7 @@ Register: [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS
 | `POST` | `/v1/uploads` | Multipart ingest; returns a storage-relative path for analysis |
 | `POST` | `/v1/validate/ifc` | Validate an IFC file against requirements and IDS |
 | `POST` | `/v1/analyze/project-package` | Full package analysis: model, drawings, specification, calculation |
-| `POST` | `/v1/analyze/project-package/submit` | Queue a larger package as an **in-process** FastAPI `BackgroundTasks` job (not a durable worker). Redis stores job records outside development; a process crash can leave `QUEUED` until reclaim |
+| `POST` | `/v1/analyze/project-package/submit` | Queue a larger package as an **in-process** FastAPI `BackgroundTasks` job (not a durable worker). `Idempotency-Key`; same key + different payload → 409; per-tenant concurrency → 429; cancel via `request_cancel`; Redis stores job records outside development; a process crash can leave `QUEUED` until `reclaim_stale_queued` |
 | `GET` | `/v1/analyze/project-package/jobs/{job_id}` | Poll a background job |
 | `POST` | `/v1/analyze/project-package/jobs/{job_id}/cancel` | Cancel a running job |
 | `GET` | `/v1/reports` | List persisted reports, filtered by project, discipline or verdict |

@@ -6,6 +6,7 @@ import unittest
 from pathlib import Path
 
 from aerobim.tools.build_customer_review_pack import (
+    FORM_COLUMNS,
     build_customer_review_pack,
     main,
     render_customer_review_form,
@@ -16,7 +17,7 @@ from aerobim.tools.build_customer_review_pack import (
 def _report() -> dict[str, object]:
     return {
         "report_id": "a" * 32,
-        "project_name": "House 5",
+        "project_name": "Fixture Pack A",
         "summary": {"passed": False, "outcome": "review_required"},
         "capabilities": {
             "ifc": {"status": "ok"},
@@ -107,12 +108,48 @@ class CustomerReviewPackTests(unittest.TestCase):
         self.assertEqual(pack["accuracy_claim"], "NOT_ESTABLISHED")
         self.assertEqual(pack["sla_claim"], "NOT_ESTABLISHED")
         self.assertIn("mep_system_clash", pack["not_evaluated_or_unverified"])
+        self.assertIsNone(findings[0]["customer_decision"]["status"])
+        self.assertEqual(findings[0]["review"]["status"], "accepted")
+        self.assertFalse(pack["customer_go"])
+        self.assertEqual(pack["checkpoint"], "GO")
+        self.assertEqual(pack["go_kind"], "regulatory_measurement_mvp")
         serialized = json.dumps(pack, ensure_ascii=False)
         self.assertNotIn("source_path", serialized)
         self.assertNotIn("/home/operator/private", serialized)
         self.assertIn("not probability of a true defect", serialized)
         markdown = render_customer_review_markdown(pack)
         self.assertIn("не акт приёмки", markdown)
+        self.assertIn("identity-ключу", markdown)
+        self.assertIn(
+            "в исходном отчёте отдельной строки нет",
+            markdown,
+        )
+
+    def test_expert_form_ignores_hitl_and_lists_declared_timeouts(self) -> None:
+        payload = _report()
+        capabilities = payload["capabilities"]
+        assert isinstance(capabilities, dict)
+        capabilities["drawings"] = {
+            "status": "not_verified",
+            "reason": "PDF analysis timed out after 60s",
+        }
+        pack = build_customer_review_pack(payload, top_k=2)
+        self.assertIsNone(pack["findings"][0]["customer_decision"]["status"])
+        self.assertEqual(pack["findings"][0]["review"]["status"], "accepted")
+        self.assertEqual(
+            pack["drawing_timeouts"],
+            ["drawings: PDF analysis timed out after 60s"],
+        )
+        markdown = render_customer_review_markdown(pack)
+        self.assertIn("PDF analysis timed out after 60s", markdown)
+        form = render_customer_review_form(pack)
+        rows = [line for line in form.split("\r\n") if line]
+        columns = rows[0].split(";")
+        cells = rows[1].split(";")
+        self.assertEqual(columns, list(FORM_COLUMNS))
+        self.assertEqual(cells[columns.index("decision")], "")
+        self.assertEqual(cells[columns.index("machine_status")], "accepted")
+        self.assertEqual(cells[columns.index("comment")], "")
 
     def test_triage_funnel_coverage_and_data_gaps(self) -> None:
         pack = build_customer_review_pack(

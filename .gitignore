@@ -78,6 +78,10 @@ docs/evidence/sprint2-synthetic-baseline-2026-08-1*.*
 # Accidental private dump at repo root (use sibling ../AeroBIM-private/, not in-tree .local/)
 /AeroBIM/
 
+# Customer/audit derivative zips (ADR-005 — never commit)
+audit/*.zip
+audit/AeroBIM-audit-*.zip
+
 # Commercial ops with contacts / outreach PII (live copies under .local/commercial-ops/)
 docs/customer-discovery/*.csv
 docs/customer-discovery/outreach-log.md

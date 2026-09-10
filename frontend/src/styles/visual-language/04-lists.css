@@ -122,6 +122,30 @@
   overflow-wrap: anywhere;
 }
 
+.advisory-candidates {
+  margin: var(--vl-space-3) var(--vl-space-4) var(--vl-space-4);
+  font-size: var(--vl-text-sm);
+}
+
+.advisory-candidates summary {
+  cursor: pointer;
+}
+
+.advisory-candidate-list {
+  list-style: none;
+  margin: var(--vl-space-2) 0 0;
+  padding: 0;
+}
+
+.remark-audit-details {
+  margin: var(--vl-space-3) 0 0;
+  font-size: var(--vl-text-sm);
+}
+
+.remark-audit-details summary {
+  cursor: pointer;
+}
+
 .issue-location-missing {
   font-style: italic;
   color: var(--vl-text-muted);

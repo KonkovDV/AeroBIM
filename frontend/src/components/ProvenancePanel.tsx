@@ -40,12 +40,12 @@ export default function ProvenancePanel({ activeIssue }: ProvenancePanelProps) {
     <article className="detail-block" data-testid="provenance-active-issue">
       <h3>{UI_COPY.activeIssue}</h3>
       {!auditReady && (
-        <p className="provenance-gap-banner" role="status">
+        <p className="provenance-gap-banner" role="note">
           {UI_COPY.provenanceGap}
         </p>
       )}
       {auditReady && (
-        <p className="provenance-ok-banner" role="status">
+        <p className="provenance-ok-banner" role="note">
           {UI_COPY.provenanceOk}
         </p>
       )}

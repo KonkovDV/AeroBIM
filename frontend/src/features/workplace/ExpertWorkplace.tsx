@@ -23,6 +23,7 @@ export type ExpertWorkplaceProps = {
   selectedReport: ValidationReport | null;
   reportLoading: boolean;
   filteredIssues: IndexedIssue[];
+  advisoryIssues?: IndexedIssue[];
   selectedIssueIndex: number;
   issueSeverityFilter: "all" | "error" | "warning" | "info";
   hitlOnlyFilter: boolean;
@@ -66,6 +67,7 @@ export default function ExpertWorkplace({
   selectedReport,
   reportLoading,
   filteredIssues,
+  advisoryIssues = [],
   selectedIssueIndex,
   issueSeverityFilter,
   hitlOnlyFilter,
@@ -174,6 +176,7 @@ export default function ExpertWorkplace({
             ) : (
               <FindingListPanel
                 issues={filteredIssues}
+                advisoryIssues={advisoryIssues}
                 totalIssueCount={selectedReport.issues.length}
                 selectedIssueIndex={selectedIssueIndex}
                 issueSeverityFilter={issueSeverityFilter}

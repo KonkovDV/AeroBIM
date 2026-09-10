@@ -38,6 +38,8 @@ export default function App() {
     landing,
     triage,
     handleSeededReport,
+    beginDemoSeed,
+    failDemoSeed,
     requestWorkspaceView,
     requestSelectReport,
     resolveLeave,
@@ -82,7 +84,12 @@ export default function App() {
         onChange={requestWorkspaceView}
       />
       {import.meta.env.DEV ? (
-        <DemoFixturePanel onSeeded={handleSeededReport} hideIntro={review.selectedReport !== null} />
+        <DemoFixturePanel
+          onSeeded={handleSeededReport}
+          onSeedStarted={beginDemoSeed}
+          onSeedFailed={failDemoSeed}
+          hideIntro={review.selectedReport !== null}
+        />
       ) : null}
       {EXPERT_SHELL_VIEWS.has(workspaceView) && review.selectedReport ? (
         <CapabilityTopBanner capabilities={review.selectedReport.capabilities} />
@@ -130,6 +137,7 @@ export default function App() {
           selectedReport={review.selectedReport}
           reportLoading={review.reportLoading}
           filteredIssues={triage.filteredIssues}
+          advisoryIssues={triage.advisoryIssues}
           selectedIssueIndex={review.selectedIssueIndex}
           issueSeverityFilter={findings.issueSeverityFilter}
           hitlOnlyFilter={findings.hitlOnlyFilter}

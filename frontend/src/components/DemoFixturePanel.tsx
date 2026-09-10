@@ -5,11 +5,18 @@ import { UI_COPY } from "../lib/ui-copy";
 
 export type DemoFixturePanelProps = {
   onSeeded: (reportId: string) => void;
+  onSeedStarted?: () => void;
+  onSeedFailed?: () => void;
   /** When a report is already on the expert screen, hide the essay so the three-pane is the landing. */
   hideIntro?: boolean;
 };
 
-export default function DemoFixturePanel({ onSeeded, hideIntro = false }: DemoFixturePanelProps) {
+export default function DemoFixturePanel({
+  onSeeded,
+  onSeedStarted,
+  onSeedFailed,
+  hideIntro = false,
+}: DemoFixturePanelProps) {
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "failed">("idle");
   const [detail, setDetail] = useState<string | null>(null);
 
@@ -20,6 +27,7 @@ export default function DemoFixturePanel({ onSeeded, hideIntro = false }: DemoFi
   async function seed(): Promise<void> {
     setStatus("loading");
     setDetail(null);
+    onSeedStarted?.();
     try {
       const result = await seedDemoFixture();
       setStatus("ok");
@@ -28,6 +36,7 @@ export default function DemoFixturePanel({ onSeeded, hideIntro = false }: DemoFi
     } catch (error: unknown) {
       setStatus("failed");
       setDetail(error instanceof Error ? error.message : UI_COPY.demoSeedFailed);
+      onSeedFailed?.();
     }
   }
 

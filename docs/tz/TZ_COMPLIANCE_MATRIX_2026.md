@@ -2,8 +2,8 @@
 ---
 title: "AeroBIM TZ Compliance Matrix 2026"
 status: active
-version: "1.3.6"
-last_updated: "2026-09-05"
+version: "1.3.7"
+last_updated: "2026-09-09"
 tags: [aerobim, tz, compliance, mvp]
 ---
 
@@ -89,7 +89,7 @@ Extraction integrity: [`../extraction-integrity-2026.md`](../extraction-integrit
 | Requirement | Status | Module | Phase |
 |-------------|--------|--------|-------|
 | Highlight problem zones on drawing | done | `ProblemZone` + `DrawingEvidencePanel` | MVP |
-| Generate remark text | done | RU/EN templates (`AEROBIM_REMARK_LOCALE`); storey/axis from `IfcSpatialIndex` when GUID hits, else explicit missing (not OCR); payload `samples/schemas/remark-shape.schema.json` (essence + bound clause or unbound marker + location) | MVP / P0 |
+| Generate remark text | done | RU/EN templates (`AEROBIM_REMARK_LOCALE` + export `?locale=`); storey/axis from `IfcSpatialIndex` when GUID hits, else explicit missing (not OCR); payload `samples/schemas/remark-shape.schema.json`; incomplete 2.1.5 triad is a named marker, never an invented clause | MVP / P0 |
 | Edit comments | done | API + frontend remark editor → `edited_remark` | P0 |
 
 ## 4. Functionality
@@ -103,7 +103,7 @@ Extraction integrity: [`../extraction-integrity-2026.md`](../extraction-integrit
 | Upload BIM (IFC) | done | Path-based + multipart upload | MVP / P0 |
 | Auto analysis + report | done | `AnalyzeProjectPackageUseCase` + JSON/HTML/BCF ZIP export | MVP |
 | BCF ZIP file ingest | partial | Committed `fixture-topics.bcfzip` round-trip; CDE import NOT_VERIFIED | MVP |
-| Version / doc-type compare | partial | Fixture package identity compare (`compare_package_document_identities`); not CDE version management | P1 |
+| Version / doc-type compare | partial | `GET /v1/reports/{id}/revision-diff` + HTML `?against=` («не воспроизведено» ≠ исправлено); fixture package identity compare; not CDE version management | P1 |
 | CV for drawings | missing | Advisory roadmap | P2 |
 | OCR for text | partial | Raster baseline | MVP |
 | NLP for TZ / remarks / anomalies | partial | Regex NLP; LLM advisory stub; EN/RU templates | MVP / P3 |
@@ -132,9 +132,9 @@ Extraction integrity: [`../extraction-integrity-2026.md`](../extraction-integrit
 | TZ criterion | Pilot / repo target | Status | Phase |
 |--------------|---------------------|--------|-------|
 | Clash accuracy >90% | Measured precision after labeled corpus; pilot TP ≥60% interim | partial ([KT#2 handoff](../evidence/kt2-handoff-2026-08-11/README.md) + [slice 2026-08](../evidence/clash-measurement-slice-2026-08/README.md): **fixture** AABB extents precision=1.0 recall=1.0 n=6 — **not** customer corpus, **not** TZ >90%; customer n≈50 still open) | P1 fixture densified 12.08 / measure customer when IFC arrives / P4 publish |
-| Calc error detection | Cross-doc + OpenRebar provenance сверка on fixture; correctness NOT_IMPLEMENTED | partial | MVP |
+| Calc error detection | Four-row declared-value section in HTML/PDF (As / concrete-steel / deflection / loads); absent rebar = «нет данных», not silence; independent solver NOT_IMPLEMENTED | partial | MVP |
 | Inconsistency accuracy >90% | Same adjudication path as clash | partial (harness + protocol; not measured on customer corpus) | P1 harness done / P4 publish |
-| Remark quality RU/EN | RU/EN templates; storey/axis from IFC index when GUID hits; human edit HITL | partial | P0 |
+| Remark quality RU/EN | Export `?locale=ru` (default) / `en`; 2.1.5 triad or explicit incomplete marker; human edit HITL; rejected findings leave the finding list | partial | P0 |
 | Model accuracy / stability | pytest + capabilities fail-closed + publishable runtime baseline (`tests_passed` numeric; `claims-lint` CI) | done | MVP |
 | Scalability | Jobs + optional Redis/Postgres/S3 | partial | MVP foundation |
 | UI usability | Review shell; remarks panel P0 | partial | P0 |

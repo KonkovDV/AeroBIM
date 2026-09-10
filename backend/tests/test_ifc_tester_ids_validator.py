@@ -59,6 +59,36 @@ class IfcTesterIdsValidatorResultMappingTests(unittest.TestCase):
         self.assertIn("Wall Fire Rating", issues[0].rule_id)
         self.assertIn("REI30", issues[0].message)
         self.assertEqual(issues[0].element_guid, "2hJQkZ0zj1XBp0001")
+        self.assertEqual(issues[0].property_set, "Pset_WallCommon")
+        self.assertEqual(issues[0].property_name, "FireRating")
+        self.assertEqual(issues[0].expected_value, "REI60")
+        self.assertEqual(issues[0].observed_value, "REI30")
+
+    def test_ids_structured_fields_from_ifctester_prose(self) -> None:
+        from aerobim.infrastructure.adapters.ifc_tester_ids_validator import (
+            IfcTesterIdsValidator,
+            ids_structured_fields,
+        )
+
+        pset, name, expected, observed = ids_structured_fields(
+            "FireRating data shall be REI60 and in the dataset Pset_WallCommon",
+            'The property value "REI30" does not match the requirement',
+        )
+        self.assertEqual(pset, "Pset_WallCommon")
+        self.assertEqual(name, "FireRating")
+        self.assertEqual(expected, "REI60")
+        self.assertEqual(observed, "REI30")
+        issue = IfcTesterIdsValidator()._build_issue(
+            spec_name="Wall Fire Rating Multi",
+            facet_type="Property",
+            description="FireRating data shall be REI60 and in the dataset Pset_WallCommon",
+            entity_reason='The property value "REI30" does not match the requirement',
+            entity_element="1XYVUKGoDDbREfVxRKsHkl#12",
+        )
+        self.assertIn("[IDS]", issue.message)
+        self.assertEqual(issue.expected_value, "REI60")
+        self.assertEqual(issue.observed_value, "REI30")
+        self.assertEqual(issue.element_guid, "1XYVUKGoDDbREfVxRKsHkl")
 
     def test_map_results_skips_passing_specs(self) -> None:
         from aerobim.infrastructure.adapters.ifc_tester_ids_validator import IfcTesterIdsValidator

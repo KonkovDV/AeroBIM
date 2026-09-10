@@ -20,6 +20,6 @@ describe("product header", () => {
     render(<ShellHeader apiBase="" reportCount={0} uiRole="user" onRoleChange={() => undefined}
       bffStatus="UNKNOWN" roleLocked />);
     expect((screen.getByRole("combobox", { name: UI_COPY.roleSelectLabel }) as HTMLSelectElement).disabled).toBe(true);
-    expect(screen.getByRole("status").textContent).toContain("Редактирование недоступно");
+    expect(screen.getByRole("note").textContent).toContain("Редактирование недоступно");
   });
 });

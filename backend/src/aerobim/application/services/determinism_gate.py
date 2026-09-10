@@ -34,6 +34,26 @@ from aerobim.domain.models import (
     ValidationIssue,
 )
 
+_ADVISORY_WRAP_PREFIXES: tuple[str, ...] = (
+    "[advisory-only] ",
+    "[advisory-agent] ",
+    "[advisory] ",
+)
+
+
+def _strip_leading_advisory_tags(message: str) -> str:
+    """Drop agent/gate tags so this gate wraps ``[advisory-only]`` once."""
+
+    text = message.strip()
+    changed = True
+    while changed:
+        changed = False
+        for prefix in _ADVISORY_WRAP_PREFIXES:
+            if text.startswith(prefix):
+                text = text[len(prefix) :].lstrip()
+                changed = True
+    return text
+
 
 def _issue_key(issue: ValidationIssue) -> str:
     if issue.finding_id:
@@ -121,8 +141,9 @@ class DeterminismGate:
             key = _issue_key(advisory)
             engine = engine_by_key.get(key)
             if engine is None:
+                inner = _strip_leading_advisory_tags(advisory.message)
                 message = (
-                    f"[advisory-only] {advisory.message} "
+                    f"[advisory-only] {inner} "
                     "(DeterminismGate: not confirmed by deterministic engine)"
                 )
                 extra_refs: tuple[str, ...] = ()

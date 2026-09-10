@@ -22,7 +22,7 @@ function bannerCopy(status: AuthBffDiscoveryStatus): string {
 export default function RoleHonestyBanner({ bffStatus = "NOT_IMPLEMENTED" }: RoleHonestyBannerProps) {
   const text = bannerCopy(bffStatus);
   return (
-    <p className="role-honesty-banner" role="status" data-testid="role-honesty-banner">
+    <p className="role-honesty-banner" role="note" data-testid="role-honesty-banner">
       {text}
     </p>
   );

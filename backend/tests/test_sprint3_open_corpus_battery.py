@@ -61,12 +61,18 @@ class Sprint3BatterySmokeTests(unittest.TestCase):
     def test_battery_quick_passes(self) -> None:
         from aerobim.tools.run_sprint3_open_corpus_battery import run_battery
 
-        with patch(
-            "aerobim.tools.run_sprint3_open_corpus_battery._run_internal_script",
-            return_value={"status": "skipped"},
+        with (
+            patch(
+                "aerobim.tools.run_sprint3_open_corpus_battery._run_internal_script",
+                return_value={"status": "skipped"},
+            ),
+            patch(
+                "aerobim.tools.run_sprint3_open_corpus_battery.write_ifc_release_evidence",
+            ) as write_ev,
         ):
             payload = run_battery(include_bsi=False, run_internal=False)
         self.assertTrue(payload["battery_pass"])
+        write_ev.assert_not_called()
         regression = payload["open_corpora"]["profiles"]["regression"]
         self.assertEqual(regression["cases_matched"], regression["cases_run"])
 

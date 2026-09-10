@@ -14,6 +14,8 @@ import {
   CLAUSE_FILTER_MISSING,
   clauseFilterKey,
   clauseLine,
+  findingCategoryLabel,
+  findingListTitle,
   groupFindings,
   priorityCaption,
   spatialOrMissing,
@@ -60,6 +62,7 @@ function groupHeaderId(groupKey: string): string {
 
 export type FindingListPanelProps = {
   issues: IndexedIssue[];
+  advisoryIssues?: IndexedIssue[];
   totalIssueCount: number;
   selectedIssueIndex: number;
   issueSeverityFilter: "all" | "error" | "warning" | "info";
@@ -137,9 +140,9 @@ function IssueCard({
           <span className="issue-priority">P{issue.priority}</span>
         ) : null}
       </div>
-      <p>{issue.message}</p>
+      <p>{findingListTitle(issue)}</p>
       <div className="issue-card-meta">
-        <span>{issue.category}</span>
+        <span>{findingCategoryLabel(issue.category)}</span>
         <span>{issue.target_ref ?? issue.element_guid ?? UI_COPY.noTarget}</span>
       </div>
       <div className="issue-card-meta issue-card-location" data-testid="issue-location">
@@ -163,6 +166,7 @@ function IssueCard({
 
 export default function FindingListPanel({
   issues,
+  advisoryIssues = [],
   totalIssueCount,
   selectedIssueIndex,
   issueSeverityFilter,
@@ -447,6 +451,31 @@ export default function FindingListPanel({
           </div>
         )}
       </div>
+      {advisoryIssues.length > 0 ? (
+        <details className="advisory-candidates" data-testid="advisory-candidates">
+          <summary>{UI_COPY.advisorySection(advisoryIssues.length)}</summary>
+          <ul className="advisory-candidate-list">
+            {advisoryIssues.map(({ issue, index }) => (
+              <li key={`${issue.rule_id}-${index}`}>
+                <button
+                  type="button"
+                  className={`issue-card issue-card--advisory${index === selectedIssueIndex ? " active" : ""}`}
+                  data-testid="advisory-candidate-card"
+                  onClick={() => handleSelect(index, issue)}
+                >
+                  <div className="issue-card-row">
+                    <strong>{issue.rule_id}</strong>
+                    <span className="origin-pill origin-advisory" title={UI_COPY.advisoryTitle}>
+                      {UI_COPY.advisory}
+                    </span>
+                  </div>
+                  <p>{findingListTitle(issue)}</p>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </details>
+      ) : null}
     </>
   );
 }

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -67,6 +68,10 @@ def verify_kt2_handoff(*, handoff_dir: Path, repo: Path) -> dict[str, Any]:
     wall = handoff_dir / "wall-guid"
     _check("wall_guid_dir", wall.is_dir(), str(wall), rows)
     if wall.is_dir():
+        env = os.environ.copy()
+        src = str(repo / "backend" / "src")
+        existing = env.get("PYTHONPATH", "")
+        env["PYTHONPATH"] = src if not existing else src + os.pathsep + existing
         proc = subprocess.run(
             [
                 sys.executable,
@@ -76,6 +81,7 @@ def verify_kt2_handoff(*, handoff_dir: Path, repo: Path) -> dict[str, Any]:
                 str(wall),
             ],
             cwd=str(repo / "backend"),
+            env=env,
             capture_output=True,
             text=True,
             encoding="utf-8",

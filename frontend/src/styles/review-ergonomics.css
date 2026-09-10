@@ -20,9 +20,6 @@
     --ds-text-body: 1rem;
     --ds-text-muted: var(--vl-text-muted);
   }
-  @media (prefers-color-scheme: dark) {
-    :root { --vl-text-muted: #a9b7ca; }
-  }
   .app-header h1 { max-inline-size: 34ch; text-wrap: balance; }
   .panel-header h2 { font-size: var(--vl-text-md); }
   .eyebrow, .panel-kicker, .pack-cycle-caption {

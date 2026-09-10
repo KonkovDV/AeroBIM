@@ -294,7 +294,7 @@ class IfcClashDetector:
                 )
             raise ClashCapabilityError(
                 "failed",
-                f"Clash detection failed: {detail}",
+                detail,
             ) from exc
 
     def _selector_for(self, ifc_path: Path) -> str | None:

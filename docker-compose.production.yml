@@ -7,6 +7,13 @@
 # Never commit real tokens. Prefer OIDC in real deployments (AEROBIM_OIDC_*).
 # Phase 3 BFF lab flags (AEROBIM_OIDC_BFF_*) must stay unset here.
 # AEROBIM_REDIS_PASSWORD is compose-only (interpolated into AEROBIM_REDIS_URL).
+#
+# 14.09 independent trial (organizer letter): AEROBIM_ENV=production already
+# disables POST /v1/demo/seed-fixture. ./samples is the git vertical slice,
+# not the three channel packs — mount agreed control data outside git.
+# Review shell is frontend/ `npm run build` behind a reverse proxy that
+# injects Authorization; never put the bearer in VITE_*. Bind stays
+# 127.0.0.1 — LAN exposure needs an explicit HTTPS proxy (RT A04).
 
 services:
   backend:

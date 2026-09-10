@@ -6,6 +6,7 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from threading import Lock
 
+from aerobim.domain.analyze_job_idempotency import job_from_stored_mapping
 from aerobim.domain.job_transitions import can_transition
 from aerobim.domain.models import AnalyzeProjectPackageJob, JobStatus
 
@@ -70,33 +71,7 @@ class InMemoryAnalyzeProjectPackageJobStore:
             if not isinstance(item, dict):
                 continue
             try:
-                job = AnalyzeProjectPackageJob(
-                    job_id=str(item["job_id"]),
-                    request_id=str(item["request_id"]),
-                    status=JobStatus(str(item["status"])),
-                    created_at=str(item["created_at"]),
-                    started_at=(str(item["started_at"]) if item.get("started_at") else None),
-                    completed_at=(str(item["completed_at"]) if item.get("completed_at") else None),
-                    report_id=str(item["report_id"]) if item.get("report_id") else None,
-                    error_message=(
-                        str(item["error_message"])
-                        if item.get("error_message") is not None
-                        else None
-                    ),
-                    idempotency_key=(
-                        str(item["idempotency_key"]) if item.get("idempotency_key") else None
-                    ),
-                    heartbeat_at=(str(item["heartbeat_at"]) if item.get("heartbeat_at") else None),
-                    lease_expires_at=(
-                        str(item["lease_expires_at"]) if item.get("lease_expires_at") else None
-                    ),
-                    retry_count=int(item.get("retry_count") or 0),
-                    stage_progress=(
-                        str(item["stage_progress"]) if item.get("stage_progress") else None
-                    ),
-                    cancel_requested=bool(item.get("cancel_requested") or False),
-                    tenant_id=(str(item["tenant_id"]) if item.get("tenant_id") else None),
-                )
+                job = job_from_stored_mapping(item)
             except (KeyError, ValueError, TypeError):
                 continue
             if job.status in {JobStatus.QUEUED, JobStatus.RUNNING}:
