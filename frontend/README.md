@@ -35,10 +35,17 @@ Publishable frontend test counts are only in [`docs/evidence/runtime-baseline-la
 
 ## Run
 
-API default: `http://127.0.0.1:8080`.
+API default: `http://127.0.0.1:8080`. One command starts **API + Vite** (`npm ci` if Vite is missing):
 
 ```bash
-cd frontend
+python scripts/run_review_shell.py
+```
+
+Same stand from `backend/` (venv active): `python -m aerobim.tools.run_it_mentor_stand`. From this directory: `npm start`. Ctrl+C stops both processes. Empty storage; click «Загрузить демонстрационный комплект». Not the jury CLI.
+
+Vite only (smokes, already-running API):
+
+```bash
 npm ci
 npm run lint
 npm test
@@ -51,7 +58,7 @@ Override the API:
 VITE_AEROBIM_API_BASE_URL=http://127.0.0.1:8080
 ```
 
-Backend must be up (`python -m aerobim.main` from `backend/`). Combined live smoke from `backend/`:
+`npm run dev` needs the API already up (`python -m aerobim.main` from `backend/`). Combined live smoke from `backend/`:
 
 ```bash
 python -m aerobim.tools.run_live_review_smoke

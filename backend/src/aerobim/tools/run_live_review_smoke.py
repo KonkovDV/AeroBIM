@@ -5,6 +5,7 @@ import json
 import os
 import socket
 import subprocess
+import sys
 import time
 from collections.abc import Mapping
 from pathlib import Path
@@ -71,6 +72,7 @@ def build_backend_env(
     port: int,
     frontend_origin: str,
     tenant_id: str = SMOKE_TENANT_ID,
+    host: str = "127.0.0.1",
 ) -> dict[str, str]:
     """Env for the throwaway rehearsal backend. Development only.
 
@@ -82,11 +84,15 @@ def build_backend_env(
 
     env = dict(base_env)
     env.pop("AEROBIM_API_BEARER_TOKEN", None)
+    # Inherited pilot/production signoff must not ride in on a mentor laptop.
+    env.pop("AEROBIM_SIGNOFF_PROFILE", None)
     env["AEROBIM_STORAGE_DIR"] = str(storage_dir)
+    env["AEROBIM_HOST"] = host
     env["AEROBIM_PORT"] = str(port)
     env["AEROBIM_DEBUG"] = "true"
     env["AEROBIM_CORS_ORIGINS"] = frontend_origin
     env["AEROBIM_ENV"] = "development"
+    env["AEROBIM_SIGNOFF_PROFILE"] = "development"
     env["AEROBIM_ALLOW_ANONYMOUS_DEV"] = "true"
     # Must equal the tenant stamped on the seeded report, or «Проекты» is empty.
     env["AEROBIM_API_TENANT_ID"] = tenant_id
@@ -98,6 +104,9 @@ def build_backend_env(
 def build_frontend_env(base_env: Mapping[str, str], backend_base_url: str) -> dict[str, str]:
     env = dict(base_env)
     env["VITE_AEROBIM_API_BASE_URL"] = backend_base_url
+    # Same-origin /v1 and /health on the Vite origin must hit THIS backend,
+    # not a leftover process on the default 8080 proxy target.
+    env["AEROBIM_PROXY_TARGET"] = backend_base_url
     # Cursor Agent sessions pin PLAYWRIGHT_BROWSERS_PATH at a TEMP sandbox
     # cache. That directory vanishes; the rehearsal must use the user cache.
     env.pop("PLAYWRIGHT_BROWSERS_PATH", None)
@@ -170,6 +179,46 @@ def extract_decision_payload(raw_output: str) -> dict[str, object]:
 
 def npm_command() -> str:
     return "npm.cmd" if os.name == "nt" else "npm"
+
+
+def frontend_vite_installed(root: Path | None = None) -> bool:
+    target = root or frontend_dir()
+    return (target / "node_modules" / "vite" / "package.json").is_file()
+
+
+def ensure_frontend_dependencies(*, env: Mapping[str, str] | None = None) -> None:
+    """Install frontend lockfile deps when Vite is missing. Not a CI pin."""
+
+    root = frontend_dir()
+    if frontend_vite_installed(root):
+        return
+    sys.stdout.write("npm ci (frontend dependencies missing)\n")
+    sys.stdout.flush()
+    run_foreground_command(
+        [npm_command(), "ci"],
+        cwd=root,
+        env=env or os.environ,
+        label="npm ci",
+    )
+
+
+def run_foreground_command(
+    command: list[str],
+    *,
+    cwd: Path,
+    env: Mapping[str, str],
+    label: str,
+) -> subprocess.CompletedProcess[str]:
+    result = subprocess.run(
+        command,
+        cwd=cwd,
+        env=dict(env),
+        check=False,
+        text=True,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(f"{label} failed (exit {result.returncode})")
+    return result
 
 
 def run_captured_command(
@@ -263,7 +312,11 @@ def run_live_review_smoke(
     frontend_origin = frontend_base_url
 
     backend_env = build_backend_env(
-        os.environ, target_storage_dir, selected_backend_port, frontend_origin
+        os.environ,
+        target_storage_dir,
+        selected_backend_port,
+        frontend_origin,
+        host=host,
     )
     frontend_env = build_frontend_env(os.environ, backend_base_url)
 
@@ -280,6 +333,7 @@ def run_live_review_smoke(
         wait_for_http_ok(f"{backend_base_url}/health")
 
         report = seed_smoke_report(target_storage_dir, tenant_id=SMOKE_TENANT_ID)
+        ensure_frontend_dependencies(env=frontend_env)
 
         frontend_process = subprocess.Popen(
             [
@@ -291,6 +345,7 @@ def run_live_review_smoke(
                 host,
                 "--port",
                 str(selected_frontend_port),
+                "--strictPort",
             ],
             cwd=frontend_dir(),
             env=frontend_env,

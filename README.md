@@ -77,11 +77,17 @@ pytest tests -q
 # Jury clone contract: 0 failed. Tests that need extra pdf-agpl (PyMuPDF) or
 # kitchen GitHub secrets skip. A local count is not the CI pin below.
 python -m aerobim.main   # → http://127.0.0.1:8080/health
+
+# 4. Review shell (IT-mentor laptop; empty storage; not the jury CLI)
+python -m aerobim.tools.run_it_mentor_stand
+# → http://127.0.0.1:5173/  (API on 8080; Ctrl+C stops both)
+# from the repo root: python scripts/run_review_shell.py
+# Windows: start.bat  (Explorer / .\start.bat; not the CMD builtin "start")
 ```
 
 Both demos end with `summary.passed=false`, which is the expected result: the fixture pack contains planted defects. These are fixtures, not customer data, and the numbers they produce are not product accuracy. A local `pytest` count is not the CI pin in the runtime baseline below. The red badge is **customer sign-off** (`customer_go` false), not product Checkpoint `NO_GO`.
 
-Optional extras: `.[clash]` for geometry clash detection, `.[docling]` for non-text document extraction, `.[enterprise]` for S3 and Postgres adapters, `.[pdf-agpl]` for legacy PyMuPDF tools (not needed for the three demo commands above; without it those tests skip). Review shell: `cd frontend && npm ci && npm run dev` (API at `http://127.0.0.1:8080`). The sitting-member jury track remains the CLI above; the shell is the IT-mentor laptop track, not a CDE.
+Optional extras: `.[clash]` for geometry clash detection, `.[docling]` for non-text document extraction, `.[enterprise]` for S3 and Postgres adapters, `.[pdf-agpl]` for legacy PyMuPDF tools (not needed for the three demo commands above; without it those tests skip). Review shell (one command): `python -m aerobim.tools.run_it_mentor_stand` from `backend/`, or `python scripts/run_review_shell.py` from the repo root, or `npm start` from `frontend/`. That starts API + Vite together (`npm ci` if Vite is missing). The sitting-member jury track remains the CLI above; the shell is the IT-mentor laptop track, not a CDE.
 
 ## Review shell
 

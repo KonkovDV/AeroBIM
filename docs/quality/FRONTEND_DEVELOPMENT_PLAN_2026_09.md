@@ -4,7 +4,7 @@ title: "План развития фронтенда (для ИИ-исполни
 date: "2026-09-03"
 last_updated: "2026-09-10"
 status: active
-version: "1.5.6"
+version: "1.5.7"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -582,7 +582,7 @@ SSO; одна находка фикстуры — не точность прод
   нечитаемое; точки перелома уже есть на 1200 / 1100 / 780 / 760 / 480.
 - Шаг 4: печать экрана эксперта (`09-print.css`) — если жюри распечатает.
 - Запреты: Vite как «дефолт ноутбука жюри» — KILL (RT-UI-JURY-VITE). Трек жюри
-  КТ#3 — `python -m aerobim.tools.run_kt3_jury`; `npm run dev` — трек ИТ-ментора.
+  КТ#3 — `python -m aerobim.tools.run_kt3_jury`; оболочка — `python scripts/run_review_shell.py` / `npm start`.
 
 ### Волна B. Доступность по факту, а не по заявке
 
@@ -715,6 +715,15 @@ className="viewer-viewport" />` без роли и без доступного �
 #### WP-FE-38. Маршрут печати для заказчика (P2, D-11)
 
 **Статус: open.** Слой `09-print.css` есть. Документированный маршрут «экран → PDF заказчику» — не CDE.
+
+#### FE-CRUFT-02 / FE-DRIFT-01. Нативное окно экспорта и дубль копирайта (P1, после показа)
+
+**Статус: open + сторож влит.** `window.confirm` в `ExportActionsBar` зарегистрирован в
+`no-debug-artifacts.test.ts`. Текст предупреждения дублируется в
+`scripts/capture-review-smoke-shared.mjs`. Vitest
+`export-confirm-copy-drift.test.ts` сверяет дубль со словарём. Не заменять нативное окно
+накануне показа. Закрытие FE-CRUFT-02 в одном коммите: диалог + смоук + сторож, иначе
+падает репетиция OA-21 / issue #41. Issues #40 и #41 этим WP не закрываются.
 
 ### Red Team этого прохода
 

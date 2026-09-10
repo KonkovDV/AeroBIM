@@ -71,7 +71,10 @@ function walk(dir: string): string[] {
 }
 
 function rel(file: string): string {
-  return relative(SRC_ROOT, file).replaceAll("\\\\", "/");
+  // CI is Linux; the demo machine is Windows. path.relative keeps "\" here,
+  // and the allow-lists are posix. replaceAll("\\\\") would look for two
+  // backslashes and leave Windows paths unregistered.
+  return relative(SRC_ROOT, file).split("\\").join("/");
 }
 
 function hits(source: string, pattern: RegExp): number {
@@ -101,6 +104,7 @@ describe("HD24-FE-01 demo hygiene source-scan", () => {
     expect(files.length - production.length).toBeGreaterThan(15);
     expect(files.some((file) => file.path === "App.tsx")).toBe(true);
     expect(files.every((file) => !file.path.endsWith(SELF_NAME))).toBe(true);
+    expect(files.every((file) => !file.path.includes("\\"))).toBe(true);
   });
 
   it("keeps debugging consoles and breakpoints out of product code", () => {

@@ -230,8 +230,10 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
                 detail=public_idempotency_payload_conflict_detail(),
             ) from exc
         if job.status.value == "queued":
-            # JOB-01: FastAPI BackgroundTasks in this API process — not a durable worker.
-            # A process crash after 202 leaves QUEUED until reclaim_stale_queued.
+            # JOB-01: FastAPI BackgroundTasks in this API process — not a durable
+            # worker with lease/heartbeat. Idempotency-Key, per-tenant concurrency
+            # (HTTP 429), request_cancel, and reclaim_stale_queued exist; a crash
+            # after 202 still leaves QUEUED until reclaim.
             background_tasks.add_task(job_runner.run, job.job_id, request)
         return ctx.serialize_analyze_project_package_job(job)
 

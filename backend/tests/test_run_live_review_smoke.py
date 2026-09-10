@@ -53,6 +53,8 @@ class LiveReviewSmokeHelperTests(unittest.TestCase):
         self.assertEqual(env["AEROBIM_PORT"], "8081")
         self.assertEqual(env["AEROBIM_DEBUG"], "true")
         self.assertEqual(env["AEROBIM_CORS_ORIGINS"], "http://127.0.0.1:3000")
+        self.assertEqual(env["AEROBIM_HOST"], "127.0.0.1")
+        self.assertEqual(env["AEROBIM_SIGNOFF_PROFILE"], "development")
 
     def test_build_backend_env_binds_the_dev_principal_to_the_seeded_tenant(self) -> None:
         env = build_backend_env(
@@ -71,6 +73,16 @@ class LiveReviewSmokeHelperTests(unittest.TestCase):
         # backend directly and has no way to present one.
         self.assertNotIn("AEROBIM_API_BEARER_TOKEN", env)
 
+    def test_build_backend_env_drops_inherited_pilot_signoff(self) -> None:
+        env = build_backend_env(
+            base_env={"AEROBIM_SIGNOFF_PROFILE": "samolet_pilot"},
+            storage_dir=Path("c:/tmp/live-smoke"),
+            port=8081,
+            frontend_origin="http://127.0.0.1:3000",
+        )
+        self.assertEqual(env["AEROBIM_SIGNOFF_PROFILE"], "development")
+        self.assertEqual(env["AEROBIM_ENV"], "development")
+
     def test_build_frontend_env_points_at_backend_base_url(self) -> None:
         env = build_frontend_env(
             base_env={
@@ -82,6 +94,7 @@ class LiveReviewSmokeHelperTests(unittest.TestCase):
 
         self.assertEqual(env["PATH"], "example")
         self.assertEqual(env["VITE_AEROBIM_API_BASE_URL"], "http://127.0.0.1:8081")
+        self.assertEqual(env["AEROBIM_PROXY_TARGET"], "http://127.0.0.1:8081")
         self.assertNotIn("PLAYWRIGHT_BROWSERS_PATH", env)
 
     def test_python_deflated_zip_writes_sizes_in_the_local_header(self) -> None:
