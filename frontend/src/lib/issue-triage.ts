@@ -195,13 +195,6 @@ export function groupFindings(
   return Array.from(map.entries()).map(([key, grouped]) => ({ key, rows: grouped }));
 }
 
-export function priorityCaption(issue: ValidationIssue): string | null {
-  if (typeof issue.priority !== "number" || issue.priority <= 0) {
-    return null;
-  }
-  return `P${issue.priority} · серьёзность × раздел × стадия, не точность продукта`;
-}
-
 const CATEGORY_LABELS: Record<string, string> = {
   "ids-validation": "IDS",
   ids: "IDS",
@@ -215,21 +208,31 @@ export function findingCategoryLabel(category: string): string {
   return CATEGORY_LABELS[category] ?? category;
 }
 
+function stripEngineChrome(text: string): string {
+  return text
+    .replace(/^\[advisory-only\]\s*/i, "")
+    .replace(/\s*\(DeterminismGate:[^)]*\)\s*/gi, " ")
+    .replace(/\s*\[приоритет[^\]]*\]\s*/giu, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 /** Заголовок строки списка: русская суть, не сырой английский message. */
 export function findingListTitle(issue: ValidationIssue): string {
-  const essence = issue.remark?.essence?.trim();
+  const essence = stripEngineChrome(issue.remark?.essence?.trim() ?? "");
   if (essence && !essence.startsWith("[")) {
     return essence;
   }
   const title = issue.remark?.title?.trim();
   if (title) {
     const colon = title.indexOf(": ");
-    const rest = colon >= 0 ? title.slice(colon + 2).replace(/\s*\[приоритет[^\]]*\]\s*$/u, "").trim() : title;
-    if (rest && !rest.startsWith("[")) {
-      return rest;
+    const rest = colon >= 0 ? title.slice(colon + 2).trim() : title;
+    const cleaned = stripEngineChrome(rest);
+    if (cleaned && !cleaned.startsWith("[")) {
+      return cleaned;
     }
   }
-  return issue.message;
+  return stripEngineChrome(issue.message);
 }
 
 const ENGINE_CAPABILITY_RULES = new Set([
@@ -371,15 +374,15 @@ export function uniqueClauseKeys(issues: ValidationIssue[]): string[] {
 }
 
 export function essenceLine(issue: ValidationIssue): string {
-  const fromRemark = issue.remark?.essence?.trim();
+  const fromRemark = stripEngineChrome(issue.remark?.essence?.trim() ?? "");
   if (fromRemark) {
     return fromRemark;
   }
-  const title = issue.remark?.title?.trim();
+  const title = stripEngineChrome(issue.remark?.title?.trim() ?? "");
   if (title) {
     return title;
   }
-  const message = issue.message.trim();
+  const message = stripEngineChrome(issue.message.trim());
   const sentence = message.split(/(?<=[.!?])\s+/)[0];
   return sentence || "нет одной фразы сути";
 }

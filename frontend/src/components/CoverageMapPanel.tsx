@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { fetchReportCoverage, type CheckCoverageMap } from "../lib/api";
+import { coverageFamilyLabel, coverageStatusLabel } from "../lib/status-labels";
 import { UI_COPY } from "../lib/ui-copy";
 
 const STATUS_CLASS: Record<string, string> = {
@@ -27,7 +28,7 @@ const FILTER_OPTIONS = [
 type FilterValue = (typeof FILTER_OPTIONS)[number]["value"];
 
 function formatFamily(key: string): string {
-  return key.replaceAll("-", " ").replaceAll("_", " ");
+  return coverageFamilyLabel(key);
 }
 
 function cellStatus(row: CheckCoverageMap["sources"][number], fam: string): string {
@@ -155,8 +156,8 @@ export default function CoverageMapPanel({
             {map.tz_gaps.map((gap) => (
               <tr key={gap.gap_id}>
                 <td>{gap.label}</td>
-                <td className={STATUS_CLASS[gap.status] ?? ""}>
-                  <code>{gap.status}</code>
+                <td className={STATUS_CLASS[gap.status] ?? ""} data-coverage-status={gap.status}>
+                  {coverageStatusLabel(gap.status)}
                 </td>
                 <td className="cov-reason">{gap.reason}</td>
               </tr>
@@ -165,15 +166,13 @@ export default function CoverageMapPanel({
         </table>
       )}
 
-      {map.operator_legend && (
-        <ul className="coverage-legend compact-copy">
-          {Object.entries(map.operator_legend).map(([key, text]) => (
-            <li key={key}>
-              <code className={STATUS_CLASS[key] ?? ""}>{key}</code> — {text}
-            </li>
-          ))}
-        </ul>
-      )}
+      <ul className="coverage-legend compact-copy">
+        {FILTER_OPTIONS.filter((opt) => opt.value !== "all").map((opt) => (
+          <li key={opt.value}>
+            <span className={STATUS_CLASS[opt.value] ?? ""}>{opt.label}</span>
+          </li>
+        ))}
+      </ul>
 
       {emptySources ? null : filteredSources.length === 0 ? (
         <p className="compact-copy">{UI_COPY.covEmptyFilter}</p>
@@ -204,6 +203,7 @@ export default function CoverageMapPanel({
                       key={fam}
                       className={STATUS_CLASS[op] ?? ""}
                       title={reason ?? undefined}
+                      data-coverage-status={op}
                     >
                       {isFindings && onNavigateToFindings ? (
                         <button
@@ -211,10 +211,10 @@ export default function CoverageMapPanel({
                           className="coverage-findings-link"
                           onClick={onNavigateToFindings}
                         >
-                          {UI_COPY.covFindingsLink(op)}
+                          {UI_COPY.covFindingsLink}
                         </button>
                       ) : (
-                        <code>{op}</code>
+                        coverageStatusLabel(op)
                       )}
                       {reason ? <span className="cov-reason"> {reason}</span> : null}
                     </td>

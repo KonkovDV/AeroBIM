@@ -917,10 +917,14 @@ describe("App", () => {
     render(<App />);
     expect(await screen.findByText("Residential Tower Alpha")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Эффект" }));
+    expect(screen.getByRole("main").getAttribute("id")).toBe("work-area");
+    const coverage = screen.getByTestId("coverage-map");
+    const tzMap = screen.getByTestId("tz-workplace-coverage");
+    expect(coverage.compareDocumentPosition(tzMap) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(screen.getByTestId("tz-workplace-coverage")).toBeTruthy();
     expect(screen.getByTestId("review-kpi-panel")).toBeTruthy();
     expect(screen.getByTestId("blocker-honesty-panel")).toBeTruthy();
-    expect(screen.getByText("SCR-DIFF")).toBeTruthy();
+    expect(screen.getByTestId("SCR-DIFF")).toBeTruthy();
     expect(screen.getAllByText(/«не воспроизведено» ≠ исправлено/).length).toBeGreaterThan(0);
   });
 

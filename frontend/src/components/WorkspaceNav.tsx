@@ -1,4 +1,4 @@
-import { useEffect, useId } from "react";
+import { useEffect, useId, useRef } from "react";
 import { UI_COPY } from "../lib/ui-copy";
 import { isTextEntryTarget } from "../lib/triage-hotkeys";
 import WorkspaceIcon from "./WorkspaceIcon";
@@ -27,6 +27,9 @@ export type WorkspaceNavProps = {
 
 export default function WorkspaceNav({ workspaceView, onChange, reviewFindingsCount = null }: WorkspaceNavProps) {
   const countId = useId();
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent): void {
       if (!event.altKey || event.ctrlKey || event.metaKey || event.repeat || event.isComposing || event.defaultPrevented) return;
@@ -34,11 +37,11 @@ export default function WorkspaceNav({ workspaceView, onChange, reviewFindingsCo
       const next = WORKSPACE_NAV[Number(event.key) - 1];
       if (!next) return;
       event.preventDefault();
-      onChange(next.id);
+      onChangeRef.current(next.id);
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [onChange]);
+  }, []);
 
   return (
     <nav className="workspace-nav product-nav" aria-label={UI_COPY.navAria} data-testid="workspace-nav">

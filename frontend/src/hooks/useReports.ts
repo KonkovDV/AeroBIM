@@ -37,6 +37,20 @@ export type ReportsState = {
   groupedReports: Map<string, ReportSummaryEntry[]>;
 };
 
+/** Поиск в индексе отчётов: идентификаторы, имя проекта и раздел. */
+export function reportMatchesQuery(report: ReportSummaryEntry, query: string): boolean {
+  const needle = query.trim().toLowerCase();
+  if (!needle) {
+    return true;
+  }
+  return (
+    report.report_id.toLowerCase().includes(needle) ||
+    report.request_id.toLowerCase().includes(needle) ||
+    (report.project_name?.toLowerCase() ?? "").includes(needle) ||
+    (report.discipline?.toLowerCase() ?? "").includes(needle)
+  );
+}
+
 /** Список отчётов: загрузка с фильтрами, сверка выбора, поиск, сортировка, группировка. */
 export function useReports(options: UseReportsOptions): ReportsState {
   const {
@@ -126,11 +140,7 @@ export function useReports(options: UseReportsOptions): ReportsState {
   const filteredReports = useMemo(() => {
     const normalizedQuery = deferredSearch.trim().toLowerCase();
     const matched = normalizedQuery
-      ? reports.filter(
-          (report) =>
-            report.report_id.toLowerCase().includes(normalizedQuery) ||
-            report.request_id.toLowerCase().includes(normalizedQuery),
-        )
+      ? reports.filter((report) => reportMatchesQuery(report, normalizedQuery))
       : reports.slice();
     return matched.sort(compareReports);
   }, [reports, deferredSearch]);

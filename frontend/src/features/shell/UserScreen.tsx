@@ -13,7 +13,7 @@ type UserScreenProps = {
   onNavigateToFindings: () => void;
 };
 
-/** Экран «Эффект»: покрытие ТЗ, блокеры, KPI. Только чтение, без HITL-действий. */
+/** Экран «Эффект»: сначала «что не проверялось», затем блокеры, карта ТЗ, KPI. Только чтение. */
 export default function UserScreen({
   selectedReportId,
   selectedReport,
@@ -22,9 +22,6 @@ export default function UserScreen({
 }: UserScreenProps) {
   return (
     <div className="workspace-alt">
-      <TzWorkplaceCoveragePanel onOpenScreen={onOpenScreen} />
-      <BlockerHonestyPanel />
-      <ReviewKpiPanel reportId={selectedReportId} />
       {selectedReport ? (
         <CoverageMapPanel
           reportId={selectedReport.report_id}
@@ -33,6 +30,9 @@ export default function UserScreen({
       ) : (
         <p className="panel-empty">{UI_COPY.selectReport}</p>
       )}
+      <BlockerHonestyPanel />
+      <TzWorkplaceCoveragePanel onOpenScreen={onOpenScreen} />
+      <ReviewKpiPanel reportId={selectedReportId} />
     </div>
   );
 }

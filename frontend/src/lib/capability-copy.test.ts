@@ -26,10 +26,10 @@ describe("engineGroupStatus", () => {
 describe("humanCapabilityLine", () => {
   it("does not echo English capability enums in the visible line", () => {
     expect(humanCapabilityLine({ key: "clash", status: "skipped" })).toBe(
-      "Проверка «коллизии» не выполнена → тишина ≠ успех",
+      "Проверка «коллизии» не выполнена → отсутствие результата не означает, что проверка пройдена",
     );
     expect(humanCapabilityLine({ key: "dwg_dxf", status: "failed" })).toMatch(
-      /Проверка «DWG» не выполнена → вердикт отрицательный/,
+      /Проверка «DWG» не выполнена → итог комплекта отрицательный/,
     );
     expect(humanCapabilityLine({ key: "ids", status: "ok" })).toBe("Проверка «IDS» выполнена");
     expect(humanCapabilityLine({ key: "clash", status: "skipped" })).not.toMatch(/skipped|failed|ok/);
@@ -37,7 +37,7 @@ describe("humanCapabilityLine", () => {
 
   it("states MEP gap in human language without calling silence success", () => {
     expect(humanCapabilityLine({ key: "mep_system_clash", status: "not_verified" })).toBe(
-      "Проверка коллизий инженерных сетей не выполнена (сети в IFC не переданы) → тишина ≠ успех",
+      "Проверка коллизий инженерных сетей не выполнена (сети в IFC не переданы) → отсутствие результата не означает, что проверка пройдена",
     );
   });
 });

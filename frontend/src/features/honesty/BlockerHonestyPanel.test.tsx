@@ -9,6 +9,7 @@ vi.mock("../../lib/api", () => ({
 
 import BlockerHonestyPanel from "./BlockerHonestyPanel";
 import { INTAKE_GATE_KEYS } from "../../lib/intake-gates";
+import { UI_COPY } from "../../lib/ui-copy";
 
 describe("BlockerHonestyPanel", () => {
   beforeEach(() => {
@@ -38,7 +39,7 @@ describe("BlockerHonestyPanel", () => {
     });
   });
 
-  it("lists intake gates as false and does not close RT", async () => {
+  it("lists intake gates as not done and does not close RT", async () => {
     render(<BlockerHonestyPanel />);
     expect(await screen.findByTestId("blocker-honesty-panel")).toBeTruthy();
     expect(screen.getByTestId("rt-blocker-list").textContent).toMatch(/RT-001 ОТКРЫТ/);
@@ -49,7 +50,7 @@ describe("BlockerHonestyPanel", () => {
         INTAKE_GATE_KEYS.length,
       );
     });
-    expect(screen.getAllByText("false").length).toBeGreaterThanOrEqual(INTAKE_GATE_KEYS.length);
-    expect(screen.getByText(/Checkpoint GO/i)).toBeTruthy();
+    expect(screen.getAllByText(UI_COPY.blockersNo).length).toBeGreaterThanOrEqual(INTAKE_GATE_KEYS.length);
+    expect(screen.getByText(/контрольная точка GO/i)).toBeTruthy();
   });
 });

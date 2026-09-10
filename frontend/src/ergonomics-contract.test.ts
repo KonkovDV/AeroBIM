@@ -50,9 +50,13 @@ describe("эргономика оболочки", () => {
     const layer = read(LAYER);
 
     expect(layer).toMatch(/\.skip-to-work:not\(:focus\):not\(:active\)/);
-    expect(layer).toMatch(/\.skip-to-work-target/);
+    expect(layer).toMatch(/#work-area/);
+    expect(layer).toMatch(/scroll-margin-block-start:\s*96px/);
+    expect(layer).not.toMatch(/block-size:\s*0/);
     expect(read("features/shell/ShellHeader.tsx")).toContain('href="#work-area"');
-    expect(read("App.tsx")).toContain('id="work-area"');
+    expect(read("App.tsx")).toMatch(/<main id="work-area"/);
+    expect(read("features/workplace/ResizableWorkplace.tsx")).not.toMatch(/<main\b/);
+    expect(read("features/reports/ProjectsScreen.tsx")).not.toMatch(/<main\b/);
   });
 
   it("не сжимает и не скрывает панели честности", () => {

@@ -80,7 +80,7 @@ async function main() {
       throw new Error(`demo seed HTTP ${seedResponse.status()}: ${seedResponse.url()}`);
     }
     const seedBody = assertDemoSeedPayload(await seedResponse.json());
-    await page.getByText(/Фикстура git, не заказчик/).waitFor({ timeout: 30_000 });
+    await page.getByText(COPY.demoSeededNeedle).waitFor({ timeout: 30_000 });
     await page.getByText(seedBody.report_id.slice(0, 8)).waitFor({ timeout: 30_000 });
     await page.locator(".issue-card").first().waitFor({ state: "visible", timeout: 30_000 });
     await page.locator(".issue-card").first().click();

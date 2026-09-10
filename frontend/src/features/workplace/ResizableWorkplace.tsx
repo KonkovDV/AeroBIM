@@ -25,7 +25,7 @@ export type ResizableWorkplaceProps = { left: ReactNode; center: ReactNode; righ
 type Drag = { side: Side; pointerId: number; x: number; width: number; start: Cols };
 
 export default function ResizableWorkplace({ left, center, right }: ResizableWorkplaceProps) {
-  const gridRef = useRef<HTMLElement | null>(null);
+  const gridRef = useRef<HTMLDivElement | null>(null);
   const dragRef = useRef<Drag | null>(null);
   const [cols, setCols] = useState<Cols>(readCols);
   const id = useId();
@@ -117,13 +117,13 @@ export default function ResizableWorkplace({ left, center, right }: ResizableWor
       </div>
       <p id={`${id}-help`}>{UI_COPY.workspaceWidthHelp}</p>
     </details>
-    <main ref={gridRef} className="workspace-grid" data-testid="workspace-grid"
+    <div ref={gridRef} className="workspace-grid" data-testid="workspace-grid"
       style={{ ["--col-left" as string]: `${cols.left}fr`, ["--col-mid" as string]: `${cols.mid}fr`, ["--col-right" as string]: `${cols.right}fr` }}>
       {leftPane.node}
       {separator("left", leftPane.id, UI_COPY.resizeLeftAria)}
       {center}
       {separator("right", rightPane.id, UI_COPY.resizeRightAria)}
       {rightPane.node}
-    </main>
+    </div>
   </>;
 }

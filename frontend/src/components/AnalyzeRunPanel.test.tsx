@@ -94,7 +94,9 @@ describe("AnalyzeRunPanel", () => {
     expect(await screen.findByTestId("analyze-job-status")).toBeTruthy();
     expect(screen.getByTestId("analyze-engine-groups").textContent).toMatch(/модель: ожидание/);
     expect(screen.getByTestId("run-status-strip").textContent).toContain(UI_COPY.runEvidenceNone);
-    expect(screen.getByRole("button", { name: "Запустить анализ" })).toHaveProperty("disabled", true);
+    const startButton = screen.getByRole("button", { name: /запустить анализ|запускаем/i });
+    expect(startButton).toHaveProperty("disabled", true);
+    expect(startButton.getAttribute("aria-busy")).toBe("true");
   });
 
   it("resumes GET of the same job after a poll error without a second POST", async () => {
@@ -127,8 +129,8 @@ describe("AnalyzeRunPanel", () => {
     fireEvent.click(screen.getByRole("button", { name: "Запустить анализ" }));
     const journal = await screen.findByTestId("run-journal");
     await waitFor(() => {
-      expect(journal.textContent).toMatch(/job-session-1/);
-      expect(journal.textContent).toMatch(/succeeded/);
+      expect(journal.querySelector('[data-job-id="job-session-1"]')).toBeTruthy();
+      expect(journal.textContent).toMatch(/завершён/);
     });
     expect(screen.getByText(UI_COPY.runJournalHonesty)).toBeTruthy();
   });
@@ -143,7 +145,7 @@ describe("AnalyzeRunPanel", () => {
     fireEvent.click(screen.getByRole("button", { name: "Запустить анализ" }));
     const journal = await screen.findByTestId("run-journal");
     await waitFor(() => {
-      expect(journal.textContent).toMatch(/job-once-1/);
+      expect(journal.querySelector('[data-job-id="job-once-1"]')).toBeTruthy();
     });
     // Запись шла и из start(), и из эффекта; сторож по job_id оставляет одну строку.
     expect(journal.querySelectorAll("li")).toHaveLength(1);
@@ -171,7 +173,8 @@ describe("AnalyzeRunPanel", () => {
     render(<AnalyzeRunPanel ifcPath="walls.ifc" />);
     fireEvent.click(screen.getByRole("button", { name: "Запустить анализ" }));
     expect(await screen.findByTestId("analyze-job-status")).toBeTruthy();
-    expect(screen.getByTestId("analyze-job-status").textContent).toMatch(/job-running-1/);
+    expect(screen.getByTestId("analyze-job-status").getAttribute("data-job-id")).toBe("job-running-1");
+    expect(screen.getByTestId("analyze-job-status").textContent).toMatch(/выполняется/);
     fireEvent.click(screen.getByRole("button", { name: "Отменить" }));
     expect(screen.getByTestId("run-cancel-confirm")).toBeTruthy();
     expect(cancelAnalyzeJobMock).not.toHaveBeenCalled();

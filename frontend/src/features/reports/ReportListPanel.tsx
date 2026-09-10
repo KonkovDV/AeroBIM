@@ -70,16 +70,15 @@ function ReportCard({
       }}
     >
       <div className="report-card-row">
-        <strong>{report.report_id.slice(0, 8)}</strong>
+        <strong>{report.project_name?.trim() || report.report_id.slice(0, 8)}</strong>
         <span className={`status-pill ${report.passed ? "pass" : "fail"}`}>
           {report.passed ? UI_COPY.enginePass : UI_COPY.engineFail}
         </span>
       </div>
       <div className="report-card-meta">
-        {report.project_name && <span>{report.project_name}</span>}
         {report.discipline && <span>{report.discipline}</span>}
-        <span>{UI_COPY.requestLabel(report.request_id)}</span>
         <span>{UI_COPY.issueCount(report.issue_count)}</span>
+        <span>{report.report_id.slice(0, 8)}</span>
       </div>
       <span className="report-card-time">{formatTimestamp(report.created_at)}</span>
     </button>

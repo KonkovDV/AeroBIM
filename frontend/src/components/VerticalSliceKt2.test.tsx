@@ -73,19 +73,18 @@ describe("KT#2 vertical-slice UI contract", () => {
     expect(screen.getByTestId("kt2-vertical-slice")).toBeTruthy();
     expect(screen.getByText("fid-slice-wall-01")).toBeTruthy();
     expect(screen.getByText("sheet:A-101")).toBeTruthy();
-    expect(screen.getByText(/Checkpoint GO; customer_go false/i)).toBeTruthy();
-    expect(screen.getByText(/только приём файла/i)).toBeTruthy();
+    expect(screen.getByText(/импорт в среду заказчика не подтверждён/i)).toBeTruthy();
     expect(screen.getByText("pdf:techlab-a101-wall-thickness#page1")).toBeTruthy();
     expect(screen.getByText(/Quote: WALL-01 thickness 150 mm/)).toBeTruthy();
     expect(screen.getByText(/Лист A-101/)).toBeTruthy();
     expect(screen.getByTestId("kt2-overlay")).toBeTruthy();
     expect(screen.getByTestId("kt2-overlay-bbox")).toBeTruthy();
-    expect(screen.getByText(/детерминированный bbox, не CV/i)).toBeTruthy();
+    expect(screen.getByText(/координаты из сохранённого отчёта/i)).toBeTruthy();
     const badge = screen.getByTestId("kt2-outcome");
     expect(badge.textContent).toBe(UI_COPY.outcomeFailed);
     expect(badge.className).toContain("outcome-fail");
     expect(badge.className).not.toContain("outcome-pass");
-    expect(screen.getByText(/Вердикт не PASS/i)).toBeTruthy();
+    expect(screen.getByText(/Итог комплекта не «пройдено»/i)).toBeTruthy();
   });
 
   it("keeps FAILED visually distinct from BLOCKED", () => {

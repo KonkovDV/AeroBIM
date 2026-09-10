@@ -87,10 +87,6 @@ export default function ProvenancePanel({ activeIssue }: ProvenancePanelProps) {
           <dd>{activeIssue.category}</dd>
         </div>
         <div>
-          <dt>{UI_COPY.provPriority}</dt>
-          <dd>{dash(activeIssue.priority)}</dd>
-        </div>
-        <div>
           <dt>{UI_COPY.provConflictKind}</dt>
           <dd>{dash(activeIssue.conflict_kind)}</dd>
         </div>

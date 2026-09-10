@@ -38,6 +38,7 @@ export const TS_SCAN_FILES = [
   "lib/tz-ui-screens.ts",
   "lib/tz-requirement-map.ts",
   "lib/capability-copy.ts",
+  "lib/status-labels.ts",
   "lib/pack-kind.ts",
   "lib/issue-triage.ts",
 ];

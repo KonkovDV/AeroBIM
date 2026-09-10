@@ -32,8 +32,8 @@ const LABEL_RU: Record<string, string> = {
   section_pairing: "сшивка ПД/РД",
   raster: "растр чертежа",
   dwg_dxf: "DWG",
-  cv_human_level: "CV на уровне человека",
-  mep_system_clash: "коллизии MEP",
+  cv_human_level: "чтение чертежа как у эксперта",
+  mep_system_clash: "коллизии инженерных сетей",
   calculation_match: "сверка расчёта",
   calculation_correctness: "пересчёт расчёта",
   package_completeness: "комплектность",
@@ -79,16 +79,16 @@ export function capabilityStatusPhrase(row: CapabilityRow): string {
 
 export function humanCapabilityLine(row: CapabilityRow): string {
   if (row.key === "mep_system_clash" && row.status !== "ok") {
-    return "Проверка коллизий инженерных сетей не выполнена (сети в IFC не переданы) → тишина ≠ успех";
+    return "Проверка коллизий инженерных сетей не выполнена (сети в IFC не переданы) → отсутствие результата не означает, что проверка пройдена";
   }
   const label = formatCapabilityLabel(row.key);
   if (row.status === "ok") {
     return `Проверка «${label}» выполнена`;
   }
   if (BLOCKING_STATES.has(row.status)) {
-    return `Проверка «${label}» не выполнена → вердикт отрицательный; UI не пишет summary.passed`;
+    return `Проверка «${label}» не выполнена → итог комплекта отрицательный`;
   }
-  return `Проверка «${label}» не выполнена → тишина ≠ успех`;
+  return `Проверка «${label}» не выполнена → отсутствие результата не означает, что проверка пройдена`;
 }
 
 export const RUN_ENGINE_GROUPS: Array<{
