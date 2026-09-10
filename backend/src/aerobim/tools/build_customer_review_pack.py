@@ -347,9 +347,7 @@ def build_customer_review_pack(
     needs_data = [row for row in active if row["review_class"] == "needs_data"]
     eligible = [row for row in active if include_needs_data or row["review_class"] == "reviewable"]
     pool = [
-        row
-        for row in eligible
-        if not strict_evidence or row["evidence_completeness"] == "full"
+        row for row in eligible if not strict_evidence or row["evidence_completeness"] == "full"
     ]
     families: dict[str, dict[str, Any]] = {}
     shortlist: list[dict[str, Any]] = []
