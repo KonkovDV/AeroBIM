@@ -259,13 +259,18 @@ export default function AnalyzeRunPanel({
         capabilities={scopedCapabilities}
       />
       <div className="remark-actions">
-        <button type="button" onClick={() => void start()} disabled={startLocked || !packDraftHasAny(draft)}>
+        <button
+          type="button"
+          onClick={() => void start()}
+          disabled={startLocked || !packDraftHasAny(draft)}
+          aria-busy={busy}
+        >
           {busy ? UI_COPY.runStarting : UI_COPY.runStart}
         </button>
         {confirmingCancel ? (
           <span className="run-cancel-confirm" data-testid="run-cancel-confirm">
             <span className="compact-copy">{UI_COPY.runCancelConfirm}</span>
-            <button type="button" onClick={() => void cancel()} disabled={busy || !job?.job_id}>
+            <button type="button" onClick={() => void cancel()} disabled={busy || !job?.job_id || terminal}>
               {UI_COPY.runCancelYes}
             </button>
             <button type="button" onClick={() => setConfirmingCancel(false)} disabled={busy}>

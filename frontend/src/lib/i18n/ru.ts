@@ -197,6 +197,10 @@ export const RU_COPY = {
   cancelUpload: "Отменить загрузку",
   uploadFailed: "Загрузка не удалась",
   failClosedBefore: (name: string) => `${name}: жёсткий отказ до отправки.`,
+  viewerRenderError:
+    "IFC-вьюер завершился ошибкой рендера. Оболочка отчёта продолжает работать.",
+  viewerRenderErrorHint:
+    "Перезагрузите страницу или откройте другой отчёт. Ошибка вьюера не влияет на summary.passed.",
   viewerKicker: "Пространственный разбор",
   viewerTitle: "IFC-вьюер",
   viewerLoading: "Загружаем среду пространственного разбора…",

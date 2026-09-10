@@ -129,7 +129,9 @@ export function useReports(options: UseReportsOptions): ReportsState {
       ? reports.filter(
           (report) =>
             report.report_id.toLowerCase().includes(normalizedQuery) ||
-            report.request_id.toLowerCase().includes(normalizedQuery),
+            report.request_id.toLowerCase().includes(normalizedQuery) ||
+            (report.project_name?.toLowerCase() ?? "").includes(normalizedQuery) ||
+            (report.discipline?.toLowerCase() ?? "").includes(normalizedQuery),
         )
       : reports.slice();
     return matched.sort(compareReports);

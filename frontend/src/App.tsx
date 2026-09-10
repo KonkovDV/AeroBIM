@@ -20,6 +20,7 @@ import ViewerPlaceholder from "./features/shell/ViewerPlaceholder";
 import { UI_COPY } from "./lib/ui-copy";
 
 import { useReviewShell } from "./hooks/useReviewShell";
+import IfcViewerErrorBoundary from "./features/shell/IfcViewerErrorBoundary";
 
 const IfcViewerPanel = lazy(() => import("./components/IfcViewerPanel"));
 export default function App() {
@@ -158,19 +159,21 @@ export default function App() {
           historyPending={review.historyPending}
           conflictMessage={review.conflictMessage}
           spatialViewer={
-            <Suspense fallback={<ViewerPlaceholder message={UI_COPY.viewerLoading} />}>
-              {review.selectedReport ? (
-                <IfcViewerPanel
-                  report={review.selectedReport}
-                  selectedGuids={triage.viewerFocus.guids}
-                  selectionMode={triage.viewerFocus.mode}
-                  selectionHeading={triage.viewerFocus.heading}
-                  selectionDetail={triage.viewerFocus.detail}
-                />
-              ) : (
-                <ViewerPlaceholder message={UI_COPY.viewerNeedReport} />
-              )}
-            </Suspense>
+            <IfcViewerErrorBoundary>
+              <Suspense fallback={<ViewerPlaceholder message={UI_COPY.viewerLoading} />}>
+                {review.selectedReport ? (
+                  <IfcViewerPanel
+                    report={review.selectedReport}
+                    selectedGuids={triage.viewerFocus.guids}
+                    selectionMode={triage.viewerFocus.mode}
+                    selectionHeading={triage.viewerFocus.heading}
+                    selectionDetail={triage.viewerFocus.detail}
+                  />
+                ) : (
+                  <ViewerPlaceholder message={UI_COPY.viewerNeedReport} />
+                )}
+              </Suspense>
+            </IfcViewerErrorBoundary>
           }
           onSelectReport={requestSelectReport}
           onSeverityChange={findings.setIssueSeverityFilter}
