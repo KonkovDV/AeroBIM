@@ -39,13 +39,6 @@ const HARDCODED_HOST = /["'`]https?:\/\/(?:localhost|127\.0\.0\.1)/g;
  */
 const DIAGNOSTIC_CONSOLE_ALLOWED = new Set(["features/shell/IfcViewerErrorBoundary.tsx"]);
 
-/**
- * Зарегистрированный долг: подтверждение экспорта при несохранённом черновике
- * всё ещё нативное. Список закрывает распространение паттерна по коду.
- * План замены — FE-CRUFT-02 в docs/quality/FRONTEND_MENTOR_DEMO_2026_09_11.md.
- */
-const NATIVE_CONFIRM_ALLOWED = new Set(["features/export/ExportActionsBar.tsx"]);
-
 /** Исключительный запуск: один `.only` тихо отключает остальной набор. */
 const EXCLUSIVE_RUN = ["describe", "it", "test"].map(
   (fn) => new RegExp(`\\b${fn}\\s*\\.\\s*only\\s*[(<]`),
@@ -134,17 +127,29 @@ describe("HD24-FE-01 demo hygiene source-scan", () => {
     }
   });
 
-  it("keeps native blocking dialogs out and confirms only where registered", () => {
+  it("keeps native blocking dialogs out of product code", () => {
+    // Список исключений удалён вместе с последним нативным confirm (FE-CRUFT-02):
+    // правило безусловное, чтобы долг не мог вернуться через новую запись в списке.
     const violations: string[] = [];
     for (const file of production) {
       if (hits(file.source, NATIVE_BLOCKING) > 0) {
         violations.push(`${file.path} native alert/prompt`);
       }
-      if (hits(file.source, NATIVE_CONFIRM) > 0 && !NATIVE_CONFIRM_ALLOWED.has(file.path)) {
-        violations.push(`${file.path} unregistered native confirm`);
+      if (hits(file.source, NATIVE_CONFIRM) > 0) {
+        violations.push(`${file.path} native confirm`);
       }
     }
     expect(violations).toEqual([]);
+  });
+
+  it("keeps the export confirmation inside the shell (FE-CRUFT-02)", () => {
+    const bar = read("features/export/ExportActionsBar.tsx");
+    expect(hits(bar, NATIVE_CONFIRM)).toBe(0);
+    expect(bar).toContain("<ExportUnsavedDialog");
+    const dialog = read("features/export/ExportUnsavedDialog.tsx");
+    expect(dialog).toContain("showModal()");
+    expect(dialog).toContain('role="alertdialog"');
+    expect(dialog).toContain('data-testid="export-unsaved-message"');
   });
 
   it("never hardcodes a bench address in product code", () => {
