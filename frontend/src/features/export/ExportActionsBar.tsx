@@ -3,6 +3,7 @@ import { downloadExport, type ExportFormat } from "../../lib/api";
 import { classifyRequestFailure, type RequestFailureKind } from "../../lib/request-failure";
 import { requestFailureBody } from "../../lib/request-failure-copy";
 import { UI_COPY } from "../../lib/ui-copy";
+import ExportUnsavedDialog from "./ExportUnsavedDialog";
 
 export type ExportActionsBarProps = {
   reportId: string;
@@ -11,8 +12,9 @@ export type ExportActionsBarProps = {
 };
 
 type ExportRequest = { format: ExportFormat; bcfVersion?: "2.1" | "3.0" };
+type LabelledExportRequest = ExportRequest & { label: string };
 
-const EXPORT_ACTIONS: readonly (ExportRequest & { label: string })[] = [
+const EXPORT_ACTIONS: readonly LabelledExportRequest[] = [
   { format: "html", label: "HTML" },
   { format: "json", label: "JSON" },
   { format: "bcf", label: "BCF" },
@@ -36,11 +38,15 @@ export default function ExportActionsBar({
 }: ExportActionsBarProps) {
   const [pendingKey, setPendingKey] = useState<string | null>(null);
   const [errorKind, setErrorKind] = useState<RequestFailureKind | null>(null);
+  /**
+   * FE-CRUFT-02: решение о выгрузке поверх несохранённого черновика принимает
+   * диалог оболочки, а не нативное окно браузера. Ждущий формат держим в
+   * состоянии, чтобы подтверждение запускало ровно ту выгрузку, о которой
+   * спросили, даже если пользователь тем временем передумал и нажал другую.
+   */
+  const [confirmRequest, setConfirmRequest] = useState<LabelledExportRequest | null>(null);
 
   async function run(action: ExportRequest): Promise<void> {
-    if (unsavedRemark && !window.confirm(UI_COPY.exportUnsavedConfirm)) {
-      return;
-    }
     setPendingKey(actionKey(action));
     setErrorKind(null);
     try {
@@ -50,6 +56,14 @@ export default function ExportActionsBar({
     } finally {
       setPendingKey(null);
     }
+  }
+
+  function request(action: LabelledExportRequest): void {
+    if (unsavedRemark) {
+      setConfirmRequest(action);
+      return;
+    }
+    void run(action);
   }
 
   const busy = pendingKey !== null;
@@ -67,7 +81,7 @@ export default function ExportActionsBar({
             key={actionKey(action)}
             type="button"
             disabled={busy}
-            onClick={() => void run(action)}
+            onClick={() => request(action)}
           >
             {pendingKey === actionKey(action) ? UI_COPY.exportInProgress : action.label}
           </button>
@@ -77,7 +91,7 @@ export default function ExportActionsBar({
           aria-label={UI_COPY.exportPdf}
           aria-describedby={PDF_HINT_ID}
           disabled={busy}
-          onClick={() => void run({ format: "pdf" })}
+          onClick={() => request({ format: "pdf", label: UI_COPY.exportPdf })}
         >
           {pendingKey === "pdf" ? UI_COPY.exportInProgress : UI_COPY.exportPdf}
         </button>
@@ -93,6 +107,17 @@ export default function ExportActionsBar({
         <p className="compact-copy export-error" role="alert" data-testid="export-error" data-kind={errorKind}>
           {requestFailureBody(errorKind)}
         </p>
+      ) : null}
+      {confirmRequest ? (
+        <ExportUnsavedDialog
+          formatLabel={confirmRequest.label}
+          onConfirm={() => {
+            const action = confirmRequest;
+            setConfirmRequest(null);
+            void run(action);
+          }}
+          onCancel={() => setConfirmRequest(null)}
+        />
       ) : null}
     </div>
   );
