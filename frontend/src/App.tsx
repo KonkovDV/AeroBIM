@@ -1,5 +1,4 @@
 import { Suspense, lazy } from "react";
-import { getApiBaseUrl } from "./lib/api";
 import DemoFixturePanel from "./components/DemoFixturePanel";
 import DirtyLeaveDialog from "./components/DirtyLeaveDialog";
 import KeyboardHelpDialog from "./components/KeyboardHelpDialog";
@@ -58,7 +57,6 @@ export default function App() {
   return (
     <div className="app-shell">
       <ShellHeader
-        apiBase={getApiBaseUrl()}
         reportCount={reportsState.reports.length}
         uiRole={authBff.screenRole}
         bffStatus={authBff.discovery.status}
