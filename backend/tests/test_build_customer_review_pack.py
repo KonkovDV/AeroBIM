@@ -223,9 +223,7 @@ class CustomerReviewPackTests(unittest.TestCase):
         )
 
     def test_markdown_discloses_similar_count_lives_outside_table(self) -> None:
-        markdown = render_customer_review_markdown(
-            build_customer_review_pack(_report(), top_k=20)
-        )
+        markdown = render_customer_review_markdown(build_customer_review_pack(_report(), top_k=20))
         self.assertIn("similar_count", markdown)
         self.assertIn("не в таблице", markdown)
 
