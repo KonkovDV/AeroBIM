@@ -1,3 +1,4 @@
+<!-- claims-lint: allow-file reason="External UI review; WCAG/HIG as criteria not a certificate; expert time unmeasured; NO_GO" -->
 # Фронтенд AeroBIM: внешний обзор интерфейса
 
 **Версия:** 1.0.0 · **Дата:** 10.09.2026 · **Срез:** `main@9ef3af47`

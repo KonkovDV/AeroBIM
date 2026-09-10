@@ -121,3 +121,55 @@ class FilesystemAuditStoreDrawingAssetTests(unittest.TestCase):
                 storage_dir / "drawing-assets" / report.report_id / str(asset.stored_filename)
             )
             self.assertTrue(preview_path.exists())
+
+    def test_resave_without_source_path_keeps_preview_files(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            storage_dir = Path(tmpdir)
+            image_path = storage_dir / "source-sheet.png"
+
+            pix = pymupdf.Pixmap(pymupdf.csRGB, (0, 0, 120, 60), False)
+            pix.set_rect(pix.irect, (255, 255, 255))
+            pix.save(image_path)
+
+            store = FilesystemAuditStore(storage_dir)
+            report = ValidationReport(
+                report_id="c" * 32,
+                request_id="req-resave-assets",
+                ifc_path=storage_dir / "model.ifc",
+                created_at=datetime.now(tz=UTC).isoformat(),
+                requirements=(),
+                issues=(),
+                summary=ValidationSummary(
+                    requirement_count=0,
+                    issue_count=0,
+                    error_count=0,
+                    warning_count=0,
+                    passed=True,
+                ),
+                drawing_assets=(
+                    DrawingAsset(
+                        asset_id="drawing-003",
+                        sheet_id="A-301",
+                        page_number=1,
+                        media_type="image/png",
+                        source_path=image_path,
+                    ),
+                ),
+            )
+
+            store.save(report)
+            first = store.get(report.report_id)
+            self.assertIsNotNone(first)
+            assert first is not None
+            asset = first.drawing_assets[0]
+            preview_path = (
+                storage_dir / "drawing-assets" / report.report_id / str(asset.stored_filename)
+            )
+            self.assertTrue(preview_path.exists())
+
+            store.save(first)
+            second = store.get(report.report_id)
+            self.assertIsNotNone(second)
+            assert second is not None
+            self.assertTrue(preview_path.exists())
+            self.assertEqual(second.drawing_assets[0].stored_filename, asset.stored_filename)
