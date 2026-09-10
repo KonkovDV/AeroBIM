@@ -21,6 +21,7 @@ from aerobim.tools.run_live_review_smoke import (
     build_backend_env,
     build_frontend_env,
     choose_available_port,
+    ensure_frontend_dependencies,
     frontend_dir,
     npm_command,
     terminate_process,
@@ -29,7 +30,8 @@ from aerobim.tools.run_live_review_smoke import (
 from aerobim.tools.seed_smoke_report import repo_root
 
 CLAIM_BOUNDARY = (
-    "IT-mentor Vite-dev stand. Empty storage, then POST /v1/demo/seed-fixture. "
+    "IT-mentor Vite-dev stand. Dedicated .local storage (reused, not wiped), "
+    "then POST /v1/demo/seed-fixture. "
     "Not jury CLI. Not a customer pack. Not product accuracy. "
     "Checkpoint GO; customer_go false."
 )
@@ -75,7 +77,9 @@ def run_it_mentor_stand(
     backend_url = f"http://{host}:{selected_backend}"
     frontend_url = f"http://{host}:{selected_frontend}"
 
-    backend_env = build_backend_env(os.environ, target_storage, selected_backend, frontend_url)
+    backend_env = build_backend_env(
+        os.environ, target_storage, selected_backend, frontend_url, host=host
+    )
     frontend_env = build_frontend_env(os.environ, backend_url)
 
     backend_process: subprocess.Popen[str] | None = None
@@ -88,6 +92,7 @@ def run_it_mentor_stand(
             text=True,
         )
         wait_for_http_ok(f"{backend_url}/health")
+        ensure_frontend_dependencies(env=frontend_env)
         frontend_process = subprocess.Popen(
             [
                 npm_command(),
@@ -98,6 +103,7 @@ def run_it_mentor_stand(
                 host,
                 "--port",
                 str(selected_frontend),
+                "--strictPort",
             ],
             cwd=frontend_dir(),
             env=frontend_env,
@@ -125,7 +131,10 @@ def run_it_mentor_stand(
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Start the IT-mentor Vite-dev stand (empty storage, no overlay seed)"
+        description=(
+            "One-command IT-mentor review shell: API + Vite. "
+            "Dedicated .local storage, no overlay seed. Not the jury CLI."
+        )
     )
     parser.add_argument("--storage-dir", type=Path, default=None)
     parser.add_argument("--host", default=DEFAULT_HOST)

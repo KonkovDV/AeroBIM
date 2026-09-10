@@ -79,11 +79,17 @@ pytest tests -q
 # Контракт чистого клона: 0 failed. Тесты extra pdf-agpl (PyMuPDF) и
 # kitchen-секретов GitHub — skip. Локальный счётчик — не CI pin ниже.
 python -m aerobim.main   # → http://127.0.0.1:8080/health
+
+# 4. Оболочка ревью (ноутбук ИТ-ментора; пустое хранилище; не CLI жюри)
+python -m aerobim.tools.run_it_mentor_stand
+# → http://127.0.0.1:5173/  (API на 8080; Ctrl+C останавливает оба процесса)
+# из корня репозитория: python scripts/run_review_shell.py
+# Windows: start.bat  (Проводник / .\start.bat; не встроенная команда CMD start)
 ```
 
 Оба демо и команда КТ#3 заканчиваются с `summary.passed=false`, и это ожидаемый результат: в учебном комплекте заложены дефекты. Это не данные заказчика, и полученные на них числа не являются точностью продукта. Локальный счётчик `pytest` — не CI pin в runtime baseline ниже. Красный бейдж — **подпись заказчика** (`customer_go` false), не продукт Checkpoint `NO_GO`.
 
-Дополнительные наборы: `.[clash]` — геометрические коллизии, `.[docling]` — разбор нетекстовых документов, `.[enterprise]` — адаптеры S3 и Postgres, `.[pdf-agpl]` — устаревшие инструменты на PyMuPDF (для трёх демо-команд выше не нужны; без extra эти тесты skip). Оболочка ревью: `cd frontend && npm ci && npm run dev` (API `http://127.0.0.1:8080`). Трек сидящего члена жюри — CLI выше; оболочка — ноутбук ИТ-ментора, не СОД.
+Дополнительные наборы: `.[clash]` — геометрические коллизии, `.[docling]` — разбор нетекстовых документов, `.[enterprise]` — адаптеры S3 и Postgres, `.[pdf-agpl]` — устаревшие инструменты на PyMuPDF (для трёх демо-команд выше не нужны; без extra эти тесты skip). Оболочка ревью (одна команда): `python -m aerobim.tools.run_it_mentor_stand` из `backend/`, или `python scripts/run_review_shell.py` из корня репозитория, или `npm start` из `frontend/`. Это поднимает API и Vite вместе (`npm ci`, если Vite ещё не ставили). Трек сидящего члена жюри — CLI выше; оболочка — ноутбук ИТ-ментора, не СОД.
 
 ## Оболочка ревью
 

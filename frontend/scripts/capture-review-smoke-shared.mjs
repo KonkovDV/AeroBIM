@@ -12,7 +12,7 @@ import { chromium } from "playwright";
 
 export const LOOPBACK_HOSTS = new Set(["127.0.0.1", "localhost", "[::1]"]);
 
-/** Unsaved-card warning — must match WORKPLACE_COPY.exportUnsavedConfirm. */
+/** Unsaved-card warning — must match UI_COPY.exportUnsavedConfirm (FE-DRIFT-01). */
 export const EXPORT_UNSAVED_CONFIRM =
   "В карточке есть несохранённый текст. В файл попадёт последняя записанная на сервере версия, не текущий черновик. Продолжить выгрузку?";
 

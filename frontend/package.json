@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "start": "node scripts/start-review-shell.mjs",
     "build": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json && vite build",
     "lint": "node scripts/lint-ui-strings.mjs",
     "smoke:browser": "node scripts/capture-review-shell-smoke.mjs",

@@ -61,9 +61,7 @@ python -m aerobim.tools.run_kt3_jury
 ## Веб-интерфейс (P1, не показ КТ#2)
 
 ```bash
-cd frontend
-npm ci
-npm run dev
+python scripts/run_review_shell.py
 ```
 
 Просмотр IFC в 3D, наложение на 2D, список замечаний, правка текста экспертом. Это оболочка ревью, не замена живой команды.

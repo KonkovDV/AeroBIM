@@ -46,6 +46,8 @@ describe("FE-DRIFT-01 unsaved-export warning copy", () => {
   it("keeps the drift assertion wired into the rehearsal helper", () => {
     expect(sharedSmokeSource).toContain("assertUnsavedDialogs");
     expect(sharedSmokeSource).toContain("EXPORT_UNSAVED_CONFIRM");
+    expect(sharedSmokeSource).toMatch(/message !== EXPORT_UNSAVED_CONFIRM/);
+    expect(sharedSmokeSource).toContain("unsaved confirm copy drifted");
   });
 
   it("keeps the warning honest about what lands in the file", () => {
