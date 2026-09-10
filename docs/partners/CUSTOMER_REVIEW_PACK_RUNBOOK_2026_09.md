@@ -64,3 +64,20 @@ Every delivery must retain:
 
 Use one expert for all top-K findings now. Use a second reviewer or adjudicator
 for a random/disputed subset in the 30–60 day pilot.
+
+## Repository gate output for this tool
+
+On branch commit `2c5a2911eaf79fa7e1e99b400db4aed94759770d` the repository
+toolchain, installed from the pinned development lock file, reported:
+
+- `python -m ruff format --check src tests` — exit 0, 822 files already
+  formatted;
+- `python -m ruff check src tests` — exit 0, all checks passed;
+- `python -m mypy src/aerobim --strict --ignore-missing-imports` — exit 0,
+  443 source files;
+- `python -m pytest tests/test_build_customer_review_pack.py -q` — exit 0,
+  2 passed.
+
+These are code-health gates for the generator itself. They do not establish
+product accuracy, customer acceptance, SLA at customer scale, or CDE import,
+and they do not change any open blocker.
