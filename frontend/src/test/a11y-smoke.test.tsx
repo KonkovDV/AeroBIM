@@ -128,7 +128,7 @@ describe("a11y smoke (axe-core, not a WCAG certificate)", () => {
     expect(await seriousViolations(container)).toEqual([]);
   });
 
-  it("keeps honesty banners as notes and one live status on the findings count", () => {
+  it("keeps honesty banners as notes; live status stays on findings count and density", () => {
     const { container } = render(
       <>
         <ShellHeader
@@ -153,7 +153,12 @@ describe("a11y smoke (axe-core, not a WCAG certificate)", () => {
         />
       </>,
     );
-    expect(container.querySelectorAll('[role="status"]')).toHaveLength(1);
+    const densityStatus = container.querySelector('[data-testid="density-announce"]');
+    expect(densityStatus?.getAttribute("role")).toBe("status");
+    const otherStatus = [...container.querySelectorAll('[role="status"]')].filter(
+      (node) => node !== densityStatus,
+    );
+    expect(otherStatus).toHaveLength(1);
     expect(container.querySelectorAll('[role="note"]').length).toBeGreaterThan(0);
   });
 

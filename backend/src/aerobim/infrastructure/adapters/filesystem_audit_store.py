@@ -337,6 +337,12 @@ class FilesystemAuditStore:
         if not drawing_assets:
             return []
 
+        # Re-save (assemble persists, then execute adds traces and saves again)
+        # must not rmtree already-materialized previews: those assets have
+        # source_path=None and would not be rewritten.
+        if all(asset.source_path is None for asset in drawing_assets):
+            return list(drawing_assets)
+
         report_asset_dir = self._drawing_assets_dir / report_id
         if report_asset_dir.exists():
             shutil.rmtree(report_asset_dir)

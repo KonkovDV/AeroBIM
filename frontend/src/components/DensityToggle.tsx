@@ -46,7 +46,12 @@ export default function DensityToggle() {
         <span className="density-toggle-label">{UI_COPY.densityLabel}</span>
         <span className="density-toggle-value">{currentLabel}</span>
       </button>
-      <span className="visually-hidden" role="status" data-testid="density-announce">
+      <span
+        className="visually-hidden"
+        role="status"
+        aria-live="polite"
+        data-testid="density-announce"
+      >
         {UI_COPY.densityAnnounce(currentLabel)}
       </span>
     </>
