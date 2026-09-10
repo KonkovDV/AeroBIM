@@ -40,8 +40,7 @@ describe("DemoFixturePanel", () => {
       expect(seedDemoFixtureMock).toHaveBeenCalledTimes(1);
       expect(onSeeded).toHaveBeenCalledWith("c".repeat(32));
     });
-    expect(screen.getByText(/3 находок/)).toBeTruthy();
-    expect(screen.getByText(/checkpoint GO/)).toBeTruthy();
+    expect(screen.getByText(UI_COPY.demoSeeded(3, "GO"))).toBeTruthy();
     expect(screen.getByTestId("demo-fixture-panel").getAttribute("data-compact")).toBe("true");
   });
 

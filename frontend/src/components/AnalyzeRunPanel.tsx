@@ -15,6 +15,7 @@ import {
   type PackDraft,
 } from "../lib/pack-draft";
 import { appendRunJournal, readRunJournal, type RunJournalEntry } from "../lib/run-journal";
+import { jobStatusLabel } from "../lib/status-labels";
 import { formatMmss, TERMINAL_JOB_STATUSES, useRunPolling, type RunPolling } from "../hooks/useRunPolling";
 
 export type AnalyzeRunPanelProps = {
@@ -105,7 +106,7 @@ function RunStatusStrip({
       <div className="run-status-cell">
         <span className="run-status-kicker">{UI_COPY.runCellGate}</span>
         <strong className="run-status-value">
-          {jobStatus ? <code>{jobStatus}</code> : UI_COPY.runGateNone}
+          {jobStatus ? jobStatusLabel(jobStatus) : UI_COPY.runGateNone}
         </strong>
       </div>
       <div className="run-status-cell">
@@ -259,13 +260,18 @@ export default function AnalyzeRunPanel({
         capabilities={scopedCapabilities}
       />
       <div className="remark-actions">
-        <button type="button" onClick={() => void start()} disabled={startLocked || !packDraftHasAny(draft)}>
+        <button
+          type="button"
+          onClick={() => void start()}
+          disabled={startLocked || !packDraftHasAny(draft)}
+          aria-busy={startLocked}
+        >
           {busy ? UI_COPY.runStarting : UI_COPY.runStart}
         </button>
         {confirmingCancel ? (
           <span className="run-cancel-confirm" data-testid="run-cancel-confirm">
             <span className="compact-copy">{UI_COPY.runCancelConfirm}</span>
-            <button type="button" onClick={() => void cancel()} disabled={busy || !job?.job_id}>
+            <button type="button" onClick={() => void cancel()} disabled={busy || !job?.job_id || terminal}>
               {UI_COPY.runCancelYes}
             </button>
             <button type="button" onClick={() => setConfirmingCancel(false)} disabled={busy}>
@@ -298,33 +304,23 @@ export default function AnalyzeRunPanel({
         ) : null}
       </div>
       {job ? (
-        <dl className="job-status" data-testid="analyze-job-status">
-          <div>
-            <dt>job_id</dt>
-            <dd>
-              <code>{job.job_id}</code>
-            </dd>
-          </div>
-          <div>
-            <dt>request_id</dt>
-            <dd>
-              <code>{job.request_id ?? "—"}</code>
-            </dd>
-          </div>
+        <dl className="job-status" data-testid="analyze-job-status" data-job-id={job.job_id}>
           <div>
             <dt>{UI_COPY.runStatusLabel}</dt>
-            <dd>
-              <code>{job.status}</code>
-            </dd>
+            <dd>{jobStatusLabel(job.status)}</dd>
           </div>
-          <div>
-            <dt>{UI_COPY.runStageLabel}</dt>
-            <dd>{job.stage_progress ?? "—"}</dd>
-          </div>
-          <div>
-            <dt>{UI_COPY.runReportLabel}</dt>
-            <dd>{job.report_id ?? "—"}</dd>
-          </div>
+          {job.stage_progress ? (
+            <div>
+              <dt>{UI_COPY.runStageLabel}</dt>
+              <dd>{job.stage_progress}</dd>
+            </div>
+          ) : null}
+          {job.report_id ? (
+            <div>
+              <dt>{UI_COPY.runReportLabel}</dt>
+              <dd>{UI_COPY.runReportReady}</dd>
+            </div>
+          ) : null}
         </dl>
       ) : null}
       {job ? (
@@ -385,9 +381,8 @@ export default function AnalyzeRunPanel({
         ) : (
           <ol className="kpi-list">
             {journal.map((row) => (
-              <li key={row.job_id}>
-                <code>{row.job_id}</code>
-                {` · ${row.status} · ${formatMmss(row.elapsed_sec)}`}
+              <li key={row.job_id} data-job-id={row.job_id}>
+                {`${jobStatusLabel(row.status)} · ${formatMmss(row.elapsed_sec)}`}
               </li>
             ))}
           </ol>

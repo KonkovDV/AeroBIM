@@ -29,6 +29,7 @@ export const SMOKE_REPORT_ID = "9".repeat(32);
 export const COPY = {
   projects: "Проекты",
   demoSeed: "Загрузить демонстрационный комплект",
+  demoSeededNeedle: "Учебный комплект, не комплект заказчика",
   trainingNeedle: "ещё не согласован",
   engineFlagNeedle: "Результат формирует сервер",
   pdfHintNeedle: "Черновик карты покрытия",

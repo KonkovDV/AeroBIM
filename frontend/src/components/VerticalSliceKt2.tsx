@@ -89,8 +89,7 @@ function overlayHint(issue: ValidationIssue | null): string {
   const page = String(zone.page_number ?? "?");
   const hasBox =
     zone.x != null && zone.y != null && zone.width != null && zone.height != null;
-  const box = hasBox ? ` · bbox (${zone.x}, ${zone.y}) ${zone.width}×${zone.height}` : "";
-  return UI_COPY.kt2SheetPage(zone.sheet_id, page, box);
+  return UI_COPY.kt2SheetPage(zone.sheet_id, page, hasBox ? "" : "");
 }
 
 /**
@@ -143,8 +142,8 @@ export default function VerticalSliceKt2({
             <code>{issue?.finding_id?.trim() || "—"}</code>
             {issue?.source_id?.trim() ? (
               <>
-                {" · source_id "}
-                <code>{issue.source_id.trim()}</code>
+                {" · "}
+                <span>{issue.source_id.trim()}</span>
               </>
             ) : null}
             {issue?.rule_id ? ` · ${issue.rule_id}` : ""}

@@ -66,35 +66,32 @@ describe("CoverageMapPanel", () => {
     expect(screen.getByText(/загрузка/i)).toBeTruthy();
   });
 
-  it("renders honesty note that coverage is not summary.passed", async () => {
+  it("renders honesty note that coverage is not the package verdict", async () => {
     fetchReportCoverageMock.mockResolvedValue(buildMap());
     render(<CoverageMapPanel reportId={"r".repeat(32)} />);
     await screen.findByTestId("coverage-map");
-    expect(screen.getByText(/не смешивать/i)).toBeTruthy();
-    expect(screen.getByText(/summary\.passed/i)).toBeTruthy();
+    expect(screen.getByText(/не итог комплекта/i)).toBeTruthy();
+    expect(screen.queryByText(/summary\.passed/i)).toBeNull();
   });
 
-  it("renders TZ gaps as not_checked, never as no_findings", async () => {
+  it("renders TZ gaps as not checked, never as no findings", async () => {
     fetchReportCoverageMock.mockResolvedValue(buildMap());
     render(<CoverageMapPanel reportId={"r".repeat(32)} />);
     const gaps = await screen.findByTestId("coverage-tz-gaps");
-    expect(gaps.textContent).toMatch(/not_checked/);
+    expect(gaps.querySelector('[data-coverage-status="not_checked"]')).toBeTruthy();
+    expect(gaps.textContent).toMatch(/не проверялось/i);
     expect(gaps.textContent).not.toMatch(/no_findings/);
   });
 
-  it("lists operator legend keys for the five honest states", async () => {
+  it("lists operator legend in Russian for the five honest states", async () => {
     fetchReportCoverageMock.mockResolvedValue(buildMap());
     render(<CoverageMapPanel reportId={"r".repeat(32)} />);
     await screen.findByTestId("coverage-map");
-    for (const key of [
-      "no_findings",
-      "findings",
-      "not_checked",
-      "insufficient_data",
-      "expert_required",
-    ]) {
-      expect(screen.getAllByText(key).length).toBeGreaterThan(0);
-    }
+    expect(screen.getAllByText(UI_COPY.covFilterNoFindings).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(UI_COPY.covFilterFindings).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(UI_COPY.covFilterNotChecked).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(UI_COPY.covFilterInsufficient).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(UI_COPY.covFilterExpert).length).toBeGreaterThan(0);
   });
 
   it("renders per-source family cells from presentation_status", async () => {
@@ -102,8 +99,8 @@ describe("CoverageMapPanel", () => {
     render(<CoverageMapPanel reportId={"r".repeat(32)} />);
     await screen.findByText("model.ifc");
     expect(screen.getByText("sheet.pdf")).toBeTruthy();
-    expect(screen.getAllByText("no_findings").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("findings").length).toBeGreaterThan(0);
+    expect(screen.getAllByText(UI_COPY.covFilterNoFindings).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(UI_COPY.covFilterFindings).length).toBeGreaterThan(0);
   });
 
   it("filters rows by selected operator status", async () => {
@@ -131,7 +128,7 @@ describe("CoverageMapPanel", () => {
     const onNavigate = vi.fn();
     fetchReportCoverageMock.mockResolvedValue(buildMap());
     render(<CoverageMapPanel reportId={"r".repeat(32)} onNavigateToFindings={onNavigate} />);
-    const link = await screen.findByRole("button", { name: /findings → находки/i });
+    const link = await screen.findByRole("button", { name: UI_COPY.covFindingsLink });
     fireEvent.click(link);
     expect(onNavigate).toHaveBeenCalledTimes(1);
   });
@@ -159,7 +156,7 @@ describe("CoverageMapPanel", () => {
     );
     render(<CoverageMapPanel reportId={"r".repeat(32)} />);
     await screen.findByText("legacy.ifc");
-    expect(screen.getAllByText("insufficient_data").length).toBeGreaterThan(0);
+    expect(screen.getAllByText(UI_COPY.covFilterInsufficient).length).toBeGreaterThan(0);
   });
 
   it("refetches when reportId changes", async () => {

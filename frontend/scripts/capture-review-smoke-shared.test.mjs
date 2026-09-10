@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { parseArgs as parseDemoArgs } from "./capture-demo-seed-smoke.mjs";
 import {
+  COPY,
   EXPORT_UNSAVED_CONFIRM,
   FORBIDDEN_FIXED,
   OA21_NEEDLE,
@@ -120,6 +121,10 @@ describe("OA-21 export inspectors", () => {
 });
 
 describe("demo-seed smoke helpers", () => {
+  it("keeps the seeded-status needle on the current honesty line", () => {
+    expect(COPY.demoSeededNeedle).toBe("Учебный комплект, не комплект заказчика");
+  });
+
   it("parses base url and output dir", () => {
     const options = parseDemoArgs([
       "--base-url",

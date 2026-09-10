@@ -58,5 +58,6 @@ describe("ProvenancePanel", () => {
     expect(screen.getByText("2O2Fr$t4X7Zf8NOew3FLOH")).toBeTruthy();
     expect(screen.getByText(/pkg-ifc-main@r1#ifc:/i)).toBeTruthy();
     expect(screen.getByText(/SAM-NP-001/)).toBeTruthy();
+    expect(screen.queryByText(UI_COPY.provPriority)).toBeNull();
   });
 });

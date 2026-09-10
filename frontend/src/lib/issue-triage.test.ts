@@ -84,6 +84,38 @@ describe("issue-triage", () => {
     ).toBe("Стена без REI60");
   });
 
+  it("strips advisory engine chrome from list titles", () => {
+    expect(
+      findingListTitle(
+        issue({
+          message: "[advisory-only] leftover English (DeterminismGate: not confirmed by deterministic engine)",
+          remark: { title: "", body: "", essence: "" },
+        }),
+      ),
+    ).toBe("leftover English");
+  });
+
+  it("strips engine priority chrome from titles and essence", () => {
+    expect(
+      findingListTitle(
+        issue({
+          remark: {
+            title: "Замечание по модели: FireRating REI30 вместо REI60 [приоритет 40]",
+            body: "",
+            essence: "",
+          },
+        }),
+      ),
+    ).toBe("FireRating REI30 вместо REI60");
+    expect(
+      essenceLine(
+        issue({
+          remark: { title: "T [приоритет 40]", body: "", essence: "Стена REI [приоритет 40]" },
+        }),
+      ),
+    ).toBe("Стена REI");
+  });
+
   it("groups by axis and category without inventing tags", () => {
     const rows = [
       { issue: issue({ grid_axis: "А" }), index: 0 },

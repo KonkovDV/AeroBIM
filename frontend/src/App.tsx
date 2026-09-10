@@ -17,6 +17,7 @@ import ShellHeader from "./features/shell/ShellHeader";
 import ErrorBanner from "./features/shell/ErrorBanner";
 import UserScreen from "./features/shell/UserScreen";
 import ViewerPlaceholder from "./features/shell/ViewerPlaceholder";
+import IfcViewerErrorBoundary from "./features/shell/IfcViewerErrorBoundary";
 import { UI_COPY } from "./lib/ui-copy";
 
 import { useReviewShell } from "./hooks/useReviewShell";
@@ -83,7 +84,7 @@ export default function App() {
         hasReport={selectedReportId !== null}
         onChange={requestWorkspaceView}
       />
-      <div id="work-area" tabIndex={-1} className="skip-to-work-target" />
+      <main id="work-area" tabIndex={-1} className="work-area" data-testid="work-area">
       {import.meta.env.DEV ? (
         <DemoFixturePanel
           onSeeded={handleSeededReport}
@@ -158,19 +159,21 @@ export default function App() {
           historyPending={review.historyPending}
           conflictMessage={review.conflictMessage}
           spatialViewer={
-            <Suspense fallback={<ViewerPlaceholder message={UI_COPY.viewerLoading} />}>
-              {review.selectedReport ? (
-                <IfcViewerPanel
-                  report={review.selectedReport}
-                  selectedGuids={triage.viewerFocus.guids}
-                  selectionMode={triage.viewerFocus.mode}
-                  selectionHeading={triage.viewerFocus.heading}
-                  selectionDetail={triage.viewerFocus.detail}
-                />
-              ) : (
-                <ViewerPlaceholder message={UI_COPY.viewerNeedReport} />
-              )}
-            </Suspense>
+            <IfcViewerErrorBoundary>
+              <Suspense fallback={<ViewerPlaceholder message={UI_COPY.viewerLoading} />}>
+                {review.selectedReport ? (
+                  <IfcViewerPanel
+                    report={review.selectedReport}
+                    selectedGuids={triage.viewerFocus.guids}
+                    selectionMode={triage.viewerFocus.mode}
+                    selectionHeading={triage.viewerFocus.heading}
+                    selectionDetail={triage.viewerFocus.detail}
+                  />
+                ) : (
+                  <ViewerPlaceholder message={UI_COPY.viewerNeedReport} />
+                )}
+              </Suspense>
+            </IfcViewerErrorBoundary>
           }
           onSelectReport={requestSelectReport}
           onSeverityChange={findings.setIssueSeverityFilter}
@@ -195,6 +198,7 @@ export default function App() {
           unsavedRemark={review.isDirty}
         />
       ) : null}
+      </main>
 
       {TRIAGE_KEYBOARD_VIEWS.has(workspaceView) ? (
         <footer className="hotkeys-footer" data-testid="hotkeys-footer">

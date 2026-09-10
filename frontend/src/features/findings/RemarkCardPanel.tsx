@@ -3,7 +3,7 @@ import type { ValidationIssue } from "../../lib/types";
 import type { ReviewEventRow } from "../../lib/api";
 import { hitlEventTypeLabel } from "../../lib/hitl-event-copy";
 import { eventMatchesIssue } from "../../lib/hitl-state";
-import { clauseLine, essenceLine, spatialOrMissing } from "../../lib/issue-triage";
+import { clauseLine, essenceLine, findingListTitle, spatialOrMissing } from "../../lib/issue-triage";
 import { UI_COPY } from "../../lib/ui-copy";
 import EvidenceStepper from "./EvidenceStepper";
 
@@ -166,7 +166,7 @@ export default function RemarkCardPanel({
             </dl>
           </details>
           <p className="compact-copy">
-            <strong>{activeIssue.remark?.title ?? UI_COPY.generatedRemark}</strong>
+            <strong>{findingListTitle(activeIssue) || UI_COPY.generatedRemark}</strong>
           </p>
           {hitlEnabled ? (
             <>

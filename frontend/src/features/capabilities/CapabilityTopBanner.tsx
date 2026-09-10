@@ -41,7 +41,7 @@ export default function CapabilityTopBanner({
     <div className="capability-top-banner" role="note" data-testid="capability-top-banner">
       <details>
         <summary>
-          {UI_COPY.capabilityIncompleteSummary(incomplete.length, rows.length)}. {UI_COPY.silenceIsNotSuccess}
+          {UI_COPY.capabilityIncompleteSummary(incomplete.length, rows.length)} {UI_COPY.silenceIsNotSuccess}
         </summary>
         <p className="capability-top-banner-lines">{incomplete.map(humanCapabilityLine).join(". ")}</p>
       </details>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchSystemCapabilities, type SystemCapabilitiesPayload } from "../../lib/api";
 import { INTAKE_GATE_KEYS, intakeGateLabel, isIntakeGateTrue } from "../../lib/intake-gates";
+import { claimLevelLabel, intakeGateValueLabel } from "../../lib/status-labels";
 import { UI_COPY } from "../../lib/ui-copy";
 
 function intakeStatusLabel(status: string): string {
@@ -70,33 +71,27 @@ export default function BlockerHonestyPanel() {
       ) : null}
       {payload ? (
         <p className="compact-copy">
-          {UI_COPY.blockersIntake}: <code>{intakeStatusLabel(payload.customer_intake_gate.status)}</code> ·{" "}
-          {UI_COPY.blockersClaimLevel} <code>{payload.customer_intake_gate.claim_level}</code> ·{" "}
-          {UI_COPY.blockersCheckpoint} <code>{payload.customer_intake_gate.checkpoint}</code>
-          {payload.auth_bff?.status ? ` · auth_bff ${payload.auth_bff.status}` : ""}
-          {payload.bcf_t2
-            ? ` · BCF T2 ${payload.bcf_t2.status}${payload.bcf_t2.claim_allowed ? "" : ` (${UI_COPY.blockersNotVerified})`}`
+          {UI_COPY.blockersIntake}: {intakeStatusLabel(payload.customer_intake_gate.status)}.{" "}
+          {UI_COPY.blockersClaimLevel}: {claimLevelLabel(payload.customer_intake_gate.claim_level)}.{" "}
+          {UI_COPY.blockersCheckpoint} {payload.customer_intake_gate.checkpoint}.
+          {payload.auth_bff?.status && payload.auth_bff.status !== "ok"
+            ? ` ${UI_COPY.blockersAuthPending}`
             : ""}
+          {payload.bcf_t2 && !payload.bcf_t2.claim_allowed ? ` ${UI_COPY.blockersBcfPending}` : ""}
         </p>
       ) : null}
       <table className="coverage-table" data-testid="intake-gate-table">
         <thead>
           <tr>
-            <th scope="col">{UI_COPY.blockersGateCol}</th>
-            <th scope="col">{UI_COPY.blockersInFileCol}</th>
             <th scope="col">{UI_COPY.blockersMeaningCol}</th>
+            <th scope="col">{UI_COPY.blockersInFileCol}</th>
           </tr>
         </thead>
         <tbody>
           {INTAKE_GATE_KEYS.map((key) => (
-            <tr key={key}>
-              <td>
-                <code>{key}</code>
-              </td>
-              <td>
-                <code>{isIntakeGateTrue(trueGates, key) ? "true" : "false"}</code>
-              </td>
+            <tr key={key} data-gate-key={key}>
               <td className="cov-reason">{intakeGateLabel(key)}</td>
+              <td>{intakeGateValueLabel(isIntakeGateTrue(trueGates, key))}</td>
             </tr>
           ))}
         </tbody>

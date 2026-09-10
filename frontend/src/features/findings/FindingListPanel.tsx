@@ -17,7 +17,6 @@ import {
   findingCategoryLabel,
   findingListTitle,
   groupFindings,
-  priorityCaption,
   spatialOrMissing,
   triageBand,
   type FindingGroupBy,
@@ -92,7 +91,6 @@ function IssueCard({
   onSelect: (index: number, issue: ValidationIssue) => void;
 }) {
   const band = triageBand(issue);
-  const caption = priorityCaption(issue);
   const storey = spatialOrMissing(issue.storey_name ?? issue.remark?.storey_name);
   const axis = spatialOrMissing(issue.grid_axis ?? issue.remark?.grid_axis);
   const clause = clauseLine(issue);
@@ -136,9 +134,6 @@ function IssueCard({
             {UI_COPY.lowConfidence(issue.confidence.toFixed(2))}
           </span>
         ) : null}
-        {typeof issue.priority === "number" && issue.priority > 0 ? (
-          <span className="issue-priority">P{issue.priority}</span>
-        ) : null}
       </div>
       <p>{findingListTitle(issue)}</p>
       <div className="issue-card-meta">
@@ -159,7 +154,6 @@ function IssueCard({
           {UI_COPY.findingClause(clause)}
         </span>
       </div>
-      {caption ? <p className="compact-copy">{caption}</p> : null}
     </button>
   );
 }

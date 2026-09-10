@@ -1,5 +1,6 @@
 import type { CapabilityState, DivergenceRecord, ReportCapabilities } from "../lib/types";
 import { BLOCKING_STATES, capabilityRows, capabilityStatusPhrase, formatCapabilityLabel, formatCapabilityState } from "../lib/capability-copy";
+import { divergenceResolutionLabel } from "../lib/status-labels";
 import { UI_COPY } from "../lib/ui-copy";
 
 function statusClass(status: CapabilityState): string {
@@ -94,7 +95,7 @@ export default function CapabilityHonestyPanel({
               <li key={`${item.finding_key}-${item.engine_verdict}-${item.advisory_verdict}`}>
                 <strong>{item.finding_key}</strong>:{" "}
                 {UI_COPY.capEngineVs(item.engine_verdict, item.advisory_verdict)}
-                {item.resolution ? ` → ${item.resolution}` : ""}
+                {item.resolution ? ` → ${divergenceResolutionLabel(item.resolution)}` : ""}
               </li>
             ))}
           </ul>

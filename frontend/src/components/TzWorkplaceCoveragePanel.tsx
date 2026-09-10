@@ -1,5 +1,6 @@
 import { TZ_UI_SCREENS } from "../lib/tz-ui-screens";
 import { TZ_REQUIREMENT_ROWS, tzRequirementView } from "../lib/tz-requirement-map";
+import { tzGitLabel } from "../lib/status-labels";
 import { UI_COPY } from "../lib/ui-copy";
 import type { WorkspaceView } from "./WorkspaceNav";
 
@@ -31,9 +32,8 @@ export default function TzWorkplaceCoveragePanel({ onOpenScreen }: TzWorkplaceCo
       <table className="coverage-table" data-testid="tz-requirement-map">
         <thead>
           <tr>
-            <th scope="col">{UI_COPY.tzColId}</th>
-            <th scope="col">{UI_COPY.tzColPoint}</th>
             <th scope="col">{UI_COPY.tzColFn}</th>
+            <th scope="col">{UI_COPY.tzColPoint}</th>
             <th scope="col">{UI_COPY.tzColEvidence}</th>
             <th scope="col">{UI_COPY.tzColGit}</th>
           </tr>
@@ -42,22 +42,24 @@ export default function TzWorkplaceCoveragePanel({ onOpenScreen }: TzWorkplaceCo
           {TZ_REQUIREMENT_ROWS.map((row) => {
             const view = tzRequirementView(row.id);
             return (
-              <tr key={row.id}>
+              <tr key={row.id} data-requirement-id={row.id}>
                 <td>
                   {onOpenScreen && view ? (
-                    <button type="button" className="linkish" onClick={() => onOpenScreen(view)}>
-                      <code>{row.id}</code>
+                    <button
+                      type="button"
+                      className="linkish"
+                      data-testid={row.id}
+                      onClick={() => onOpenScreen(view)}
+                    >
+                      {row.fn}
                     </button>
                   ) : (
-                    <code>{row.id}</code>
+                    <span data-testid={row.id}>{row.fn}</span>
                   )}
                 </td>
                 <td>{row.tz}</td>
-                <td>{row.fn}</td>
                 <td className="cov-reason">{row.evidence}</td>
-                <td>
-                  <code>{row.git}</code>
-                </td>
+                <td>{tzGitLabel(row.git)}</td>
               </tr>
             );
           })}
@@ -67,7 +69,6 @@ export default function TzWorkplaceCoveragePanel({ onOpenScreen }: TzWorkplaceCo
       <table className="coverage-table">
         <thead>
           <tr>
-            <th scope="col">{UI_COPY.tzColId}</th>
             <th scope="col">{UI_COPY.tzColScreen}</th>
             <th scope="col">{UI_COPY.tzColGit}</th>
             <th scope="col">{UI_COPY.tzColNote}</th>
@@ -77,20 +78,22 @@ export default function TzWorkplaceCoveragePanel({ onOpenScreen }: TzWorkplaceCo
           {TZ_UI_SCREENS.map((row) => {
             const view = SCREEN_VIEW[row.id];
             return (
-              <tr key={row.id}>
+              <tr key={row.id} data-screen-id={row.id}>
                 <td>
                   {onOpenScreen && view ? (
-                    <button type="button" className="linkish" onClick={() => onOpenScreen(view)}>
-                      <code>{row.id}</code>
+                    <button
+                      type="button"
+                      className="linkish"
+                      data-testid={row.id}
+                      onClick={() => onOpenScreen(view)}
+                    >
+                      {row.title}
                     </button>
                   ) : (
-                    <code>{row.id}</code>
+                    <span data-testid={row.id}>{row.title}</span>
                   )}
                 </td>
-                <td>{row.title}</td>
-                <td>
-                  <code>{row.git}</code>
-                </td>
+                <td>{tzGitLabel(row.git)}</td>
                 <td className="cov-reason">{row.note}</td>
               </tr>
             );

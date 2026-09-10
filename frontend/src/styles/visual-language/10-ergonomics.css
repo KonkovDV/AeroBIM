@@ -81,15 +81,14 @@
   text-decoration: none;
 }
 
-/* Цель пропуска не рисует собственное кольцо: фокус сразу уходит дальше,
-   но запас прокрутки держит её под липкой шапкой (WCAG 2.4.11). */
-.skip-to-work-target {
-  display: block;
-  block-size: 0;
+/* Skip target is the workspace <main>, not an empty 0-height sink.
+   Zero height here would collapse the landmark. */
+#work-area,
+.work-area {
   scroll-margin-block-start: 96px;
 }
 
-.skip-to-work-target:focus {
+.work-area:focus {
   outline: none;
 }
 

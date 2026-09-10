@@ -51,6 +51,31 @@ describe("FindingListPanel", () => {
     expect(screen.getByRole("listbox").getAttribute("aria-activedescendant")).toBe("finding-row-1");
   });
 
+  it("does not print the engine priority score on the card", () => {
+    render(
+      <FindingListPanel
+        issues={[
+          {
+            ...issue("IDS-Wall Fire Rating Multi", 0),
+            issue: { ...issue("IDS-Wall Fire Rating Multi", 0).issue, priority: 40 },
+          },
+        ]}
+        totalIssueCount={1}
+        selectedIssueIndex={0}
+        issueSeverityFilter="all"
+        hitlOnlyFilter={false}
+        hitlRegionCount={0}
+        groupBy="none"
+        onSeverityChange={() => undefined}
+        onHitlOnlyChange={() => undefined}
+        onGroupByChange={() => undefined}
+        onSelectIssue={() => undefined}
+      />,
+    );
+    expect(screen.getByTestId("issue-card").textContent).not.toMatch(/P\s*40/);
+    expect(screen.queryByText(/^P40$/)).toBeNull();
+  });
+
   it("shows storey and axis on the card or нет в индексе", () => {
     render(
       <FindingListPanel

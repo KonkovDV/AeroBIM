@@ -36,7 +36,7 @@ describe("CapabilityHonestyPanel", () => {
     expect(screen.getByText(/Блокирующие статусы \(1\)/i)).toBeTruthy();
     expect(screen.getByText(/DWG: не выполнена/i)).toBeTruthy();
     expect(screen.getByTestId("capability-skip-banner").textContent).toContain(UI_COPY.silenceIsNotSuccess);
-    expect(screen.getByTestId("divergence-list").textContent).toMatch(/engine_wins/);
+    expect(screen.getByTestId("divergence-list").textContent).toMatch(/принят результат автоматической проверки/);
   });
 
   it("shows incomplete-evidence message when capabilities missing", () => {

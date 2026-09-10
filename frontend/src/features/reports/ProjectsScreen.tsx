@@ -55,7 +55,7 @@ export default function ProjectsScreen({
   } = filters;
 
   return (
-    <main className="workspace-alt" data-testid="projects-index">
+    <div className="workspace-alt" data-testid="projects-index">
       <ReportListPanel
         reportsLoading={reportsLoading}
         filteredReports={filteredReports}
@@ -105,6 +105,6 @@ export default function ProjectsScreen({
         onApplyPreset={applyPreset}
         onRemovePreset={removePreset}
       />
-    </main>
+    </div>
   );
 }

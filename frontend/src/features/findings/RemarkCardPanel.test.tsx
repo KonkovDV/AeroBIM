@@ -53,6 +53,30 @@ describe("RemarkCardPanel", () => {
     expect(screen.getByLabelText("Текст замечания").getAttribute("spellcheck")).toBe("true");
   });
 
+  it("does not show the engine priority score in the visible title", () => {
+    render(
+      <RemarkCardPanel
+        activeIssue={{
+          ...baseIssue,
+          remark: {
+            title: "Замечание по модели: FireRating REI30 вместо REI60 [приоритет 40]",
+            body: "REI",
+            essence: "Стена без REI60",
+          },
+        }}
+        remarkDraft="REI"
+        remarkSaveState="idle"
+        hitlDecisionState="idle"
+        onDraftChange={() => undefined}
+        onSave={() => undefined}
+        onAccept={() => undefined}
+        onReject={() => undefined}
+      />,
+    );
+    expect(screen.queryByText(/приоритет 40/)).toBeNull();
+    expect(screen.getAllByText("Стена без REI60").length).toBeGreaterThan(0);
+  });
+
   it("filters cached HITL events for the active finding", () => {
     render(
       <RemarkCardPanel

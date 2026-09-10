@@ -4,7 +4,9 @@ import { UI_COPY } from "./ui-copy";
 describe("product copy safety boundaries", () => {
   it("removes developer contracts from primary workspace messages", () => {
     const primary = [UI_COPY.headerLede, UI_COPY.roleBanner, UI_COPY.roleBannerLab,
-      UI_COPY.capabilityMissing, UI_COPY.engineFlag, UI_COPY.hitlSeparate, UI_COPY.diffNote];
+      UI_COPY.capabilityMissing, UI_COPY.engineFlag, UI_COPY.hitlSeparate, UI_COPY.diffNote,
+      UI_COPY.covBody, UI_COPY.capHonestyBody, UI_COPY.demoBody, UI_COPY.kt2Body,
+      UI_COPY.viewerRenderError, UI_COPY.viewerRenderErrorHint];
     for (const text of primary) expect(text).not.toMatch(/summary\.passed|customer_go|Checkpoint|GET \/v1|SSE|review-events/);
   });
   it("does not equate empty filtered results with complete validation", () => {
