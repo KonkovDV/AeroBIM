@@ -125,7 +125,21 @@ class ReviewShellLauncherTests(unittest.TestCase):
         text = (repo_root() / "start.bat").read_text(encoding="utf-8")
         self.assertIn("-m aerobim.tools.run_it_mentor_stand", text)
         self.assertIn("backend\\.venv\\Scripts\\python.exe", text)
+        self.assertIn(".\\start.bat", text)
         self.assertNotIn("run_kt3_jury", text)
+
+    def test_root_start_ps1_calls_the_mentor_stand(self) -> None:
+        text = (repo_root() / "start.ps1").read_text(encoding="utf-8")
+        self.assertIn("aerobim.tools.run_it_mentor_stand", text)
+        self.assertIn("backend\\.venv\\Scripts\\python.exe", text)
+        self.assertIn(".\\start.bat", text)
+        self.assertNotIn("run_kt3_jury", text)
+
+    def test_readme_power_shell_recipe_requires_dot_slash(self) -> None:
+        for name in ("README.md", "README.ru.md"):
+            text = (repo_root() / name).read_text(encoding="utf-8")
+            self.assertIn(".\\start.bat", text, msg=name)
+            self.assertIn("Start-Process", text, msg=name)
 
 
 if __name__ == "__main__":
