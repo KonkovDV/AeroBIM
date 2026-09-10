@@ -82,7 +82,11 @@ python -m aerobim.main   # → http://127.0.0.1:8080/health
 python -m aerobim.tools.run_it_mentor_stand
 # → http://127.0.0.1:5173/  (API on 8080; Ctrl+C stops both)
 # from the repo root: python scripts/run_review_shell.py
-# Windows: start.bat  (Explorer / .\start.bat; not the CMD builtin "start")
+# Windows PowerShell (required leading .\ ):
+#   .\start.bat
+# Do not type: start          (Start-Process; it will ask for FilePath)
+# Do not type: start.bat     (PowerShell does not run a .bat from cwd)
+# Explorer: double-click start.bat.  CMD: start.bat
 ```
 
 Both demos end with `summary.passed=false`, which is the expected result: the fixture pack contains planted defects. These are fixtures, not customer data, and the numbers they produce are not product accuracy. A local `pytest` count is not the CI pin in the runtime baseline below. The red badge is **customer sign-off** (`customer_go` false), not product Checkpoint `NO_GO`.

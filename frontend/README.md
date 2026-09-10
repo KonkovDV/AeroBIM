@@ -41,6 +41,8 @@ API default: `http://127.0.0.1:8080`. One command starts **API + Vite** (`npm ci
 python scripts/run_review_shell.py
 ```
 
+Windows PowerShell from the repo root: `.\start.bat` (the `.\` is required). Do not type `start` (Start-Process) or `start.bat` without the prefix. Explorer: double-click `start.bat`. CMD: `start.bat`.
+
 Same stand from `backend/` (venv active): `python -m aerobim.tools.run_it_mentor_stand`. From this directory: `npm start`. Ctrl+C stops both processes. Empty storage; click «Загрузить демонстрационный комплект». Not the jury CLI.
 
 Vite only (smokes, already-running API):

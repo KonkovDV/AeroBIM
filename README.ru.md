@@ -84,7 +84,11 @@ python -m aerobim.main   # → http://127.0.0.1:8080/health
 python -m aerobim.tools.run_it_mentor_stand
 # → http://127.0.0.1:5173/  (API на 8080; Ctrl+C останавливает оба процесса)
 # из корня репозитория: python scripts/run_review_shell.py
-# Windows: start.bat  (Проводник / .\start.bat; не встроенная команда CMD start)
+# Windows PowerShell (точка обязательна):
+#   .\start.bat
+# Не писать: start         (это Start-Process, спросит FilePath)
+# Не писать: start.bat     (PowerShell не запускает .bat из текущей папки)
+# Проводник: двойной щелчок по start.bat.  CMD: start.bat
 ```
 
 Оба демо и команда КТ#3 заканчиваются с `summary.passed=false`, и это ожидаемый результат: в учебном комплекте заложены дефекты. Это не данные заказчика, и полученные на них числа не являются точностью продукта. Локальный счётчик `pytest` — не CI pin в runtime baseline ниже. Красный бейдж — **подпись заказчика** (`customer_go` false), не продукт Checkpoint `NO_GO`.
