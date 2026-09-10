@@ -1,0 +1,138 @@
+name: Baseline refresh (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: Why the runtime baseline pin is being refreshed
+        required: false
+        default: routine evidence refresh
+
+permissions:
+  contents: write
+
+concurrency:
+  group: baseline-refresh-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    name: Re-run the gates and mint the runtime baseline pin
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      AEROBIM_GATES_ATTESTED: test,frontend,supply-chain-audit,sprint-2-1-gates,security-regression,offline-bundle-smoke,openapi-contract
+    steps:
+      - name: Check out the dispatched ref
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+
+      - name: Set up Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v5
+        with:
+          node-version: '22'
+
+      - name: Install the locked backend toolchain
+        working-directory: backend
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade "pip==25.2"
+          python -m pip install --require-hashes -r requirements-dev-lock.txt
+          python -m pip install -e . --no-deps
+
+      - name: Backend gates
+        working-directory: backend
+        run: |
+          set -euo pipefail
+          mkdir -p var/reports
+          python -m ruff format --check src tests
+          python -m ruff check src tests
+          python -m mypy src/aerobim --strict --ignore-missing-imports
+          python -m pytest tests -q --junitxml=var/reports/pytest-junit.xml
+
+      - name: Frontend gates
+        working-directory: frontend
+        run: |
+          set -euo pipefail
+          mkdir -p var
+          npm ci
+          npx vitest run --reporter=json --outputFile=var/vitest-results.json
+          npm run build
+
+      - name: Mint the pin and align both README snippets
+        run: |
+          set -euo pipefail
+          python -m aerobim.tools.export_runtime_baseline --help > /tmp/baseline-help.txt
+          MINT=(--gate ruff=PASS --gate mypy=PASS --gate pytest=PASS --gate vitest=PASS)
+          MINT+=(--gate build=PASS)
+          MINT+=(--pytest-junit backend/var/reports/pytest-junit.xml)
+          MINT+=(--vitest-json frontend/var/vitest-results.json)
+          if grep -q -- '--require-complete' /tmp/baseline-help.txt; then
+            MINT+=(--require-complete)
+          fi
+          python -m aerobim.tools.export_runtime_baseline "${MINT[@]}"
+          python - <<'PY'
+          import json
+          import pathlib
+          import subprocess
+
+          path = pathlib.Path("docs/evidence/runtime-baseline-latest.json")
+          minted = json.loads(path.read_text(encoding="utf-8"))
+          committed = json.loads(
+              subprocess.run(
+                  ["git", "show", f"HEAD:{path.as_posix()}"],
+                  capture_output=True,
+                  text=True,
+                  check=True,
+              ).stdout
+          )
+          old = str(committed.get("readme_snippet") or "")
+          new = str(minted.get("readme_snippet") or "")
+          if not new:
+              raise SystemExit("minted baseline has no readme_snippet; refusing to touch READMEs")
+          for name in ("README.md", "README.ru.md"):
+              readme = pathlib.Path(name)
+              text = readme.read_text(encoding="utf-8")
+              if new in text:
+                  print(f"{name}: already current")
+              elif old and old in text:
+                  readme.write_text(text.replace(old, new), encoding="utf-8")
+                  print(f"{name}: pin replaced")
+              else:
+                  raise SystemExit(f"{name}: previous pin not found; refusing a partial refresh")
+          print("minted commit_sha:", minted.get("commit_sha"))
+          PY
+
+      - name: Verify the refreshed pin the same way CI does
+        run: |
+          set -euo pipefail
+          CHECK=(--out /tmp/runtime-baseline.ci-generated.json)
+          if grep -q -- '--check-readme' /tmp/baseline-help.txt; then
+            CHECK+=(--check-readme)
+          fi
+          if grep -q -- '--check-complete' /tmp/baseline-help.txt; then
+            CHECK+=(--check-complete)
+          fi
+          python -m aerobim.tools.export_runtime_baseline "${CHECK[@]}"
+          rm -f /tmp/runtime-baseline.ci-generated.json
+
+      - name: Commit and push the refreshed pin
+        run: |
+          set -euo pipefail
+          TRACKED=(docs/evidence/runtime-baseline-latest.json README.md README.ru.md)
+          if git diff --quiet -- "${TRACKED[@]}"; then
+            echo "pin already current; nothing to commit"
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "${TRACKED[@]}"
+          git commit -m 'chore(evidence): refresh the CI-attested runtime baseline pin' \
+            -m 'Minted inside GitHub Actions after re-running ruff, mypy, pytest, vitest and build. Evidence bookkeeping only: checkpoint, customer_go=false and market_go=false are unchanged.'
+          git push origin "HEAD:${GITHUB_REF_NAME}"
