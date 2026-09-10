@@ -4,9 +4,15 @@ import type { UiRoleAlias } from "../../lib/ui-role";
 import type { AuthBffDiscoveryStatus } from "../../lib/auth-bff";
 import RoleHonestyBanner from "../honesty/RoleHonestyBanner";
 
+/**
+ * Шапка продукта.
+ *
+ * FE-CRUFT-01: проп с адресом сервиса удалён. Он приходил из `App`, никогда не
+ * читался в разметке и существовал только «на совместимость», то есть был служебной
+ * проводкой в презентационном слое. Адресом владеет только `lib/api`; шапка не
+ * должна иметь к нему доступа даже теоретически — это закреплено сканером HD24-FE-01.
+ */
 export type ShellHeaderProps = {
-  /** Kept for caller compatibility; service addresses never appear in product UI. */
-  apiBase: string;
   reportCount: number;
   uiRole: UiRoleAlias;
   onRoleChange: (role: UiRoleAlias) => void;

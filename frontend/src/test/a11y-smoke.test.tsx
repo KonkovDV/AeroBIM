@@ -132,7 +132,6 @@ describe("a11y smoke (axe-core, not a WCAG certificate)", () => {
     const { container } = render(
       <>
         <ShellHeader
-          apiBase=""
           reportCount={0}
           uiRole="expert"
           onRoleChange={noop}
@@ -173,7 +172,6 @@ describe("a11y smoke (axe-core, not a WCAG certificate)", () => {
     expect(await seriousViolations(exportBar)).toEqual([]);
     const { container: header } = render(
       <ShellHeader
-        apiBase=""
         reportCount={0}
         uiRole="expert"
         onRoleChange={noop}
