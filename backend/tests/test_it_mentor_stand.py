@@ -76,8 +76,22 @@ def _load_review_shell_wrapper():
 class ReviewShellLauncherTests(unittest.TestCase):
     def test_wrapper_finds_backend_venv_python(self) -> None:
         module = _load_review_shell_wrapper()
-        python = module.backend_venv_python(repo_root())
-        self.assertTrue(python.is_file(), python)
+        repo = Path(self.enterContext(TemporaryDirectory()))
+        posix = repo / "backend" / ".venv" / "bin" / "python"
+        posix.parent.mkdir(parents=True)
+        posix.write_text("", encoding="utf-8")
+        self.assertEqual(module.backend_venv_python(repo), posix)
+
+    def test_wrapper_prefers_windows_python_exe_when_both_exist(self) -> None:
+        module = _load_review_shell_wrapper()
+        repo = Path(self.enterContext(TemporaryDirectory()))
+        windows = repo / "backend" / ".venv" / "Scripts" / "python.exe"
+        posix = repo / "backend" / ".venv" / "bin" / "python"
+        windows.parent.mkdir(parents=True)
+        posix.parent.mkdir(parents=True)
+        windows.write_text("", encoding="utf-8")
+        posix.write_text("", encoding="utf-8")
+        self.assertEqual(module.backend_venv_python(repo), windows)
 
     def test_wrapper_missing_venv_is_explicit(self) -> None:
         module = _load_review_shell_wrapper()
@@ -115,9 +129,14 @@ class ReviewShellLauncherTests(unittest.TestCase):
 
     def test_wrapper_stays_in_foreground_via_subprocess(self) -> None:
         module = _load_review_shell_wrapper()
-        with patch.object(module.subprocess, "call", return_value=0) as call:
+        fake = Path("C:/fake-venv/python.exe")
+        with (
+            patch.object(module, "backend_venv_python", return_value=fake),
+            patch.object(module.subprocess, "call", return_value=0) as call,
+        ):
             self.assertEqual(module.main(["--help"]), 0)
         command = call.call_args.args[0]
+        self.assertEqual(command[0], str(fake))
         self.assertEqual(command[1:3], ["-m", "aerobim.tools.run_it_mentor_stand"])
         self.assertEqual(command[-1], "--help")
 
