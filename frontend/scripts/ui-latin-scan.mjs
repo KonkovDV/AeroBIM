@@ -32,6 +32,7 @@ export const ALLOWED_WORDS = new Set([
 /** .ts-файлы с пользовательски видимыми строками (литералы с кириллицей). */
 export const TS_SCAN_FILES = [
   "lib/i18n/ru.ts",
+  "lib/i18n/ergonomics.ts",
   "lib/ui-copy.ts",
   "lib/intake-gates.ts",
   "lib/tz-ui-screens.ts",

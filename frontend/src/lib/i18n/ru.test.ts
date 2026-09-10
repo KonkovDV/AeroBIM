@@ -3,6 +3,7 @@ import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { EVIDENCE_COPY } from "./evidence";
+import { ERGONOMICS_COPY } from "./ergonomics";
 import { RU_COPY } from "./ru";
 import { WORKPLACE_COPY } from "./workplace";
 import {
@@ -92,6 +93,7 @@ describe("UI3 P0.1: русификация — страж латиницы", () 
     for (const [file, dict] of [
       ["lib/i18n/workplace.ts", WORKPLACE_COPY],
       ["lib/i18n/evidence.ts", EVIDENCE_COPY],
+      ["lib/i18n/ergonomics.ts", ERGONOMICS_COPY],
     ] as const) {
       for (const [key, value] of Object.entries(dict)) {
         violations.push(...scanDictionaryValue(resolveCopyValue(value), file, key));

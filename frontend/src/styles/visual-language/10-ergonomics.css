@@ -1,0 +1,166 @@
+/* --- Эргономика: цели нажатия, пропуск навигации, плотность ---
+
+   Слой идёт после контролов и поверхностей, но до печати.
+
+   Три правила этого файла:
+   1. Обычная плотность не меняется. Компактный шаг включается только
+      атрибутом `data-density="compact"` на корневом элементе.
+   2. Плотность сжимает отступы, а не кегль и не контраст: токены текста
+      прошли проверку и остаются как есть.
+   3. Панели честности и ограничений не сжимаются и не прячутся ни в одном
+      режиме: плотность не должна стать способом убрать неудобную оговорку. */
+
+:root {
+  /* WCAG 2.2, 2.5.8 Target Size (Minimum): 24x24 CSS-пикселя для любой цели. */
+  --vl-target-min: 24px;
+  /* Сенсорный ввод и панель на планшете: крупная цель 44px. */
+  --vl-target-touch: 44px;
+}
+
+/* --- Цели нажатия ---
+   :where() даёт нулевой вес, поэтому правило работает как пол, а не как
+   перехват: любой компонент может задать свой размер больше минимума.
+   Ссылки внутри абзаца исключены самим критерием, поэтому .linkish не
+   трогаем: там подъём высоты сломал бы строку текста. */
+:where(button, summary, select, [role="button"], [role="tab"], [role="switch"]):not(
+    .linkish,
+    .coverage-findings-link
+  ) {
+  min-block-size: var(--vl-target-min);
+  min-inline-size: var(--vl-target-min);
+}
+
+:where(input[type="checkbox"], input[type="radio"]) {
+  inline-size: var(--vl-space-4);
+  block-size: var(--vl-space-4);
+  /* Просвет вокруг флажка заменяет размер самой цели (исключение по разносу). */
+  margin-block: calc((var(--vl-target-min) - var(--vl-space-4)) / 2);
+}
+
+@media (pointer: coarse) {
+  :where(button, summary, select, [role="button"], [role="tab"]):not(
+      .linkish,
+      .coverage-findings-link
+    ) {
+    min-block-size: var(--vl-target-touch);
+  }
+}
+
+/* --- Пропуск навигации (WCAG 2.4.1) ---
+   Клавиатурный эксперт иначе проходит шапку, роль, вкладки и полосу
+   цикла комплекта на каждом переходе между находками. */
+.visually-hidden,
+.skip-to-work:not(:focus):not(:active) {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip-to-work {
+  position: absolute;
+  inset-block-start: var(--vl-space-2);
+  inset-inline-start: var(--vl-space-4);
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--vl-target-touch);
+  padding: var(--vl-space-2) var(--vl-space-4);
+  background: var(--vl-surface);
+  border: 1px solid var(--vl-accent);
+  border-radius: var(--vl-radius-sm);
+  box-shadow: var(--vl-shadow-overlay);
+  color: var(--vl-accent-hover);
+  font-size: var(--vl-text-sm);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* Цель пропуска не рисует собственное кольцо: фокус сразу уходит дальше,
+   но запас прокрутки держит её под липкой шапкой (WCAG 2.4.11). */
+.skip-to-work-target {
+  display: block;
+  block-size: 0;
+  scroll-margin-block-start: 96px;
+}
+
+.skip-to-work-target:focus {
+  outline: none;
+}
+
+/* --- Переключатель плотности --- */
+.density-toggle {
+  gap: var(--vl-space-2);
+}
+
+.density-toggle-label {
+  font-size: var(--vl-text-3xs);
+  font-weight: 600;
+  letter-spacing: var(--vl-track-caps);
+  text-transform: uppercase;
+  color: var(--vl-text-muted);
+}
+
+.density-toggle-value {
+  font-weight: 600;
+  color: var(--vl-text);
+}
+
+.toolbar-button.density-toggle[aria-pressed="true"] .density-toggle-label,
+.toolbar-button.density-toggle[aria-pressed="true"] .density-toggle-value {
+  color: var(--vl-accent-hover);
+}
+
+/* --- Компактный шаг ---
+   Селектор начинается с html[data-density]: веса хватает, чтобы перекрыть
+   отступы базовых слоёв, и при этом ничего не меняется без атрибута. */
+html[data-density="compact"] :is(.issue-card, .report-card, .collection-card) {
+  padding-block: var(--vl-space-2);
+}
+
+html[data-density="compact"]
+  :is(
+    .report-toolbar,
+    .issue-toolbar,
+    .viewer-toolbar,
+    .report-filters,
+    .report-presets,
+    .expert-pack-bar,
+    .pack-switcher,
+    .remark-actions,
+    .export-actions
+  ) {
+  padding-block: var(--vl-space-1);
+}
+
+html[data-density="compact"] :is(.panel-header, .panel-body, .summary-tile) {
+  padding-block: var(--vl-space-2);
+}
+
+html[data-density="compact"] :is(.summary-grid, .detail-grid, .kpi-list) {
+  gap: var(--vl-space-2);
+}
+
+html[data-density="compact"] :is(td, th) {
+  padding-block: var(--vl-space-1);
+}
+
+/* Оговорки и границы применимости сохраняют воздух в любом режиме. */
+html[data-density="compact"]
+  :is(
+    .role-honesty-banner,
+    .capability-top-banner,
+    .capability-block-banner,
+    .provenance-gap-banner,
+    .upload-honesty,
+    .hitl-readonly-note,
+    .viewer-limit-notice,
+    .pack-draft-apply-note
+  ) {
+  padding-block: var(--vl-space-3);
+}
