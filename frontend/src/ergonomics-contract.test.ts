@@ -60,6 +60,9 @@ describe("эргономика оболочки", () => {
     const honestyRule = layer.slice(layer.indexOf(".role-honesty-banner"));
 
     expect(honestyRule).toMatch(/padding-block:\s*var\(--vl-space-3\)/);
+    expect(layer).toContain("capability-skip-banner");
+    expect(layer).toContain(".hitl-readonly-note");
+    expect(read("features/findings/RemarkCardPanel.tsx")).toContain("hitl-readonly-note");
     expect(layer).not.toMatch(/display:\s*none/);
     expect(layer).not.toMatch(/visibility:\s*hidden/);
   });

@@ -2,9 +2,9 @@
 ---
 title: "План развития фронтенда (для ИИ-исполнителя) — 2026-09-03"
 date: "2026-09-03"
-last_updated: "2026-09-09"
+last_updated: "2026-09-10"
 status: active
-version: "1.5.4"
+version: "1.5.5"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -69,7 +69,7 @@ lazy-чанк, предупреждение о размере — исходно
 4. OIDC заказчика не имитировать. По умолчанию `GET /v1/auth/bff` = 501.
    Lab `200 LAB` — не SSO: непроверенная cookie не авторизует. Баннер читает
    discovery, не хардкодит 501 (RT-UI-OIDC-LIVE, RT-UI-ROLE-LS).
-5. Баннер NO_GO и honesty-панели не прятать и не «улучшать» до зелёного
+5. Баннер `customer_go=false` и honesty-панели не прятать и не «улучшать» до зелёного
    (RT-UI-NOGO-MASK, RT-UI-HONEST-CAP).
 6. Все видимые строки — через `RU_COPY` (`lib/i18n/ru.ts`); латиница только
    по правилам `scripts/ui-latin-scan.mjs` (капс-акронимы, идентификаторы,

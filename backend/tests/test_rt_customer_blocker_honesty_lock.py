@@ -285,7 +285,8 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
         for path in src.rglob("*.py"):
             if path.name in allowed:
                 continue
-            if "Checkpoint stays NO_GO" in path.read_text(encoding="utf-8"):
+            text = path.read_text(encoding="utf-8")
+            if "Checkpoint stays NO_GO" in text or "Checkpoint remains NO_GO" in text:
                 hits.append(path.as_posix())
         self.assertEqual(hits, [])
 

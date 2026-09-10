@@ -211,6 +211,24 @@ class CustomerReviewPackTests(unittest.TestCase):
         pack = build_customer_review_pack(_report(), top_k=1)
         self.assertEqual(render_customer_review_form(pack).count("\r\n"), 2)
 
+    def test_omitted_authoritative_is_fail_closed(self) -> None:
+        pack = build_customer_review_pack(_report(), top_k=1)
+        self.assertFalse(pack["machine_result"]["authoritative"])
+        payload = _report()
+        summary = payload["summary"]
+        assert isinstance(summary, dict)
+        summary["authoritative"] = True
+        self.assertTrue(
+            build_customer_review_pack(payload, top_k=1)["machine_result"]["authoritative"]
+        )
+
+    def test_markdown_discloses_similar_count_lives_outside_table(self) -> None:
+        markdown = render_customer_review_markdown(
+            build_customer_review_pack(_report(), top_k=20)
+        )
+        self.assertIn("similar_count", markdown)
+        self.assertIn("не в таблице", markdown)
+
 
 if __name__ == "__main__":
     unittest.main()
