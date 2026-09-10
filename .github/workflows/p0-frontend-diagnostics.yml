@@ -1,0 +1,59 @@
+name: One-shot frontend diagnostics
+
+on:
+  push:
+    branches:
+      - fix/p0-atomic-review-export-20260909
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  diagnostics:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: fix/p0-atomic-review-export-20260909
+          persist-credentials: true
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v5
+        with:
+          node-version: "22"
+      - name: Run vitest verbose
+        working-directory: frontend
+        run: |
+          set +e
+          : > /tmp/frontend-diagnostics.txt
+          npm ci > /tmp/npm-ci.log 2>&1
+          echo "npm ci exit=$?" >> /tmp/frontend-diagnostics.txt
+          npx vitest run --reporter=verbose > /tmp/vitest.log 2>&1
+          echo "vitest exit=$?" >> /tmp/frontend-diagnostics.txt
+          echo "== failing lines ==" >> /tmp/frontend-diagnostics.txt
+          grep -n -E "FAIL|AssertionError|Error:|failed|\u00d7" /tmp/vitest.log | head -n 120 >> /tmp/frontend-diagnostics.txt
+          echo "== tail ==" >> /tmp/frontend-diagnostics.txt
+          tail -n 150 /tmp/vitest.log >> /tmp/frontend-diagnostics.txt
+          exit 0
+      - name: Comment diagnostics
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          {
+            echo "One-shot frontend vitest diagnostics for commit ${{ github.sha }}."
+            echo
+            echo '```text'
+            head -c 45000 /tmp/frontend-diagnostics.txt
+            echo '```'
+          } > /tmp/frontend-comment.md
+          gh pr comment 45 --repo "$GITHUB_REPOSITORY" --body-file /tmp/frontend-comment.md
+      - name: Remove this workflow
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/p0-frontend-diagnostics.yml
+          git commit -m "chore(ci): remove the one-shot frontend diagnostics workflow"
+          git push origin HEAD:fix/p0-atomic-review-export-20260909
