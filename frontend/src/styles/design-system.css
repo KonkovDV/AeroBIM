@@ -653,6 +653,7 @@ a:focus-visible,
 }
 
 .capability-block-banner,
+.capability-skip-banner,
 .provenance-gap-banner,
 .upload-honesty {
   border-radius: var(--ds-radius-md);

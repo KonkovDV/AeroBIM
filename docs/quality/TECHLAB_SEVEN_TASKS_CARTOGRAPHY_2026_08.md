@@ -2,9 +2,9 @@
 ---
 title: "Seven TechLab comparison tasks — cartography on local NDA rehearsal"
 date: "2026-08-26"
-last_updated: "2026-09-03"
+last_updated: "2026-09-10"
 status: active
-version: "1.1.1"
+version: "1.1.2"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -23,7 +23,7 @@ claim_boundary: >
 
 **Метод.** Каждая задача = набор стыков «носитель A ↔ носитель B». Состояние ячейки: `mapped_present` | `mapped_absent` | `incomparable` | `blocked`. Критерий задачи целиком — **Uncertain** (нет золота, нет подписанного IDS, нет двух разметчиков). Состояния **Meets / Does-not** как вердикт заказчику **запрещены**.
 
-**Checkpoint:** **`NO_GO`**. `detected_count: 0`. Машина: [`../evidence/techlab-seven-tasks-cartography-2026-08.json`](../evidence/techlab-seven-tasks-cartography-2026-08.json). Шов литературы: [`TZ_SEAM_COVERAGE_MAP_2026_08.md`](TZ_SEAM_COVERAGE_MAP_2026_08.md).
+**Checkpoint:** **`GO`** (`regulatory_measurement_mvp`). `customer_go` false. Картография этого репетиционного носителя остаётся **Uncertain**. `detected_count: 0`. Машина: [`../evidence/techlab-seven-tasks-cartography-2026-08.json`](../evidence/techlab-seven-tasks-cartography-2026-08.json). Шов литературы: [`TZ_SEAM_COVERAGE_MAP_2026_08.md`](TZ_SEAM_COVERAGE_MAP_2026_08.md).
 
 Пакет A = один ЖД, 6 АР IFC + 5 КР IFC (ПД). Пакет B = соседний ЖД, 1 АР + 1 КР. Пакет C = третий ЖД, АР над лимитом 256 МиБ (не analyze). Имена площадок, GUID, тексты замечаний, sha256, строки ТЭП м² и литералы статусов ОЭП в git нет.
 

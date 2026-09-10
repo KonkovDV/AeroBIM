@@ -516,7 +516,7 @@ def build_system_capabilities_payload() -> dict[str, object]:
                 "Honesty fields above must not silently become ok without "
                 "an explicit product delivery change."
             ),
-            "Checkpoint remains NO_GO until RT-001/002/003 customer evidence.",
+            "Checkpoint GO is regulatory_measurement_mvp; customer_go stays false until RT-001/002/003 customer evidence.",
             (
                 "auth_bff remains NOT_IMPLEMENTED until POST-05 phases 2–3 ship; "
                 "see docs/security/PILOT_THREAT_MODEL_2026_07.md."

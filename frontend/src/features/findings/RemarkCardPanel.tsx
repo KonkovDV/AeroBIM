@@ -222,7 +222,7 @@ export default function RemarkCardPanel({
               </div>
             </>
           ) : (
-            <p className="compact-copy" data-testid="hitl-readonly-note">
+            <p className="compact-copy hitl-readonly-note" data-testid="hitl-readonly-note">
               {UI_COPY.hitlUserAlias}
             </p>
           )}

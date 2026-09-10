@@ -403,7 +403,7 @@ def build_customer_review_pack(
         "machine_result": {
             "passed": bool(summary.get("passed")),
             "outcome": _text(summary.get("outcome"), 64),
-            "authoritative": summary.get("authoritative") is not False,
+            "authoritative": summary.get("authoritative") is True,
         },
         "customer_acceptance": "NOT_EVALUATED",
         "accuracy_claim": "NOT_ESTABLISHED",
@@ -569,6 +569,9 @@ def render_customer_review_markdown(pack: Mapping[str, Any]) -> str:
         [
             "",
             "Решения: " + ", ".join(f"`{name}`" for name in DECISIONS) + ".",
+            "",
+            "Размер семьи дубликатов (`similar_count`, включая эту строку) — в JSON и CSV, "
+            "не в таблице выше. Это не полнота и не recall.",
             "",
             str(pack.get("claim_boundary") or CLAIM_BOUNDARY),
             "",

@@ -3,6 +3,7 @@
    врезки с цветным рельсом и нигде не приглушаются. --- */
 
 .capability-block-banner,
+.capability-skip-banner,
 .provenance-gap-banner,
 .provenance-ok-banner,
 .capability-top-banner,
@@ -26,6 +27,7 @@
 }
 
 .capability-block-banner,
+.capability-skip-banner,
 .provenance-gap-banner,
 .capability-top-banner {
   background: var(--vl-amber-soft);

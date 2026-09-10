@@ -261,7 +261,8 @@ def verify_release_evidence(
             "sprint2_path": None,
             "claim_boundary": (
                 "Engineering release packaging only. Synthetic/fixture evidence "
-                "never establishes customer accuracy. Checkpoint remains NO_GO."
+                "never establishes customer accuracy. Checkpoint GO "
+                "(regulatory_measurement_mvp); customer_go stays false."
             ),
         }
     day = resolved_day
@@ -337,7 +338,8 @@ def verify_release_evidence(
         ),
         "claim_boundary": (
             "Engineering release packaging only. Synthetic/fixture evidence "
-            "never establishes customer accuracy. Checkpoint remains NO_GO."
+            "never establishes customer accuracy. Checkpoint GO "
+            "(regulatory_measurement_mvp); customer_go stays false."
         ),
     }
 

@@ -1,7 +1,7 @@
 ---
 title: "Remediation plan P0-P2 — evidence before features"
 status: active
-version: "1.1.0"
+version: "1.1.1"
 last_updated: "2026-09-10"
 claim_boundary: >
   Planning document only. Nothing here is customer acceptance, product
@@ -53,10 +53,10 @@ shortlist, and those decisions are stored with the source report digest.
 
 Misquoting our own evidence is the fastest way to lose a technical reviewer.
 
-- the runtime baseline pin is minted only in CI; quote the pinned commit from
-  `docs/evidence/runtime-baseline-latest.json` and never a local run;
-- the backend suite collects 3040 tests and passes 3020 with 20 skipped; say
-  "collected" and "skipped" out loud;
+- the runtime baseline pin is minted only in CI; quote `commit_sha`,
+  `tests_collected`, `tests_passed`, and `tests_skipped` from
+  `docs/evidence/runtime-baseline-latest.json` and never a local run or a
+  copied integer from this plan;
 - the defect-injection experiment covered part of the planned mutation classes
   and produced a recall point estimate of 0.0 with a Wilson upper bound near
   0.39; it is an unfinished experiment, not a measured recall;
