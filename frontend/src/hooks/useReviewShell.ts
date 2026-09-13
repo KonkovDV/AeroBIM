@@ -15,6 +15,11 @@ import { useFindingFilters } from "./useFindingFilters";
 import { useTriageView } from "./useTriageView";
 import { useWorkspaceLanding } from "./useWorkspaceLanding";
 
+type PendingNav =
+  | { kind: "report"; reportId: string; thenView?: WorkspaceView }
+  | { kind: "view"; view: WorkspaceView }
+  | { kind: "role"; role: UiRoleAlias; view: WorkspaceView };
+
 /** Review-shell orchestration; verdict and HITL persistence remain in their existing owners. */
 export function useReviewShell() {
   const [uiRole, setUiRole] = useState<UiRoleAlias>(readUiRoleAlias);
@@ -27,11 +32,7 @@ export function useReviewShell() {
   const [reportsEpoch, setReportsEpoch] = useState(0);
   const [demoSeedInFlight, setDemoSeedInFlight] = useState(false);
   const [selectedReportId, setSelectedReportId] = useState<string | null>(readUrlReportId);
-  const [pendingNav, setPendingNav] = useState<
-    | { kind: "report"; reportId: string; thenView?: WorkspaceView }
-    | { kind: "view"; view: WorkspaceView }
-    | null
-  >(null);
+  const [pendingNav, setPendingNav] = useState<PendingNav | null>(null);
   const findings = useFindingFilters();
 
   const reportFilters = useReportFilters(selectedReportId);
@@ -154,21 +155,39 @@ export function useReviewShell() {
         if (nav.thenView) {
           setWorkspaceView(nav.thenView);
         }
-      } else {
-        setWorkspaceView(nav.view);
+        return;
       }
+      if (nav.kind === "role") {
+        setUiRole(nav.role);
+        persistUiRoleAlias(nav.role);
+        setWorkspaceView(nav.view);
+        return;
+      }
+      setWorkspaceView(nav.view);
     },
     [activeIssue, confirmPendingSelect, pendingNav, pendingSelect, saveRemarkEdit],
   );
 
   const runPolling = useRunPolling(handleSeededReport, authBff.discovery.status !== "LOADING");
 
-
-  const changeUiRole = (next: UiRoleAlias) => {
-    setUiRole(next);
-    persistUiRoleAlias(next);
-    setWorkspaceView(next === "user" ? "user" : "review");
-  };
+  const changeUiRole = useCallback(
+    (next: UiRoleAlias) => {
+      if (next === uiRole) {
+        return;
+      }
+      const nextView: WorkspaceView = next === "user" ? "user" : "review";
+      if (isDirty && nextView !== workspaceView) {
+        setPendingNav({ kind: "role", role: next, view: nextView });
+        return;
+      }
+      setUiRole(next);
+      persistUiRoleAlias(next);
+      if (nextView !== workspaceView) {
+        setWorkspaceView(nextView);
+      }
+    },
+    [isDirty, uiRole, workspaceView],
+  );
 
   const retryReports = () => setReportsEpoch((value) => value + 1);
 

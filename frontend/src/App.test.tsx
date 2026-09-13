@@ -1234,6 +1234,30 @@ describe("App", () => {
     );
   });
 
+  it("asks before switching the screen mock to user when the remark draft is dirty", async () => {
+    render(<App />);
+    const editor = await screen.findByLabelText(UI_COPY.editRemark);
+    fireEvent.change(editor, { target: { value: "Черновик перед сменой режима" } });
+    fireEvent.change(screen.getByLabelText(UI_COPY.roleSelectLabel), { target: { value: "user" } });
+    expect(await screen.findByTestId("dirty-leave-dialog")).toBeTruthy();
+    expect(screen.getByTestId("expert-workplace")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: UI_COPY.dirtyLeaveStay }));
+    expect(screen.queryByTestId("dirty-leave-dialog")).toBeNull();
+    expect((screen.getByLabelText(UI_COPY.roleSelectLabel) as HTMLSelectElement).value).toBe("expert");
+    expect((screen.getByLabelText(UI_COPY.editRemark) as HTMLTextAreaElement).value).toBe(
+      "Черновик перед сменой режима",
+    );
+    fireEvent.change(screen.getByLabelText(UI_COPY.roleSelectLabel), { target: { value: "user" } });
+    fireEvent.click(await screen.findByRole("button", { name: UI_COPY.dirtyLeaveDiscard }));
+    await waitFor(() => {
+      expect(screen.queryByTestId("dirty-leave-dialog")).toBeNull();
+    });
+    expect(screen.queryByTestId("expert-workplace")).toBeNull();
+    expect(screen.queryByLabelText(UI_COPY.editRemark)).toBeNull();
+    expect(await screen.findByTestId("coverage-map")).toBeTruthy();
+    expect((screen.getByLabelText(UI_COPY.roleSelectLabel) as HTMLSelectElement).value).toBe("user");
+  });
+
 
   it("walks the commission route upload → run onto the expert screen without extra tabs", async () => {
     const packed = buildReport();
