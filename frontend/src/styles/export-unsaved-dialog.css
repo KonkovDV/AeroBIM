@@ -1,0 +1,126 @@
+/*
+ * FE-CRUFT-02: подтверждение выгрузки живёт в оболочке, а не в окне браузера.
+ * Слой, размеры и цели повторяют диалог несохранённого черновика — одна
+ * механика на все подтверждения продукта. Геометрия доказательств и
+ * рабочих панелей не затрагивается: правила ограничены самим диалогом.
+ *
+ * Тема принудительно светлая (см. styles/force-light.css): цвета заданы
+ * явными значениями с запасными вариантами из визуального языка, поэтому
+ * тёмная тема системы не может изменить контраст предупреждения.
+ */
+.keyboard-help-dialog.export-unsaved-dialog {
+  --export-primary: #1b55c7;
+  --export-on-primary: #ffffff;
+  --export-caution: #8a5a00;
+  box-sizing: border-box;
+  inline-size: min(560px, calc(100vw - 32px));
+  max-block-size: calc(100dvh - 32px);
+  margin: auto;
+  padding: 24px;
+  border: 1px solid var(--vl-line-control, #7c8aa0);
+  border-radius: 12px;
+  background: var(--vl-surface, #ffffff);
+  color: var(--vl-text, #172b4d);
+  font: 1rem/1.5 system-ui, sans-serif;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.export-unsaved-dialog::backdrop {
+  background: #0c1119b3;
+}
+
+.export-unsaved-dialog h2 {
+  margin: 0;
+  font-size: 1.375rem;
+  line-height: 1.35;
+  text-wrap: balance;
+}
+
+.export-unsaved-dialog #export-unsaved-message {
+  margin: 16px 0 0;
+  color: var(--vl-text, #172b4d);
+}
+
+.export-unsaved-dialog .export-unsaved-format {
+  margin: 8px 0 20px;
+  color: var(--export-caution);
+  font-size: 0.875rem;
+}
+
+.export-unsaved-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.export-unsaved-actions .toolbar-button {
+  flex: 1 1 auto;
+  min-block-size: 44px;
+  min-inline-size: 44px;
+  margin: 0;
+  padding: 10px 16px;
+  border: 1px solid var(--vl-line-control, #7c8aa0);
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.export-unsaved-actions .export-unsaved-continue,
+.export-unsaved-actions .export-unsaved-continue:hover {
+  border-color: var(--export-primary);
+  background: var(--export-primary);
+  color: var(--export-on-primary);
+  font-weight: 600;
+}
+
+.export-unsaved-actions .toolbar-button:hover:not(:disabled) {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.export-unsaved-actions .toolbar-button:focus-visible {
+  outline: 3px solid var(--export-primary);
+  outline-offset: 3px;
+}
+
+.export-unsaved-actions .toolbar-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+@media (max-width: 480px) {
+  .keyboard-help-dialog.export-unsaved-dialog {
+    padding: 20px;
+  }
+
+  .export-unsaved-actions {
+    flex-direction: column;
+  }
+}
+
+@media (forced-colors: active) {
+  .export-unsaved-actions .toolbar-button {
+    border-color: ButtonText;
+    background: ButtonFace;
+    color: ButtonText;
+  }
+
+  .export-unsaved-actions .export-unsaved-continue,
+  .export-unsaved-actions .export-unsaved-continue:hover {
+    background: ButtonText;
+    color: ButtonFace;
+  }
+
+  .export-unsaved-actions .toolbar-button:focus-visible {
+    outline-color: Highlight;
+  }
+
+  .export-unsaved-dialog .export-unsaved-format {
+    color: CanvasText;
+  }
+}

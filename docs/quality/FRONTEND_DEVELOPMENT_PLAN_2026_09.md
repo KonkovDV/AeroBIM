@@ -2,9 +2,9 @@
 ---
 title: "План развития фронтенда (для ИИ-исполнителя) — 2026-09-03"
 date: "2026-09-03"
-last_updated: "2026-09-10"
+last_updated: "2026-09-13"
 status: active
-version: "1.5.7"
+version: "1.5.8"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -718,12 +718,11 @@ className="viewer-viewport" />` без роли и без доступного �
 
 #### FE-CRUFT-02 / FE-DRIFT-01. Нативное окно экспорта и дубль копирайта (P1, после показа)
 
-**Статус: open + сторож влит.** `window.confirm` в `ExportActionsBar` зарегистрирован в
-`no-debug-artifacts.test.ts`. Текст предупреждения дублируется в
-`scripts/capture-review-smoke-shared.mjs`. Vitest
-`export-confirm-copy-drift.test.ts` сверяет дубль со словарём. Не заменять нативное окно
-накануне показа. Закрытие FE-CRUFT-02 в одном коммите: диалог + смоук + сторож, иначе
-падает репетиция OA-21 / issue #41. Issues #40 и #41 этим WP не закрываются.
+**Статус: closed in HD28 (code + smoke lockstep).** `window.confirm` снят.
+`ExportUnsavedDialog` + `settleUnsavedExportDialog` + безусловный сторож
+HD24-FE-01. Локальная репетиция `run_live_review_smoke --skip-demo-seed`:
+`nativeDialogs: []`. Репетиция не закрывает issue #41 / OA-21. Issues #40 и #41
+этим WP не закрываются.
 
 ### Red Team этого прохода
 
