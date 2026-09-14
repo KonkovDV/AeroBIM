@@ -13,7 +13,7 @@ Loads ``backend/.env`` when present (python-dotenv). Without keys → NOT_RUN ex
 
 Honesty: ``text_layer_present=False`` is **forced** so the VLM path runs even on
 the open vector PDF (otherwise the plan skips VLM when a text layer exists).
-Say this aloud on the call — deterministic text-layer path is the vertical slice;
+deterministic text-layer path is the vertical slice;
 this tool is the advisory vision path.
 """
 

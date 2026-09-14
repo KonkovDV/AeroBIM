@@ -86,11 +86,11 @@ class UiExpertWorkplaceTriageTests(unittest.TestCase):
         self.assertNotIn("| Web UI | done |", text)
 
     def test_hd13_fe01_frontend_source_scan_does_not_assign_summary_passed(self) -> None:
-        """HD13-FE-01: walk production frontend/src; UI must not assign summary.passed."""
+        """Walk production frontend/src; UI must not assign summary.passed."""
         root = self._repo() / "frontend" / "src"
         vitest_guard = root / "summary-passed-source-scan.test.ts"
         self.assertTrue(vitest_guard.is_file(), vitest_guard)
-        self.assertIn("HD13-FE-01", vitest_guard.read_text(encoding="utf-8"))
+        self.assertIn("ADR-001 UI assignment guard", vitest_guard.read_text(encoding="utf-8"))
 
         assign_field = re.compile(
             r"(?:^|[;\n{}()])\s*(?:[A-Za-z_$][\w$]*\.)*summary\s*\.\s*(?:passed|outcome)\s*=(?!=)"

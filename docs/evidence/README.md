@@ -49,7 +49,6 @@ Only **citeable** snapshots for TechLab review and reproducibility. Working dump
 | [`../samples/benchmarks/ifc-bench-v2/IMPORT_PINS.json`](../../samples/benchmarks/ifc-bench-v2/IMPORT_PINS.json) | IFC-Bench **v2** pins (1027 QA, CC BY 4.0 QA; GPLv3 models excluded from MIT tree); checkout not vendored |
 | [`checkpoint2-evidence-bundle-latest.json`](checkpoint2-evidence-bundle-latest.json) | P2-04 wall-guid demo bundle pin (fixture GO) |
 | [`runtime-baseline-latest.json`](runtime-baseline-latest.json) | Runtime LOC / tests / gates (schema 1.2.0; completeness checked in CI) |
-| [`../quality/DEMO_DAY_AUDITOR_PACK_2026_09.md`](../quality/DEMO_DAY_AUDITOR_PACK_2026_09.md) | Demo-day A–F auditor table (machine: `demo_day_auditor_pack`). Not a jury exhibit. VERIFIED_CUSTOMER=0 |
 | [`samolet-sla-fixture-p95-2026-08-04.json`](samolet-sla-fixture-p95-2026-08-04.json) | Fixture SLA schema **1.4.0**, gate=**p95**; not customer; advisory on/off dual-run is still manual. Speech sheet: [`../demo/KT2_FIXTURE_TIMING_2026_08_16.md`](../demo/KT2_FIXTURE_TIMING_2026_08_16.md) |
 | [`lab-before-after-fixture-tool-only-latest.json`](lab-before-after-fixture-tool-only-latest.json) | Lab before/after journal: `t_tool_ms` on git wall+IDS; `t_manual_s` null; not partner B4; not A1–A8 |
 | [`DEFECT_INJECTION_RECALL_PLAN_2026_09.md`](DEFECT_INJECTION_RECALL_PLAN_2026_09.md) | План mutation-test recall; seed 20260824; не партнёр |

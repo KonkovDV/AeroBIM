@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 /**
- * HD13-FE-01: source-scan (not runtime). UI may display server
+ * ADR-001 UI assignment guard: source-scan (not runtime). UI may display server
  * ``summary.passed`` / ``summary.outcome`` and mention them in honesty copy.
  * It must not assign them. Covers MachineGatewayStrip, PackCycleStrip, App,
  * and every other production ``.ts`` / ``.tsx`` under ``src/``.
@@ -63,7 +63,7 @@ function lineOf(source: string, index: number): number {
   return source.slice(0, index).split("\n").length;
 }
 
-describe("HD13-FE-01 summary.passed source-scan", () => {
+describe("ADR-001 UI assignment guard: summary.passed source-scan", () => {
   const files = walkSourceFiles(SRC_ROOT);
 
   it("walks production ts/tsx including workplace strips", () => {

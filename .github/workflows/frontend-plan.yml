@@ -19,8 +19,7 @@ on:
 permissions:
   contents: read
 
-# Also validates stacked WP branches; the existing main CI remains unchanged.
-# Machine checks do not replace export artifacts or the offline laptop rehearsal.
+# Frontend typecheck, vitest, and claims-lint. Does not replace main CI.
 jobs:
   frontend-plan:
     runs-on: ubuntu-latest

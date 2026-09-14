@@ -39,9 +39,7 @@ JURY_SURFACES: Final[tuple[str, ...]] = (
     "docs/pilot-claim-boundary-2026.md",
     "docs/tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md",
     "docs/demo/KT3_RVT_NWD_CV_ONEPAGER_2026_08.md",
-    "docs/demo/DEMO_DAY_SPEECH_LOCK_2026_09.md",
     "submission/README.md",
-    "submission/03-presentation/demo_day_slides.md",
 )
 
 JURY_FINGERPRINT_TOKENS: Final[tuple[str, ...]] = (

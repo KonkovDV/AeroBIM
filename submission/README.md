@@ -26,7 +26,7 @@ claim_boundary: >
 |---|---|---|
 | **Репозиторий** \* | [`01-repository/`](01-repository/README.md) | Структура, сборка, лицензия, CI |
 | **Документация** \* | [`02-documentation/`](02-documentation/README.md) | Техобоснование + матрица ТЗ + границы заявлений |
-| **Презентация** \* | [`03-presentation/`](03-presentation/README.md) | Демо-день: [`demo_day_slides.md`](03-presentation/demo_day_slides.md); бинарь КТ#2 остаётся [`aerobim_kt2.pptx`](03-presentation/aerobim_kt2.pptx) |
+| **Презентация** \* | [`03-presentation/`](03-presentation/README.md) | [`slides.md`](03-presentation/slides.md) · [`aerobim_kt2.pptx`](03-presentation/aerobim_kt2.pptx) |
 | **Прототип** \* | [`04-prototype/`](04-prototype/README.md) | Команды запуска, живой CLI, веб-интерфейс |
 | **Дополнительные материалы** | [`05-additional/`](05-additional/README.md) | Доказательства, датасеты, красная команда, конкуренты |
 

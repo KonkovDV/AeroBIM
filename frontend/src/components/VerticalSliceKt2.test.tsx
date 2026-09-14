@@ -100,7 +100,7 @@ describe("KT#2 vertical-slice UI contract", () => {
     expect(formatPackageOutcome(undefined, true)).not.toMatch(/Published/i);
   });
 
-  // Tree-wide assignment scan: src/summary-passed-source-scan.test.ts (HD13-FE-01).
+  // Tree-wide assignment scan: src/summary-passed-source-scan.test.ts (ADR-001 UI assignment guard).
 
   it("places the bbox from problem_zone on the fixture letter page", () => {
     const style = overlayRectStyle(stampFinding.problem_zone);

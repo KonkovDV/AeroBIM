@@ -1,4 +1,4 @@
-<!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
+<!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock" -->
 # AeroBIM
 
 [Русская версия](README.ru.md)
@@ -9,41 +9,37 @@
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-**AeroBIM catches disagreements between files in a construction pack: a schedule area against the IFC area, a PD elevation against an RD elevation, a brief requirement against what the files actually contain — and it does this against public machine-readable examination requirements. Each file opens cleanly on its own. The defect lives in the seam and usually surfaces on site.**
+**AeroBIM checks a construction pack against itself.** A schedule area against the IFC area, a PD elevation against an RD elevation, a brief requirement against what the files contain — on public machine-readable examination rules (IFC + IDS + sheets + specification text). Each file can open cleanly on its own. The defect lives in the seam and usually surfaces on site.
 
-From 2 April 2026, Moscow requires an AGR CIM in IFC: Moscow Government decree № 17-ПП of 16 January 2026 set that filing date; the joint DIT/DGP order № ДГП-Р-1/26/64-16-6/26 of the same day approved the IFC materials. From 18 August 2026 the joint DGP/DIT order № ДГП-Р-56/26/64-16-473/26 updates requirements for three-dimensional models placed in Moscow information systems (DGP page on mos.ru). Those are **city filing rules**, not a Samolet-signed acceptance profile and not a product accuracy claim. City AGR IFC mapping/export tooling is published for Revit (stroimprosto.mos.ru); AeroBIM does not ingest native RVT. For a developer whose pipeline is RVT, IFC export quality is a regulatory filing risk; AeroBIM sits on the pack-check seam before filing and does not compete with a model checker (Tangl) or a CDE (10D).
+Findings come out with provenance to a sheet and a GUID: HTML, JSON, a PDF coverage draft, and structural BCF. The reviewer still decides. AeroBIM is not a CDE, not a model viewer, and not a replacement for the expert. Model checkers such as Tangl operate on the model; a CDE such as 10D operates on presence, versions and routes. This repository operates on the **seam between files**. It is not a Tangl connector and not a CDE.
 
-IFC + IDS + sheets + specification texts go in. Findings you can follow to a sheet and a GUID come out — HTML, JSON, a PDF coverage draft, and BCF. The reviewer still decides. AeroBIM is not a CDE, not a model viewer, and not a replacement for the expert.
+From 2 April 2026 Moscow requires an AGR CIM in IFC (Moscow Government decree № 17-ПП of 16 January 2026; joint DIT/DGP order № ДГП-Р-1/26/64-16-6/26). From 18 August 2026 joint DGP/DIT order № ДГП-Р-56/26/64-16-473/26 updates 3D models placed in Moscow information systems. Those are **city filing rules**, not a Samolet-signed acceptance profile and not a product accuracy claim. City AGR IFC mapping is published for Revit; AeroBIM does not ingest native RVT.
 
-> **KT#3 window (3–21 Sep 2026), feature freeze 18 Sep, delivery pack 19–21 Sep. Moscow TechLab task on automated verification of design and working documentation, customer Samolet Group.** Historical KT#2 intake (20 Aug): [`submission/README.md`](submission/README.md). We are in *refinement* on the customer contour. One command shows a fail-closed finding on a fixture. Effectiveness validation and deployment have not started. Checkpoint `GO` is the regulatory-measurement MVP. `customer_go` stays false until an independent labeled pack, two raters, a signed appointing-party profile, and CDE proof. Measurement substitutes close content/IDS/planted-clash volumes; dual raters, Samolet signature, system MEP, and CDE proof remain.
+Moscow TechLab programme: automated verification of design and working documentation, customer Samolet Group. Programme status is not a measured result on Samolet's own pack. Pack index: [`submission/README.md`](submission/README.md).
 
-## The seam where packs break
+> We are in *refinement* on the customer contour. One command shows a fail-closed finding on a fixture. Effectiveness validation and deployment have not started. Checkpoint `GO` is the regulatory-measurement MVP. `customer_go` stays false until an independent labeled pack, two raters, a signed appointing-party profile, and CDE proof.
 
-A schedule on a PDF sheet states one area. The IFC wall with the same identifier states another. Each file opens cleanly on its own. The defect lives *between* them and usually surfaces on site.
+## What the clone does
 
-AeroBIM raises that class of finding with provenance to the sheet and the GUID, leaves the verdict to the reviewer, and never authorises the ISO 19650 Shared → Published transition. Model checkers such as Tangl operate on the model; a CDE such as 10D operates on presence, versions and routes. AeroBIM operates on the **seam between files**. This repository is not a Tangl connector and not a CDE. Participation in TechLab is a programme status, not a measured result on Samolet's own pack.
-
-## What you can clone today
-
-| TZ ask | What the clone actually does |
+| Ask | What git actually does |
 |---|---|
 | Ingest 2D + BIM + texts | IFC 2x3 / 4 / 4x3, IDS 1.0, PDF vector/raster, specification text |
 | Cross-check model, drawings, rules | Deterministic IFC + IDS + cross-document compare (configured ε-band) |
-| Highlight and remark | 2D overlay, 3D review shell, RU/EN remark templates, expert HITL edit |
+| Highlight and remark | 2D overlay, 3D review shell, RU/EN remark templates, expert HITL |
 | Report for coordination | HTML + JSON + PDF coverage draft + structural BCF 2.1 / 3.0 ZIP |
 | Expert stays accountable | `summary.passed` is a Shared-gate. LLM/VLM never write it ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)) |
 
 Silence is never success: a skipped mandatory engine cannot hide inside a green report.
 
-## Status at a glance
+## Status
 
 | | |
 |---|---|
-| **Runs on this clone** | Fixture packs, fail-closed IDS, live CLI, CI, overlay, structural BCF, review shell (one screen: findings → remark → sheet/3D → BCF) |
-| **Waits on residual volumes** | Dual human raters + pack-specific expertise conclusions (RT-001b) · Samolet-signed profile (RT-002c) · system-aware clash (speech **RT-003c**) · customer federated IFC (`c_customer_federated_ifc`) · BCF import into their CDE |
+| **Runs on this clone** | Fixture packs, fail-closed IDS, live CLI, CI, overlay, structural BCF, review shell (findings → remark → sheet/3D → BCF) |
+| **Waits on residual volumes** | Dual human raters + pack-specific conclusions (RT-001b) · Samolet-signed profile (RT-002c) · system-aware clash (speech **RT-003c**) · customer federated IFC (`c_customer_federated_ifc`) · BCF import into their CDE |
 | **Not claimed** | Product accuracy >90% · customer SLA ≤30 min · native DWG · native RVT/NWD · MEP delivered · CDE-ready BCF · production-ready |
 
-Full boundary: [`docs/pilot-claim-boundary-2026.md`](docs/pilot-claim-boundary-2026.md). Blockers: [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md).
+Full boundary: [`docs/pilot-claim-boundary-2026.md`](docs/pilot-claim-boundary-2026.md). Blockers: [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md). Jury map: [`docs/TIER0_INDEX.md`](docs/TIER0_INDEX.md).
 
 ## Try it
 
@@ -51,59 +47,44 @@ Full boundary: [`docs/pilot-claim-boundary-2026.md`](docs/pilot-claim-boundary-2
 git clone https://github.com/KonkovDV/AeroBIM.git
 cd AeroBIM/backend
 
-# CPython 3.12, the version CI pins.
 python3.12 -m venv .venv            # Windows: py -3.12 -m venv .venv
 source .venv/bin/activate           # Windows PowerShell: .\.venv\Scripts\Activate.ps1
-
-# Core PDF is pypdfium2; the overlay does not need PyMuPDF
 pip install -e ".[dev,raster]"
 
-# 1. Acceptance gate on an IFC + IDS fixture
+# 1. IFC + IDS fixture gate
 python -m aerobim.tools.run_demo_ifc_acceptance_gate
-# → artifacts/ifc-acceptance-gate-demo/{report.html,acceptance-gate.json}
 
-# 2. Same package with the drawing overlay
+# 2. Same pack with drawing overlay and BCF
 python -m aerobim.tools.run_demo_vertical_slice
-# → artifacts/vertical-slice-demo/report.html: sheet fragment, overlay,
-#   text evidence, capability table, run manifest, BCF ZIP
 
-# 3. KT#3 one-command: live fixture gate + pack + tracker six tasks (GO; customer_go false)
+# 3. Sitting-member track: live fixture gate + pack + tracker six tasks
 python -m aerobim.tools.run_kt3_jury
 # → artifacts/kt3-jury/latest.json (passed=false, GUID finding)
-# → artifacts/kt3-without-customer/latest.json (re-scope pack)
-# equivalent two-command: run_demo_ifc_acceptance_gate + run_kt3_without_customer
+# → artifacts/kt3-without-customer/latest.json
 
-pytest tests -q
-# Jury clone contract: 0 failed. Tests that need extra pdf-agpl (PyMuPDF) or
-# optional publication-denylist GitHub secrets skip. A local count is not the CI pin below.
-python -m aerobim.main   # → http://127.0.0.1:8080/health
-
-# 4. Review shell (dedicated storage; not the jury CLI)
+# 4. Optional browser review shell (not the jury CLI; not a CDE)
 python -m aerobim.tools.run_review_stand
-# → http://127.0.0.1:5173/  (API on 8080; Ctrl+C stops both)
-# from the repo root: python scripts/run_review_shell.py
+# → http://127.0.0.1:5173/  (API on 8080)
+# repo root: python scripts/run_review_shell.py
 # Windows PowerShell (required leading .\ ):
 #   .\start.bat
 # Do not type: start          (Start-Process; it will ask for FilePath)
 # Do not type: start.bat     (PowerShell does not run a .bat from cwd)
-# Explorer: double-click start.bat.  CMD: start.bat
+
+pytest tests -q
+# Clean clone: 0 failed. Optional extras skip. A local count is not the CI pin below.
+python -m aerobim.main   # → http://127.0.0.1:8080/health
 ```
 
-Both demos end with `summary.passed=false`, which is the expected result: the fixture pack contains planted defects. These are fixtures, not customer data, and the numbers they produce are not product accuracy. A local `pytest` count is not the CI pin in the runtime baseline below. The red badge is **customer sign-off** (`customer_go` false), not product Checkpoint `NO_GO`.
+Both demos end with `summary.passed=false`: the fixture pack contains planted defects. Those numbers are not product accuracy. The red badge is **customer sign-off** (`customer_go` false), not product Checkpoint `NO_GO`.
 
-Optional extras: `.[clash]` for geometry clash detection, `.[docling]` for non-text document extraction, `.[enterprise]` for S3 and Postgres adapters, `.[pdf-agpl]` for legacy PyMuPDF tools (not needed for the three demo commands above; without it those tests skip). Review shell (one command): `python -m aerobim.tools.run_review_stand` from `backend/`, or `python scripts/run_review_shell.py` from the repo root, or `npm start` from `frontend/`. That starts API + Vite together (`npm ci` if Vite is missing). The sitting-member jury track remains the CLI above; the shell is not a CDE.
+Optional extras: `.[clash]` geometry clash, `.[docling]` non-text extraction, `.[enterprise]` S3/Postgres, `.[pdf-agpl]` PyMuPDF (not needed for the commands above). From `frontend/`: `npm start` (runs `npm ci` if Vite is missing).
 
 ## Review shell
 
-The browser workplace is a review shell over **persisted reports**, not a CDE and not a replacement for the expert. UI never writes `summary.passed` ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)).
+Browser workplace over **persisted reports**. UI never writes `summary.passed` ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)). Native RVT/NWD/DWG fail closed before upload. Default `GET /v1/auth/bff` = 501. A lab cookie is not customer SSO. One rehearsal click: development-only `POST /v1/demo/seed-fixture` (unpublished in OpenAPI; git fixtures, not a customer pack) or a finished analyze job opens findings, remark, sheet overlay, 3D and BCF on one screen.
 
-- **One rehearsal click.** Development-only `POST /v1/demo/seed-fixture` (unpublished in OpenAPI; git walls+IDS, not a customer pack) or a finished analyze job opens the expert three-pane: findings, remark (ITZ/STO/SP clause; storey/axis or “not in index”), sheet overlay and 3D, BCF on the same bar. The Export tab is not required. PDF stays (`GET .../export/pdf` is a coverage draft). There is no XLSX endpoint.
-- **Honesty.** Capability banner in Russian: silence is not success; MEP without network IFC is stated as not run. Default `GET /v1/auth/bff` = 501. A lab `200 LAB` cookie is not customer SSO. HITL writes: expert/reviewer; `user`/`viewer` → 403 in lab.
-- **Limits.** Native RVT/NWD/DWG fail closed before upload. WASM viewer cap 256 MiB; disk analyze on a hard profile up to 1.5 GB via RocksDB. SSE is not shipped; jobs are polled.
-
-## Who this page is for
-
-TechLab / MIK jury: formula above → [`submission/README.md`](submission/README.md) → the CLI just above. The sitting-member track is that CLI. The browser review shell is optional UI on this clone, not a CDE. This is a refinement pack, not a Checkpoint act.
+Details: [`frontend/README.md`](frontend/README.md).
 
 ## What a run actually does
 
@@ -130,7 +111,7 @@ flowchart LR
 
 ## Checkpoint: `GO` (`regulatory_measurement_mvp`)
 
-Product Checkpoint is the **regulatory-measurement MVP**. `customer_go` stays **false**. That is not “the system does not run”. Code and fixtures work. **Measurement substitutes** (owner re-scope 2026-09-04) replace what Samolet did not hand over. Undifferentiated `closes_rt001/002/003` stay false. Do not read the red customer-sign-off badge as product `NO_GO`.
+Product Checkpoint is the **regulatory-measurement MVP**. `customer_go` stays **false**. That is not “the system does not run”. Code and fixtures work. **Measurement substitutes** replace what Samolet did not hand over. Undifferentiated `closes_rt001/002/003` stay false. Do not read the red customer-sign-off badge as product `NO_GO`.
 
 | ID | Measurement substitute (no Samolet) | Residual (not substitutable) |
 |---|---|---|
@@ -237,7 +218,7 @@ Artifacts sit behind an `ObjectStore` port, so local storage and S3-compatible b
 
 ## Configuration
 
-A local clone runs on defaults. The collapsed table is the operator-facing configuration surface. CI checks it against `settings.py` **both ways** (code → docs and docs → code). Helper-read aliases and lab-only knobs live in [`audit/internal_env_vars.json`](audit/internal_env_vars.json). It is not a KT#2 evaluation surface.
+A local clone runs on defaults. The collapsed table is the operator-facing configuration surface. CI checks it against `settings.py` **both ways** (code → docs and docs → code). Helper-read aliases and lab-only knobs live in [`audit/internal_env_vars.json`](audit/internal_env_vars.json).
 
 <details>
 <summary>Full <code>AEROBIM_*</code> table (CI-checked against <code>backend/.env.example</code>)</summary>
@@ -311,7 +292,7 @@ A local clone runs on defaults. The collapsed table is the operator-facing confi
 | `AEROBIM_BSI_API_TOKEN` | *(unset)* | Optional buildingSMART Validation Service token |
 | `AEROBIM_BSI_VALIDATION_URL` | *(built-in)* | Optional override for bSI Validation Service URL |
 | `AEROBIM_GATES_ATTESTED` | *(CI only)* | Comma-separated CI job names attested into the runtime baseline; ignored locally, and must equal the required gate set under GitHub Actions |
-| `AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE` | `120` | Pre-auth **per-IP** bucket for mutating `/v1` POSTs and GET `/v1/auth/login` + `/callback` + `/session`; after successful auth a second **per-principal** (`tenant_id:subject`) bucket applies to those POSTs. HD2-RL-02: `0` disables in development; **must be >0** under pilot/production |
+| `AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE` | `120` | Pre-auth **per-IP** bucket for mutating `/v1` POSTs and GET `/v1/auth/login` + `/callback` + `/session`; after successful auth a second **per-principal** (`tenant_id:subject`) bucket applies to those POSTs. `0` disables in development; **must be >0** under pilot/production |
 | `AEROBIM_TRUSTED_PROXY_IPS` | *(unset)* | Comma-separated peer IPs allowed to supply `X-Forwarded-For` for rate-limit keys; empty = never trust XFF |
 | `AEROBIM_IFC_PARSE_CACHE_DIR` | *(unset)* | Optional on-disk IFC parse cache directory |
 | `AEROBIM_KIMI_API_BASE_URL` | *(unset)* | Deprecated alias of the primary VLM base URL (internal name). Default unset. Under `samolet_pilot`/`production` VLM is not ready even if set. See [`docs/security/BUILD_WITHOUT_EXTERNAL_MODELS_2026.md`](docs/security/BUILD_WITHOUT_EXTERNAL_MODELS_2026.md) |
@@ -458,38 +439,6 @@ Code volume and the pass counts recorded by CI are generated, never typed by han
 <!-- regenerated by: python -m aerobim.tools.export_runtime_baseline -->
 tests_passed: backend=3143, frontend=350; commit f9383efa40b1; see docs/evidence/runtime-baseline-latest.json · src ~100954 LOC; tests ~66039 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)
 <!-- AEROBIM_RUNTIME_BASELINE:END -->
-
-## Development
-
-<details>
-<summary>Local CI commands and measurement CLIs</summary>
-
-Run locally what CI runs:
-
-```bash
-cd backend
-python -m ruff format --check src tests
-python -m ruff check src tests
-python -m mypy src
-pytest tests -q
-```
-
-Measurements are reproducible commands, not stored numbers:
-
-```bash
-python -m aerobim.tools.benchmark_project_package --iterations 1 --warmup-iterations 0
-python -m aerobim.tools.measure_package_sla --corpus-kind fixture
-python -m aerobim.tools.evaluate_extraction --min-macro-f1 0.70
-python -m aerobim.tools.verify_bcf_structural_handoff
-python -m aerobim.tools.export_runtime_baseline
-python -m aerobim.tools.export_evidence_bundle \
-  --pack ../samples/benchmarks/project-package-techlab-demo.json \
-  --output ../artifacts/evidence-bundle/techlab-demo
-```
-
-Throughput and F1 figures are environment-specific and fixture-scoped. Any performance statement must ship with the pack path, CLI flags, machine fingerprint and artifact hashes. Citation: [`CITATION.cff`](CITATION.cff) · [`docs/CITATION.bib`](docs/CITATION.bib).
-
-</details>
 
 ## Documentation
 

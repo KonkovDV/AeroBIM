@@ -9,9 +9,9 @@ AeroBIM is an open-source platform for cross-modal BIM validation. Contributions
 1. README.md
 2. CODE_OF_CONDUCT.md
 3. docs/TIER0_INDEX.md · docs/README.md
-3. docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md
-4. docs/pilot-claim-boundary-2026.md
-5. SECURITY.md · audit/reports/CLAIMS_LOCK_2026_07_17.md
+4. docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md
+5. docs/pilot-claim-boundary-2026.md
+6. SECURITY.md · audit/reports/CLAIMS_LOCK_2026_07_17.md
 
 ## Contribution Principles
 
@@ -22,9 +22,9 @@ AeroBIM is an open-source platform for cross-modal BIM validation. Contributions
 - Keep diffs focused and reviewable.
 - Do not claim customer accuracy, CDE-ready BCF, MEP system clash, or calculation *correctness* without evidence cited in [`audit/reports/CLAIMS_LOCK_2026_07_17.md`](audit/reports/CLAIMS_LOCK_2026_07_17.md).
 
-## Maintenance (honest)
+## Maintenance
 
-Public GitHub shows a single contributor on origin. Dual-rater labeling (RT-001) is a customer-corpus protocol, not a git headcount. Review every claim-facing doc as if the next reader is a juror: no silent upgrades of Checkpoint `GO`.
+Public GitHub may show a single contributor on origin. Dual-rater labeling (RT-001) is a customer-corpus protocol, not a git headcount. Do not silently upgrade Checkpoint `GO` or `customer_go`.
 
 ## Local Setup
 
@@ -35,7 +35,7 @@ source .venv/bin/activate  # Windows PowerShell: .\.venv\Scripts\Activate.ps1
 pip install -e ".[dev,raster]"
 ```
 
-Optional local hooks (human Co-authored-by kept; vendor IDE trailers stripped):
+Optional local hooks (human `Co-authored-by:` kept; vendor IDE identity trailers stripped):
 
 ```bash
 git config core.hooksPath .githooks
@@ -60,7 +60,7 @@ python -m mypy src
 pytest tests -q
 ```
 
-Jury/README extras (`.[dev,raster]`): **0 failed**. Tests that need `pdf-agpl` or optional publication-denylist secrets skip. The CI pin in `docs/evidence/runtime-baseline-latest.json` is `attested_by=ci`, not a local count.
+Install extras `.[dev,raster]`: **0 failed** on a clean clone. Tests that need `pdf-agpl` or unpublished CI secrets skip. The publishable pin is `docs/evidence/runtime-baseline-latest.json` (`attested_by=ci`), not a local count.
 
 If formatting fails:
 
@@ -68,12 +68,9 @@ If formatting fails:
 python -m ruff format src tests
 ```
 
-## Git Commits (honest authorship)
+## Git commits
 
-Keep commit authorship truthful. If a **human** co-author materially contributed, use an explicit `Co-authored-by:` trailer. Vendor IDE/cloud GitHub-identity trailers are stripped by `.githooks/commit-msg`. Do not strip human provenance trailers. AI assistance remains disclosed in SECURITY.md.
-
-1. Commit from your shell. Human `Co-authored-by:` allowed; vendor IDE trailers are dropped.
-2. Optional hooks: `git config core.hooksPath .githooks`.
+Keep authorship truthful. If a **human** co-author materially contributed, use an explicit `Co-authored-by:` trailer. The commit-msg hook drops vendor IDE GitHub-identity trailers. Do not strip human provenance. Assistance is disclosed in SECURITY.md.
 
 ## Pull Request Checklist
 

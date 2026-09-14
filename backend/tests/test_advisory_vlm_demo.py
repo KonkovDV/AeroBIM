@@ -15,7 +15,7 @@ from aerobim.domain.models import DrawingSource
 from aerobim.infrastructure.adapters.heuristic_layout_region_detector import (
     HeuristicLayoutRegionDetector,
 )
-from aerobim.tools.run_mentor_vlm_demo import (
+from aerobim.tools.run_advisory_vlm_demo import (
     _redact_model_uri,
     _resolve_credentials,
     _save_planned_crops,
@@ -76,7 +76,7 @@ class AdvisoryVlmDemoTests(unittest.TestCase):
             controlled = {k: v for k, v in os.environ.items() if not k.startswith("AEROBIM_")}
             with (
                 patch.dict("os.environ", controlled, clear=True),
-                patch("aerobim.tools.run_mentor_vlm_demo._load_dotenv", return_value=None),
+                patch("aerobim.tools.run_advisory_vlm_demo._load_dotenv", return_value=None),
             ):
                 code = main(["--pdf", str(pdf), "--output", str(out), "--dry-crop-only"])
             self.assertEqual(code, 0)

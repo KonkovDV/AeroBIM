@@ -808,11 +808,17 @@ class SubmissionPackHonestyTests(unittest.TestCase):
         self.assertIn("INTERPRETATION_USE_LEDGER_2026_08.md", text)
 
     def test_submission_links_resolve_on_a_fresh_clone(self) -> None:
-        # Resolve against tracked files: a gitignored local copy is not a published target.
+        # Resolve against tracked files: a local untracked copy is not a published target.
+        repo = self._submission().parent
         tracked = self._tracked_paths()
         pattern = re.compile(r"\]\((?!https?:|mailto:)([^)#]+)")
         broken: list[str] = []
-        for path in sorted(self._submission().rglob("*.md")):
+        listed = _git_ls_files("submission")
+        for rel in listed.splitlines():
+            rel = rel.strip().replace("\\", "/")
+            if not rel.endswith(".md"):
+                continue
+            path = repo / rel
             for match in pattern.finditer(path.read_text(encoding="utf-8")):
                 if (path.parent / match.group(1)).resolve() not in tracked:
                     broken.append(f"{path.name} -> {match.group(1)}")

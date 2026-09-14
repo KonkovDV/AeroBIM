@@ -4,7 +4,7 @@ status: active
 version: "3.7.0"
 last_updated: "2026-09-05"
 tags: [aerobim, documentation, samolet, techlab, jury]
-claim_boundary: "Public GitHub = TechLab jury pack only. Checkpoint GO; customer_go false. Eng readiness ≠ customer GO. Working/debug docs stay local, outside git."
+claim_boundary: "Public GitHub = TechLab jury pack only. Checkpoint GO; customer_go false. Eng readiness ≠ customer GO. Operator notes stay local, outside git."
 ---
 
 # Документация

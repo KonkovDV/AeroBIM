@@ -49,7 +49,7 @@ Checkpoint **`GO`**; `customer_go` false. `detected_count: 0`. `processed: false
 | RT-JURY-OA-EXHIBIT | Внутренний журнал владельца как exhibit уже сделанной работы | Журнал снят с TIER0; строки не marked done |
 | RT-JURY-MEETS | Семейства ⇒ Meets/Does-not семи задач Техлаба | Criterion **Uncertain**; local max-pass — не вердикт |
 | RT-JURY-ENG-PINS | Удалить census JSON из git, чтобы исчез тормоз «не processed» | Пины оставить; пометить не exhibit; счётчики не на TIER0 |
-| RT-JURY-DENYLIST | Добавить фамилии комиссии в kitchen denylist этим коммитом | HMAC-пин — секрет CI; ротация секретов вне полосы |
+| RT-JURY-DENYLIST | Добавить фамилии комиссии в publication denylist этим коммитом | HMAC-пин — секрет CI; ротация секретов вне полосы |
 | RT-JURY-SEATS-ROLES | На карте нет брифов ролей — речь выдумывает ФИО | MIK_SEAT_BRIEFS на TIER0; оговорка про ФИО есть |
 | RT-JURY-RENAME | Личные имена трекера остаются в `git ls-files` | Honesty lock запрещает старые path-токены трекера/канала |
 | RT-JURY-TIER0-SHRINK | TIER0 всё ещё рекламирует census / family / local max-pass / SIG-01 volume | Эти файлы сняты с TIER0; intro говорит не exhibit |

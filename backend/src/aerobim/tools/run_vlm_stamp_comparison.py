@@ -18,7 +18,7 @@ from urllib.parse import urlparse
 from aerobim.core.config.vlm_endpoint_gate import refuse_yandex_kimi_default_model
 from aerobim.domain.models import DrawingSource
 from aerobim.tools.benchmark_project_package import _machine_fingerprint, repo_root
-from aerobim.tools.run_mentor_vlm_demo import (
+from aerobim.tools.run_advisory_vlm_demo import (
     _build_pipeline,
     _load_dotenv,
     _observation_rows,

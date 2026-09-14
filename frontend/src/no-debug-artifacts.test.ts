@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 /**
- * HD24-FE-01: демо-гигиена оболочки (source-scan, не runtime).
+ * Review-shell demo hygiene (source-scan, not runtime).
  *
  * Оболочка ревью живая, поэтому в продуктовом коде не должно
  * остаться служебных следов: отладочной консоли, точек останова, нативных
@@ -91,7 +91,7 @@ function read(path: string): string {
   return found ? found.source : "";
 }
 
-describe("HD24-FE-01 demo hygiene source-scan", () => {
+describe("review-shell demo hygiene source-scan", () => {
   it("walks production and test sources", () => {
     expect(production.length).toBeGreaterThan(25);
     expect(files.length - production.length).toBeGreaterThan(15);
