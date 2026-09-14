@@ -60,7 +60,7 @@ REQUIRED_EVIDENCE: Final[tuple[tuple[str, str], ...]] = (
         "docs/quality/TRACKER_EIGHT_TASKS_2026_08.md",
     ),
     ("tz_v1_brief", "docs/tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md"),
-    ("owner_ai_plan", "docs/quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md"),
+    ("owner_ai_plan", "docs/evidence/owner-ai-plan-execution-2026-08.json"),
     ("iua_ledger", "docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md"),
     (
         "typical_errors_catalog",

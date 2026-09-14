@@ -13,7 +13,7 @@ from aerobim.domain.checkpoint import CHECKPOINT
 
 CLAIM_LEVEL: Final = "coverage_map_only"
 CLAIM_BOUNDARY: Final = (
-    "Jury-pack Red Team triage after the kitchen-surface pass. "
+    "Jury-pack Red Team triage of public surfaces. "
     "Roles not FIO. Unpack counts stay off TIER0. Not pack processed. "
     "Not sitting-member OSINT in git. Checkpoint GO "
     "(regulatory_measurement_mvp; customer_go false)."
@@ -26,7 +26,7 @@ JURY_SURFACES: Final[tuple[str, ...]] = (
     "docs/docs.md",
     "docs/quality/MIK_SEAT_BRIEFS_2026_08.md",
     "docs/quality/TRACKER_EIGHT_TASKS_2026_08.md",
-    "docs/quality/KT3_IN_REPO_WORKPLAN_2026_08_27.md",
+    "docs/quality/KT3_DELIVERY_BOM_2026_08.md",
     "docs/evidence/DATA_STATEMENT_2026_08.md",
     "docs/demo/KT3_JURY_FAQ_2026_08_25.md",
     "docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md",
@@ -39,7 +39,9 @@ JURY_SURFACES: Final[tuple[str, ...]] = (
     "docs/pilot-claim-boundary-2026.md",
     "docs/tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md",
     "docs/demo/KT3_RVT_NWD_CV_ONEPAGER_2026_08.md",
+    "docs/demo/DEMO_DAY_SPEECH_LOCK_2026_09.md",
     "submission/README.md",
+    "submission/03-presentation/demo_day_slides.md",
 )
 
 JURY_FINGERPRINT_TOKENS: Final[tuple[str, ...]] = (
@@ -138,7 +140,7 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
     {
         "id": "RT-JURY-OA-EXHIBIT",
         "verdict": "KILL",
-        "attack": "Present OWNER_ACTIONS as a jury exhibit of work already done",
+        "attack": "Present an internal owner-action log as a jury exhibit of work already done",
         "brake": "Owner list is off TIER0; rows are not marked done",
     },
     {

@@ -62,7 +62,7 @@ API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_
 | Hide low-confidence findings to look stable | RT-001 | Advisory / SKIPPED / NOT_VERIFIED stay in the brief |
 | GitHub hosts the three customer reports | OA-22 / contour | Organizers channel + `.local/`; public git is not the NDA tree |
 | Screen-share = independent trial on control data | organizer letter 09.09 | operator HTTPS or on-prem; seed-fixture off |
-| 15.09 call = Samolet delivery | OA-24 | 14.09 via organizers is final; mentor slot is not customer delivery |
+| 15.09 call = Samolet delivery | OA-24 | Organizers channel is final; a follow-up slot is not customer delivery |
 | Direct Samolet mail/Telegram is the delivery channel | OA-24 | No Samolet contact; organizers only |
 
 ## Allowed with evidence pointers

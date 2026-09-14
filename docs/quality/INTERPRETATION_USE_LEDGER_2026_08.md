@@ -44,7 +44,7 @@ claim_boundary: >-
 | TRK-01 | tracker | Задача 1: доработать продукт к КТ#3 (03–21.09); КТ#2 был 20.08 | IFC Acceptance Gate + live CLI + run_kt3_jury; Checkpoint GO (regulatory_measurement_mvp; customer_go false) | Checkpoint GO / market GO = customer GO | `fixture_demo` |
 | TRK-02 | tracker | Задача 2: таблица IFC2X3 / IFC4 / IFC4X3 | Fixture kernel n=20: findings 5/4/6, passed=false, clash=skipped | Product accuracy / customer SLA по релизам IFC | `engine_regression` |
 | TRK-03 | tracker | Задача 3: поиск и прогон открытых датасетов | IFC-Bench 27/1026 countable; PNST CLI skip-honest; Ishigaki XML processability | Open bench = RT-001; свежий 18/22; Harbor agent run; DrawingVQA в MIT tree | `open_bench` |
-| TRK-04 | tracker | Задача 4: научный консультант / ИТ-ментор | Вопросы и демо-ссылка в репозитории | Выдуманные минуты консультаций | `operational_hygiene` |
+| TRK-04 | tracker | Задача 4: научный консультант | Вопросы и демо-ссылка в репозитории | Выдуманные минуты консультаций | `operational_hygiene` |
 | TRK-05 | tracker | Задача 5: KPI = назначенные демо (3–5) | Живой счёт только в локальном операторском слое (не в git) | Назначенные демо как git-факт | `operational_hygiene` |
 | TRK-06 | tracker | Задача 6: монетизация при открытом коде | Варианты A/B к обсуждению; LICENSE MIT; ADR-002 accepted | Трекер согласовал Tangl/10D/SKU | `operational_hygiene` |
 | SIG-01 | tracker | Восемь задач 29.08: объём находок на канале IFC/PDF | Report phrase: объём находок на канале получен. unrestricted_eq_sample is a capped unsigned ALL+eq sample, not a defect. EI 45 vs demo REI60 is SAM-09, not SP 2.13130. | Product accuracy; pack processed; customer defect list; unsigned ALL+eq as SP; raising the mismatch cap as a defect export | `operational_hygiene` |
@@ -148,7 +148,7 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 | JURY-01 | Keep FIO and NDA fingerprint counts off jury surfaces |
 | FMT-01 | Appointing-party IFC/PDF; readable calc notes; NWD federation as IFC or OOS |
 | SPG-01 | Keep the consulting pin; keep the filename off the jury map |
-| UI-01 | Jury laptop CLI; mentor may seed git fixture; keep NO_GO; natives fail-closed. Demo seed stays off published OpenAPI. |
+| UI-01 | Jury laptop CLI; operator may seed git fixture; keep NO_GO; natives fail-closed. Demo seed stays off published OpenAPI. |
 | TL-01 | КТ#3 03–21.09 — итоговое решение |
 | TL-02 | Замеры только после intake-gates |
 | TL-03 | Оплату приза уточнять только по соглашению Партнёра и Фонда |
@@ -223,11 +223,11 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 - `SAM-08`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md)
 - `SAM-09`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md)
 - `SAM-10`: [TZ_V1_CONTEST_BRIEF_PIN_2026_08.md](../tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md)
-- `PLAN-00`: [OWNER_AI_PLAN_EXECUTION_2026_08_27.md](OWNER_AI_PLAN_EXECUTION_2026_08_27.md)
+- `PLAN-00`: [owner-ai-plan-execution-2026-08.json](../evidence/owner-ai-plan-execution-2026-08.json)
 - `PLAN-01`: [qto_space_area.unsigned.json](../../samples/oos/qto_space_area.unsigned.json)
 - `PLAN-02`: [mep_federated.unsigned.json](../../samples/oos/mep_federated.unsigned.json)
 - `PLAN-03`: [rebar_class4.unsigned.json](../../samples/oos/rebar_class4.unsigned.json)
-- `PLAN-04`: [OWNER_AI_PLAN_EXECUTION_2026_08_27.md](OWNER_AI_PLAN_EXECUTION_2026_08_27.md)
+- `PLAN-04`: [owner-ai-plan-execution-2026-08.json](../evidence/owner-ai-plan-execution-2026-08.json)
 - `PLAN-05`: [RT001_LABELING_PROTOCOL_RT026_2026_08_03.md](RT001_LABELING_PROTOCOL_RT026_2026_08_03.md)
 - `TRK-01`: [KT3_TRACKER_SIX_TASKS_2026_08.md](../demo/KT3_TRACKER_SIX_TASKS_2026_08.md)
 - `TRK-02`: [ifc-release-matrix-2026-08.md](../evidence/ifc-release-matrix-2026-08.md)
@@ -295,7 +295,7 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 - `MIK-12`: [K4_COMMERCIAL_PATH_2026_08.md](K4_COMMERCIAL_PATH_2026_08.md)
 - `TL-16`: [K2_NOVELTY_VS_PEERS_2026_08.md](K2_NOVELTY_VS_PEERS_2026_08.md)
 - `IND-26`: [K4_COMMERCIAL_PATH_2026_08.md](K4_COMMERCIAL_PATH_2026_08.md)
-- `SAM-11`: [KT3_WINDOW_CRITICAL_PATH_2026_09.md](KT3_WINDOW_CRITICAL_PATH_2026_09.md)
+- `SAM-11`: [FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md](FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md)
 - `IND-27`: [NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md](NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md)
 - `IND-28`: [README.md](../evidence/clash-measurement-slice-2026-08/README.md)
 - `SAM-12`: [IFC_ANALYZE_VS_INGEST_CAP_2026_08.md](IFC_ANALYZE_VS_INGEST_CAP_2026_08.md)

@@ -24,7 +24,7 @@ if (python === null) {
   process.exit(1);
 }
 
-const child = spawn(python, ["-m", "aerobim.tools.run_it_mentor_stand", ...process.argv.slice(2)], {
+const child = spawn(python, ["-m", "aerobim.tools.run_review_stand", ...process.argv.slice(2)], {
   cwd: repoRoot,
   stdio: "inherit",
   windowsHide: false,

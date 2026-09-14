@@ -13,7 +13,7 @@ Checkpoint: **`GO`** (`regulatory_measurement_mvp`). `customer_go` **false**. С
 
 Полная карта: [`TIER0_INDEX.md`](TIER0_INDEX.md). Пакет формы: [`../submission/README.md`](../submission/README.md).
 
-Показ для сидящего члена жюри — команда `python -m aerobim.tools.run_kt3_jury` (не ролик). Оболочка ревью (`../frontend/`) — ноутбук ИТ-ментора, не СОД.
+Показ для сидящего члена жюри — команда `python -m aerobim.tools.run_kt3_jury` (не ролик). Оболочка ревью (`../frontend/`) — не показ сидящего члена жюри и не СОД.
 
 | Документ | Зачем |
 |---|---|

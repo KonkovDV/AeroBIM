@@ -62,8 +62,9 @@ OLE `.db` on both trees is **not** SQLite. Empty members: **30** in the unpack t
 ## What this does not license
 
 - Pack processed, «43 ГБ обработаны», product accuracy, customer SLA.
+- A **revision-duplicate finding class**. Unpack holds **4** IFC files that are copies of wrapper IFC, not a pinned «same revision, different paths» defect.
 - Native DWG / RVT / NWD / LIRA / 3ds Max.
 - Raising the 256 MiB SPF default because one IFC is over cap (OA-16 / RocksDB path).
 - `customer_confirmed_patterns` or RT-001/002b/003 CLOSED.
 
-Related: [`../quality/TRACKER_EIGHT_TASKS_2026_08.md`](../quality/TRACKER_EIGHT_TASKS_2026_08.md) · [`../quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md`](../quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md) · [`DATA_STATEMENT_2026_08.md`](DATA_STATEMENT_2026_08.md).
+Related: [`../quality/TRACKER_EIGHT_TASKS_2026_08.md`](../quality/TRACKER_EIGHT_TASKS_2026_08.md) · [`DATA_STATEMENT_2026_08.md`](DATA_STATEMENT_2026_08.md).

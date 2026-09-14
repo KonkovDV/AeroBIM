@@ -75,11 +75,11 @@ python -m aerobim.tools.run_kt3_jury
 
 pytest tests -q
 # Jury clone contract: 0 failed. Tests that need extra pdf-agpl (PyMuPDF) or
-# kitchen GitHub secrets skip. A local count is not the CI pin below.
+# optional publication-denylist GitHub secrets skip. A local count is not the CI pin below.
 python -m aerobim.main   # → http://127.0.0.1:8080/health
 
-# 4. Review shell (IT-mentor laptop; empty storage; not the jury CLI)
-python -m aerobim.tools.run_it_mentor_stand
+# 4. Review shell (dedicated storage; not the jury CLI)
+python -m aerobim.tools.run_review_stand
 # → http://127.0.0.1:5173/  (API on 8080; Ctrl+C stops both)
 # from the repo root: python scripts/run_review_shell.py
 # Windows PowerShell (required leading .\ ):
@@ -91,7 +91,7 @@ python -m aerobim.tools.run_it_mentor_stand
 
 Both demos end with `summary.passed=false`, which is the expected result: the fixture pack contains planted defects. These are fixtures, not customer data, and the numbers they produce are not product accuracy. A local `pytest` count is not the CI pin in the runtime baseline below. The red badge is **customer sign-off** (`customer_go` false), not product Checkpoint `NO_GO`.
 
-Optional extras: `.[clash]` for geometry clash detection, `.[docling]` for non-text document extraction, `.[enterprise]` for S3 and Postgres adapters, `.[pdf-agpl]` for legacy PyMuPDF tools (not needed for the three demo commands above; without it those tests skip). Review shell (one command): `python -m aerobim.tools.run_it_mentor_stand` from `backend/`, or `python scripts/run_review_shell.py` from the repo root, or `npm start` from `frontend/`. That starts API + Vite together (`npm ci` if Vite is missing). The sitting-member jury track remains the CLI above; the shell is the IT-mentor laptop track, not a CDE.
+Optional extras: `.[clash]` for geometry clash detection, `.[docling]` for non-text document extraction, `.[enterprise]` for S3 and Postgres adapters, `.[pdf-agpl]` for legacy PyMuPDF tools (not needed for the three demo commands above; without it those tests skip). Review shell (one command): `python -m aerobim.tools.run_review_stand` from `backend/`, or `python scripts/run_review_shell.py` from the repo root, or `npm start` from `frontend/`. That starts API + Vite together (`npm ci` if Vite is missing). The sitting-member jury track remains the CLI above; the shell is not a CDE.
 
 ## Review shell
 
@@ -103,7 +103,7 @@ The browser workplace is a review shell over **persisted reports**, not a CDE an
 
 ## Who this page is for
 
-TechLab / MIK jury: formula above → [`submission/README.md`](submission/README.md) → the CLI just above. The sitting-member track is that CLI. The browser review shell is the IT-mentor laptop track, not a CDE. This is a refinement pack, not a Checkpoint act.
+TechLab / MIK jury: formula above → [`submission/README.md`](submission/README.md) → the CLI just above. The sitting-member track is that CLI. The browser review shell is optional UI on this clone, not a CDE. This is a refinement pack, not a Checkpoint act.
 
 ## What a run actually does
 

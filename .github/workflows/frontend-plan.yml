@@ -1,11 +1,10 @@
-name: Frontend plan gates
+name: Frontend gates
 
 on:
   pull_request:
     paths:
       - "frontend/**"
       - "backend/**"
-      - "docs/quality/FRONTEND_DEVELOPMENT_PLAN_2026_09.md"
       - "scripts/lint_claims.py"
       - ".github/workflows/frontend-plan.yml"
   push:
@@ -13,7 +12,6 @@ on:
     paths:
       - "frontend/**"
       - "backend/**"
-      - "docs/quality/FRONTEND_DEVELOPMENT_PLAN_2026_09.md"
       - "scripts/lint_claims.py"
       - ".github/workflows/frontend-plan.yml"
   workflow_dispatch:

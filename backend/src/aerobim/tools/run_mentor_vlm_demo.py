@@ -1,4 +1,4 @@
-"""Mentor demo: region crop → Yandex VLM read → structured candidate (advisory only).
+"""Advisory VLM demo: region crop → Yandex VLM read → structured candidate (advisory only).
 
 Shows that AeroBIM can *send a drawing crop* to Yandex AI Studio (Qwen) and get
 back structured observations. Never flips ``summary.passed``.
@@ -48,7 +48,7 @@ from aerobim.tools.vlm_smoke_gate import (
 def _observation_rows(
     pipeline: RegionRestrictedVlmPipeline, source: DrawingSource
 ) -> dict[str, Any]:
-    """Richer mentor view: include grounded observation values (still advisory)."""
+    """Richer advisory view: include grounded observation values (still advisory)."""
     result = pipeline.read_sheet(source, text_layer_present=False)
     reads: list[dict[str, Any]] = []
     for read in result.reads:
@@ -264,7 +264,7 @@ def _limitations(*, live: bool, model: str, provider: str | None) -> dict[str, A
         "live_call": live,
         "forced_vlm_path": True,
         "forced_vlm_path_reason": (
-            "text_layer_present=False so mentor can see crop→VLM; "
+            "text_layer_present=False so the crop→VLM path is visible; "
             "deterministic text-layer path is vertical-slice demo"
         ),
         "do_not_claim": [
@@ -296,7 +296,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("../artifacts/mentor-vlm-2026-08-11"),
+        default=Path("../artifacts/advisory-vlm-2026-08-11"),
         help="Artifact directory",
     )
     parser.add_argument(
@@ -423,7 +423,7 @@ def main(argv: list[str] | None = None) -> int:
             auth_scheme=creds["auth_scheme"] or "Bearer",
             folder_id=creds["folder_id"],
         )
-        # Forced advisory VLM path for mentor — see LIMITATIONS.forced_vlm_path_reason.
+        # Forced advisory VLM path — see LIMITATIONS.forced_vlm_path_reason.
         smoke = _observation_rows(pipeline, source)
     except Exception as exc:
         fail = {

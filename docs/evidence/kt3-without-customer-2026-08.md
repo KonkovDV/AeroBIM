@@ -55,7 +55,7 @@ Customer files are not expected in git. KT#3 is the live fixture gate plus publi
 | kt3_tracker_card | `docs/demo/KT3_TRACKER_SIX_TASKS_2026_08.md` | yes |
 | kt3_tracker_eight | `docs/quality/TRACKER_EIGHT_TASKS_2026_08.md` | yes |
 | tz_v1_brief | `docs/tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md` | yes |
-| owner_ai_plan | `docs/quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md` | yes |
+| owner_ai_plan | `docs/evidence/owner-ai-plan-execution-2026-08.json` | yes |
 | iua_ledger | `docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md` | yes |
 | typical_errors_catalog | `samples/benchmarks/samolet-typical-errors-catalog.json` | yes |
 | rt_blocker_volumes | `docs/evidence/rt-blocker-volumes-2026-09.md` | yes |

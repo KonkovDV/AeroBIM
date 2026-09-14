@@ -199,10 +199,7 @@ class SamoletAnswersHonestyTests(unittest.TestCase):
         runbook = (repo / "docs" / "demo" / "KT3_OPERATOR_RUNBOOK_2026_08_25.md").read_text(
             encoding="utf-8"
         )
-        workplan = (repo / "docs" / "quality" / "KT3_IN_REPO_WORKPLAN_2026_08_27.md").read_text(
-            encoding="utf-8"
-        )
-        for text in (faq, runbook, workplan):
+        for text in (faq, runbook):
             self.assertIn("closes_rt001: false", text)
             self.assertIn("customer_go", text)
             self.assertNotIn("closes_rt001: true", text)

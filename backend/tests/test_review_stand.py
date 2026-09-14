@@ -9,30 +9,30 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from aerobim.tools.run_it_mentor_stand import (
-    CLAIM_BOUNDARY,
-    default_storage_dir,
-    print_stand_card,
-)
 from aerobim.tools.run_live_review_smoke import (
     build_backend_env,
     ensure_frontend_dependencies,
     frontend_vite_installed,
     repo_root,
 )
+from aerobim.tools.run_review_stand import (
+    CLAIM_BOUNDARY,
+    default_storage_dir,
+    print_stand_card,
+)
 from aerobim.tools.seed_smoke_report import SMOKE_TENANT_ID
 
 
-class ItMentorStandTests(unittest.TestCase):
+class ReviewStandTests(unittest.TestCase):
     def test_default_storage_is_isolated_under_local(self) -> None:
         storage = default_storage_dir()
-        self.assertEqual(storage, repo_root() / ".local" / "mentor-demo-stand")
+        self.assertEqual(storage, repo_root() / ".local" / "review-stand")
         self.assertNotEqual(storage, repo_root() / "backend" / "var" / "reports")
 
     def test_stand_reuses_anonymous_dev_env_and_does_not_claim_customer_go(self) -> None:
         env = build_backend_env(
             base_env={"PATH": "example", "AEROBIM_API_BEARER_TOKEN": "secret"},
-            storage_dir=Path("c:/tmp/mentor-stand"),
+            storage_dir=Path("c:/tmp/review-stand"),
             port=8080,
             frontend_origin="http://127.0.0.1:5173",
         )
@@ -55,7 +55,7 @@ class ItMentorStandTests(unittest.TestCase):
             print_stand_card(
                 frontend_url="http://127.0.0.1:5173",
                 backend_url="http://127.0.0.1:8080",
-                storage=Path("c:/tmp/mentor-stand"),
+                storage=Path("c:/tmp/review-stand"),
             )
         text = buffer.getvalue()
         self.assertIn("Загрузить демонстрационный комплект", text)
@@ -137,19 +137,19 @@ class ReviewShellLauncherTests(unittest.TestCase):
             self.assertEqual(module.main(["--help"]), 0)
         command = call.call_args.args[0]
         self.assertEqual(command[0], str(fake))
-        self.assertEqual(command[1:3], ["-m", "aerobim.tools.run_it_mentor_stand"])
+        self.assertEqual(command[1:3], ["-m", "aerobim.tools.run_review_stand"])
         self.assertEqual(command[-1], "--help")
 
-    def test_root_start_bat_calls_the_mentor_stand(self) -> None:
+    def test_root_start_bat_calls_the_review_stand(self) -> None:
         text = (repo_root() / "start.bat").read_text(encoding="utf-8")
-        self.assertIn("-m aerobim.tools.run_it_mentor_stand", text)
+        self.assertIn("-m aerobim.tools.run_review_stand", text)
         self.assertIn("backend\\.venv\\Scripts\\python.exe", text)
         self.assertIn(".\\start.bat", text)
         self.assertNotIn("run_kt3_jury", text)
 
-    def test_root_start_ps1_calls_the_mentor_stand(self) -> None:
+    def test_root_start_ps1_calls_the_review_stand(self) -> None:
         text = (repo_root() / "start.ps1").read_text(encoding="utf-8")
-        self.assertIn("aerobim.tools.run_it_mentor_stand", text)
+        self.assertIn("aerobim.tools.run_review_stand", text)
         self.assertIn("backend\\.venv\\Scripts\\python.exe", text)
         self.assertIn(".\\start.bat", text)
         self.assertNotIn("run_kt3_jury", text)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""One-command IT-mentor review shell (API + Vite).
+"""One-command review shell (API + Vite).
 
 From the repo root, with ``backend/.venv`` already created::
 
@@ -40,7 +40,7 @@ def main(argv: list[str] | None = None) -> int:
         sys.stderr.write(f"{error}\n")
         return 1
     return subprocess.call(
-        [str(python), "-m", "aerobim.tools.run_it_mentor_stand", *args]
+        [str(python), "-m", "aerobim.tools.run_review_stand", *args]
     )
 
 

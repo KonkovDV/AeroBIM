@@ -58,7 +58,7 @@ claim_boundary: >
 
 1. Заявка i.moscow: **свои** ФИО, два класса, диплом/публикации/патент на
    научную строку; git/CI на инженерную. Не консультанты. Не выдуманный состав.
-   Тексты полей: [`../partners/I_MOSCOW_APPLICATION_PASTE_2026_08.md`](../partners/I_MOSCOW_APPLICATION_PASTE_2026_08.md).
+   Тексты полей: [`MIK_COMMISSION_SCORING_2026_08.md`](MIK_COMMISSION_SCORING_2026_08.md).
 2. Письмо партнёру: обложка протокола 0,60 «готово подписать» (interim, не 90 %):
    [`../partners/PARTNER_PROTOCOL_SIGNREADY_COVER_2026_08.md`](../partners/PARTNER_PROTOCOL_SIGNREADY_COVER_2026_08.md).
 3. На защите: УГТ 4, не «внедрено»; К3 = посадка на запрос, не pytest;

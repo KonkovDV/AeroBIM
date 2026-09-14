@@ -59,6 +59,6 @@ claim_boundary: >
 
 Не делается: native DWG/RVT/NWD/LIRA, IDS `customer_approved`, закрытие RT-001/002/003, `summary.passed` от модели, product score по «>90%».
 
-Дальше (владелец): корпус + два разметчика; формы Фонда M2/M8; ИОС IFC или MEP-OOS; стержни или OOS п.7. Карта семи задач: [`../quality/TECHLAB_POST_CARTOGRAPHY_PLAN_2026_08.md`](../quality/TECHLAB_POST_CARTOGRAPHY_PLAN_2026_08.md). Триаж живого дерева 27.08: [`../quality/TZ_LIVE_TREE_TRIAGE_2026_08_27.md`](../quality/TZ_LIVE_TREE_TRIAGE_2026_08_27.md). Исполнение плана: [`../quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md`](../quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md).
+Дальше (владелец): корпус + два разметчика; формы Фонда M2/M8; ИОС IFC или MEP-OOS; стержни или OOS п.7. Карта семи задач: [`../quality/TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md`](../quality/TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md). Триаж живого дерева 27.08: [`../quality/TZ_LIVE_TREE_TRIAGE_2026_08_27.md`](../quality/TZ_LIVE_TREE_TRIAGE_2026_08_27.md). Скаффолды плана: [`../evidence/owner-ai-plan-execution-2026-08.json`](../evidence/owner-ai-plan-execution-2026-08.json).
 
 Checkpoint **`GO`**; `customer_go` false.

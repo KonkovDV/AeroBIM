@@ -18,7 +18,7 @@ claim_boundary: >
 
 Машина: `python -c "from aerobim.domain.mik_commission_scoring import scoring_snapshot"`.
 
-Связанные: [`MIK_COMMISSION_SCORING_2026_08.md`](MIK_COMMISSION_SCORING_2026_08.md) · [`MIK_SEAT_BRIEFS_2026_08.md`](MIK_SEAT_BRIEFS_2026_08.md) · [`KT3_INTERROGATION_PACK_2026_09.md`](KT3_INTERROGATION_PACK_2026_09.md).
+Связанные: [`MIK_COMMISSION_SCORING_2026_08.md`](MIK_COMMISSION_SCORING_2026_08.md) · [`MIK_SEAT_BRIEFS_2026_08.md`](MIK_SEAT_BRIEFS_2026_08.md).
 
 **ФИО ниже подтверждены выпиской из приказа (Отборочная комиссия №7)**, это больше не гипотеза. На защите говорить **ролями**; имена — только если сидящий представился сам. Состав **не** равен явке: присутствие фиксирует протокол заседания, не таблица приказа.
 
@@ -49,7 +49,7 @@ Checkpoint **`GO`**; `customer_go` false. `predicted_aerobim_total() is None`.
 |---|---|---|---|
 | 1 | Самолёт (через организаторов) | Шесть блокеров ТЗ; **не** формы Фонда | [`SAMOLET_QUESTIONS_GROUNDED_2026_09_03.md`](../partners/SAMOLET_QUESTIONS_GROUNDED_2026_09_03.md) |
 | 2 | Организаторы Техлаб | Пять TBD-разделов брифа | §3 grounded |
-| 3 | Менеджер МИК | M2, M8, форма M7, программа испытаний | [`MIK_OPERATOR_LETTER_REQUEST_2026_09.md`](../partners/MIK_OPERATOR_LETTER_REQUEST_2026_09.md) |
+| 3 | Менеджер МИК | M2, M8, форма M7, программа испытаний | [`SAMOLET_OFFICIAL_LETTER_AND_QUESTIONS_2026_09.md`](../partners/SAMOLET_OFFICIAL_LETTER_AND_QUESTIONS_2026_09.md) |
 
 **Ошибка адресации (исправлена):** вопрос «по какой **форме** закрывать пилот» — оператору Фонда. Самолёту — только **должность подписанта приложений** к заключению площадки (G6).
 

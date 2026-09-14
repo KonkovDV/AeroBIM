@@ -168,7 +168,7 @@ jobs:
       - run: mypy src/aerobim --strict --ignore-missing-imports
 
   pytest-readme-extras:
-    # Jury clone: README extras only (no pdf-agpl lock, no kitchen secrets).
+    # Jury clone: README extras only (no pdf-agpl lock, no optional publication-denylist secrets).
     # Must stay 0-failed so documented `pip install -e ".[dev,raster]"` matches CI.
     runs-on: ubuntu-latest
     defaults:

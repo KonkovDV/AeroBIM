@@ -26,7 +26,7 @@ claim_boundary: >
 |---|---|---|
 | **Репозиторий** \* | [`01-repository/`](01-repository/README.md) | Структура, сборка, лицензия, CI |
 | **Документация** \* | [`02-documentation/`](02-documentation/README.md) | Техобоснование + матрица ТЗ + границы заявлений |
-| **Презентация** \* | [`03-presentation/`](03-presentation/README.md) | [`aerobim_kt2.pptx`](03-presentation/aerobim_kt2.pptx) / [`aerobim_kt2.pdf`](03-presentation/aerobim_kt2.pdf); речь: [`slides.md`](03-presentation/slides.md) |
+| **Презентация** \* | [`03-presentation/`](03-presentation/README.md) | Демо-день: [`demo_day_slides.md`](03-presentation/demo_day_slides.md); бинарь КТ#2 остаётся [`aerobim_kt2.pptx`](03-presentation/aerobim_kt2.pptx) |
 | **Прототип** \* | [`04-prototype/`](04-prototype/README.md) | Команды запуска, живой CLI, веб-интерфейс |
 | **Дополнительные материалы** | [`05-additional/`](05-additional/README.md) | Доказательства, датасеты, красная команда, конкуренты |
 
@@ -52,7 +52,7 @@ claim_boundary: >
 | Техлаб | Доработка. Живой CLI. Учебный комплект. Checkpoint `GO`; `customer_go` false. |
 | МИК | Стадия доработки. Валидация эффективности не начата. Пять полей формы — не акт Checkpoint. |
 | Трекер | Tangl = модель, мы = комплект. Задачи 1–3 в репо; письмо Самолёту отправляет человек, а не репозиторий. |
-| ИТ-ментор | Пропуск IDS роняет комплект. CI pin = `runtime-baseline-latest.json`. Отставание pin на несколько коммитов принято. |
+| Review shell | Пропуск IDS роняет комплект. CI pin = `runtime-baseline-latest.json`. Отставание pin на несколько коммитов принято. |
 | Наука | Kane: на учебном комплекте цифры про содержание — да; про Самолёта — нет. Заморозка `f9389bf`. |
 | Венчур | Юрлица нет. Слот + комплект, не SAFE. |
 

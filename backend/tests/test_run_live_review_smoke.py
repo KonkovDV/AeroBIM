@@ -87,7 +87,7 @@ class LiveReviewSmokeHelperTests(unittest.TestCase):
         env = build_frontend_env(
             base_env={
                 "PATH": "example",
-                "PLAYWRIGHT_BROWSERS_PATH": "C:\\tmp\\cursor-sandbox-cache\\playwright",
+                "PLAYWRIGHT_BROWSERS_PATH": "C:\\tmp\\ephemeral-browser-cache\\playwright",
             },
             backend_base_url="http://127.0.0.1:8081",
         )

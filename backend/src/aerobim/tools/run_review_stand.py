@@ -1,6 +1,6 @@
-"""IT-mentor laptop track: empty storage + Vite-dev review shell.
+"""Review shell: dedicated storage + Vite-dev UI.
 
-Jury track remains ``python -m aerobim.tools.run_kt3_jury``.
+Sitting-member track remains ``python -m aerobim.tools.run_kt3_jury``.
 Does not seed the overlay fixture. Click «Загрузить демонстрационный комплект».
 Not a customer pack. Checkpoint GO; customer_go false.
 """
@@ -30,7 +30,7 @@ from aerobim.tools.run_live_review_smoke import (
 from aerobim.tools.seed_smoke_report import repo_root
 
 CLAIM_BOUNDARY = (
-    "IT-mentor Vite-dev stand. Dedicated .local storage (reused, not wiped), "
+    "Review-shell Vite-dev stand. Dedicated .local storage (reused, not wiped), "
     "then POST /v1/demo/seed-fixture. "
     "Not jury CLI. Not a customer pack. Not product accuracy. "
     "Checkpoint GO; customer_go false."
@@ -42,7 +42,7 @@ DEFAULT_FRONTEND_PORTS = (5173, 3000)
 
 
 def default_storage_dir() -> Path:
-    return repo_root() / ".local" / "mentor-demo-stand"
+    return repo_root() / ".local" / "review-stand"
 
 
 def print_stand_card(*, frontend_url: str, backend_url: str, storage: Path) -> None:
@@ -64,7 +64,7 @@ def print_stand_card(*, frontend_url: str, backend_url: str, storage: Path) -> N
     sys.stdout.flush()
 
 
-def run_it_mentor_stand(
+def run_review_stand(
     storage_dir: Path | None = None,
     host: str = DEFAULT_HOST,
     backend_port: int | None = None,
@@ -122,7 +122,7 @@ def run_it_mentor_stand(
                 raise RuntimeError("frontend process exited")
             time.sleep(0.5)
     except KeyboardInterrupt:
-        sys.stdout.write("stopping mentor stand\n")
+        sys.stdout.write("stopping review stand\n")
         sys.stdout.flush()
     finally:
         terminate_process(frontend_process)
@@ -132,7 +132,7 @@ def run_it_mentor_stand(
 def main() -> None:
     parser = argparse.ArgumentParser(
         description=(
-            "One-command IT-mentor review shell: API + Vite. "
+            "One-command review shell: API + Vite. "
             "Dedicated .local storage, no overlay seed. Not the jury CLI."
         )
     )
@@ -141,7 +141,7 @@ def main() -> None:
     parser.add_argument("--backend-port", type=int, default=None)
     parser.add_argument("--frontend-port", type=int, default=None)
     args = parser.parse_args()
-    run_it_mentor_stand(
+    run_review_stand(
         storage_dir=args.storage_dir,
         host=args.host,
         backend_port=args.backend_port,

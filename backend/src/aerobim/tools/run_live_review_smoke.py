@@ -84,7 +84,7 @@ def build_backend_env(
 
     env = dict(base_env)
     env.pop("AEROBIM_API_BEARER_TOKEN", None)
-    # Inherited pilot/production signoff must not ride in on a mentor laptop.
+    # Inherited pilot/production signoff must not ride in on a review-shell laptop.
     env.pop("AEROBIM_SIGNOFF_PROFILE", None)
     env["AEROBIM_STORAGE_DIR"] = str(storage_dir)
     env["AEROBIM_HOST"] = host

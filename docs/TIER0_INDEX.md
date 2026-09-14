@@ -1,19 +1,19 @@
 ---
 title: "AeroBIM — карта для жюри Техлаба и МИК"
 status: active
-version: "4.8.50"
-last_updated: "2026-09-13"
+version: "4.9.0"
+last_updated: "2026-09-14"
 tags: [aerobim, documentation, tier-0, techlab]
 claim_boundary: "Jury pack only. Checkpoint GO; customer_go false until RT-001/002/003. Eng readiness ≠ customer GO."
 ---
 
 # Карта для жюри Техлаба и МИК
 
-**Checkpoint `GO` (regulatory_measurement_mvp).** `customer_go` **false**. Стадия МИК — **доработка**. На учебном комплекте проверка запускается. Измерений (κ, held-out, два разметчика) на комплекте Самолёта **в git** нет. Канал 25.08 получен — **не** говорить «нет данных заказчика»; хеш-пакет в репозитории отсутствует. Частные тех+UX аудиты, переписка и вложения в публичный GitHub **не** переносятся. Блокеры: [реестр](../audit/reports/CRITICAL_BLOCKERS.md). Граница заявлений: [что проверено](pilot-claim-boundary-2026.md). Кто ставит технический статус: [ADR-001](architecture/ADR-001-verdict-ownership-2026.md). План в репо: [работа после 25.08](quality/KT3_IN_REPO_WORKPLAN_2026_08_27.md).
+**Checkpoint `GO` (regulatory_measurement_mvp).** `customer_go` **false**. Стадия МИК — **доработка**. На учебном комплекте проверка запускается. Измерений (κ, held-out, два разметчика) на комплекте Самолёта **в git** нет. Канал 25.08 получен — **не** говорить «нет данных заказчика»; хеш-пакет в репозитории отсутствует. Частные тех+UX аудиты, переписка и вложения в публичный GitHub **не** переносятся. Блокеры: [реестр](../audit/reports/CRITICAL_BLOCKERS.md). Граница заявлений: [что проверено](pilot-claim-boundary-2026.md). Кто ставит технический статус: [ADR-001](architecture/ADR-001-verdict-ownership-2026.md).
 
 **Формула стадии (дословно; источник — [карточка речи](demo/KT2_JURY_FAQ_2026_08_12.md)):** Мы на стадии доработки контура заказчика. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение у назначающей стороны ещё не начались. Checkpoint `GO` — регуляторно-измерительный MVP. `customer_go` остаётся false, пока нет независимого размеченного корпуса, двух разметчиков, подписанного профиля назначающей стороны и подтверждения импорта в СОД.
 
-**Объект КТ#3.** Речь и сценарий: [карточка КТ#3](demo/KT3_JURY_FAQ_2026_08_25.md) · [оператор](demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md) · [трекер, 6 задач](demo/KT3_TRACKER_SIX_TASKS_2026_08.md). Показ жюри = `python -m aerobim.tools.run_kt3_jury` (живой CLI из git). Review shell (`frontend/`) — трек ИТ-ментора, не чужой ноутбук жюри. В репозитории нет файлов заказчика. Замечание: суть + пункт нормы (не выдуман) + этаж/ось из `IfcSpatialIndex`, если GUID попал в индекс; иначе явно «нет в индексе», не из OCR. Модель 1,5 ГБ — RocksDB, не SPF RAM; WASM 256 МиБ. Unsigned OOS: [`../samples/oos/`](../samples/oos/) — в `DATASET_MANIFEST.json`, не закрывает RT.
+**Объект КТ#3.** Речь и сценарий: [карточка КТ#3](demo/KT3_JURY_FAQ_2026_08_25.md) · [оператор](demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md) · [трекер, 6 задач](demo/KT3_TRACKER_SIX_TASKS_2026_08.md). Показ жюри = `python -m aerobim.tools.run_kt3_jury` (живой CLI из git). Оболочка ревью (`frontend/`) — отдельная команда на этом же клоне, не замена CLI. В репозитории нет файлов заказчика. Замечание: суть + пункт нормы (не выдуман) + этаж/ось из `IfcSpatialIndex`, если GUID попал в индекс; иначе явно «нет в индексе», не из OCR. Модель 1,5 ГБ — RocksDB, не SPF RAM; WASM 256 МиБ. Unsigned OOS: [`../samples/oos/`](../samples/oos/) — в `DATASET_MANIFEST.json`, не закрывает RT.
 
 **Пять кресел отборочной комиссии №7** (роли, **не** ФИО; три кресла партнёра по согласованию): [брифы кресел](quality/MIK_SEAT_BRIEFS_2026_08.md) · [playbook по креслам](quality/MIK_COMMISSION_SEAT_PLAYBOOK_2026_09.md). Инженерные пины инвентаря канала (census / family / local max-pass) **не** карта жюри и **не** exhibit.
 
@@ -30,7 +30,6 @@ claim_boundary: "Jury pack only. Checkpoint GO; customer_go false until RT-001/0
 | [Матрица ТЗ](tz/TZ_COMPLIANCE_MATRIX_2026.md) | Построчное соответствие |
 | [Карта покрытия подачи](../submission/TZ_REQUIREMENTS_COVERAGE_2026_08.md) | Эта подача |
 | [Граница заявлений](pilot-claim-boundary-2026.md) | Проверено vs план |
-| [План в репо после 25.08](quality/KT3_IN_REPO_WORKPLAN_2026_08_27.md) | Канал ≠ хеш-пакет; CI; SPF cap 256 МиБ |
 | [Стриминг IFC / disk R-tree](quality/IFC_STREAMING_DISK_RTREE_DESIGN_2026_08.md) | Дизайн; parser не shipped; JSON sidecar индекса ≠ R-tree; RocksDB over SPF |
 | [SPF 256 МиБ / RocksDB 1,5 ГБ](quality/IFC_ANALYZE_VS_INGEST_CAP_2026_08.md) | SPF default не поднят; 413 свыше 1,5 ГБ; SPF ×10 литература |
 | [Отказ RVT/NWD](tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md) | IFC-first; тот же класс, что DWG |
@@ -61,11 +60,10 @@ claim_boundary: "Jury pack only. Checkpoint GO; customer_go false until RT-001/0
 | [План recall на инъекциях](evidence/DEFECT_INJECTION_RECALL_PLAN_2026_09.md) | Синтетика; seed 20260824; не корпус Самолёта |
 | [Прогон E2 03.09](evidence/DEFECT_INJECTION_RECALL_RUN_2026_09.md) | Mutation-kill 0/6 канальный IFC, 1/8 mini-IFC; Wilson lower 0.000 / 0.022; `synthetic_only`; customer_go false |
 | [ADR-004 MIT vs п. 6.3](architecture/ADR-004-prize-ip-mit-fork-2026.md) | Развилка; LICENSE не меняем |
-| [Сверка весов с PDF](quality/ORDER_WEIGHTS_VERIFICATION_2026_09.md) | Колонка PDF пустая; UNVERIFIED; attributed |
+| [Сверка весов с PDF](quality/ORDER_WEIGHTS_VERIFICATION_2026_09.md) | Десктоп 14.09: MATCH по весам; конфликт порога в прил. 3 п. 1.4; PDF не в git |
 | [Лицензионная вилка CAD (OSINT 30.08)](quality/NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md) | Sustaining ≠ BimRv; не продукт CAD |
 | [Триаж форматов ingest](quality/FORMAT_INGEST_TRIAGE_2026_09.md) | Обмен IFC+PDF/A; native fail-closed; trial ≠ продукт |
 | [Триаж UI рабочего места](quality/UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md) | Review shell ≠ полный цикл; UI не пишет summary.passed; показ жюри = CLI |
-| [Критический путь окна КТ#3](quality/KT3_WINDOW_CRITICAL_PATH_2026_09.md) | OIDC 501; Wilson n=6; RT-002 split; TBD confirm |
 | [Восемь задач трекера 29.08](quality/TRACKER_EIGHT_TASKS_2026_08.md) | SIG-01…08; volume≠accuracy; BFF 501 |
 | [Триаж поверхностей жюри](quality/JURY_PACK_TRIAGE_2026_09.md) | Роли не ФИО; census не карта; не exhibit |
 | [Одностраничник RVT/NWD/CV](demo/KT3_RVT_NWD_CV_ONEPAGER_2026_08.md) | SIG-07; CADSoftTools от 765 USD; Sustaining ≠ BimRv |
@@ -77,20 +75,7 @@ claim_boundary: "Jury pack only. Checkpoint GO; customer_go false until RT-001/0
 | [Playbook комиссии](quality/MIK_COMMISSION_SEAT_PLAYBOOK_2026_09.md) | Удары, три письма, двухчастная защита; ФИО [Г] |
 | [Шесть вопросов Самолёту](partners/SAMOLET_QUESTIONS_GROUNDED_2026_09_03.md) | Блокеры ТЗ; не NDA; не формы Фонда |
 | [Целостность доставки пакета](partners/DELIVERY_INTEGRITY_2026_09.md) | Git не отправляет почту; P0 канала |
-| [Триаж созвона 09.09](quality/CALL_09_09_TRIAGE_2026_09.md) | Engineering vs customer readiness; не 90% |
-| [Внешний обзор UI 10.09](quality/FRONTEND_UI_EXTERNAL_REVIEW_2026_09.md) | Review shell; WCAG/HIG как критерии, не сертификат; время эксперта не замерено |
-| [Триаж HEAD 10.09 (HD22)](quality/HEAD_TRIAGE_2026_09_10.md) | Red Team post-#47; не закрывает RT-001/002/003 |
-| [Триаж HD23 10.09 вечер](quality/HEAD_TRIAGE_HD23_2026_09_10.md) | Оболочка на `main`; #48 не merge; #40/#41/#44 OPEN |
-| [Триаж HD24 10.09 вечер](quality/HEAD_TRIAGE_HD24_2026_09_10.md) | Входящий переаудит vs git; 0/6 не 0/8; 14.09 ≠ SBOM; #44 OPEN |
-| [Триаж HD25 10.09 вечер](quality/HEAD_TRIAGE_HD25_2026_09_10.md) | #49/#50 влиты; FE-DRIFT-01; D-05 не «нет виртуализации»; #40/#41 OPEN |
-| [Триаж HD26 10.09 ночь](quality/HEAD_TRIAGE_HD26_2026_09_10.md) | CI venv-KILL; PR #51 HOLD до 11.09; #40/#41/#44 OPEN |
-| [Триаж HD27 13.09](quality/HEAD_TRIAGE_HD27_2026_09_13.md) | PR #52 снимок на main; FW-19 FIXED; #51 тогда HOLD по smoke; #40/#41/#44 OPEN |
-| [Триаж HD28 13.09](quality/HEAD_TRIAGE_HD28_2026_09_13.md) | FE-CRUFT-02 / FW-24 FIXED; live smoke rehearsal; #40/#41/#44 OPEN |
-| [Ранбук показа ИТ-ментору 11.09](quality/FRONTEND_MENTOR_DEMO_2026_09_11.md) | Review shell; красная черта списком; native confirm снят в HD28 |
-| [Разбор оболочки под ментора (снимок 5cf113ce)](quality/FRONTEND_MENTOR_WALKTHROUGH_2026_09_11.md) | Инженерный разбор UI; не приёмка; FW-19 и FW-24 закрыты в HD27/HD28 |
-| [Поставка 14.09: три отчёта + trial](partners/KT3_CUSTOMER_DELIVERY_14_09.md) | GitHub не канал; демо-seed не отчёт |
 | [Пакет ревью 10–25 карточек](partners/CUSTOMER_REVIEW_PACK_RUNBOOK_2026_09.md) | CLI shortlist; не точность; git не шлёт Самолёту |
-| [Ответ организаторам 14.09](partners/KT3_ORGANIZER_REPLY_14_09.md) | Единственный канал; 14.09 финал; нет прямого контакта |
 | [Пороги заказчика](quality/CUSTOMER_THRESHOLD_VS_ACTUAL_2026_08.md) | Целевое vs фактическое; 256 МиБ; cap не поднимаем |
 | [Обложка 0,60](partners/PARTNER_PROTOCOL_SIGNREADY_COVER_2026_08.md) | Письмо «готово подписать»; не 90% |
 

@@ -291,7 +291,7 @@ function looksLikeFireRating(issue: ValidationIssue): boolean {
 /**
  * First issue the expert should see after a report loads.
  * Coverage notes (IfcSpace absent, etc.) stay in the list; they must not
- * steal the landing from the IDS fire-rating example on the mentor fixture.
+ * steal the landing from the IDS fire-rating example on the demo fixture.
  */
 export function pickLandingIssueIndex(issues: readonly ValidationIssue[]): number {
   if (issues.length === 0) {

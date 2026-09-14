@@ -76,7 +76,7 @@ class UiExpertWorkplaceTriageTests(unittest.TestCase):
         text = (self._repo() / "docs" / "TIER0_INDEX.md").read_text(encoding="utf-8")
         self.assertIn("UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md", text)
         self.assertIn("run_kt3_jury", text)
-        self.assertIn("ИТ-ментора", text)
+        self.assertIn("оболочка ревью", text.lower())
 
     def test_tz_matrix_web_ui_is_partial_not_done(self) -> None:
         text = (self._repo() / "docs" / "tz" / "TZ_COMPLIANCE_MATRIX_2026.md").read_text(

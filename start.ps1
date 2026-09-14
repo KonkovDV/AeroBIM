@@ -1,4 +1,4 @@
-# IT-mentor review shell (API + Vite). Not the jury CLI.
+# Review shell (API + Vite). Not the jury CLI.
 # PowerShell:  .\start.ps1   or   .\start.bat
 # Do not type: start          (that is Start-Process)
 # Do not type: start.bat      (PowerShell will not run a .bat from cwd)
@@ -14,5 +14,5 @@ if (-not (Test-Path -LiteralPath $python)) {
     Write-Host "Not the jury CLI. customer_go false."
     exit 1
 }
-& $python -m aerobim.tools.run_it_mentor_stand @args
+& $python -m aerobim.tools.run_review_stand @args
 exit $LASTEXITCODE

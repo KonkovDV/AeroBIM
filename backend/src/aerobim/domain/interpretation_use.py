@@ -208,7 +208,7 @@ LEDGER: tuple[InferenceRow, ...] = (
         "deleting covered source archives. Counts live in engineering pins, "
         "not the jury map. Live scan only under .local/. Not processed.",
         "sha256 пакета Самолёта в git; имена площадок в публичном дереве",
-        "docs/quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md",
+        "docs/evidence/owner-ai-plan-execution-2026-08.json",
         "Keep NDA binaries and hashes out of git",
         "operational_hygiene",
     ),
@@ -248,7 +248,7 @@ LEDGER: tuple[InferenceRow, ...] = (
         "Extractor по прозе проектного ТЗ: 0 hits = extraction_gap",
         "II/C0 and TEP prose ≠ fixture REI60 patterns; gap is mapping, not empty TZ",
         "В проектном ТЗ нет требований к огнестойкости и площадям",
-        "docs/quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md",
+        "docs/evidence/owner-ai-plan-execution-2026-08.json",
         "Keep constructs unmixed; do not treat 0 hits as Does-not",
         "engine_regression",
     ),
@@ -296,7 +296,7 @@ LEDGER: tuple[InferenceRow, ...] = (
     _row(
         "TRK-04",
         "tracker",
-        "Задача 4: научный консультант / ИТ-ментор",
+        "Задача 4: научный консультант",
         "Вопросы и демо-ссылка в репозитории",
         "Выдуманные минуты консультаций",
         "docs/demo/KT3_JURY_FAQ_2026_08_25.md",
@@ -395,7 +395,7 @@ LEDGER: tuple[InferenceRow, ...] = (
         "Full-cycle workplace delivered; native RVT in UI; 30 min SLA measured; "
         "10D live; XLSX export; Checkpoint GO from chrome; seed as customer pack",
         "docs/quality/UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md",
-        "Jury laptop CLI; mentor may seed git fixture; keep NO_GO; natives fail-closed. "
+        "Jury laptop CLI; operator may seed git fixture; keep NO_GO; natives fail-closed. "
         "Demo seed stays off published OpenAPI.",
         "operational_hygiene",
     ),
@@ -964,7 +964,7 @@ LEDGER: tuple[InferenceRow, ...] = (
         "thresholds are signed; scope is OA-14",
         "Space efficiency delivered / customer does not need the row / "
         "numeric KPI without signature",
-        "docs/quality/KT3_WINDOW_CRITICAL_PATH_2026_09.md",
+        "docs/quality/FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md",
         "Owner records in-scope advisory vs out-of-MVP before the 22.09 rehearsal",
         "protocol_planning",
     ),

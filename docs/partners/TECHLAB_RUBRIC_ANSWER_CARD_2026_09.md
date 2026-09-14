@@ -31,7 +31,7 @@ claim_boundary: >
 | До 30 минут | стадийный тайминг в паспорте прогона + краткая выжимка | HTML `id='executive-brief'`; `run_passport` | не SLA |
 | Формат отчёта | краткая выжимка сверху, детали ниже; SKIPPED/NOT_VERIFIED видимы | HTML/PDF | не прятать advisory |
 | Роли Эксперт / Пользователь | слои отчёта: служебное не мешает роли «Пользователь»; HITL в экспорте | HTML слои | слой ≠ вердикт |
-| Три отчёта + пробный доступ к 14.09 | HTML выжимка на каждый слот канала; on-prem или time-boxed HTTPS | [`KT3_CUSTOMER_DELIVERY_14_09.md`](KT3_CUSTOMER_DELIVERY_14_09.md) · [`KT3_ORGANIZER_REPLY_14_09.md`](KT3_ORGANIZER_REPLY_14_09.md) | не GitHub; не демо-seed; не SLA 30–60 дней |
+| Три отчёта + пробный доступ | HTML выжимка на каждый слот канала; on-prem или time-boxed HTTPS | [`DELIVERY_INTEGRITY_2026_09.md`](DELIVERY_INTEGRITY_2026_09.md) · [`SAMOLET_OFFICIAL_LETTER_AND_QUESTIONS_2026_09.md`](SAMOLET_OFFICIAL_LETTER_AND_QUESTIONS_2026_09.md) | не GitHub; не демо-seed; не SLA 30–60 дней |
 
 ## Заготовки на острые вопросы
 

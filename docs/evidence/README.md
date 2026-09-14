@@ -25,7 +25,7 @@ Only **citeable** snapshots for TechLab review and reproducibility. Working dump
 | [`deep-study-carrier-facts-2026-08.md`](deep-study-carrier-facts-2026-08.md) · [`.json`](deep-study-carrier-facts-latest.json) | SIG-02 depth: 15 IFC2X3, QTO 0, wall FireRating EI 45, RVT 2020/2023. Not processed. No names/hashes |
 | [`interpretation-use-ledger-latest.json`](interpretation-use-ledger-latest.json) · [`../quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../quality/INTERPRETATION_USE_LEDGER_2026_08.md) | Kane IUA: licensed vs blocked inferences. Not customer precision. Checkpoint GO; customer_go false |
 | [`tz-v1-brief-coverage-2026-08.json`](tz-v1-brief-coverage-2026-08.json) · [`../tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md`](../tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md) | Public TZ v1 6-page brief pin. Not seven tasks. Not a product accuracy score. NO_GO |
-| [`owner-ai-plan-execution-2026-08.json`](owner-ai-plan-execution-2026-08.json) · [`../quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md`](../quality/OWNER_AI_PLAN_EXECUTION_2026_08_27.md) | Owner-AI plan scaffolds (unsigned OOS, local inventory). Not RT CLOSED. NO_GO |
+| [`owner-ai-plan-execution-2026-08.json`](owner-ai-plan-execution-2026-08.json) | Owner-AI plan scaffolds (unsigned OOS, local inventory). Not RT CLOSED. NO_GO |
 | [`kt3-jury-2026-08.json`](kt3-jury-2026-08.json) · [`../demo/KT3_TRACKER_SIX_TASKS_2026_08.md`](../demo/KT3_TRACKER_SIX_TASKS_2026_08.md) | KT#3 one-command pin + tracker six tasks. Fixture `passed=false`. Not RT CLOSED |
 | [`../quality/ENV_VAR_BIDIRECTIONAL_INVENTORY_2026_08.md`](../quality/ENV_VAR_BIDIRECTIONAL_INVENTORY_2026_08.md) | P0: documented vs code env scan. Scanner defect, not no-op. Not a new CI pin |
 | [`ifc-open-rss-probe-latest.json`](ifc-open-rss-probe-latest.json) | Fixture-only IFC-open RSS delta. `representative_scale=false`. Not Samolet RSS. Not a reason to raise the 256 MiB SPF default |
@@ -49,6 +49,7 @@ Only **citeable** snapshots for TechLab review and reproducibility. Working dump
 | [`../samples/benchmarks/ifc-bench-v2/IMPORT_PINS.json`](../../samples/benchmarks/ifc-bench-v2/IMPORT_PINS.json) | IFC-Bench **v2** pins (1027 QA, CC BY 4.0 QA; GPLv3 models excluded from MIT tree); checkout not vendored |
 | [`checkpoint2-evidence-bundle-latest.json`](checkpoint2-evidence-bundle-latest.json) | P2-04 wall-guid demo bundle pin (fixture GO) |
 | [`runtime-baseline-latest.json`](runtime-baseline-latest.json) | Runtime LOC / tests / gates (schema 1.2.0; completeness checked in CI) |
+| [`../quality/DEMO_DAY_AUDITOR_PACK_2026_09.md`](../quality/DEMO_DAY_AUDITOR_PACK_2026_09.md) | Demo-day A–F auditor table (machine: `demo_day_auditor_pack`). Not a jury exhibit. VERIFIED_CUSTOMER=0 |
 | [`samolet-sla-fixture-p95-2026-08-04.json`](samolet-sla-fixture-p95-2026-08-04.json) | Fixture SLA schema **1.4.0**, gate=**p95**; not customer; advisory on/off dual-run is still manual. Speech sheet: [`../demo/KT2_FIXTURE_TIMING_2026_08_16.md`](../demo/KT2_FIXTURE_TIMING_2026_08_16.md) |
 | [`lab-before-after-fixture-tool-only-latest.json`](lab-before-after-fixture-tool-only-latest.json) | Lab before/after journal: `t_tool_ms` on git wall+IDS; `t_manual_s` null; not partner B4; not A1–A8 |
 | [`DEFECT_INJECTION_RECALL_PLAN_2026_09.md`](DEFECT_INJECTION_RECALL_PLAN_2026_09.md) | План mutation-test recall; seed 20260824; не партнёр |

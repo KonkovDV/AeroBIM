@@ -28,7 +28,7 @@ Checkpoint **`GO`**; `customer_go` false. `detected_count: 0`. UI **не** за�
 
 PR #38 (ресайз панелей, нативные шкалы, пересчёт виртуального списка) **слит** в `main`. Изолированный стенд 08.09 и зелёная CI **не** WCAG и не приёмка на данных заказчика.
 
-Связанные: [`FORMAT_INGEST_TRIAGE_2026_09.md`](FORMAT_INGEST_TRIAGE_2026_09.md) · [`../architecture/ADR-001-verdict-ownership-2026.md`](../architecture/ADR-001-verdict-ownership-2026.md) · [`../tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md`](../tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md) · [`TRACKER_EIGHT_TASKS_2026_08.md`](TRACKER_EIGHT_TASKS_2026_08.md) · [`FRONTEND_DEVELOPMENT_PLAN_2026_09.md`](FRONTEND_DEVELOPMENT_PLAN_2026_09.md) (исполняемый план WP-FE для ИИ).
+Связанные: [`FORMAT_INGEST_TRIAGE_2026_09.md`](FORMAT_INGEST_TRIAGE_2026_09.md) · [`../architecture/ADR-001-verdict-ownership-2026.md`](../architecture/ADR-001-verdict-ownership-2026.md) · [`../tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md`](../tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md) · [`TRACKER_EIGHT_TASKS_2026_08.md`](TRACKER_EIGHT_TASKS_2026_08.md).
 
 ## Восемь экранов (IA, не delivery)
 
@@ -86,8 +86,8 @@ PR #38 (ресайз панелей, нативные шкалы, пересчё
 | RT-UI-DEMO-PACK | Git-seed = пакет заказчика обработан | Только стены+IDS; чертежи/ТЗ/расчёты в этом POST нет |
 | RT-UI-SEED-PASSED | Вернуть `passed` в JSON сида, чтобы фронт владел флагом | Сид даёт `report_id` + `issue_count`; флаг с GET отчёта |
 | RT-UI-TZ-MATRIX-DONE | Матрица ТЗ Web UI = done как сдача | Строка **partial**; этот пин — SSOT |
-| RT-UI-JURY-VITE | Vite как дефолт чужого ноутбука жюри | Ноутбук жюри = `run_kt3_jury`; UI — трек ИТ-ментора |
-| RT-UI-STORE-NOISE | Грязный локальный audit store = объём канала | Демо ментора — пустой `AEROBIM_STORAGE_DIR` |
+| RT-UI-JURY-VITE | Vite как дефолт чужого ноутбука жюри | Ноутбук жюри = `run_kt3_jury`; UI — оболочка ревью, не CLI жюри |
+| RT-UI-STORE-NOISE | Грязный локальный audit store = объём канала | Демо оболочки ревью — пустой `AEROBIM_STORAGE_DIR` |
 | RT-UI-FONTS | Офлайн-ноутбук падает из-за CDN-шрифтов | Нет `fonts.googleapis.com`; системный UI/mono |
 | RT-UI-OPENAPI-DEMO | OpenAPI публикует seed-fixture как продуктный operation | `include_in_schema=False`; роутер только при `is_dev_environment` |
 | RT-UI-SEED-VOLUME | `issue_count` сида = объём канала SIG-01 | Счётчик фикстуры; SIG-01 — фраза канала |
@@ -111,7 +111,7 @@ RT-001 (корпус + два оценщика), RT-002b (подпись Сам�
 | Трек | Кто | Что нажимать | Что нельзя |
 |---|---|---|---|
 | Жюри КТ#3 | сидящий член, чужой ноутбук | `python -m aerobim.tools.run_kt3_jury` | Vite как дефолт; native RVT; GO |
-| ИТ-ментор | `python scripts/run_review_shell.py` / `npm start` | «Загрузить демонстрационный комплект» | «пакет обработан»; SLA; XLSX сдан |
+| Review shell | `python scripts/run_review_shell.py` / `npm start` | «Загрузить демонстрационный комплект» | «пакет обработан»; SLA; XLSX сдан |
 
 Ожидаемый IDS-пример на обоих треках — учебные стены: FireRating REI60 vs REI30. Это сценарий фикстуры, не RT-001 CLOSED.
 

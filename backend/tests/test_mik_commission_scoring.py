@@ -314,8 +314,8 @@ class Kt3CommissionPackTests(unittest.TestCase):
         seats = (self._repo / "docs" / "quality" / "MIK_SEAT_BRIEFS_2026_08.md").read_text(
             encoding="utf-8"
         )
-        paste = (
-            (self._repo / "docs" / "partners" / "I_MOSCOW_APPLICATION_PASTE_2026_08.md")
+        scoring = (
+            (self._repo / "docs" / "quality" / "MIK_COMMISSION_SCORING_2026_08.md")
             .read_text(encoding="utf-8")
             .lower()
         )
@@ -335,10 +335,15 @@ class Kt3CommissionPackTests(unittest.TestCase):
         self.assertIn("не оценка", pnst)
         self.assertIn("Пилотирование Фонда", seats)
         self.assertIn("Информационное моделирование", seats)
-        self.assertIn("два класса", paste)
+        self.assertIn("два класса", scoring)
         self.assertIn("0,60", cover)
         self.assertIn("не цифра тз", cover)
-        self.assertIn("не прогноз нашего балла", paste)
+        levers = (
+            (self._repo / "docs" / "quality" / "MIK_A_LEVERS_PAST_50_2026_08.md")
+            .read_text(encoding="utf-8")
+            .lower()
+        )
+        self.assertIn("не прогноз нашего балла", levers)
         self.assertIn("tam_horizon_is_our_revenue() == false", k4)
         self.assertIn("нулевой вход", k4)
         self.assertIn("не capex", k4)
@@ -362,7 +367,7 @@ class Kt3CommissionPackTests(unittest.TestCase):
         )
         self.assertIn("итоговая сумма", scoring)
         self.assertIn("приложение 3 к положению", scoring)
-        self.assertIn("не видели", scoring)
+        self.assertIn("не коммитим", scoring)
         self.assertIn("arithmetic_mean", scoring)
         self.assertIn("points_bound_to_criteria_not_members", scoring)
 
@@ -389,7 +394,6 @@ class Kt3CommissionPackTests(unittest.TestCase):
             DEFECT_INJECTION_PLAN,
             LAB_BEFORE_AFTER,
             ORDER_WEIGHTS_VERIFICATION,
-            OWNER_ACTIONS,
         )
 
         snap = scoring_snapshot()
@@ -398,7 +402,6 @@ class Kt3CommissionPackTests(unittest.TestCase):
         inj = (self._repo / DEFECT_INJECTION_PLAN).read_text(encoding="utf-8").lower()
         adr = (self._repo / ADR_004_PRIZE_IP).read_text(encoding="utf-8").lower()
         weights = (self._repo / ORDER_WEIGHTS_VERIFICATION).read_text(encoding="utf-8").lower()
-        owner = (self._repo / OWNER_ACTIONS).read_text(encoding="utf-8").lower()
         faq = (
             (self._repo / "docs" / "demo" / "KT3_JURY_FAQ_2026_08_25.md")
             .read_text(encoding="utf-8")
@@ -426,11 +429,10 @@ class Kt3CommissionPackTests(unittest.TestCase):
         self.assertIn("evaluate_injection_recall", inj)
         self.assertIn("**proposed.**", adr)
         self.assertIn("license", adr)
-        self.assertIn("unverified", weights)
-        self.assertIn("| **unverified** |", weights)
         self.assertIn("attested_by=owner_briefing", weights)
-        self.assertIn("не утверждает, что действие уже сделано", owner)
-        self.assertIn("oa-1", owner)
+        self.assertIn("| **match** |", weights)
+        self.assertIn("conflict_in_pdf", weights)
+        self.assertNotIn("| **unverified** |", weights)
         self.assertIn("угт 4", faq)
         self.assertIn("не заявляем", faq)
         self.assertIn("02.04.2026", faq)
@@ -451,7 +453,6 @@ class Kt3CommissionPackTests(unittest.TestCase):
             DEFECT_INJECTION_PLAN,
             ADR_004_PRIZE_IP,
             ORDER_WEIGHTS_VERIFICATION,
-            OWNER_ACTIONS,
             "docs/quality/B_FINAL_SCORING_TICKSHEET_2026_09.md",
         ):
             text = (self._repo / rel).read_text(encoding="utf-8").lower()

@@ -1,4 +1,4 @@
-"""AI-trace: prompts live in docs/ai/; public reviews must not start with agent voice."""
+"""Public academic docs must not embed operator-prompt voice."""
 
 from __future__ import annotations
 
@@ -10,28 +10,18 @@ from pathlib import Path
 _REPO = Path(__file__).resolve().parents[2]
 
 
-class AcademicLitPromptHomeTests(unittest.TestCase):
+class AcademicPublicDocsStayPromptFreeTests(unittest.TestCase):
     def test_review_does_not_embed_operator_prompt(self) -> None:
         review = (_REPO / "docs" / "quality" / "ACADEMIC_LIT_REVIEW_2026_09.md").read_text(
             encoding="utf-8"
         )
         self.assertNotIn("Ты — научный со-автор", review)
-        self.assertIn("ACADEMIC_LIT_RADAR.md", review)
-        prompt = (_REPO / "docs" / "ai" / "ACADEMIC_LIT_RADAR.md").read_text(encoding="utf-8")
-        self.assertIn("Ты — научный со-автор", prompt)
-        self.assertIn("ACADEMIC_LIT_REVIEW_2026_09.md", prompt)
 
-
-class AcademicCoauthorPromptHomeTests(unittest.TestCase):
     def test_roadmap_does_not_embed_operator_prompt(self) -> None:
         roadmap = (_REPO / "docs" / "quality" / "ACADEMIC_ROADMAP_2026_09.md").read_text(
             encoding="utf-8"
         )
         self.assertNotIn("Ты — научный со-автор", roadmap)
-        self.assertIn("ACADEMIC_COAUTHOR.md", roadmap)
-        prompt = (_REPO / "docs" / "ai" / "ACADEMIC_COAUTHOR.md").read_text(encoding="utf-8")
-        self.assertIn("Ты — научный со-автор", prompt)
-        self.assertIn("ACADEMIC_ROADMAP_2026_09.md", prompt)
 
 
 class LintAiTraceTests(unittest.TestCase):
@@ -125,3 +115,4 @@ class LintAiTraceTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

@@ -48,7 +48,7 @@ TRACKER_TASKS: Final[tuple[dict[str, str], ...]] = (
     },
     {
         "id": "TRK-04",
-        "title": "Scientific consultant / IT mentor questions in the repo",
+        "title": "Scientific consultant questions in the repo",
         "agent": "done_speech",
         "owner": "blocked_consultation_minutes",
         "kt3_show": "docs/demo/KT3_JURY_FAQ_2026_08_25.md",

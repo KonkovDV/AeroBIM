@@ -164,6 +164,31 @@ _BUILTIN_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
         "forbidden_norm_checker_as_gold",
         re.compile(r"(?i)норм\s+чекер.{0,24}эталон"),
     ),
+    ("forbidden_ugt5_hyphen", re.compile(r"(?i)угт-5")),
+    (
+        "forbidden_aecv_as_macro_f1",
+        re.compile(r"(?i)macro\s*f1\s*0[.,]43"),
+    ),
+    (
+        "forbidden_customer_pack_run_as_processed",
+        re.compile(r"(?i)прогон\s+выполнен\s+на\s+вашем\s+комплекте"),
+    ),
+    (
+        "forbidden_area_from_geometry_claimed",
+        re.compile(r"(?i)площади\s+считаем\s+по\s+геометрии"),
+    ),
+    (
+        "forbidden_bcf_in_your_registry",
+        re.compile(r"(?i)bcf\s+в\s+ваш\s+реестр"),
+    ),
+    (
+        "forbidden_sso_on_their_idp",
+        re.compile(r"(?i)sso\s+на\s+вашем\s+idp"),
+    ),
+    (
+        "forbidden_ru_software_registry_as_status",
+        re.compile(r"(?i)в\s+реестре\s+российского\s+по"),
+    ),
 ]
 
 _KITCHEN_PATH_PREFIXES = (
@@ -178,6 +203,30 @@ _KITCHEN_PATH_PREFIXES = (
     "docs/demo/TRACKER_MEETING",
     "docs/demo/KT2_HOSTILE_QA",
     "docs/demo/KT2_VIDEO_SCRIPT",
+    "docs/quality/HEAD_TRIAGE",
+    "docs/quality/FRONTEND_MENTOR",
+    "docs/quality/FRONTEND_DEVELOPMENT_PLAN",
+    "docs/quality/FRONTEND_UI_EXTERNAL",
+    "docs/quality/OWNER_AI_PLAN",
+    "docs/quality/KT3_IN_REPO_WORKPLAN",
+    "docs/quality/KT3_INTERROGATION",
+    "docs/quality/KT3_HYPERPLAN",
+    "docs/quality/KT3_WINDOW_CRITICAL",
+    "docs/quality/KT3_PLAN_B",
+    "docs/quality/CALL_09_09",
+    "docs/quality/AI_TRACE_",
+    "docs/quality/CLOSING_CHECKLIST",
+    "docs/quality/SAMOLET_REPORT_RECONCILIATION",
+    "docs/quality/TECHLAB_POST_CARTOGRAPHY",
+    "docs/OWNER_ACTIONS",
+    "docs/ai/ACADEMIC_",
+    "docs/ai/AI_ARTEFACT",
+    "docs/partners/KT3_CUSTOMER_DELIVERY",
+    "docs/partners/KT3_ORGANIZER_REPLY",
+    "docs/partners/HTTPS_DEMO_STAND",
+    "docs/partners/MIK_OPERATOR_LETTER",
+    "docs/partners/I_MOSCOW_APPLICATION",
+    "backend/src/aerobim/tools/run_it_mentor_stand.py",
 )
 
 

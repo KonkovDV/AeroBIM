@@ -80,6 +80,6 @@ Checkpoint **`GO`**; `customer_go` false. Пакет канала **не** в gi
 
 ## Дополнение 09.09 вечер (не восьмая задача трекера)
 
-Письмо организаторов: к **14.09** заказчику нужны **три отчёта** по направленным комплектам и **самостоятельный** прогон. Это не SIG-01…08. Прямого контакта с Самолётом нет — единственный канал организаторы. **14.09 финальная** для заказчика; слот **15.09** — менторы, не вторая сдача. GitHub не канал. Демо-seed не отчёт. Ответ организаторам — [`../partners/KT3_ORGANIZER_REPLY_14_09.md`](../partners/KT3_ORGANIZER_REPLY_14_09.md) (`OA-23`). Поставка — [`../partners/KT3_CUSTOMER_DELIVERY_14_09.md`](../partners/KT3_CUSTOMER_DELIVERY_14_09.md) (`OA-22`). Пустой индекс `ready_for_deadline=false` — правильное состояние, пока владелец не отправил.
+Письмо организаторов: заказчику нужны **три отчёта** по направленным комплектам и **самостоятельный** прогон. Это не SIG-01…08. GitHub не канал. Демо-seed не отчёт. Целостность доставки: [`../partners/DELIVERY_INTEGRITY_2026_09.md`](../partners/DELIVERY_INTEGRITY_2026_09.md). Пустой индекс `ready_for_deadline=false` — правильное состояние, пока пакет не отправлен.
 
-Связанные: [`KT3_WINDOW_CRITICAL_PATH_2026_09.md`](KT3_WINDOW_CRITICAL_PATH_2026_09.md) · [`OWNER_ACTIONS_2026_09.md`](../OWNER_ACTIONS_2026_09.md) · [`KT3_HYPERPLAN_TRIAGE_RT_WH_2026_09.md`](KT3_HYPERPLAN_TRIAGE_RT_WH_2026_09.md).
+Связанные: [`../partners/SAMOLET_OFFICIAL_LETTER_AND_QUESTIONS_2026_09.md`](../partners/SAMOLET_OFFICIAL_LETTER_AND_QUESTIONS_2026_09.md) · [`FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md`](FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md).

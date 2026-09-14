@@ -60,7 +60,7 @@ python -m mypy src
 pytest tests -q
 ```
 
-Jury/README extras (`.[dev,raster]`): **0 failed**. Tests that need `pdf-agpl` or kitchen secrets skip. The CI pin in `docs/evidence/runtime-baseline-latest.json` is `attested_by=ci`, not a local count.
+Jury/README extras (`.[dev,raster]`): **0 failed**. Tests that need `pdf-agpl` or optional publication-denylist secrets skip. The CI pin in `docs/evidence/runtime-baseline-latest.json` is `attested_by=ci`, not a local count.
 
 If formatting fails:
 
@@ -70,7 +70,7 @@ python -m ruff format src tests
 
 ## Git Commits (honest authorship)
 
-Keep commit authorship truthful. If a **human** co-author materially contributed, use an explicit `Co-authored-by:` trailer. Vendor IDE/cloud GitHub-identity trailers are stripped by `.githooks/commit-msg` (owner order 2026-09-14). Do not strip human provenance trailers. AI assistance remains disclosed in SECURITY.md.
+Keep commit authorship truthful. If a **human** co-author materially contributed, use an explicit `Co-authored-by:` trailer. Vendor IDE/cloud GitHub-identity trailers are stripped by `.githooks/commit-msg`. Do not strip human provenance trailers. AI assistance remains disclosed in SECURITY.md.
 
 1. Commit from your shell. Human `Co-authored-by:` allowed; vendor IDE trailers are dropped.
 2. Optional hooks: `git config core.hooksPath .githooks`.

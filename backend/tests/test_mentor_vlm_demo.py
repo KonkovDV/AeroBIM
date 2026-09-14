@@ -1,4 +1,4 @@
-"""Mentor VLM demo — dry crop honesty + Yandex credential guard (offline)."""
+"""Advisory VLM demo — dry crop honesty + Yandex credential guard (offline)."""
 
 from __future__ import annotations
 
@@ -27,7 +27,7 @@ def _make_pdf(path: Path) -> None:
     write_text_pdf(path, "WALL-01 thickness 150 mm")
 
 
-class MentorVlmDemoTests(unittest.TestCase):
+class AdvisoryVlmDemoTests(unittest.TestCase):
     def test_redact_model_uri(self) -> None:
         self.assertEqual(
             _redact_model_uri("gpt://b1gsecret/qwen3.6-35b-a3b"),

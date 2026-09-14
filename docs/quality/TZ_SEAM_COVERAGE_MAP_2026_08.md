@@ -78,7 +78,7 @@ Completeness engine, pairing off, discipline codes PZ/AR/KR: **structural pass**
 
 ## 3. Seven comparison tasks × Solihin × 2026 benches
 
-Карта ячеек: [`TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md`](TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md). That map does **not** close any task. Execution plan after the map: [`TECHLAB_POST_CARTOGRAPHY_PLAN_2026_08.md`](TECHLAB_POST_CARTOGRAPHY_PLAN_2026_08.md).
+Карта ячеек: [`TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md`](TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md). That map does **not** close any task.
 
 | # | Task | Class | 2026 bench | Pack carrier | AeroBIM now | RT |
 |---|---|---|---|---|---|---|
@@ -171,7 +171,7 @@ OSINT for speech (not a pitch): NKP **A.ru / stable** as of **20.03.2026** **[П
 | RT-REC-21 | Demo-seed = report on a sent customer pack | **KILL** | Overlay/fixture id rejected in delivery index |
 | RT-REC-22 | 15.09 call = Samolet delivery / second chance | **KILL** | No direct contact; 14.09 via organizers is final |
 
-Живое дерево 27.08 (бриф v1 + inject): [`TZ_LIVE_TREE_TRIAGE_2026_08_27.md`](TZ_LIVE_TREE_TRIAGE_2026_08_27.md). Исполнение плана (unsigned OOS, inventory `.local/`): [`OWNER_AI_PLAN_EXECUTION_2026_08_27.md`](OWNER_AI_PLAN_EXECUTION_2026_08_27.md).
+Живое дерево 27.08 (бриф v1 + inject): [`TZ_LIVE_TREE_TRIAGE_2026_08_27.md`](TZ_LIVE_TREE_TRIAGE_2026_08_27.md). Unsigned OOS and local inventory: [`../evidence/owner-ai-plan-execution-2026-08.json`](../evidence/owner-ai-plan-execution-2026-08.json).
 
 ## 6. What this pass does not do
 

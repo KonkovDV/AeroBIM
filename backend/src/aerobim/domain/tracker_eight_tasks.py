@@ -93,10 +93,10 @@ TRACKER_EIGHT: Final[tuple[dict[str, str], ...]] = (
     },
     {
         "id": "SIG-08",
-        "title": "Datasets: RUT (MIIT) via IT mentor",
+        "title": "Datasets: RUT (MIIT) academic partner",
         "git": "letter_not_in_git",
         "owner": "blocked_send_mail",
-        "show": "docs/OWNER_ACTIONS_2026_09.md OA-10",
+        "show": "docs/evidence/DATA_STATEMENT_2026_08.md",
         "stop": "Teaching pack closes RT-001",
     },
 )

@@ -1,5 +1,5 @@
 @echo off
-rem IT-mentor review shell (API + Vite). Not the jury CLI.
+rem Review shell (API + Vite). Not the jury CLI.
 rem PowerShell:  .\start.bat     (the leading .\ is required)
 rem Do not type: start           (PowerShell alias for Start-Process)
 rem Do not type: start.bat       (PowerShell does not run cwd .bat without .\)
@@ -21,7 +21,7 @@ if not exist "backend\.venv\Scripts\python.exe" (
   exit /b 1
 )
 
-backend\.venv\Scripts\python.exe -m aerobim.tools.run_it_mentor_stand %*
+backend\.venv\Scripts\python.exe -m aerobim.tools.run_review_stand %*
 set "EXITCODE=%ERRORLEVEL%"
 if not "%EXITCODE%"=="0" (
   echo start.bat failed, exit %EXITCODE%

@@ -143,14 +143,19 @@ class Pass12HonestyLockTests(unittest.TestCase):
         for leak in POINTER_CATEGORY_LEAKS:
             self.assertNotIn(leak, lowered, msg=leak)
 
-    def test_workplan_names_licensed_registry_as_alternate_path(self) -> None:
-        text = (
-            (_REPO / "docs" / "quality" / "KT3_IN_REPO_WORKPLAN_2026_08_27.md")
+    def test_iua_ledger_names_licensed_use(self) -> None:
+        iua = (
+            (_REPO / "docs" / "quality" / "INTERPRETATION_USE_LEDGER_2026_08.md")
             .read_text(encoding="utf-8")
             .lower()
         )
-        self.assertIn("licensed", text)
-        self.assertIn("registry", text)
+        cad = (
+            (_REPO / "docs" / "quality" / "NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md")
+            .read_text(encoding="utf-8")
+            .lower()
+        )
+        self.assertIn("licensed", iua)
+        self.assertIn("sustaining", cad)
 
 
 if __name__ == "__main__":

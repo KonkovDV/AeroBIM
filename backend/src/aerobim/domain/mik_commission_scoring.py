@@ -85,8 +85,8 @@ K2_NOVELTY_VS_PEERS: Final = "docs/quality/K2_NOVELTY_VS_PEERS_2026_08.md"
 PNST_841_MAP: Final = "docs/quality/PNST_841_AI_QUALITY_EVAL_2026.md"
 SEAT_BRIEFS: Final = "docs/quality/MIK_SEAT_BRIEFS_2026_08.md"
 SEAT_PLAYBOOK: Final = "docs/quality/MIK_COMMISSION_SEAT_PLAYBOOK_2026_09.md"
-MIK_OPERATOR_LETTER: Final = "docs/partners/MIK_OPERATOR_LETTER_REQUEST_2026_09.md"
-APPLICATION_PASTE: Final = "docs/partners/I_MOSCOW_APPLICATION_PASTE_2026_08.md"
+MIK_OPERATOR_LETTER: Final = "docs/partners/SAMOLET_OFFICIAL_LETTER_AND_QUESTIONS_2026_09.md"
+APPLICATION_PASTE: Final = "docs/quality/MIK_COMMISSION_SCORING_2026_08.md"
 SIGNREADY_COVER: Final = "docs/partners/PARTNER_PROTOCOL_SIGNREADY_COVER_2026_08.md"
 CUSTOMER_THRESHOLDS: Final = "docs/quality/CUSTOMER_THRESHOLD_VS_ACTUAL_2026_08.md"
 B_FINAL_TICKSHEET: Final = "docs/quality/B_FINAL_SCORING_TICKSHEET_2026_09.md"
@@ -94,7 +94,6 @@ LAB_BEFORE_AFTER: Final = "docs/partners/BEFORE_AFTER_MEASUREMENT_PROTOCOL_2026_
 DEFECT_INJECTION_PLAN: Final = "docs/evidence/DEFECT_INJECTION_RECALL_PLAN_2026_09.md"
 ADR_004_PRIZE_IP: Final = "docs/architecture/ADR-004-prize-ip-mit-fork-2026.md"
 ORDER_WEIGHTS_VERIFICATION: Final = "docs/quality/ORDER_WEIGHTS_VERIFICATION_2026_09.md"
-OWNER_ACTIONS: Final = "docs/OWNER_ACTIONS_2026_09.md"
 # LETI: not less than 1, not more than 10. K1 scores two competency classes.
 MIN_TEAM_SIZE: Final = 1
 MAX_TEAM_SIZE: Final = 10
@@ -438,7 +437,6 @@ def scoring_snapshot() -> dict[str, Any]:
         "defect_injection_plan": DEFECT_INJECTION_PLAN,
         "adr_004_prize_ip": ADR_004_PRIZE_IP,
         "order_weights_verification": ORDER_WEIGHTS_VERIFICATION,
-        "owner_actions": OWNER_ACTIONS,
     }
 
 
@@ -454,7 +452,6 @@ __all__ = [
     "DEFECT_INJECTION_PLAN",
     "ADR_004_PRIZE_IP",
     "ORDER_WEIGHTS_VERIFICATION",
-    "OWNER_ACTIONS",
     "FINALIST_AGGREGATION",
     "FINALIST_CRITERIA",
     "FINALIST_TIE_BREAK_ORDER",

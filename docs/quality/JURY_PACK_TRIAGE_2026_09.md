@@ -27,7 +27,7 @@ claim_boundary: >
 
 Checkpoint **`GO`**; `customer_go` false. `detected_count: 0`. `processed: false`. Семь задач Техлаба — **Uncertain**.
 
-Связанные: [`TRACKER_EIGHT_TASKS_2026_08.md`](TRACKER_EIGHT_TASKS_2026_08.md) · [`KT3_IN_REPO_WORKPLAN_2026_08_27.md`](KT3_IN_REPO_WORKPLAN_2026_08_27.md) · [`INTERPRETATION_USE_LEDGER_2026_08.md`](INTERPRETATION_USE_LEDGER_2026_08.md) · [`FORMAT_INGEST_TRIAGE_2026_09.md`](FORMAT_INGEST_TRIAGE_2026_09.md) · [`UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md`](UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md).
+Связанные: [`TRACKER_EIGHT_TASKS_2026_08.md`](TRACKER_EIGHT_TASKS_2026_08.md) · [`KT3_DELIVERY_BOM_2026_08.md`](KT3_DELIVERY_BOM_2026_08.md) · [`INTERPRETATION_USE_LEDGER_2026_08.md`](INTERPRETATION_USE_LEDGER_2026_08.md) · [`FORMAT_INGEST_TRIAGE_2026_09.md`](FORMAT_INGEST_TRIAGE_2026_09.md) · [`UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md`](UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md).
 
 ## Этот проход (KILL / HOLD / ACCEPT)
 
@@ -42,11 +42,11 @@ Checkpoint **`GO`**; `customer_go` false. `detected_count: 0`. `processed: false
 | RT-JURY-TANGL | AeroBIM как замена Tangl креслу BIM | Бриф: 10D-атрибуты; Tangl — слой модели; мы — шов документов |
 | RT-JURY-GIGACHAT | Процессные заметки вендор-чата на SSOT восьми задач | SSOT: несинхронизированные копии чата не используются; имени вендора нет |
 | RT-JURY-CHANNEL-BRAND | Партнёрский бренд в имени public-файла max-pass | Переименовано в CHANNEL_LOCAL_MAX_PASS; не exhibit жюри |
-| RT-JURY-OSINT-GIT | Трек OSINT-вектора партнёра или прочей кухни сессии | Файл вектора в gitignore; unpublished-list honesty lock |
+| RT-JURY-OSINT-GIT | Трек OSINT-вектора партнёра или внутренних заметок сессии | Файл вектора в gitignore; unpublished-list honesty lock |
 | RT-JURY-LOCAL-PIN | Локально сгенерированный IFC/runtime pin как `attested_by=ci` | Pre-push предупреждает; `attested_by=ci` только; локальные тайминги не стейджим |
 | RT-JURY-GIB | Несжатые байт-итоги NDA-дерева на поверхности жюри | `uncompressed_gib_in_git=false`; majority — boolean |
 | RT-JURY-QUESTION-EXHIBIT | Неотправленный вопросник заказчику на TIER0 | Черновик в `partners/`; TIER0 больше не перечисляет |
-| RT-JURY-OA-EXHIBIT | OWNER_ACTIONS как exhibit уже сделанной работы | Список владельца снят с TIER0; строки не marked done |
+| RT-JURY-OA-EXHIBIT | Внутренний журнал владельца как exhibit уже сделанной работы | Журнал снят с TIER0; строки не marked done |
 | RT-JURY-MEETS | Семейства ⇒ Meets/Does-not семи задач Техлаба | Criterion **Uncertain**; local max-pass — не вердикт |
 | RT-JURY-ENG-PINS | Удалить census JSON из git, чтобы исчез тормоз «не processed» | Пины оставить; пометить не exhibit; счётчики не на TIER0 |
 | RT-JURY-DENYLIST | Добавить фамилии комиссии в kitchen denylist этим коммитом | HMAC-пин — секрет CI; ротация секретов вне полосы |

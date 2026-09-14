@@ -59,8 +59,8 @@ IFC). Организатора просим **переслать эксперт�
 | канал ссылок | почта организаторов; пересылка эксперту **до** 14.09 | on-prem Docker или time-boxed HTTPS |
 | не канал | GitHub | облако; аноним; шаринг экрана |
 
-См. [`KT3_CUSTOMER_DELIVERY_14_09.md`](KT3_CUSTOMER_DELIVERY_14_09.md).
-Исходящий ответ организаторам: [`KT3_ORGANIZER_REPLY_14_09.md`](KT3_ORGANIZER_REPLY_14_09.md).
+См. [`CUSTOMER_REVIEW_PACK_RUNBOOK_2026_09.md`](CUSTOMER_REVIEW_PACK_RUNBOOK_2026_09.md).
+Исходящий список вопросов: [`SAMOLET_QUESTIONS_GROUNDED_2026_09_03.md`](SAMOLET_QUESTIONS_GROUNDED_2026_09_03.md).
 Краткая выжимка в HTML/PDF (`id='executive-brief'`). SKIPPED / NOT_VERIFIED /
 advisory **не вырезаются**.
 

@@ -23,7 +23,7 @@ claim_boundary: >
 | [`../../docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](../../docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) | Методика до данных заказчика |
 | [`../../docs/demo/KT3_JURY_FAQ_2026_08_25.md`](../../docs/demo/KT3_JURY_FAQ_2026_08_25.md) | КТ#3: живой CLI, файлов заказчика в git нет |
 | [`../../docs/quality/IFC_ANALYZE_VS_INGEST_CAP_2026_08.md`](../../docs/quality/IFC_ANALYZE_VS_INGEST_CAP_2026_08.md) | SPF 256 МиБ ≠ приём 1,5 ГБ |
-| [`../../docs/quality/FRONTEND_DEVELOPMENT_PLAN_2026_09.md`](../../docs/quality/FRONTEND_DEVELOPMENT_PLAN_2026_09.md) | Review shell: что сделано / HOLD |
+| [`../../docs/quality/UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md`](../../docs/quality/UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md) | Review shell: что сделано / HOLD |
 
 Открытые наборы и учебные комплекты — регрессия движка. В них нет разметки инженеров «Самолёта». Разбор шести столов (Техлаб, МИК, трекер, заказчик, жюри, оператор) — в [карточке речи](../../docs/demo/KT2_JURY_FAQ_2026_08_12.md) и Interpretation/Use ledger.
 

@@ -4,7 +4,7 @@
 
 The browser workplace is a **review shell over persisted reports**. It is not a CDE, not a model authoring tool, and not a replacement for the expert. The UI never writes `summary.passed` ([ADR-001](../docs/architecture/ADR-001-verdict-ownership-2026.md)). Checkpoint **`GO`**; `customer_go` false.
 
-Sitting-member jury track remains the CLI (`python -m aerobim.tools.run_kt3_jury` from `backend/`). This shell is the IT-mentor laptop track.
+Sitting-member jury track remains the CLI (`python -m aerobim.tools.run_kt3_jury` from `backend/`). This shell is optional UI on the same clone.
 
 ## What you can open today
 
@@ -43,7 +43,7 @@ python scripts/run_review_shell.py
 
 Windows PowerShell from the repo root: `.\start.bat` (the `.\` is required). Do not type `start` (Start-Process) or `start.bat` without the prefix. Explorer: double-click `start.bat`. CMD: `start.bat`.
 
-Same stand from `backend/` (venv active): `python -m aerobim.tools.run_it_mentor_stand`. From this directory: `npm start`. Ctrl+C stops both processes. Empty storage; click «Загрузить демонстрационный комплект». Not the jury CLI.
+Same stand from `backend/` (venv active): `python -m aerobim.tools.run_review_stand`. From this directory: `npm start`. Ctrl+C stops both processes. Dedicated storage; click «Загрузить демонстрационный комплект». Not the jury CLI.
 
 Vite only (smokes, already-running API):
 
@@ -108,4 +108,4 @@ drops the inherited variable.
 - Lab HITL: expert/reviewer write; `user`/`viewer` → 403.
 - Authoring-tool roundtrip (write back to Revit/Navisworks) is not implemented.
 
-Plan for the executor: [`docs/quality/FRONTEND_DEVELOPMENT_PLAN_2026_09.md`](../docs/quality/FRONTEND_DEVELOPMENT_PLAN_2026_09.md). Claim boundary: [`docs/pilot-claim-boundary-2026.md`](../docs/pilot-claim-boundary-2026.md).
+Claim boundary: [`docs/pilot-claim-boundary-2026.md`](../docs/pilot-claim-boundary-2026.md).

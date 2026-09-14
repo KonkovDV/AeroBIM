@@ -267,18 +267,18 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "id": "RT-UI-JURY-VITE",
         "verdict": "KILL",
         "attack": "Open Vite as the default KT#3 sitting-member laptop track",
-        "brake": "Jury laptop stays run_kt3_jury; UI is the IT-mentor track",
+        "brake": "Jury laptop stays run_kt3_jury; UI is the optional review shell",
     },
     {
         "id": "RT-UI-STORE-NOISE",
         "verdict": "HOLD",
         "attack": "A dirty local audit store looks like channel volume",
-        "brake": "Mentor demo uses an empty AEROBIM_STORAGE_DIR; SIG-01 is not this list",
+        "brake": "Review stand uses a dedicated AEROBIM_STORAGE_DIR; SIG-01 is not this list",
     },
     {
         "id": "RT-UI-FONTS",
         "verdict": "ACCEPT",
-        "attack": "Jury or mentor laptop offline fails because fonts load from a CDN",
+        "attack": "Offline clone fails because fonts load from a CDN",
         "brake": "No fonts.googleapis.com import; system UI/mono stack",
     },
     {

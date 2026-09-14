@@ -95,9 +95,9 @@ Jury/preprint extract (tracked): [`../RELATED_WORK_PREPRINT_2026_09.md`](../RELA
 | Evidence-объект как контракт находки | **OPEN** | Cheung даёт *институциональную* рамку evidence–engine; машиночитаемого honesty-контракта находки (rule/GUID/expected/observed/claim-level) в работах нет |
 | RU-контур (21.101, МОГЭ IDS, РД-ревью) | **OPEN** | Мировая литература не покрывает. Корпус партнёра в git по-прежнему отсутствует |
 
-## 4. Промт литрадара
+## 4. Операторский промт
 
-Текст промта живёт в [`../ai/ACADEMIC_LIT_RADAR.md`](../ai/ACADEMIC_LIT_RADAR.md). Этот файл — обзор, не операторский промт.
+Операторский промт не публикуется. Этот файл — обзор, не инструкция модели.
 
 ## 5. Статус команд (02.09.2026)
 
@@ -106,5 +106,5 @@ Jury/preprint extract (tracked): [`../RELATED_WORK_PREPRINT_2026_09.md`](../RELA
 3. Кейс-слайд — CORENET **исправлен** (не «все проекты»). CBIMS 20k — UNVERIFIED.
 4. Вклад draft — без «первый в мире»; n≥30 по-прежнему впереди (`t_manual_s` лабораторного журнала пуст).
 5. Фактчек ссылок 02.09.2026 — [`LINK_FACTCHECK_2026_09.md`](LINK_FACTCHECK_2026_09.md); снимок, не точность продукта.
-6. AI-trace 02.09.2026 — промт вынесен в `docs/ai/` (вариант А).
+6. AI-trace 02.09.2026 — операторский промт не входит в публичное дерево.
 7. E-process — CLI fixture-monitor, не job GitHub Actions; arXiv 2501.03982 в docstring модуля, не в `CITATION.bib`. Порог VLM — [`../evidence/VLM_CONFIDENCE_TUNING_PROTOCOL_2026_09.md`](../evidence/VLM_CONFIDENCE_TUNING_PROTOCOL_2026_09.md) (не interim 0.60).
