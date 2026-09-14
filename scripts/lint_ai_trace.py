@@ -92,9 +92,9 @@ def _iter_source_files(root: Path) -> list[Path]:
             if path in seen:
                 continue
             seen.add(path)
-            if any(part in _SKIP_DIR_PARTS for part in path.parts):
-                continue
             rel = _rel(path, scan_root)
+            if any(part in _SKIP_DIR_PARTS for part in Path(rel).parts):
+                continue
             if _skip_rel(rel):
                 continue
             files.append(path)

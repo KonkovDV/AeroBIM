@@ -2,7 +2,7 @@
 ---
 title: "КТ#3 — сценарий оператора (живой CLI из git)"
 date: "2026-08-25"
-last_updated: "2026-09-01"
+last_updated: "2026-09-14"
 checkpoint: GO
 closes_rt001: false
 closes_rt002: false
@@ -50,12 +50,21 @@ Stderr `MEP system graph probe failed` / `MEP-CLASH-001` на учебной м�
 
 **Не** ставить `AEROBIM_SIGNOFF_PROFILE=samolet_pilot` на чужом ноутбуке: clash/MEP форсируются и демо покраснеет не про шов. Если нужен городской контур:
 
+cmd:
+
 ```text
 set AEROBIM_ENV=development
 set AEROBIM_SIGNOFF_PROFILE=moscow_agr_2026
 ```
 
-Clash/MEP на этом профиле — честный SKIPPED, не подделка (RT-003 OPEN).
+PowerShell:
+
+```powershell
+$env:AEROBIM_ENV = "development"
+$env:AEROBIM_SIGNOFF_PROFILE = "moscow_agr_2026"
+```
+
+Clash/MEP на этом профиле — честный SKIPPED, не подделка (RT-003 OPEN). Stderr про MEP probe и HTTP rate limit на учебной фикстуре — штатно, не падение демо.
 
 P1, только если осталось время: `python -m aerobim.tools.run_demo_vertical_slice` (оверлей PDF). Не ядро вердикта.
 

@@ -1315,7 +1315,7 @@ class Settings:
         settings.require_durable_runtime()
         if not profile_gate and settings.http_rate_limit_per_minute <= 0:
             logging.getLogger(__name__).warning(
-                "HD2-RL-02: HTTP rate limit is off (max_events<=0 → allow). "
+                "HTTP rate limit is off (max_events<=0 → allow). "
                 "samolet_pilot/production reject AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE<=0 at boot."
             )
         return settings
