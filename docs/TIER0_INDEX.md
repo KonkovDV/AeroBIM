@@ -39,6 +39,7 @@ claim_boundary: "Jury pack only. Checkpoint GO; customer_go false until RT-001/0
 | [Строка корпуса](demo/KT2_CORPUS_SSOT_2026_08.md) | Замороженные открытые прокси |
 | [Поля обмена 10D](demo/KT2_10D_INTAKE_CONTRACT_2026_08.md) | Предложение; не коннектор 10D |
 | [Карточка речи КТ#3](demo/KT3_JURY_FAQ_2026_08_25.md) | 30 с + 8–12 мин; стоп-лист |
+| [Текст слайдов 29–30.09](../submission/03-presentation/demo_day_slides.md) | Семь экранов демо-дня; не дека 13.09 с рабочего стола |
 | [Сценарий оператора КТ#3](demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md) | Живой CLI из git |
 | [Трекер КТ#3 (6 задач)](demo/KT3_TRACKER_SIX_TASKS_2026_08.md) | Live CLI; не KPI демо в git |
 | [ADR-001](architecture/ADR-001-verdict-ownership-2026.md) | Кто пишет `summary.passed`; Iversen/Fuchs — LLM на маршруте, у нас черновик |
@@ -79,4 +80,4 @@ claim_boundary: "Jury pack only. Checkpoint GO; customer_go false until RT-001/0
 | [Пороги заказчика](quality/CUSTOMER_THRESHOLD_VS_ACTUAL_2026_08.md) | Целевое vs фактическое; 256 МиБ; cap не поднимаем |
 | [Обложка 0,60](partners/PARTNER_PROTOCOL_SIGNREADY_COVER_2026_08.md) | Письмо «готово подписать»; не 90% |
 
-Пять полей формы: [пакет подачи](../submission/README.md). Дека: [`aerobim_kt2.pptx`](../submission/03-presentation/aerobim_kt2.pptx) / [`aerobim_kt2.pdf`](../submission/03-presentation/aerobim_kt2.pdf). Ролик 2–3 мин **не записываем и не прилагаем.** Показ — `run_demo_ifc_acceptance_gate`.
+Пять полей формы: [пакет подачи](../submission/README.md). Дека формы (КТ#2): [`aerobim_kt2.pptx`](../submission/03-presentation/aerobim_kt2.pptx) / [`aerobim_kt2.pdf`](../submission/03-presentation/aerobim_kt2.pdf). Речь 29–30.09: [`demo_day_slides.md`](../submission/03-presentation/demo_day_slides.md). Ролик 2–3 мин **не записываем и не прилагаем.** Показ — `run_demo_ifc_acceptance_gate`. Демо-день — `run_kt3_jury`.

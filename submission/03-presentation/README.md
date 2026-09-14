@@ -1,24 +1,27 @@
 ---
 title: "Поле «Презентация» — дека, речь, запреты"
 status: active
-version: "1.1.2"
-last_updated: "2026-09-10"
+version: "1.2.0"
+last_updated: "2026-09-14"
 claim_boundary: >
-  Main deck files are still aerobim_kt2.pptx / aerobim_kt2.pdf until the
-  KT#3 rebuild (P2, not this commit). Slide copy in slides.md.
-  Speech SSOT for KT#3 is docs/demo/KT3_JURY_FAQ_2026_08_25.md.
-  Video not recorded. Checkpoint GO; customer_go false; RT-001 OPEN; RT-002a CLOSED
+  Form-field binary remains aerobim_kt2.pptx / aerobim_kt2.pdf (KT#2).
+  Demo-day 29–30.09 slide copy is demo_day_slides.md. Speech lock is
+  docs/demo/DEMO_DAY_SPEECH_LOCK_2026_09.md. Video not recorded.
+  Checkpoint GO; customer_go false; RT-001 OPEN; RT-002a CLOSED
   regulatory / RT-002b CLOSED EIR carrier / RT-002c OPEN signed; RT-003 OPEN.
 ---
 
 # Презентация
 
-**Основная дека для формы (бинарь пока с меткой КТ#2):** [`aerobim_kt2.pptx`](aerobim_kt2.pptx) · [`aerobim_kt2.pdf`](aerobim_kt2.pdf).
-Текстовый каркас — [`slides.md`](slides.md). Если бинарь отсутствует в
-клоне, для речи использовать FAQ, не выдумывать слайды. Пересборка pptx
-под КТ#3 — P2 **до 18.09**, не этот коммит.
+**Демо-день 29–30.09 — текст семи экранов:** [`demo_day_slides.md`](demo_day_slides.md).
+Замок речи: [`../../docs/demo/DEMO_DAY_SPEECH_LOCK_2026_09.md`](../../docs/demo/DEMO_DAY_SPEECH_LOCK_2026_09.md).
+Дека 13.09 на рабочем столе устарела — её не показывать. Бинарь в git этим файлом не переписывается.
 
-Речь КТ#3 (SSOT, не слайд-файл): [`../../docs/demo/KT3_JURY_FAQ_2026_08_25.md`](../../docs/demo/KT3_JURY_FAQ_2026_08_25.md) · runbook: [`../../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md`](../../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md). Пересборка pptx под КТ#3 — P2 до 18.09, не этот коммит. Ролик 2–3 мин **не записываем и не прилагаем.** Показ продукта — живой CLI, не mp4 и не снимок HTML.
+**Дека для поля формы (бинарь с меткой КТ#2, 20.08):** [`aerobim_kt2.pptx`](aerobim_kt2.pptx) · [`aerobim_kt2.pdf`](aerobim_kt2.pdf).
+Текстовый каркас КТ#2 — [`slides.md`](slides.md). Если бинарь отсутствует в
+клоне, для речи использовать FAQ, не выдумывать слайды.
+
+Речь КТ#3 (карточка, не слайд-файл): [`../../docs/demo/KT3_JURY_FAQ_2026_08_25.md`](../../docs/demo/KT3_JURY_FAQ_2026_08_25.md) · runbook: [`../../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md`](../../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md). Ролик 2–3 мин **не записываем и не прилагаем.** Показ КТ#2 — `python -m aerobim.tools.run_demo_ifc_acceptance_gate`. Показ демо-дня — `python -m aerobim.tools.run_kt3_jury`. Живой CLI, не mp4 и не снимок HTML.
 
 ## Каркас слайдов
 

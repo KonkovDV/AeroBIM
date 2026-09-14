@@ -2,8 +2,8 @@
 ---
 title: "КТ#3 — пакет подачи (Техлаб Москва, задача Самолёта по верификации ПД/РД)"
 status: active
-version: "1.2.0"
-last_updated: "2026-09-04"
+version: "1.2.1"
+last_updated: "2026-09-14"
 claim_boundary: >
   Submission index only. TZ criteria (>90%, до 30 минут) are the customer's
   evaluation targets, not AeroBIM measurements.   Checkpoint GO; customer_go false; RT-001/002/003 OPEN.
@@ -26,7 +26,7 @@ claim_boundary: >
 |---|---|---|
 | **Репозиторий** \* | [`01-repository/`](01-repository/README.md) | Структура, сборка, лицензия, CI |
 | **Документация** \* | [`02-documentation/`](02-documentation/README.md) | Техобоснование + матрица ТЗ + границы заявлений |
-| **Презентация** \* | [`03-presentation/`](03-presentation/README.md) | [`slides.md`](03-presentation/slides.md) · [`aerobim_kt2.pptx`](03-presentation/aerobim_kt2.pptx) |
+| **Презентация** \* | [`03-presentation/`](03-presentation/README.md) | [`slides.md`](03-presentation/slides.md) · [`aerobim_kt2.pptx`](03-presentation/aerobim_kt2.pptx) · [`demo_day_slides.md`](03-presentation/demo_day_slides.md) |
 | **Прототип** \* | [`04-prototype/`](04-prototype/README.md) | Команды запуска, живой CLI, веб-интерфейс |
 | **Дополнительные материалы** | [`05-additional/`](05-additional/README.md) | Доказательства, датасеты, красная команда, конкуренты |
 
