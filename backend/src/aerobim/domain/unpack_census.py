@@ -62,6 +62,10 @@ PUBLIC_UNPACK_CENSUS: Final[dict[str, Any]] = {
     "raise_cap": False,
     "parse_rvt_nwd_lira": False,
     "default_ifc_cap_mib": 256,
+    # 4 unpack IFC files are copies of wrapper SPF, not extra volume
+    # (docs/evidence/unpack-census-2026-08.md). Not a pinned finding class.
+    "unpacked_ifc_are_wrapper_copies": True,
+    "revision_duplicate_finding_class_pinned": False,
 }
 
 

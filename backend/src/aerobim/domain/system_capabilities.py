@@ -324,6 +324,25 @@ def build_four_direction_contracts() -> list[dict[str, Any]]:
             evidence_refs=["ReportCapabilities.calculation_correctness"],
         ),
         capability_contract(
+            capability="space_area_from_geometry",
+            status="not_implemented",
+            evidence_level="unit",
+            affects_pass=False,
+            reason=(
+                "IfcSpace inventory reads QTO NetFloorArea only; "
+                "create_shape / tessellate are not called"
+            ),
+            claim_boundary=(
+                "Empty NetFloorArea is not a geometry-derived area; "
+                "never claim area from the IfcSpace solid"
+            ),
+            dependencies=["IfcSpaceInventory"],
+            evidence_refs=[
+                "backend/src/aerobim/infrastructure/adapters/ifc_space_inventory.py",
+                "docs/evidence/deep-study-carrier-facts-2026-08.md",
+            ],
+        ),
+        capability_contract(
             capability="bcf_21_export",
             status="available",
             evidence_level="integration",

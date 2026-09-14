@@ -46,5 +46,7 @@
   "processed": false,
   "raise_cap": false,
   "parse_rvt_nwd_lira": false,
-  "default_ifc_cap_mib": 256
+  "default_ifc_cap_mib": 256,
+  "unpacked_ifc_are_wrapper_copies": true,
+  "revision_duplicate_finding_class_pinned": false
 }

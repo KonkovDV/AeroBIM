@@ -49,6 +49,8 @@ class UnpackCensusTests(unittest.TestCase):
         self.assertEqual(pin["unpacked_zip_shells"], 0)
         self.assertEqual(pin["wrapper_zip_count"], 0)
         self.assertTrue(pin["source_archives_deleted_after_coverage"])
+        self.assertTrue(pin["unpacked_ifc_are_wrapper_copies"])
+        self.assertFalse(pin["revision_duplicate_finding_class_pinned"])
 
     def test_evidence_json_matches_snapshot(self) -> None:
         dumped = json.loads(_EVIDENCE.read_text(encoding="utf-8"))
