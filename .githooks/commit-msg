@@ -1,4 +1,12 @@
 #!/bin/sh
-# Honesty: do not rewrite commit authorship metadata.
-# Co-authored-by trailers are allowed. History provenance is part of the product claim.
-exit 0
+# Strip vendor IDE GitHub-identity trailers (Cursor, Notion AI).
+# Human Co-authored-by trailers pass through (N-34).
+root=$(git rev-parse --show-toplevel)
+script="$root/scripts/strip_vendor_commit_trailers.py"
+if [ -x "$root/backend/.venv/Scripts/python.exe" ]; then
+  exec "$root/backend/.venv/Scripts/python.exe" "$script" "$1"
+fi
+if [ -x "$root/backend/.venv/bin/python" ]; then
+  exec "$root/backend/.venv/bin/python" "$script" "$1"
+fi
+exec python "$script" "$1"

@@ -5,6 +5,7 @@
 **/.ruff_cache/
 frontend/dist/
 var/
+tmp/
 artifacts/
 .local/
 files/

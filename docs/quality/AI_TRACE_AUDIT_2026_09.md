@@ -3,7 +3,7 @@
 title: "AI-Trace Audit — следы ИИ-авторства в публичном дереве"
 status: active
 version: "1.1.0"
-last_updated: "2026-09-02"
+last_updated: "2026-09-14"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -14,7 +14,8 @@ claim_boundary: >
 
 # AI-Trace Audit (02.09.2026)
 
-Прогон классификации: [`AI_TRACE_RUN_2026_09_02.md`](AI_TRACE_RUN_2026_09_02.md).  
+Прогон классификации: [`AI_TRACE_RUN_2026_09_02.md`](AI_TRACE_RUN_2026_09_02.md) ·
+повтор 14.09: [`AI_TRACE_RUN_2026_09_14.md`](AI_TRACE_RUN_2026_09_14.md).  
 Промты: [`../ai/ACADEMIC_LIT_RADAR.md`](../ai/ACADEMIC_LIT_RADAR.md) · [`../ai/AI_ARTEFACT_CLEANER.md`](../ai/AI_ARTEFACT_CLEANER.md).
 
 ## 1. Результаты по категориям (358 файлов)
@@ -48,3 +49,4 @@ claim_boundary: >
 - [x] Проход по placeholder-хитам файл-файлом (классификация ARTEFACT/LEGITIMATE).
 - [ ] После коммита волны: `lint_claims.py --full-docs` (excluded_untracked → 0).
 - [x] Опционально: AI-trace мета/чат в `pre_push_gate.py` (`scripts/lint_ai_trace.py`).
+- [x] 14.09: отпечатки IDE-агента в стенде Playwright; гейт py/ts; `tmp/` вне индекса.

@@ -8,5 +8,7 @@ backend/.venv*/
 frontend/dist/
 frontend/artifacts/
 var/
+tmp/
 artifacts/
 .local/
+agent-transcripts/

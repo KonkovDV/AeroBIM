@@ -12,8 +12,13 @@ AI coding assistants were used during development. For a period before 2026-08-0
 repository tooling discouraged or stripped `Co-authored-by:` trailers so GitHub
 contributor graphs looked single-author. That provenance rewrite was incorrect for
 a product whose value is origin integrity; it was removed in commit series around
-`b99f5fd` / Class A honesty fixes. Commit messages may again carry truthful
-co-author trailers. Historical commits retain whatever metadata they had when written.
+`b99f5fd` / Class A honesty fixes. Human `Co-authored-by:` trailers stay.
+
+On 2026-09-14 the owner ordered a **vendor GitHub-identity** strip: IDE/cloud
+`Co-authored-by` trailers (and matching literals on the default branch) so the
+commit sidebar does not present a vendor bot as a co-author. That is surface
+hygiene, not a claim that assistants were unused. The rewrite is the 2026-09-10
+commit window only; the 2026-08 filter-repo signing cliff is unchanged.
 
 ## Commit signing trust anchor (2026-08-09)
 

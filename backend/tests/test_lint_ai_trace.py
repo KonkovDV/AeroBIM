@@ -88,6 +88,22 @@ class LintAiTraceTests(unittest.TestCase):
             hits = lint_ai_trace_meta(root=root)
         self.assertEqual(hits, [])
 
+    def test_tool_fingerprint_in_python_is_flagged(self) -> None:
+        sys.path.insert(0, str(_REPO / "scripts"))
+        try:
+            from lint_ai_trace import lint_ai_trace_meta  # type: ignore[import-not-found]
+        finally:
+            if sys.path and sys.path[0] == str(_REPO / "scripts"):
+                sys.path.pop(0)
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            src = root / "backend" / "src"
+            src.mkdir(parents=True)
+            comment = "# " + "Cur" + "sor Ag" + "ent sessions pin a TEMP cache\n"
+            (src / "noise.py").write_text(comment, encoding="utf-8")
+            hits = lint_ai_trace_meta(root=root)
+        self.assertTrue(any("tool_fingerprint" in h for h in hits))
+
     def test_operator_prompt_line_is_flagged_outside_ai_dir(self) -> None:
         sys.path.insert(0, str(_REPO / "scripts"))
         try:

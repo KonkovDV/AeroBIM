@@ -35,7 +35,7 @@ source .venv/bin/activate  # Windows PowerShell: .\.venv\Scripts\Activate.ps1
 pip install -e ".[dev,raster]"
 ```
 
-Optional local hooks (do not rewrite authorship metadata):
+Optional local hooks (human Co-authored-by kept; vendor IDE trailers stripped):
 
 ```bash
 git config core.hooksPath .githooks
@@ -70,10 +70,10 @@ python -m ruff format src tests
 
 ## Git Commits (honest authorship)
 
-Keep commit authorship truthful. If an AI assistant materially contributed, prefer an explicit `Co-authored-by:` trailer (or an equivalent honest note in the commit body). Do not strip or rewrite provenance trailers.
+Keep commit authorship truthful. If a **human** co-author materially contributed, use an explicit `Co-authored-by:` trailer. Vendor IDE/cloud GitHub-identity trailers are stripped by `.githooks/commit-msg` (owner order 2026-09-14). Do not strip human provenance trailers. AI assistance remains disclosed in SECURITY.md.
 
-1. Commit from your shell. Keep authorship truthful (`Co-authored-by:` allowed).
-2. Optional hooks: `git config core.hooksPath .githooks` (pass-through; does not erase co-authors).
+1. Commit from your shell. Human `Co-authored-by:` allowed; vendor IDE trailers are dropped.
+2. Optional hooks: `git config core.hooksPath .githooks`.
 
 ## Pull Request Checklist
 

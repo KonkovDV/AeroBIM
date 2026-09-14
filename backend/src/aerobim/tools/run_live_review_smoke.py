@@ -107,8 +107,8 @@ def build_frontend_env(base_env: Mapping[str, str], backend_base_url: str) -> di
     # Same-origin /v1 and /health on the Vite origin must hit THIS backend,
     # not a leftover process on the default 8080 proxy target.
     env["AEROBIM_PROXY_TARGET"] = backend_base_url
-    # IDE session agent sessions pin PLAYWRIGHT_BROWSERS_PATH at a TEMP sandbox
-    # cache. That directory vanishes; the rehearsal must use the user cache.
+    # Drop inherited Playwright cache pins. Ephemeral sandbox directories
+    # vanish; the rehearsal uses the user cache.
     env.pop("PLAYWRIGHT_BROWSERS_PATH", None)
     return env
 
