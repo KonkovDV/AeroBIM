@@ -4,13 +4,14 @@ status: active
 version: "1.3.0"
 last_updated: "2026-09-15"
 claim_boundary: >
-  Slide copy SSOT for aerobim_kt2.pptx / aerobim_kt2.pdf. Checkpoint GO; customer_go false;
+  Slide copy SSOT for aerobim_kt2.pptx. Form PDF is AeroBIM_demo_day.pdf.
+  Checkpoint GO; customer_go false;
   RT-001/002/003 OPEN. Not a recorded video. Demo-day 29–30.09 copy is demo_day_slides.md.
 ---
 
 # Текст слайдов КТ#2
 
-Основная дека поля формы: [`aerobim_kt2.pptx`](aerobim_kt2.pptx) · [`aerobim_kt2.pdf`](aerobim_kt2.pdf). Этот файл — текст для речи к той деке и сверки формулировок. На 29–30.09 в зале — [`demo_day_slides.md`](demo_day_slides.md) и [`../../docs/demo/DEMO_DAY_SPEECH_LOCK_2026_09.md`](../../docs/demo/DEMO_DAY_SPEECH_LOCK_2026_09.md). Источник цифр КТ#2: [`../../docs/demo/KT2_CORPUS_SSOT_2026_08.md`](../../docs/demo/KT2_CORPUS_SSOT_2026_08.md). Формула стадии: [`../../docs/demo/KT2_JURY_FAQ_2026_08_12.md`](../../docs/demo/KT2_JURY_FAQ_2026_08_12.md).
+Основная дека поля формы: [`AeroBIM_demo_day.pdf`](AeroBIM_demo_day.pdf). Архив КТ#2: [`aerobim_kt2.pptx`](aerobim_kt2.pptx). Этот файл — текст для речи к архивной деке и сверки формулировок. На 29–30.09 в зале — [`demo_day_slides.md`](demo_day_slides.md) и [`../../docs/demo/DEMO_DAY_SPEECH_LOCK_2026_09.md`](../../docs/demo/DEMO_DAY_SPEECH_LOCK_2026_09.md). Источник цифр КТ#2: [`../../docs/demo/KT2_CORPUS_SSOT_2026_08.md`](../../docs/demo/KT2_CORPUS_SSOT_2026_08.md). Формула стадии: [`../../docs/demo/KT2_JURY_FAQ_2026_08_12.md`](../../docs/demo/KT2_JURY_FAQ_2026_08_12.md).
 
 ## Слайд 1. Проблема
 

@@ -152,7 +152,7 @@ claim_boundary: >
 | Требования к архитектуре решения | [`../docs/tz/TZ_ARCHITECTURE_REQUIREMENTS_2026.md`](../docs/tz/TZ_ARCHITECTURE_REQUIREMENTS_2026.md) |
 | Требования к коду и сборке | [`../docs/tz/TZ_BUILD_AND_QUALITY_2026.md`](../docs/tz/TZ_BUILD_AND_QUALITY_2026.md) |
 | Образ финального решения | [`../docs/tz/TZ_SOLUTION_IMAGE_AND_PRESENTATION_2026.md`](../docs/tz/TZ_SOLUTION_IMAGE_AND_PRESENTATION_2026.md) §1 |
-| Требования к презентации | тот же документ §2–4 · [`03-presentation/README.md`](03-presentation/README.md) (дека: [`aerobim_kt2.pptx`](03-presentation/aerobim_kt2.pptx) / [`aerobim_kt2.pdf`](03-presentation/aerobim_kt2.pdf); речь 29–30.09: [`03-presentation/demo_day_slides.md`](03-presentation/demo_day_slides.md)) |
+| Требования к презентации | тот же документ §2–4 · [`03-presentation/README.md`](03-presentation/README.md) (дека: [`AeroBIM_demo_day.pdf`](03-presentation/AeroBIM_demo_day.pdf); архив КТ#2: [`aerobim_kt2.pptx`](03-presentation/aerobim_kt2.pptx); речь: [`03-presentation/demo_day_slides.md`](03-presentation/demo_day_slides.md)) |
 | Требования к сопроводительной документации | [`../docs/tz/TZ_ACCOMPANYING_DOCS_2026.md`](../docs/tz/TZ_ACCOMPANYING_DOCS_2026.md) |
 
 ## 8. Что закрывает разрыв

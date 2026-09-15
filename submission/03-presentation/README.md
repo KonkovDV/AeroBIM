@@ -4,8 +4,8 @@ status: active
 version: "1.3.0"
 last_updated: "2026-09-15"
 claim_boundary: >
-  Form-field binary remains aerobim_kt2.pptx / aerobim_kt2.pdf (KT#2).
-  Demo-day 29–30.09 slide copy is demo_day_slides.md. Speech lock is
+  Form-field PDF is AeroBIM_demo_day.pdf (29–30.09). KT#2 pptx remains
+  aerobim_kt2.pptx. Slide copy is demo_day_slides.md. Speech lock is
   docs/demo/DEMO_DAY_SPEECH_LOCK_2026_09.md. Video not recorded.
   Checkpoint GO; customer_go false; RT-001 OPEN; RT-002a CLOSED
   regulatory / RT-002b CLOSED EIR carrier / RT-002c OPEN signed; RT-003 OPEN.
@@ -13,20 +13,19 @@ claim_boundary: >
 
 # Презентация
 
-**Демо-день 29–30.09 — текст семи экранов:** [`demo_day_slides.md`](demo_day_slides.md).
+**Демо-день 29–30.09 — PDF для поля формы:** [`AeroBIM_demo_day.pdf`](AeroBIM_demo_day.pdf).
+Текст семи экранов: [`demo_day_slides.md`](demo_day_slides.md).
 Замок речи: [`../../docs/demo/DEMO_DAY_SPEECH_LOCK_2026_09.md`](../../docs/demo/DEMO_DAY_SPEECH_LOCK_2026_09.md).
 Красная черта деки 13.09: [`../../docs/quality/DEMO_DAY_DECK_REDLINE_2026_09.md`](../../docs/quality/DEMO_DAY_DECK_REDLINE_2026_09.md) — сверка, не кадр.
-Дека 13.09 на рабочем столе устарела — её не показывать. Бинарь в git этим файлом не переписывается.
+Дека 13.09 на рабочем столе устарела — её не показывать.
 
-**Дека для поля формы (бинарь с меткой КТ#2, 20.08):** [`aerobim_kt2.pptx`](aerobim_kt2.pptx) · [`aerobim_kt2.pdf`](aerobim_kt2.pdf).
-Текстовый каркас КТ#2 — [`slides.md`](slides.md). Если бинарь отсутствует в
-клоне, для речи использовать FAQ, не выдумывать слайды.
+**Архив КТ#2 (20.08):** [`aerobim_kt2.pptx`](aerobim_kt2.pptx). Текстовый каркас той деки — [`slides.md`](slides.md). Если бинарь отсутствует в клоне, для речи использовать FAQ, не выдумывать слайды.
 
 Речь КТ#3 (карточка, не слайд-файл): [`../../docs/demo/KT3_JURY_FAQ_2026_08_25.md`](../../docs/demo/KT3_JURY_FAQ_2026_08_25.md) · runbook: [`../../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md`](../../docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md). Ролик 2–3 мин **не записываем и не прилагаем.** Показ КТ#2 — `python -m aerobim.tools.run_demo_ifc_acceptance_gate`. Показ демо-дня — `python -m aerobim.tools.run_kt3_jury`. Живой CLI, не mp4 и не снимок HTML.
 
 ## Каркас слайдов
 
-Дека в форме — **12 слайдов** в [`aerobim_kt2.pptx`](aerobim_kt2.pptx) / [`aerobim_kt2.pdf`](aerobim_kt2.pdf). Таблица ниже — опорный каркас речи КТ#2, не покадровый дубль. На 29–30.09 в зале — семь экранов из [`demo_day_slides.md`](demo_day_slides.md).
+Дека в форме — [`AeroBIM_demo_day.pdf`](AeroBIM_demo_day.pdf). Таблица ниже — опорный каркас речи КТ#2 к архивному [`aerobim_kt2.pptx`](aerobim_kt2.pptx), не покадровый дубль PDF. На 29–30.09 в зале — семь экранов из [`demo_day_slides.md`](demo_day_slides.md).
 
 | № | Слайд | Обязательный тезис |
 |---|---|---|

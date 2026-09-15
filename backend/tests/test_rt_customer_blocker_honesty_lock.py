@@ -753,16 +753,17 @@ class SubmissionPackHonestyTests(unittest.TestCase):
     def test_presentation_pack_tracks_main_deck(self) -> None:
         root = self._submission() / "03-presentation"
         pptx = root / "aerobim_kt2.pptx"
-        pdf = root / "aerobim_kt2.pdf"
+        pdf = root / "AeroBIM_demo_day.pdf"
         self.assertTrue(pptx.is_file(), msg=str(pptx))
         self.assertTrue(pdf.is_file(), msg=str(pdf))
         tracked = _git_ls_files(
             "--",
             "submission/03-presentation/aerobim_kt2.pptx",
-            "submission/03-presentation/aerobim_kt2.pdf",
+            "submission/03-presentation/AeroBIM_demo_day.pdf",
         )
         self.assertIn("aerobim_kt2.pptx", tracked)
-        self.assertIn("aerobim_kt2.pdf", tracked)
+        self.assertIn("AeroBIM_demo_day.pdf", tracked)
+        self.assertNotIn("aerobim_kt2.pdf", tracked)
         deck = _pptx_plain_text(pptx).lower()
         self.assertIn("checkpoint go", deck)
         self.assertIn("customer_go", deck)

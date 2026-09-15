@@ -24,6 +24,10 @@ _DEFAULT_KEY = _REPO / ".local" / "kitchen-hmac.key"
 ENV_LIST_PATH = "AEROBIM_KITCHEN_DENYLIST_PATH"
 ENV_HMAC_KEY = "AEROBIM_KITCHEN_HMAC_KEY"
 ENV_HMAC_KEY_FILE = "AEROBIM_KITCHEN_HMAC_KEY_FILE"
+# Owner-named binary uploads (for example the demo-day form deck in
+# submission/03-presentation) are reviewed locally and bypass only the
+# token scan. Path quarantine and pack suffixes still apply.
+ENV_ALLOW_UPLOADS = "AEROBIM_KITCHEN_ALLOW_UPLOADS"
 
 SKIP_DIR_NAMES = frozenset(
     {
@@ -337,6 +341,19 @@ def _module_imports_kitchen_denylist(path: Path) -> bool:
     return "from kitchen_denylist" in text or "import kitchen_denylist" in text
 
 
+def _upload_bypass_paths() -> set[Path]:
+    raw = os.environ.get(ENV_ALLOW_UPLOADS, "").strip()
+    if not raw:
+        return set()
+    out: set[Path] = set()
+    for part in raw.replace(";", "\n").splitlines():
+        rel = part.strip().replace("\\", "/").lstrip("/")
+        if not rel:
+            continue
+        out.add((_REPO / rel).resolve())
+    return out
+
+
 def lint_kitchen_tokens() -> list[str]:
     """Scan tracked files for denylist literals. Fail-closed on load errors."""
 
@@ -346,9 +363,12 @@ def lint_kitchen_tokens() -> list[str]:
     except KitchenDenylistError as exc:
         return [f"[kitchen_denylist] fail-closed: {exc}"]
 
+    bypass = _upload_bypass_paths()
     hits: list[str] = []
     for path in iter_tracked_files():
         rel = path.relative_to(_REPO).as_posix()
+        if path.resolve() in bypass:
+            continue
         try:
             found = file_contains_tokens(path, tokens)
         except OSError:

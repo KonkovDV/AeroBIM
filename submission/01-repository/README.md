@@ -66,6 +66,6 @@ python -m aerobim.tools.run_kt3_jury
 | Лицензия | [`../../LICENSE`](../../LICENSE) · [`../../docs/license-policy-2026.md`](../../docs/license-policy-2026.md) |
 | Офлайн-контур | [`../../docs/evidence/offline-bundle-trial-latest.json`](../../docs/evidence/offline-bundle-trial-latest.json) — пробный Docker image-track, не данные заказчика |
 
-Презентация для поля формы: [`aerobim_kt2.pptx`](../03-presentation/aerobim_kt2.pptx) + [`aerobim_kt2.pdf`](../03-presentation/aerobim_kt2.pdf). Речь 29–30.09: [`demo_day_slides.md`](../03-presentation/demo_day_slides.md). Видео не записываем.
+Презентация для поля формы: [`AeroBIM_demo_day.pdf`](../03-presentation/AeroBIM_demo_day.pdf). Архив КТ#2: [`aerobim_kt2.pptx`](../03-presentation/aerobim_kt2.pptx). Речь 29–30.09: [`demo_day_slides.md`](../03-presentation/demo_day_slides.md). Видео не записываем.
 
 После правок документации CI pin может отставать от HEAD до следующего прогона CI.

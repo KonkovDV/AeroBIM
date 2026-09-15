@@ -14,7 +14,7 @@ claim_boundary: >
 
 **Формула стадии (дословно; источник — [карточка речи для жюри](../../docs/demo/KT2_JURY_FAQ_2026_08_12.md)):** Мы на стадии доработки контура заказчика. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение у назначающей стороны ещё не начались. Checkpoint `GO` — регуляторно-измерительный MVP. `customer_go` остаётся false, пока нет независимого размеченного корпуса, двух разметчиков, подписанного профиля назначающей стороны и подтверждения импорта в СОД.
 
-Порядок чтения для жюри — [`../../docs/TIER0_INDEX.md`](../../docs/TIER0_INDEX.md). Дека подачи: [`../03-presentation/aerobim_kt2.pptx`](../03-presentation/aerobim_kt2.pptx) / [`../03-presentation/aerobim_kt2.pdf`](../03-presentation/aerobim_kt2.pdf) (файлы всё ещё с меткой КТ#2; речь КТ#3 — [`../../docs/demo/KT3_JURY_FAQ_2026_08_25.md`](../../docs/demo/KT3_JURY_FAQ_2026_08_25.md); речь демо-дня — [`../../docs/demo/DEMO_DAY_SPEECH_LOCK_2026_09.md`](../../docs/demo/DEMO_DAY_SPEECH_LOCK_2026_09.md), не переименованный бинарник).
+Порядок чтения для жюри — [`../../docs/TIER0_INDEX.md`](../../docs/TIER0_INDEX.md). Дека подачи: [`../03-presentation/AeroBIM_demo_day.pdf`](../03-presentation/AeroBIM_demo_day.pdf). Архив КТ#2: [`../03-presentation/aerobim_kt2.pptx`](../03-presentation/aerobim_kt2.pptx). Речь КТ#3 — [`../../docs/demo/KT3_JURY_FAQ_2026_08_25.md`](../../docs/demo/KT3_JURY_FAQ_2026_08_25.md); речь демо-дня — [`../../docs/demo/DEMO_DAY_SPEECH_LOCK_2026_09.md`](../../docs/demo/DEMO_DAY_SPEECH_LOCK_2026_09.md).
 
 ## 1. Обязательное ядро
 

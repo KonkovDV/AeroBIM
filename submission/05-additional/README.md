@@ -27,7 +27,8 @@ claim_boundary: >
 | [`../../docs/demo/DEMO_DAY_SPEECH_LOCK_2026_09.md`](../../docs/demo/DEMO_DAY_SPEECH_LOCK_2026_09.md) | Лицензированные числа 29–30.09 |
 | [`../../docs/quality/IFC_ANALYZE_VS_INGEST_CAP_2026_08.md`](../../docs/quality/IFC_ANALYZE_VS_INGEST_CAP_2026_08.md) | SPF 256 МиБ ≠ приём 1,5 ГБ |
 | [`../../docs/quality/UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md`](../../docs/quality/UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md) | Review shell: что сделано / HOLD |
-| [`aerobim_kt2.pptx`](../03-presentation/aerobim_kt2.pptx) | Дека поля формы (метка КТ#2) |
+| [`AeroBIM_demo_day.pdf`](../03-presentation/AeroBIM_demo_day.pdf) | Дека поля формы, 29–30.09 |
+| [`aerobim_kt2.pptx`](../03-presentation/aerobim_kt2.pptx) | Архив деки КТ#2 |
 
 ## Пины сентября (учебные и синтетические)
 
@@ -43,4 +44,4 @@ claim_boundary: >
 
 Открытые наборы и учебные комплекты — регрессия движка. В них нет разметки инженеров «заказчика канала». Разбор шести столов (Техлаб, МИК, трекер, заказчик, жюри, оператор) — в [карточке речи](../../docs/demo/KT2_JURY_FAQ_2026_08_12.md) и Interpretation/Use ledger.
 
-Нельзя выдавать за доказательство: снимок HTML 11.08 и `wall-guid/report.html`; локальный pytest как CI pin; письмо трекеру как факт git; ролик как «видео-демо» (в git есть `aerobim_kt2.pptx` / `aerobim_kt2.pdf`, mp4 нет и не появится); SAFE; уже оплаченный пилот. **ИП/юрлицо не требование входа в Техлаб** (FAQ: физлица или команда до 10) и не доказательство готовности продукта. Дату регистрации юрлица не выдумываем.
+Нельзя выдавать за доказательство: снимок HTML 11.08 и `wall-guid/report.html`; локальный pytest как CI pin; письмо трекеру как факт git; ролик как «видео-демо» (в git есть `AeroBIM_demo_day.pdf` / `aerobim_kt2.pptx`, mp4 нет и не появится); SAFE; уже оплаченный пилот. **ИП/юрлицо не требование входа в Техлаб** (FAQ: физлица или команда до 10) и не доказательство готовности продукта. Дату регистрации юрлица не выдумываем.
