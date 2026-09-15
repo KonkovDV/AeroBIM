@@ -1,8 +1,8 @@
 ---
 title: "Поле «Презентация» — дека, речь, запреты"
 status: active
-version: "1.2.0"
-last_updated: "2026-09-14"
+version: "1.3.0"
+last_updated: "2026-09-15"
 claim_boundary: >
   Form-field binary remains aerobim_kt2.pptx / aerobim_kt2.pdf (KT#2).
   Demo-day 29–30.09 slide copy is demo_day_slides.md. Speech lock is
@@ -15,6 +15,7 @@ claim_boundary: >
 
 **Демо-день 29–30.09 — текст семи экранов:** [`demo_day_slides.md`](demo_day_slides.md).
 Замок речи: [`../../docs/demo/DEMO_DAY_SPEECH_LOCK_2026_09.md`](../../docs/demo/DEMO_DAY_SPEECH_LOCK_2026_09.md).
+Красная черта деки 13.09: [`../../docs/quality/DEMO_DAY_DECK_REDLINE_2026_09.md`](../../docs/quality/DEMO_DAY_DECK_REDLINE_2026_09.md) — сверка, не кадр.
 Дека 13.09 на рабочем столе устарела — её не показывать. Бинарь в git этим файлом не переписывается.
 
 **Дека для поля формы (бинарь с меткой КТ#2, 20.08):** [`aerobim_kt2.pptx`](aerobim_kt2.pptx) · [`aerobim_kt2.pdf`](aerobim_kt2.pdf).
@@ -25,7 +26,7 @@ claim_boundary: >
 
 ## Каркас слайдов
 
-Дека в форме — **12 слайдов** в [`aerobim_kt2.pptx`](aerobim_kt2.pptx) / [`aerobim_kt2.pdf`](aerobim_kt2.pdf). Таблица ниже — опорный каркас речи, не покадровый дубль.
+Дека в форме — **12 слайдов** в [`aerobim_kt2.pptx`](aerobim_kt2.pptx) / [`aerobim_kt2.pdf`](aerobim_kt2.pdf). Таблица ниже — опорный каркас речи КТ#2, не покадровый дубль. На 29–30.09 в зале — семь экранов из [`demo_day_slides.md`](demo_day_slides.md).
 
 | № | Слайд | Обязательный тезис |
 |---|---|---|
@@ -44,11 +45,12 @@ claim_boundary: >
 
 | Материал | Назначение |
 |---|---|
+| [`../../docs/demo/DEMO_DAY_SPEECH_LOCK_2026_09.md`](../../docs/demo/DEMO_DAY_SPEECH_LOCK_2026_09.md) | Лицензированные числа 29–30.09; красная черта атак |
 | [`../../docs/demo/KT2_JURY_FAQ_2026_08_12.md`](../../docs/demo/KT2_JURY_FAQ_2026_08_12.md) | Формула стадии дословно; списки «можно / нельзя говорить» |
 | [`../../docs/qa-defense-2026.md`](../../docs/qa-defense-2026.md) | Заготовки ответов на защиту |
 | [`../../docs/partners/GLOSSARY_JURY_RU_2026_08.md`](../../docs/partners/GLOSSARY_JURY_RU_2026_08.md) | Термины для нетехнического члена жюри |
 
-Ролик 2–3 мин **не записываем и не прилагаем.** Показ — живой CLI: `python -m aerobim.tools.run_demo_ifc_acceptance_gate`.
+Ролик 2–3 мин **не записываем и не прилагаем.** Показ — живой CLI: `python -m aerobim.tools.run_demo_ifc_acceptance_gate`. Демо-день: `python -m aerobim.tools.run_kt3_jury`.
 
 Формула стадии (дословно):
 
@@ -58,7 +60,7 @@ claim_boundary: >
 
 ## Источник цифр
 
-Единственная строка корпуса, заморожена до 20.08: [`../../docs/demo/KT2_CORPUS_SSOT_2026_08.md`](../../docs/demo/KT2_CORPUS_SSOT_2026_08.md). Время на фикстуре: [`../../docs/demo/KT2_FIXTURE_TIMING_2026_08_16.md`](../../docs/demo/KT2_FIXTURE_TIMING_2026_08_16.md) — порядок величины, не SLA.
+Единственная строка корпуса, заморожена до 20.08: [`../../docs/demo/KT2_CORPUS_SSOT_2026_08.md`](../../docs/demo/KT2_CORPUS_SSOT_2026_08.md). Время на фикстуре: [`../../docs/demo/KT2_FIXTURE_TIMING_2026_08_16.md`](../../docs/demo/KT2_FIXTURE_TIMING_2026_08_16.md) — порядок величины, не SLA. Учебный p95 с честным масштабом inventory: [`../../docs/evidence/sla-package-scale-latest.json`](../../docs/evidence/sla-package-scale-latest.json) — не SLA заказчика.
 
 Сравнение решений: [`../../docs/demo/KT2_TASK07_COMPARISON_2026_08.md`](../../docs/demo/KT2_TASK07_COMPARISON_2026_08.md). Цифры конкурентов — их публичные заявления, не наш измеренный факт.
 
@@ -73,5 +75,12 @@ claim_boundary: >
 - CDE-ready BCF
 - «ИИ понимает чертёж как инженер»
 - Customer GO
+- УГТ-5 / TRL 5 как заявленный уровень
+- «ИИ не нужна»
+- выдуманная фамилия валидатора
+- дата регистрации юрлица
+- диаграмма Ганта вместо GitHub Issues
+- `sla_pass` на учебной фикстуре как SLA заказчика
+- десять из десяти мутаций как полнота продукта
 
 Полный реестр: [`../../docs/capability-claim-matrix-2026.md`](../../docs/capability-claim-matrix-2026.md). Нарушение ловится `scripts/lint_claims.py` в CI.

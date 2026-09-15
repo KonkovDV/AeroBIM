@@ -1,16 +1,16 @@
 ---
 title: "КТ#2 — текст слайдов (SSOT речи к деке)"
 status: active
-version: "1.2.0"
-last_updated: "2026-08-17"
+version: "1.3.0"
+last_updated: "2026-09-15"
 claim_boundary: >
   Slide copy SSOT for aerobim_kt2.pptx / aerobim_kt2.pdf. Checkpoint GO; customer_go false;
-  RT-001/002/003 OPEN. Not a recorded video.
+  RT-001/002/003 OPEN. Not a recorded video. Demo-day 29–30.09 copy is demo_day_slides.md.
 ---
 
 # Текст слайдов КТ#2
 
-Основная дека: [`aerobim_kt2.pptx`](aerobim_kt2.pptx) · [`aerobim_kt2.pdf`](aerobim_kt2.pdf). Этот файл — текст для речи и сверки формулировок. Источник цифр: [`../../docs/demo/KT2_CORPUS_SSOT_2026_08.md`](../../docs/demo/KT2_CORPUS_SSOT_2026_08.md). Формула стадии: [`../../docs/demo/KT2_JURY_FAQ_2026_08_12.md`](../../docs/demo/KT2_JURY_FAQ_2026_08_12.md).
+Основная дека поля формы: [`aerobim_kt2.pptx`](aerobim_kt2.pptx) · [`aerobim_kt2.pdf`](aerobim_kt2.pdf). Этот файл — текст для речи к той деке и сверки формулировок. На 29–30.09 в зале — [`demo_day_slides.md`](demo_day_slides.md) и [`../../docs/demo/DEMO_DAY_SPEECH_LOCK_2026_09.md`](../../docs/demo/DEMO_DAY_SPEECH_LOCK_2026_09.md). Источник цифр КТ#2: [`../../docs/demo/KT2_CORPUS_SSOT_2026_08.md`](../../docs/demo/KT2_CORPUS_SSOT_2026_08.md). Формула стадии: [`../../docs/demo/KT2_JURY_FAQ_2026_08_12.md`](../../docs/demo/KT2_JURY_FAQ_2026_08_12.md).
 
 ## Слайд 1. Проблема
 
@@ -72,6 +72,7 @@ claim_boundary: >
 - Получение комплекта заказчика, фиксация профиля, разметка, customer evaluation, импорт BCF, решение заказчика.
 - Это ≠ `customer_go` и не выполненный roadmap. Код RT-001/002/003 не закрывает.
 - Репозиторий: https://github.com/KonkovDV/AeroBIM · пакет подачи: [`../README.md`](../README.md).
+- План работ — GitHub Issues, не диаграмма Ганта в этом дереве.
 
 ## Запрещено в кадре и в голосе
 
@@ -87,3 +88,10 @@ claim_boundary: >
 - CDE-ready BCF
 - «ИИ понимает чертёж как инженер»
 - Customer GO
+- УГТ-5
+- «ИИ не нужна»
+- выдуманная фамилия валидатора
+- дата регистрации юрлица
+- диаграмма Ганта вместо GitHub Issues
+- `sla_pass` на учебной фикстуре как SLA заказчика
+- десять из десяти мутаций как полнота продукта
