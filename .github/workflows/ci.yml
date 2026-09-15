@@ -149,6 +149,8 @@ jobs:
         run: python -m aerobim.tools.check_markdown_links --root ..
       - name: Docs metadata integrity (WP-A3)
         run: python ../scripts/check_docs_metadata_integrity.py
+      - name: Live evidence freshness (7-day allowlist)
+        run: python ../scripts/check_live_evidence_freshness.py
 
   typecheck:
     runs-on: ubuntu-latest

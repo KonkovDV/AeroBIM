@@ -11,6 +11,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from aerobim.domain.architecture import DEFAULT_PACKAGE_STAGE_BUDGET, StageBudget
+from aerobim.domain.checkpoint import checkpoint_fields
 from aerobim.tools.benchmark_project_package import (
     benchmark_project_package,
     default_pack_path,
@@ -26,10 +27,77 @@ def _sha256_file(path: Path) -> str:
     return hasher.hexdigest()
 
 
+def _repo_relative_posix(path: Path) -> str:
+    """N-24: never publish operator-absolute paths in SLA evidence."""
+
+    try:
+        return path.resolve().relative_to(repo_root().resolve()).as_posix()
+    except (OSError, ValueError):
+        return path.as_posix().replace("\\", "/").lstrip("/")
+
+
+def _strip_repo_prefix(text: str) -> str:
+    root = repo_root().resolve()
+    variants = sorted(
+        {str(root), str(root).replace("\\", "/"), root.as_posix()},
+        key=len,
+        reverse=True,
+    )
+    out = text
+    for prefix in variants:
+        if not prefix:
+            continue
+        for needle in (prefix + "\\", prefix + "/", prefix):
+            out = out.replace(needle, "")
+    return out.replace("\\", "/").lstrip("/")
+
+
+def _scrub_repo_paths(value: object) -> object:
+    if isinstance(value, dict):
+        return {str(key): _scrub_repo_paths(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_scrub_repo_paths(item) for item in value]
+    if isinstance(value, str):
+        return _strip_repo_prefix(value)
+    return value
+
+
+def _scale_honesty(inventory: list[dict[str, object]]) -> dict[str, object]:
+    """Split inventory bytes: analyze path vs referenced assets not opened as IFC."""
+
+    by_kind = {"ifc": 0, "ids": 0, "rules": 0, "xsd_or_asset": 0, "other": 0}
+    referenced = inventory[1:] if inventory else []
+    for entry in referenced:
+        path = str(entry.get("path") or "").replace("\\", "/").lower()
+        nbytes = int(entry["bytes"]) if isinstance(entry.get("bytes"), int | float) else 0
+        if path.endswith(".ifc"):
+            by_kind["ifc"] += nbytes
+        elif path.endswith(".ids"):
+            by_kind["ids"] += nbytes
+        elif "requirement" in path or path.endswith(".txt"):
+            by_kind["rules"] += nbytes
+        elif path.endswith(".xsd") or "/xsd/" in path:
+            by_kind["xsd_or_asset"] += nbytes
+        else:
+            by_kind["other"] += nbytes
+    analyze_path_bytes = by_kind["ifc"] + by_kind["ids"] + by_kind["rules"]
+    unanalyzed = by_kind["xsd_or_asset"] + by_kind["other"]
+    return {
+        "representative_scale_basis": "referenced_file_inventory_not_analyze_rss",
+        "analyze_path_bytes": analyze_path_bytes,
+        "unanalyzed_referenced_bytes": unanalyzed,
+        "by_kind_bytes": by_kind,
+        "note": (
+            "representative_scale is an inventory flag. XSD/assets can dominate "
+            "bytes while the analyze contour still opens a tiny IFC."
+        ),
+    }
+
+
 def _pack_file_inventory(pack_path: Path) -> list[dict[str, object]]:
     inventory: list[dict[str, object]] = [
         {
-            "path": str(pack_path.as_posix()),
+            "path": _repo_relative_posix(pack_path),
             "bytes": pack_path.stat().st_size,
             "sha256": _sha256_file(pack_path),
         }
@@ -90,7 +158,7 @@ def _pack_file_inventory(pack_path: Path) -> list[dict[str, object]]:
         seen.add(resolved)
         inventory.append(
             {
-                "path": str(path.as_posix()),
+                "path": _repo_relative_posix(path),
                 "bytes": path.stat().st_size,
                 "sha256": _sha256_file(path),
             }
@@ -310,12 +378,12 @@ def measure_package_sla(
     }
 
     resolved_command = command or (
-        f"python -m aerobim.tools.measure_package_sla --pack {pack_path} "
+        f"python -m aerobim.tools.measure_package_sla --pack {_repo_relative_posix(pack_path)} "
         f"--max-minutes {max_minutes} --iterations {iterations} "
         f"--warmup-iterations {warmup_iterations}"
     )
 
-    return {
+    payload: dict[str, object] = {
         "artifact_type": "customer_package_sla",
         "schema_version": "1.4.0",
         "generated_at": datetime.now(tz=UTC).isoformat(),
@@ -336,6 +404,7 @@ def measure_package_sla(
         "file_inventory": inventory,
         "package_scale": package_scale_summary,
         "representative_scale": bool(package_scale_summary["is_representative"]),
+        "scale_honesty": _scale_honesty(inventory),
         "machine": machine,
         "machine_fingerprint": machine,
         "mandatory_capabilities_complete": mandatory_capabilities_complete,
@@ -361,6 +430,13 @@ def measure_package_sla(
         ),
         "benchmark": cold_payload,
     }
+    payload.update(checkpoint_fields())
+    payload["closes_rt001"] = False
+    payload["closes_rt002"] = False
+    payload["closes_rt003"] = False
+    scrubbed = _scrub_repo_paths(payload)
+    assert isinstance(scrubbed, dict)
+    return scrubbed
 
 
 def main() -> None:

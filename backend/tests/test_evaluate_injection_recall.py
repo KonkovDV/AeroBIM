@@ -9,6 +9,7 @@ from aerobim.tools.evaluate_injection_recall import (
     diff_issue_multisets,
     evaluate_manifest,
     issue_key,
+    targeted_issue_key,
 )
 
 
@@ -117,6 +118,34 @@ class EvaluateManifestTests(unittest.TestCase):
         result = evaluate_manifest(manifest, {"CONTROL": [], "IDS_VIOLATION": []})
         self.assertFalse(result["aggregate"]["wilson_95"]["defined"])
         self.assertIsNone(result["aggregate"]["recall_point"])
+
+    def test_targeted_key_is_class_plus_location(self) -> None:
+        left = {**_issue("A", guid="g1"), "norm_clause": "SP 2"}
+        right = {**_issue("A", guid="g1", observed="99"), "norm_clause": "SP 2"}
+        self.assertEqual(targeted_issue_key(left), targeted_issue_key(right))
+        self.assertNotEqual(issue_key(left), issue_key(right))
+
+    def test_require_clean_control_fails_closed(self) -> None:
+        manifest = _manifest(["CONTROL", "AREA_MISMATCH"])
+        issues = {"CONTROL": [_issue("BASE")], "AREA_MISMATCH": [_issue("NEW")]}
+        with self.assertRaises(ValueError):
+            evaluate_manifest(manifest, issues, require_clean_control=True)
+
+    def test_targeted_mode_kills_on_guid_location(self) -> None:
+        manifest = _manifest(["CONTROL", "IDS_FIRE_REI45"])
+        manifest["variants"][1]["expected_element_guid"] = "g-wall"  # type: ignore[index]
+        issues = {
+            "CONTROL": [],
+            "IDS_FIRE_REI45": [_issue("IDS-Wall Fire Rating", observed="REI45", guid="g-wall")],
+        }
+        result = evaluate_manifest(
+            manifest, issues, key_fn=targeted_issue_key, require_clean_control=True
+        )
+        row = result["rows"][0]
+        self.assertTrue(row["killed"])
+        self.assertTrue(row["location_hit"])
+        self.assertEqual(result["control_issue_count"], 0)
+        self.assertEqual(result["aggregate"]["trials"], 1)
 
 
 if __name__ == "__main__":

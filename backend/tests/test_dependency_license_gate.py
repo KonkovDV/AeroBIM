@@ -103,6 +103,18 @@ def test_pymupdf_dual_license_is_acknowledged() -> None:
     assert item["scope"] == "extra:pdf-agpl"
 
 
+def test_pymupdf_absent_from_default_extras() -> None:
+    payload = tomllib.loads(_PYPROJECT.read_text(encoding="utf-8"))
+    extras = payload["project"]["optional-dependencies"]
+    for name, specs in extras.items():
+        if name == "pdf-agpl":
+            continue
+        blob = " ".join(specs).lower()
+        assert "pymupdf" not in blob, name
+    core = " ".join(payload["project"]["dependencies"]).lower()
+    assert "pymupdf" not in core
+
+
 def test_core_pdf_stack_is_permissive() -> None:
     inventory = _inventory()
     for name in ("pypdfium2", "pdfminer.six", "pillow", "reportlab"):

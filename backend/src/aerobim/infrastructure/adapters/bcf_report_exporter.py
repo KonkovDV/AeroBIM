@@ -71,6 +71,22 @@ def _stable_uuid(seed: str) -> str:
     return str(uuid.UUID(digest[:32]))
 
 
+def bilingual_remark_body(issue: ValidationIssue) -> str:
+    """RU + EN template bodies for BCF Description (TZ P0 locale parity)."""
+
+    from aerobim.infrastructure.adapters.template_remark_generator import (
+        TemplateRemarkGenerator,
+    )
+
+    try:
+        ru = TemplateRemarkGenerator(locale="ru").generate(issue).body
+        en = TemplateRemarkGenerator(locale="en").generate(issue).body
+    except ValueError:
+        fallback = issue.remark.body if issue.remark is not None else (issue.message or "")
+        return fallback
+    return f"[RU] {ru}\n\n[EN] {en}"
+
+
 def bcf_topic_zip_dir(topic_guid: str) -> str:
     """Canonical UUID directory name; reject path separators (HD2-BCF-01)."""
 
@@ -172,11 +188,18 @@ def _collect_topics(
             )
         else:
             topic_type = "Error" if issue.severity == Severity.ERROR else "CoordinationWarning"
-        base_description = (
-            effective_text_for_issue(issue, review_events)
-            if review_events
-            else (issue.remark.body if issue.remark is not None else (issue.message or ""))
-        )
+        bilingual = bilingual_remark_body(issue)
+        stored = issue.remark.body if issue.remark is not None else ""
+        if review_events:
+            lead = effective_text_for_issue(issue, review_events)
+        elif stored and stored not in bilingual:
+            lead = stored
+        else:
+            lead = bilingual
+        if lead == bilingual:
+            base_description = bilingual
+        else:
+            base_description = f"{lead}\n\n{bilingual}"
         ai_generated = bool(issue.remark is not None and issue.remark.ai_generated)
         provenance_lines = [
             f"finding_id={issue.finding_id}" if issue.finding_id else None,

@@ -1,0 +1,69 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "aerobim_data_residency_inventory",
+  "claim_level": "code_inventory",
+  "claim_boundary": "Surfaces from Settings env and JOB-01 comments in code. Not a 152-FZ audit. Durable workers are not claimed. Checkpoint GO (regulatory_measurement_mvp; customer_go false).",
+  "checkpoint": "GO",
+  "go_kind": "regulatory_measurement_mvp",
+  "go_re_scope_date": "2026-09-04",
+  "customer_go": false,
+  "market_go": false,
+  "deployment_go": false,
+  "generated_at": "2026-09-15T16:09:04.085848+00:00",
+  "closes_rt001": false,
+  "surfaces": [
+    {
+      "id": "object_store",
+      "kind": "local_disk_or_s3",
+      "path_env": "AEROBIM_STORAGE_DIR",
+      "default": "var/reports",
+      "durable": true
+    },
+    {
+      "id": "sqlite_optional",
+      "kind": "local_or_network_db",
+      "path_env": "AEROBIM_DB_URL",
+      "default": null,
+      "durable": true,
+      "required": false
+    },
+    {
+      "id": "report_ttl",
+      "kind": "retention_policy",
+      "path_env": "AEROBIM_REPORT_TTL_DAYS",
+      "default": null,
+      "durable": false
+    },
+    {
+      "id": "ifc_disk_touch_markers",
+      "kind": "local_disk",
+      "path_env": "AEROBIM_IFC_PARSE_CACHE_DIR",
+      "default": null,
+      "durable": true,
+      "required": false
+    },
+    {
+      "id": "ifc_ram_lru",
+      "kind": "process_memory",
+      "config": "max_cached_models × max_ifc_bytes",
+      "max_cached_models": 8,
+      "max_bytes_per_cached_model": 268435456,
+      "durable": false
+    },
+    {
+      "id": "redis_optional",
+      "kind": "optional_cache_and_job_store",
+      "path_env": "AEROBIM_REDIS_URL",
+      "default": null,
+      "durable": false,
+      "required_outside_dev": true
+    }
+  ],
+  "job_queue": {
+    "id": "JOB-01",
+    "status": "in_process_background_tasks",
+    "durable_workers_claimed": false,
+    "honesty": "FastAPI BackgroundTasks in this API process. In-memory job store (optional snapshot JSON) in development/test; Redis job store required outside those environments. That is a store, not a durable worker fleet.",
+    "code_ref": "backend/src/aerobim/presentation/http/routes/analyze.py"
+  }
+}

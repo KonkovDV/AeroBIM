@@ -2,7 +2,7 @@
 ---
 title: "Defect-injection recall run — mutation-kill, synthetic-only"
 date: "2026-09-03"
-last_updated: "2026-09-10"
+last_updated: "2026-09-15"
 status: active
 version: "1.0.1"
 closes_rt001: false
@@ -70,7 +70,7 @@ CONTROL-дифф. Recall на синтетике **не** переносится
 | Прогон | CONTROL находок | applied | убито | точечно | Wilson 95% lower | JSON |
 |---|---|---|---|---|---|---|
 | KR 5.8 MiB | 6 | 6 | **0** | 0.000 | **0.000** | [`defect-injection-recall-run-2026-09-03-house-5-s1-3-kr-blind.json`](defect-injection-recall-run-2026-09-03-house-5-s1-3-kr-blind.json) |
-| AR 89.9 MiB | 97 | 6 | **0** | 0.000 | **0.000** | [`defect-injection-recall-run-latest.json`](defect-injection-recall-run-latest.json) |
+| AR 89.9 MiB | 97 | 6 | **0** | 0.000 | **0.000** | [`defect-injection-recall-run-2026-09-03-house-5-s1-3-ar.json`](defect-injection-recall-run-2026-09-03-house-5-s1-3-ar.json) |
 
 Wilson 95% на 0/6: [0.000; 0.390]. Публикуется нижняя граница **0.000**.
 `claim_level=synthetic_only`.
@@ -129,5 +129,15 @@ python -m aerobim.tools.evaluate_injection_recall \
 Следующий замер — отдельный протокол с новым seed-журналом: либо инжектор
 бьёт в `IFCSPACE.NetFloorArea` / `Pset_WallCommon.FireRating`, либо контур
 читает sidecar ПД/ТЗ/расчёта. Поверх этих цифр пороги не двигаем.
+
+## Контур 3 — seam-clean wall+IDS (git, 15.09.2026)
+
+CONTROL: `samples/ifc/wall-fire-rating-rei60.ifc` + `samples/ids/wall-fire-rating.ids`,
+`summary.passed=true`, 0 находок. 10 targeted инъекций FireRating / pset / class /
+property / entity. Атрибуция: `rule_id + GUID + norm_clause|target_ref`.
+Seed **20260915**. CLI: `python -m aerobim.tools.run_seam_clean_injection_recall`.
+Живой JSON: [`defect-injection-recall-run-latest.json`](defect-injection-recall-run-latest.json).
+Нарратив прогона: [`DEFECT_INJECTION_RECALL_SEAM_CLEAN_2026_09.md`](DEFECT_INJECTION_RECALL_SEAM_CLEAN_2026_09.md).
+Не customer-recall. Не закрывает RT-001.
 
 Checkpoint **GO**; customer_go false. RT-001/002/003 остаются OPEN.

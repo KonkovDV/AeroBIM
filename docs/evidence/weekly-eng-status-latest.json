@@ -1,9 +1,9 @@
 {
   "schema_version": "1.3.0",
   "artifact_type": "aerobim_weekly_eng_status",
-  "generated_at": "2026-08-17T17:02:27.833081+00:00",
-  "claim_boundary": "Engineering weekly status only. No invented commercial funnel. Checkpoint GO; customer_go false until RF PD+expertise corpus, the appointing party acceptance profile, and measured federated MEP. Fixture != customer accuracy.",
-  "checkpoint": "NO_GO",
+  "generated_at": "2026-09-15T12:47:30.232802+00:00",
+  "claim_boundary": "Engineering weekly status only. No invented commercial funnel. Checkpoint GO (regulatory_measurement_mvp; customer_go false) until RF PD+expertise corpus, the appointing party acceptance profile, and measured federated MEP. Fixture != customer accuracy.",
+  "checkpoint": "GO",
   "rt_open": [
     "RT-001",
     "RT-002",
@@ -20,12 +20,12 @@
     "print_as": "commercial block empty — no outreach-log.md"
   },
   "runtime_baseline": {
-    "commit_sha": "acac02bd9d2d20cee667bcc9e2a32b30fbb89503",
+    "commit_sha": "139896709507447e14d48f9a95026a7c1c33d374",
     "schema_version": "1.4.0",
     "metrics": {
-      "backend_src_loc": 77804,
-      "backend_test_loc": 51152,
-      "backend_test_functions": 2473,
+      "backend_src_loc": 102652,
+      "backend_test_loc": 66667,
+      "backend_test_functions": 3195,
       "extraction_macro_f1": 0.8600000000000001
     },
     "architecture_inventory": {
@@ -163,7 +163,7 @@
   "interpretation_use": {
     "ledger": "docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md",
     "cli": "python -m aerobim.tools.export_interpretation_use_ledger",
-    "checkpoint": "NO_GO"
+    "checkpoint": "GO"
   },
   "ifc_cache_ram_ceiling": {
     "schema_version": "1.0.0",
@@ -176,8 +176,12 @@
     "ceiling_gib": 2.0,
     "measured_rss_delta_bytes": null,
     "representative_scale": false,
+    "spf_ram_multiplier_literature": 10,
+    "spf_ram_multiplier_source": "IfcOpenShell#7116 SPF ~8–10x disk on ~275–300 MB; planning uses 10",
+    "literature_rss_ceiling_bytes": 21474836480,
+    "literature_rss_not_measured": true,
     "closes_rt003": false,
-    "checkpoint": "NO_GO",
+    "checkpoint": "GO",
     "cli": "python -m aerobim.tools.export_ifc_cache_ram_ceiling",
     "evidence": "docs/evidence/ifc-cache-ram-ceiling-latest.json"
   },

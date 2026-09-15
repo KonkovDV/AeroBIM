@@ -1,10 +1,10 @@
 <!-- claims-lint: allow-file reason="Demo-day speech lock; TRL 5 / CDE / SSO / 90% as non-claims; Checkpoint GO; customer_go false" -->
 ---
 title: "Демо-день 29–30.09.2026 — замок речи"
-date: "2026-09-14"
-last_updated: "2026-09-14"
+date: "2026-09-15"
+last_updated: "2026-09-15"
 status: active
-version: "1.1.0"
+version: "1.3.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -64,7 +64,7 @@ CI-пин (`attested_by=ci`): пять ворот PASS. Число файлов 
 
 Каждый идентификатор разобран в redline. На сцене — тормоз, не спор.
 
-RT-DEMO-TRL5 · RT-DEMO-837-CUSTOMER · RT-DEMO-GRID-ALL-PACKS · RT-DEMO-AREA-GEOMETRY · RT-DEMO-F1-043 · RT-DEMO-N62-AS-N · RT-DEMO-KR-17 · RT-DEMO-389-IN-50 · RT-DEMO-SSO-READY · RT-DEMO-BCF-CDE · RT-DEMO-REGISTRY-NOW · RT-DEMO-PACK-PROCESSED · RT-DEMO-IFC4-EXAMPLE · RT-DEMO-NWD-NATIVE · RT-DEMO-REVISION-DUPES · RT-DEMO-MYPY-FILECOUNT · RT-DEMO-AGR-DATE · RT-DEMO-WEIGHTS-PDF · RT-DEMO-ESCROW-NAMED · RT-DEMO-UGT-ON-COVER.
+RT-DEMO-TRL5 · RT-DEMO-837-CUSTOMER · RT-DEMO-GRID-ALL-PACKS · RT-DEMO-AREA-GEOMETRY · RT-DEMO-F1-043 · RT-DEMO-N62-AS-N · RT-DEMO-KR-17 · RT-DEMO-389-IN-50 · RT-DEMO-SSO-READY · RT-DEMO-BCF-CDE · RT-DEMO-REGISTRY-NOW · RT-DEMO-PACK-PROCESSED · RT-DEMO-IFC4-EXAMPLE · RT-DEMO-NWD-NATIVE · RT-DEMO-REVISION-DUPES · RT-DEMO-MYPY-FILECOUNT · RT-DEMO-AGR-DATE · RT-DEMO-WEIGHTS-PDF · RT-DEMO-ESCROW-NAMED · RT-DEMO-UGT-ON-COVER · RT-DEMO-AI-NOT-NEEDED · RT-DEMO-VALIDATOR-SURNAME · RT-DEMO-LEGAL-DATE · RT-DEMO-GANTT · RT-DEMO-SLA-PASS · RT-DEMO-RECALL-100.
 
 ## Три числа, без которых критерий эффекта пуст
 
@@ -87,3 +87,9 @@ RT-DEMO-TRL5 · RT-DEMO-837-CUSTOMER · RT-DEMO-GRID-ALL-PACKS · RT-DEMO-AREA-G
 - в реестре российского ПО как статус
 - площади считаем по геометрии
 - прогон выполнен на вашем комплекте как список дефектов заказчика
+- «ИИ не нужна»
+- выдуманная фамилия валидатора
+- дата регистрации юрлица
+- диаграмма Ганта вместо GitHub Issues
+- `sla_pass` / `customer_package_sla` как SLA заказчика
+- 10/10 seam-clean как полнота продукта

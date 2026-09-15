@@ -45,6 +45,9 @@ def test_measure_sla_emits_package_scale_for_pilot_pack() -> None:
     assert isinstance(scale, dict)
     # The pilot fixture pack references only tiny fixtures -> not representative.
     assert result["representative_scale"] is False
+    honesty = result["scale_honesty"]
+    assert honesty["representative_scale_basis"] == "referenced_file_inventory_not_analyze_rss"
+    assert "analyze_path_bytes" in honesty
     # request-nested inputs are now resolved into the inventory.
     assert int(scale["input_files"]) >= 1
 

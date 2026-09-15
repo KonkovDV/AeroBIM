@@ -45,13 +45,13 @@ class CheckpointSotTests(unittest.TestCase):
 
 
 class LiveInjectionPinTests(unittest.TestCase):
-    """Historical 03.09 pins: wording and denominator only. Do not hand-edit checkpoint."""
+    """Historical 03.09 pins stay dated. Live latest.json is the seam-clean contour."""
 
-    def test_channel_latest_pin_is_output_sensitivity_proxy(self) -> None:
+    def test_channel_ar_historical_pin_is_output_sensitivity_proxy(self) -> None:
         payload = json.loads(
-            (_REPO / "docs/evidence/defect-injection-recall-run-latest.json").read_text(
-                encoding="utf-8"
-            )
+            (
+                _REPO / "docs/evidence/defect-injection-recall-run-2026-09-03-house-5-s1-3-ar.json"
+            ).read_text(encoding="utf-8")
         )
         self.assertEqual(payload["git_commit"], "929a787a8972daffc9d39638163fa5338f62543b")
         self.assertEqual(payload["aggregate"]["killed"], 0)
@@ -65,6 +65,20 @@ class LiveInjectionPinTests(unittest.TestCase):
         self.assertEqual(payload["determinism_check"]["status"], "pass")
         self.assertEqual(payload["control_issue_count"], 97)
         self.assertIn("not seam-clean", payload["plan_deviation"])
+        self.assertFalse(payload["closes_rt001"])
+
+    def test_live_latest_is_seam_clean_targeted(self) -> None:
+        payload = json.loads(
+            (_REPO / "docs/evidence/defect-injection-recall-run-latest.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertGreaterEqual(payload["aggregate"]["trials"], 10)
+        self.assertGreaterEqual(payload["aggregate"]["killed"], 9)
+        self.assertEqual(payload["control_issue_count"], 0)
+        self.assertIn("targeted", payload["detection_proxy"])
+        self.assertIn("seam-clean", payload["plan_deviation"])
+        self.assertFalse(payload["customer_go"])
         self.assertFalse(payload["closes_rt001"])
 
     def test_fixture_latest_pin_keeps_synthetic_denominator(self) -> None:

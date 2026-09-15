@@ -183,3 +183,18 @@ def test_wheelhouse_artifact_in_manifest(tmp_path: Path) -> None:
     write_wheelhouse_artifact(tmp_path)
     manifest = build_manifest(tmp_path, image_id="sha256:test")
     assert "wheelhouse-OUT_OF_SCOPE.json" in manifest["files"]
+
+
+def test_trial_fact_is_honest_and_not_customer_go(tmp_path: Path) -> None:
+    from aerobim.tools.offline_bundle import _IMAGE_TAR, build_trial_fact
+
+    bundle = _make_bundle(tmp_path)
+    manifest = json.loads((bundle / "BUNDLE_MANIFEST.json").read_text(encoding="utf-8"))
+    fact = build_trial_fact(manifest)
+    assert fact["claim_level"] == "image_bundle_only"
+    assert fact["customer_go"] is False
+    assert fact["closes_rt001"] is False
+    assert fact["customer_data_included"] is False
+    assert fact["tar_name"] == _IMAGE_TAR
+    assert fact["tar_sha256"]
+    assert fact["precision_claim_publishable"] is False

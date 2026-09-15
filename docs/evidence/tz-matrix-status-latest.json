@@ -1,39 +1,53 @@
 {
   "artifact_type": "aerobim_tz_matrix_status",
-  "schema_version": "1.0.0",
-  "generated_at": "2026-07-16T20:48:33.582084+00:00",
+  "schema_version": "1.2.0",
+  "generated_at": "2026-09-15T16:10:34.948505+00:00",
   "author_relationship": "self",
+  "claim_boundary": "Capability snapshot. Fixture OK ≠ customer done. Not product accuracy. Checkpoint GO (regulatory_measurement_mvp; customer_go false).",
+  "checkpoint": "GO",
+  "go_kind": "regulatory_measurement_mvp",
+  "go_re_scope_date": "2026-09-04",
+  "customer_go": false,
+  "market_go": false,
+  "deployment_go": false,
+  "interpretation_use": {
+    "licensed_use": "engine_regression",
+    "ledger": "docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md",
+    "closes_rt001": false
+  },
   "corpus_kind": "fixture",
   "customer_corpus_present": false,
+  "evidence_path": "samples/benchmarks/project-package-wall-fire-rating.json",
+  "capabilities_executed": true,
   "capabilities_snapshot": {
     "clash": {
-      "status": "skipped",
-      "reason": "clash detection not evaluated",
+      "status": "failed",
+      "reason": "AssertionError; IfcClash geometry init (typical on tiny wall fixtures; not a silent pass)",
       "external_ref": null
     },
     "ids": {
-      "status": "skipped",
-      "reason": "IDS validation not requested",
+      "status": "ok",
+      "reason": null,
       "external_ref": null
     },
     "ifc_validation": {
       "status": "skipped",
-      "reason": "IFC property validation not evaluated",
+      "reason": "no IFC property requirements",
       "external_ref": null
     },
     "unit_scale": {
-      "status": "skipped",
-      "reason": "IFC unit scale not evaluated",
+      "status": "not_verified",
+      "reason": "IFC unit scale not probed",
       "external_ref": null
     },
     "raster": {
       "status": "skipped",
-      "reason": "raster drawing analysis not evaluated",
+      "reason": "no raster drawing sources",
       "external_ref": null
     },
     "ifc_schema": {
-      "status": "skipped",
-      "reason": "IFC schema pre-gate not evaluated",
+      "status": "not_verified",
+      "reason": "SPF FILE_SCHEMA pre-gate only (not full EXPRESS / bSI)",
       "external_ref": null
     },
     "norm_rule_packs": {
@@ -53,53 +67,61 @@
       "contour": "deterministic_validation",
       "capability": "ids",
       "status": "partial",
-      "note": "done only with customer corpus evidence"
+      "note": "done only with customer corpus evidence",
+      "evidence_path": "samples/benchmarks/project-package-wall-fire-rating.json"
     },
     {
       "requirement": "Norm / rule packs",
       "contour": "deterministic_validation",
       "capability": "norm_rule_packs",
       "status": "partial",
-      "note": "synthetic-template loader is partial until customer_approved pack"
+      "note": "synthetic-template loader is partial until customer_approved pack",
+      "evidence_path": "samples/benchmarks/project-package-wall-fire-rating.json"
     },
     {
       "requirement": "Section pairing PD↔RD",
       "contour": "deterministic_validation",
       "capability": "section_pairing",
-      "status": "partial"
+      "status": "partial",
+      "evidence_path": "samples/benchmarks/project-package-wall-fire-rating.json"
     },
     {
       "requirement": "Geometric clash",
       "contour": "deterministic_validation",
       "capability": "clash",
       "status": "partial",
-      "note": "generic clash only; MEP-CLASH-001 open"
+      "note": "generic clash only; MEP-CLASH-001 open",
+      "evidence_path": "samples/benchmarks/project-package-wall-fire-rating.json"
     },
     {
       "requirement": "MEP system intersections",
       "contour": "deterministic_validation",
       "capability": "clash",
       "status": "missing",
-      "note": "blocked on federated MEP IFC + scope memo"
+      "note": "blocked on federated MEP IFC + scope memo",
+      "evidence_path": "samples/benchmarks/project-package-wall-fire-rating.json"
     },
     {
       "requirement": "CV / drawing literacy",
       "contour": "ai_advisory",
       "capability": "raster",
       "status": "missing",
-      "note": "OCR baseline ≠ CV; advisory only"
+      "note": "OCR baseline ≠ CV; advisory only",
+      "evidence_path": "samples/benchmarks/project-package-wall-fire-rating.json"
     },
     {
       "requirement": "OCR baseline",
       "contour": "ingestion",
       "capability": "raster",
-      "status": "partial"
+      "status": "partial",
+      "evidence_path": "samples/benchmarks/project-package-wall-fire-rating.json"
     },
     {
       "requirement": "BCF / review HITL",
       "contour": "evidence_reporting",
       "capability": null,
-      "status": "partial"
+      "status": "partial",
+      "evidence_path": "samples/benchmarks/project-package-wall-fire-rating.json"
     }
   ]
 }

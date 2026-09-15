@@ -50,6 +50,7 @@ class RemarkLocaleParityTests(unittest.TestCase):
 
     _CASES: tuple[tuple[FindingCategory, str, str], ...] = (
         (FindingCategory.IFC_VALIDATION, "Замечание по модели", "Model remark"),
+        (FindingCategory.IDS_VALIDATION, "Замечание по модели", "Model remark"),
         (FindingCategory.DRAWING_VALIDATION, "Замечание по чертежу", "Drawing remark"),
         (FindingCategory.CROSS_DOCUMENT, "Междокументное расхождение", "Cross-document conflict"),
         (FindingCategory.SPATIAL, "Пространственное замечание", "Spatial remark"),
@@ -93,6 +94,14 @@ class RemarkLocaleParityTests(unittest.TestCase):
             severity=issue.severity,
             message=issue.message,
             category=issue.category,
+            ifc_entity=issue.ifc_entity,
+            property_set=issue.property_set,
+            property_name=issue.property_name,
+            operator=issue.operator,
+            expected_value=issue.expected_value,
+            observed_value=issue.observed_value,
+            unit=issue.unit,
+            target_ref=issue.target_ref,
             element_guid="guid-en-1",
             finding_id="fid-en-1",
             origin="deterministic",
@@ -121,11 +130,33 @@ class RemarkLocaleParityTests(unittest.TestCase):
         with zipfile.ZipFile(io.BytesIO(bcf_bytes), "r") as zf:
             markup = next(n for n in zf.namelist() if n.endswith("/markup.bcf"))
             xml = zf.read(markup).decode("utf-8")
+        self.assertIn("[EN]", xml)
+        self.assertIn("[RU]", xml)
         self.assertIn("at least", xml)
         self.assertIn("value must be at least 25", xml)
-        self.assertNotIn("не менее", xml)
-        # BCF Title is rule_id (language-neutral); EN lives in Description body.
+        self.assertIn("не менее", xml)
         self.assertIn("QTO-PARITY-001", xml)
+
+    def test_four_kr_classes_have_ru_en_key_parity(self) -> None:
+        ru_gen = TemplateRemarkGenerator(locale="ru")
+        en_gen = TemplateRemarkGenerator(locale="en")
+        covered = (
+            FindingCategory.IFC_VALIDATION,
+            FindingCategory.DRAWING_VALIDATION,
+            FindingCategory.CROSS_DOCUMENT,
+            FindingCategory.SPATIAL,
+        )
+        ru_keys = {category.value for category, _ru, _en in self._CASES if category in covered}
+        en_keys = set(ru_keys)
+        self.assertEqual(ru_keys, en_keys)
+        self.assertEqual(len(covered), 4)
+        for category in covered:
+            issue = _issue(category=category)
+            ru = ru_gen.generate(issue)
+            en = en_gen.generate(issue)
+            self.assertEqual(bool(ru.essence), bool(en.essence))
+            self.assertEqual(bool(ru.location_line), bool(en.location_line))
+            self.assertEqual(bool(ru.clause_cite), bool(en.clause_cite))
 
 
 if __name__ == "__main__":

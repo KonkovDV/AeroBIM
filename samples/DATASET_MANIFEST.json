@@ -1,9 +1,9 @@
 {
   "artifact_type": "samples_dataset_manifest",
   "schema_version": "1.0.0",
-  "generated_at": "2026-09-15T11:01:51.225054+00:00",
+  "generated_at": "2026-09-15T16:08:44.842737+00:00",
   "note": "license/provenance map of the public fixture corpus; fixtures are synthetic and never customer evidence (corpus_kind=fixture); vendored buildingSMART BCF/IDS schemas are CC BY-ND 4.0 (verified 2026-08-04 RT-W-01) with NOTICE + LICENSE files",
-  "file_count": 890,
+  "file_count": 892,
   "vendored_count": 15,
   "files": [
     {
@@ -855,6 +855,18 @@
       "personal_data": false
     },
     {
+      "path": "benchmarks/project-package-sla-representative.json",
+      "sha256": "d892d072b038fa134b6e7369cb049b6c078c14a8c0f424b337f74199b6094ae1",
+      "bytes": 745,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
       "path": "benchmarks/project-package-stress-multisource.json",
       "sha256": "80f294261a3e0d05105327e10c6ec1504b837b1e3764a5414403e4e84867dae8",
       "bytes": 934,
@@ -894,6 +906,18 @@
       "path": "benchmarks/project-package-techlab-structure.json",
       "sha256": "9899e851a408e12772cf2862da43300f0ce2483ab83b096ccf0c7b08a3a5a090",
       "bytes": 710,
+      "provenance": "project_authored_fixture",
+      "source": "authored for AeroBIM tests/benchmarks; synthetic content",
+      "license_status": "repo_mit",
+      "attribution_required": false,
+      "redistribution": "allowed under repo MIT",
+      "production_use": "fixture only; never customer evidence",
+      "personal_data": false
+    },
+    {
+      "path": "benchmarks/project-package-wall-fire-rating.json",
+      "sha256": "87666e51d127eff4c15f7f7c3b58bec9fbff05bf47ae8177e4a10ae24b6e1a20",
+      "bytes": 441,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",

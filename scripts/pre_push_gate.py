@@ -74,6 +74,16 @@ _STEPS_BASE: list[tuple[str, list[str], Path]] = [
         BACKEND,
     ),
     ("kt2 handoff", [PY, "-m", "aerobim.tools.verify_kt2_handoff"], REPO),
+    (
+        "nda gate patterns",
+        [PY, str(REPO / "scripts" / "scan_nda_gate_patterns.py")],
+        REPO,
+    ),
+    (
+        "live evidence freshness",
+        [PY, str(REPO / "scripts" / "check_live_evidence_freshness.py")],
+        REPO,
+    ),
 ]
 
 _STEPS_FULL: list[tuple[str, list[str], Path]] = [

@@ -2,8 +2,8 @@
 ---
 title: "Citeable evidence (jury / FAIR)"
 status: active
-version: "2.5.18"
-last_updated: "2026-09-03"
+version: "2.5.20"
+last_updated: "2026-09-15"
 ---
 
 # Evidence fixtures
@@ -51,8 +51,13 @@ Only **citeable** snapshots for TechLab review and reproducibility. Working dump
 | [`runtime-baseline-latest.json`](runtime-baseline-latest.json) | Runtime LOC / tests / gates (schema 1.2.0; completeness checked in CI) |
 | [`sla-fixture-p95-2026-08-04.json`](sla-fixture-p95-2026-08-04.json) | Fixture SLA schema **1.4.0**, gate=**p95**; not customer; advisory on/off dual-run is still manual. Speech sheet: [`../demo/KT2_FIXTURE_TIMING_2026_08_16.md`](../demo/KT2_FIXTURE_TIMING_2026_08_16.md) |
 | [`lab-before-after-fixture-tool-only-latest.json`](lab-before-after-fixture-tool-only-latest.json) | Lab before/after journal: `t_tool_ms` on git wall+IDS; `t_manual_s` null; not partner B4; not A1–A8 |
+| [`offline-bundle-trial-latest.json`](offline-bundle-trial-latest.json) | Docker image-track trial fact from `offline_bundle --write-docs-evidence`; tar sha256; not customer data; not CDE |
 | [`DEFECT_INJECTION_RECALL_PLAN_2026_09.md`](DEFECT_INJECTION_RECALL_PLAN_2026_09.md) | План mutation-test recall; seed 20260824; не партнёр |
-| [`DEFECT_INJECTION_RECALL_RUN_2026_09.md`](DEFECT_INJECTION_RECALL_RUN_2026_09.md) · [`defect-injection-recall-run-latest.json`](defect-injection-recall-run-latest.json) · [`defect-injection-recall-run-fixture-latest.json`](defect-injection-recall-run-fixture-latest.json) | E2 03.09: mutation-kill 0/6 канальный IFC (`MISSING_ELEMENT`/`IDS_VIOLATION` не применялись), 1/8 mini-IFC; Wilson upper 0.390 на n=6; `synthetic_only`; поле `checkpoint: NO_GO` = HISTORICAL_PIN прогона, живой SSOT = GO; customer_go false |
+| [`DEFECT_INJECTION_RECALL_RUN_2026_09.md`](DEFECT_INJECTION_RECALL_RUN_2026_09.md) · [`defect-injection-recall-run-latest.json`](defect-injection-recall-run-latest.json) · [`defect-injection-recall-run-fixture-latest.json`](defect-injection-recall-run-fixture-latest.json) · [`DEFECT_INJECTION_RECALL_SEAM_CLEAN_2026_09.md`](DEFECT_INJECTION_RECALL_SEAM_CLEAN_2026_09.md) | Live latest = seam-clean wall+IDS targeted ≥10; 03.09 house-5 0/6 is HISTORICAL_PIN (`…-ar.json` / KR blind); mini-IFC 1/8 stays fixture-latest; `synthetic_only`; customer_go false |
+| [`sla-package-scale-latest.json`](sla-package-scale-latest.json) | Fixture p95; `representative_scale` is inventory (XSD assets dominate bytes); `scale_honesty` splits analyze vs unanalyzed; not customer SLA |
+| [`data-residency-inventory-latest.json`](data-residency-inventory-latest.json) | Storage surfaces + JOB-01 in-process BackgroundTasks; durable workers not claimed |
+| [`substitution-matrix-latest.json`](substitution-matrix-latest.json) | 63 DI tokens classified live / in_memory / missing; not a vendor quote |
+| [`../deployment-sizing-and-cost-2026.md`](../deployment-sizing-and-cost-2026.md) | Honest RAM/FTE ranges; not a commercial quote |
 | [`tracker-baseline-2026-08-07.md`](tracker-baseline-2026-08-07.md) · [`.pdf`](tracker-baseline-2026-08-07.pdf) | К0 tracker baseline (NO_GO; open-bench + fixture + synthetic); commercial counts local-only |
 | [`sprint2-synthetic-baseline-2026-08-04.json`](sprint2-synthetic-baseline-2026-08-04.json) | Synthetic detection twin (`synthetic_only`) |
 | [`sla-pilot-moscow-2026-05-21.json`](sla-pilot-moscow-2026-05-21.json) | Legacy fixture SLA snapshot |

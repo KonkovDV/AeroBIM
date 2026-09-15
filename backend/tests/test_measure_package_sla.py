@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -37,6 +38,15 @@ class MeasurePackageSlaTests(unittest.TestCase):
         self.assertIn("command", result)
         self.assertIn("Fixture wall-clock only", result["allowed_wording"])
         self.assertIn("p95_minutes", result["cold_run"])
+        blob = json.dumps(result)
+        self.assertNotIn("C:/", blob)
+        self.assertNotIn("C:\\", blob)
+        self.assertFalse(result["customer_go"])
+        self.assertFalse(result["closes_rt001"])
+        self.assertIn("scale_honesty", result)
+        for entry in result["file_inventory"]:
+            path = str(entry["path"])
+            self.assertFalse(path.startswith("/") or (len(path) > 1 and path[1] == ":"))
 
     def test_rejects_customer_measurable_on_fixture_corpus(self) -> None:
         repo_root = Path(__file__).resolve().parents[2]

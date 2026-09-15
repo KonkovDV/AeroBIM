@@ -1,10 +1,10 @@
 <!-- claims-lint: allow-file reason="Demo-day deck redline; quotes of forbidden deck claims under KILL; NO_GO" -->
 ---
 title: "Demo-day deck redline — 13.09.2026 vs git pins (14.09)"
-date: "2026-09-14"
-last_updated: "2026-09-14"
+date: "2026-09-15"
+last_updated: "2026-09-15"
 status: active
-version: "1.0.0"
+version: "1.1.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -42,6 +42,12 @@ claim_boundary: >
 | RT-DEMO-WEIGHTS-PDF | Веса Приложения 3 как attested CI | PDF не в git; 30/20/20/20/10 совпали с десктопным сканом 14.09; не `attested_by=ci` |
 | RT-DEMO-ESCROW-NAMED | % переноса срока партнёра как наш эффект | Контекст рынка; E1–E5 не подписаны |
 | RT-DEMO-UGT-ON-COVER | Цифра уровня готовности на обложке | Обложка: шов + трасса. TRL 4 — в приложении, как самооценка |
+| RT-DEMO-AI-NOT-NEEDED | «ИИ не нужна» | ADR-001: вердикт детерминированный; ИИ — извлечение и подсказки |
+| RT-DEMO-VALIDATOR-SURNAME | Выдуманная фамилия валидатора | Роль: инженер нормоконтроля / ГИП комплекта |
+| RT-DEMO-LEGAL-DATE | Дата регистрации юрлица | Не выдумывать; вход Фонда — команда физлиц |
+| RT-DEMO-GANTT | Диаграмма Ганта как план сдачи | Публичный backlog — GitHub Issues |
+| RT-DEMO-SLA-PASS | `sla_pass true` как SLA заказчика | `claim_level=fixture_only`; `customer_go` false; schema id ≠ claim |
+| RT-DEMO-RECALL-100 | 10/10 seam-clean как полнота продукта | `synthetic_only`; Wilson lower 0.722 |
 
 Pack-letter IfcSpace (engineering pin, не слайд жюри): 10 599 + 1 339 + 4 214 = 16 152; NetFloorArea = 0. Источник: [`../evidence/deep-study-carrier-facts-2026-08.md`](../evidence/deep-study-carrier-facts-2026-08.md).
 

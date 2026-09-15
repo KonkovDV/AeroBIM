@@ -29,6 +29,8 @@ from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
 
+from aerobim.domain.checkpoint import CHECKPOINT, CUSTOMER_GO
+
 _REPO_ROOT = Path(__file__).resolve().parents[3].parent
 _BACKEND = _REPO_ROOT / "backend"
 _BUNDLE_DIR = _REPO_ROOT / "artifacts" / "offline-bundle"
@@ -43,6 +45,8 @@ _INSTALL_PS1 = "install_offline.ps1"
 _WHEELHOUSE_ARTIFACT = "wheelhouse-OUT_OF_SCOPE.json"
 _DEMO_TOKEN = "offline-bundle-token"
 _CONTAINER_NAME = "aerobim-offline"
+_TRIAL_EVIDENCE = _REPO_ROOT / "docs" / "evidence" / "offline-bundle-trial-latest.json"
+_TRIAL_EXPIRES = "2026-09-18"
 _BUNDLE_FILES = (
     _IMAGE_TAR,
     "requirements-lock.txt",
@@ -392,6 +396,62 @@ def verify_bundle_source_sync(bundle_dir: Path) -> list[str]:
     return problems
 
 
+def build_trial_fact(manifest: dict[str, object]) -> dict[str, object]:
+    """Operator trial-access fact from a verified bundle manifest. Not a CDE claim."""
+
+    files = manifest.get("files")
+    image_id = str(manifest.get("image_id") or "")
+    if not isinstance(files, dict) or not files or not image_id:
+        raise ValueError("manifest missing image_id or files")
+    tar_meta = files.get(_IMAGE_TAR)
+    tar_sha = ""
+    tar_bytes = 0
+    if isinstance(tar_meta, dict):
+        tar_sha = str(tar_meta.get("sha256") or "")
+        tar_bytes = int(tar_meta.get("bytes") or 0)
+    return {
+        "artifact_type": "offline_bundle_trial_fact",
+        "schema_version": "1.0.0",
+        "generated_at": datetime.now(tz=UTC).isoformat(),
+        "claim_level": "image_bundle_only",
+        "checkpoint": CHECKPOINT,
+        "customer_go": CUSTOMER_GO,
+        "closes_rt001": False,
+        "closes_rt002": False,
+        "closes_rt003": False,
+        "precision_claim_publishable": False,
+        "customer_data_included": False,
+        "image_tag": str(manifest.get("image_tag") or _IMAGE_TAG),
+        "image_id": image_id,
+        "tar_name": _IMAGE_TAR,
+        "tar_sha256": tar_sha,
+        "tar_bytes": tar_bytes,
+        "files": files,
+        "bundle_rel": "artifacts/offline-bundle",
+        "valid_until": _TRIAL_EXPIRES,
+        "valid_until_note": "feature freeze or lockfile/Dockerfile change, whichever first",
+        "claim_boundary": (
+            "Docker image-track trial only. Not customer SLA. Not CDE-ready. "
+            "Not MEP delivered. Checkpoint GO is regulatory_measurement_mvp."
+        ),
+    }
+
+
+def write_trial_fact(*, bundle_dir: Path | None = None) -> Path:
+    root = bundle_dir or _BUNDLE_DIR
+    manifest = json.loads((root / _MANIFEST).read_text(encoding="utf-8"))
+    if not isinstance(manifest, dict):
+        raise ValueError("BUNDLE_MANIFEST.json must be an object")
+    payload = build_trial_fact(manifest)
+    _TRIAL_EVIDENCE.parent.mkdir(parents=True, exist_ok=True)
+    _TRIAL_EVIDENCE.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    print(f"docs_evidence={_TRIAL_EVIDENCE}")
+    return _TRIAL_EVIDENCE
+
+
 def verify_manifest(bundle_dir: Path) -> list[str]:
     """Return a list of mismatches (empty == verified)."""
     manifest = json.loads((bundle_dir / _MANIFEST).read_text(encoding="utf-8"))
@@ -456,12 +516,14 @@ def cmd_build() -> int:
     return 0
 
 
-def cmd_verify() -> int:
+def cmd_verify(*, write_docs_evidence: bool = False) -> int:
     problems = verify_manifest(_BUNDLE_DIR) + verify_bundle_source_sync(_BUNDLE_DIR)
     if problems:
         print("BUNDLE VERIFY FAILED:\n" + "\n".join(problems))
         return 1
     print("bundle verified: all sha256 match; no bundle/backend drift")
+    if write_docs_evidence:
+        write_trial_fact()
     return 0
 
 
@@ -513,7 +575,7 @@ def cmd_smoke() -> int:
         _docker("rm", "-f", container)
 
 
-def cmd_closed_contour(*, run_smoke: bool = False) -> int:
+def cmd_closed_contour(*, run_smoke: bool = False, write_docs_evidence: bool = False) -> int:
     """И1 operator gate: manifest verify + optional docker smoke."""
 
     problems = verify_manifest(_BUNDLE_DIR) + verify_bundle_source_sync(_BUNDLE_DIR)
@@ -531,6 +593,8 @@ def cmd_closed_contour(*, run_smoke: bool = False) -> int:
         print("closed-contour: run with --smoke to prove docker load + --network none")
     print(f"bundle dir: {_BUNDLE_DIR}")
     print("operator docs: docs/offline-deployment-2026.md")
+    if write_docs_evidence:
+        write_trial_fact()
     return 0
 
 
@@ -556,12 +620,20 @@ def main() -> None:
         action="store_true",
         help="With closed-contour: also run docker load + --network none smoke",
     )
+    parser.add_argument(
+        "--write-docs-evidence",
+        action="store_true",
+        help="After verify/closed-contour: write docs/evidence/offline-bundle-trial-latest.json",
+    )
     args = parser.parse_args()
     handlers: dict[str, Callable[[], int]] = {
         "build": cmd_build,
-        "verify": cmd_verify,
+        "verify": lambda: cmd_verify(write_docs_evidence=args.write_docs_evidence),
         "smoke": cmd_smoke,
-        "closed-contour": lambda: cmd_closed_contour(run_smoke=args.smoke),
+        "closed-contour": lambda: cmd_closed_contour(
+            run_smoke=args.smoke,
+            write_docs_evidence=args.write_docs_evidence,
+        ),
         "wheelhouse": cmd_wheelhouse,
         "sbom": cmd_sbom,
     }

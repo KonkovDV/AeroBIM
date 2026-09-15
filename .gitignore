@@ -246,3 +246,7 @@ Thumbs.db
 aerobim-internal-data/
 **/aerobim-internal-data/
 
+# Agent/operator local drops (pre-demo reports; NDA gate patterns stay untracked)
+/out/
+.nda/
+

@@ -55,6 +55,12 @@ PLAN_DEVIATION = (
     "uses the CONTROL baseline issue-multiset diff instead, because the "
     "2026-09-03 E2 command runs on packs that are not seam-clean."
 )
+PLAN_DEVIATION_SEAM_CLEAN = (
+    "CLOSED vs the 2026-08-30 plan on the seam-clean wall+IDS fixture: CONTROL "
+    "has summary.passed=true and control_issue_count=0. Attribution is targeted "
+    "(rule_id + element_guid + norm_clause|target_ref), not the house-5 "
+    "CONTROL-multiset. The 2026-09-03 0/6 pin stays historical. Not customer recall."
+)
 CONTROL_CLASS = "CONTROL"
 _IFC_SUFFIXES = {".ifc", ".ifcxml"}
 
@@ -75,6 +81,16 @@ def issue_key(issue: IssueRecord) -> tuple[str, ...]:
     )
 
 
+def targeted_issue_key(issue: IssueRecord) -> tuple[str, ...]:
+    """Class + location identity: rule, GUID, norm clause (fallback target_ref)."""
+
+    return (
+        str(issue.get("rule_id") or ""),
+        str(issue.get("element_guid") or ""),
+        str(issue.get("norm_clause") or issue.get("target_ref") or ""),
+    )
+
+
 def diff_issue_multisets(
     baseline: Counter[tuple[str, ...]],
     variant: Counter[tuple[str, ...]],
@@ -88,12 +104,20 @@ def evaluate_manifest(
     manifest: Mapping[str, Any],
     issues_by_class: Mapping[str, list[IssueRecord]],
     analyze_errors: Mapping[str, str] | None = None,
+    *,
+    key_fn: Callable[[IssueRecord], tuple[str, ...]] | None = None,
+    require_clean_control: bool = False,
 ) -> dict[str, Any]:
     """Compute per-class kill rows and aggregate recall with a Wilson interval."""
 
     if CONTROL_CLASS not in issues_by_class:
         raise ValueError("CONTROL variant issues are required as the baseline")
-    baseline = Counter(issue_key(issue) for issue in issues_by_class[CONTROL_CLASS])
+    identity = key_fn or issue_key
+    baseline = Counter(identity(issue) for issue in issues_by_class[CONTROL_CLASS])
+    if require_clean_control and sum(baseline.values()) != 0:
+        raise ValueError(
+            f"CONTROL is not seam-clean: expected 0 issues, got {sum(baseline.values())}"
+        )
     errors = analyze_errors or {}
 
     rows: list[dict[str, Any]] = []
@@ -103,10 +127,17 @@ def evaluate_manifest(
             continue
         applied = bool(variant.get("applied"))
         error = errors.get(defect_class)
-        counts = Counter(issue_key(issue) for issue in issues_by_class.get(defect_class, []))
+        variant_issues = issues_by_class.get(defect_class, [])
+        counts = Counter(identity(issue) for issue in variant_issues)
         novel, vanished = diff_issue_multisets(baseline, counts)
         novel_count = sum(novel.values())
         vanished_count = sum(vanished.values())
+        expected_guid = str(variant.get("expected_element_guid") or "").strip()
+        location_hit = False
+        if expected_guid:
+            location_hit = any(
+                str(issue.get("element_guid") or "") == expected_guid for issue in variant_issues
+            )
         # A contour that refuses the mutated pack (fail-closed parse/ingest
         # error) visibly reacts to the mutant, so it counts as killed with the
         # direction recorded as the error rather than as issue movement.
@@ -120,6 +151,8 @@ def evaluate_manifest(
                 "vanished_issues": vanished_count,
                 "killed": killed,
                 "analyze_error": error,
+                "expected_element_guid": expected_guid or None,
+                "location_hit": location_hit,
             }
         )
 
@@ -160,6 +193,7 @@ def _issue_to_record(issue: Any) -> IssueRecord:
         "property_name": getattr(issue, "property_name", None),
         "observed_value": getattr(issue, "observed_value", None),
         "element_guid": getattr(issue, "element_guid", None),
+        "norm_clause": getattr(issue, "norm_clause", None),
     }
 
 
@@ -245,9 +279,12 @@ def build_artifact(
     git_commit: str | None,
     source_label: str,
     generated_at: str | None = None,
+    plan_deviation: str | None = None,
+    detection_proxy: str | None = None,
+    schema_version: str | None = None,
 ) -> dict[str, Any]:
     payload: dict[str, Any] = {
-        "schema_version": SCHEMA_VERSION,
+        "schema_version": schema_version or SCHEMA_VERSION,
         "artifact_type": "defect_injection_recall_run",
         "claim_level": "synthetic_only",
         "claim_boundary": CLAIM_BOUNDARY,
@@ -271,13 +308,14 @@ def build_artifact(
                 f"seed {manifest.get('seed')} the mutation-kill recall below was "
                 "obtained."
             ),
-            "detection_proxy": (
+            "detection_proxy": detection_proxy
+            or (
                 "killed = issue multiset of the mutated variant differs from the "
                 "unmutated CONTROL variant (novel or vanished findings). Direction "
                 "is reported per class; a vanished alarm is recorded as a hide, "
                 "not as confirmation of the intended defect."
             ),
-            "plan_deviation": PLAN_DEVIATION,
+            "plan_deviation": plan_deviation or PLAN_DEVIATION,
             "determinism_check": determinism_check,
             "per_class": evaluation["rows"],
             "not_applied_classes": evaluation["not_applied_classes"],
@@ -300,12 +338,13 @@ def _source_tree_hash(manifest: Mapping[str, Any]) -> str | None:
 def render_markdown(artifact: Mapping[str, Any]) -> str:
     aggregate = artifact["aggregate"]
     wilson = aggregate.get("wilson_95") or {}
+    generated_day = str(artifact.get("generated_at") or "2026-09-15")[:10]
     lines = [
         '<!-- claims-lint: allow-file reason="Injection recall run; synthetic mutation test; GO; customer_go false" -->',
         "---",
         'title: "Defect-injection recall run — mutation-kill, synthetic-only"',
-        'date: "2026-09-03"',
-        'last_updated: "2026-09-03"',
+        f'date: "{generated_day}"',
+        f'last_updated: "{generated_day}"',
         "status: active",
         f'version: "{SCHEMA_VERSION}"',
         "closes_rt001: false",
@@ -402,6 +441,17 @@ def main(argv: list[str] | None = None) -> int:
         type=Path,
         default=Path("docs/evidence/DEFECT_INJECTION_RECALL_RUN_2026_09.md"),
     )
+    parser.add_argument(
+        "--attribution",
+        choices=("multiset", "targeted"),
+        default="multiset",
+        help="multiset = full CONTROL issue key; targeted = rule+GUID+norm",
+    )
+    parser.add_argument(
+        "--require-clean-control",
+        action="store_true",
+        help="Fail if CONTROL has any findings (seam-clean gate)",
+    )
     args = parser.parse_args(argv)
 
     manifest_path = args.manifest.resolve()
@@ -436,8 +486,9 @@ def main(argv: list[str] | None = None) -> int:
 
         source_dir = Path(str(manifest["source"]))
         source_issues = analyze(source_dir, "e2-source")
-        control_counter = Counter(issue_key(i) for i in issues_by_class[CONTROL_CLASS])
-        source_counter = Counter(issue_key(i) for i in source_issues)
+        key_fn = targeted_issue_key if args.attribution == "targeted" else issue_key
+        control_counter = Counter(key_fn(i) for i in issues_by_class[CONTROL_CLASS])
+        source_counter = Counter(key_fn(i) for i in source_issues)
         determinism_status = "pass" if source_counter == control_counter else "fail"
         determinism_check = {
             "status": determinism_status,
@@ -454,7 +505,13 @@ def main(argv: list[str] | None = None) -> int:
         if temp_storage is not None:
             temp_storage.cleanup()
 
-    evaluation = evaluate_manifest(manifest, issues_by_class, analyze_errors)
+    evaluation = evaluate_manifest(
+        manifest,
+        issues_by_class,
+        analyze_errors,
+        key_fn=targeted_issue_key if args.attribution == "targeted" else issue_key,
+        require_clean_control=bool(args.require_clean_control) or args.attribution == "targeted",
+    )
     artifact = build_artifact(
         manifest=manifest,
         manifest_path=manifest_path,
@@ -462,6 +519,16 @@ def main(argv: list[str] | None = None) -> int:
         determinism_check=determinism_check,
         git_commit=_git_commit(Path(__file__).resolve().parents[4]),
         source_label=args.source_label,
+        plan_deviation=(
+            PLAN_DEVIATION_SEAM_CLEAN if args.attribution == "targeted" else PLAN_DEVIATION
+        ),
+        detection_proxy=(
+            "killed = targeted (rule_id, element_guid, norm_clause|target_ref) "
+            "multiset differs from CONTROL, or fail-closed analyze error"
+            if args.attribution == "targeted"
+            else None
+        ),
+        schema_version="1.1.0" if args.attribution == "targeted" else SCHEMA_VERSION,
     )
 
     args.output.parent.mkdir(parents=True, exist_ok=True)

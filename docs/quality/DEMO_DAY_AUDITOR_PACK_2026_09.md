@@ -2,9 +2,9 @@
 ---
 title: "Аудиторский пакет демо-дня — блоки A–F (14.09.2026)"
 date: "2026-09-14"
-last_updated: "2026-09-14"
+last_updated: "2026-09-15"
 status: active
-version: "1.1.0"
+version: "1.1.1"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -176,7 +176,7 @@ Checkpoint **`GO`**; `customer_go` **false**. `PrecisionClaim.publishable` **fal
 | ID | Где | Суть |
 |---|---|---|
 | X-01 | CLAIMS_LOCK_2026_07_17.md header vs live checkpoint | Header still says Checkpoint verdict NO_GO; live product checkpoint is GO since 2026-09-04. Treat the July file as HISTORICAL_PIN plus Pass 14 wording, not as current SSOT. |
-| X-02 | weekly-eng-status-latest.json checkpoint vs TIER0 | weekly-eng-status generated_at 2026-08-17 still has checkpoint NO_GO and a stale runtime_baseline SHA. SSOT for tests is runtime-baseline-latest.json (2026-09-10). Do not mix. |
+| X-02 | weekly-eng-status-latest.json checkpoint vs TIER0 | CLOSED 2026-09-15: weekly pin regenerated via export_weekly_eng_status; checkpoint GO; runtime_baseline SHA is the attested pin 139896709507. The 2026-08-17 NO_GO snapshot is historical. Do not mix the August file with HEAD. |
 | X-03 | techlab-alignment R1–R15 checkmarks vs this pack | Alignment uses ✅ on several rows that this audit marks fixture-only or target_metric (R11/R15 SLA, R5 clash, R14 catalog). Prefer this table’s weaker status. |
 | X-04 | Desktop deck 13.09 vs git | Deck (outside git) printed УГТ-5, 837 as partner AR↔MEP, 0.43 as F1, n≥62, KR 17%, 389-in-50, SSO/BCF-ready. Licensed copy is submission/03-presentation/demo_day_slides.md. PPTX itself is still the owner’s file. |
 | X-05 | AUDITOR_BRIEF freeze 2026-09-04 vs HEAD docs | Standalone auditor brief is dated 04–08.09 and must not be read as HEAD evidence counts. CI integers live only in runtime-baseline-latest.json. |

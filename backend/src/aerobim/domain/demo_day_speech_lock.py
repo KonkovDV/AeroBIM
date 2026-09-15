@@ -215,6 +215,42 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "attack": "Lead the cover with a readiness-level numeral",
         "brake": "Cover: seam + evidence chain. TRL 4 lives in appendix, labeled self-assess",
     },
+    {
+        "id": "RT-DEMO-AI-NOT-NEEDED",
+        "verdict": "KILL",
+        "attack": "Say ИИ не нужна as if the product has no model",
+        "brake": "ADR-001: deterministic verdict; AI is extraction and hints only",
+    },
+    {
+        "id": "RT-DEMO-VALIDATOR-SURNAME",
+        "verdict": "KILL",
+        "attack": "Invent a named validator on the P4 slide",
+        "brake": "Role is нормоконтроль / ГИП комплекта; no invented surname",
+    },
+    {
+        "id": "RT-DEMO-LEGAL-DATE",
+        "verdict": "KILL",
+        "attack": "Invent a legal-entity registration date",
+        "brake": "Do not mint a юрлицо date; Fund FAQ allows a team of natural persons",
+    },
+    {
+        "id": "RT-DEMO-GANTT",
+        "verdict": "KILL",
+        "attack": "Show a Gantt as the delivery plan",
+        "brake": "Public backlog is GitHub Issues, not a Gantt in this tree",
+    },
+    {
+        "id": "RT-DEMO-SLA-PASS",
+        "verdict": "KILL",
+        "attack": "Read sla_pass true as customer package SLA",
+        "brake": "artifact_type is schema id; claim_level=fixture_only; customer_go false",
+    },
+    {
+        "id": "RT-DEMO-RECALL-100",
+        "verdict": "KILL",
+        "attack": "Say 100% recall from seam-clean 10/10",
+        "brake": "synthetic_only; Wilson lower 0.722; not product recall",
+    },
 )
 
 
@@ -243,6 +279,12 @@ def licensed_slide_lines() -> tuple[str, ...]:
         "Default GET /v1/auth/bff is 501. Space area from geometry is not implemented.",
         "Channel IFC schema is IFC2X3. Three NWD federations are unread carriers.",
         "processed is false. customer_go is false. LLM does not write summary.passed.",
+        "P3 metric is cross-file discrepancy count per pack before examination.",
+        "Verdict is deterministic; AI is extraction and hints only (ADR-001).",
+        "Do not invent a validator surname or a legal-entity registration date.",
+        "Backlog is GitHub Issues, not a Gantt.",
+        "sla_pass true is fixture p95, not customer SLA.",
+        "Seam-clean 10/10 is synthetic_only; not product recall.",
     )
 
 

@@ -46,6 +46,8 @@ SKIP_DIR_NAMES = frozenset(
         "coverage",
         "var",
         "tmp",
+        "out",
+        ".nda",
     }
 )
 

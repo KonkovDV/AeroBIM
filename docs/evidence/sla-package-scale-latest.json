@@ -1,0 +1,260 @@
+{
+  "artifact_type": "customer_package_sla",
+  "schema_version": "1.4.0",
+  "generated_at": "2026-09-15T16:34:31.146404+00:00",
+  "customer_reference": "https://i.moscow/techlab",
+  "sla_target_minutes": 30.0,
+  "sla_pass": true,
+  "sla_gate_metric": "p95_minutes_observed",
+  "max_minutes_observed": 0.0746,
+  "avg_minutes_observed": 0.0746,
+  "p95_minutes_observed": 0.0746,
+  "stage_budgets": {
+    "ingestion_minutes": 5.0,
+    "deterministic_validation_minutes": 18.0,
+    "ai_advisory_minutes": 2.0,
+    "evidence_reporting_minutes": 5.0,
+    "total_minutes": 30.0
+  },
+  "stage_budget_consistent": true,
+  "advisory_budget_minutes": 2.0,
+  "advisory_budget_within_sla": true,
+  "llm_advisory_enabled_env": false,
+  "package_sha256": "d892d072b038fa134b6e7369cb049b6c078c14a8c0f424b337f74199b6094ae1",
+  "pack_hash": "d892d072b038fa134b6e7369cb049b6c078c14a8c0f424b337f74199b6094ae1",
+  "file_inventory": [
+    {
+      "path": "samples/benchmarks/project-package-sla-representative.json",
+      "bytes": 745,
+      "sha256": "d892d072b038fa134b6e7369cb049b6c078c14a8c0f424b337f74199b6094ae1"
+    },
+    {
+      "path": "samples/ifc/wall-fire-rating-rei60.ifc",
+      "bytes": 799,
+      "sha256": "68ef14fdc9bc96848d6acce4fcaba29ed9d6be4b72e0c5ded9e535417134d31f"
+    },
+    {
+      "path": "samples/ids/wall-fire-rating.ids",
+      "bytes": 1304,
+      "sha256": "d6c01a1ea030ba4862cae748ebe0c6acbb0d6cd7c0b4412912e492995ee5ad99"
+    },
+    {
+      "path": "samples/requirements/techlab-demo-rules.txt",
+      "bytes": 1163,
+      "sha256": "e83a27e9b04ba582be4ff4b577dc07cc9b01f44707cd9ede2b5e9a4b4d11ac45"
+    },
+    {
+      "path": "samples/xsd/minstroy/explanatorynote-01-05.xsd",
+      "bytes": 573278,
+      "sha256": "6002c961b155322b52ec64462eadb2c58049a0ad7f4411372b4e1f4b432f5f58"
+    },
+    {
+      "path": "samples/xsd/minstroy/explanatorynote-01-06.xsd",
+      "bytes": 594624,
+      "sha256": "e3fbc7b338d2b5a7d88855d41904cea5077e681b804489c017f3017823a12569"
+    },
+    {
+      "path": "samples/xsd/minstroy/explanatorynote-01-07.xsd",
+      "bytes": 586987,
+      "sha256": "742dc8ec7f2df425b27fd59d419f3d01e4f25f53025475f9e71f7f4f45459df4"
+    }
+  ],
+  "package_scale": {
+    "input_files": 6,
+    "total_input_bytes": 1758155,
+    "ifc_bytes": 799,
+    "largest_input_bytes": 594624,
+    "drawing_count": 0,
+    "source_count": 6,
+    "is_representative": true,
+    "thresholds": {
+      "min_input_bytes": 1048576,
+      "min_input_files": 3
+    }
+  },
+  "representative_scale": true,
+  "scale_honesty": {
+    "representative_scale_basis": "referenced_file_inventory_not_analyze_rss",
+    "analyze_path_bytes": 3266,
+    "unanalyzed_referenced_bytes": 1754889,
+    "by_kind_bytes": {
+      "ifc": 799,
+      "ids": 1304,
+      "rules": 1163,
+      "xsd_or_asset": 1754889,
+      "other": 0
+    },
+    "note": "representative_scale is an inventory flag. XSD/assets can dominate bytes while the analyze contour still opens a tiny IFC."
+  },
+  "machine": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "cpu": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "ram_gb": null,
+    "python": "3.12.10"
+  },
+  "machine_fingerprint": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "cpu": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "ram_gb": null,
+    "python": "3.12.10"
+  },
+  "mandatory_capabilities_complete": false,
+  "cold_run": {
+    "max_minutes": 0.0746,
+    "avg_minutes": 0.0746,
+    "p95_minutes": 0.0746,
+    "benchmark": {
+      "iterations": 1,
+      "warmup_iterations": 0,
+      "measured_runs": [
+        {
+          "iteration": 1,
+          "request_id": "benchmark-project-package-sla-representative-scale-run-001",
+          "elapsed_ms": 4474.477,
+          "report_id": "af41986bbf8f4f398d11983ff2dfb640",
+          "issue_count": 7,
+          "requirement_count": 5,
+          "project_name": "SLA representative-scale fixture",
+          "discipline": "architecture"
+        }
+      ],
+      "summary": {
+        "min_ms": 4474.477,
+        "max_ms": 4474.477,
+        "avg_ms": 4474.477,
+        "p50_ms": 4474.477,
+        "p95_ms": 4474.477,
+        "reports_per_second": 0.223,
+        "sample_n": 1,
+        "p95_equals_max": true,
+        "spike_ratio_max_over_p50": 1.0,
+        "timing_stability_note": "With small n, nearest-rank p95 equals max; prefer schema-suite n≥20."
+      },
+      "artifact_type": "benchmark_project_package",
+      "schema_version": "1.2.0",
+      "generated_at": "2026-09-15T16:34:30.801154+00:00",
+      "claim_level": "fixture_only",
+      "customer_accuracy_not_established": true,
+      "accuracy_measured": false,
+      "accuracy_note": "No adjudicated finding ground truth for these packs; issue_count is not accuracy.",
+      "benchmark_pack": {
+        "pack_id": "project-package-sla-representative-scale",
+        "pack_version": "1.0.0",
+        "manifest_schema_version": "1.0.0",
+        "description": "Analyze path is wall+IDS. Scale inventory ≥1 MiB / ≥3 files via public XSD assets. Not customer SLA.",
+        "ifc_schema": null,
+        "corpus_kind": "fixture",
+        "pack_path": "samples/benchmarks/project-package-sla-representative.json"
+      },
+      "pack_id": "project-package-sla-representative-scale",
+      "pack_version": "1.0.0",
+      "description": "Analyze path is wall+IDS. Scale inventory ≥1 MiB / ≥3 files via public XSD assets. Not customer SLA.",
+      "ifc_schema": null,
+      "corpus_kind": "fixture",
+      "pack_path": "samples/benchmarks/project-package-sla-representative.json",
+      "ifc_sha256": "68ef14fdc9bc96848d6acce4fcaba29ed9d6be4b72e0c5ded9e535417134d31f",
+      "ifc_bytes": 799,
+      "ifc_entity_count": 9,
+      "ifc_schema_from_header": "IFC4",
+      "peak_traced_memory_bytes": 21280645,
+      "dependencies": {
+        "ifcopenshell": "0.8.5",
+        "ifctester": "0.8.5",
+        "fastapi": "0.141.1"
+      },
+      "machine": {
+        "platform": "Windows-11-10.0.26200-SP0",
+        "python": "3.12.10",
+        "machine": "AMD64",
+        "system": "Windows"
+      },
+      "storage_dir": "backend/var/reports"
+    }
+  },
+  "warm_run": {
+    "max_minutes": null,
+    "avg_minutes": null,
+    "p95_minutes": null,
+    "benchmark": null
+  },
+  "command": "python -m aerobim.tools.measure_package_sla --pack samples/benchmarks/project-package-sla-representative.json --max-minutes 30.0 --iterations 1 --warmup-iterations 0",
+  "corpus_kind": "fixture",
+  "claim_level": "fixture_only",
+  "allowed_wording": "Fixture wall-clock only; gate=p95; not customer комплект SLA",
+  "benchmark": {
+    "iterations": 1,
+    "warmup_iterations": 0,
+    "measured_runs": [
+      {
+        "iteration": 1,
+        "request_id": "benchmark-project-package-sla-representative-scale-run-001",
+        "elapsed_ms": 4474.477,
+        "report_id": "af41986bbf8f4f398d11983ff2dfb640",
+        "issue_count": 7,
+        "requirement_count": 5,
+        "project_name": "SLA representative-scale fixture",
+        "discipline": "architecture"
+      }
+    ],
+    "summary": {
+      "min_ms": 4474.477,
+      "max_ms": 4474.477,
+      "avg_ms": 4474.477,
+      "p50_ms": 4474.477,
+      "p95_ms": 4474.477,
+      "reports_per_second": 0.223,
+      "sample_n": 1,
+      "p95_equals_max": true,
+      "spike_ratio_max_over_p50": 1.0,
+      "timing_stability_note": "With small n, nearest-rank p95 equals max; prefer schema-suite n≥20."
+    },
+    "artifact_type": "benchmark_project_package",
+    "schema_version": "1.2.0",
+    "generated_at": "2026-09-15T16:34:30.801154+00:00",
+    "claim_level": "fixture_only",
+    "customer_accuracy_not_established": true,
+    "accuracy_measured": false,
+    "accuracy_note": "No adjudicated finding ground truth for these packs; issue_count is not accuracy.",
+    "benchmark_pack": {
+      "pack_id": "project-package-sla-representative-scale",
+      "pack_version": "1.0.0",
+      "manifest_schema_version": "1.0.0",
+      "description": "Analyze path is wall+IDS. Scale inventory ≥1 MiB / ≥3 files via public XSD assets. Not customer SLA.",
+      "ifc_schema": null,
+      "corpus_kind": "fixture",
+      "pack_path": "samples/benchmarks/project-package-sla-representative.json"
+    },
+    "pack_id": "project-package-sla-representative-scale",
+    "pack_version": "1.0.0",
+    "description": "Analyze path is wall+IDS. Scale inventory ≥1 MiB / ≥3 files via public XSD assets. Not customer SLA.",
+    "ifc_schema": null,
+    "corpus_kind": "fixture",
+    "pack_path": "samples/benchmarks/project-package-sla-representative.json",
+    "ifc_sha256": "68ef14fdc9bc96848d6acce4fcaba29ed9d6be4b72e0c5ded9e535417134d31f",
+    "ifc_bytes": 799,
+    "ifc_entity_count": 9,
+    "ifc_schema_from_header": "IFC4",
+    "peak_traced_memory_bytes": 21280645,
+    "dependencies": {
+      "ifcopenshell": "0.8.5",
+      "ifctester": "0.8.5",
+      "fastapi": "0.141.1"
+    },
+    "machine": {
+      "platform": "Windows-11-10.0.26200-SP0",
+      "python": "3.12.10",
+      "machine": "AMD64",
+      "system": "Windows"
+    },
+    "storage_dir": "backend/var/reports"
+  },
+  "checkpoint": "GO",
+  "go_kind": "regulatory_measurement_mvp",
+  "go_re_scope_date": "2026-09-04",
+  "customer_go": false,
+  "market_go": false,
+  "deployment_go": false,
+  "closes_rt001": false,
+  "closes_rt002": false,
+  "closes_rt003": false
+}

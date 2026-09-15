@@ -1,0 +1,412 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "aerobim_substitution_matrix",
+  "claim_level": "code_inventory",
+  "claim_boundary": "Classification of resolved instance class names at test bootstrap. Stubs/Unconfigured/Disabled map to missing. InMemory* maps to in_memory. Not a vendor quote. Checkpoint GO (regulatory_measurement_mvp; customer_go false).",
+  "checkpoint": "GO",
+  "go_kind": "regulatory_measurement_mvp",
+  "go_re_scope_date": "2026-09-04",
+  "customer_go": false,
+  "market_go": false,
+  "deployment_go": false,
+  "generated_at": "2026-09-15T16:10:39.560084+00:00",
+  "closes_rt001": false,
+  "architecture_inventory": {
+    "public_domain_protocols": 48,
+    "adapter_modules": 75,
+    "di_tokens": 63
+  },
+  "di_tokens_expected": 63,
+  "classified": {
+    "token_count": 63,
+    "counts": {
+      "live_adapter": 58,
+      "in_memory": 1,
+      "missing": 4
+    },
+    "percents": {
+      "live_adapter": 92.1,
+      "in_memory": 1.6,
+      "missing": 6.3
+    },
+    "rows": [
+      {
+        "token": "advisory_vlm_pipeline",
+        "name": "ADVISORY_VLM_PIPELINE",
+        "kind": "live_adapter",
+        "class_name": "RegionRestrictedVlmPipeline"
+      },
+      {
+        "token": "agentic_review_orchestrator",
+        "name": "AGENTIC_REVIEW_ORCHESTRATOR",
+        "kind": "live_adapter",
+        "class_name": "AgenticReviewOrchestrator"
+      },
+      {
+        "token": "analyze_project_package_job_runner",
+        "name": "ANALYZE_PROJECT_PACKAGE_JOB_RUNNER",
+        "kind": "live_adapter",
+        "class_name": "AnalyzeProjectPackageJobRunner"
+      },
+      {
+        "token": "analyze_project_package_job_store",
+        "name": "ANALYZE_PROJECT_PACKAGE_JOB_STORE",
+        "kind": "in_memory",
+        "class_name": "InMemoryAnalyzeProjectPackageJobStore"
+      },
+      {
+        "token": "analyze_project_package_use_case",
+        "name": "ANALYZE_PROJECT_PACKAGE_USE_CASE",
+        "kind": "live_adapter",
+        "class_name": "AnalyzeProjectPackageUseCase"
+      },
+      {
+        "token": "apply_norm_rule_hitl_event_use_case",
+        "name": "APPLY_NORM_RULE_HITL_EVENT_USE_CASE",
+        "kind": "live_adapter",
+        "class_name": "ApplyNormRuleHitlEventUseCase"
+      },
+      {
+        "token": "audit_report_store",
+        "name": "AUDIT_REPORT_STORE",
+        "kind": "live_adapter",
+        "class_name": "FilesystemAuditStore"
+      },
+      {
+        "token": "bcf_api_client",
+        "name": "BCF_API_CLIENT",
+        "kind": "missing",
+        "class_name": "UnconfiguredBcfApiClient"
+      },
+      {
+        "token": "bsi_validation_service",
+        "name": "BSI_VALIDATION_SERVICE",
+        "kind": "missing"
+      },
+      {
+        "token": "cad_entity_loader",
+        "name": "CAD_ENTITY_LOADER",
+        "kind": "live_adapter",
+        "class_name": "EzdxfCadEntityLoader"
+      },
+      {
+        "token": "cad_model_ingestor",
+        "name": "CAD_MODEL_INGESTOR",
+        "kind": "live_adapter",
+        "class_name": "EzdxfCadModelIngestor"
+      },
+      {
+        "token": "clash_detector",
+        "name": "CLASH_DETECTOR",
+        "kind": "live_adapter",
+        "class_name": "IfcClashDetector"
+      },
+      {
+        "token": "compile_requirements_to_ids_use_case",
+        "name": "COMPILE_REQUIREMENTS_TO_IDS_USE_CASE",
+        "kind": "live_adapter",
+        "class_name": "CompileRequirementsToIdsUseCase"
+      },
+      {
+        "token": "compliance_agent_orchestrator",
+        "name": "COMPLIANCE_AGENT_ORCHESTRATOR",
+        "kind": "live_adapter",
+        "class_name": "ComplianceAgentOrchestrator"
+      },
+      {
+        "token": "determinism_gate",
+        "name": "DETERMINISM_GATE",
+        "kind": "live_adapter",
+        "class_name": "DeterminismGate"
+      },
+      {
+        "token": "document_signature_auditor",
+        "name": "DOCUMENT_SIGNATURE_AUDITOR",
+        "kind": "live_adapter",
+        "class_name": "JsonDetachedSignatureAuditor"
+      },
+      {
+        "token": "drawing_analyzer",
+        "name": "DRAWING_ANALYZER",
+        "kind": "live_adapter",
+        "class_name": "StructuredDrawingAnalyzer"
+      },
+      {
+        "token": "drawing_analyzer_port",
+        "name": "DRAWING_ANALYZER_PORT",
+        "kind": "live_adapter",
+        "class_name": "HybridDrawingAnalyzer"
+      },
+      {
+        "token": "drawing_region_detector",
+        "name": "DRAWING_REGION_DETECTOR",
+        "kind": "live_adapter",
+        "class_name": "HeuristicLayoutRegionDetector"
+      },
+      {
+        "token": "external_evidence_verifier",
+        "name": "EXTERNAL_EVIDENCE_VERIFIER",
+        "kind": "live_adapter",
+        "class_name": "OpenRebarEvidenceVerifier"
+      },
+      {
+        "token": "extraction_integrity_producer",
+        "name": "EXTRACTION_INTEGRITY_PRODUCER",
+        "kind": "live_adapter",
+        "class_name": "OcrAwareExtractionIntegrityProducer"
+      },
+      {
+        "token": "get_analyze_project_package_job_status_use_case",
+        "name": "GET_ANALYZE_PROJECT_PACKAGE_JOB_STATUS_USE_CASE",
+        "kind": "live_adapter",
+        "class_name": "GetAnalyzeProjectPackageJobStatusUseCase"
+      },
+      {
+        "token": "hybrid_model_router",
+        "name": "HYBRID_MODEL_ROUTER",
+        "kind": "live_adapter",
+        "class_name": "ModelRouter"
+      },
+      {
+        "token": "hybrid_route_gate",
+        "name": "HYBRID_ROUTE_GATE",
+        "kind": "live_adapter",
+        "class_name": "HybridRouteGate"
+      },
+      {
+        "token": "ids_document_auditor",
+        "name": "IDS_DOCUMENT_AUDITOR",
+        "kind": "live_adapter",
+        "class_name": "XmlIdsDocumentAuditor"
+      },
+      {
+        "token": "ids_validator",
+        "name": "IDS_VALIDATOR",
+        "kind": "live_adapter",
+        "class_name": "IfcTesterIdsValidator"
+      },
+      {
+        "token": "ifc_knowledge_graph",
+        "name": "IFC_KNOWLEDGE_GRAPH",
+        "kind": "live_adapter",
+        "class_name": "RelationalIfcKnowledgeGraph"
+      },
+      {
+        "token": "ifc_model_diff",
+        "name": "IFC_MODEL_DIFF",
+        "kind": "live_adapter",
+        "class_name": "IfcGuidAttributeDiffAdapter"
+      },
+      {
+        "token": "ifc_schema_validator",
+        "name": "IFC_SCHEMA_VALIDATOR",
+        "kind": "live_adapter",
+        "class_name": "BasicIfcSchemaValidator"
+      },
+      {
+        "token": "ifc_space_inventory",
+        "name": "IFC_SPACE_INVENTORY",
+        "kind": "live_adapter",
+        "class_name": "IfcOpenShellSpaceInventoryExtractor"
+      },
+      {
+        "token": "ifc_validator",
+        "name": "IFC_VALIDATOR",
+        "kind": "live_adapter",
+        "class_name": "IfcOpenShellValidator"
+      },
+      {
+        "token": "llm_advisory_provider",
+        "name": "LLM_ADVISORY_PROVIDER",
+        "kind": "missing",
+        "class_name": "DisabledLlmProvider"
+      },
+      {
+        "token": "llm_extraction_kimi",
+        "name": "LLM_EXTRACTION_KIMI",
+        "kind": "live_adapter",
+        "class_name": "OpenAICompatLlmExtractionAdapter"
+      },
+      {
+        "token": "llm_extraction_qwen",
+        "name": "LLM_EXTRACTION_QWEN",
+        "kind": "live_adapter",
+        "class_name": "OpenAICompatLlmExtractionAdapter"
+      },
+      {
+        "token": "llm_extraction_regex",
+        "name": "LLM_EXTRACTION_REGEX",
+        "kind": "live_adapter",
+        "class_name": "RegexRequirementExtractionAdapter"
+      },
+      {
+        "token": "load_evidence_verifier",
+        "name": "LOAD_EVIDENCE_VERIFIER",
+        "kind": "live_adapter",
+        "class_name": "SpreadsheetLoadEvidenceAdapter"
+      },
+      {
+        "token": "logger",
+        "name": "LOGGER",
+        "kind": "live_adapter",
+        "class_name": "JsonStructuredLogger"
+      },
+      {
+        "token": "logic_consistency_analyzer",
+        "name": "LOGIC_CONSISTENCY_ANALYZER",
+        "kind": "live_adapter",
+        "class_name": "ManifestLogicConsistencyAdapter"
+      },
+      {
+        "token": "mep_aabb_pair_filter",
+        "name": "MEP_AABB_PAIR_FILTER",
+        "kind": "live_adapter",
+        "class_name": "IfcAabbMepPairFilter"
+      },
+      {
+        "token": "mep_system_graph_provider",
+        "name": "MEP_SYSTEM_GRAPH_PROVIDER",
+        "kind": "live_adapter",
+        "class_name": "ScopedMepSystemGraphProvider"
+      },
+      {
+        "token": "multimodal_drawing_pipeline",
+        "name": "MULTIMODAL_DRAWING_PIPELINE",
+        "kind": "live_adapter",
+        "class_name": "OcrFallbackMultimodalDrawingPipeline"
+      },
+      {
+        "token": "narrative_rule_synthesizer",
+        "name": "NARRATIVE_RULE_SYNTHESIZER",
+        "kind": "live_adapter",
+        "class_name": "NarrativeRuleSynthesizer"
+      },
+      {
+        "token": "norm_corpus_retriever",
+        "name": "NORM_CORPUS_RETRIEVER",
+        "kind": "live_adapter",
+        "class_name": "FilesystemNormCorpusRetriever"
+      },
+      {
+        "token": "norm_rule_pack_loader",
+        "name": "NORM_RULE_PACK_LOADER",
+        "kind": "live_adapter",
+        "class_name": "JsonNormRulePackLoader"
+      },
+      {
+        "token": "norm_rule_pack_version_store",
+        "name": "NORM_RULE_PACK_VERSION_STORE",
+        "kind": "live_adapter",
+        "class_name": "ObjectStoreNormRulePackVersionStore"
+      },
+      {
+        "token": "object_store",
+        "name": "OBJECT_STORE",
+        "kind": "live_adapter",
+        "class_name": "LocalObjectStore"
+      },
+      {
+        "token": "oda_cad_model_ingestor",
+        "name": "ODA_CAD_MODEL_INGESTOR",
+        "kind": "live_adapter",
+        "class_name": "OdaCadModelIngestor"
+      },
+      {
+        "token": "office_document_ingestor",
+        "name": "OFFICE_DOCUMENT_INGESTOR",
+        "kind": "live_adapter",
+        "class_name": "OfficeDocumentIngestor"
+      },
+      {
+        "token": "oidc_token_validator",
+        "name": "OIDC_TOKEN_VALIDATOR",
+        "kind": "live_adapter",
+        "class_name": "NoneType"
+      },
+      {
+        "token": "package_inventory_loader",
+        "name": "PACKAGE_INVENTORY_LOADER",
+        "kind": "live_adapter",
+        "class_name": "JsonPackageInventoryLoader"
+      },
+      {
+        "token": "push_report_to_bcf_api_use_case",
+        "name": "PUSH_REPORT_TO_BCF_API_USE_CASE",
+        "kind": "live_adapter",
+        "class_name": "PushReportToBcfApiUseCase"
+      },
+      {
+        "token": "quantity_consistency_checker",
+        "name": "QUANTITY_CONSISTENCY_CHECKER",
+        "kind": "live_adapter",
+        "class_name": "IfcQuantityConsistencyAdapter"
+      },
+      {
+        "token": "raster_drawing_analyzer",
+        "name": "RASTER_DRAWING_ANALYZER",
+        "kind": "live_adapter",
+        "class_name": "RasterDrawingAnalyzer"
+      },
+      {
+        "token": "remark_generator",
+        "name": "REMARK_GENERATOR",
+        "kind": "live_adapter",
+        "class_name": "TemplateRemarkGenerator"
+      },
+      {
+        "token": "requirement_extractor",
+        "name": "REQUIREMENT_EXTRACTOR",
+        "kind": "live_adapter",
+        "class_name": "StructuredRequirementExtractor"
+      },
+      {
+        "token": "requirement_interpreter",
+        "name": "REQUIREMENT_INTERPRETER",
+        "kind": "live_adapter",
+        "class_name": "DeterministicRequirementInterpreter"
+      },
+      {
+        "token": "requirement_to_ids_compiler",
+        "name": "REQUIREMENT_TO_IDS_COMPILER",
+        "kind": "live_adapter",
+        "class_name": "DeterministicRequirementToIdsCompiler"
+      },
+      {
+        "token": "review_event_store",
+        "name": "REVIEW_EVENT_STORE",
+        "kind": "live_adapter",
+        "class_name": "FilesystemReviewEventStore"
+      },
+      {
+        "token": "section_diff_analyzer",
+        "name": "SECTION_DIFF_ANALYZER",
+        "kind": "live_adapter",
+        "class_name": "JsonSectionDiffAnalyzer"
+      },
+      {
+        "token": "settings",
+        "name": "SETTINGS",
+        "kind": "live_adapter",
+        "class_name": "Settings"
+      },
+      {
+        "token": "submit_analyze_project_package_job_use_case",
+        "name": "SUBMIT_ANALYZE_PROJECT_PACKAGE_JOB_USE_CASE",
+        "kind": "live_adapter",
+        "class_name": "SubmitAnalyzeProjectPackageJobUseCase"
+      },
+      {
+        "token": "system_clash",
+        "name": "SYSTEM_CLASH",
+        "kind": "missing",
+        "class_name": "UnconfiguredSystemClash"
+      },
+      {
+        "token": "validate_ifc_against_ids_use_case",
+        "name": "VALIDATE_IFC_AGAINST_IDS_USE_CASE",
+        "kind": "live_adapter",
+        "class_name": "ValidateIfcAgainstIdsUseCase"
+      }
+    ]
+  }
+}

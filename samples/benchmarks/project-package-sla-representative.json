@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0.0",
+  "pack_version": "1.0.0",
+  "pack_id": "project-package-sla-representative-scale",
+  "description": "Analyze path is wall+IDS. Scale inventory ≥1 MiB / ≥3 files via public XSD assets. Not customer SLA.",
+  "corpus_kind": "fixture",
+  "project_name": "SLA representative-scale fixture",
+  "discipline": "architecture",
+  "request": {
+    "ifc_path": "samples/ifc/wall-fire-rating-rei60.ifc",
+    "ids_path": "samples/ids/wall-fire-rating.ids",
+    "requirement_path": "samples/requirements/techlab-demo-rules.txt",
+    "assets": [
+      "samples/xsd/minstroy/explanatorynote-01-05.xsd",
+      "samples/xsd/minstroy/explanatorynote-01-06.xsd",
+      "samples/xsd/minstroy/explanatorynote-01-07.xsd"
+    ]
+  }
+}

@@ -65,6 +65,26 @@ class ArchitectureSeamTests(unittest.TestCase):
         self.assertEqual(mep["status"], "missing")
         self.assertEqual(payload["author_relationship"], "self")
         self.assertFalse(payload["interpretation_use"]["closes_rt001"])
+        self.assertFalse(payload["customer_corpus_present"])
+        self.assertFalse(payload["capabilities_executed"])
+
+    def test_tz_matrix_fixture_ok_stays_partial_without_customer(self) -> None:
+        caps = ReportCapabilities(
+            ids=CapabilityStatus(CapabilityState.OK, "fixture ids"),
+        )
+        payload = generate_tz_matrix_status(
+            capabilities=caps,
+            evidence_path="samples/benchmarks/project-package-wall-fire-rating.json",
+        )
+        ids_row = next(row for row in payload["rows"] if row["capability"] == "ids")
+        self.assertEqual(ids_row["status"], "partial")
+        self.assertEqual(
+            ids_row["evidence_path"],
+            "samples/benchmarks/project-package-wall-fire-rating.json",
+        )
+        self.assertEqual(payload["capabilities_snapshot"]["ids"]["status"], "ok")
+        self.assertFalse(payload["customer_corpus_present"])
+        self.assertTrue(payload["capabilities_executed"])
 
     def test_honesty_capabilities_never_silently_ok(self) -> None:
         caps = ReportCapabilities()

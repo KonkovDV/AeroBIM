@@ -2,7 +2,7 @@
 ---
 title: "Before/after measurement protocol — lab pack, not partner B4"
 date: "2026-08-30"
-last_updated: "2026-09-02"
+last_updated: "2026-09-15"
 status: active
 version: "1.1.0"
 closes_rt001: false
@@ -80,3 +80,13 @@ CLI `python -m aerobim.tools.run_lab_before_after_fixture --also-docs-evidence`
 
 Связь с системой B: [`B_FINAL_SCORING_TICKSHEET_2026_09.md`](../quality/B_FINAL_SCORING_TICKSHEET_2026_09.md)
 (Б4 остаётся пустым для партнёра).
+
+## Исполнение 2026-09-15 (инструментальное, не партнёр)
+
+CLI `python -m aerobim.tools.run_lab_before_after_fixture --also-docs-evidence`
+на git-стенке + IDS. `claim_level=fixture_only`. `t_manual_s` / HITL / A1–A8
+остаются null. Wilson n=111 и power n=62 — **план разметки** из
+`weekly-eng-status-latest.json` (`adjudication_corpus_plan`), не замер точности.
+Публикуемых цифр точности нет (`PrecisionClaim.publishable=false`).
+Открытый корпус duplex / west_riverside / sixty5 — только если локальный
+checkout `.local/ifc-bench-v2` есть; иначе фиксируется отсутствие, без выдумки.

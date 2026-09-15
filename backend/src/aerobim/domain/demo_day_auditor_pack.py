@@ -997,7 +997,7 @@ CONTRADICTIONS: Final[tuple[dict[str, str], ...]] = (
     {
         "id": "X-02",
         "where": "weekly-eng-status-latest.json checkpoint vs TIER0",
-        "drift": "weekly-eng-status generated_at 2026-08-17 still has checkpoint NO_GO and a stale runtime_baseline SHA. SSOT for tests is runtime-baseline-latest.json (2026-09-10). Do not mix.",
+        "drift": "CLOSED 2026-09-15: weekly pin regenerated via export_weekly_eng_status; checkpoint GO; runtime_baseline SHA is the attested pin 139896709507. The 2026-08-17 NO_GO snapshot is historical. Do not mix the August file with HEAD.",
     },
     {
         "id": "X-03",
@@ -1199,9 +1199,9 @@ def render_auditor_document() -> str:
 ---
 title: "Аудиторский пакет демо-дня — блоки A–F (14.09.2026)"
 date: "2026-09-14"
-last_updated: "2026-09-14"
+last_updated: "2026-09-15"
 status: active
-version: "1.1.0"
+version: "1.1.1"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
