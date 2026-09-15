@@ -40,4 +40,4 @@ Backlog lives in **GitHub Issues**, not a Gantt chart in this tree.
 - Optional `pdf-agpl` (PyMuPDF) is **not** in default extras or `requirements-lock.txt`.
 - IDS profile of an appointing party is **data**, not a core fork.
 
-No line here is a customer SLA of ≤30 minutes. Fixture `representative_scale` is an inventory flag on a public XSD-backed pack, not the appointing-party комплект.
+Customer wall-clock on a live pack is not claimed. Fixture `representative_scale` is an inventory flag on a public XSD-backed pack, not the appointing-party комплект.
