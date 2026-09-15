@@ -14,7 +14,7 @@ Machine-readable CIM requirements published by SPb GAU «Центр госуда
 | RII edition | 1.1.0 (2024-12-10) — 5 IDS files |
 | Retrieved | 2026-08-14 (`samples/ids/spbexp/SOURCE.md`) |
 | Provenance | `OFFICIAL_PUBLISHED` |
-| `signed_by_customer` | `false` (ЦГЭ is the publisher, not AeroBIM’s customer; Samolet RT-002b stays open) |
+| `signed_by_customer` | `false` (ЦГЭ is the publisher, not AeroBIM’s customer; the appointing party RT-002b stays open) |
 
 Linear-object CIM is a separate CGE subject and is **not** in this pack. Do not mix with Moscow AGR (DGP) or MOEXP packs.
 
@@ -48,4 +48,4 @@ Publisher OKS folder `Требования к ЦИМ ОК _V.3.1.0` is the name 
 
 ## Honesty locks
 
-`closes_rt001`, `closes_rt002`, `closes_rt003`, `signed_by_customer`, `samolet_alias` are JSON `false` and rejected if flipped. Manifest schema: `samples/profiles/spb-cge/manifest.schema.json`.
+`closes_rt001`, `closes_rt002`, `closes_rt003`, `signed_by_customer`, `customer_alias` are JSON `false` and rejected if flipped. Manifest schema: `samples/profiles/spb-cge/manifest.schema.json`.

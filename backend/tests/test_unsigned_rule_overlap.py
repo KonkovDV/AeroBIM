@@ -34,7 +34,7 @@ class UnsignedRuleOverlapTests(unittest.TestCase):
             and item["property_name"] == "FireRating"
         )
         self.assertIn("REQ-FIRE-001", wall_fire["rule_ids"])
-        self.assertIn("SAM-AR-011", wall_fire["rule_ids"])
+        self.assertIn("TYP-AR-011", wall_fire["rule_ids"])
         snap = overlap_snapshot()
         self.assertEqual(snap["checkpoint"], CHECKPOINT)
         self.assertFalse(snap["is_accuracy"])
@@ -43,7 +43,7 @@ class UnsignedRuleOverlapTests(unittest.TestCase):
 
     def test_active_groups_need_two_present_rules(self) -> None:
         self.assertEqual(active_overlap_groups(["REQ-FIRE-001"]), [])
-        active = active_overlap_groups(["REQ-FIRE-001", "SAM-AR-011"])
+        active = active_overlap_groups(["REQ-FIRE-001", "TYP-AR-011"])
         self.assertEqual(len(active), 1)
         self.assertEqual(active[0]["property_name"], "FireRating")
 

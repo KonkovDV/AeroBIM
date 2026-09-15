@@ -27,7 +27,7 @@ def _volume_fixtures() -> dict[str, dict[str, object]]:
             "rule_id": "REQ-FIRE-001",
             "message": "No elements found for entity IFCWALL",
         },
-        "coverage_unsigned": {"rule_id": "SAM-AR-001", "message": "coverage"},
+        "coverage_unsigned": {"rule_id": "TYP-AR-001", "message": "coverage"},
         "unrestricted_eq_sample": {
             "rule_id": "REQ-FIRE-001",
             "element_guid": "wall-guid-1",

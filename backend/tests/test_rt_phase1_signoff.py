@@ -70,9 +70,9 @@ class Phase1RequiredCapabilityPolicyTests(unittest.TestCase):
             )
         )
 
-    def test_samolet_pilot_blocks_default_capabilities(self) -> None:
+    def test_customer_pilot_blocks_default_capabilities(self) -> None:
         # Default caps: clash SKIPPED, schema SKIPPED, mep NOT_VERIFIED.
-        policy = build_signoff_policy(profile="samolet_pilot")
+        policy = build_signoff_policy(profile="customer_pilot")
         self.assertFalse(
             summary_passed_after_capabilities(
                 error_count=0,

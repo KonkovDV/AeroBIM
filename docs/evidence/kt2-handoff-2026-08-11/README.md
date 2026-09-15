@@ -50,4 +50,4 @@ python -m aerobim.tools.render_drawing_overlay_evidence
 
 Do **not** say: customer accuracy >90%, SLA ≤30 min on customer pack, native DWG ready, MEP delivered, OIDC BFF production-ready, CV understands drawings.
 
-**Do** say: fixture GO, harness ready, measured AABB extents on synthetic IFC (n=6, not duplex inventory 654), deterministic overlay illustration, waiting on Samolet corpus/pack/experts.
+**Do** say: fixture GO, harness ready, measured AABB extents on synthetic IFC (n=6, not duplex inventory 654), deterministic overlay illustration, waiting on customer corpus/pack/experts.

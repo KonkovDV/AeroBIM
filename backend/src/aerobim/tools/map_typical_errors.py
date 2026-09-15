@@ -1,4 +1,4 @@
-"""Map Samolet typical-error entries to rule ids and finding classes.
+"""Map the appointing party typical-error entries to rule ids and finding classes.
 
 Mapping is traceability, not a precision or implementation claim.  The output keeps
 rule-level coverage, class-only mapping, and explicit gaps separate.
@@ -19,7 +19,7 @@ def repo_root() -> Path:
 
 
 def default_catalog_path() -> Path:
-    return repo_root() / "samples" / "benchmarks" / "samolet-typical-errors-catalog.json"
+    return repo_root() / "samples" / "benchmarks" / "typical-errors-catalog.json"
 
 
 def default_rules_dir() -> Path:
@@ -169,7 +169,7 @@ def map_typical_errors(
         if isinstance(raw_ingested, int) and not isinstance(raw_ingested, bool):
             checklists_ingested = raw_ingested
     return {
-        "artifact_type": "samolet_typical_errors_mapping",
+        "artifact_type": "customer_typical_errors_mapping",
         "schema_version": "1.1.0",
         "catalog_id": catalog.get("catalog_id"),
         "catalog_status": catalog.get("catalog_status"),
@@ -198,7 +198,7 @@ def map_typical_errors(
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Map Samolet typical-error catalog to rule ids and finding classes"
+        description="Map the appointing party typical-error catalog to rule ids and finding classes"
     )
     parser.add_argument("--catalog", type=Path, default=default_catalog_path())
     parser.add_argument("--rules-dir", type=Path, default=default_rules_dir())

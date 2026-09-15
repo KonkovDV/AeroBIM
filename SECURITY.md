@@ -84,7 +84,7 @@ Pilot threat-model note: [`docs/security/PILOT_THREAT_MODEL_2026_07.md`](docs/se
 
 - Non-`development`/`test` environments **require** `AEROBIM_API_BEARER_TOKEN` and/or OIDC (`AEROBIM_OIDC_ISSUER` + audience + JWKS) at startup and on every authenticated `/v1/*` call (503/401 fail-closed). Public exception: `GET /v1/auth/bff` returns 501 honesty JSON for FE discovery.
 - Local `docker-compose.yml` defaults to **development**, publishes **127.0.0.1:8080 only**, and keeps `AEROBIM_ALLOW_ANONYMOUS_DEV=false` unless explicitly opted in. Shared/LAN use `docker-compose.production.yml` which **requires** `AEROBIM_API_BEARER_TOKEN` with no default.
-- Non-dev `AEROBIM_ENV` rejects soft `AEROBIM_SIGNOFF_PROFILE=development|fixture` (must be `production` or `samolet_pilot`).
+- Non-dev `AEROBIM_ENV` rejects soft `AEROBIM_SIGNOFF_PROFILE=development|fixture` (must be `production` or `customer_pilot`).
 - OIDC JWKS is fetched only via SSRF-guarded `safe_urlopen` (no unguarded `PyJWKClient` HTTP).
 - OIDC JWKS hostname must match issuer hostname unless listed in `AEROBIM_OIDC_JWKS_EXTRA_HOSTS` (multi-host IdP allowlist).
 - Frontend never embeds bearer tokens; Vite loopback proxy may inject `Authorization` in dev only. Production builds require reverse-proxy / BFF auth (POST-05 default **DESIGNED / NOT_IMPLEMENTED** — `docs/security/PILOT_THREAT_MODEL_2026_07.md`; public `GET /v1/auth/bff` returns 501 honesty JSON unless lab Phase 3 is configured, which is still not a production SSO claim).
@@ -114,7 +114,7 @@ Pilot threat-model note: [`docs/security/PILOT_THREAT_MODEL_2026_07.md`](docs/se
 - Duplicate / oversized / smuggled `Authorization` headers are rejected with HTTP 401 before token parsing.
 - PDF preview/raster of untrusted uploads uses a subprocess isolate (POSIX `RLIMIT_*` / Windows Job Object). Nested-job hosts may fall back to timeout-only.
 - Security regression battery is exercised in CI job `security-regression` (engineering only; not a production multi-tenant certification). See `docs/security/PILOT_THREAT_MODEL_2026_07.md`.
-- IFC files larger than the **model ingest cap** (1.5 GB under `samolet_pilot`/`production`) are rejected with HTTP 413. SPF in-memory open stays at `AEROBIM_MAX_IFC_BYTES` (default 256 MiB); larger IFC files convert to IfcOpenShell RocksDB. Frontend WASM IFC memory stays 256 MiB.
+- IFC files larger than the **model ingest cap** (1.5 GB under `customer_pilot`/`production`) are rejected with HTTP 413. SPF in-memory open stays at `AEROBIM_MAX_IFC_BYTES` (default 256 MiB); larger IFC files convert to IfcOpenShell RocksDB. Frontend WASM IFC memory stays 256 MiB.
 - Optional validation engines publish `report.capabilities` so silent empty clash/IDS results cannot look like PASS.
 - Upload responses omit storage `object_key` from client-visible JSON.
 - Drawing preview responses use an allowlisted Content-Type; client Blob creation mirrors that allowlist.

@@ -1,4 +1,4 @@
-"""Two license lanes: public MIT tree vs Samolet-local copyleft inputs.
+"""Two license lanes: public MIT tree vs customer-local copyleft inputs.
 
 Not a legal opinion. Does not close RT-001/002/003. Does not enable native DWG.
 """
@@ -14,8 +14,8 @@ GPLV3_IFC_BENCH_PROJECTS: tuple[str, ...] = (
 )
 
 
-def local_samolet_demo_copyleft_inputs_permitted(*, opted_in: bool, ci: bool) -> bool:
-    """GPLv3 IFC files may be read from gitignored ``.local/`` for a Samolet demo.
+def local_demo_copyleft_inputs_permitted(*, opted_in: bool, ci: bool) -> bool:
+    """GPLv3 IFC files may be read from gitignored ``.local/`` for a customer demo.
 
     Off by default. Forced off in CI. Never a reason to vendor those files into git
     or to ship LibreDWG/AGPL in the public runtime lock / Docker image.

@@ -24,7 +24,7 @@ Checkpoint **`GO`**; `customer_go` false. `raises_default_cap: false`. `rocksdb_
 ## Today
 
 - **SPF** (`analyze_ok`): `ifcopenshell.open(.ifc)` + dense in-memory `IfcSpatialIndex` (`IfcRoot`). Cap: **256 MiB**.
-- **RocksDB** (`analyze_disk`): streaming `convert_path_to_rocksdb`, then `open(rdb)`. Sparse index (`IfcProduct` + storey/grid). Cap: **1.5 GB** under Samolet ingest.
+- **RocksDB** (`analyze_disk`): streaming `convert_path_to_rocksdb`, then `open(rdb)`. Sparse index (`IfcProduct` + storey/grid). Cap: **1.5 GB** under the appointing party ingest.
 - Optional JSON sidecar is a dump of that index (`spatial_index_json_sidecar=dump_only`). It is **not** a disk R-tree and is **not** a streaming parser. WASM stays **256 MiB**.
 
 ## Intended next slice (not shipped)

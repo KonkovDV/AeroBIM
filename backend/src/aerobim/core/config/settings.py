@@ -54,7 +54,7 @@ def assert_cors_origins_safe(
     if hard_profile and len(origins) > _MAX_HARD_CORS_ORIGINS:
         raise RuntimeError(
             "AEROBIM_CORS_ORIGINS is capped at "
-            f"{_MAX_HARD_CORS_ORIGINS} entries under samolet_pilot/production"
+            f"{_MAX_HARD_CORS_ORIGINS} entries under customer_pilot/production"
         )
     for origin in origins:
         if origin == "*":
@@ -74,7 +74,7 @@ def assert_cors_origins_safe(
         if hard_profile and parsed.scheme != "https" and host not in _LOOPBACK_CORS_HOSTS:
             raise RuntimeError(
                 "AEROBIM_CORS_ORIGINS must be https:// "
-                "(loopback http allowed) under samolet_pilot/production; "
+                "(loopback http allowed) under customer_pilot/production; "
                 f"got {origin!r}"
             )
 
@@ -145,29 +145,29 @@ def _warn_deprecated_llm_local_alias() -> None:
     )
 
 
-def _samolet_office_default(profile_gate: bool) -> int:
+def _pilot_office_default(profile_gate: bool) -> int:
     """Pilot/production ingest default for office files when the apply-flag is on."""
 
     from aerobim.core.security.upload_limits import (
         DEV_DEFAULT_UPLOAD_BYTES,
-        SAMOLET_STATED_OFFICE_BYTES,
+        PILOT_STATED_OFFICE_BYTES,
     )
 
-    if profile_gate and _read_bool("AEROBIM_APPLY_SAMOLET_UPLOAD_CAPS", True):
-        return SAMOLET_STATED_OFFICE_BYTES
+    if profile_gate and _read_bool("AEROBIM_APPLY_PILOT_UPLOAD_CAPS", True):
+        return PILOT_STATED_OFFICE_BYTES
     return DEV_DEFAULT_UPLOAD_BYTES
 
 
-def _samolet_model_default(profile_gate: bool) -> int:
+def _pilot_model_default(profile_gate: bool) -> int:
     """Pilot/production ingest default for model files when the apply-flag is on."""
 
     from aerobim.core.security.upload_limits import (
         DEV_DEFAULT_UPLOAD_BYTES,
-        SAMOLET_STATED_MODEL_BYTES,
+        PILOT_STATED_MODEL_BYTES,
     )
 
-    if profile_gate and _read_bool("AEROBIM_APPLY_SAMOLET_UPLOAD_CAPS", True):
-        return SAMOLET_STATED_MODEL_BYTES
+    if profile_gate and _read_bool("AEROBIM_APPLY_PILOT_UPLOAD_CAPS", True):
+        return PILOT_STATED_MODEL_BYTES
     return DEV_DEFAULT_UPLOAD_BYTES
 
 
@@ -194,8 +194,8 @@ _DEFAULT_LLM_ALLOWED_HOSTS: frozenset[str] = frozenset(
 _EMPTY_LLM_HOST_TOKENS: frozenset[str] = frozenset({"-", "none", "empty", "deny"})
 _PILOT_LIKE_SIGNOFF: frozenset[str] = frozenset(
     {
-        "samolet_pilot",
-        "samolet_pilot_demo",
+        "customer_pilot",
+        "customer_pilot_demo",
         "moscow_agr_2026",
         "production",
     }
@@ -339,7 +339,7 @@ class Settings:
     """CORS ``Access-Control-Allow-Credentials``.
 
     ``from_env`` enables this in development/test for a finite origin list so the
-    review shell ``credentials:include`` keeps working. ``samolet_pilot`` /
+    review shell ``credentials:include`` keeps working. ``customer_pilot`` /
     ``production`` stay false unless ``AEROBIM_CORS_ALLOW_CREDENTIALS=true``
     (Phase-3 BFF is lab-only and never ready on those profiles).
     """
@@ -347,7 +347,7 @@ class Settings:
     cross_doc_contradiction_severity: str = "warning"
     """Severity for cross-document contradictions: ``error`` | ``warning`` | ``info``."""
     priority_profile: str = "default"
-    """Reviewer priority profile: ``default`` or ``samolet`` (TechLab fire/cross-doc boost)."""
+    """Reviewer priority profile: ``default`` or ``pilot`` (TechLab fire/cross-doc boost)."""
     db_url: str | None = None
     postgres_apply_ddl: bool = True
     """When true (pilot default), PostgresAuditStore runs create_all + tenant_id ALTER at boot.
@@ -388,15 +388,15 @@ class Settings:
 
     Comparable to the buildingSMART Validation Service 256 MB uncompressed
     ``.ifc`` cap, not the same unit. Files above this and up to
-    ``max_model_bytes`` (1.5 GB under Samolet ingest) open via RocksDB.
+    ``max_model_bytes`` (1.5 GB under the appointing party ingest) open via RocksDB.
     Does not raise the WASM viewer cap.
     """
     max_upload_bytes: int = _DEFAULT_MAX_IFC_BYTES
     """Envelope multipart cap (bytes). Per-file office/model caps cannot exceed this."""
     max_office_bytes: int = _DEFAULT_MAX_IFC_BYTES
-    """Office ingest cap (PDF/Office). Samolet stated 500_000_000 under pilot when applied."""
+    """Office ingest cap (PDF/Office). Customer stated 500_000_000 under pilot when applied."""
     max_model_bytes: int = _DEFAULT_MAX_IFC_BYTES
-    """Model ingest cap (IFC/ZIP/CAD). Samolet stated 1_500_000_000 under pilot when applied."""
+    """Model ingest cap (IFC/ZIP/CAD). Customer stated 1_500_000_000 under pilot when applied."""
     max_uploads_per_tenant_day: int | None = None
     """Optional per-tenant daily upload count quota (``AEROBIM_MAX_UPLOADS_PER_TENANT_DAY``)."""
     max_upload_bytes_per_tenant_day: int | None = None
@@ -637,8 +637,8 @@ class Settings:
         if self.customer_pack_llm_egress_denied:
             return False
         if self.signoff_profile in {
-            "samolet_pilot",
-            "samolet_pilot_demo",
+            "customer_pilot",
+            "customer_pilot_demo",
             "moscow_agr_2026",
             "production",
         }:
@@ -659,7 +659,7 @@ class Settings:
         """True when OpenAI-compat advisory LLM may be invoked.
 
         Fail-closed: disabled by default; requires enable + base URL.
-        ``samolet_pilot`` / ``production`` hard-disable external advisory egress
+        ``customer_pilot`` / ``production`` hard-disable external advisory egress
         (customer closed contour). Pin: ``AEROBIM_LLM_MODEL_REVISION`` **or** an
         unversioned ``gpt://…/model`` URI without ``/latest``/``/rc``.
         Does not authorize Alibaba cloud Max.
@@ -670,8 +670,8 @@ class Settings:
         if self.customer_pack_llm_egress_denied:
             return False
         if self.signoff_profile in {
-            "samolet_pilot",
-            "samolet_pilot_demo",
+            "customer_pilot",
+            "customer_pilot_demo",
             "moscow_agr_2026",
             "production",
         }:
@@ -736,12 +736,12 @@ class Settings:
     def oidc_bff_phase3_ready(self) -> bool:
         """True only in lab/dev when Phase 3 IdP + cookie secrets are fully configured.
 
-        ``samolet_pilot`` / ``production`` never activate Phase 3. Public
+        ``customer_pilot`` / ``production`` never activate Phase 3. Public
         ``GET /v1/auth/bff`` stays 501 / NOT_IMPLEMENTED there (POST-05).
         Lab ``200 LAB`` is not a production SSO claim.
         """
 
-        if self.signoff_profile in {"samolet_pilot", "production"}:
+        if self.signoff_profile in {"customer_pilot", "production"}:
             return False
         return self.oidc_bff_phase3_credentials_configured()
 
@@ -752,7 +752,7 @@ class Settings:
         Lab Phase 3 also enforces this so viewer cookies cannot sign (WP-FE-15).
         """
 
-        if self.signoff_profile in {"samolet_pilot", "production"}:
+        if self.signoff_profile in {"customer_pilot", "production"}:
             return True
         return bool(getattr(self, "oidc_bff_phase3_ready", False))
 
@@ -760,19 +760,19 @@ class Settings:
     def disable_sync_package_analyze(self) -> bool:
         """Force async submit for heavy analyze under pilot/production."""
 
-        return self.signoff_profile in {"samolet_pilot", "production"}
+        return self.signoff_profile in {"customer_pilot", "production"}
 
     @property
     def enforce_stage_timeouts(self) -> bool:
         """Fail closed when analyze contours exceed stage budgets."""
 
-        return self.signoff_profile in {"samolet_pilot", "production"}
+        return self.signoff_profile in {"customer_pilot", "production"}
 
     @property
     def require_hitl_reviewer_roles(self) -> bool:
         """OIDC principals must carry reviewer/admin roles for expert HITL."""
 
-        if self.signoff_profile in {"samolet_pilot", "production"}:
+        if self.signoff_profile in {"customer_pilot", "production"}:
             return True
         return bool(getattr(self, "oidc_bff_phase3_ready", False))
 
@@ -780,7 +780,7 @@ class Settings:
     def enforce_norm_pack_rbac(self) -> bool:
         """Norm-pack mutations require editor/reviewer/admin OIDC roles."""
 
-        return self.signoff_profile in {"samolet_pilot", "production"}
+        return self.signoff_profile in {"customer_pilot", "production"}
 
     def upload_limit_for_filename(self, filename: str) -> int:
         """Per-file ingest cap: min(office or model cap, ``max_upload_bytes``)."""
@@ -810,15 +810,15 @@ class Settings:
         """Fail closed: non-dev *and* hard signoff profiles must configure auth.
 
         ``AEROBIM_ENV=development`` must not waive this when
-        ``signoff_profile`` is ``samolet_pilot`` or ``production`` (F-02).
+        ``signoff_profile`` is ``customer_pilot`` or ``production`` (F-02).
         """
-        hard_profile = self.signoff_profile in {"samolet_pilot", "production"}
+        hard_profile = self.signoff_profile in {"customer_pilot", "production"}
         if self.is_dev_environment and not hard_profile:
             return
         if self.api_bearer_token or self.oidc_enabled:
             return
         raise RuntimeError(
-            "Non-development deployments and samolet_pilot/production signoff "
+            "Non-development deployments and customer_pilot/production signoff "
             "require AEROBIM_API_BEARER_TOKEN and/or OIDC settings "
             "(AEROBIM_OIDC_ISSUER, AEROBIM_OIDC_AUDIENCE, AEROBIM_OIDC_JWKS_URL); "
             f"AEROBIM_ENV={self.environment!r} signoff_profile={self.signoff_profile!r}"
@@ -858,7 +858,7 @@ class Settings:
             raw_severity if raw_severity in {"error", "warning", "info"} else "warning"
         )
         raw_profile = (os.getenv("AEROBIM_PRIORITY_PROFILE") or "default").strip().lower()
-        priority_profile = raw_profile if raw_profile in {"default", "samolet"} else "default"
+        priority_profile = raw_profile if raw_profile in {"default", "pilot"} else "default"
 
         def _optional_bool(name: str) -> bool | None:
             if name not in os.environ:
@@ -874,10 +874,10 @@ class Settings:
             signoff_profile = "development" if env_name in _DEV_ENVIRONMENTS else "production"
         else:
             raw_signoff = str(signoff_raw_env).strip().lower()
-            if raw_signoff in {"samolet", "samolet_pilot", "pilot"}:
-                signoff_profile = "samolet_pilot"
-            elif raw_signoff in {"samolet_pilot_demo", "pilot_demo"}:
-                signoff_profile = "samolet_pilot_demo"
+            if raw_signoff in {"customer_pilot", "pilot"}:
+                signoff_profile = "customer_pilot"
+            elif raw_signoff in {"customer_pilot_demo", "pilot_demo"}:
+                signoff_profile = "customer_pilot_demo"
             elif raw_signoff in {"moscow_agr_2026", "moscow_agr", "agr_2026"}:
                 signoff_profile = "moscow_agr_2026"
             elif raw_signoff in {"production", "prod"}:
@@ -890,15 +890,15 @@ class Settings:
         if env_name not in _DEV_ENVIRONMENTS and signoff_profile in {
             "development",
             "fixture",
-            "samolet_pilot_demo",
+            "customer_pilot_demo",
             "moscow_agr_2026",
         }:
             raise RuntimeError(
                 f"AEROBIM_SIGNOFF_PROFILE={signoff_profile!r} is not allowed when "
-                f"AEROBIM_ENV={env_name!r}; use 'production' or 'samolet_pilot'"
+                f"AEROBIM_ENV={env_name!r}; use 'production' or 'customer_pilot'"
             )
-        profile_gate = signoff_profile in {"samolet_pilot", "production"}
-        demo_gate = signoff_profile in {"samolet_pilot_demo", "moscow_agr_2026"}
+        profile_gate = signoff_profile in {"customer_pilot", "production"}
+        demo_gate = signoff_profile in {"customer_pilot_demo", "moscow_agr_2026"}
         assert_cors_origins_safe(origins, hard_profile=profile_gate)
         cors_allow_credentials = _cors_allow_credentials_from_env(origins, env_name=env_name)
         # Pilot/production are fail-closed: env cannot weaken required gates.
@@ -962,7 +962,7 @@ class Settings:
         if profile_gate and http_rate_limit_per_minute <= 0:
             raise RuntimeError(
                 "HD2-RL-02: AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE must be > 0 under "
-                "samolet_pilot/production (0 silently disables the limiter)"
+                "customer_pilot/production (0 silently disables the limiter)"
             )
         http_trusted_proxy_ips = tuple(
             ip.strip()
@@ -1004,22 +1004,22 @@ class Settings:
             max_ifc_bytes=_read_int("AEROBIM_MAX_IFC_BYTES", _DEFAULT_MAX_IFC_BYTES),
             max_office_bytes=_read_int(
                 "AEROBIM_MAX_OFFICE_BYTES",
-                _samolet_office_default(profile_gate),
+                _pilot_office_default(profile_gate),
             ),
             max_model_bytes=_read_int(
                 "AEROBIM_MAX_MODEL_BYTES",
-                _samolet_model_default(profile_gate),
+                _pilot_model_default(profile_gate),
             ),
             max_upload_bytes=_read_int(
                 "AEROBIM_MAX_UPLOAD_BYTES",
                 max(
                     _read_int(
                         "AEROBIM_MAX_OFFICE_BYTES",
-                        _samolet_office_default(profile_gate),
+                        _pilot_office_default(profile_gate),
                     ),
                     _read_int(
                         "AEROBIM_MAX_MODEL_BYTES",
-                        _samolet_model_default(profile_gate),
+                        _pilot_model_default(profile_gate),
                     ),
                 ),
             ),
@@ -1177,11 +1177,11 @@ class Settings:
                 or "json_schema",
                 llm_base_url=settings.llm_base_url or "https://llm.api.cloud.yandex.net/v1",
             )
-        if settings.signoff_profile in {"samolet_pilot", "production"}:
+        if settings.signoff_profile in {"customer_pilot", "production"}:
             if settings.oidc_bff_phase3_credentials_configured():
                 raise RuntimeError(
                     "OIDC BFF Phase 3 is lab-only; unset AEROBIM_OIDC_BFF_* "
-                    "under samolet_pilot/production (POST-05)"
+                    "under customer_pilot/production (POST-05)"
                 )
         if (
             settings.oidc_bff_phase3_ready
@@ -1193,8 +1193,8 @@ class Settings:
             if (
                 settings.signoff_profile
                 in {
-                    "samolet_pilot",
-                    "samolet_pilot_demo",
+                    "customer_pilot",
+                    "customer_pilot_demo",
                     "moscow_agr_2026",
                     "production",
                 }
@@ -1316,6 +1316,6 @@ class Settings:
         if not profile_gate and settings.http_rate_limit_per_minute <= 0:
             logging.getLogger(__name__).warning(
                 "HTTP rate limit is off (max_events<=0 → allow). "
-                "samolet_pilot/production reject AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE<=0 at boot."
+                "customer_pilot/production reject AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE<=0 at boot."
             )
         return settings

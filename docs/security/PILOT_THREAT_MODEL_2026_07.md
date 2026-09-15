@@ -1,6 +1,6 @@
 <!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 ---
-title: "Pilot threat model (Samolet) — 2026-07"
+title: "Pilot threat model (the appointing party) — 2026-07"
 status: active
 date: 2026-07-21
 last_updated: "2026-09-05"
@@ -61,6 +61,6 @@ Prefer these over narrative claims:
 
 Product Checkpoint is **`GO`** (`regulatory_measurement_mvp`). `customer_go` stays
 **false**. Residual volumes (RT-001b dual human raters, RT-001c customer corpus,
-RT-002c Samolet signature, RT-003c system MEP, CDE T2) are not closed by
+RT-002c the appointing party signature, RT-003c system MEP, CDE T2) are not closed by
 engineering controls in this document. Security readiness ≠ customer sign-off.
 Do not write undifferentiated «RT-001/002/003 CLOSED».

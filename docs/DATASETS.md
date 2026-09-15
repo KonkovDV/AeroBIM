@@ -13,9 +13,9 @@ AeroBIM is MIT. Third-party corpora stay under their own licenses. This file is 
 
 ## Do not put in this repository
 
-| Model / artefact | License | Public MIT tree | Samolet local demo |
+| Model / artefact | License | Public MIT tree | the appointing party local demo |
 | --- | --- | --- | --- |
-| IFC-Bench `4351`, `ettenheim_gis`, `hitos`, `samuel_macalister_sample_house` | GNU GPLv3 | Not in git, not in distro | Allowed under `.local/` with `--samolet-demo-copyleft` |
+| IFC-Bench `4351`, `ettenheim_gis`, `hitos`, `samuel_macalister_sample_house` | GNU GPLv3 | Not in git, not in distro | Allowed under `.local/` with `--demo-copyleft` |
 | LibreDWG | GPL-3 | Do not link | Do not link (DWG still FAILED; show IFC/PDF) |
 
 ## AEC-Bench
@@ -66,7 +66,7 @@ Never say one number under three names. Speech: corpus + protocol + license ever
 - Publisher: ГАУ МО «Мособлгосэкспертиза»
 - Page: https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/
 - Hashes / retrieval: `samples/ids/moexp/SOURCE.md`
-- This is an approved **state examination** IDS pack. It is **not** a Samolet-signed acceptance profile.
+- This is an approved **state examination** IDS pack. It is **not** a appointing-party-signed acceptance profile.
 
 ## Official Moscow AGR IDS (ДГП / «СтроимПросто»)
 
@@ -74,14 +74,14 @@ Never say one number under three names. Speech: corpus + protocol + license ever
 - Pack: `samples/ids/moscow-agr/` (4 IDS from public `IDS.zip`)
 - Related XML: `samples/agr/dgp/` (`AGR_TEO.xml`, `Vedomost_AGR_VED_NEW.xsd`)
 - Example IFCs: local pin [`.local/moscow-agr-examples/`](dataset/MOSCOW_AGR_CITY_EXAMPLES_LOCAL_PIN_2026_08_24.md) — **not** a PD pack, **not** RT-001
-- This is a **city AGR** IDS pack. It is **not** a Samolet-signed acceptance profile and **not** the frozen `moscow_agr` DI port.
+- This is a **city AGR** IDS pack. It is **not** a appointing-party-signed acceptance profile and **not** the frozen `moscow_agr` DI port.
 
 ## Official SPb GAU «ЦГЭ» IDS 1.0
 
 - Publisher: СПб ГАУ «Центр государственной экспертизы»
 - Page: https://www.spbexp.ru/bim/docs/
 - Pack: `samples/ids/spbexp/` (22 IDS from ОКС 3.1.0 + РИИ 1.1.0 zips)
-- This is a **state examination** IDS pack. It is **not** a Samolet-signed acceptance profile.
+- This is a **state examination** IDS pack. It is **not** a appointing-party-signed acceptance profile.
 
 ## Official MinStroy XML schemas (EGRZ / ECPE intake)
 
@@ -118,10 +118,10 @@ Never say one number under three names. Speech: corpus + protocol + license ever
 ## Renga ПНСТ 909-2024 (publisher pack)
 
 - Source: rengabim.com/shablons (ознакомительные цели ≠ OSS). ToS cite **GO** 2026-08-05 for aggregated metrics.
-- AeroBIM: header probe MEASURED (IFC4 / Renga 8.7, not Samolet). 22-scenario pairing frozen at [`docs/evidence/pnst909-22-scenario-pairing.json`](evidence/pnst909-22-scenario-pairing.json). Runtime **18/22** snapshot dated **2026-08-05**. CLI `python -m aerobim.tools.run_pnst909_22_scenario_runtime` is in tree; live extract on this machine is a header sample only (`SKIPPED_PACK_INCOMPLETE`). Do not invent a fresh 18/22.
+- AeroBIM: header probe MEASURED (IFC4 / Renga 8.7, not appointing-party). 22-scenario pairing frozen at [`docs/evidence/pnst909-22-scenario-pairing.json`](evidence/pnst909-22-scenario-pairing.json). Runtime **18/22** snapshot dated **2026-08-05**. CLI `python -m aerobim.tools.run_pnst909_22_scenario_runtime` is in tree; live extract on this machine is a header sample only (`SKIPPED_PACK_INCOMPLETE`). Do not invent a fresh 18/22.
 
 ## What is still missing
 
-Public «российский комплект ПД + фактическое заключение экспертизы» does not exist **in git**. A local NDA wrapper+unpack tree was counted 30.08 ([`evidence/unpack-census-2026-08.md`](evidence/unpack-census-2026-08.md)) and family-counted 31.08 ([`evidence/pack-family-facts-2026-08.md`](evidence/pack-family-facts-2026-08.md)) — coverage map, not RT-001, not pack processed. Samolet project models under NDA are not in this repository. Those two sentences are the remaining RT-001 / customer-corpus deficit. Everything else in this file was available under a free license and is now cited.
+Public «российский комплект ПД + фактическое заключение экспертизы» does not exist **in git**. A local NDA wrapper+unpack tree was counted 30.08 ([`evidence/unpack-census-2026-08.md`](evidence/unpack-census-2026-08.md)) and family-counted 31.08 ([`evidence/pack-family-facts-2026-08.md`](evidence/pack-family-facts-2026-08.md)) — coverage map, not RT-001, not pack processed. the appointing party project models under NDA are not in this repository. Those two sentences are the remaining RT-001 / customer-corpus deficit. Everything else in this file was available under a free license and is now cited.
 
 Link-check of a later open-proxy list (Schependomlaan zip, ПНСТ/Renga, ifcfast#141, clash-experiments): [`datasets/OPEN_PROXY_VERIFICATION_2026_08_23.md`](datasets/OPEN_PROXY_VERIFICATION_2026_08_23.md). Still `closes_rt001/002/003: false`.

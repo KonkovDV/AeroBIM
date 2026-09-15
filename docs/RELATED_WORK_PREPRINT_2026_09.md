@@ -59,7 +59,7 @@ CLI `python -m aerobim.tools.sequential_regression_monitor` — e-process по
 
 **Draft (не «первый в мире», не метрика партнёра):** open-source IFC-pack acceptance gate, где (а) нейтральность вердикта к LLM доказуема кодом, (б) замечание — evidence-объект, (в) дрейф форматов движков fail-closes, (г) advisory под reproducibility-hash. После adjudication n≥30 добавить «и измерено на названном корпусе». Partner n = 0.
 
-1. Поле ставит LLM на маршрут (Iversen — выбрать tool; Fuchs — сгенерировать функцию). Мы оставляем LLM вне `summary.passed`. Для Самолёта/экспертизы это не «мы лучше Iversen»: черновик замечания и IDS — да; выбор проверки и generated checker на Shared-gate — нет, пока pack не hashed/`approval_ref`. Они закрывают оцифровку нормы моделью; мы — кто имеет право сказать pass.
+1. Поле ставит LLM на маршрут (Iversen — выбрать tool; Fuchs — сгенерировать функцию). Мы оставляем LLM вне `summary.passed`. Для заказчика канала/экспертизы это не «мы лучше Iversen»: черновик замечания и IDS — да; выбор проверки и generated checker на Shared-gate — нет, пока pack не hashed/`approval_ref`. Они закрывают оцифровку нормы моделью; мы — кто имеет право сказать pass.
 2. Мандат проверки уже существует: Сингапур CORENET X — с 01.10.2026 **новые проекты GFA ≥ 5 000 м²**, не все проекты ([URA dc26-08](https://www.ura.gov.sg/guidelines/circulars/dc26-08/)). Китай — гос-контур РД-ревью (объём «20k моделей» на 02.09.2026 **UNVERIFIED**). Эстония — разрешение как запись EHR.
 3. Геометрию не обещаем (Xiao = карта RT-003). Cheung: ACC объясним, когда evidence и движок совпадают.
 

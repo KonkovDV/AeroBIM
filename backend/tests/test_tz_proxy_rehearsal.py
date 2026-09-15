@@ -1,4 +1,4 @@
-"""Honesty lock for the Samolet-free TZ proxy rehearsal."""
+"""Honesty lock for the appointing party-free TZ proxy rehearsal."""
 
 from __future__ import annotations
 
@@ -41,11 +41,11 @@ class ConstructValidityFrameTests(unittest.TestCase):
         self.assertEqual(len(catalogs["kirov-kr"]["detectable_openers"]), 4)
         self.assertEqual(catalogs["mordovia-vk-3kv2024"]["detectable"], 4)
 
-    def test_jurisdiction_pointer_is_not_samolet(self) -> None:
+    def test_jurisdiction_pointer_is_not_customer(self) -> None:
         pointer = jurisdiction_ids_proxy()
         self.assertFalse(pointer["closes_rt002"])
         self.assertFalse(pointer["customer_signed"])
-        self.assertFalse(pointer["samolet_alias"])
+        self.assertFalse(pointer["customer_alias"])
         self.assertIsNone(pointer["approval"])
         self.assertEqual(pointer["iso19650_role"], "jurisdiction_eir_like")
 
@@ -73,8 +73,8 @@ class JurisdictionPointerFileTests(unittest.TestCase):
         self.assertIsNone(data["approval"])
         self.assertFalse(data["closes_rt002"])
         self.assertFalse(data["customer_signed"])
-        self.assertFalse(data["samolet_alias"])
-        self.assertIn("not-samolet-profile", data["claim_labels"])
+        self.assertFalse(data["customer_alias"])
+        self.assertIn("not-customer-profile", data["claim_labels"])
         self.assertIsNone(data["customer_pack_hash"])
         self.assertEqual(data["hash_kind"], "jurisdiction_tree_not_customer_pack")
         from aerobim.domain.norm_pack_hash import compute_directory_tree_hash
@@ -82,7 +82,7 @@ class JurisdictionPointerFileTests(unittest.TestCase):
         pack = REPO_ROOT / str(data["ids_pack_rel"])
         self.assertEqual(data["jurisdiction_tree_hash"], compute_directory_tree_hash(pack))
 
-    def test_checked_in_moscow_and_spb_pointers_cannot_be_samolet(self) -> None:
+    def test_checked_in_moscow_and_spb_pointers_cannot_be_customer(self) -> None:
         from aerobim.domain.norm_pack_hash import compute_directory_tree_hash
 
         for rel in (
@@ -92,7 +92,7 @@ class JurisdictionPointerFileTests(unittest.TestCase):
             data = json.loads((REPO_ROOT / rel).read_text(encoding="utf-8"))
             self.assertFalse(data["closes_rt002"])
             self.assertFalse(data["customer_signed"])
-            self.assertFalse(data["samolet_alias"])
+            self.assertFalse(data["customer_alias"])
             self.assertIsNone(data["approval"])
             self.assertIsNone(data["customer_pack_hash"])
             self.assertEqual(data["hash_kind"], "jurisdiction_tree_not_customer_pack")

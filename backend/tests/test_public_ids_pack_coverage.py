@@ -1,4 +1,4 @@
-"""Honesty + inventory for public jurisdiction IDS packs (not Samolet)."""
+"""Honesty + inventory for public jurisdiction IDS packs (not appointing-party)."""
 
 from __future__ import annotations
 
@@ -32,7 +32,7 @@ class PublicJurisdictionPackTests(unittest.TestCase):
         for row in packs:
             self.assertFalse(row["closes_rt002"])
             self.assertFalse(row["customer_signed"])
-            self.assertFalse(row["samolet_alias"])
+            self.assertFalse(row["customer_alias"])
             self.assertIsNone(row["approval"])
             self.assertEqual(row["legal_force"], "not_npa")
 
@@ -80,7 +80,7 @@ class PublicJurisdictionPackTests(unittest.TestCase):
                 (REPO / "docs" / "evidence" / f"{stem}.json").read_text(encoding="utf-8")
             )
             self.assertFalse(data["closes_rt002_customer_profile"])
-            self.assertFalse(data.get("samolet_alias"))
+            self.assertFalse(data.get("customer_alias"))
             self.assertFalse(data.get("customer_signed"))
 
 

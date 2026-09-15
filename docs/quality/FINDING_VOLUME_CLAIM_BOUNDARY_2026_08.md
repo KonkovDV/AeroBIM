@@ -32,7 +32,7 @@ claim_boundary: >
 |---|---|---|
 | `unrestricted_eq_sample` | Поэлементное eq/gte на **неподписанном ALL** (потолок 50), даже если есть `element_guid` | Образец шаблона, не дефект |
 | `element_detection_unsigned` | Поэлементное срабатывание на **именованном** `target_ref` | Детекция движка, порог не из СП |
-| `coverage_unsigned` | Свойство/Qto не найдено ни на одном экземпляре типа; `missing on N of M`; suppressor после потолка; `AEROBIM-QTY-*`; `SAM-AR-001…019` | Факт покрытия пакета |
+| `coverage_unsigned` | Свойство/Qto не найдено ни на одном экземпляре типа; `missing on N of M`; suppressor после потолка; `AEROBIM-QTY-*`; `TYP-AR-001…019` | Факт покрытия пакета |
 | `entity_presence` | В модели нет сущностей типа (`No elements found for entity …`) после корректного ALL | Честное отсутствие типа (в т.ч. файл КР без дверей) |
 | `unsigned_universal_rule` | `REQ-FIRE-*` / `REQ-STR-*` / `REQ-MEP-*` без текста сообщения (учебный ALL-скоуп) | Не дефект заказчика |
 | `data_integrity` | Дубликат/невалидный **IfcRoot.GlobalId** | Дефект данных, если GUID настоящий |
@@ -43,9 +43,9 @@ claim_boundary: >
 
 `service_record_count` = HITL + capability. `capped_eq_sample_count` = `unrestricted_eq_sample`. `publishable_finding_count` = 0, пока нет dual-rater. `suppressed_remainder_sum` — сумма «N further … suppressed», **не** число находок.
 
-Учебные наборы (`samples/requirements/samolet-*.txt`, `samples/rule-packs/residential-ar-reference-template.json`) — **synthetic / unsigned**. `SAM-AR-020` (перила ≥ 1,2 м) на ALL — `unrestricted_eq_sample`, демо-порог, не СП.
+Учебные наборы (`samples/requirements/residential-*.txt`, `samples/rule-packs/residential-ar-reference-template.json`) — **synthetic / unsigned**. `TYP-AR-020` (перила ≥ 1,2 м) на ALL — `unrestricted_eq_sample`, демо-порог, не СП.
 
-Наблюдаемый `FireRating` стен канала (пакет A) — класс **EI 45**, не учебный `REI60` (IUA `SAM-09`). Это не «стены провалили СП 2.13130».
+Наблюдаемый `FireRating` стен канала (пакет A) — класс **EI 45**, не учебный `REI60` (IUA `CH-09`). Это не «стены провалили СП 2.13130».
 
 ## Исправление 1: `target_ref=ALL`
 
@@ -67,14 +67,14 @@ claim_boundary: >
 
 ## Исправление 3: overlap unsigned-пакетов
 
-`REQ-FIRE-*` / `REQ-STR-*` (eq/gte/lte) и `SAM-AR-*` (в основном exists) делят ключ `entity+pset+property`. Пара `REQ-FIRE-001` и `SAM-AR-011` — это `Pset_WallCommon.FireRating` на `IFCWALL`, не два дефекта. Карта: `aerobim.domain.unsigned_rule_overlap.overlap_snapshot()`. `volume_from_findings` пишет `overlap_unsigned_groups` по правилам, которые реально встретились в прогоне.
+`REQ-FIRE-*` / `REQ-STR-*` (eq/gte/lte) и `TYP-AR-*` (в основном exists) делят ключ `entity+pset+property`. Пара `REQ-FIRE-001` и `TYP-AR-011` — это `Pset_WallCommon.FireRating` на `IFCWALL`, не два дефекта. Карта: `aerobim.domain.unsigned_rule_overlap.overlap_snapshot()`. `volume_from_findings` пишет `overlap_unsigned_groups` по правилам, которые реально встретились в прогоне.
 
 ## Что не утверждать
 
-- Сырой `total` после прогона канала — не F1 и не «дефекты Самолёта».
+- Сырой `total` после прогона канала — не F1 и не «дефекты заказчика канала».
 - Не подписывать учебный ALL+eq как проверку СП 2.13130 / СП 63.
 - Не выносить в git имена файлов, хэши, пообъектные GUID и сырой total пакета канала до письменного режима данных.
-- Не складывать `REQ-*` и `SAM-AR-*` на одном свойстве как независимые дефекты.
+- Не складывать `REQ-*` и `TYP-AR-*` на одном свойстве как независимые дефекты.
 - Не читать «N further suppressed» как N дефектов.
 
 Связанные: [`TRACKER_EIGHT_TASKS_2026_08.md`](TRACKER_EIGHT_TASKS_2026_08.md) · [`SIG01_CHANNEL_TRIAGE_2026_08.md`](SIG01_CHANNEL_TRIAGE_2026_08.md) · ADR-001 (`summary.passed` не пишет LLM).

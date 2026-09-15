@@ -84,7 +84,7 @@ Preferred pipeline: real IFC → BatchPlan plan → programmatic defect → know
 | AECBench | PARTIAL |
 | Purdue PTBC | PARTIAL |
 
-Does not replace Russian norm pack; measures pipeline before Samolet norms.
+Does not replace Russian norm pack; measures pipeline before the appointing party norms.
 
 ---
 

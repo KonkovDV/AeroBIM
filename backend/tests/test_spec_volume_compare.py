@@ -5,7 +5,7 @@ from __future__ import annotations
 import unittest
 
 from aerobim.domain.checkpoint import CHECKPOINT
-from aerobim.domain.samolet_mvp_answers import samolet_mvp_answers_payload
+from aerobim.domain.customer_channel_answers import customer_channel_answers_payload
 from aerobim.domain.spec_volume_compare import (
     SpecVolumeLine,
     compare_spec_volumes,
@@ -53,7 +53,7 @@ class SpecVolumeCompareTests(unittest.TestCase):
         boundary = str(snap["claim_boundary"]).lower()
         self.assertIn("not", boundary)
         self.assertNotIn("smeta", boundary)
-        payload = samolet_mvp_answers_payload()
+        payload = customer_channel_answers_payload()
         self.assertEqual(payload["spec_volume_compare"], snap)
 
 

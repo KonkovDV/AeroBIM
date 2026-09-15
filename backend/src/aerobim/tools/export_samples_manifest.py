@@ -4,7 +4,7 @@ Provenance classes:
 - samples/bcf-xsd/**, samples/ids-xsd/** -> vendored buildingSMART schemas
   (committed rows keep CC BY-ND 4.0 after RT-W-01; do not full-rebuild);
 - samples/ids/moexp/** -> third-party official MOEXP IDS/mappings (not a
-  Samolet profile);
+  the appointing party profile);
 - samples/ids/moscow-agr/** -> official Moscow AGR IDS (stroimprosto);
 - samples/ids/spbexp/** -> official SPb GAU CGE IDS;
 - samples/agr/dgp/** -> official ДГП AGR XML/XSD examples;
@@ -77,7 +77,7 @@ def _entry(path: Path) -> dict[str, object]:
             path,
             source=(
                 "GAU MO / MOEXP published IDS and IFC4 mappings (moexp.ru); "
-                "not a Samolet customer profile"
+                "not a customer customer profile"
             ),
             redistribution="redistributed as published; see samples/ids/moexp/SOURCE.md",
         )
@@ -85,7 +85,7 @@ def _entry(path: Path) -> dict[str, object]:
         return _official(
             path,
             source=(
-                "Moscow DGP / stroimprosto published AGR IDS; not a Samolet "
+                "Moscow DGP / stroimprosto published AGR IDS; not a customer "
                 "profile and not the frozen moscow_agr DI port"
             ),
             redistribution=("redistributed as published; see samples/ids/moscow-agr/SOURCE.md"),
@@ -93,13 +93,15 @@ def _entry(path: Path) -> dict[str, object]:
     if rel.startswith("ids/spbexp/"):
         return _official(
             path,
-            source=("SPb GAU CGE published IDS 1.0; not a Samolet customer profile"),
+            source=("SPb GAU CGE published IDS 1.0; not a customer customer profile"),
             redistribution="redistributed as published; see samples/ids/spbexp/SOURCE.md",
         )
     if rel.startswith("agr/dgp/"):
         return _official(
             path,
-            source=("Moscow DGP / stroimprosto AGR TEP example + Vedomost XSD; not a Samolet pack"),
+            source=(
+                "Moscow DGP / stroimprosto AGR TEP example + Vedomost XSD; not a customer pack"
+            ),
             redistribution="redistributed as published; see samples/agr/dgp/SOURCE.md",
         )
     if rel.startswith("xsd/minstroy/") and rel.endswith(".xsd"):
@@ -138,7 +140,7 @@ def _entry(path: Path) -> dict[str, object]:
             "source": (
                 "AeroBIM-authored index of SPb GAU CGE published IDS 1.0 "
                 "(samples/ids/spbexp/); not itself an official IDS file and not a "
-                "Samolet customer profile"
+                "the appointing party customer profile"
             ),
             "license_status": "repo_mit",
             "attribution_required": False,

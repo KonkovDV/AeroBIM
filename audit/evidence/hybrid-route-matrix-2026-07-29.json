@@ -245,7 +245,7 @@
     {
       "classification": "restricted",
       "external": false,
-      "kind": "samolet_data",
+      "kind": "customer_data",
       "model_tier": "local",
       "requires_human_review": false,
       "route_status": "local",
@@ -255,7 +255,7 @@
     {
       "classification": "restricted",
       "external": false,
-      "kind": "samolet_data",
+      "kind": "customer_data",
       "model_tier": "local",
       "requires_human_review": false,
       "route_status": "local",
@@ -265,7 +265,7 @@
     {
       "classification": "restricted",
       "external": false,
-      "kind": "samolet_data",
+      "kind": "customer_data",
       "model_tier": null,
       "requires_human_review": false,
       "route_status": "blocked",
@@ -275,7 +275,7 @@
     {
       "classification": "restricted",
       "external": false,
-      "kind": "samolet_data",
+      "kind": "customer_data",
       "model_tier": null,
       "requires_human_review": false,
       "route_status": "blocked",
@@ -285,7 +285,7 @@
     {
       "classification": "restricted",
       "external": false,
-      "kind": "samolet_data",
+      "kind": "customer_data",
       "model_tier": null,
       "requires_human_review": false,
       "route_status": "blocked",
@@ -295,7 +295,7 @@
     {
       "classification": "restricted",
       "external": false,
-      "kind": "samolet_data",
+      "kind": "customer_data",
       "model_tier": null,
       "requires_human_review": false,
       "route_status": "blocked",

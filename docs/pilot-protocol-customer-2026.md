@@ -1,13 +1,13 @@
 <!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 ---
-title: "Samolet Pilot Protocol 2026"
+title: "customer pilot Protocol 2026"
 status: active
 version: "1.1.0"
 last_updated: "2026-07-24"
 claim_boundary: "Protocol only. Thresholds are parameters for customer agreement. Checkpoint GO; customer_go false until RT-001/002/003."
 ---
 
-# Pilot Protocol — ГК «Самолёт» × AeroBIM TechLab Task 07
+# Pilot Protocol — заказчика × AeroBIM TechLab Task 07
 
 Параллельный план Checkpoint #2: `pilot/PARALLEL_WORKPLAN_CHECKPOINT2_2026_08.md`.  
 Инструкция разметчиков: [`pilot/EXPERT_LABELING_INSTRUCTION_2026.md`](pilot/EXPERT_LABELING_INSTRUCTION_2026.md).
@@ -57,12 +57,12 @@ Evidence-driven bounded pilot: measure whether AeroBIM reduces expert verificati
 
 | Input | Owner | Notes |
 |---|---|---|
-| NDA + scope memo | Samolet + AeroBIM | Disciplines, stage П/Р, in/out of auto-check |
-| Customer package (IFC/PDF/ТЗ/calc) | Samolet | `samples/customer/` local only — never git |
-| Approved norm/IDS pack + approval object | Samolet | RT-002 |
-| Federated MEP pack + clearance rules (if MEP in scope) | Samolet | RT-003 |
-| ≥2 named adjudicators | Samolet | Dual-independent |
-| Manual baseline hours | Samolet | Same package |
+| NDA + scope memo | the appointing party + AeroBIM | Disciplines, stage П/Р, in/out of auto-check |
+| Customer package (IFC/PDF/ТЗ/calc) | the appointing party | `samples/customer/` local only — never git |
+| Approved norm/IDS pack + approval object | the appointing party | RT-002 |
+| Federated MEP pack + clearance rules (if MEP in scope) | the appointing party | RT-003 |
+| ≥2 named adjudicators | the appointing party | Dual-independent |
+| Manual baseline hours | the appointing party | Same package |
 
 Intake gate: `aerobim-validate-customer-intake-gate` · [`../audit/evidence/customer-intake-gate.json`](../audit/evidence/customer-intake-gate.json).
 
@@ -70,7 +70,7 @@ Intake gate: `aerobim-validate-customer-intake-gate` · [`../audit/evidence/cust
 
 | Parameter | Suggested starting point | Binding? |
 |---|---|---|
-| Interim precision TP/(TP+FP) | ≥ 0.60 | Agree with Samolet |
+| Interim precision TP/(TP+FP) | ≥ 0.60 | Agree with the appointing party |
 | Critical-error recall | Agree per class | Agree |
 | Cohen’s κ / Krippendorff’s α | ≥ 0.60 suggested | Agree |
 | Package wall-clock | ≤ 30 min on **agreed** pack | Measure, then claim |
@@ -110,7 +110,7 @@ Stop or narrow if: expert distrust; critical misses above threshold; unstable ma
 | Tech lead | Runtime, evidence bundle, fail-closed profile |
 | openBIM lead | IFC/IDS/clash/BCF |
 | Adjudicators (≥2) | TP/FP labels; no LLM-as-adjudicator |
-| Samolet sponsor | Scope memo; CDE import proof owner |
+| the appointing party sponsor | Scope memo; CDE import proof owner |
 | Security | Closed-contour review before production data |
 
 ## Success / expansion

@@ -31,7 +31,7 @@ quote this scanner note as the pin). Architecture inventory in this report:
 | Variable | Mechanism | File (approx.) | No-op? |
 |---|---|---|---|
 | `AEROBIM_ALLOW_ANONYMOUS_DEV` | `_read_bool` | `settings.py` ~929 | no |
-| `AEROBIM_APPLY_SAMOLET_UPLOAD_CAPS` | `_read_bool` | `settings.py` ~106, ~119 | no |
+| `AEROBIM_APPLY_PILOT_UPLOAD_CAPS` | `_read_bool` | `settings.py` ~106, ~119 | no |
 | `AEROBIM_CLASH_AFFECTS_PASS` | `_optional_bool` | `settings.py` ~783 | no (forced true under pilot/production) |
 | `AEROBIM_CLASH_MIN_AABB_VOLUME_M3` | `_read_float` | `settings.py` ~855 | no |
 | `AEROBIM_CLASH_SKIP_TINY` | `_read_bool` | `settings.py` ~854 | no |

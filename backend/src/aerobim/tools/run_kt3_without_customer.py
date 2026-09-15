@@ -1,4 +1,4 @@
-"""Assemble the KT#3 pack that does not wait for Samolet files."""
+"""Assemble the KT#3 pack that does not wait for the appointing party files."""
 
 from __future__ import annotations
 
@@ -39,7 +39,7 @@ def write_payload(
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="KT#3 pack without Samolet files. Re-scope. Checkpoint GO; customer_go false."
+        description="KT#3 pack without the appointing party files. Re-scope. Checkpoint GO; customer_go false."
     )
     parser.add_argument(
         "--write-docs-evidence",

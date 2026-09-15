@@ -40,7 +40,7 @@ claim_boundary: >
 - Веса внешних LLM/VLM и обещание включённого облачного вывода.
 - Native RVT / NWD / DWG / `.lir` solver.
 - OIDC BFF, импорт BCF в СОД (T2).
-- Подпись профиля приёмки Самолёта.
+- Подпись профиля приёмки заказчика канала.
 
 Воспроизведение: [`../TIER0_INDEX.md`](../TIER0_INDEX.md) +
 [`../demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md`](../demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md).

@@ -1,5 +1,5 @@
 ---
-title: "Norm pack + RASE guide (Samolet pilot)"
+title: "Norm pack + RASE guide (the appointing party pilot)"
 status: active
 version: "1.1.0"
 last_updated: "2026-08-02"
@@ -96,14 +96,14 @@ Schema **2.0.0** требует на каждом правиле: `requirement_t
 
 ## Связь с пилотом
 
-1. Самолет утверждает содержимое → `customer_approved` + hash lock (RT-002).  
+1. заказчик канала утверждает содержимое → `customer_approved` + hash lock (RT-002).  
 2. AeroBIM грузит pack через `AEROBIM_NORM_RULE_PACK`.  
 3. Неполный / draft pack → capability fail-closed, не Shared-gate green по нормам.  
 4. HITL может править правила только через versioned store + audit event (не silent overwrite).
 
 ## Вход от заказчика (перечень)
 
-См. также [`../partners/SAMOLET_WHAT_WE_NEED_2026_07-ru.md`](../partners/SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md):
+См. также [`../partners/CUSTOMER_WHAT_WE_NEED_2026_07-ru.md`](../partners/CUSTOMER_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md):
 
 1. Выписка EIR / критерии приёмки на пилот (1–2 стр + таблица свойств).  
 2. Список СП/локальных стандартов **в scope** (не «все СП»).  

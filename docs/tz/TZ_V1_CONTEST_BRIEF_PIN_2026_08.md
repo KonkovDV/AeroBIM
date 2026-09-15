@@ -17,9 +17,9 @@ claim_boundary: >
 
 # ТЗ v1 (бриф конкурса) — что это за PDF
 
-Файл на машине владельца: `7. Самолет ТЗ Техлаб 2026.docx-1.pdf` (6 стр., sha256 в машине [`../evidence/tz-v1-brief-coverage-2026-08.json`](../evidence/tz-v1-brief-coverage-2026-08.json)). Бинарь **не** в git.
+Файл на машине владельца: `7. заказчик канала ТЗ Техлаб 2026.docx-1.pdf` (6 стр., sha256 в машине [`../evidence/tz-v1-brief-coverage-2026-08.json`](../evidence/tz-v1-brief-coverage-2026-08.json)). Бинарь **не** в git.
 
-Это **публичный бриф Задачи** (термины, концепция, критерии, приложения). В репозитории канон ответа — **ТЗ v2** [`TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md`](TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md) (Часть 0 уже аудирует v1).
+Это **публичный бриф Задачи** (термины, концепция, критерии, приложения). В репозитории канон ответа — **ТЗ v2** [`TZ_TECHLAB_TASK_07_V2_2026.md`](TZ_TECHLAB_TASK_07_V2_2026.md) (Часть 0 уже аудирует v1).
 
 **Не склеивать с:**
 
@@ -51,11 +51,11 @@ claim_boundary: >
 - M2/M8 формы Фонда: **VERIFY_WITH_OPERATOR**.  
 - Семь задач сравнения картографированы отдельно: [`../quality/TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md`](../quality/TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md).
 
-Машина: `python -c "from aerobim.domain.tz_v1_brief import v1_brief_snapshot"` — IUA `SAM-10`. Локальная сверка хэша PDF: переменная `AEROBIM_TZ_V1_PDF` (бинарь не в git).
+Машина: `python -c "from aerobim.domain.tz_v1_brief import v1_brief_snapshot"` — IUA `CH-10`. Локальная сверка хэша PDF: переменная `AEROBIM_TZ_V1_PDF` (бинарь не в git).
 
 ## Этот проход / дальше
 
-Сделано: pin V1-01…16, IUA `SAM-10`, речь КТ#3 если покажут этот PDF, акт МИК = 0.60 не цифра v1.
+Сделано: pin V1-01…16, IUA `CH-10`, речь КТ#3 если покажут этот PDF, акт МИК = 0.60 не цифра v1.
 
 Не делается: native DWG/RVT/NWD/LIRA, IDS `customer_approved`, закрытие RT-001/002/003, `summary.passed` от модели, product score по «>90%».
 

@@ -1,6 +1,6 @@
 """Candidate space-efficiency observations — advisory only, no numeric thresholds.
 
-TZ row 19 / Samolet 2.1.4 (2026-08-25): sellable area, excess technical rooms,
+TZ row 19 / the appointing party 2.1.4 (2026-08-25): sellable area, excess technical rooms,
 wide corridors, dead zones in МОП. Surface IFC space inventory as INFO findings
 with ``origin=advisory``. No signed numeric thresholds. Never sets
 ``summary.passed``.

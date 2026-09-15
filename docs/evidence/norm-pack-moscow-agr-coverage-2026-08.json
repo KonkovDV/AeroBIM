@@ -4,7 +4,7 @@
   "claim_level": "official_ids_engine_coverage",
   "customer_accuracy_not_established": true,
   "closes_rt002_customer_profile": false,
-  "claim_boundary": "Official Moscow AGR IDS zip from stroimprosto.mos.ru (АР / БиО / ПС / МССК). IfcTester engine coverage on a wall fixture is not CIM AGR acceptance, not УКЭП, and not a Samolet-signed pack. RT-002 stays OPEN.",
+  "claim_boundary": "Official Moscow AGR IDS zip from stroimprosto.mos.ru (АР / БиО / ПС / МССК). IfcTester engine coverage on a wall fixture is not CIM AGR acceptance, not УКЭП, and not a appointing-party-signed pack. RT-002 stays OPEN.",
   "source_page": "https://stroimprosto.mos.ru/knowledge/article/cim-agr/",
   "generated_at": "2026-08-14T17:07:47.373106+00:00",
   "machine": {
@@ -161,7 +161,7 @@
     }
   ],
   "pack_id": "moscow-agr",
-  "samolet_alias": false,
+  "customer_alias": false,
   "customer_signed": false,
   "content_sha256": "6b9b630850b31a2097c62197f3b717094d87ad20492977dcd462ff5662ca12db"
 }

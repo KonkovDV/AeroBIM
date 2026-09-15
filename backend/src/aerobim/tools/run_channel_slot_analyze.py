@@ -1,4 +1,4 @@
-"""Analyze one already-received channel slot. No further Samolet answers.
+"""Analyze one already-received channel slot. No further the appointing party answers.
 
 Writes HTML/JSON/PDF/BCF under ``.local/`` only. Does not stamp fixture_demo.
 Does not use demo-seed or REI60 IDS. Checkpoint GO; customer_go false.
@@ -171,7 +171,7 @@ def main(argv: list[str] | None = None) -> int:
         "claim_boundary": CLAIM_BOUNDARY,
         "checkpoint": CHECKPOINT,
         "customer_go": CUSTOMER_GO,
-        "waiting_for_samolet": False,
+        "waiting_for_customer": False,
         "fixture_demo": False,
         "slot": slot,
         "git_sha": _git_sha(repo),
@@ -200,7 +200,7 @@ def main(argv: list[str] | None = None) -> int:
         "passed": report.summary.passed,
         "issue_count": report.summary.issue_count,
         "fixture_demo": False,
-        "waiting_for_samolet": False,
+        "waiting_for_customer": False,
         "exports": ["html", "json", "pdf", "bcf"],
         **extra,
     }

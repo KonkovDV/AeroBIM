@@ -85,7 +85,7 @@ class SpbCgeProfileManifestTests(unittest.TestCase):
             "closes_rt001",
             "closes_rt002",
             "closes_rt003",
-            "samolet_alias",
+            "customer_alias",
         ):
             self.assertIs(_manifest_payload()[field], False, field)
         self.assertIn("экспертиз", profile.disclaimer.casefold())

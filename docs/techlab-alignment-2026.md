@@ -1,21 +1,21 @@
 <!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 ---
-title: "Samolet TechLab Alignment 2026 (Academic)"
+title: "TechLab Alignment 2026 (Academic)"
 status: active
 version: "1.2.4"
 last_updated: "2026-08-29"
-tags: [aerobim, samolet, techlab, openBIM, academic, traceability]
+tags: [aerobim, customer, techlab, openBIM, academic, traceability]
 claim_boundary: "Checkpoint GO; customer_go false until RT-001/002/003. Fixture evidence ≠ product accuracy."
 ---
 
-# Samolet × TechLab × AeroBIM — Academic Alignment
+# the appointing party × TechLab × AeroBIM — Academic Alignment
 
-Single traceability document mapping **customer requirements** ([i.moscow/techlab/samolet](https://i.moscow/techlab/samolet), task **#07** — *Система автоматизированной верификации проектной и рабочей документации*) to **AeroBIM capabilities**, **openBIM standards**, and **pilot evidence**. Use with [`REPRODUCIBILITY-2026.md`](REPRODUCIBILITY-2026.md), [`pilot-claim-boundary-2026.md`](pilot-claim-boundary-2026.md), and [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md).
+Single traceability document mapping **customer requirements** ([i.moscow/techlab/customer](https://i.moscow/techlab), task **#07** — *Система автоматизированной верификации проектной и рабочей документации*) to **AeroBIM capabilities**, **openBIM standards**, and **pilot evidence**. Use with [`REPRODUCIBILITY-2026.md`](REPRODUCIBILITY-2026.md), [`pilot-claim-boundary-2026.md`](pilot-claim-boundary-2026.md), and [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md).
 
 **TZ Response Pack:** [`tz/README.md`](tz/README.md).  
 **Task 07 readiness memo:** [`partners/TECHLAB_TASK_07_READINESS_2026.md`](partners/TECHLAB_TASK_07_READINESS_2026.md).  
-**What Samolet must supply:** [`partners/SAMOLET_WHAT_WE_NEED_2026_07-ru.md`](partners/SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md).  
-**Application packet:** [`partners/TECHLAB_SAMOLET_APPLICATION_2026.md`](partners/TECHLAB_SAMOLET_APPLICATION_2026.md).
+**What the appointing party must supply:** [`partners/CUSTOMER_WHAT_WE_NEED_2026_07-ru.md`](partners/CUSTOMER_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md).  
+**Application packet:** [`partners/TECHLAB_APPLICATION_2026.md`](partners/TECHLAB_APPLICATION_2026.md).
 
 ## 1. Customer mandate (official task page)
 
@@ -23,7 +23,7 @@ Single traceability document mapping **customer requirements** ([i.moscow/techla
 **Prize:** платное пилотное тестирование **2 000 000 ₽** (соглашение Партнёр↔Фонд; не грант 449-ПП и не «сначала ИП»).  
 **Direction:** прикладной ИИ · Competencies: BIM/CAD, Computer Vision/OCR, AI/ML · Stack: at team discretion.
 
-**Samolet** (via Moscow Innovation Cluster **TechLab**) requests a **reviewer-assist MVP** that:
+**the appointing party** (via Moscow Innovation Cluster **TechLab**) requests a **reviewer-assist MVP** that:
 
 1. Ingests **2D drawings**, **BIM models**, **technical specifications**, and **calculations**.
 2. Cross-checks them against each other and **normative / project rules**.
@@ -55,11 +55,11 @@ Single traceability document mapping **customer requirements** ([i.moscow/techla
 | Requirement-driven IDS workflow | Dias, Miceli Junior, Pellanda, *Automation in Construction* 2026, [doi:10.1016/j.autcon.2026.107043](https://doi.org/10.1016/j.autcon.2026.107043) (IDScribe / cost QTO) | Analog only: IDS as computable information requirements. AeroBIM sell-path = IFC+IDS evidence gate, not IDScribe, not cost take-off |
 | Schema validation baseline | [buildingSMART IFC Validation Service](https://validate.buildingsmart.org/) | Cited in [`evidence/upstream-validate-overlap-2026-08.md`](evidence/upstream-validate-overlap-2026-08.md). Not a Task-07 rival. Not claimed as running the Validation Service |
 
-**Explicit non-goals for Samolet claims:** full SP/GOST corpus automation; autonomous sign-off; universal 30-minute SLA without measured corpus.
+**Explicit non-goals for the appointing party claims:** full SP/GOST corpus automation; autonomous sign-off; universal 30-minute SLA without measured corpus.
 
 ## 3. Requirements traceability matrix
 
-| # | Samolet requirement (task page) | AeroBIM module / artifact | Status | Evidence / limit |
+| # | the appointing party requirement (task page) | AeroBIM module / artifact | Status | Evidence / limit |
 |---|---|---|---|---|
 | R1 | 2D drawings | Drawing evidence adapter, PDF/OCR baseline, 2D overlay UI | ✅ fixture | Vision-heavy path = planned, not pilot sign-off |
 | R2 | BIM models | IFC + IDS validators | ✅ | `pytest`, benchmark packs |
@@ -69,7 +69,7 @@ Single traceability document mapping **customer requirements** ([i.moscow/techla
 | R6 | Calculation / dimension / area errors | Quantity algebra + cross-doc | ✅ | Pilot pack informational 0 cross-doc on fixture |
 | R7 | Logic / missing elements | IDS + requirement operators (`exists`, bounds) | ✅ | |
 | R8 | Highlight problem zones | `problem_zone`, drawing overlay | ✅ | `run_live_review_smoke` |
-| R9 | Prioritize remarks | `compute_issue_priority`, Samolet profile (`AEROBIM_PRIORITY_PROFILE=samolet`) | ✅ | [`domain/review_priority.py`](../backend/src/aerobim/domain/review_priority.py) |
+| R9 | Prioritize remarks | `compute_issue_priority`, the appointing party profile (`AEROBIM_PRIORITY_PROFILE=customer`) | ✅ | [`domain/review_priority.py`](../backend/src/aerobim/domain/review_priority.py) |
 | R10 | Designer comments | `TemplateRemarkGenerator` (RU/EN) + HITL edit + BCF | ✅ | `AEROBIM_REMARK_LOCALE`; frontend remark editor |
 | R11 | Faster review | SLA tool + pilot KPI protocol | 🚧 measure | [`measure_package_sla`](../backend/src/aerobim/tools/measure_package_sla.py) |
 | R12 | Expert remains accountable | Claim boundary + adjudication KPI | ✅ | TP/FP by customer engineer |
@@ -99,9 +99,9 @@ flowchart LR
 
 Default benchmark pack: [`project-package-pilot-moscow-v1.json`](../samples/benchmarks/project-package-pilot-moscow-v1.json).
 
-## 5. KPI and SLA protocol (Samolet-specific)
+## 5. KPI and SLA protocol (the appointing party-specific)
 
-| Metric | Definition | Samolet page target | AeroBIM measurement |
+| Metric | Definition | the appointing party page target | AeroBIM measurement |
 |---|---|---|---|
 | Package SLA | Wall-clock analyze on agreed pack | ≤ 30 min | `python -m aerobim.tools.measure_package_sla --max-minutes 30` |
 | Time-to-first finding | Ingest → first actionable issue | Lower than manual | Logs + report timestamps |
@@ -115,12 +115,12 @@ Default benchmark pack: [`project-package-pilot-moscow-v1.json`](../samples/benc
 cd AeroBIM\backend
 .\.venv-pilot\Scripts\pip install -e ".[dev,raster]"
 
-# Samolet priority profile (fire/structure/cross-doc boost)
-$env:AEROBIM_PRIORITY_PROFILE = "samolet"
+# the appointing party priority profile (fire/structure/cross-doc boost)
+$env:AEROBIM_PRIORITY_PROFILE = "pilot"
 
 .\.venv-pilot\Scripts\python.exe -m aerobim.tools.measure_package_sla `
   --pack ..\samples\benchmarks\project-package-pilot-moscow-v1.json `
-  --max-minutes 30 --output ..\docs\evidence\samolet-sla-pilot-moscow-2026-05-21.json
+  --max-minutes 30 --output ..\docs\evidence\sla-pilot-moscow-2026-05-21.json
 
 .\.venv-pilot\Scripts\python.exe -m aerobim.tools.summarize_conflict_breakdown `
   --pack samples/benchmarks/project-package-pilot-moscow-v1.json
@@ -134,9 +134,9 @@ $env:AEROBIM_PRIORITY_PROFILE = "samolet"
 | Limits | This doc §2 non-goals + claim boundary |
 | Data availability | [`REPRODUCIBILITY-2026.md`](REPRODUCIBILITY-2026.md) |
 | Case study / claims | [`pilot-claim-boundary-2026.md`](pilot-claim-boundary-2026.md) · [`docs.md`](docs.md) |
-| TechLab application | [`partners/TECHLAB_SAMOLET_APPLICATION_2026.md`](partners/TECHLAB_SAMOLET_APPLICATION_2026.md) |
+| TechLab application | [`partners/TECHLAB_APPLICATION_2026.md`](partners/TECHLAB_APPLICATION_2026.md) |
 
-## Clash policy (Samolet R5)
+## Clash policy (the appointing party R5)
 
 | Term in task page | AeroBIM meaning | Default pilot |
 |-------------------|-----------------|---------------|
@@ -150,15 +150,15 @@ $env:AEROBIM_PRIORITY_PROFILE = "samolet"
 
 | ID | Gap | Owner | Target |
 |---|---|---|---|
-| S-01 | Customer document corpus + NDA | Samolet + pilot lead | Week 1 intake |
+| S-01 | Customer document corpus + NDA | the appointing party + pilot lead | Week 1 intake |
 | S-02 | CDE BCF import proof | Joint | Week 1 |
 | S-03 | SLA sign-off on production-sized pack | Joint | After corpus frozen |
-| S-04 | Typical errors filled from Samolet QA history | Customer | Iteration 2 |
+| S-04 | Typical errors filled from the appointing party QA history | Customer | Iteration 2 |
 | S-05 | Discipline-specific norm packs (MEP full IFC) | AeroBIM | Post-pilot |
 
 ## 9. Citation
 
-When citing results for Samolet / TechLab, use frozen tag **`pilot-2026-pre`** for metrics and note Samolet-specific SLA runs separately in evidence filenames (`samolet-sla-*.json`).
+When citing results for the appointing party / TechLab, use frozen tag **`pilot-2026-pre`** for metrics and note the appointing party-specific SLA runs separately in evidence filenames (`customer-sla-*.json`).
 
 ## Drawing AI posture (retained local SSOT)
 

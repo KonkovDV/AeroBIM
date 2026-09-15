@@ -8,7 +8,7 @@ closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   Operator note for IB review. Default is no outbound advisory.
-  samolet_pilot / production hard-disable LLM and VLM ready().
+  customer_pilot / production hard-disable LLM and VLM ready().
   Checkpoint GO; customer_go false.
 ---
 
@@ -18,14 +18,14 @@ claim_boundary: >
 
 **What IB will see in the public inventory.** Deprecated Kimi aliases (`AEROBIM_KIMI_*`) remain in the README Configuration table so operators who still have those names in scripts are not surprised. They are aliases of `AEROBIM_VLM_*`. Seeing a name in a table is not an open socket.
 
-**Who may enable egress.** Only `development` / `fixture` (and not `samolet_pilot` / `samolet_pilot_demo` / `moscow_agr_2026` / `production`). `Settings.llm_local_ready()` and `Settings.vlm_advisory_ready()` return `false` on those four profiles even if the enable flags are left on.
+**Who may enable egress.** Only `development` / `fixture` (and not `customer_pilot` / `customer_pilot_demo` / `moscow_agr_2026` / `production`). `Settings.llm_local_ready()` and `Settings.vlm_advisory_ready()` return `false` on those four profiles even if the enable flags are left on.
 
 **Proof in CI.**
 
 | Test | What it shows |
 |---|---|
-| `backend/tests/test_pilot_profile_blocks_external_llm_egress.py` | `samolet_pilot` + `AEROBIM_LLM_ADVISORY_ENABLED=true` → `llm_local_ready() is False` |
-| same file, `test_pilot_profile_blocks_kimi_alias_vlm` | `AEROBIM_KIMI_K3_ENABLED=true` under `samolet_pilot` → `vlm_advisory_ready() is False` |
+| `backend/tests/test_pilot_profile_blocks_external_llm_egress.py` | `customer_pilot` + `AEROBIM_LLM_ADVISORY_ENABLED=true` → `llm_local_ready() is False` |
+| same file, `test_pilot_profile_blocks_kimi_alias_vlm` | `AEROBIM_KIMI_K3_ENABLED=true` under `customer_pilot` → `vlm_advisory_ready() is False` |
 | `backend/tests/test_vlm_advisory_client.py::test_customer_profile_hard_disables_public_api` | VLM client path hard-disabled on pilot/production |
 | `python -m aerobim.tools.offline_bundle` | Docker image-track smoke (CI job `offline-bundle-smoke` is in the attested gate set of the runtime baseline) |
 

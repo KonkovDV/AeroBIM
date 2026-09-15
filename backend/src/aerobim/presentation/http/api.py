@@ -80,7 +80,7 @@ def create_http_app(container: Container) -> FastAPI:
     # is not 429'd before the CORS response.
     job_poll_per_minute = (
         _DEFAULT_JOB_POLL_PER_MINUTE
-        if settings.signoff_profile in {"samolet_pilot", "production"}
+        if settings.signoff_profile in {"customer_pilot", "production"}
         else 0
     )
     cors_origins = list(settings.cors_origins)

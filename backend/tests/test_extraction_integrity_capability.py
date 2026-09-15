@@ -25,8 +25,8 @@ def test_failed_extraction_integrity_blocks_pass_in_every_profile() -> None:
     for profile in (
         "development",
         "fixture",
-        "samolet_pilot",
-        "samolet_pilot_demo",
+        "customer_pilot",
+        "customer_pilot_demo",
         "moscow_agr_2026",
         "production",
     ):

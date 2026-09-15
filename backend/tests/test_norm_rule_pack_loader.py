@@ -42,7 +42,7 @@ def _approved_payload_from_intake() -> dict:
         "approved_by": "customer-qa",
         "approval_date": "2026-07-17T12:00:00+03:00",
         "approval_status": "customer_approved",
-        "document_title": "Samolet residential AR norms",
+        "document_title": "the appointing party residential AR norms",
         "document_edition": "2026-07",
         "effective_date": "2026-07-01",
         "scope_reference": "SIGNED-MEMO-REF",
@@ -60,7 +60,7 @@ class JsonNormRulePackLoaderTests(unittest.TestCase):
     def test_loads_bounded_reference_pack_with_provenance(self) -> None:
         pack = self.loader.load(REFERENCE_PACK)
 
-        self.assertEqual(pack.pack_id, "SAMOLET-RESIDENTIAL-AR-REFERENCE")
+        self.assertEqual(pack.pack_id, "CUSTOMER-RESIDENTIAL-AR-REFERENCE")
         self.assertEqual(pack.status, RulePackStatus.SYNTHETIC_TEMPLATE)
         self.assertTrue(pack.advisory_only)
         self.assertIn("synthetic", pack.claim_labels)
@@ -143,7 +143,7 @@ class JsonNormRulePackLoaderTests(unittest.TestCase):
         self.assertEqual(pack.status, RulePackStatus.APPROVED)
         self.assertFalse(pack.advisory_only)
         self.assertEqual(pack.jurisdiction, "RF")
-        self.assertEqual(pack.document_title, "Samolet residential AR norms")
+        self.assertEqual(pack.document_title, "the appointing party residential AR norms")
         self.assertEqual(pack.rules[0].norm_clause, "7.1.2")
         self.assertEqual(pack.rules[0].approval_status, "customer_approved")
         self.assertEqual(pack.schema_version, "2.0.0")
@@ -158,7 +158,7 @@ class JsonNormRulePackLoaderTests(unittest.TestCase):
         )
 
         requirement = ParsedRequirement(
-            rule_id="SAM-AR-PROV",
+            rule_id="TYP-AR-PROV",
             ifc_entity="IFCWALL",
             property_set="Pset_WallCommon",
             property_name="FireRating",
@@ -232,7 +232,7 @@ class NormPackImmutableHashTests(unittest.TestCase):
                 LocalObjectStore(root / "objects"),
                 index_dir=root / "index",
             )
-            pack_id = "SAMOLET-RESIDENTIAL-AR-REFERENCE"
+            pack_id = "CUSTOMER-RESIDENTIAL-AR-REFERENCE"
             v1 = REFERENCE_PACK.read_bytes()
             record = store.save_version(
                 pack_id=pack_id,
@@ -267,7 +267,7 @@ class NormPackImmutableHashTests(unittest.TestCase):
             )
             with self.assertRaisesRegex(ValueError, "synthetic/fixture claim_labels"):
                 store.save_version(
-                    pack_id="SAMOLET-RESIDENTIAL-AR-REFERENCE",
+                    pack_id="CUSTOMER-RESIDENTIAL-AR-REFERENCE",
                     version="9.9.9-bad",
                     payload=REFERENCE_PACK.read_bytes(),
                     created_by="attacker",

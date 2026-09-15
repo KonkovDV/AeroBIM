@@ -1,4 +1,4 @@
-"""Construct-validity map for Samolet TZ rows that RT-001/002/003 still block.
+"""Construct-validity map for the appointing party TZ rows that RT-001/002/003 still block.
 
 Public / synthetic proxies can support Messick *content* and *substantive*
 aspects for the engine. They cannot supply the *external* (criterion) aspect
@@ -15,10 +15,10 @@ from aerobim.domain.npa_legal_force import overlay_egrz_intake, overlay_ids_pack
 
 CLAIM_LEVEL: Final = "tz_proxy_rehearsal"
 CLAIM_BOUNDARY: Final = (
-    "Public and synthetic proxies for Task 07 rows that still need Samolet files. "
+    "Public and synthetic proxies for Task 07 rows that still need the appointing party files. "
     "Messick content/substantive evidence for the engine is not criterion validity "
     "on a customer PD/RD + expertise corpus. Official MOEXP IDS is a jurisdiction "
-    "profile, not a Samolet-signed EIR. IfcClash on planted or open federated IFC "
+    "profile, not a appointing-party-signed EIR. IfcClash on planted or open federated IFC "
     "is not MEP system-aware delivery. Checkpoint GO "
     "(regulatory_measurement_mvp; customer_go false). "
     "closes_rt001=false, closes_rt002=false, closes_rt003=false."
@@ -157,7 +157,7 @@ def jurisdiction_ids_proxy() -> dict[str, Any]:
             "claim_level": "official_ids_engine_coverage",
             "closes_rt002": False,
             "customer_signed": False,
-            "samolet_alias": False,
+            "customer_alias": False,
             "approval": None,
             "iso19650_role": "jurisdiction_eir_like",
             "iso19650_not": "appointing_party_eir_or_bep",
@@ -170,7 +170,7 @@ def jurisdiction_ids_proxy() -> dict[str, Any]:
             "construct": (
                 "buildingSMART IDS 1.0 executed by IfcTester against official "
                 "MosoblGosExpertiza specifications. That is engine coverage of a "
-                "public jurisdiction information requirement, not Samolet acceptance."
+                "public jurisdiction information requirement, not appointing-party acceptance."
             ),
             "why_not_criterion_valid": (
                 "RT-002 CLOSED needs a customer_approved pack with a full approval "
@@ -183,14 +183,14 @@ def jurisdiction_ids_proxy() -> dict[str, Any]:
 
 
 def moscow_agr_ids_proxy() -> dict[str, Any]:
-    """Official ДГП AGR IDS from stroimprosto.mos.ru — still not Samolet."""
+    """Official ДГП AGR IDS from stroimprosto.mos.ru — still not appointing-party."""
     return overlay_ids_pack(
         "MOSCOW-AGR-DGP-IDS",
         {
             "claim_level": "official_ids_engine_coverage",
             "closes_rt002": False,
             "customer_signed": False,
-            "samolet_alias": False,
+            "customer_alias": False,
             "approval": None,
             "iso19650_role": "jurisdiction_eir_like",
             "iso19650_not": "appointing_party_eir_or_bep",
@@ -203,7 +203,7 @@ def moscow_agr_ids_proxy() -> dict[str, Any]:
                 "(АР / БиО / ПС / МССК). City knowledge-base pack, not appointing-party EIR."
             ),
             "why_not_criterion_valid": (
-                "RT-002 CLOSED needs Samolet approval + pack_hash. A public ДГП "
+                "RT-002 CLOSED needs the appointing party approval + pack_hash. A public ДГП "
                 "IDS zip is not that pack and is not the frozen moscow_agr DI port."
             ),
             "ids_pack_rel": "samples/ids/moscow-agr/pack",
@@ -213,14 +213,14 @@ def moscow_agr_ids_proxy() -> dict[str, Any]:
 
 
 def spbexp_ids_proxy() -> dict[str, Any]:
-    """Official SPb GAU CGE IDS 1.0 — second GAU pack, still not Samolet."""
+    """Official SPb GAU CGE IDS 1.0 — second GAU pack, still not appointing-party."""
     return overlay_ids_pack(
         "SPBEXP-GAU-CGE-IDS",
         {
             "claim_level": "official_ids_engine_coverage",
             "closes_rt002": False,
             "customer_signed": False,
-            "samolet_alias": False,
+            "customer_alias": False,
             "approval": None,
             "iso19650_role": "jurisdiction_eir_like",
             "iso19650_not": "appointing_party_eir_or_bep",
@@ -233,7 +233,7 @@ def spbexp_ids_proxy() -> dict[str, Any]:
                 "Second public GAU jurisdiction pack after MOEXP."
             ),
             "why_not_criterion_valid": (
-                "A second GAU pack is still not a customer_approved Samolet profile."
+                "A second GAU pack is still not a customer_approved the appointing party profile."
             ),
             "ids_pack_rel": "samples/ids/spbexp/pack",
             "coverage_evidence": "docs/evidence/norm-pack-spbexp-coverage-2026-08.json",
@@ -286,13 +286,13 @@ def tz_row_proxy_map() -> dict[str, Any]:
     return {
         "TR-8": {
             "tz": "IDS / IFC properties",
-            "without_samolet": "done on fixtures + MOEXP + BSI TestCases",
+            "without_customer": "done on fixtures + MOEXP + BSI TestCases",
             "status": "done",
             "closes_blocker": None,
         },
         "TR-11": {
             "tz": "Customer-approved norm pack",
-            "without_samolet": (
+            "without_customer": (
                 "MOEXP + Moscow AGR IDS + SPb CGE IDS jurisdiction pointers; "
                 "intake template unsigned"
             ),
@@ -301,25 +301,25 @@ def tz_row_proxy_map() -> dict[str, Any]:
         },
         "TR-14": {
             "tz": "Geometric BIM clashes (IfcClash)",
-            "without_samolet": "IfcClashDetector + detect_between + planted fixture rehearsal",
+            "without_customer": "IfcClashDetector + detect_between + planted fixture rehearsal",
             "status": "partial",
             "closes_blocker": None,
         },
         "TR-15": {
             "tz": "MEP system-aware clash",
-            "without_samolet": "federated inventory AABB; IfcClash optional; still NOT_VERIFIED",
+            "without_customer": "federated inventory AABB; IfcClash optional; still NOT_VERIFIED",
             "status": "not_verified",
             "closes_blocker": "RT-003",
         },
         "TR-6": {
             "tz": "Native DWG",
-            "without_samolet": "DXF/PDF-A only; LibreDWG not linked",
+            "without_customer": "DXF/PDF-A only; LibreDWG not linked",
             "status": "TZ_MANDATORY_UNSUPPORTED",
             "closes_blocker": None,
         },
         "accuracy_protocol": {
             "tz": "Detection accuracy after dual adjudication",
-            "without_samolet": (
+            "without_customer": (
                 "Exp B coverage map + synthetic planted defects + MinStroy "
                 "XSD intake pre-check (PZ 01.07 / ZnP 01.01; xml:id sanitize)"
             ),
@@ -348,7 +348,7 @@ def construct_validity_frame() -> dict[str, Any]:
                 "capability status. Do not collapse them into one F1."
             ),
             "generalizability": (
-                "Open benches and GAU IDS do not generalize to Samolet PD/RD + "
+                "Open benches and GAU IDS do not generalize to the appointing party PD/RD + "
                 "expertise remarks (AECV-Bench §6; PP RF 878 §23)."
             ),
             "external": (

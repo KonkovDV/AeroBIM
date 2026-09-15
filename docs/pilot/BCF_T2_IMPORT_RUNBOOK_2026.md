@@ -7,14 +7,14 @@ last_updated: "2026-08-28"
 claim_boundary: "Runbook only — executing it requires a real customer/pilot CDE session. T2 stays NOT_VERIFIED until the pack verifies (RT-008)."
 ---
 
-# BCF T2 CDE-import runbook — Samolet pilot (2026)
+# BCF T2 CDE-import runbook — the appointing party pilot (2026)
 
 Purpose: produce an **independent, hash-bound** proof that an AeroBIM BCF ZIP
 imports into an external CDE. **Target confirmed 2026-08-28 (address level):**
 the customer's pack share link resolves to the **10D** СОД contour
-([samolet10d.ru/catalog/product/10d-cod](https://samolet10d.ru/catalog/product/10d-cod/),
+([customer10d.ru/catalog/product/10d-cod](https://customer10d.ru/catalog/product/10d-cod/),
 publicly described as covering PD + RD + IRD after the **15.07.2025** update,
-[ComNews](https://www.comnews.ru/digital-economy/content/240189/2025-07-15/2025-w29/1012/samolet-obnovil-reshenie-upravleniyu-dokumentaciey-stroitelnykh-proektakh)).
+[ComNews](https://www.comnews.ru/digital-economy/content/240189/2025-07-15/2025-w29/1012/customer-obnovil-reshenie-upravleniyu-dokumentaciey-stroitelnykh-proektakh)).
 The application contour serves content only to a session browser — the address
 is confirmed, the folder contents are **not** read, and no access-type claim is
 made (operator must ask the customer whether the link is authorized-only or

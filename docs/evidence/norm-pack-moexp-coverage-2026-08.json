@@ -5,7 +5,7 @@
   "customer_accuracy_not_established": true,
   "closes_rt002_customer_profile": false,
   "public_moexp_ids_present": true,
-  "claim_boundary": "Official GAU MO MosoblGosExpertiza IDS executed by IfcTester. Fixture IFC is not a MOEXP-compliant CIM. Pass/fail on the fixture is not product accuracy, not Samolet acceptance, and does not close RT-002 (customer-approved profile still absent). ICMM 3.3 has no published IDS.",
+  "claim_boundary": "Official GAU MO MosoblGosExpertiza IDS executed by IfcTester. Fixture IFC is not a MOEXP-compliant CIM. Pass/fail on the fixture is not product accuracy, not appointing-party acceptance, and does not close RT-002 (customer-approved profile still absent). ICMM 3.3 has no published IDS.",
   "source_page": "https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/",
   "generated_at": "2026-08-13T20:33:20.765514+00:00",
   "machine": {

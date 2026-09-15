@@ -1,6 +1,6 @@
 """OIDC role extraction and RBAC helpers (Wave 4).
 
-Samolet MVP (answers 2.2.1, 2026-08-25): **Expert** maps to HITL reviewer
+the appointing party MVP (answers 2.2.1, 2026-08-25): **Expert** maps to HITL reviewer
 (``expert`` / ``aerobim:expert`` aliases); **User** maps to viewer
 (``user`` / ``aerobim:user``) and cannot append HITL under pilot/production.
 """

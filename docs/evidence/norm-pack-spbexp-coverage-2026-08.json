@@ -4,7 +4,7 @@
   "claim_level": "official_ids_engine_coverage",
   "customer_accuracy_not_established": true,
   "closes_rt002_customer_profile": false,
-  "claim_boundary": "Official SPb GAU CGE IDS 1.0 zips (ЦИМ ОКС 3.1.0 + ЦИМ РИИ 1.1.0). Second public GAU jurisdiction pack. Not MosoblGosExpertiza. Not a Samolet-signed acceptance profile. RT-002 stays OPEN.",
+  "claim_boundary": "Official SPb GAU CGE IDS 1.0 zips (ЦИМ ОКС 3.1.0 + ЦИМ РИИ 1.1.0). Second public GAU jurisdiction pack. Not MosoblGosExpertiza. Not a appointing-party-signed acceptance profile. RT-002 stays OPEN.",
   "source_page": "https://www.spbexp.ru/bim/docs/",
   "generated_at": "2026-08-14T17:07:48.321729+00:00",
   "machine": {
@@ -810,7 +810,7 @@
     }
   ],
   "pack_id": "spbexp",
-  "samolet_alias": false,
+  "customer_alias": false,
   "customer_signed": false,
   "content_sha256": "dde568f15d011ed18630918b284d1d5a58dabe30796ed1ece1816a05d1a33e8f"
 }

@@ -28,7 +28,7 @@ class DataClassificationTests(unittest.TestCase):
         self.assertEqual(classify_object("ifc"), _C.CONFIDENTIAL)
         self.assertEqual(classify_object("drawing"), _C.CONFIDENTIAL)
         self.assertEqual(classify_object("customer_corpus"), _C.RESTRICTED)
-        self.assertEqual(classify_object("samolet_data"), _C.RESTRICTED)
+        self.assertEqual(classify_object("customer_data"), _C.RESTRICTED)
         self.assertEqual(classify_object("api_key"), _C.SECRET)
         self.assertEqual(classify_object("public_fixture"), _C.PUBLIC)
         self.assertEqual(classify_object("internal_doc"), _C.INTERNAL)

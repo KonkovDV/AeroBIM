@@ -79,8 +79,8 @@ def _minimal_report(*, report_id: str, ifc_path: Path) -> ValidationReport:
 
 
 class CapabilityPolicyHyperTests(unittest.TestCase):
-    def test_samolet_pilot_defaults_require_mep(self) -> None:
-        policy = build_signoff_policy(profile="samolet_pilot")
+    def test_customer_pilot_defaults_require_mep(self) -> None:
+        policy = build_signoff_policy(profile="customer_pilot")
         self.assertTrue(policy.require_mep_system_clash)
         self.assertTrue(policy.require_clash)
         self.assertTrue(policy.audit_fail_closed)
@@ -119,9 +119,9 @@ class CapabilityPolicyHyperTests(unittest.TestCase):
         )
 
     def test_profile_aliases(self) -> None:
-        self.assertEqual(normalize_signoff_profile("samolet"), "samolet_pilot")
+        self.assertEqual(normalize_signoff_profile("pilot"), "customer_pilot")
         self.assertEqual(normalize_signoff_profile("prod"), "production")
-        self.assertEqual(normalize_signoff_profile("pilot_demo"), "samolet_pilot_demo")
+        self.assertEqual(normalize_signoff_profile("pilot_demo"), "customer_pilot_demo")
         self.assertEqual(normalize_signoff_profile("moscow_agr"), "moscow_agr_2026")
         self.assertEqual(normalize_signoff_profile("agr_2026"), "moscow_agr_2026")
 

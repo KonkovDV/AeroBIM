@@ -1,4 +1,4 @@
-"""samolet_pilot / production hard-disable external advisory LLM egress."""
+"""customer_pilot / production hard-disable external advisory LLM egress."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ class PilotProfileBlocksExternalLlmEgressTests(unittest.TestCase):
             os.environ,
             {
                 "AEROBIM_ENV": "development",
-                "AEROBIM_SIGNOFF_PROFILE": "samolet_pilot",
+                "AEROBIM_SIGNOFF_PROFILE": "customer_pilot",
                 **_PILOT_AUTH,
                 "AEROBIM_LLM_ADVISORY_ENABLED": "true",
                 "AEROBIM_LLM_BASE_URL": "https://llm.api.cloud.yandex.net/v1",
@@ -32,7 +32,7 @@ class PilotProfileBlocksExternalLlmEgressTests(unittest.TestCase):
             self.assertTrue(settings.llm_advisory_enabled)
             self.assertFalse(
                 settings.llm_local_ready(),
-                "samolet_pilot must hard-disable external advisory egress",
+                "customer_pilot must hard-disable external advisory egress",
             )
             self.assertTrue(settings.customer_pack_llm_egress_denied)
             self.assertEqual(settings.llm_allowed_hosts, ())
@@ -42,7 +42,7 @@ class PilotProfileBlocksExternalLlmEgressTests(unittest.TestCase):
             os.environ,
             {
                 "AEROBIM_ENV": "development",
-                "AEROBIM_SIGNOFF_PROFILE": "samolet_pilot",
+                "AEROBIM_SIGNOFF_PROFILE": "customer_pilot",
                 **_PILOT_AUTH,
                 "AEROBIM_CUSTOMER_PACK_LLM_EGRESS": "allow",
             },
@@ -57,7 +57,7 @@ class PilotProfileBlocksExternalLlmEgressTests(unittest.TestCase):
             os.environ,
             {
                 "AEROBIM_ENV": "development",
-                "AEROBIM_SIGNOFF_PROFILE": "samolet_pilot",
+                "AEROBIM_SIGNOFF_PROFILE": "customer_pilot",
                 **_PILOT_AUTH,
                 "AEROBIM_CUSTOMER_PACK_LLM_EGRESS": "allow",
                 "AEROBIM_CUSTOMER_PACK_LLM_EGRESS_CONSENT_REF": "letter-oa-2026-09",
@@ -108,7 +108,7 @@ class PilotProfileBlocksExternalLlmEgressTests(unittest.TestCase):
             os.environ,
             {
                 "AEROBIM_ENV": "development",
-                "AEROBIM_SIGNOFF_PROFILE": "samolet_pilot",
+                "AEROBIM_SIGNOFF_PROFILE": "customer_pilot",
                 **_PILOT_AUTH,
                 "AEROBIM_KIMI_K3_ENABLED": "true",
             },
@@ -121,7 +121,7 @@ class PilotProfileBlocksExternalLlmEgressTests(unittest.TestCase):
             self.assertTrue(settings.vlm_enabled)
             self.assertFalse(
                 settings.vlm_advisory_ready(),
-                "samolet_pilot must hard-disable Kimi/VLM egress",
+                "customer_pilot must hard-disable Kimi/VLM egress",
             )
 
     def test_advisory_env_preferred_over_deprecated_local(self) -> None:

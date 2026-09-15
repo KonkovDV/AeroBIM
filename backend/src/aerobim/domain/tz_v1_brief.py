@@ -26,12 +26,12 @@ CLAIM_BOUNDARY: Final = (
 )
 
 # Local owner copy of the public brief. Binary stays out of git.
-PDF_FILENAME: Final = "7. Самолет ТЗ Техлаб 2026.docx-1.pdf"
+PDF_FILENAME: Final = "7. заказчик канала ТЗ Техлаб 2026.docx-1.pdf"
 PDF_PAGES: Final = 6
 PDF_BYTES: Final = 252251
 PDF_SHA256: Final = "e9c922e005e82e9b1866a6f64c157155e31a93908d206e08cf3901aeacfdfc4b"
 
-# Four Samolet paper-objects. Do not glue.
+# Four the appointing party paper-objects. Do not glue.
 PAPER_OBJECTS: Final[tuple[str, ...]] = (
     "tz_v1_contest_brief",
     "tz_v2_tr_1_62",
@@ -127,7 +127,7 @@ def _v1_requirements() -> list[dict[str, Any]]:
             "v1": "Module assists the expert; does not replace them",
             "engine": "HITL + ADR-001 DeterminismGate",
             "status": "done_fixture",
-            "iua": "SAM-01",
+            "iua": "CH-01",
         },
         {
             "id": "V1-02",
@@ -135,7 +135,7 @@ def _v1_requirements() -> list[dict[str, Any]]:
             "v1": "Analyze 2D drawings and BIM models",
             "engine": "PDF/OCR baseline + IFC/IDS; CV advisory",
             "status": "partial",
-            "iua": "SAM-02",
+            "iua": "CH-02",
         },
         {
             "id": "V1-03",
@@ -143,7 +143,7 @@ def _v1_requirements() -> list[dict[str, Any]]:
             "v1": "PD/RD vs calcs, TZ, sections, norms",
             "engine": "cross-doc + IDS + pairing; customer pack blocked",
             "status": "partial",
-            "iua": "SAM-08",
+            "iua": "CH-08",
         },
         {
             "id": "V1-04",
@@ -151,7 +151,7 @@ def _v1_requirements() -> list[dict[str, Any]]:
             "v1": "Geometric clashes and MEP intersections; accuracy >90%",
             "engine": "generic IfcClash; MEP-CLASH-001; >90% not published",
             "status": "partial_protocol",
-            "iua": "SAM-05",
+            "iua": "CH-05",
         },
         {
             "id": "V1-05",
@@ -167,7 +167,7 @@ def _v1_requirements() -> list[dict[str, Any]]:
             "v1": "Incorrect areas; inefficient space use",
             "engine": "QTO Missing is not TEP Does-not; advisory inventory",
             "status": "partial",
-            "iua": "SAM-08",
+            "iua": "CH-08",
         },
         {
             "id": "V1-07",
@@ -175,7 +175,7 @@ def _v1_requirements() -> list[dict[str, Any]]:
             "v1": "Highlight on drawing; generate/edit remarks; web UI",
             "engine": "overlay + templates RU/EN + HITL editor",
             "status": "done_fixture",
-            "iua": "SAM-03",
+            "iua": "CH-03",
         },
         {
             "id": "V1-08",
@@ -183,7 +183,7 @@ def _v1_requirements() -> list[dict[str, Any]]:
             "v1": "Upload Office, PDF, DWG, BIM",
             "engine": "PDF/Office exchange; native DWG NOT_IMPLEMENTED",
             "status": "partial",
-            "iua": "SAM-04",
+            "iua": "CH-04",
         },
         {
             "id": "V1-09",
@@ -199,7 +199,7 @@ def _v1_requirements() -> list[dict[str, Any]]:
             "v1": "Up to 30 minutes per document package",
             "engine": "fixture SLA rail; customer SLA not claimed",
             "status": "protocol_ready",
-            "iua": "SAM-06",
+            "iua": "CH-06",
         },
         {
             "id": "V1-11",
@@ -215,7 +215,7 @@ def _v1_requirements() -> list[dict[str, Any]]:
             "v1": "Section mismatch; missing elements; dimension discrepancies",
             "engine": "completeness + pairing + IDS exists; customer pack blocked",
             "status": "partial",
-            "iua": "SAM-08",
+            "iua": "CH-08",
         },
         {
             "id": "V1-13",
@@ -223,7 +223,7 @@ def _v1_requirements() -> list[dict[str, Any]]:
             "v1": "Remark generation quality (RU/EN) as an evaluation target",
             "engine": "templates RU/EN + HITL; quality % not published",
             "status": "protocol_ready",
-            "iua": "SAM-03",
+            "iua": "CH-03",
         },
         {
             "id": "V1-14",
@@ -239,7 +239,7 @@ def _v1_requirements() -> list[dict[str, Any]]:
             "v1": "UI convenience; reduce cognitive load",
             "engine": "fixture web UI; cognitive-load metric not measured",
             "status": "partial",
-            "iua": "SAM-01",
+            "iua": "CH-01",
         },
         {
             "id": "V1-16",

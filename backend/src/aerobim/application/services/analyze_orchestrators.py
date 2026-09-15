@@ -757,8 +757,8 @@ class EvidenceAssembler:
     ) -> ValidationReport:
         intake_issues: list[ValidationIssue] = []
         intake_blocked = False
-        # Phase B: only samolet_pilot requires full customer intake (not fixture/dev CI).
-        if self._host._signoff_profile == "samolet_pilot":
+        # Phase B: only customer_pilot requires full customer intake (not fixture/dev CI).
+        if self._host._signoff_profile == "customer_pilot":
             gate_path = self._host._customer_intake_gate_path or CustomerIntakeGate.default_path()
             intake = CustomerIntakeGate.evaluate(gate_path)
             if not intake.ok:

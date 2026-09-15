@@ -1,4 +1,4 @@
-"""Public MIT tree stays copyleft-free; Samolet-local demo may read gitignored GPLv3 IFC."""
+"""Public MIT tree stays copyleft-free; customer-local demo may read gitignored GPLv3 IFC."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from unittest.mock import patch
 
 from aerobim.domain.copyleft_lane import (
     GPLV3_IFC_BENCH_PROJECTS,
-    local_samolet_demo_copyleft_inputs_permitted,
+    local_demo_copyleft_inputs_permitted,
 )
 from aerobim.tools.fetch_ifc_bench_v2 import copy_local
 from aerobim.tools.fetch_ifc_bench_v2 import main as fetch_main
@@ -21,9 +21,9 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 class CopyleftLanePolicyTests(unittest.TestCase):
     def test_default_and_ci_refuse_copyleft_inputs(self) -> None:
-        self.assertFalse(local_samolet_demo_copyleft_inputs_permitted(opted_in=False, ci=False))
-        self.assertFalse(local_samolet_demo_copyleft_inputs_permitted(opted_in=True, ci=True))
-        self.assertTrue(local_samolet_demo_copyleft_inputs_permitted(opted_in=True, ci=False))
+        self.assertFalse(local_demo_copyleft_inputs_permitted(opted_in=False, ci=False))
+        self.assertFalse(local_demo_copyleft_inputs_permitted(opted_in=True, ci=True))
+        self.assertTrue(local_demo_copyleft_inputs_permitted(opted_in=True, ci=False))
 
     def test_gplv3_project_dirs_are_not_under_samples(self) -> None:
         samples = REPO_ROOT / "samples"
@@ -37,7 +37,7 @@ class CopyleftLanePolicyTests(unittest.TestCase):
     def test_ci_workflow_does_not_opt_into_copyleft_lane(self) -> None:
         ci = (REPO_ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
         self.assertNotIn("--include-gplv3", ci)
-        self.assertNotIn("--samolet-demo-copyleft", ci)
+        self.assertNotIn("--demo-copyleft", ci)
 
 
 class FetchCopyleftLaneTests(unittest.TestCase):
@@ -56,13 +56,13 @@ class FetchCopyleftLaneTests(unittest.TestCase):
         self.assertNotIn("projects/hitos/arc.ifc", skipped_paths)
         self.assertIn("projects/hitos/arc.ifc", included_paths)
 
-    def test_fetch_refuses_gpl_without_samolet_lane(self) -> None:
+    def test_fetch_refuses_gpl_without_customer_lane(self) -> None:
         self.assertEqual(fetch_main(["--include-gplv3"]), 2)
 
     def test_fetch_refuses_gpl_on_ci_even_with_lane(self) -> None:
         with patch.dict(os.environ, {"GITHUB_ACTIONS": "true", "CI": "true"}):
             self.assertEqual(
-                fetch_main(["--include-gplv3", "--samolet-demo-copyleft"]),
+                fetch_main(["--include-gplv3", "--demo-copyleft"]),
                 2,
             )
 

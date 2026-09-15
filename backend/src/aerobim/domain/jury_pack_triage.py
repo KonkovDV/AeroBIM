@@ -50,7 +50,7 @@ JURY_FINGERPRINT_TOKENS: Final[tuple[str, ...]] = (
     "46 xlsx",
     "SIGINEVICH",
     "TRACKER_DMITRY",
-    "CHANNEL_SAMOLET_MAX_PASS",
+    "CHANNEL_CUSTOMER_MAX_PASS",
     "Team Space",
     "GigaChat",
     "SPG_CONSTRUCTION_VS_FM",
@@ -108,14 +108,14 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
     {
         "id": "RT-JURY-CHANNEL-BRAND",
         "verdict": "KILL",
-        "attack": "Keep CHANNEL_SAMOLET_MAX_PASS in a public path",
+        "attack": "Keep CHANNEL_CUSTOMER_MAX_PASS in a public path",
         "brake": "Renamed CHANNEL_LOCAL_MAX_PASS; not a jury exhibit",
     },
     {
         "id": "RT-JURY-OSINT-GIT",
         "verdict": "KILL",
-        "attack": "Track the Samolet OSINT vector or other session kitchen",
-        "brake": "docs/gtm/SAMOLET_OSINT_VECTOR* gitignored; honesty lock unpublished list",
+        "attack": "Track the appointing party OSINT vector or other session kitchen",
+        "brake": "docs/gtm/CUSTOMER_OSINT_VECTOR* gitignored; honesty lock unpublished list",
     },
     {
         "id": "RT-JURY-LOCAL-PIN",
@@ -181,7 +181,7 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "id": "RT-JURY-OSINT-IGNORED",
         "verdict": "ACCEPT",
         "attack": "Session OSINT vector is a tracked GitHub file",
-        "brake": "SAMOLET_OSINT_VECTOR stays gitignored; unpublished-list honesty lock",
+        "brake": "CUSTOMER_OSINT_VECTOR stays gitignored; unpublished-list honesty lock",
     },
     {
         "id": "RT-JURY-NOT-EXHIBIT",

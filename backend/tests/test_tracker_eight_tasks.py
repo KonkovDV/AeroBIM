@@ -35,7 +35,7 @@ class TrackerEightTasksTests(unittest.TestCase):
         self.assertEqual(snap["channel_max_pass"], "channel_local_max_pass_snapshot")
         self.assertEqual(snap["pack_family_facts"], "pack_family_snapshot")
         self.assertFalse(snap["customer_pack_in_git"])
-        self.assertEqual(snap["samolet_appendix4_task"], 6)
+        self.assertEqual(snap["customer_appendix4_task"], 6)
         self.assertEqual(snap["commission_order_number"], 7)
         self.assertEqual(snap["space_efficiency_kt3"], "advisory_unsigned")
         self.assertFalse(snap["space_efficiency_delivered"])
@@ -51,7 +51,7 @@ class TrackerEightTasksTests(unittest.TestCase):
             Path(__file__).resolve().parents[2]
             / "samples"
             / "benchmarks"
-            / "samolet-typical-errors-catalog.json"
+            / "typical-errors-catalog.json"
         )
         catalog = json.loads(path.read_text(encoding="utf-8"))
         self.assertGreaterEqual(len(catalog["patterns"]), 20)

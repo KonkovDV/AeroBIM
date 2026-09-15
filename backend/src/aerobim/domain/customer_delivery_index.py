@@ -1,7 +1,7 @@
 """Git-safe index of the 14.09 customer delivery: three packs + trial access.
 
 Reports themselves stay in ``.local/``. GitHub is not a delivery channel.
-No Samolet direct contact: organizers only. Deadline 14.09 is final.
+No customer direct contact: organizers only. Deadline 14.09 is final.
 Demo-seed is not a customer report. Checkpoint GO; customer_go false.
 """
 
@@ -14,7 +14,7 @@ from aerobim.domain.checkpoint import CHECKPOINT, CUSTOMER_GO, PRECISION_PUBLISH
 
 CLAIM_BOUNDARY: Final = (
     "Index of three channel packs and a trial-access mode. "
-    "Sole customer channel is organizers. No Samolet direct contact. "
+    "Sole customer channel is organizers. No customer direct contact. "
     "Customer deadline 14.09 is final; a later call is not delivery. "
     "Not product accuracy. Not pack processed. Not a GitHub-hosted NDA tree. "
     "Demo-seed is not a customer report. Checkpoint GO; customer_go false."
@@ -97,7 +97,7 @@ def empty_delivery_index() -> dict[str, Any]:
         "is_accuracy": False,
         "git_hosts_reports": False,
         "seed_fixture_on_trial": False,
-        "samolet_direct_contact": False,
+        "customer_direct_contact": False,
         "delivery_channel": DELIVERY_CHANNEL,
         "customer_deadline_is_final": True,
         "post_deadline_slot_is_not_delivery": True,
@@ -191,8 +191,8 @@ def validate_delivery_index(data: Mapping[str, Any]) -> dict[str, Any]:
     if len(packs) != 3:
         raise DeliveryIndexError("each pack row must be an object")
     trial = _normalize_trial(data.get("trial"))
-    if data.get("samolet_direct_contact"):
-        raise DeliveryIndexError("no Samolet direct contact; organizers are the sole channel")
+    if data.get("customer_direct_contact"):
+        raise DeliveryIndexError("no customer direct contact; organizers are the sole channel")
     channel = str(data.get("delivery_channel") or DELIVERY_CHANNEL).strip()
     if channel != DELIVERY_CHANNEL:
         raise DeliveryIndexError("delivery_channel must be organizers_only")
@@ -208,7 +208,7 @@ def validate_delivery_index(data: Mapping[str, Any]) -> dict[str, Any]:
         "is_accuracy": False,
         "git_hosts_reports": False,
         "seed_fixture_on_trial": False,
-        "samolet_direct_contact": False,
+        "customer_direct_contact": False,
         "delivery_channel": DELIVERY_CHANNEL,
         "customer_deadline_is_final": True,
         "post_deadline_slot_is_not_delivery": True,

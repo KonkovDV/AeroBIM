@@ -265,7 +265,7 @@ function classifyFindingLayerFallback(issue: ValidationIssue): FindingLayer {
     message.includes("No elements found for entity") ||
     message.includes("was not found on any") ||
     message.includes("is missing on") ||
-    issue.rule_id.startsWith("SAM-AR-") && issue.rule_id !== "SAM-AR-020"
+    issue.rule_id.startsWith("TYP-AR-") && issue.rule_id !== "TYP-AR-020"
   ) {
     return "coverage_note";
   }

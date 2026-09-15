@@ -1,6 +1,6 @@
 <!-- claims-lint: allow-file reason="Unsigned SP 63 IDS draft for signoff; not RT-002b; not a solver; NO_GO" -->
 ---
-title: "Черновик samolet.ids по СП 63 — на согласование"
+title: "Черновик customer.ids по СП 63 — на согласование"
 date: "2026-09-04"
 last_updated: "2026-09-04"
 status: draft_for_signoff
@@ -9,7 +9,7 @@ closes_rt001: false
 closes_rt002: false
 closes_rt003: false
 claim_boundary: >
-  Unsigned draft. approval is null. Not Samolet-signed profile (RT-002c OPEN).
+  Unsigned draft. approval is null. Not appointing-party-signed profile (RT-002c OPEN).
   Not a structural solver. Not SP 63 table by exposure class. Checkpoint GO; customer_go false.
 ---
 
@@ -45,7 +45,7 @@ claim_boundary: >
      xsi:schemaLocation="http://standards.buildingsmart.org/IDS http://standards.buildingsmart.org/IDS/1.0/ids.xsd">
   <info>
     <title>AeroBIM SP 63 cover draft — UNSIGNED</title>
-    <description>Draft for Samolet signoff. Not RT-002b. Not a solver. Template 20 mm IfcSlab cover.</description>
+    <description>Draft for the appointing party signoff. Not RT-002b. Not a solver. Template 20 mm IfcSlab cover.</description>
   </info>
   <specifications>
     <specification name="SP63-COVER-SLAB-DRAFT" ifcVersion="IFC2X3 IFC4 IFC4X3_ADD2">

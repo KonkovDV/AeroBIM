@@ -16,7 +16,7 @@ from aerobim.domain.run_passport import SPF_CAP_BYTES
 
 CLAIM_BOUNDARY: Final = (
     "Operator assemble of one analyze request from files already received. "
-    "No further Samolet answers. Unsigned IFC2X3 presence IDS is not their "
+    "No further the appointing party answers. Unsigned IFC2X3 presence IDS is not their "
     "profile. Fixture REI60 is forbidden. Not product accuracy. "
     "Checkpoint GO; customer_go false."
 )
@@ -243,7 +243,7 @@ def build_package_inventory(*, slot: str, discovered: dict[str, list[Path]]) -> 
         "claim_boundary": CLAIM_BOUNDARY,
         "checkpoint": CHECKPOINT,
         "customer_go": CUSTOMER_GO,
-        "waiting_for_samolet": False,
+        "waiting_for_customer": False,
         "ids_in_pack": False,
         "rd_ifc_present": False,
     }
@@ -276,7 +276,7 @@ def assemble_slot_inputs(
         "inventory": build_package_inventory(slot=slot, discovered=discovered),
         "ifc_over_spf_cap": over_cap,
         "native_rejected": sorted({path.suffix.lower() for path in discovered.get("native") or []}),
-        "waiting_for_samolet": False,
+        "waiting_for_customer": False,
         "claim_boundary": CLAIM_BOUNDARY,
         "checkpoint": CHECKPOINT,
         "customer_go": CUSTOMER_GO,

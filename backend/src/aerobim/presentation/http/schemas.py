@@ -265,9 +265,11 @@ class SystemCapabilitiesResponse(BaseModel):
     mep_intake: dict[str, object]
     auth_bff: AuthBffStatus
     customer_intake_gate: CustomerIntakeGateSnapshot
-    samolet_mvp_answers: dict[str, object] = Field(
+    customer_channel_answers: dict[str, object] = Field(
+        title="Customer channel answers",
         description=(
-            "Samolet questionnaire answers (2026-08-25). Share received is not a hashed pack. "
+            "appointing-party questionnaire answers (2026-08-25). "
+            "Share received is not a hashed pack. "
             "closes_rt001/002/003 stay false. No NDA locator on this surface."
         ),
     )

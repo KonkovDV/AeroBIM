@@ -1,4 +1,4 @@
-"""Tests for Samolet typical-error mapping tool."""
+"""Tests for the appointing party typical-error mapping tool."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ class MapTypicalErrorsTests(unittest.TestCase):
             default_catalog_path(),
             repo_root / "samples" / "requirements",
         )
-        self.assertEqual(payload["artifact_type"], "samolet_typical_errors_mapping")
+        self.assertEqual(payload["artifact_type"], "customer_typical_errors_mapping")
         self.assertEqual(payload["patterns_total"], 26)
         self.assertGreaterEqual(payload["patterns_with_rule_match"], 8)
         self.assertEqual(payload["patterns_with_explicit_gap"], 7)
@@ -26,19 +26,19 @@ class MapTypicalErrorsTests(unittest.TestCase):
         self.assertEqual(payload["acceptance_checklists_detected"], 2)
         self.assertEqual(payload["acceptance_checklists_ingested"], 0)
         rows = payload["rows"]
-        fire_row = next(r for r in rows if r["error_id"] == "SAM-TYP-001")
+        fire_row = next(r for r in rows if r["error_id"] == "TYP-ERR-001")
         self.assertEqual(fire_row["status"], "covered")
         self.assertEqual(fire_row["techlab_tasks"], [4, 5])
         self.assertTrue(payload["techlab_task_map_present"])
         self.assertTrue(fire_row["matched_rule_ids"])
-        mep_gap = next(r for r in rows if r["error_id"] == "SAM-TYP-020")
+        mep_gap = next(r for r in rows if r["error_id"] == "TYP-ERR-020")
         self.assertEqual(mep_gap["status"], "gap")
         self.assertEqual(mep_gap["roadmap_ref"], "MEP-CLASH-001")
-        lira_gap = next(r for r in rows if r["error_id"] == "SAM-TYP-021")
+        lira_gap = next(r for r in rows if r["error_id"] == "TYP-ERR-021")
         self.assertEqual(lira_gap["status"], "gap")
-        space_gap = next(r for r in rows if r["error_id"] == "SAM-TYP-023")
+        space_gap = next(r for r in rows if r["error_id"] == "TYP-ERR-023")
         self.assertEqual(space_gap["status"], "gap")
-        deflection_gap = next(r for r in rows if r["error_id"] == "SAM-TYP-025")
+        deflection_gap = next(r for r in rows if r["error_id"] == "TYP-ERR-025")
         self.assertEqual(deflection_gap["status"], "gap")
 
     def test_cli_writes_json(self) -> None:

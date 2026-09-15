@@ -1,7 +1,7 @@
 """moscow_agr_2026: clash/MEP out of AGR CIM scope, not faked; LLM still closed.
 
-Does not close RT-003. Does not close RT-002b (Samolet corporate).
-Does not weaken samolet_pilot / production.
+Does not close RT-003. Does not close RT-002b (the appointing party corporate).
+Does not weaken customer_pilot / production.
 """
 
 from __future__ import annotations
@@ -28,7 +28,7 @@ class MoscowAgr2026ProfileTests(unittest.TestCase):
         self.assertEqual(normalize_signoff_profile("agr_2026"), "moscow_agr_2026")
         self.assertIn("moscow_agr_2026", HONEST_SCOPE_PROFILES)
         self.assertFalse(is_customer_hard_profile("moscow_agr_2026"))
-        self.assertTrue(is_customer_hard_profile("samolet_pilot"))
+        self.assertTrue(is_customer_hard_profile("customer_pilot"))
         self.assertTrue(is_closed_egress_profile("moscow_agr_2026"))
 
     def test_agr_does_not_require_clash_or_mep(self) -> None:

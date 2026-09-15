@@ -1,4 +1,4 @@
-"""Tests for reviewer priority profiles (Samolet TechLab)."""
+"""Tests for reviewer priority profiles (TechLab)."""
 
 from __future__ import annotations
 
@@ -34,7 +34,7 @@ class ReviewPriorityTests(unittest.TestCase):
         )
         self.assertEqual(compute_issue_priority(issue, profile="default"), 55)
 
-    def test_samolet_boosts_fire_rule(self) -> None:
+    def test_pilot_boosts_fire_rule(self) -> None:
         issue = ValidationIssue(
             rule_id="REQ-FIRE-001",
             severity=Severity.ERROR,
@@ -42,11 +42,11 @@ class ReviewPriorityTests(unittest.TestCase):
             category=FindingCategory.IFC_VALIDATION,
         )
         default_score = compute_issue_priority(issue, profile="default")
-        samolet_score = compute_issue_priority(issue, profile="samolet")
+        pilot_score = compute_issue_priority(issue, profile="pilot")
         self.assertEqual(default_score, 30)
-        self.assertEqual(samolet_score, 35)
+        self.assertEqual(pilot_score, 35)
 
-    def test_samolet_boosts_cross_document(self) -> None:
+    def test_pilot_boosts_cross_document(self) -> None:
         issue = ValidationIssue(
             rule_id="XDOC-002",
             severity=Severity.WARNING,
@@ -54,8 +54,8 @@ class ReviewPriorityTests(unittest.TestCase):
             category=FindingCategory.CROSS_DOCUMENT,
         )
         default_score = compute_issue_priority(issue, profile="default")
-        samolet_score = compute_issue_priority(issue, profile="samolet")
-        self.assertGreater(samolet_score, default_score)
+        pilot_score = compute_issue_priority(issue, profile="pilot")
+        self.assertGreater(pilot_score, default_score)
 
 
 if __name__ == "__main__":

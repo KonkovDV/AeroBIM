@@ -3,31 +3,31 @@
 > **Нумерация раздачи, не Положение.** Историческое «07» в имени файла может не совпадать с приложением 4 Положения. До ответа оператора МИК в публичных формулировках номер не используем.
 
 ---
-title: "TechLab Samolet Samolet PD/RD verification task Readiness 2026"
+title: "TechLab PD/RD verification task Readiness 2026"
 status: active
 version: "1.3.5"
 last_updated: "2026-09-05"
-tags: [aerobim, techlab, samolet, task-07, readiness]
+tags: [aerobim, techlab, customer, task-07, readiness]
 ---
 
-# Samolet PD/RD verification task readiness — automated verification of PD/RD
+# PD/RD verification task readiness — automated verification of PD/RD
 
-**Official task:** Система автоматизированной верификации проектной и рабочей документации — **задаче Самолёта по верификации ПД/РД**  
+**Official task:** Система автоматизированной верификации проектной и рабочей документации — **задаче заказчика канала по верификации ПД/РД**  
 **Sponsor quote (Artsrun Gevorkyan):** automatic checking is not about replacing the engineer — it is about ensuring no obvious error reaches the construction site. Sponsor quote ≠ attested commission chair.  
 **Prize:** paid pilot testing **2 000 000 ₽** (Partner↔Fund agreement; not a 449-PP entry grant)  
-**Task page:** https://i.moscow/techlab/samolet  
+**Task page:** https://i.moscow/techlab  
 **Eligibility (official FAQ, 26.08.2026):** individuals or a team of **1–10**, age 18+. **ИП/ООО is not an entry requirement.** Captain files the application on i.moscow.  
 **Checkpoint:** **`GO`** (`regulatory_measurement_mvp`). `customer_go` **false** until residual RT-001b/c, RT-002c, RT-003c, federated IFC, and CDE T2 ([`../../audit/reports/CRITICAL_BLOCKERS.md`](../../audit/reports/CRITICAL_BLOCKERS.md)). Undifferentiated `closes_rt001/002/003` stay false.  
 **26.08.2026 owner-disk rehearsal:** IFC analyze with **fixture** IDS/rules does not change the table below. Not a customer defect list. `detected_count` stays 0. Intake remains `BLOCKED_NO_CUSTOMER_DATA`. Seam coverage map (spaces without QTO area; FireRating sparse / EI 45 ≠ design-TZ II/C0): [`../quality/TZ_SEAM_COVERAGE_MAP_2026_08.md`](../quality/TZ_SEAM_COVERAGE_MAP_2026_08.md).  
 **МИК stage:** **доработка** (КТ#3 открывается 03.09). Валидация эффективности и внедрение **не начаты**. Показ: [`../demo/KT3_JURY_FAQ_2026_08_25.md`](../demo/KT3_JURY_FAQ_2026_08_25.md).  
 **Eng status (Aug 2026):** IUA ledger [`../quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../quality/INTERPRETATION_USE_LEDGER_2026_08.md). Seven-task map [`../quality/TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md`](../quality/TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md). TZ v1 brief pin [`../tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md`](../tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md). KT#3 one-command [`../demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md`](../demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md). Tracker six tasks [`../demo/KT3_TRACKER_SIX_TASKS_2026_08.md`](../demo/KT3_TRACKER_SIX_TASKS_2026_08.md).  
-**Traceability:** [`../samolet-techlab-alignment-2026.md`](../samolet-techlab-alignment-2026.md) · [`../tz/README.md`](../tz/README.md) · [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md) · [`../../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../../audit/reports/CLAIMS_LOCK_2026_07_17.md)
+**Traceability:** [`../techlab-alignment-2026.md`](../techlab-alignment-2026.md) · [`../tz/README.md`](../tz/README.md) · [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md) · [`../../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../../audit/reports/CLAIMS_LOCK_2026_07_17.md)
 
 Status vocabulary: `VERIFIED_FIXTURE_ONLY` | `PARTIAL` | `FOUNDATION` | `BLOCKED_BY_CUSTOMER_DATA` | `MISSING` | `NOT_VERIFIED`.
 
 ## 1. Official mandate → AeroBIM
 
-| Samolet PD/RD verification task requirement | AeroBIM today | Status |
+| the appointing party PD/RD verification task requirement | AeroBIM today | Status |
 |---------------------|---------------|--------|
 | Work with **2D drawings** | Structured annotations + PDF/OCR baseline + 2D overlay | PARTIAL (CV deferred; OCR optional-extra) |
 | Work with **BIM models** | IFC + IDS + schema pre-gate + optional clash | VERIFIED_FIXTURE_ONLY |
@@ -37,7 +37,7 @@ Status vocabulary: `VERIFIED_FIXTURE_ONLY` | `PARTIAL` | `FOUNDATION` | `BLOCKED
 | Calc / dimension / area errors | Quantity algebra + cross-doc | VERIFIED_FIXTURE_ONLY (bounded) |
 | Logic gaps / missing elements | IDS `exists` + property checks + package completeness (soft opt-in) | VERIFIED_FIXTURE_ONLY |
 | Highlight problem zones | `problem_zone` + drawing overlay | VERIFIED_FIXTURE_ONLY |
-| Prioritize remarks | `compute_issue_priority` + Samolet profile | VERIFIED_FIXTURE_ONLY |
+| Prioritize remarks | `compute_issue_priority` + the appointing party profile | VERIFIED_FIXTURE_ONLY |
 | Generate designer comments | RU/EN templates + HITL edit | VERIFIED_FIXTURE_ONLY |
 | Speed up review | SLA rail ≤30 min on agreed pack | FIXTURE_ONLY measured; customer pack BLOCKED |
 | Expert remains in the loop | Claim boundary + review-events / adjudication + quality protocol (WP-07) | VERIFIED_FIXTURE_ONLY |
@@ -65,10 +65,10 @@ AeroBIM is **decision-support**, not a licensed-engineer replacement. Sign-off p
 - **P0 eng package WP-01…08** — runtime baseline, HybridRouteGate advisory pre-gate, signature envelope, norm pack v2, package completeness, open-corpora (honest n=7), quality protocol (interim 0.60), README/baseline sync  
 - Backend pytest suite (see [runtime baseline](../evidence/runtime-baseline-latest.json); optional extras may skip)
 
-### Needs Samolet pilot corpus (cannot fake in git)
+### Needs the appointing party pilot corpus (cannot fake in git)
 
 Detailed ask (world + RU practice, July 2026):  
-[`SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md`](SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md)
+[`CUSTOMER_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md`](CUSTOMER_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md)
 
 1. Customer PD/RD/BIM pack (week-1 intake)  
 2. Customer-approved residential norms / IDS pack (synthetic AR template is not sign-off)  
@@ -93,30 +93,30 @@ Detailed ask (world + RU practice, July 2026):
 Red Team / Claims Lock: без «>90%», без «DWG готов», без «MEP delivered», без «AI читает чертежи как инженер», без «BCF готов к CDE».
 
 ```
-Уникальность. AeroBIM — openBIM-native ассистент приёмки ПД/РД: не «ещё один LLM поверх PDF», а гибрид, совпадающий с консенсусом AECO 2026 (Solibri-класс детерминизма + AI только как advisory). Источник правды для вердикта — детерминированные контуры IFC/IDS/cross-document/clash/количеств; LLM/VLM/агент не выставляют summary.passed сами. При расхождении AI↔движок побеждает движок, расхождение уходит эксперту (DeterminismGate). Это прямо отвечает тезису Самолёта: автоматизация не заменяет инженера, а не даёт очевидной ошибке дойти до стройки.
+Уникальность. AeroBIM — openBIM-native ассистент приёмки ПД/РД: не «ещё один LLM поверх PDF», а гибрид, совпадающий с консенсусом AECO 2026 (Solibri-класс детерминизма + AI только как advisory). Источник правды для вердикта — детерминированные контуры IFC/IDS/cross-document/clash/количеств; LLM/VLM/агент не выставляют summary.passed сами. При расхождении AI↔движок побеждает движок, расхождение уходит эксперту (DeterminismGate). Это прямо отвечает тезису заказчика канала: автоматизация не заменяет инженера, а не даёт очевидной ошибке дойти до стройки.
 
 Архитектура результата. Четыре контура: INGESTION → DETERMINISTIC_VALIDATION → AI_ADVISORY → EVIDENCE_REPORTING. Clean Architecture (domain/application/infrastructure), Protocol-порты, DI. Analyze оркестрирует контуры; capability-честность (ok/skipped/failed/not_verified): FAILED блокирует pass. Fail-closed: clash/OCR/нормо-пак при ошибке конфигурации, auth вне development, смешанный DWG+DXF не маскируется успехом DXF.
 
 Что уже работает (демо / fixture). Мультимодальный analyze (IFC + IDS + ТЗ/расчёты + чертежи); браузерный review (3D web-ifc + 2D overlay проблемных зон + приоритеты + HITL-правка замечаний RU/EN); multipart upload; BCF 2.1/3.0 ZIP export (структурно доказан); OpenCDE push foundation; каталог типовых ошибок ≥20; PD↔RD pairing scaffold; нормо-паки JSON; precision-харнесс + протокол adjudication (κ/α) под клиентский корпус. Стек: Python 3.12, FastAPI, React, IfcOpenShell, IfcTester, optional IfcClash, PyMuPDF/RapidOCR.
 
-Чем отличаемся от «AI-хайпа». Не обещаем product CV/YOLO и GraphRAG «из коробки»: OCR-базлайн и advisory-скаффолды (регионы/приоры, I9 KG) — с HITL. «Точность >90%» из ТЗ трактуем как evaluation target: публикуем только после размеченного корпуса Самолёта + ≥2 экспертов. Generic clash есть; system-aware MEP — честный gap до федеративного комплекта. BCF export ≠ доказанный импорт в CDE.
+Чем отличаемся от «AI-хайпа». Не обещаем product CV/YOLO и GraphRAG «из коробки»: OCR-базлайн и advisory-скаффолды (регионы/приоры, I9 KG) — с HITL. «Точность >90%» из ТЗ трактуем как evaluation target: публикуем только после размеченного корпуса заказчика + ≥2 экспертов. Generic clash есть; system-aware MEP — честный gap до федеративного комплекта. BCF export ≠ доказанный импорт в CDE.
 
-Планируемый результат пилота TechLab (2 млн ₽). На согласованном комплекте Самолёта: SLA ≤30 мин; interim TP/(TP+FP) ≥60% с журналом adjudication; экономия времени ревью ≥20% vs baseline; BCF виден в CDE заказчика; эксперт остаётся accountable. Нужны: пакет ПД/РД/IFC+IDS, подписанный нормо-пак, 2 инженера-разметчика, scope memo, канал NDA.
+Планируемый результат пилота TechLab (2 млн ₽). На согласованном комплекте заказчика: SLA ≤30 мин; interim TP/(TP+FP) ≥60% с журналом adjudication; экономия времени ревью ≥20% vs baseline; BCF виден в CDE заказчика; эксперт остаётся accountable. Нужны: пакет ПД/РД/IFC+IDS, подписанный нормо-пак, 2 инженера-разметчика, scope memo, канал NDA.
 
 Мировые практики (июль 2026), которые мы сознательно повторяем: гибрид rule-based≻LLM (обзоры BRI / AiC); IDS 1.0 как machine-checkable якорь; HITL; узкий detector+VLM только advisory (AECV-Bench: counting unsolved). Код: github.com/KonkovDV/AeroBIM · граница заявлений: docs/pilot-claim-boundary-2026.md · Claims Lock.
 ```
 
 Символов ориентир: ~2,5–3 тыс. (умещается в типичные формы). Полный pitch/ask — ниже и в readiness memo.
 
-### Pilot env profile (Samolet Samolet PD/RD verification task)
+### Pilot env profile (PD/RD verification task)
 
 **Development / fixture** profiles keep soft gates so local installs without `.[clash]` stay usable.  
 **Customer / production** packages must run fail-closed: unset `AEROBIM_SIGNOFF_PROFILE` under `AEROBIM_ENV=production` defaults to `production` sign-off (RT-POST-01), which forces clash / bSI schema / MEP requirements. Explicit pilot profile:
 
 ```bash
 export AEROBIM_ENV=production
-export AEROBIM_SIGNOFF_PROFILE=samolet_pilot   # or omit under AEROBIM_ENV=production
-export AEROBIM_PRIORITY_PROFILE=samolet
+export AEROBIM_SIGNOFF_PROFILE=customer_pilot   # or omit under AEROBIM_ENV=production
+export AEROBIM_PRIORITY_PROFILE=customer
 export AEROBIM_CROSS_DOC_SEVERITY=error
 pip install -e '.[clash]'
 ```
@@ -126,9 +126,9 @@ Still blocked: RT-001/002/003 (customer corpus / approved norms / MEP).
 
 ## 5. Ask
 
-Primary handoff document: [`SAMOLET_WHAT_WE_NEED_2026_07-ru.md`](SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md).
+Primary handoff document: [`CUSTOMER_WHAT_WE_NEED_2026_07-ru.md`](CUSTOMER_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md).
 
-1. Named Samolet owner for the **paid-pilot** prize (2 000 000 ₽). Payment mechanics live in a Partner↔Fund agreement — **not** «open an ИП to enter TechLab».  
+1. Named the appointing party owner for the **paid-pilot** prize (2 000 000 ₽). Payment mechanics live in a Partner↔Fund agreement — **not** «open an ИП to enter TechLab».  
 2. One residential (or agreed) document package + IDS/rule pack + typical-error list (≥20)  
 3. Week-1 CDE import path + **two** adjudicating engineers + manual baseline hours  
 4. Written scope memo: norms = **agreed rule sets**; IDS ≠ geometry; CV not MVP sign-off  
@@ -144,7 +144,7 @@ Primary handoff document: [`SAMOLET_WHAT_WE_NEED_2026_07-ru.md`](SAMOLET_ACCEPTA
 
 ## 7. Do not claim on application form
 
-- Production rollout at Samolet  
+- Production rollout at the appointing party  
 - Full SP/GOST automation  
 - Autonomous sign-off  
 - Clash/inconsistency accuracy **>90%** without labeled adjudication  

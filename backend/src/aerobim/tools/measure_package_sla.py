@@ -1,4 +1,4 @@
-"""Measure project-package analysis SLA against Samolet TechLab target (≤ 30 min)."""
+"""Measure project-package analysis SLA against TechLab target (≤ 30 min)."""
 
 from __future__ import annotations
 
@@ -316,10 +316,10 @@ def measure_package_sla(
     )
 
     return {
-        "artifact_type": "samolet_package_sla",
+        "artifact_type": "customer_package_sla",
         "schema_version": "1.4.0",
         "generated_at": datetime.now(tz=UTC).isoformat(),
-        "customer_reference": "https://i.moscow/techlab/samolet",
+        "customer_reference": "https://i.moscow/techlab",
         "sla_target_minutes": max_minutes,
         "sla_pass": sla_pass,
         "sla_gate_metric": "p95_minutes_observed",
@@ -365,7 +365,7 @@ def measure_package_sla(
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Measure analyze/project-package wall time vs Samolet ≤30 min SLA"
+        description="Measure analyze/project-package wall time vs the appointing party ≤30 min SLA"
     )
     parser.add_argument(
         "--pack",
@@ -377,7 +377,7 @@ def main() -> None:
         "--max-minutes",
         type=float,
         default=30.0,
-        help="SLA ceiling in minutes (Samolet task page default: 30)",
+        help="SLA ceiling in minutes (TechLab task page default: 30)",
     )
     parser.add_argument("--iterations", type=int, default=1)
     parser.add_argument("--warmup-iterations", type=int, default=0)

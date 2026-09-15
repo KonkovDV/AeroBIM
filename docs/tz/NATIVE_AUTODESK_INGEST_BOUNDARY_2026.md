@@ -34,7 +34,7 @@ Carriers of closed Autodesk formats exist on the local unpack tree. Presence is 
 
 **Ingest route we ask the customer to use.**
 
-1. Authoring tool (including Renga, which Samolet has shown publicly on the Pushkino IZHS case) exports **IFC 2x3 / IFC4 / IFC4x3**.
+1. Authoring tool (including Renga, which the appointing party has shown publicly on the Pushkino IZHS case) exports **IFC 2x3 / IFC4 / IFC4x3**.
 2. Sheets and letters go as **PDF/A** (ПП 614 and MinStroy order 783/пр are built on PDF/A + IFC for the machine-checkable contour, not on native Revit).
 3. Optional DXF sidecar for CAD annotation extract; DWG ingest stays `NOT_IMPLEMENTED` (`validate_dwg_toolchain`).
 

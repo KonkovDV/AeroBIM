@@ -409,7 +409,7 @@ class KimiConfigGateTests(unittest.TestCase):
         self.assertTrue(ready)
 
     def test_customer_profile_hard_disables_public_api(self) -> None:
-        for profile in ("samolet_pilot", "production"):
+        for profile in ("customer_pilot", "production"):
             ready = _settings(
                 vlm_enabled=True,
                 vlm_api_base_url="https://kimi.example.com/v1",

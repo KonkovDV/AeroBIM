@@ -1,6 +1,6 @@
 :root {
   color-scheme: light;
-  /* Яркий контур Самолёта: оранж + чернила. Не брендбук заказчика в git. */
+  /* AeroBIM accent: orange + ink. Customer brandbook is not in git. */
   --bg: #fff4e8;
   --bg-strong: #ffd9b0;
   --panel: #ffffff;

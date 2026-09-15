@@ -15,8 +15,8 @@ Only **citeable** snapshots for TechLab review and reproducibility. Working dump
 | [`aecv-bench-eval-latest.json`](aecv-bench-eval-latest.json) | L1 AECV: publish **`macro_extended=0.4325`** (5 fields = Table 1 metric) + `macro_bench_protocol=0.5064` reference-only; scorer validation vs Table 1 max\|Δ\|≈0.02; B.5 gates; `open_bench_only` |
 | [`aec-bench-smoke-latest.json`](aec-bench-smoke-latest.json) | L1 AEC-Bench: 196-task inventory + 196 `gt.json`; Harbor agent NOT_RUN; ≠ RT-001 |
 | [`norm-pack-moexp-coverage-2026-08.md`](norm-pack-moexp-coverage-2026-08.md) · [`.json`](norm-pack-moexp-coverage-2026-08.json) | Official GAU MO IDS executed by IfcTester; engine coverage ≠ CIM compliance; `by_kind` = attributes vs classification; does not close RT-002 customer profile |
-| [`norm-pack-moscow-agr-coverage-2026-08.md`](norm-pack-moscow-agr-coverage-2026-08.md) · [`.json`](norm-pack-moscow-agr-coverage-2026-08.json) | Official Moscow AGR IDS from stroimprosto; not Samolet; not `moscow_agr` DI port |
-| [`norm-pack-spbexp-coverage-2026-08.md`](norm-pack-spbexp-coverage-2026-08.md) · [`.json`](norm-pack-spbexp-coverage-2026-08.json) | Official SPb GAU CGE IDS 1.0; second GAU pack; not Samolet. Spec-level 14.08 fixture counts — not the 24.08 issue-row profile evidence |
+| [`norm-pack-moscow-agr-coverage-2026-08.md`](norm-pack-moscow-agr-coverage-2026-08.md) · [`.json`](norm-pack-moscow-agr-coverage-2026-08.json) | Official Moscow AGR IDS from stroimprosto; not appointing-party; not `moscow_agr` DI port |
+| [`norm-pack-spbexp-coverage-2026-08.md`](norm-pack-spbexp-coverage-2026-08.md) · [`.json`](norm-pack-spbexp-coverage-2026-08.json) | Official SPb GAU CGE IDS 1.0; second GAU pack; not appointing-party. Spec-level 14.08 fixture counts — not the 24.08 issue-row profile evidence |
 | [`vlm-comparison-2026-08.md`](vlm-comparison-2026-08.md) · [`.json`](vlm-comparison-2026-08.json) | Qwen LIVE on fixture; Kimi GATED; `comparison_not_run`. Not a bake-off; not product accuracy |
 | [`vertical-slice-demo-live-2026-08-14.md`](vertical-slice-demo-live-2026-08-14.md) | Live `run_demo_vertical_slice` pin: exit 0, `summary.passed=false`, NO_GO; PNG/manifest hashes stable; report/BCF drift via `created_at` |
 | [`DATA_STATEMENT_2026_08.md`](DATA_STATEMENT_2026_08.md) | Data availability: git fixtures vs local benches vs missing customer corpus; Checkpoint GO; customer_go false |
@@ -28,7 +28,7 @@ Only **citeable** snapshots for TechLab review and reproducibility. Working dump
 | [`owner-ai-plan-execution-2026-08.json`](owner-ai-plan-execution-2026-08.json) | Owner-AI plan scaffolds (unsigned OOS, local inventory). Not RT CLOSED. NO_GO |
 | [`kt3-jury-2026-08.json`](kt3-jury-2026-08.json) · [`../demo/KT3_TRACKER_SIX_TASKS_2026_08.md`](../demo/KT3_TRACKER_SIX_TASKS_2026_08.md) | KT#3 one-command pin + tracker six tasks. Fixture `passed=false`. Not RT CLOSED |
 | [`../quality/ENV_VAR_BIDIRECTIONAL_INVENTORY_2026_08.md`](../quality/ENV_VAR_BIDIRECTIONAL_INVENTORY_2026_08.md) | P0: documented vs code env scan. Scanner defect, not no-op. Not a new CI pin |
-| [`ifc-open-rss-probe-latest.json`](ifc-open-rss-probe-latest.json) | Fixture-only IFC-open RSS delta. `representative_scale=false`. Not Samolet RSS. Not a reason to raise the 256 MiB SPF default |
+| [`ifc-open-rss-probe-latest.json`](ifc-open-rss-probe-latest.json) | Fixture-only IFC-open RSS delta. `representative_scale=false`. Not appointing-party RSS. Not a reason to raise the 256 MiB SPF default |
 | [`ifc-release-matrix-2026-08.md`](ifc-release-matrix-2026-08.md) · [`.json`](ifc-release-matrix-2026-08.json) | Fixture IFC2X3/IFC4/IFC4X3 kernel: findings 5/4/6, `passed=false`, `clash=skipped`. sha `559dcd91…46391`. Not customer accuracy |
 | [`aec-bench-false-pass-2026-08.md`](aec-bench-false-pass-2026-08.md) · [`.json`](aec-bench-false-pass-2026-08.json) | Harbor drawing-reading false-pass **NOT_MEASURED**. Gold-only `null_always_clean`: 134 FP / 50 TN / 184 labeled (0.7283). sha `6133a564…57aa4e` |
 | [`solihin-rule-classes-2026-08.md`](solihin-rule-classes-2026-08.md) · [`.json`](solihin-rule-classes-2026-08.json) | Solihin & Eastman 1–4 classification of in-repo rules. Class 4 = not claimed |
@@ -49,13 +49,13 @@ Only **citeable** snapshots for TechLab review and reproducibility. Working dump
 | [`../samples/benchmarks/ifc-bench-v2/IMPORT_PINS.json`](../../samples/benchmarks/ifc-bench-v2/IMPORT_PINS.json) | IFC-Bench **v2** pins (1027 QA, CC BY 4.0 QA; GPLv3 models excluded from MIT tree); checkout not vendored |
 | [`checkpoint2-evidence-bundle-latest.json`](checkpoint2-evidence-bundle-latest.json) | P2-04 wall-guid demo bundle pin (fixture GO) |
 | [`runtime-baseline-latest.json`](runtime-baseline-latest.json) | Runtime LOC / tests / gates (schema 1.2.0; completeness checked in CI) |
-| [`samolet-sla-fixture-p95-2026-08-04.json`](samolet-sla-fixture-p95-2026-08-04.json) | Fixture SLA schema **1.4.0**, gate=**p95**; not customer; advisory on/off dual-run is still manual. Speech sheet: [`../demo/KT2_FIXTURE_TIMING_2026_08_16.md`](../demo/KT2_FIXTURE_TIMING_2026_08_16.md) |
+| [`sla-fixture-p95-2026-08-04.json`](sla-fixture-p95-2026-08-04.json) | Fixture SLA schema **1.4.0**, gate=**p95**; not customer; advisory on/off dual-run is still manual. Speech sheet: [`../demo/KT2_FIXTURE_TIMING_2026_08_16.md`](../demo/KT2_FIXTURE_TIMING_2026_08_16.md) |
 | [`lab-before-after-fixture-tool-only-latest.json`](lab-before-after-fixture-tool-only-latest.json) | Lab before/after journal: `t_tool_ms` on git wall+IDS; `t_manual_s` null; not partner B4; not A1–A8 |
 | [`DEFECT_INJECTION_RECALL_PLAN_2026_09.md`](DEFECT_INJECTION_RECALL_PLAN_2026_09.md) | План mutation-test recall; seed 20260824; не партнёр |
 | [`DEFECT_INJECTION_RECALL_RUN_2026_09.md`](DEFECT_INJECTION_RECALL_RUN_2026_09.md) · [`defect-injection-recall-run-latest.json`](defect-injection-recall-run-latest.json) · [`defect-injection-recall-run-fixture-latest.json`](defect-injection-recall-run-fixture-latest.json) | E2 03.09: mutation-kill 0/6 канальный IFC (`MISSING_ELEMENT`/`IDS_VIOLATION` не применялись), 1/8 mini-IFC; Wilson upper 0.390 на n=6; `synthetic_only`; поле `checkpoint: NO_GO` = HISTORICAL_PIN прогона, живой SSOT = GO; customer_go false |
 | [`tracker-baseline-2026-08-07.md`](tracker-baseline-2026-08-07.md) · [`.pdf`](tracker-baseline-2026-08-07.pdf) | К0 tracker baseline (NO_GO; open-bench + fixture + synthetic); commercial counts local-only |
 | [`sprint2-synthetic-baseline-2026-08-04.json`](sprint2-synthetic-baseline-2026-08-04.json) | Synthetic detection twin (`synthetic_only`) |
-| [`samolet-sla-pilot-moscow-2026-05-21.json`](samolet-sla-pilot-moscow-2026-05-21.json) | Legacy fixture SLA snapshot |
+| [`sla-pilot-moscow-2026-05-21.json`](sla-pilot-moscow-2026-05-21.json) | Legacy fixture SLA snapshot |
 | [`tz-matrix-status-latest.json`](tz-matrix-status-latest.json) | TZ matrix status |
 | [`benchmark-report-2026-05-21.md`](benchmark-report-2026-05-21.md) | Academic benchmark snapshot |
 
@@ -88,6 +88,6 @@ python -m aerobim.tools.export_evidence_bundle \
 
 Artifacts: `manifest.json`, `report.json`, `findings.json`, `capability_coverage.json`, `report.html`, `timings.json`, `logs_snippet.txt`, `README.md`.
 
-See [`../benchmark-evidence-2026.md`](../benchmark-evidence-2026.md) · [`../pilot-protocol-samolet-2026.md`](../pilot-protocol-samolet-2026.md).
+See [`../benchmark-evidence-2026.md`](../benchmark-evidence-2026.md) · [`../pilot-protocol-customer-2026.md`](../pilot-protocol-customer-2026.md).
 
 Audit honesty: [`../../audit/evidence/`](../../audit/evidence/) · Claims Lock: [`../../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../../audit/reports/CLAIMS_LOCK_2026_07_17.md).

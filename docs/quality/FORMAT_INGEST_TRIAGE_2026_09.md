@@ -47,7 +47,7 @@ Checkpoint **`GO`**; `customer_go` false. `detected_count: 0`. `is_dwg_ready: fa
 | RT-FMT-ADSK-BUY | Купить Revit API для РФ-юрлица в этом окне | Канал Autodesk 2022+; не путь КТ#3 |
 | RT-FMT-RAISE-SPF | Поднять SPF 256 МиБ, чтобы «влез» native CAD | Кап — in-memory IFC; native — класс формата |
 | RT-FMT-ODA-TRIAL | Не мерить proxy/SHX на Drawings trial | ADR-003 разрешает замер; `claim_allowed` остаётся false |
-| RT-FMT-SDK-SIGN | Купить BimRv/Nv до подписи профиля Самолёта | Правило покупки ADR-003: доля DWG-only + профиль |
+| RT-FMT-SDK-SIGN | Купить BimRv/Nv до подписи профиля назначающей стороны | Правило покупки ADR-003: доля DWG-only + профиль |
 | RT-FMT-GPL-PROC | LibreDWG sidecar, чтобы обойти copyleft | Юридическая вилка; без license ADR не ship |
 | RT-FMT-EXCHANGE | Молчание в п. 1.1.5 = не закрытый native RVT | ПП 614 / 783/пр: PDF/A + IFC |
 | RT-FMT-FAIL-CLOSED | Тихий skip `.rvt`/`.nwd`/`.dwg`/`.lir` в ZIP | Upload и ZIP-члены fail-closed |

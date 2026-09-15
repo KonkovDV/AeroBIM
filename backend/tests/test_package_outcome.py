@@ -111,7 +111,7 @@ class PackageOutcomeMatrixTests(unittest.TestCase):
         caps = _caps(
             mep_system_clash=CapabilityStatus(CapabilityState.NOT_VERIFIED, "MEP not configured")
         )
-        policy = build_signoff_policy(profile="samolet_pilot")
+        policy = build_signoff_policy(profile="customer_pilot")
         outcome = compute_package_outcome(
             error_count=0,
             warning_count=0,
@@ -128,7 +128,7 @@ class PackageOutcomeMatrixTests(unittest.TestCase):
             warning_count=0,
             capabilities=caps,
             intake_blocked=True,
-            policy=build_signoff_policy(profile="samolet_pilot"),
+            policy=build_signoff_policy(profile="customer_pilot"),
         )
         self.assertEqual(outcome, PackageOutcome.FAILED)
         self.assertFalse(summary_passed_from_outcome(outcome))
@@ -152,7 +152,7 @@ class PackageOutcomeMatrixTests(unittest.TestCase):
             capabilities=_caps(),
             intake_blocked=True,
             hitl_requires_review=True,
-            policy=build_signoff_policy(profile="samolet_pilot"),
+            policy=build_signoff_policy(profile="customer_pilot"),
         )
         self.assertEqual(outcome, PackageOutcome.BLOCKED)
         self.assertFalse(summary_passed_from_outcome(outcome))
@@ -225,7 +225,7 @@ class PackageOutcomeFalseGreenTests(unittest.TestCase):
                 ifc_validator=MagicMock(validate=MagicMock(return_value=[])),
                 remark_generator=TemplateRemarkGenerator(),
                 audit_report_store=InMemoryAuditStore(),
-                signoff_profile="samolet_pilot",
+                signoff_profile="customer_pilot",
                 customer_intake_gate_path=gate,
             )
             report = uc.execute(

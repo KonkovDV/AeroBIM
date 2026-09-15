@@ -17,7 +17,7 @@
   "case_count": 15,
   "reproducibility_hash": "59f903a936a66625b50ea914241a808f63ea8a4243d20272926fbbe3cd56310f",
   "evidence_file_sha256": {
-    "samples/ifc/wall-fire-rating-rei60.ifc": "bd3064055b32bf2d1c1cd2256e050a4c6b3ae9095db651e8a4cc715711d21785",
+    "samples/ifc/wall-fire-rating-rei60.ifc": "68ef14fdc9bc96848d6acce4fcaba29ed9d6be4b72e0c5ded9e535417134d31f",
     "samples/ids/wall-fire-rating.ids": "d6c01a1ea030ba4862cae748ebe0c6acbb0d6cd7c0b4412912e492995ee5ad99",
     "samples/benchmarks/sprint2-synthetic-ground-truth.json": "359583f8a38a730b90524292f030a9a45e912f71307e74d5ecdcfef5d5540ded",
     "samples/benchmarks/injected-defects-level-b.json": "f8d4d2afb8725b647586df6d9b5dfe0faf3519fd0aa9cdf5fe92ec30acd64dfc",

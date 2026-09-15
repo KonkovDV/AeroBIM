@@ -216,7 +216,7 @@ _KITCHEN_PATH_PREFIXES = (
     "docs/quality/CALL_09_09",
     "docs/quality/AI_TRACE_",
     "docs/quality/CLOSING_CHECKLIST",
-    "docs/quality/SAMOLET_REPORT_RECONCILIATION",
+    "docs/quality/CUSTOMER_REPORT_RECONCILIATION",
     "docs/quality/TECHLAB_POST_CARTOGRAPHY",
     "docs/OWNER_ACTIONS",
     "docs/ai/ACADEMIC_",
@@ -654,7 +654,7 @@ def matrix_guard(
             continue
         if not any(pattern.search(requirement) for pattern in blocked_patterns):
             continue
-        violations.append(f"{rel}:{lineno}: Samolet-blocked row marked {status!r}: {line.strip()}")
+        violations.append(f"{rel}:{lineno}: the appointing party-blocked row marked {status!r}: {line.strip()}")
     return violations
 
 
@@ -807,7 +807,7 @@ def main(argv: list[str] | None = None) -> int:
         "--blocked-registry",
         type=Path,
         default=_BLOCKED_REGISTRY,
-        help="Explicit Samolet-blocked TZ row registry (audit/tz_matrix_blocked_registry.json)",
+        help="Explicit the appointing party-blocked TZ row registry (audit/tz_matrix_blocked_registry.json)",
     )
     args = parser.parse_args(argv)
 

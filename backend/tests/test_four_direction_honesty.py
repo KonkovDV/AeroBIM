@@ -114,7 +114,7 @@ class NativeDwgHonestyTests(unittest.TestCase):
                 "DWG conversion failed; derived PDF/IFC unavailable",
             )
         )
-        policy = build_signoff_policy(profile="samolet_pilot")
+        policy = build_signoff_policy(profile="customer_pilot")
         self.assertFalse(policy.summary_passed(error_count=0, capabilities=caps))
 
     def test_requested_dwg_path_fails_and_blocks_summary_passed(self) -> None:
@@ -213,7 +213,7 @@ class MepHonestyTests(unittest.TestCase):
     def test_require_mep_blocks_pass_when_not_verified(self) -> None:
         caps = ReportCapabilities()
         self.assertEqual(caps.mep_system_clash.status, CapabilityState.NOT_VERIFIED)
-        policy = build_signoff_policy(profile="samolet_pilot", require_mep_system_clash=True)
+        policy = build_signoff_policy(profile="customer_pilot", require_mep_system_clash=True)
         self.assertFalse(policy.summary_passed(error_count=0, capabilities=caps))
 
     def test_clearance_matrix_schema_validates_template(self) -> None:
@@ -344,7 +344,7 @@ class UnifiedContractTests(unittest.TestCase):
         caps = ReportCapabilities(
             clash=CapabilityStatus(CapabilityState.FAILED, "required clash missing"),
         )
-        policy = build_signoff_policy(profile="samolet_pilot")
+        policy = build_signoff_policy(profile="customer_pilot")
         self.assertFalse(policy.summary_passed(error_count=0, capabilities=caps))
 
 

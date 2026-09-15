@@ -12,5 +12,5 @@
     "signed_by": null,
     "signed_at": null
   },
-  "notes": "Populate federated_ifc_paths and scope_memo_ref when Samolet provides federated MEP IFC + signed clearance matrix. Until then analyze keeps mep_system_clash=NOT_VERIFIED under pilot profile."
+  "notes": "Populate federated_ifc_paths and scope_memo_ref when the appointing party provides federated MEP IFC + signed clearance matrix. Until then analyze keeps mep_system_clash=NOT_VERIFIED under pilot profile."
 }

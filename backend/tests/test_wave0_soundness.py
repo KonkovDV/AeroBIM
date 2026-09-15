@@ -108,7 +108,7 @@ class AuthFailClosedSettingsTests(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             settings.require_secure_auth()
 
-    def test_samolet_pilot_signoff_in_dev_env_without_token_refuses_start(self) -> None:
+    def test_customer_pilot_signoff_in_dev_env_without_token_refuses_start(self) -> None:
         settings = Settings(
             application_name="test",
             environment="development",
@@ -117,7 +117,7 @@ class AuthFailClosedSettingsTests(unittest.TestCase):
             storage_dir=Path("."),
             debug=True,
             api_bearer_token=None,
-            signoff_profile="samolet_pilot",
+            signoff_profile="customer_pilot",
         )
         with self.assertRaises(RuntimeError):
             settings.require_secure_auth()

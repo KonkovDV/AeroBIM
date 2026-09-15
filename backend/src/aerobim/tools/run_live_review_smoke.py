@@ -96,7 +96,7 @@ def build_backend_env(
     env["AEROBIM_ALLOW_ANONYMOUS_DEV"] = "true"
     # Must equal the tenant stamped on the seeded report, or «Проекты» is empty.
     env["AEROBIM_API_TENANT_ID"] = tenant_id
-    env["AEROBIM_PRIORITY_PROFILE"] = "samolet"
+    env["AEROBIM_PRIORITY_PROFILE"] = "customer"
     env["AEROBIM_REMARK_LOCALE"] = "ru"
     return env
 

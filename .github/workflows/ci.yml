@@ -617,7 +617,7 @@ jobs:
             artifacts/ci-benchmark-smoke/benchmark-threshold-summary.md
             artifacts/ci-benchmark-smoke/benchmark-threshold-enforced-summary.md
 
-  samolet-fixture-sla-smoke:
+  fixture-sla-smoke:
     runs-on: ubuntu-latest
     needs: test
     defaults:
@@ -633,22 +633,22 @@ jobs:
           python -m pip install --upgrade "pip==25.2"
           pip install --require-hashes -r requirements-dev-lock.txt
           pip install -e . --no-deps
-      - name: Samolet FIXTURE SLA smoke (pilot-moscow fixture pack; claim_level=fixture_only, NOT customer evidence)
+      - name: FIXTURE SLA smoke (pilot-moscow fixture pack; claim_level=fixture_only, NOT customer evidence)
         env:
-          AEROBIM_PRIORITY_PROFILE: samolet
+          AEROBIM_PRIORITY_PROFILE: pilot
         run: |
-          mkdir -p ../artifacts/samolet-fixture-sla-smoke
+          mkdir -p ../artifacts/fixture-sla-smoke
           python -m aerobim.tools.measure_package_sla \
             --pack ../samples/benchmarks/project-package-pilot-moscow-v1.json \
             --max-minutes 30 \
             --iterations 1 \
             --warmup-iterations 0 \
-            --output ../artifacts/samolet-fixture-sla-smoke/samolet-fixture-sla-pilot-moscow-ci.json
-      - name: Upload Samolet SLA artifact
+            --output ../artifacts/fixture-sla-smoke/fixture-sla-pilot-moscow-ci.json
+      - name: Upload the appointing party SLA artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: samolet-fixture-sla-smoke-artifacts
-          path: artifacts/samolet-fixture-sla-smoke/*.json
+          name: fixture-sla-smoke-artifacts
+          path: artifacts/fixture-sla-smoke/*.json
 
   extraction-quality:
     runs-on: ubuntu-latest

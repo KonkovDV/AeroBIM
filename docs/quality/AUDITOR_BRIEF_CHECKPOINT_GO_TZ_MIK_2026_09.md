@@ -1,6 +1,6 @@
 <!-- claims-lint: allow-file reason="Standalone auditor corpus; TZ/MIK criteria and forbidden phrases as non-claims; Checkpoint GO; customer_go false; closes_rt false" -->
 ---
-title: "Самодостаточный аудиторский корпус — Checkpoint GO × ТЗ Самолёта × Техлаб/МИК"
+title: "Самодостаточный аудиторский корпус — Checkpoint GO × ТЗ заказчика канала × Техлаб/МИК"
 date: "2026-09-04"
 last_updated: "2026-09-08"
 status: active
@@ -33,7 +33,7 @@ claim_boundary: >
 
 # Самодостаточный аудиторский корпус
 
-Дата заморозки состояния: **2026-09-04**. Аудитор **не имеет** репозитория. Этот файл — единственный SSOT. Не запрашивать пути, не предполагать содержимое git, не «дочитывать» отсутствующие документы. Если позднее приложены фрагменты чужого текста — классифицировать их **против онтологии этого файла**. Не изобретать людей, подписи, федеративный IFC заказчика, импорт в СОД, κ на корпусе Самолёта.
+Дата заморозки состояния: **2026-09-04**. Аудитор **не имеет** репозитория. Этот файл — единственный SSOT. Не запрашивать пути, не предполагать содержимое git, не «дочитывать» отсутствующие документы. Если позднее приложены фрагменты чужого текста — классифицировать их **против онтологии этого файла**. Не изобретать людей, подписи, федеративный IFC заказчика, импорт в СОД, κ на корпусе заказчика канала.
 
 Стиль отчёта аудитора: сухой, сжатый, академический. Вердиктная лексика только из §0.3.
 
@@ -43,11 +43,11 @@ claim_boundary: >
 
 ### 0.1 Задача аудитора
 
-Выдать структурированный отчёт (схема §23) о согласованности **заявленного состояния продукта AeroBIM** с (а) ТЗ Самолёта × ТехЛаб задача верификации ПД/РД, (б) критериями отбора/финала МИК, (в) онтологией Checkpoint после рескоупа 04.09.2026. Источник фактов внутреннего аудита — **только этот файл**. Внешний контур (OSINT) — только §0.6; он **не** основание менять §3.1. Гипотезы без опоры на числа/формулировки ниже = `UNVERIFIABLE`.
+Выдать структурированный отчёт (схема §23) о согласованности **заявленного состояния продукта AeroBIM** с (а) ТЗ заказчика канала × ТехЛаб задача верификации ПД/РД, (б) критериями отбора/финала МИК, (в) онтологией Checkpoint после рескоупа 04.09.2026. Источник фактов внутреннего аудита — **только этот файл**. Внешний контур (OSINT) — только §0.6; он **не** основание менять §3.1. Гипотезы без опоры на числа/формулировки ниже = `UNVERIFIABLE`.
 
 ### 0.2 Что этот файл не является
 
-Не акт экспертизы. Не оценка комиссии. Не `customer_go`. Не прогноз приза. Не лицензия перекрасить OPEN-тома в CLOSED. Не заявление «ТЗ закрыто». Не заявление «можно в прод Самолёта».
+Не акт экспертизы. Не оценка комиссии. Не `customer_go`. Не прогноз приза. Не лицензия перекрасить OPEN-тома в CLOSED. Не заявление «ТЗ закрыто». Не заявление «можно в прод заказчика канала».
 
 ### 0.3 Вердиктная лексика (обязательна)
 
@@ -55,7 +55,7 @@ claim_boundary: >
 |---|---|
 | `CONSISTENT` | Утверждение совпадает с онтологией и числами этого файла |
 | `DRIFT` | Внутреннее противоречие корпуса или устаревшая формула «Checkpoint NO_GO» на **живом** продуктовом слое после 04.09 при сохранённом `customer_go=false` |
-| `OVERCLAIM` | Утверждение сильнее доказанного: `customer_go=true`; недифференцированное `closes_rt001/002/003=true`; `PrecisionClaim.publishable=true` без `corpus_kind=customer` и ≥2 **человеческих** разметчиков; `mep_system_clash=OK`; CDE T2 `claim_allowed=true`; точность продукта >90%; SLA заказчика ≤30 мин; native DWG/RVT/NWD готов; LLM пишет `summary.passed`; симуляция = люди; городской IDS = подпись Самолёта; посаженный IfcClash = MEP delivered |
+| `OVERCLAIM` | Утверждение сильнее доказанного: `customer_go=true`; недифференцированное `closes_rt001/002/003=true`; `PrecisionClaim.publishable=true` без `corpus_kind=customer` и ≥2 **человеческих** разметчиков; `mep_system_clash=OK`; CDE T2 `claim_allowed=true`; точность продукта >90%; SLA заказчика ≤30 мин; native DWG/RVT/NWD готов; LLM пишет `summary.passed`; симуляция = люди; городской IDS = подпись заказчика канала; посаженный IfcClash = MEP delivered |
 | `UNVERIFIABLE` | Факт вне корпуса (ФИО заявки, PDF приказа Фонда, часы партнёра, хеш живого пакета) |
 | `HISTORICAL_PIN` | Датированная заморозка (КТ#2 handoff 11.08, CLAIMS_LOCK июля, JSON августа с `"checkpoint":"NO_GO"`). Не переписывать как текущий SSOT. Не трактовать как опровержение GO 04.09 |
 
@@ -64,7 +64,7 @@ claim_boundary: >
 | Слой | Что закрыто | Что не закрыто |
 |---|---|---|
 | **Content / substantive** (измерение) | Публичные IDS экспертизы; каталоги типовых ошибок РФ; учебный комплект; инъекция; симуляция протокола dual-rater; текст EIR v4 на канале; посаженный геометрический clash; HVAC `IfcSystem` rehearsal; три NWD как носитель | Публикуемая точность продукта |
-| **Criterion** (приёмка у назначающей стороны) | Ничего из residual volumes | Двое людей; корпус Самолёта в git; подписанный IDS/`customer_approved`; system-aware MEP; федеративный IFC заказчика; CDE T2 |
+| **Criterion** (приёмка у назначающей стороны) | Ничего из residual volumes | Двое людей; корпус заказчика в git; подписанный IDS/`customer_approved`; system-aware MEP; федеративный IFC заказчика; CDE T2 |
 
 Документация TBD ТЗ (архитектура, сборка, образ, презентация, сопр. доки) заполнена в git. Это **не** `customer_go`. Checkpoint `GO` = регуляторно-измерительный MVP (content). `customer_go` рисует **заказчик**, не текст.
 
@@ -94,7 +94,7 @@ claim_boundary: >
 | Приз 2 млн ≠ i.moscow/pilot | Публичный акт пилотов Москвы: **ПП 631-ПП** (27.05.2020). Совпадение суммы 2 млн — источник путаницы | CONSISTENT разведение призов. Идентификатор **449-ПП** в старых текстах — UNVERIFIABLE как публичный акт этого прохода; не приравнивать ни 631-ПП, ни 449-ПП к призу задачи №6 |
 | ГОСТ Р 72514/72515-2026 | Каталог стандартов: оба обозначения существуют | Существование CONSISTENT. Номера приказов 64-ст/65-ст — in-repo pin карточки фонда; этот OSINT-проход их не подтвердил (UNVERIFIABLE внешне). Смежный 66-ст той же даты не доказательство |
 | Законопроект Минцифры, текст 18.03.2026 | Публикация проекта 18.03.2026 | Дата CONSISTENT. ID 166424 и вступление 01.09.2027 — UNVERIFIABLE этим проходом |
-| Соседние задачи потока | ДГП Москвы — иная задача Техлаба | Не переносить лексику «пилот у ДГП» на задачу Самолёта |
+| Соседние задачи потока | ДГП Москвы — иная задача Техлаба | Не переносить лексику «пилот у ДГП» на задачу заказчика канала |
 | Состав комиссии №7, приказ П-01-ОД-52-1/26, цитата спонсора, ЛЭТИ 30.04, ComNews 46 команд / 200 млн, IDS MOEXP/CGE/AGR | Публично не найдены этим проходом | UNVERIFIABLE. ФИО комиссии не изобретать. Гендиректор МИК (публичное имя) **не** заявлен корпусом как член комиссии №7 |
 
 Вывод OSINT: **ни один внешний факт не меняет §3.1.**
@@ -130,20 +130,20 @@ claim_boundary: >
 
 ## 2. Программа: календарь, нумерация, приз
 
-**Конкурс:** ТехЛаб Московского инновационного кластера, задача Самолёта — система автоматизированной верификации проектной и рабочей документации.
+**Конкурс:** ТехЛаб Московского инновационного кластера, задача заказчика канала — система автоматизированной верификации проектной и рабочей документации.
 
-**Приз формата задачи:** платное пилотное тестирование **2 000 000 ₽** (соглашение Партнёр↔Фонд). Не городской грант пилотов (**ПП Москвы 631-ПП** от 27.05.2020 — другой инструмент; совпадение суммы 2 млн — источник путаницы). Идентификатор 449-ПП в старых текстах — UNVERIFIABLE как публичный акт (OSINT §0.6); не вход в Техлаб. Не «фонд 20 млн» как наш приз. Не i.moscow/pilot. Не вход «сначала ИП/юрлицо»: FAQ i.moscow 26.08 — физлица или команда 1–10, возраст 18+. Как Самолёт перечислит 2 млн при победе — соглашение Партнёра и Фонда, не карточка входа.
+**Приз формата задачи:** платное пилотное тестирование **2 000 000 ₽** (соглашение Партнёр↔Фонд). Не городской грант пилотов (**ПП Москвы 631-ПП** от 27.05.2020 — другой инструмент; совпадение суммы 2 млн — источник путаницы). Идентификатор 449-ПП в старых текстах — UNVERIFIABLE как публичный акт (OSINT §0.6); не вход в Техлаб. Не «фонд 20 млн» как наш приз. Не i.moscow/pilot. Не вход «сначала ИП/юрлицо»: FAQ i.moscow 26.08 — физлица или команда 1–10, возраст 18+. Как заказчик канала перечислит 2 млн при победе — соглашение Партнёра и Фонда, не карточка входа.
 
 **Нумерация (не схлопывать):**
 
 | Контур | Число | Смысл |
 |---|---|---|
 | Витрина i.moscow | заголовок несёт **07** | историческая этикетка раздачи / имена файлов |
-| Приложение 4 Положения (публичная сверка ЛЭТИ 30.04.2026) | **строка 6** | задача Самолёта, приз 2 млн |
+| Приложение 4 Положения (публичная сверка ЛЭТИ 30.04.2026) | **строка 6** | задача заказчика канала, приз 2 млн |
 | Комиссия в приказе | **№7** | не путать со строкой 7 другого партнёра |
 | Произнесение | запрещено | говорить «07» как номер статьи Положения |
 
-Соседняя задача того же потока (Газпромбанк) публично: 46 команд (ComNews, 24.08.2026). Четыре карточки каталога задачи Самолёта — **уже отфильтрованные выжившие**, не полный вход. `catalog_four_are_all_applicants = false`. Первый поток: до 50 команд, 10 победителей на десять задач = **одно место на задачу**, не прогноз победы.
+Соседняя задача того же потока (Газпромбанк) публично: 46 команд (ComNews, 24.08.2026). Четыре карточки каталога задачи заказчика канала — **уже отфильтрованные выжившие**, не полный вход. `catalog_four_are_all_applicants = false`. Первый поток: до 50 команд, 10 победителей на десять задач = **одно место на задачу**, не прогноз победы.
 
 **Окна:**
 
@@ -235,22 +235,22 @@ We are in *refinement* on the customer contour. One command shows a fail-closed 
 
 ### 4.3 30 секунд жюри (дословно)
 
-AeroBIM ловит шов комплекта — площадь в ведомости против IFC, отметка в ПД против РД — на публичных машиночитаемых требованиях экспертизы. Это ассистент эксперта, не замена экспертизы, не СОД и не внедрение у Самолёта. Tangl — слой модели; AeroBIM — шов (требования ↔ IFC ↔ листы ↔ ревизии). Профиль *измерения* — городской IDS. Подпись / СТО Самолёта — строка «внедрено» (RT-002c OPEN). Checkpoint `GO` — регуляторно-измерительный MVP. `customer_go` false.
+AeroBIM ловит шов комплекта — площадь в ведомости против IFC, отметка в ПД против РД — на публичных машиночитаемых требованиях экспертизы. Это ассистент эксперта, не замена экспертизы, не СОД и не внедрение у заказчика канала. Tangl — слой модели; AeroBIM — шов (требования ↔ IFC ↔ листы ↔ ревизии). Профиль *измерения* — городской IDS. Подпись / СТО заказчика канала — строка «внедрено» (RT-002c OPEN). Checkpoint `GO` — регуляторно-измерительный MVP. `customer_go` false.
 
 ### 4.4 Три формулировки, валидные на отборе и финале
 
 1. **УГТ.** Самооценка УГТ 4 по ГОСТ Р 58048. УГТ 5 = комплект заказчика в контуре измерения; не заявляем. Не подменять УГТ 4 словом «внедрено».
 2. **Профиль измерения.** Публичный IDS городской экспертизы с 02.04.2026 (ЦИМ/IDS, RT-002a). На канале EIR v4 / BIM-стандарт v4 как текст (RT-002b носитель). Подпись / `customer_approved` — RT-002c OPEN. Не говорить «профиль заказчика закрыт».
-3. **Recall / precision.** Recall — генератор `inject_defects`, seed **20260824**; на синтетике mutation-kill 0/6 и 1/8, публикуются нижние границы Уилсона **0,000** и **0,022** (`synthetic_only`). Precision — два независимых **человека**. На данных Самолёта не измерялось.
+3. **Recall / precision.** Recall — генератор `inject_defects`, seed **20260824**; на синтетике mutation-kill 0/6 и 1/8, публикуются нижние границы Уилсона **0,000** и **0,022** (`synthetic_only`). Precision — два независимых **человека**. На данных заказчика канала не измерялось.
 
 ### 4.5 Стоп-лист КТ#3 (32 пункта; нарушение = OVERCLAIM или DRIFT)
 
 1. Точность >90% / «по ТЗ коллизии закрыты».
-2. SLA ≤30 мин на комплекте Самолёта.
+2. SLA ≤30 мин на комплекте заказчика.
 3. Native DWG / RVT / NWD готов.
 4. MEP system-aware clash сдан.
 5. BCF CDE-ready / импорт в 10D доказан.
-6. Customer GO / «можно принимать в проде Самолёта».
+6. Customer GO / «можно принимать в проде заказчика канала».
 7. «RT-002 CLOSED» без split a/b/c.
 8. «RT-001 CLOSED» / «RT-003 CLOSED» без split; «потому что файлы на диске»; «MEP сдан, потому что IfcClash на фикстуре дал hit»; «два разметчика закрыты, потому что симуляция».
 9. Self-check ЦИМ АГР как наш канал (с 29.06 это бесплатный городской сервис).
@@ -264,7 +264,7 @@ AeroBIM ловит шов комплекта — площадь в ведомо�
 17. «Облако с логином готово» / ближайшее пересечение осей. OIDC BFF = 501; ось только `IfcGridAxis.AxisTag`.
 18. Прогноз балла комиссии / «порог 50 у нас в кармане». Отбор и финал — среднее; историческая «итоговая сумма» опровергнута. PDF Положения в git нет.
 19. ГОСТ Р 72514/72515 как сертификат; законопроект Минцифры ID 166424 как действующий закон.
-20. Fixture p95 / «30 минут на комплект Самолёта». Пакет обложки не representative. Система B ≠ pytest. Приложение 3 к Положению в git нет (перенос с копий).
+20. Fixture p95 / «30 минут на комплект заказчика». Пакет обложки не representative. Система B ≠ pytest. Приложение 3 к Положению в git нет (перенос с копий).
 21. ГОСТ Р ИСО/МЭК 42001 как сертифицированная СМИИ; i.moscow/pilot / грант 631-ПП / 449-ПП как приз 2 млн. Карта критерий→git не прогноз балла.
 22. Состав команды из git / вымышленные ФИО в шаблоне К1. Объект К1 — заявка i.moscow.
 23. «Нужно десять человек». УГТ 5 / независимая ОГТ. К3 как pytest.
@@ -288,7 +288,7 @@ AeroBIM ловит шов комплекта — площадь в ведомо�
 
 Каждая фраза запрещена как **утвердительное** продуктовое заявление. Отрицание на той же строке или маркер заголовка «Нельзя» / «запрещено» на последующие пункты списка (HDS-SUB-02) — допустимо.
 
-Запрещённые фразы: `accuracy >90%`; `dwg-ready`; `native dwg`; `cde-ready`; `cde interoperable`; `human-level cv`; `production-ready`; `mep delivered`; `mep system clash delivered`; `полностью российский стек`; `qwen3.8-max ready`; `customer go`; `market go`; `deployment go`; `sla ≤30`; `sla ≤30 минут`; `экономия ≥20%`; `точность >90%`; `ии понимает чертёж как инженер`; `интегрированы с tangl`; `закрыли тз самолёта`; `пакет заказчика проверен`; `43 ГБ обработаны`; `режим данных согласован`; `соглашение о конфиденциальности подписано`; `первые в России сравниваем версии документации`; `точнее городского нормоконтроля`; `заменяем зарубежные проверяльщики моделей`; `поддерживаем машиночитаемые требования лучше рынка`; `интегрированы с платформой заказчика`; `заменяем валидатор buildingsmart`; `шаблон сп 63 утверждён заказчиком`; `aerobim replaces the bsi validation service`.
+Запрещённые фразы: `accuracy >90%`; `dwg-ready`; `native dwg`; `cde-ready`; `cde interoperable`; `human-level cv`; `production-ready`; `mep delivered`; `mep system clash delivered`; `полностью российский стек`; `qwen3.8-max ready`; `customer go`; `market go`; `deployment go`; `sla ≤30`; `sla ≤30 минут`; `экономия ≥20%`; `точность >90%`; `ии понимает чертёж как инженер`; `интегрированы с tangl`; `закрыли тз назначающей стороны`; `пакет заказчика проверен`; `43 ГБ обработаны`; `режим данных согласован`; `соглашение о конфиденциальности подписано`; `первые в России сравниваем версии документации`; `точнее городского нормоконтроля`; `заменяем зарубежные проверяльщики моделей`; `поддерживаем машиночитаемые требования лучше рынка`; `интегрированы с платформой заказчика`; `заменяем валидатор buildingsmart`; `шаблон сп 63 утверждён заказчиком`; `aerobim replaces the bsi validation service`.
 
 После рескоупа 04.09: фраза `checkpoint go` **снята** с запрета (продукт имеет право говорить Checkpoint GO). Добавлены `customer go` / `market go` / `deployment go`.
 
@@ -298,7 +298,7 @@ AeroBIM ловит шов комплекта — площадь в ведомо�
 
 ---
 
-## 6. ТЗ Самолёта × ТехЛаб — полное тело требований
+## 6. ТЗ заказчика канала × ТехЛаб — полное тело требований
 
 **Конкурсный бриф v1** (PDF «ТЗ Техлаб 2026», ~6 стр.) — не семь задач сравнения и не проектное ТЗ домов. «Точность >90%» в v1 — цель оценивания, не замер AeroBIM. Канон ответа — **ТЗ v2**. **0,60** — порог пилота из ТЗ v2 (ТР-37 / таблица §9), собственный интерим-порог **методики**; целевая >0,90 не снята; критерий заказчика письмом **не согласован**. Не говорить «в акт МИК внесён согласованный 0,60».
 
@@ -317,7 +317,7 @@ AeroBIM ловит шов комплекта — площадь в ведомо�
 
 ### 6.1 Термины (границы честности)
 
-| Термин | Определение (задача Самолёта; прил. 4 стр. 6; витринная этикетка 07) | Граница |
+| Термин | Определение (задача заказчика канала; прил. 4 стр. 6; витринная этикетка 07) | Граница |
 |---|---|---|
 | OCR | Извлечение текста из растра/скана/PDF | Baseline RapidOCR/PyMuPDF; ≠ понимание чертежа |
 | CV | Детекция регионов/символов | Advisory; `cv_human_level=MISSING` до корпуса |
@@ -498,7 +498,7 @@ Kill-критерий: доля замечаний, принятых без пр
 ### 6.14 Протокол оценки (ТР-55…ТР-56)
 
 ТР-55: двойная слепая разметка → adjudication CSV → labels.json → agreement → `evaluate_detection_precision --require-publishable --agreement-json`.  
-ТР-56: intake gate с evidence `{path, sha256}`. Tooling **done**; измерение на Самолёте **нет**.
+ТР-56: intake gate с evidence `{path, sha256}`. Tooling **done**; измерение на заказчике канала **нет**.
 
 ### 6.15 AI-безопасность (ТР-57…ТР-62)
 
@@ -542,7 +542,7 @@ Kill-критерий: доля замечаний, принятых без пр
 
 ## 7. Матрица соответствия ТЗ (честные статусы)
 
-Легенда: `done` | `partial` | `missing` | `blocked` (нужен Самолёт). Fixture-bounded, пока не customer.
+Легенда: `done` | `partial` | `missing` | `blocked` (нужен заказчик канала). Fixture-bounded, пока не customer.
 
 | Кластер | Статус | Примечание |
 |---|---|---|
@@ -565,7 +565,7 @@ Kill-критерий: доля замечаний, принятых без пр
 | Version/doc-type compare | partial | fixture identity; не CDE versioning |
 | Coverage map 4 states | partial | HTML+PDF+UI |
 
-Строки, заблокированные Самолётом (корпус, approved norm pack, MEP federated, CDE BCF, dual adjudication), остаются `partial/missing/blocked`. Переименовать в `done` без customer evidence = OVERCLAIM.
+Строки, заблокированные заказчиком канала (корпус, approved norm pack, MEP federated, CDE BCF, dual adjudication), остаются `partial/missing/blocked`. Переименовать в `done` без customer evidence = OVERCLAIM.
 
 Alignment R1–R15 (страница задачи → продукт):
 
@@ -579,7 +579,7 @@ Alignment R1–R15 (страница задачи → продукт):
 | R6 | Calc/dimension/area | partial | не solver |
 | R7 | Logic / missing | done | IDS exists/bounds |
 | R8 | Highlight zones | done | overlay |
-| R9 | Prioritize | done | профиль samolet |
+| R9 | Prioritize | done | профиль customer |
 | R10 | Designer comments | done | RU/EN + HITL + BCF |
 | R11 | Faster review | measure | SLA tool; customer OPEN |
 | R12 | Expert accountable | done | claim boundary |
@@ -591,7 +591,7 @@ Clash policy R5: «коллизии» = IfcClash (opt-in extra); «логиче�
 
 ---
 
-## 8. Ответы Самолёта 25.08 и шесть вопросов 04.09
+## 8. Ответы заказчика канала 25.08 и шесть вопросов 04.09
 
 ### 8.1 Что можно говорить про данные
 
@@ -712,7 +712,7 @@ Ask к назначающей стороне: один-ревизионный П
 | К4 | Тираж; нулевой вход; не CAPEX | Выручка; второй контракт; 10,1 млрд как SAM; −72% как наш эффект; «инвестируйте»; МСФО как наш эффект |
 | К5 | План и риск | Соглашение площадки |
 | Б1 | Функционал + ограничения | KPI партнёра письмом; ODA BimRv не куплен |
-| Б2 | Протоколы **и** подтверждённые метрики валидации | Dual-rater на партнёре; синтетика ≠ корпус Самолёта; `confirmed_partner_validation_metrics = false` |
+| Б2 | Протоколы **и** подтверждённые метрики валидации | Dual-rater на партнёре; синтетика ≠ корпус заказчика; `confirmed_partner_validation_metrics = false` |
 | Б3 | Импорт/экспорт MVP | SSO; SPF-open 1,5 ГБ |
 | Б4 | До/после | Часы партнёра; A1–A8 пустые |
 | Б5 | Поставка + прозрачность | Передача исключительных прав |
@@ -797,11 +797,11 @@ Iversen & Huang: *Leveraging large language models for BIM-based automated compl
 
 ### 10.1 Замена (контур измерения) — CLOSED как тома, не как RT целиком
 
-| ID | Том | Статус | Чем заменили отсутствие Самолёта |
+| ID | Том | Статус | Чем заменили отсутствие заказчика канала |
 |---|---|---|---|
 | RT-001 | `a_content_pairing` | CLOSED | Типовые замечания экспертизы РФ (Эксп. Б) + публичные IDS + учебный комплект / инъекция / синтетические labels. Content (Messick), не criterion |
 | RT-001 | `b1_protocol_rehearsal` | CLOSED | Два независимых **симулированных** прохода `sim-rater-a` / `sim-rater-b` на тех же 28 единицах. Не люди, не LLM. Не речевая литера RT-001b |
-| RT-002 | `a_regulatory` | CLOSED | Публичные IDS: Мособлгосэкспертиза **24** `.ids`; СПб ГАУ ЦГЭ **22** `.ids` (`signed_by_customer=false`, `samolet_alias=false`, provenance OFFICIAL_PUBLISHED); ЦИМ АГР Москвы **4** `.ids` + pack `moscow_agr_2026` (city as publisher). Машинный порог: ≥20 MOEXP + ≥15 CGE + ≥3 AGR. Линейка измерения, не EIR Самолёта |
+| RT-002 | `a_regulatory` | CLOSED | Публичные IDS: Мособлгосэкспертиза **24** `.ids`; СПб ГАУ ЦГЭ **22** `.ids` (`signed_by_customer=false`, `customer_alias=false`, provenance OFFICIAL_PUBLISHED); ЦИМ АГР Москвы **4** `.ids` + pack `moscow_agr_2026` (city as publisher). Машинный порог: ≥20 MOEXP + ≥15 CGE + ≥3 AGR. Линейка измерения, не EIR заказчика канала |
 | RT-002 | `b_eir_carrier` | CLOSED | EIR v4.0 + BIM-стандарт v4.0 на канальном комплекте как **текст** (deep-study 30.08; имён в git нет). Носитель EIR, не `customer_approved`. `eir_lod_mep_disciplines_named=true` (ОВ/ВК/ИТП/ЭОМ/СС LOD названы; модели отсутствуют) |
 | RT-003 | `a_federated_geometric_rehearsal` | CLOSED | Посаженный IfcClash: `clash-federated-box-{a,b}.ifc` и pipe vs wall. Оба прогона RUN, ≥1 hit. Не system-aware. В пине planted: `mep_system_clash=NOT_VERIFIED`, `closes_rt003` не true |
 | RT-003 | `b2_ifc_system_graph_rehearsal` (речь RT-003b) | CLOSED | Учебная HVAC: 2× `IfcSystem` + `IfcRelAssignsToGroup`. Граф систем, не труба≠стенка. `geometry_verified=false`, `synthetic=true` |
@@ -814,8 +814,8 @@ Iversen & Huang: *Leveraging large language models for BIM-based automated compl
 | ID | Том | Статус | Почему нельзя закрыть подменой |
 |---|---|---|---|
 | RT-001 | `b2_criterion_dual_rater` (речь **RT-001b**) | OPEN | Двое независимых людей; κ/α; заключение экспертизы на тот же том. Симуляция ≠ люди. Инъекция и один автор фикстуры ≠ два разметчика. LLM ≠ разметчик. `independent_human_raters=0` |
-| RT-001 | `c_customer_corpus` | OPEN | Хеш-пакет Самолёта не в git |
-| RT-002 | `c_corporate_signed` (`b_corporate`) | OPEN | Подпись Самолёта / `customer_approved`. Текст EIR и город-издатель ≠ подпись. СТО Самолёта unsigned |
+| RT-001 | `c_customer_corpus` | OPEN | Хеш-пакет заказчика не в git |
+| RT-002 | `c_corporate_signed` (`b_corporate`) | OPEN | Подпись заказчика канала / `customer_approved`. Текст EIR и город-издатель ≠ подпись. СТО заказчика канала unsigned |
 | RT-003 | `b3_mep_system_clash` (речь **RT-003c**) | OPEN | `mep_system_clash=NOT_VERIFIED`. 0 duct/pipe/cable в IFC комплекта. `IfcFlowTerminal` на АР — не граф заказчика. Репетиция HVAC ≠ координация инженерки. `parse_rvt_nwd_lira=false` |
 | RT-003 | `c_customer_federated_ifc` | OPEN | Нет выгрузки NWD→IFC заказчика и signed clearance. Запрос 28.08: штатный пакетный экспорт NWD→IFC по одному корпусу (уже куплен), не «дайте федеративный IFC с нуля» |
 | CDE T2 | импорт BCF | NOT_VERIFIED | T1 ≠ журнал импорта. `present_files=[]`. `claim_allowed=false` |
@@ -876,7 +876,7 @@ Open benches (AEC-Bench, IFC-Bench, GNI) — **другой контур**, че
 
 Генератор: `inject_defects`, seed **20260824**. Одинаковый seed → одинаковые мутации. Инъекция **ниже** валидатора: не вызывает analyze API и не пишет `summary.passed`. Классы: AREA_MISMATCH, LEVEL_MISMATCH, PD_RD_DIVERGENCE, TZ_UNSATISFIED, MISSING_ELEMENT, UNIT_MISMATCH, CALC_INCONSISTENCY, IDS_VIOLATION, CONTROL. CONTROL вне знаменателя recall. Городские примеры АГР запрещены как source. `samples/customer` генератор отвергает.
 
-Прокси детекции прогона 03.09: мутант **убит**, если мультимножество находок отличается от CONTROL. Исчезнувший сигнал = сокрытие, не подтверждение целевого дефекта. `claim_level=synthetic_only`. Не переносится на Самолёта.
+Прокси детекции прогона 03.09: мутант **убит**, если мультимножество находок отличается от CONTROL. Исчезнувший сигнал = сокрытие, не подтверждение целевого дефекта. `claim_level=synthetic_only`. Не переносится на заказчика канала.
 
 **Контур 1 — канальный IFC (не в git; режим данных не согласован; не внешняя репродукция):** CONTROL/applied = 6, убито **0/6**, Wilson 95% lower **0.000**. Второй прогон: CONTROL=97, applied=6, убито **0/6**, lower **0.000**. Интервал 0/6: [0.000; 0.390]. Публикуется нижняя граница. Размеры файлов, шифры объектов и метка «NDA» в публичном тексте не ставятся (`nda_signed=false`). Классы sidecar контур не читает; MISSING_ELEMENT/IDS_VIOLATION не applied. AREA_MISMATCH бьёт в заголовок STEP `5.02` (версия EDM), не в площадь.
 
@@ -925,11 +925,11 @@ Fail-closed: capability failed / required-not-OK роняет вердикт. `r
 | SPF in-memory | 268 435 456 | 256 **MiB** | `ifcopenshell.open(.ifc)`; `AEROBIM_MAX_IFC_BYTES` |
 | bSI Validation Service | 256 000 000 | 256 **MB** | Публичная загрузка uncompressed .ifc |
 | WASM viewer | 268 435 456 | 256 **MiB** | web-ifc MEMORY_LIMIT |
-| Disk analyze / ingest | 1 500 000 000 | 1,5 **GB** decimal | HTTP 413 выше; RocksDB convert затем `open(rdb)` под `samolet_pilot`/`production` |
+| Disk analyze / ingest | 1 500 000 000 | 1,5 **GB** decimal | HTTP 413 выше; RocksDB convert затем `open(rdb)` под `customer_pilot`/`production` |
 
 256 MiB − 256 MB = 12 435 456 байт. Файл может пройти AeroBIM SPF analyze и провалить bSI. FAQ bSI «250 MB» vs user guide **256 MB** — не одно число с нашими 256 **MiB**.
 
-Почему SPF default не поднимается: IfcOpenShell #7116 — SPF parse ~275–300 MB ≈ 10× disk RAM; Riverside 275 MB → 2,19 GiB RSS (~8×). Планировочный множитель в git = **10**, литература, не наш RSS на файле Самолёта. `measured_rss_delta_bytes` null. 1,5 ГБ SPF-opened ≈ 15 GiB литературы. Поэтому 1,5 ГБ идёт через RocksDB (upstream ~11 MiB vs 2,19 GiB SPF на том же ~275 MB). Convert failure → HTTP **503** `IFC disk backend unavailable`. Над ingest → HTTP **413** `ifc_over_ingest_cap`, сообщение `IFC exceeds analyze size limit` (без byte oracle). WASM и object-store get_bytes остаются 256 MiB. Не буферизовать 1,5 ГБ для preview. Development HTTP без Samolet caps: `max_model_bytes=256 MiB`.
+Почему SPF default не поднимается: IfcOpenShell #7116 — SPF parse ~275–300 MB ≈ 10× disk RAM; Riverside 275 MB → 2,19 GiB RSS (~8×). Планировочный множитель в git = **10**, литература, не наш RSS на файле заказчика. `measured_rss_delta_bytes` null. 1,5 ГБ SPF-opened ≈ 15 GiB литературы. Поэтому 1,5 ГБ идёт через RocksDB (upstream ~11 MiB vs 2,19 GiB SPF на том же ~275 MB). Convert failure → HTTP **503** `IFC disk backend unavailable`. Над ingest → HTTP **413** `ifc_over_ingest_cap`, сообщение `IFC exceeds analyze size limit` (без byte oracle). WASM и object-store get_bytes остаются 256 MiB. Не буферизовать 1,5 ГБ для preview. Development HTTP без the appointing party caps: `max_model_bytes=256 MiB`.
 
 1,5 ГБ скорее потолок authoring-экспорта Revit toolkit, не обещание SPF-open. Industry thumb: держать IFC ~250 MB или сплит.
 
@@ -945,7 +945,7 @@ Default `GET /v1/auth/bff` = **501** / `auth_bff=NOT_IMPLEMENTED`. Vite loopback
 
 Переключатель роли в шапке — **макет экрана, не RBAC**. Shared bearer = транспортная аутентификация пилота; **не** создаёт expert HITL события (`is_service_token` denied). Cookie в браузере права эксперта не выдаёт. Unverified BFF cookies never authorize. Verified lab cookie может bind AuthPrincipal; viewer/user expert HITL writes остаются 403.
 
-HITL reviewer-role gate **включён только** при `signoff_profile ∈ {samolet_pilot, production}`. Development / fixture / default demo **не** требуют reviewer roles (static bearer всё равно blocked на HITL write). Не демонстрировать ролевую модель под non-pilot профилем и утверждать, что gate живой.
+HITL reviewer-role gate **включён только** при `signoff_profile ∈ {customer_pilot, production}`. Development / fixture / default demo **не** требуют reviewer roles (static bearer всё равно blocked на HITL write). Не демонстрировать ролевую модель под non-pilot профилем и утверждать, что gate живой.
 
 Non-dev: `AEROBIM_ENV != development` + empty bearer + no OIDC → Settings/bootstrap отказывается стартовать. Soft clash env flags игнорируются под pilot/production. Non-dev default `signoff_profile=production`.
 
@@ -965,7 +965,7 @@ ACL: cross-tenant → **404** (не 403). Object enumeration избегаетс�
 | T3 | Round-trip fidelity | Topics/comments/viewpoints переживают CDE → re-export | NOT_STARTED (блок T2) |
 | T4 | Production handoff | Повторные импорты под signed scope | NOT_STARTED |
 
-Целевая СОД идентифицирована 28.08 на уровне адреса: **10D** (samolet10d.ru); confirmation = origin share-link; содержимое папок не читалось; тип доступа неизвестен. Путь закрытия без файлов заказчика: vendor public Swagger + developer demo license + synthetic BCF в demo-tenant — это **engineering evidence**, не proof реестра заказчика. `claim_allowed` остаётся false до реального импорта.
+Целевая СОД идентифицирована 28.08 на уровне адреса: **10D** (customer10d.ru); confirmation = origin share-link; содержимое папок не читалось; тип доступа неизвестен. Путь закрытия без файлов заказчика: vendor public Swagger + developer demo license + synthetic BCF в demo-tenant — это **engineering evidence**, не proof реестра заказчика. `claim_allowed` остаётся false до реального импорта.
 
 Запрещено до T2+: BCF ready for CDE; CDE interoperable; production BCF handoff; integrated with customer CDE. OpenCDE BCF API push = Foundation, не T2.
 
@@ -1017,9 +1017,9 @@ ACL: cross-tenant → **404** (не 403). Object enumeration избегаетс�
 
 **SPb GAU CGE profile:** OFFICIAL_PUBLISHED, не customer-signed, не закрывает RT-001/002, не акт экспертизы.
 
-**Москва AGR CIM IFC с 02.04.2026** (17-ПП + приказ DIT/DGP) — **городское правило подачи**, линейка RT-002a, не профиль приёмки Самолёта.
+**Москва AGR CIM IFC с 02.04.2026** (17-ПП + приказ DIT/DGP) — **городское правило подачи**, линейка RT-002a, не профиль приёмки заказчика канала.
 
-**Renga:** не стек Самолёта без квалификатора ИЖС.
+**Renga:** не стек заказчика канала без квалификатора ИЖС.
 
 **Fixture extraction:** RU macro F1 на фикстуре ≈0,86 в alignment-доке — **не** customer accuracy. EN structured corpus macro F1 1.0 на structured fixtures — не продукт.
 
@@ -1031,7 +1031,7 @@ ACL: cross-tenant → **404** (не 403). Object enumeration избегаетс�
 
 **UI:** не грузит Google Fonts. Не delivered full-cycle workplace. Восемь IA screens все `partial`.
 
-**Priority profile:** `AEROBIM_PRIORITY_PROFILE=samolet` (fire/structure/cross-doc boost) — приоритизация, не accuracy.
+**Priority profile:** `AEROBIM_PRIORITY_PROFILE=customer` (fire/structure/cross-doc boost) — приоритизация, не accuracy.
 
 **ISO 19650-lite поля** на отчётах — metadata Shared-gate, не CDE.
 
@@ -1053,7 +1053,7 @@ ACL: cross-tenant → **404** (не 403). Object enumeration избегаетс�
 
 Если покажут PDF ТЗ v1 на 6 страницах: это бриф конкурса; канон — ТЗ v2; >90% — цель оценивания.
 
-Если спросят про 1,5 ГБ: приём и разбор через RocksDB до 1,5 ГБ; SPF в RAM и WASM — 256 МиБ; первый файл >1,5 ГБ — отказ analyze, не по норме; RSS на файле Самолёта не замерен.
+Если спросят про 1,5 ГБ: приём и разбор через RocksDB до 1,5 ГБ; SPF в RAM и WASM — 256 МиБ; первый файл >1,5 ГБ — отказ analyze, не по норме; RSS на файле заказчика не замерен.
 
 Вопрос №1 комиссии про разграничение доступа — дословно §4.5 стоп-лист не покрывает, ответ: «Переключатель в шапке — макет экрана, не RBAC. GET `/v1/auth/bff` = 501, это не OIDC. HITL-запись на сервере: shared Bearer и роль viewer/user под pilot/production → 403. Cookie в браузере права эксперта не выдаёт. Production SSO в этом окне не обещаем.»
 
@@ -1079,7 +1079,7 @@ ADR-004: prize IP vs п. 6.3; MIT fork honesty; не обещать exclusive-ri
 
 ## 19. Инженерные блокеры: что OPEN для customer sign-off
 
-Живые residual volumes: RT-001b dual **human** raters; RT-001c customer corpus; RT-002c Samolet signature; RT-003b `mep_system_clash`; RT-003c customer federated IFC; CDE T2; production OIDC BFF DESIGNED/NOT_IMPLEMENTED.
+Живые residual volumes: RT-001b dual **human** raters; RT-001c customer corpus; RT-002c the appointing party signature; RT-003b `mep_system_clash`; RT-003c customer federated IFC; CDE T2; production OIDC BFF DESIGNED/NOT_IMPLEMENTED.
 
 Закрытые remediation (не переоткрывать как open, если нет регрессии): RT-004 clash SKIPPED blocks pass; RT-005 tenant ACL; RT-006 frontend tests in CI; RT-007 finding provenance contract; RT-008 PARTIAL (T1 yes, T2 no); RT-010 calculation_correctness=NOT_IMPLEMENTED honesty; RT-011 capabilities API; RT-012 SLA claim gate schema (customer SLA всё ещё не доказан); N-18 attestation forgery; LIC-001 core PDF Option B; POST-01..04, 06..11 security/fail-closed wave; RTATOM wave A1/A2 hygiene.
 
@@ -1107,9 +1107,9 @@ ADR-004: prize IP vs п. 6.3; MIT fork honesty; не обещать exclusive-ri
 | КТ#2 STATUS.json `checkpoint_verdict=NO_GO` | HISTORICAL_PIN обязательный | |
 | `independent_human_raters>0` без human adjudicator_id | OVERCLAIM | |
 | `closes_rt001: true` без a/b/c | OVERCLAIM | |
-| `agr_pack` как закрытие подписи Самолёта | OVERCLAIM | RT-002a only |
+| `agr_pack` как закрытие подписи заказчика канала | OVERCLAIM | RT-002a only |
 | κ=0.705 как «два эксперта» | OVERCLAIM | sim-rater |
-| 16,7% как product accuracy / Samolet KPI | OVERCLAIM | coverage_map_only |
+| 16,7% как product accuracy / the appointing party KPI | OVERCLAIM | coverage_map_only |
 | 1/8 mutation-kill как recall продукта | OVERCLAIM | synthetic_only |
 | n=6 AABB P=R=1.0 как метрика коллизий | OVERCLAIM | Wilson lower ≈0.61; не жюри |
 | Form 5/5 или «документы TBD заполнены» = customer_go | OVERCLAIM | |
@@ -1130,7 +1130,7 @@ ADR-004: prize IP vs п. 6.3; MIT fork honesty; не обещать exclusive-ri
 | «RT-002 CLOSED» без a/b/c | forbidden | OVERCLAIM |
 | «RT-001b CLOSED» | speech омонимия | OVERCLAIM |
 | Канал 25.08 описан как «нет данных» | speech fail | DRIFT |
-| Checkpoint GO произнесён как «можно в прод Самолёта» | Customer GO leak | OVERCLAIM |
+| Checkpoint GO произнесён как «можно в прод заказчика канала» | Customer GO leak | OVERCLAIM |
 | Stale NO_GO на живом SSOT (константы, README, формула FAQ) | incomplete re-scope | DRIFT |
 | Stale NO_GO на July CLAIMS_LOCK / КТ#2 handoff | expected | HISTORICAL_PIN |
 | ТЗ v2 YAML всё ещё пишет Checkpoint NO_GO | source TZ vs ontology | DRIFT (не OVERCLAIM продукта, если речь жюри уже GO) |
@@ -1151,14 +1151,14 @@ ADR-004: prize IP vs п. 6.3; MIT fork honesty; не обещать exclusive-ri
 4. MEP delivered; mep_system_clash=OK; pipe vs wall = system-aware; HVAC fixture = координация ИОС заказчика; IfcFlowTerminal на АР = граф заказчика.
 5. CDE-ready BCF; 10D import proven; Tangl/10D integration; «интегрированы с платформой заказчика».
 6. Production-ready; fully Russian stack; Qwen ready as product; OIDC live / облако с логином; SPF-open 1,5 ГБ; WASM 1,5 ГБ.
-7. «Закрыли ТЗ Самолёта»; «пакет заказчика проверен»; 43 ГБ обработаны; NDA подписан; режим данных согласован.
+7. «Закрыли ТЗ заказчика канала»; «пакет заказчика проверен»; 43 ГБ обработаны; NDA подписан; режим данных согласован.
 8. First-in-Russia version compare; точнее городского нормоконтроля; замена bSI validator / зарубежных проверяльщиков; SP 63 template customer-approved.
 9. Приз в кармане; 52,6 как наш балл; порог 50 автоматический; УГТ 5; независимая ОГТ; 42001 сертификат; 72514/72515 сертификат; ПНСТ 841 SQuaRE; законопроект 166424 как закон.
 10. 10,1 млрд как SAM; 25,1 млрд как наша выручка; −72% как наш эффект; «спасём МСФО»; CAPEX-запрос; РСБУ +31% как группа.
 11. Iversen F1 как наш; «мы лучше Iversen»; LLM выбирает проверки на Shared-gate.
 12. Fixture n=6 AABB как метрика коллизий для жюри.
 13. Симулированные разметчики = люди; LLM = rater; автор фикстуры дважды.
-14. Городской IDS / AGR = подпись Самолёта; текст EIR = customer_approved; СТО unsigned = deployed.
+14. Городской IDS / AGR = подпись заказчика канала; текст EIR = customer_approved; СТО unsigned = deployed.
 15. Signed OOS = RT-003 CLOSED; Form 5/5 = customer_go; eng readiness = customer GO; Checkpoint GO = можно в прод.
 16. Недифференцированное RT-001/002/003 CLOSED.
 17. QTO/MATCH Office = calculation_correctness / LIRA solver.
@@ -1193,7 +1193,7 @@ C. TZ coverage (ТР-1…ТР-68)
    Не суммировать в «ТЗ закрыто»
 
 D. TZ §9 vs actual measurement
-   - 0.60 dual-human: не измерено на Самолёте; sim κ не заменяет
+   - 0.60 dual-human: не измерено на заказчике канала; sim κ не заменяет
    - >0.90: publishable false
    - 30 min: fixture only; 25.08 не подтвердил
    - HITL accept rate: протокол есть, партнёрских часов нет
@@ -1263,7 +1263,7 @@ M. Final
 
 ## 24. Краткая карта «что считать выполненным для жюри vs заказчика»
 
-| Слой | Для жюри / измерения | Для Самолёта / customer_go |
+| Слой | Для жюри / измерения | Для заказчика канала / customer_go |
 |---|---|---|
 | IFC+IDS fail-closed | да, фикстура | их pack_hash + signed IDS |
 | Замечание с GUID и нормой | да, учебный комплект | цитата СТО из их папок 1.2.1 |
@@ -1276,7 +1276,7 @@ M. Final
 | UI | review shell / CLI жюри | не «рабочее место сдано» |
 | Auth | 501 honesty | не SSO |
 
-Короткий ответ на «почему customer_go false, если ТЗ закрыто документацией?»: ТЗ v2 закрывает *содержание* проверки на учебном комплекте (Messick content). Оно не закрывает *критерий* «пилотировать на комплектах Самолёта». Документы TBD заполнены; `customer_go` рисует заказчик. Checkpoint `GO` — регуляторно-измерительный MVP. `customer_go` false — статус **приёмки**, не статус «команда не готова измерять». Публичный критерий Техлаба «готовность к внедрению» переводить в «готовность к пилоту на согласованном пакете», не в «внедрено».
+Короткий ответ на «почему customer_go false, если ТЗ закрыто документацией?»: ТЗ v2 закрывает *содержание* проверки на учебном комплекте (Messick content). Оно не закрывает *критерий* «пилотировать на комплектах заказчика канала». Документы TBD заполнены; `customer_go` рисует заказчик. Checkpoint `GO` — регуляторно-измерительный MVP. `customer_go` false — статус **приёмки**, не статус «команда не готова измерять». Публичный критерий Техлаба «готовность к внедрению» переводить в «готовность к пилоту на согласованном пакете», не в «внедрено».
 
 ---
 

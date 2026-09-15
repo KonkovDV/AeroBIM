@@ -4,7 +4,7 @@ title: "IDS fail-closed gate (ifcVersion vs FILE_SCHEMA)"
 date: 2026-08-13
 claim_level: ids_fail_closed_gate
 claim_boundary: >-
-  AeroBIM fail-closes IDS ifcVersion vs IFC FILE_SCHEMA and IfcTester SKIPPED specs. buildingSMART case 0101 documents version-as-metadata; we disagree on purpose. Not product accuracy. Not CIM compliance. Not Samolet acceptance.
+  AeroBIM fail-closes IDS ifcVersion vs IFC FILE_SCHEMA and IfcTester SKIPPED specs. buildingSMART case 0101 documents version-as-metadata; we disagree on purpose. Not product accuracy. Not CIM compliance. Not appointing-party acceptance.
 ---
 
 # IDS fail-closed — silent skip closed

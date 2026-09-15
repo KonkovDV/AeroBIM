@@ -10,7 +10,7 @@ closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   Mutation-kill recall on injected synthetics. Output-sensitivity proxy, not
-  semantic defect confirmation. Not Samolet accuracy. Not product accuracy.
+  semantic defect confirmation. Not appointing-party accuracy. Not product accuracy.
   Checkpoint GO; customer_go false. Two contours: channel IFC (not in git; data regime not agreed)
   and the published inject_defects mini-IFC (git-reproducible).
 ---
@@ -39,7 +39,7 @@ CLI склейки: `python -m aerobim.tools.evaluate_injection_recall`
 Отклонение от плана 2026-08-30: план требовал шовно-чистый пакет с
 `summary.passed=true`. По команде дорожной карты 03.09 источник — канальный IFC
 (дерево владельца; режим данных не согласован; не публикуется) плюс git-фикстура инжектора. Атрибуция — через
-CONTROL-дифф. Recall на синтетике **не** переносится на комплект Самолёта.
+CONTROL-дифф. Recall на синтетике **не** переносится на комплект заказчика.
 
 Поле JSON `"checkpoint": "NO_GO"` — **HISTORICAL_PIN** прогона 03.09
 (`git_commit` `929a787a…`). Живой SSOT — `CHECKPOINT=GO` /
@@ -124,7 +124,7 @@ python -m aerobim.tools.evaluate_injection_recall \
   pack: мутации либо не в наблюдаемом пространстве (sidecar, заголовок
   STEP, неиспользуемый MILLI), либо класс не применился.
 - Число 1/8 на фикстуре — единственный класс, который demo-контур умеет
-  увидеть (отсутствие IFCWALL). Не переносить на Самолёта.
+  увидеть (отсутствие IFCWALL). Не переносить на заказчика канала.
 
 Следующий замер — отдельный протокол с новым seed-журналом: либо инжектор
 бьёт в `IFCSPACE.NetFloorArea` / `Pset_WallCommon.FireRating`, либо контур

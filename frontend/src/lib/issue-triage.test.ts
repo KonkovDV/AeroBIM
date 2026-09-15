@@ -310,7 +310,7 @@ describe("issue-triage", () => {
         layer: "coverage_note",
         patch: { rule_id: "REQ-FIRE-001", message: "No elements found for entity IFCWALL" },
       },
-      { layer: "coverage_note", patch: { rule_id: "SAM-AR-001", message: "coverage" } },
+      { layer: "coverage_note", patch: { rule_id: "TYP-AR-001", message: "coverage" } },
       {
         layer: "coverage_note",
         patch: {
@@ -320,7 +320,7 @@ describe("issue-triage", () => {
           target_ref: null,
         },
       },
-      { layer: "pack_finding", patch: { rule_id: "SAM-AR-020", element_guid: "g1" } },
+      { layer: "pack_finding", patch: { rule_id: "TYP-AR-020", element_guid: "g1" } },
       { layer: "service_record", patch: { rule_id: "AEROBIM-CLASH-CAPABILITY" } },
       { layer: "advisory_candidate", patch: { origin: "advisory", rule_id: "ADV-X" } },
       { layer: "coverage_note", patch: { rule_id: "AEROBIM-LOAD-FORMAT", element_guid: null } },

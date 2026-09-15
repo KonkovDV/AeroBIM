@@ -17,14 +17,14 @@ Public GitHub carries the **TechLab jury pack** only. Operator runbooks and NDA 
 | Document | Path | Role |
 |----------|------|------|
 | Jury memo (RU) | [`../docs.md`](../docs.md) | Technical justification |
-| Strategy | `../samolet.md` | Samolet wedge |
+| Strategy | `../customer.md` | the appointing party wedge |
 | Compliance matrix | [`TZ_COMPLIANCE_MATRIX_2026.md`](TZ_COMPLIANCE_MATRIX_2026.md) | TZ ↔ product |
 | Architecture requirements | [`TZ_ARCHITECTURE_REQUIREMENTS_2026.md`](TZ_ARCHITECTURE_REQUIREMENTS_2026.md) | Architecture fill |
 | Build & quality | [`TZ_BUILD_AND_QUALITY_2026.md`](TZ_BUILD_AND_QUALITY_2026.md) | Build fill |
 | Solution image & presentation | [`TZ_SOLUTION_IMAGE_AND_PRESENTATION_2026.md`](TZ_SOLUTION_IMAGE_AND_PRESENTATION_2026.md) | Demo + slides |
 | Claim boundary | [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md) | Verified vs non-claims |
 | Claims lock / blockers | [`../../audit/reports/`](../../audit/reports/) | Wording + **NO_GO** |
-| Samolet alignment | [`../samolet-techlab-alignment-2026.md`](../samolet-techlab-alignment-2026.md) | R1–R15 |
+| the appointing party alignment | [`../techlab-alignment-2026.md`](../techlab-alignment-2026.md) | R1–R15 |
 | Architecture SSOT | [`../architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](../architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) | Hybrid target |
 | Reproducibility | [`../REPRODUCIBILITY-2026.md`](../REPRODUCIBILITY-2026.md) | FAIR |
 | Security | [`../../SECURITY.md`](../../SECURITY.md) | Reporting |

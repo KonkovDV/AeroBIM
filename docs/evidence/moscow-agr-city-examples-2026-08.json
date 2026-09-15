@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "artifact_type": "moscow_agr_city_examples",
   "claim_level": "moscow_agr_city_example_rehearsal",
-  "claim_boundary": "City-published AGR CIM examples (stroimprosto.mos.ru cim-agr). Not a PD pack: no sheets, TZ, two revisions, calculations, or expertise remarks. Not a Samolet-signed profile. Class-1 AGR exchange + official IDS engine coverage only. Checkpoint GO; customer_go false.",
+  "claim_boundary": "City-published AGR CIM examples (stroimprosto.mos.ru cim-agr). Not a PD pack: no sheets, TZ, two revisions, calculations, or expertise remarks. Not a appointing-party-signed profile. Class-1 AGR exchange + official IDS engine coverage only. Checkpoint GO; customer_go false.",
   "generated_at": "2026-08-23T23:45:17.708866+00:00",
   "status": "RUN",
   "closes_rt001": false,

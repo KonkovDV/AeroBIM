@@ -1,8 +1,8 @@
 {
-  "artifact_type": "samolet_package_sla",
+  "artifact_type": "customer_package_sla",
   "schema_version": "1.4.0",
   "generated_at": "2026-08-03T22:37:38.192060+00:00",
-  "customer_reference": "https://i.moscow/techlab/samolet",
+  "customer_reference": "https://i.moscow/techlab",
   "sla_target_minutes": 30.0,
   "sla_pass": true,
   "sla_gate_metric": "p95_minutes_observed",
@@ -31,7 +31,7 @@
     {
       "path": "samples/ifc/walls-multi-entity.ifc",
       "bytes": 1142,
-      "sha256": "b64f7ea2ce88183f6a9c08969327d516ba7fe75057083fe3b326f49cebfa4ebe"
+      "sha256": "40e546fa793212dbebc94acbf29546d35d75fbafd47f3b85b4ec5c9277451cbd"
     },
     {
       "path": "samples/ids/wall-fire-rating.ids",

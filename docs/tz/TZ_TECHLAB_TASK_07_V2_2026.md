@@ -3,12 +3,12 @@
 > **Нумерация раздачи, не Положение.** Историческое «07» в имени файла может не совпадать с приложением 4 Положения. До ответа оператора МИК в публичных формулировках номер не используем. См. [`../partners/TECHLAB_TASK_07_READINESS_2026.md`](../partners/TECHLAB_TASK_07_READINESS_2026.md).
 
 ---
-title: "ТЗ Самолет × ТехЛаб 2026 — Задача 07 (редакция v2.0)"
+title: "ТЗ заказчик канала × ТехЛаб 2026 — Задача 07 (редакция v2.0)"
 status: active
 version: "2.4.0"
 last_updated: "2026-09-05"
 language: ru
-tags: [aerobim, tz, samolet, techlab, task-07]
+tags: [aerobim, tz, customer, techlab, task-07]
 claim_boundary: >
   Документ согласован с Claims Lock и CRITICAL_BLOCKERS.
   Живой product checkpoint (04.09) = GO regulatory_measurement_mvp.
@@ -24,7 +24,7 @@ basis:
 
 # Техническое задание v2.0
 
-**Конкурс:** Самолет × ТехЛаб 2026  
+**Конкурс:** заказчик канала × ТехЛаб 2026  
 **Задача 07:** Система автоматизированной верификации проектной и рабочей документации  
 **База реализации:** open-source AeroBIM ([KonkovDV/AeroBIM](https://github.com/KonkovDV/AeroBIM))  
 **Дата редакции:** 2026-07-17  
@@ -375,7 +375,7 @@ basis:
 ---
 
 ## 13. Матрица зависимостей от заказчика `[НОВОЕ]`  
-*(SSOT: `SAMOLET_TZ_REMAINING_TAILS_2026_07.md`)*
+*(SSOT: `CUSTOMER_TZ_REMAINING_TAILS_2026_07.md`)*
 
 | # | Поставка заказчика | Разблокирует |
 |---|-------------------|--------------|

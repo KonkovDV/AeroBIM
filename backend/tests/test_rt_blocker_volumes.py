@@ -50,7 +50,7 @@ class RtBlockerVolumeTests(unittest.TestCase):
         self.assertTrue(payload["RT-002"]["eir_v4_present"])
         self.assertTrue(payload["RT-002"]["bim_standard_v4_present"])
         self.assertFalse(payload["RT-002"]["customer_approved_ids"])
-        self.assertFalse(payload["RT-002"]["pointer_samolet_alias"])
+        self.assertFalse(payload["RT-002"]["pointer_customer_alias"])
         self.assertGreaterEqual(payload["RT-002"]["ids_counts"]["moexp"], 20)
         self.assertGreaterEqual(payload["RT-002"]["ids_counts"]["spb_cge"], 15)
         self.assertGreaterEqual(payload["RT-002"]["ids_counts"]["moscow_agr"], 3)

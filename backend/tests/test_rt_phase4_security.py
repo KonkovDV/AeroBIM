@@ -144,7 +144,7 @@ class ObjectStoreFallbackTests(unittest.TestCase):
             storage_dir=Path("."),
             debug=True,
             s3_bucket="aerobim-pilot",
-            signoff_profile="samolet_pilot",
+            signoff_profile="customer_pilot",
         )
         with patch(
             "aerobim.infrastructure.di._di_factories.S3ObjectStore",

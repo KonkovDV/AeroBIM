@@ -67,7 +67,7 @@ class LiveReviewSmokeHelperTests(unittest.TestCase):
         self.assertEqual(env["AEROBIM_ENV"], "development")
         self.assertEqual(env["AEROBIM_ALLOW_ANONYMOUS_DEV"], "true")
         self.assertEqual(env["AEROBIM_API_TENANT_ID"], SMOKE_TENANT_ID)
-        self.assertEqual(env["AEROBIM_PRIORITY_PROFILE"], "samolet")
+        self.assertEqual(env["AEROBIM_PRIORITY_PROFILE"], "customer")
         self.assertEqual(env["AEROBIM_REMARK_LOCALE"], "ru")
         # An inherited token disables the anonymous branch; the browser calls the
         # backend directly and has no way to present one.
@@ -75,7 +75,7 @@ class LiveReviewSmokeHelperTests(unittest.TestCase):
 
     def test_build_backend_env_drops_inherited_pilot_signoff(self) -> None:
         env = build_backend_env(
-            base_env={"AEROBIM_SIGNOFF_PROFILE": "samolet_pilot"},
+            base_env={"AEROBIM_SIGNOFF_PROFILE": "customer_pilot"},
             storage_dir=Path("c:/tmp/live-smoke"),
             port=8081,
             frontend_origin="http://127.0.0.1:3000",

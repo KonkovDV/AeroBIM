@@ -1,4 +1,4 @@
-"""Samolet answers 2026-08-25 — upload caps, remark shape, roles, intake honesty."""
+"""Appointing-party questionnaire answers 2026-08-25 — caps, remarks, roles, intake."""
 
 from __future__ import annotations
 
@@ -11,20 +11,20 @@ from unittest.mock import patch
 
 from aerobim.core.config.settings import Settings
 from aerobim.core.security.upload_limits import (
-    SAMOLET_STATED_MODEL_BYTES,
-    SAMOLET_STATED_OFFICE_BYTES,
+    PILOT_STATED_MODEL_BYTES,
+    PILOT_STATED_OFFICE_BYTES,
     classify_upload_kind,
     upload_limit_bytes,
 )
 from aerobim.domain.auth_roles import HITL_REVIEWER_ROLES, VIEWER_ROLES
 from aerobim.domain.checkpoint import CHECKPOINT
+from aerobim.domain.customer_channel_answers import customer_channel_answers_payload
 from aerobim.domain.models import (
     ComparisonOperator,
     FindingCategory,
     Severity,
     ValidationIssue,
 )
-from aerobim.domain.samolet_mvp_answers import samolet_mvp_answers_payload
 from aerobim.infrastructure.adapters.template_remark_generator import TemplateRemarkGenerator
 
 
@@ -49,11 +49,11 @@ class UploadLimitClassificationTests(unittest.TestCase):
         self.assertEqual(
             upload_limit_bytes(
                 "a.pdf",
-                max_office_bytes=SAMOLET_STATED_OFFICE_BYTES,
-                max_model_bytes=SAMOLET_STATED_MODEL_BYTES,
-                envelope_bytes=SAMOLET_STATED_MODEL_BYTES,
+                max_office_bytes=PILOT_STATED_OFFICE_BYTES,
+                max_model_bytes=PILOT_STATED_MODEL_BYTES,
+                envelope_bytes=PILOT_STATED_MODEL_BYTES,
             ),
-            SAMOLET_STATED_OFFICE_BYTES,
+            PILOT_STATED_OFFICE_BYTES,
         )
 
 
@@ -73,29 +73,29 @@ class SettingsUploadLimitTests(unittest.TestCase):
     def test_from_env_pilot_applies_stated_caps(self) -> None:
         env = {
             "AEROBIM_ENV": "development",
-            "AEROBIM_SIGNOFF_PROFILE": "samolet_pilot",
+            "AEROBIM_SIGNOFF_PROFILE": "customer_pilot",
             "AEROBIM_API_BEARER_TOKEN": "test-pilot-bearer",
             "AEROBIM_LLM_ADVISORY_ENABLED": "false",
         }
         with patch.dict(os.environ, env, clear=False):
-            os.environ.pop("AEROBIM_APPLY_SAMOLET_UPLOAD_CAPS", None)
+            os.environ.pop("AEROBIM_APPLY_PILOT_UPLOAD_CAPS", None)
             os.environ.pop("AEROBIM_MAX_OFFICE_BYTES", None)
             os.environ.pop("AEROBIM_MAX_MODEL_BYTES", None)
             os.environ.pop("AEROBIM_MAX_UPLOAD_BYTES", None)
             os.environ.pop("AEROBIM_MAX_IFC_BYTES", None)
             settings = Settings.from_env()
-        self.assertEqual(settings.max_office_bytes, SAMOLET_STATED_OFFICE_BYTES)
-        self.assertEqual(settings.max_model_bytes, SAMOLET_STATED_MODEL_BYTES)
+        self.assertEqual(settings.max_office_bytes, PILOT_STATED_OFFICE_BYTES)
+        self.assertEqual(settings.max_model_bytes, PILOT_STATED_MODEL_BYTES)
         self.assertEqual(settings.max_ifc_bytes, 256 * 1024 * 1024)
-        self.assertEqual(settings.upload_limit_for_filename("a.pdf"), SAMOLET_STATED_OFFICE_BYTES)
-        self.assertEqual(settings.upload_limit_for_filename("a.ifc"), SAMOLET_STATED_MODEL_BYTES)
+        self.assertEqual(settings.upload_limit_for_filename("a.pdf"), PILOT_STATED_OFFICE_BYTES)
+        self.assertEqual(settings.upload_limit_for_filename("a.ifc"), PILOT_STATED_MODEL_BYTES)
 
     def test_from_env_can_disable_stated_caps(self) -> None:
         env = {
             "AEROBIM_ENV": "development",
-            "AEROBIM_SIGNOFF_PROFILE": "samolet_pilot",
+            "AEROBIM_SIGNOFF_PROFILE": "customer_pilot",
             "AEROBIM_API_BEARER_TOKEN": "test-pilot-bearer",
-            "AEROBIM_APPLY_SAMOLET_UPLOAD_CAPS": "0",
+            "AEROBIM_APPLY_PILOT_UPLOAD_CAPS": "0",
             "AEROBIM_LLM_ADVISORY_ENABLED": "false",
         }
         with patch.dict(os.environ, env, clear=False):
@@ -165,12 +165,12 @@ class RoleAliasTests(unittest.TestCase):
         self.assertNotIn("viewer", HITL_REVIEWER_ROLES)
 
 
-class SamoletAnswersHonestyTests(unittest.TestCase):
+class CustomerChannelAnswersHonestyTests(unittest.TestCase):
     def _repo(self) -> Path:
         return Path(__file__).resolve().parents[2]
 
     def test_capabilities_payload_keeps_blockers_open(self) -> None:
-        payload = samolet_mvp_answers_payload()
+        payload = customer_channel_answers_payload()
         self.assertFalse(payload["closes_rt001"])
         self.assertFalse(payload["closes_rt002"])
         self.assertFalse(payload["closes_rt003"])
@@ -222,7 +222,7 @@ class SamoletAnswersHonestyTests(unittest.TestCase):
         self.assertFalse(speech["hashed_pack_in_git"])
 
     def test_catalog_share_metadata_stays_unconfirmed(self) -> None:
-        path = self._repo() / "samples" / "benchmarks" / "samolet-typical-errors-catalog.json"
+        path = self._repo() / "samples" / "benchmarks" / "typical-errors-catalog.json"
         catalog = json.loads(path.read_text(encoding="utf-8"))
         self.assertEqual(catalog["customer_confirmed_patterns"], 0)
         self.assertFalse(catalog["customer_share_ingested"])

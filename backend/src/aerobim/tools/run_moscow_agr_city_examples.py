@@ -171,7 +171,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
             "# Moscow AGR city examples",
             "",
             "Official IFCs from the city article, plus already-vendored IDS/TEP/Vedomost. ",
-            "**Not** a PD pack. **Not** Samolet. Clash/MEP stay SKIPPED under ",
+            "**Not** a PD pack. **Not** the appointing party. Clash/MEP stay SKIPPED under ",
             "`moscow_agr_2026`. Injector is not run. TEP sidecar is the official ",
             "published example reused for every IFC (not a per-model TEP). IDS ",
             "files are role-matched (ПС→ПС, БиО→БиО, АР→Общие+МССК).",

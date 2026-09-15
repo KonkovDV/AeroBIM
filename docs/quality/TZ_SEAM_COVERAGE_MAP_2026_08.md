@@ -19,7 +19,7 @@ claim_boundary: >
 
 # TZ seam coverage map (26.08.2026)
 
-**Question.** What may a local owner-disk NDA package license for Samolet TechLab Task PD/RD verification, given the August 2026 literature, and what must not be said.
+**Question.** What may a local owner-disk NDA package license for TechLab Task PD/RD verification, given the August 2026 literature, and what must not be said.
 
 **Method.** Messick (1995) aspects + Kane (2013) Interpretation/Use Argument. Rule classes: Solihin & Eastman (2015). Pack facts are `coverage_map_only` (entity/property presence), not TP/FP. NDA binaries, GUIDs, remark text, and file hashes are not in git.
 
@@ -37,9 +37,9 @@ The pack **supplies carriers** for a coverage map (IFC AR+KR, PD PDFs, EIR/LOD w
 | **P0** | LLM-as-judge (arXiv:2606.19544): agreement ≠ Cohen’s κ | Dual human raters remain the gate | «Модель подтвердила findings» |
 | **P1** | Ishigaki-IDS-Bench (arXiv:2605.22079): zero-shot Content-pass **27.7–33.1 %**. Ishigaki-IDS-8B (arXiv:2606.08545): validator-pass **0.651**, still a **draft** aid | Human-reviewed IDS draft only | `customer_approved` from an LLM |
 | **P1** | DrawingVQA (arXiv:2607.15418; CVPR Findings 2026): **main table** professionals **94.9 %** vs Gemini-2.5-pro **71.7 %** (undergraduates **62.8 %**). Supplementary Gemini-3-pro-preview **77.2 %** is not the main-table SOTA. R3 / QTO remain the bottleneck; original IFC drawing images are **not** fully public | VLM advisory; no sheet sign-off | TZ comparison tasks 1/3/7 closed; those % as AeroBIM |
-| **P1** | buildingSMART IDS **1.0** final (1 June 2024). IDS **1.1** still feedback as of 26.08.2026 | Checking vs audit split | «IDS 1.1 / certified Samolet profile» |
+| **P1** | buildingSMART IDS **1.0** final (1 June 2024). IDS **1.1** still feedback as of 26.08.2026 | Checking vs audit split | «IDS 1.1 / certified the appointing party profile» |
 | **P2** | Filename inventory of PD volumes: conventional labels 1–9, 11, 13 on loose PDFs; label **10** in a primary archive; label **12 unseen**. Engine completeness keys `section_code` before `discipline` — numeric `3` is not AR | Structural completeness is a declared-inventory check, not statutory PP-87 | «Комплект по 87-ПП сертифицирован» |
-| **P2** | Jurisdiction IFC pre-check 2026: CORENET X Model Checker (schema → quality; regulatory later; BCF out) **[П]**; Finland RAVA3.5.3 national IDS (updated **30.06.2026**) **[П]**; Moscow CIM AGR self-check since **29.06.2026** **[П]** | Same *pattern* as RT-002a (city-as-publisher). Appointing-party EIR in this pack is still RVT/NWD | «Самолёту уже выдан IDS государства»; sell AGR-check as Task 07 |
+| **P2** | Jurisdiction IFC pre-check 2026: CORENET X Model Checker (schema → quality; regulatory later; BCF out) **[П]**; Finland RAVA3.5.3 national IDS (updated **30.06.2026**) **[П]**; Moscow CIM AGR self-check since **29.06.2026** **[П]** | Same *pattern* as RT-002a (city-as-publisher). Appointing-party EIR in this pack is still RVT/NWD | «заказчику канала уже выдан IDS государства»; sell AGR-check as Task 07 |
 
 ## 1. Construct (what the sponsor asked)
 
@@ -57,13 +57,13 @@ Design TZ for the two residential houses states fire resistance **not below II**
 
 ## 2. Pack facts (no project names, no hashes)
 
-Local owner-disk NDA tree, gitignored. Analyze cap **256 MiB** unchanged. 14 IFC analysed with **fixture** IDS/rules; 1 AR IFC over cap = entity inventory only. `summary.passed` observed false. Fixture `issue_count` is **not** a Samolet defect list.
+Local owner-disk NDA tree, gitignored. Analyze cap **256 MiB** unchanged. 14 IFC analysed with **fixture** IDS/rules; 1 AR IFC over cap = entity inventory only. `summary.passed` observed false. Fixture `issue_count` is **not** a customer defect list.
 
 | Carrier | Count (this rehearsal) | Engine consequence |
 |---|---|---|
 | IFC | 15 (IFC2x3); 1 over analyze cap | Ingest ≠ native RVT/NWD |
 | Unpack tree (30.08 evening, gitignored) | **6408** files (morning 6467 included shells); IFC copies 4; PDF 2046; DWG 1877; RVT 75; LIRA family present | Coverage map of carriers; **not** processed; natives still fail-closed — [`../evidence/unpack-census-2026-08.md`](../evidence/unpack-census-2026-08.md) · depth [`../evidence/deep-study-carrier-facts-2026-08.md`](../evidence/deep-study-carrier-facts-2026-08.md) |
-| IfcSpace on 6 AR of one PD package | 10 599; **0** NetFloorArea; sampled pset = `Pset_SpaceCommon.Reference` only | SAM-TYP-008 has nothing to read; K0/K1/K2 not measurable |
+| IfcSpace on 6 AR of one PD package | 10 599; **0** NetFloorArea; sampled pset = `Pset_SpaceCommon.Reference` only | TYP-ERR-008 has nothing to read; K0/K1/K2 not measurable |
 | IfcSpace on one sister AR | 1 339; **0** NetFloorArea | Same gap |
 | IfcWall FireRating (6 AR) | 3 538 / 62 033 nonempty **on walls**, class EI 45; doors on the same files: EI30 / EI60 / EIS60 | Not II/C0; not REI60; do not quote door classes as the wall rate |
 | IfcReinforcingBar (15 IFC) | **0** | Class 4 / TZ task 7 blocked; wall pset *pitch* ≠ bars |
@@ -108,10 +108,10 @@ Only items that change the IUA. Blogs without method are out.
 | L-CLASH | *Buildings* 16(13):2623 (2026) | Detection mature; filter is human | AR↔KR clash rehearsal ≠ delivered | MEP delivered |
 | L-IDS-std | bSI IDS 1.0 (2024-06-01); 1.1/2.0 **feedback** (Tomczak 2026-05-14; bSI standards page) | Standard vs wishlist | Checking = IfcTester 1.0 | IDS 1.1 final |
 | L-CORE | CORENET X IFC-SG Model Checker **[П]** | Staged: schema on upload → quality (MVP) → regulatory later; results as BCF | Analog: city AGR IDS = RT-002a | Appointing-party EIR is RVT/NWD |
-| L-RAVA | Finland RAVA3.5.3 **[П]** (IDS + IFC test models; update **30.06.2026**, kirahub.org/rava3pro) | National *permit* information requirements as IDS | Same pattern as MOGE IDS: jurisdiction publisher | Samolet-signed EIR |
+| L-RAVA | Finland RAVA3.5.3 **[П]** (IDS + IFC test models; update **30.06.2026**, kirahub.org/rava3pro) | National *permit* information requirements as IDS | Same pattern as MOGE IDS: jurisdiction publisher | appointing-party-signed EIR |
 | L-AGR | Moscow CIM AGR self-check mandatory since 29.06.2026 **[П]** | City portal, free | Not our SKU | Sell AGR-check to the sponsor |
 
-OSINT for speech (not a pitch): NKP **A.ru / stable** as of **20.03.2026** **[П]** (`ratings.ru` Samolet-RA-200326). Do not say the February «неопределённый» forecast as current. RF developer volume: still the national leader by EISHS-based league tables **[П]**; Moscow rank **3rd** as of 1.08.2026 (~1.0 million m²) after MR Group took 2nd **[П]** (RBC). Square-metre snapshots across secondary roundups **UNVERIFIED** as a score. Commercial line remains *cycle time on the appointing party's pack*, not «they shrank, therefore they buy a checker».
+OSINT for speech (not a pitch): NKP **A.ru / stable** as of **20.03.2026** **[П]** (`ratings.ru` the appointing party-RA-200326). Do not say the February «неопределённый» forecast as current. RF developer volume: still the national leader by EISHS-based league tables **[П]**; Moscow rank **3rd** as of 1.08.2026 (~1.0 million m²) after MR Group took 2nd **[П]** (RBC). Square-metre snapshots across secondary roundups **UNVERIFIED** as a score. Commercial line remains *cycle time on the appointing party's pack*, not «they shrank, therefore they buy a checker».
 
 ## 5. Adversarial triage (KILL / HOLD)
 
@@ -123,7 +123,7 @@ OSINT for speech (not a pitch): NKP **A.ru / stable** as of **20.03.2026** **[П
 | RT-SEAM-04 | Completeness pass ⇒ PP-87 done | **KILL** | Numeric `section_code`; label 12 unseen; not statutory |
 | RT-SEAM-05 | EIR LOD has OV/VK ⇒ MEP delivered | **KILL** | No MEP IFC; RT-003 |
 | RT-SEAM-06 | Wall reinforcement pset ⇒ task 7 done | **KILL** | 0 `IfcReinforcingBar`; `.lir` unparsed |
-| RT-SEAM-07 | Fixture `issue_count` = Samolet defects | **KILL** | Demo IDS/rules |
+| RT-SEAM-07 | Fixture `issue_count` = the appointing party defects | **KILL** | Demo IDS/rules |
 | RT-SEAM-08 | LLM IDS from design TZ | **KILL** | Extractor 0 hits; Ishigaki Content-pass ≤33 % |
 | RT-SEAM-09 | OEP xlsx = gold | **KILL** | One judge; κ needs two names |
 | RT-SEAM-10 | Files on disk = RT-001 CLOSED | **KILL** | Intake `BLOCKED_NO_CUSTOMER_DATA`; no pack_hash in git |
@@ -134,14 +134,14 @@ OSINT for speech (not a pitch): NKP **A.ru / stable** as of **20.03.2026** **[П
 | RT-SEAM-15 | Jurisdiction IDS (RAVA3.5 / CORENET / city AGR) = appointing-party profile | **KILL** | RT-002a ≠ RT-002b |
 | RT-SEAM-16 | EGCC tiling +10.6 pp ⇒ VLM may approve sheets | **KILL** | Authors: not unsupervised; IFC/CAD not in that trial |
 | RT-SEAM-17 | Finland 2026 BIM permit ⇒ Task 07 delivered | **KILL** | Different statute, language, publisher |
-| RT-SEAM-18 | Ishigaki −54.7 % authoring time ⇒ skip Samolet review | **KILL** | Same human validation endpoint |
+| RT-SEAM-18 | Ishigaki −54.7 % authoring time ⇒ skip the appointing party review | **KILL** | Same human validation endpoint |
 | RT-CART-01 | Commit OEP status histogram / remark-class literals | **KILL** | Workbook strings stay in local twin; git = token class present |
 | RT-CART-02 | Commit design-TZ TEP m² | **KILL** | Fingerprints NDA TZ; git = TEP lines exist, QTO absent |
 | RT-CART-03 | 51 cells ⇒ seven tasks measured / Meets | **KILL** | Criterion Uncertain; `coverage_map_only` |
 | RT-CART-04 | AR-01…53 coindex ⇒ AGR/QTO signed off | **KILL** | Filename coindex ≠ sheet sign-off |
 | RT-CART-05 | Cartography in git ⇒ RT-001 CLOSED | **KILL** | Intake still blocked; no `pack_hash` in git |
 | RT-CART-06 | OEP tokens present ⇒ gold / remarks closed | **KILL** | One judge; κ absent |
-| RT-CART-07 | SAM-TYP matrix ⇒ `customer_confirmed_patterns>0` | **KILL** | Catalog still 0 |
+| RT-CART-07 | TYP-ERR matrix ⇒ `customer_confirmed_patterns>0` | **KILL** | Catalog still 0 |
 | RT-CART-08 | Pitch pset on the map ⇒ task 7 done | **KILL** | Same brake as RT-SEAM-06 |
 | RT-PLAN-01 | Post-cartography plan / TL-04…10 ⇒ tasks closed | **KILL** | Criterion Uncertain; IUA rows are speech bounds |
 | RT-PLAN-02 | KR cipher accepted ⇒ KZH/PP-87 delivered | **KILL** | KR-NOT-KZH warning; numeric volume ≠ discipline |
@@ -169,7 +169,7 @@ OSINT for speech (not a pitch): NKP **A.ru / stable** as of **20.03.2026** **[П
 | RT-REC-19 | GitHub URL = delivery of the three pack reports | **KILL** | Organizers channel; `.local/` |
 | RT-REC-20 | Screen-share = independent trial | **KILL** | on-prem Docker or time-boxed HTTPS |
 | RT-REC-21 | Demo-seed = report on a sent customer pack | **KILL** | Overlay/fixture id rejected in delivery index |
-| RT-REC-22 | 15.09 call = Samolet delivery / second chance | **KILL** | No direct contact; 14.09 via organizers is final |
+| RT-REC-22 | 15.09 call = the appointing party delivery / second chance | **KILL** | No direct contact; 14.09 via organizers is final |
 
 Живое дерево 27.08 (бриф v1 + inject): [`TZ_LIVE_TREE_TRIAGE_2026_08_27.md`](TZ_LIVE_TREE_TRIAGE_2026_08_27.md). Unsigned OOS and local inventory: [`../evidence/owner-ai-plan-execution-2026-08.json`](../evidence/owner-ai-plan-execution-2026-08.json).
 

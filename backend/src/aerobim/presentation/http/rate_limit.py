@@ -106,7 +106,7 @@ def add_rate_limit_middleware(
     HD2-RL-02: ``0 = off`` — ``0`` disables a bucket. ``requests_per_minute <= 0`` skips POST and
     auth-GET limiting; ``job_poll_per_minute <= 0`` skips job-poll limiting. If both
     are ``<= 0``, this function returns without attaching middleware. ``0`` is
-    by-design in development only; ``samolet_pilot`` / ``production`` reject
+    by-design in development only; ``customer_pilot`` / ``production`` reject
     ``AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE <= 0`` at Settings boot.
 
     RL-01: middleware keys are the client IP only (no Authorization fingerprint).

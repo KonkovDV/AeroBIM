@@ -28,7 +28,7 @@ Checkpoint **`GO`**; `customer_go` false. `raises_default_cap: false`. `rocksdb_
 | SPF in-memory | 268 435 456 | 256 **MiB** | `ifcopenshell.open(.ifc)` | `AEROBIM_MAX_IFC_BYTES` |
 | bSI Validation Service | 256 000 000 | 256 **MB** | Public uncompressed `.ifc` upload | [User guide](https://buildingsmart.github.io/validate/user/index.html); UI «256mb max» |
 | WASM viewer | 268 435 456 | 256 **MiB** | `web-ifc` `MEMORY_LIMIT` | `frontend/src/lib/ifc-scene.ts` |
-| Disk analyze / ingest | 1 500 000 000 | 1,5 **GB** decimal | HTTP 413 over this; RocksDB convert then `open(rdb)` under `samolet_pilot`/`production` | Answers 1.1.4 (25.08) |
+| Disk analyze / ingest | 1 500 000 000 | 1,5 **GB** decimal | HTTP 413 over this; RocksDB convert then `open(rdb)` under `customer_pilot`/`production` | Answers 1.1.4 (25.08) |
 
 256 MiB − 256 MB = 12 435 456 bytes. A file can pass AeroBIM SPF analyze and fail bSI. Neither number is 1,5 ГБ.
 
@@ -59,11 +59,11 @@ Industry rule of thumb (export guides): keep a single IFC near **~250 MB** or sp
 ## What the code does now
 
 1. `classify_ifc_bytes` names the band: `analyze_ok` (SPF) / `analyze_disk` (RocksDB; alias `analyze_blocked_ingest_ok`) / `over_ingest`.
-2. HTTP 413 over the **ingest** envelope is machine-readable: `reason_code=ifc_over_ingest_cap`, `required_profile=samolet_pilot`, `see` the path of this file. Message stays `IFC exceeds analyze size limit` (no byte oracle). RSS is **not** a measured figure (`rss_measured: false`).
+2. HTTP 413 over the **ingest** envelope is machine-readable: `reason_code=ifc_over_ingest_cap`, `required_profile=customer_pilot`, `see` the path of this file. Message stays `IFC exceeds analyze size limit` (no byte oracle). RSS is **not** a measured figure (`rss_measured: false`).
 3. `open_ifc_model` never SPF-opens over `AEROBIM_MAX_IFC_BYTES`. Over-SPF files convert to RocksDB then `open(rdb)`.
 4. RSS probe opens under the ingest envelope (RocksDB when over SPF). Files over ingest are classified, not opened. `--write-docs-evidence` stays fixture-only.
 5. WASM viewer and object-store `get_bytes` stay **256 MiB**. Do not buffer a 1.5 GB file for preview.
-6. Development HTTP (`Settings.from_env` without Samolet caps) still has `max_model_bytes=256 MiB`. The Samolet 1.5 GB path is `samolet_pilot`/`production` (or an explicit `AEROBIM_MAX_MODEL_BYTES`).
+6. Development HTTP (`Settings.from_env` without the appointing party caps) still has `max_model_bytes=256 MiB`. The the appointing party 1.5 GB path is `customer_pilot`/`production` (or an explicit `AEROBIM_MAX_MODEL_BYTES`).
 7. UI 2026-09-04: `PackUploadPanel` / `AnalyzeRunPanel` state the split in Russian. Upload is one XHR with progress and cancel; resumable protocol is **not** implemented. WASM still 256 MiB.
 
 Does not close RT-001/002b/003. Does not parse RVT/NWD/LIRA. Does not raise the SPF default cap. Does not claim a measured 1.5 GB RSS or customer SLA.

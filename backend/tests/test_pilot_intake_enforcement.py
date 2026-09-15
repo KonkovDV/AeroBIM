@@ -1,4 +1,4 @@
-"""Pilot customer-intake fail-closed on samolet_pilot analyze path."""
+"""Pilot customer-intake fail-closed on customer_pilot analyze path."""
 
 from __future__ import annotations
 
@@ -102,7 +102,7 @@ class CustomerIntakeEvaluateTests(unittest.TestCase):
 
 
 class PilotIntakeEnforcementTests(unittest.TestCase):
-    def test_samolet_pilot_false_gates_block_analyze(self) -> None:
+    def test_customer_pilot_false_gates_block_analyze(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
             root = Path(temporary_directory)
             ifc = root / "m.ifc"
@@ -110,7 +110,7 @@ class PilotIntakeEnforcementTests(unittest.TestCase):
             gate = root / "gate.json"
             gate.write_text(json.dumps(_base_payload()), encoding="utf-8")
             uc = _minimal_uc(
-                signoff_profile="samolet_pilot",
+                signoff_profile="customer_pilot",
                 customer_intake_gate_path=gate,
             )
             report = uc.execute(
@@ -169,7 +169,7 @@ class PilotIntakeEnforcementTests(unittest.TestCase):
                 encoding="utf-8",
             )
             uc = _minimal_uc(
-                signoff_profile="samolet_pilot",
+                signoff_profile="customer_pilot",
                 customer_intake_gate_path=gate,
             )
             report = uc.execute(
@@ -204,7 +204,7 @@ class PilotIntakeEnforcementTests(unittest.TestCase):
             joined = " ".join(intake.reasons)
             self.assertIn("mep_federated_scope", joined)
             uc = _minimal_uc(
-                signoff_profile="samolet_pilot",
+                signoff_profile="customer_pilot",
                 customer_intake_gate_path=gate,
                 require_mep_system_clash=True,
             )

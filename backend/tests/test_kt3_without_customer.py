@@ -1,4 +1,4 @@
-"""KT#3 without Samolet files stays re-scope; customer_go false."""
+"""KT#3 without the appointing party files stays re-scope; customer_go false."""
 
 from __future__ import annotations
 
@@ -152,7 +152,7 @@ class Kt3WithoutCustomerTests(unittest.TestCase):
         self.assertIn("run_kt3_jury", runbook)
         self.assertIn("IDS-Wall Fire Rating", runbook)
         self.assertIn("nda_corpus_in_git=false", runbook)
-        self.assertIn("samolet_pilot", runbook)
+        self.assertIn("customer_pilot", runbook)
         self.assertIn("лучше Iversen", faq)
         self.assertIn("Iversen", faq)
         self.assertIn("Fuchs", faq)

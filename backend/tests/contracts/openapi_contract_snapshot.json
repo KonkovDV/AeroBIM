@@ -1114,6 +1114,12 @@
             "title": "Claim Boundary",
             "type": "object"
           },
+          "customer_channel_answers": {
+            "additionalProperties": true,
+            "description": "appointing-party questionnaire answers (2026-08-25). Share received is not a hashed pack. closes_rt001/002/003 stay false. No NDA locator on this surface.",
+            "title": "Customer channel answers",
+            "type": "object"
+          },
           "customer_intake_gate": {
             "$ref": "#/components/schemas/CustomerIntakeGateSnapshot"
           },
@@ -1159,12 +1165,6 @@
             "title": "Notes",
             "type": "array"
           },
-          "samolet_mvp_answers": {
-            "additionalProperties": true,
-            "description": "Samolet questionnaire answers (2026-08-25). Share received is not a hashed pack. closes_rt001/002/003 stay false. No NDA locator on this surface.",
-            "title": "Samolet Mvp Answers",
-            "type": "object"
-          },
           "schema_version": {
             "title": "Schema Version",
             "type": "string"
@@ -1180,7 +1180,7 @@
           "mep_intake",
           "auth_bff",
           "customer_intake_gate",
-          "samolet_mvp_answers",
+          "customer_channel_answers",
           "llm_advisory",
           "forbidden_ok_states",
           "forbidden_claim_phrases",

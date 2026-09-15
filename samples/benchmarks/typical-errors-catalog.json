@@ -1,9 +1,9 @@
 {
   "schema_version": "1.4.1",
-  "catalog_id": "samolet-typical-errors-v1",
+  "catalog_id": "typical-errors-v1",
   "catalog_status": "synthetic-scaffold",
-  "description": "Engineering scaffold for Samolet TechLab intake. All entries require customer confirmation; mapping to a rule or finding class is not evidence that a pattern is detected with customer-grade precision.",
-  "source": "https://i.moscow/techlab/samolet",
+  "description": "Engineering scaffold for TechLab intake. All entries require customer confirmation; mapping to a rule or finding class is not evidence that a pattern is detected with customer-grade precision.",
+  "source": "https://i.moscow/techlab",
   "customer_share_received_at": "2026-08-25",
   "customer_share_ingested": false,
   "customer_confirmed_patterns": 0,
@@ -14,31 +14,31 @@
     "not_customer_defects": true,
     "notes": [
       {
-        "error_id": "SAM-TYP-001",
+        "error_id": "TYP-ERR-001",
         "observed": "Wall FireRating when filled is EI 45, not demo REI60, not TZ II/C0"
       },
       {
-        "error_id": "SAM-TYP-008",
+        "error_id": "TYP-ERR-008",
         "observed": "NetFloorArea count 0; TEP from IFC is not runnable"
       },
       {
-        "error_id": "SAM-TYP-020",
+        "error_id": "TYP-ERR-020",
         "observed": "No MEP duct/pipe/cable IFC on the 15-file carrier set"
       },
       {
-        "error_id": "SAM-TYP-021",
+        "error_id": "TYP-ERR-021",
         "observed": "IfcReinforcingBar count 0; CC-1 from IFC is blocked"
       },
       {
-        "error_id": "SAM-TYP-022",
+        "error_id": "TYP-ERR-022",
         "observed": "KR IFC material tokens B25/B35 present; MATCH needs a readable note"
       },
       {
-        "error_id": "SAM-TYP-023",
+        "error_id": "TYP-ERR-023",
         "observed": "IfcSpace objects present; space-efficiency stays advisory_unsigned"
       },
       {
-        "error_id": "SAM-TYP-024",
+        "error_id": "TYP-ERR-024",
         "observed": "customer_approved IDS absent; EIR workbook is not RT-002b"
       }
     ]
@@ -65,37 +65,37 @@
     "note": "Customer's own wording names four classes — usable as catalog axes. Still not a signed confirmation: customer_confirmed_patterns stays 0 until signature. Terminology follows СП 63: класс бетона/стали, not марка."
   },
   "techlab_task_map": {
-    "SAM-TYP-001": [4, 5],
-    "SAM-TYP-002": [4],
-    "SAM-TYP-003": [4],
-    "SAM-TYP-004": [3, 4],
-    "SAM-TYP-005": [1],
-    "SAM-TYP-006": [5],
-    "SAM-TYP-007": [3],
-    "SAM-TYP-008": [3, 4],
-    "SAM-TYP-009": [3],
-    "SAM-TYP-010": [3],
-    "SAM-TYP-011": [3],
-    "SAM-TYP-012": [1, 3],
-    "SAM-TYP-013": [1],
-    "SAM-TYP-014": [1],
-    "SAM-TYP-015": [6],
-    "SAM-TYP-016": [],
-    "SAM-TYP-017": [2],
-    "SAM-TYP-018": [],
-    "SAM-TYP-019": [5],
-    "SAM-TYP-020": [5],
-    "SAM-TYP-021": [7],
-    "SAM-TYP-022": [7],
-    "SAM-TYP-023": [4],
-    "SAM-TYP-024": [2],
-    "SAM-TYP-025": [7],
-    "SAM-TYP-026": [5]
+    "TYP-ERR-001": [4, 5],
+    "TYP-ERR-002": [4],
+    "TYP-ERR-003": [4],
+    "TYP-ERR-004": [3, 4],
+    "TYP-ERR-005": [1],
+    "TYP-ERR-006": [5],
+    "TYP-ERR-007": [3],
+    "TYP-ERR-008": [3, 4],
+    "TYP-ERR-009": [3],
+    "TYP-ERR-010": [3],
+    "TYP-ERR-011": [3],
+    "TYP-ERR-012": [1, 3],
+    "TYP-ERR-013": [1],
+    "TYP-ERR-014": [1],
+    "TYP-ERR-015": [6],
+    "TYP-ERR-016": [],
+    "TYP-ERR-017": [2],
+    "TYP-ERR-018": [],
+    "TYP-ERR-019": [5],
+    "TYP-ERR-020": [5],
+    "TYP-ERR-021": [7],
+    "TYP-ERR-022": [7],
+    "TYP-ERR-023": [4],
+    "TYP-ERR-024": [2],
+    "TYP-ERR-025": [7],
+    "TYP-ERR-026": [5]
   },
   "disciplines": ["fire-safety", "structure", "architecture", "mep", "openbim"],
   "patterns": [
     {
-      "error_id": "SAM-TYP-001",
+      "error_id": "TYP-ERR-001",
       "discipline": "fire-safety",
       "title_ru": "Несоответствие огнестойкости стены ТЗ/расчёту и IFC",
       "pattern": "FireRating REI/EI mismatch between specification, calculation note, and IfcWall property",
@@ -107,7 +107,7 @@
       "pilot_fixture": "techlab-fire-safety-rules.txt"
     },
     {
-      "error_id": "SAM-TYP-002",
+      "error_id": "TYP-ERR-002",
       "discipline": "architecture",
       "title_ru": "Расхождение площади квартиры между расчётом и ТЗ",
       "pattern": "Net or gross area contradiction across calculation sheet and technical specification",
@@ -118,7 +118,7 @@
       "pilot_fixture": "techlab-area-calc.txt"
     },
     {
-      "error_id": "SAM-TYP-003",
+      "error_id": "TYP-ERR-003",
       "discipline": "structure",
       "title_ru": "Толщина несущей стены ниже согласованного критерия",
       "pattern": "Wall thickness is below an agreed project rule",
@@ -130,7 +130,7 @@
       "pilot_fixture": "techlab-structure-rules.txt"
     },
     {
-      "error_id": "SAM-TYP-004",
+      "error_id": "TYP-ERR-004",
       "discipline": "fire-safety",
       "title_ru": "Превышение согласованного лимита площади помещения",
       "pattern": "IfcSpace NetFloorArea exceeds a customer-approved project threshold",
@@ -142,7 +142,7 @@
       "pilot_fixture": "techlab-fire-safety-rules.txt"
     },
     {
-      "error_id": "SAM-TYP-005",
+      "error_id": "TYP-ERR-005",
       "discipline": "architecture",
       "title_ru": "Расхождение аннотации чертежа с IFC-элементом",
       "pattern": "Drawing annotation target differs from the model GUID or property",
@@ -152,7 +152,7 @@
       "pilot_fixture": "techlab-annotations.txt"
     },
     {
-      "error_id": "SAM-TYP-006",
+      "error_id": "TYP-ERR-006",
       "discipline": "mep",
       "title_ru": "Отсутствие обязательного параметра инженерной системы",
       "pattern": "Required MEP property is missing on an agreed duct or pipe entity",
@@ -164,55 +164,55 @@
       "note": "Customer MEP IFC fixture is still required"
     },
     {
-      "error_id": "SAM-TYP-007",
+      "error_id": "TYP-ERR-007",
       "discipline": "architecture",
       "title_ru": "У помещения отсутствует согласованный идентификатор",
       "pattern": "IfcSpace reference property is absent",
-      "maps_to_rule_ids": ["SAM-AR-004"],
+      "maps_to_rule_ids": ["TYP-AR-004"],
       "maps_to_category": "IFC_VALIDATION",
       "severity_hint": "warning",
       "implementation_status": "implemented",
       "pilot_fixture": "residential-ar-reference-template.json"
     },
     {
-      "error_id": "SAM-TYP-008",
+      "error_id": "TYP-ERR-008",
       "discipline": "architecture",
       "title_ru": "В IFC отсутствует чистая площадь помещения",
       "pattern": "Qto_SpaceBaseQuantities.NetFloorArea is absent",
-      "maps_to_rule_ids": ["SAM-AR-008"],
+      "maps_to_rule_ids": ["TYP-AR-008"],
       "maps_to_category": "IFC_VALIDATION",
       "severity_hint": "warning",
       "implementation_status": "implemented",
       "pilot_fixture": "residential-ar-reference-template.json"
     },
     {
-      "error_id": "SAM-TYP-009",
+      "error_id": "TYP-ERR-009",
       "discipline": "fire-safety",
       "title_ru": "У двери отсутствуют данные по огнестойкости",
       "pattern": "IfcDoor fire-rating property required by the approved pack is absent",
-      "maps_to_rule_ids": ["SAM-AR-012"],
+      "maps_to_rule_ids": ["TYP-AR-012"],
       "maps_to_category": "IFC_VALIDATION",
       "severity_hint": "warning",
       "implementation_status": "implemented",
       "pilot_fixture": "residential-ar-reference-template.json"
     },
     {
-      "error_id": "SAM-TYP-010",
+      "error_id": "TYP-ERR-010",
       "discipline": "architecture",
       "title_ru": "У окна отсутствует акустический показатель",
       "pattern": "IfcWindow acoustic-rating property required by the approved pack is absent",
-      "maps_to_rule_ids": ["SAM-AR-016"],
+      "maps_to_rule_ids": ["TYP-AR-016"],
       "maps_to_category": "IFC_VALIDATION",
       "severity_hint": "warning",
       "implementation_status": "implemented",
       "pilot_fixture": "residential-ar-reference-template.json"
     },
     {
-      "error_id": "SAM-TYP-011",
+      "error_id": "TYP-ERR-011",
       "discipline": "architecture",
       "title_ru": "Высота ограждения не соответствует проектному критерию",
       "pattern": "IfcRailing height differs from a customer-approved project value",
-      "maps_to_rule_ids": ["SAM-AR-020"],
+      "maps_to_rule_ids": ["TYP-AR-020"],
       "maps_to_category": "IFC_VALIDATION",
       "severity_hint": "error",
       "implementation_status": "partial",
@@ -220,7 +220,7 @@
       "note": "The bundled 1.2 m value is synthetic and cannot be used for sign-off"
     },
     {
-      "error_id": "SAM-TYP-012",
+      "error_id": "TYP-ERR-012",
       "discipline": "architecture",
       "title_ru": "Площадь квартиры в РД расходится с утверждённой ПД",
       "pattern": "Paired AR section apartment area differs after SI normalization",
@@ -232,7 +232,7 @@
       "pilot_fixture": "ar-pd-synthetic.json + ar-rd-synthetic.json"
     },
     {
-      "error_id": "SAM-TYP-013",
+      "error_id": "TYP-ERR-013",
       "discipline": "architecture",
       "title_ru": "Обязательный тип двери ПД отсутствует в РД",
       "pattern": "Required PD section key has no paired RD value",
@@ -244,7 +244,7 @@
       "pilot_fixture": "ar-pd-synthetic.json + ar-rd-synthetic.json"
     },
     {
-      "error_id": "SAM-TYP-014",
+      "error_id": "TYP-ERR-014",
       "discipline": "architecture",
       "title_ru": "Материал фасада РД расходится с ПД",
       "pattern": "Paired AR facade material has a deterministic string mismatch",
@@ -256,7 +256,7 @@
       "pilot_fixture": "ar-pd-synthetic.json + ar-rd-synthetic.json"
     },
     {
-      "error_id": "SAM-TYP-015",
+      "error_id": "TYP-ERR-015",
       "discipline": "architecture",
       "title_ru": "РД ссылается на устаревшую ревизию ПД",
       "pattern": "RD basis revision does not equal the paired PD revision",
@@ -268,7 +268,7 @@
       "pilot_fixture": "section-pair schema"
     },
     {
-      "error_id": "SAM-TYP-016",
+      "error_id": "TYP-ERR-016",
       "discipline": "openbim",
       "title_ru": "IFC не проходит schema pre-gate",
       "pattern": "IFC SPF or declared schema is malformed or unsupported",
@@ -278,7 +278,7 @@
       "implementation_status": "implemented"
     },
     {
-      "error_id": "SAM-TYP-017",
+      "error_id": "TYP-ERR-017",
       "discipline": "openbim",
       "title_ru": "IDS-документ некорректен до проверки модели",
       "pattern": "IDS XML audit fails before model validation",
@@ -288,7 +288,7 @@
       "implementation_status": "implemented"
     },
     {
-      "error_id": "SAM-TYP-018",
+      "error_id": "TYP-ERR-018",
       "discipline": "openbim",
       "title_ru": "Не удалось определить масштаб единиц IFC",
       "pattern": "IFC unit scale cannot be resolved safely",
@@ -298,7 +298,7 @@
       "implementation_status": "implemented"
     },
     {
-      "error_id": "SAM-TYP-019",
+      "error_id": "TYP-ERR-019",
       "discipline": "mep",
       "title_ru": "Жёсткая геометрическая коллизия элементов",
       "pattern": "Generic IFC hard clash is emitted as a SPATIAL finding",
@@ -309,7 +309,7 @@
       "note": "Generic clash only; no system-aware routing semantics"
     },
     {
-      "error_id": "SAM-TYP-020",
+      "error_id": "TYP-ERR-020",
       "discipline": "mep",
       "title_ru": "Системная MEP-коллизия с учётом трассировки и допустимого пересечения",
       "pattern": "System-aware duct, pipe, cable-tray clash classification with exclusions and clearances",
@@ -320,68 +320,68 @@
       "note": "Not implemented; requires customer MEP IFC corpus and agreed system rules"
     },
     {
-      "error_id": "SAM-TYP-021",
+      "error_id": "TYP-ERR-021",
       "discipline": "structure",
       "title_ru": "Недобор площади армирования относительно расчёта ЛИРА",
       "pattern": "RD/BIM rebar area below the declared LIRA PDF/Excel result (cross-doc compare, not a solver)",
       "maps_to_category": "CROSS_DOCUMENT",
       "severity_hint": "error",
       "implementation_status": "gap",
-      "roadmap_ref": "SAMOLET-ANSWERS-2.1.1",
+      "roadmap_ref": "CUSTOMER-ANSWERS-2.1.1",
       "note": "Customer 2026-08-25: compare declared sources. calculation_correctness stays NOT_IMPLEMENTED"
     },
     {
-      "error_id": "SAM-TYP-022",
+      "error_id": "TYP-ERR-022",
       "discipline": "structure",
       "title_ru": "Неверный класс бетона или стали относительно расчёта",
       "pattern": "Concrete or steel class in RD/BIM disagrees with the declared calculation note",
       "maps_to_category": "CROSS_DOCUMENT",
       "severity_hint": "error",
       "implementation_status": "gap",
-      "roadmap_ref": "SAMOLET-ANSWERS-2.1.2"
+      "roadmap_ref": "CUSTOMER-ANSWERS-2.1.2"
     },
     {
-      "error_id": "SAM-TYP-023",
+      "error_id": "TYP-ERR-023",
       "discipline": "architecture",
       "title_ru": "Неэффективное использование пространства (МОП / продаваемая площадь)",
       "pattern": "Sellable-area, excess technical rooms, unjustified corridor width, dead zones in common areas",
       "maps_to_category": "SPATIAL",
       "severity_hint": "warning",
       "implementation_status": "gap",
-      "roadmap_ref": "SAMOLET-ANSWERS-2.1.4",
+      "roadmap_ref": "CUSTOMER-ANSWERS-2.1.4",
       "note": "Definition recorded; signed numeric thresholds absent; advisory inventory is not this check"
     },
     {
-      "error_id": "SAM-TYP-024",
+      "error_id": "TYP-ERR-024",
       "discipline": "architecture",
       "title_ru": "Состав ПД не соответствует приоритету ПП 87 на MVP",
-      "pattern": "PD composition / completeness vs PP 87 as MVP priority (not a signed Samolet IDS)",
+      "pattern": "PD composition / completeness vs PP 87 as MVP priority (not a signed the appointing party IDS)",
       "maps_to_category": "CROSS_DOCUMENT",
       "severity_hint": "warning",
       "implementation_status": "gap",
-      "roadmap_ref": "SAMOLET-ANSWERS-1.2.2",
-      "note": "Priority only. RT-002b stays OPEN until Samolet-signed pack_hash"
+      "roadmap_ref": "CUSTOMER-ANSWERS-1.2.2",
+      "note": "Priority only. RT-002b stays OPEN until appointing-party-signed pack_hash"
     },
     {
-      "error_id": "SAM-TYP-025",
+      "error_id": "TYP-ERR-025",
       "discipline": "structure",
       "title_ru": "Превышение прогибов относительно расчёта ЛИРА",
       "pattern": "Declared deflection in RD/BIM disagrees with the LIRA PDF/Excel result (cross-doc compare, not a solver)",
       "maps_to_category": "CROSS_DOCUMENT",
       "severity_hint": "error",
       "implementation_status": "gap",
-      "roadmap_ref": "SAMOLET-ANSWERS-2.1.2",
+      "roadmap_ref": "CUSTOMER-ANSWERS-2.1.2",
       "note": "Team brief 2026-08-26 restates 2.1.2. calculation_correctness stays NOT_IMPLEMENTED"
     },
     {
-      "error_id": "SAM-TYP-026",
+      "error_id": "TYP-ERR-026",
       "discipline": "structure",
       "title_ru": "Несоответствие нагрузок относительно расчётной записки",
       "pattern": "Declared loads in RD/BIM disagree with the calculation note (PDF/Excel); areas cross-checked the same way",
       "maps_to_category": "CROSS_DOCUMENT",
       "severity_hint": "error",
       "implementation_status": "gap",
-      "roadmap_ref": "SAMOLET-ANSWERS-2.1.1",
+      "roadmap_ref": "CUSTOMER-ANSWERS-2.1.1",
       "note": "Customer answers 25.08 п. 2.1.1 add loads and areas as compare objects; source is the readable note, not the solver binary"
     }
   ]

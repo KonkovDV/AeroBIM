@@ -86,7 +86,7 @@ class Post03SsrfGuardTests(unittest.TestCase):
 
 class Post06UnitScaleAndPilotSkippedTests(unittest.TestCase):
     def test_pilot_blocks_unverified_unit_scale_and_skipped_quantity(self) -> None:
-        policy = build_signoff_policy(profile="samolet_pilot")
+        policy = build_signoff_policy(profile="customer_pilot")
         caps = ReportCapabilities(
             clash=CapabilityStatus(CapabilityState.OK),
             ifc_schema=CapabilityStatus(CapabilityState.OK),

@@ -9,13 +9,13 @@ tags: [aerobim, tz, compliance, mvp]
 
 # TZ Compliance Matrix — Expert Assistant MVP
 
-SSOT mapping of the **intellectual expert-assistant TZ** / **TechLab Samolet Task 07** onto AeroBIM.
-Companion: [`samolet-techlab-alignment-2026.md`](../samolet-techlab-alignment-2026.md) (R1–R15).
+SSOT mapping of the **intellectual expert-assistant TZ** / **TechLab the appointing party Task 07** onto AeroBIM.
+Companion: [`techlab-alignment-2026.md`](../techlab-alignment-2026.md) (R1–R15).
 Task 07 readiness: [`../partners/TECHLAB_TASK_07_READINESS_2026.md`](../partners/TECHLAB_TASK_07_READINESS_2026.md).
 Architecture TBD fill: [`TZ_ARCHITECTURE_REQUIREMENTS_2026.md`](TZ_ARCHITECTURE_REQUIREMENTS_2026.md).
 Extraction integrity: [`../extraction-integrity-2026.md`](../extraction-integrity-2026.md).
 
-**Status legend:** `done` | `partial` | `missing` | `blocked` (needs Samolet)  
+**Status legend:** `done` | `partial` | `missing` | `blocked` (needs the appointing party)  
 **Phase legend:** `MVP` (sign-off deterministic) | `P0`–`P4` (implementation waves)
 
 ## 0. Former TBD sections (closed in TZ v2 pack)
@@ -28,7 +28,7 @@ Extraction integrity: [`../extraction-integrity-2026.md`](../extraction-integrit
 | Presentation | done | same §8 | Tech lead | Jury deck boundary = Claims Lock |
 | Accompanying docs | done | [`TZ_ACCOMPANYING_DOCS_2026.md`](TZ_ACCOMPANYING_DOCS_2026.md) + TZ §10 | Tech lead | Pilot protocol + claim boundary linked |
 
-**Samolet-blocked rows elsewhere in this matrix** (corpus, approved norm pack, MEP federated, CDE BCF, dual adjudication) stay `partial`/`missing`/`blocked` until RT-001/002/003 — do not relabel `done`.
+**the appointing party-blocked rows elsewhere in this matrix** (corpus, approved norm pack, MEP federated, CDE BCF, dual adjudication) stay `partial`/`missing`/`blocked` until RT-001/002/003 — do not relabel `done`.
 
 ## 1. Terms (OCR / CV / NLP / BIM)
 
@@ -141,7 +141,7 @@ Extraction integrity: [`../extraction-integrity-2026.md`](../extraction-integrit
 | Package ≤30 min | `measure_package_sla` on **agreed** pack | fixture only; 25.08 answers do not confirm the TZ time criterion | MVP |
 | Cognitive load reduction | Priority profile + HITL KPI | partial | P0 |
 
-**Honesty rule:** do not claim >90% in public materials until adjudication evidence exists. See [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md), Claims Lock, and the Kane IUA ledger [`../quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../quality/INTERPRETATION_USE_LEDGER_2026_08.md) (SAM-05 / SAM-06 / IND-28). Fixture AABB precision on n=6 is **not** this row and is **not** a jury exhibit (`wilson_interval(6, 6)` 95% lower ≈ 0.61).
+**Honesty rule:** do not claim >90% in public materials until adjudication evidence exists. See [`../pilot-claim-boundary-2026.md`](../pilot-claim-boundary-2026.md), Claims Lock, and the Kane IUA ledger [`../quality/INTERPRETATION_USE_LEDGER_2026_08.md`](../quality/INTERPRETATION_USE_LEDGER_2026_08.md) (CH-05 / CH-06 / IND-28). Fixture AABB precision on n=6 is **not** this row and is **not** a jury exhibit (`wilson_interval(6, 6)` 95% lower ≈ 0.61).
 
 ## 7. Appendices (data)
 

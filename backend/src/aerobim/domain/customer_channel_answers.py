@@ -1,4 +1,4 @@
-"""Honesty snapshot of Samolet questionnaire answers (2026-08-25).
+"""Honesty snapshot of appointing-party questionnaire answers (2026-08-25).
 
 Does not close RT-001/002/003. Share URL is not a hashed customer pack.
 """
@@ -7,8 +7,8 @@ from __future__ import annotations
 
 from aerobim.core.security.upload_limits import (
     DEV_DEFAULT_UPLOAD_BYTES,
-    SAMOLET_STATED_MODEL_BYTES,
-    SAMOLET_STATED_OFFICE_BYTES,
+    PILOT_STATED_MODEL_BYTES,
+    PILOT_STATED_OFFICE_BYTES,
     WASM_IFC_VIEWER_CAP_BYTES,
 )
 from aerobim.domain.calculation_table_compare import table_compare_honesty_snapshot
@@ -16,16 +16,16 @@ from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.ifc_streaming_design import streaming_design_snapshot
 from aerobim.domain.spec_volume_compare import spec_volume_honesty_snapshot
 
-SAMOLET_ANSWERS_RECEIVED_AT = "2026-08-25"
-SAMOLET_TEAM_BRIEF_RECEIVED_AT = "2026-08-26"
+CUSTOMER_ANSWERS_RECEIVED_AT = "2026-08-25"
+CUSTOMER_TEAM_BRIEF_RECEIVED_AT = "2026-08-26"
 
 
-def samolet_mvp_answers_payload() -> dict[str, object]:
+def customer_channel_answers_payload() -> dict[str, object]:
     """Static honesty block for ``/v1/system/capabilities``."""
 
     return {
-        "received_at": SAMOLET_ANSWERS_RECEIVED_AT,
-        "team_brief_received_at": SAMOLET_TEAM_BRIEF_RECEIVED_AT,
+        "received_at": CUSTOMER_ANSWERS_RECEIVED_AT,
+        "team_brief_received_at": CUSTOMER_TEAM_BRIEF_RECEIVED_AT,
         "share_url_received": True,
         "share_ingested_in_git": False,
         "closes_rt001": False,
@@ -42,11 +42,11 @@ def samolet_mvp_answers_payload() -> dict[str, object]:
             "scans",
             "typical_errors",
         ],
-        "stated_office_bytes": SAMOLET_STATED_OFFICE_BYTES,
-        "stated_model_bytes": SAMOLET_STATED_MODEL_BYTES,
+        "stated_office_bytes": PILOT_STATED_OFFICE_BYTES,
+        "stated_model_bytes": PILOT_STATED_MODEL_BYTES,
         "dev_default_upload_bytes": DEV_DEFAULT_UPLOAD_BYTES,
         "analyze_ifc_default_bytes": DEV_DEFAULT_UPLOAD_BYTES,
-        "analyze_ifc_disk_bytes": SAMOLET_STATED_MODEL_BYTES,
+        "analyze_ifc_disk_bytes": PILOT_STATED_MODEL_BYTES,
         "wasm_viewer_cap_bytes": WASM_IFC_VIEWER_CAP_BYTES,
         "native_rvt_nwd": "not_implemented",
         "native_dwg": "not_implemented",
@@ -82,7 +82,7 @@ def samolet_mvp_answers_payload() -> dict[str, object]:
 
 
 __all__ = [
-    "SAMOLET_ANSWERS_RECEIVED_AT",
-    "SAMOLET_TEAM_BRIEF_RECEIVED_AT",
-    "samolet_mvp_answers_payload",
+    "CUSTOMER_ANSWERS_RECEIVED_AT",
+    "CUSTOMER_TEAM_BRIEF_RECEIVED_AT",
+    "customer_channel_answers_payload",
 ]

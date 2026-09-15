@@ -31,22 +31,22 @@ unknown блокирует) и `backend/tests/test_license_isolation_guard.py`
 
 ## Две полосы (14.08.2026)
 
-Показ **Самолёту** может использовать copyleft **входные файлы** локально.
+Показ **заказчику канала** может использовать copyleft **входные файлы** локально.
 Публичный продукт, Docker, GitHub и **остальные** заказчики — без токсичных лицензий.
 
 | Полоса | Где | Можно | Нельзя |
 |---|---|---|---|
 | **public_mit** (default, CI, Docker, другие заказчики) | git + `requirements-lock.txt` | MIT-код; LGPL IfcOpenShell за infrastructure/tools; optional `pdf-agpl` **не** в runtime lock | Вендорить GPLv3 IFC; линковать LibreDWG; тащить AGPL в Docker |
-| **samolet_demo_local** | gitignored `.local/` на машине демо | Читать GPLv3 IFC-Bench (`4351`, `ettenheim_gis`, `hitos`, `samuel_macalister_sample_house`) | Коммитить эти файлы; включать флаг в CI; закрывать RT-001 |
+| **customer_demo_local** | gitignored `.local/` на машине демо | Читать GPLv3 IFC-Bench (`4351`, `ettenheim_gis`, `hitos`, `samuel_macalister_sample_house`) | Коммитить эти файлы; включать флаг в CI; закрывать RT-001 |
 
 Включение:
 
 ```bash
-python -m aerobim.tools.fetch_ifc_bench_v2 --from-dir <checkout> --include-gplv3 --samolet-demo-copyleft
-python -m aerobim.tools.run_federated_mep_inventory --samolet-demo-copyleft
+python -m aerobim.tools.fetch_ifc_bench_v2 --from-dir <checkout> --include-gplv3 --demo-copyleft
+python -m aerobim.tools.run_federated_mep_inventory --demo-copyleft
 ```
 
-Вторая команда **не** пишет GPL-строки в `docs/evidence/`. LibreDWG **не** линкуется: для показа Самолёту заказчик даёт IFC/PDF/A; CAD capability на `.dwg` остаётся FAILED.
+Вторая команда **не** пишет GPL-строки в `docs/evidence/`. LibreDWG **не** линкуется: для показа заказчику канала заказчик даёт IFC/PDF/A; CAD capability на `.dwg` остаётся FAILED.
 
 Это не юридическое заключение. Product Checkpoint **GO** (`regulatory_measurement_mvp`); `customer_go` **false**.
 

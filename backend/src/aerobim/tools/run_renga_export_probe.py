@@ -1,7 +1,7 @@
 """Probe a Renga IFC export: originating system + MOEXP IFC4 fail-closed.
 
 Does not replace the vertical-slice demo IFC (IfcOpenShell fixture).
-Does not vendor publisher binaries. Samolet Renga export remains intake.
+Does not vendor publisher binaries. the appointing party Renga export remains intake.
 
 Needed for demo 20.08: show a real Renga FILE_SCHEMA / FILE_NAME when a local
 publisher sample exists, and SKIPPED when it does not.
@@ -35,7 +35,7 @@ CLAIM_LEVEL = "renga_export_probe"
 CLAIM_BOUNDARY = (
     "Header-level probe of one IFC: FILE_SCHEMA, FILE_NAME originating_system, "
     "and official MOEXP ifcVersion=IFC4 fail-closed. Publisher PNST 909 sample "
-    "is not a Samolet export, not product accuracy, not Exp A 18/22 rerun. "
+    "is not a customer export, not product accuracy, not Exp A 18/22 rerun. "
     "Vertical-slice demo IFC stays IfcOpenShell. This Renga 8.7 pack sample is "
     "FILE_SCHEMA IFC4 (not IFC4X3). IFC4X3 fail-closed remains on the "
     "IfcOpenShell fixture. Checkpoint GO (regulatory_measurement_mvp; customer_go false)."
@@ -176,8 +176,8 @@ def skipped_payload(*, reason: str) -> dict[str, Any]:
         "reason": reason,
         "is_renga_export": False,
         "publisher_pnst909_sample": False,
-        "samolet_export": False,
-        "closes_c4_samolet_intake": False,
+        "customer_export": False,
+        "closes_c4_customer_intake": False,
         "vertical_slice_ifc_replaced": False,
         "checkpoint": CHECKPOINT,
     }
@@ -227,8 +227,8 @@ def probe_ifc(ifc_path: Path, ids_path: Path, *, repo: Path) -> dict[str, Any]:
         "originating_family": family,
         "is_renga_export": is_renga,
         "publisher_pnst909_sample": publisher,
-        "samolet_export": False,
-        "closes_c4_samolet_intake": False,
+        "customer_export": False,
+        "closes_c4_customer_intake": False,
         "vertical_slice_ifc_replaced": False,
         "spec_count": len(specs),
         "schema_mismatch_count": len(mismatches),
@@ -278,7 +278,7 @@ def build_payload(
 def render_markdown(payload: dict[str, Any]) -> str:
     status = str(payload.get("status") or "")
     lines = [
-        '<!-- claims-lint: allow-file reason="Renga publisher IFC probe; not Samolet; NO_GO" -->',
+        '<!-- claims-lint: allow-file reason="Renga publisher IFC probe; not appointing-party; NO_GO" -->',
         "---",
         'title: "Renga IFC export probe"',
         f"date: {str(payload.get('generated_at') or '')[:10]}",
@@ -290,7 +290,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
         "# Renga IFC export probe",
         "",
         "Vertical-slice demo IFC is **not** replaced. Publisher PNST 909 sample "
-        "is **not** a Samolet export. Checkpoint **GO**; customer_go false.",
+        "is **not** a customer export. Checkpoint **GO**; customer_go false.",
         "",
         f"- status: **{status}**",
     ]
@@ -318,7 +318,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
             f"- originating_family: **{payload.get('originating_family')}**",
             f"- is_renga_export: **{payload.get('is_renga_export')}**",
             f"- publisher_pnst909_sample: **{payload.get('publisher_pnst909_sample')}**",
-            f"- samolet_export: **{payload.get('samolet_export')}**",
+            f"- customer_export: **{payload.get('customer_export')}**",
             f"- FILE_SCHEMA: `{payload.get('model_schema')}`",
             f"- MOEXP IDS: `{payload.get('ids_path')}`",
             f"- schema_mismatch_count: **{payload.get('schema_mismatch_count')}** / "
@@ -409,7 +409,7 @@ def main(argv: list[str] | None = None) -> int:
         "model_schema": payload.get("model_schema"),
         "schema_fail_closed": payload.get("schema_fail_closed"),
         "schema_mismatch_count": payload.get("schema_mismatch_count"),
-        "samolet_export": payload.get("samolet_export"),
+        "customer_export": payload.get("customer_export"),
         "checkpoint": payload.get("checkpoint"),
         "content_sha256": payload.get("content_sha256"),
     }

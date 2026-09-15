@@ -1,6 +1,6 @@
 <!-- claims-lint: allow-file reason="Kane IUA ledger; TZ 90%/SLA as blocked inferences; NO_GO" -->
 ---
-title: "Interpretation/Use ledger — Самолёт × трекер × Техлаб/МИК × отрасль"
+title: "Interpretation/Use ledger — заказчик канала × трекер × Техлаб/МИК × отрасль"
 date: "2026-09-04"
 last_updated: "2026-09-08"
 status: active
@@ -14,7 +14,7 @@ claim_boundary: >-
 
 # Interpretation/Use ledger (КТ#2 → КТ#3)
 
-Валидность — свойство **вывода из оценки**, не свойства программы (Messick 1995; Kane 2013). Этот файл — SSOT: что текущие цифры AeroBIM имеют право значить для Самолёта, трекера проекта, Техлаба, МИК и отраслевых стандартов, и чего они значить не имеют.
+Валидность — свойство **вывода из оценки**, не свойства программы (Messick 1995; Kane 2013). Этот файл — SSOT: что текущие цифры AeroBIM имеют право значить для заказчика канала, трекера проекта, Техлаба, МИК и отраслевых стандартов, и чего они значить не имеют.
 
 - Checkpoint **GO**
 - IUA freeze (construct-validity object, not HEAD): `f9389bf`
@@ -25,17 +25,17 @@ claim_boundary: >-
 
 | ID | Источник | Требование | Лицензированный вывод | Запрещённый вывод | licensed_use |
 |---|---|---|---|---|---|
-| SAM-01 | samolet | ТР-1: ассистент эксперта, не замена ГИП | HITL + Claims Lock + ADR-001: модель не ставит summary.passed | Система заменяет экспертизу / лицензированного специалиста | `fixture_demo` |
-| SAM-02 | samolet | IFC + IDS / атрибуты BIM | IfcOpenShell + IfcTester на fixture и open packs; IDS 1.0 checking | Профиль приёмки Самолёта / CIM-compliance / RT-002 CLOSED | `engine_regression` |
-| SAM-03 | samolet | 2D PDF + подсветка замечания | pypdfium2 overlay на fixture; finding_id / evidence_refs | CV-счёт дверей/окон; AECV-Bench как product accuracy | `fixture_demo` |
-| SAM-04 | samolet | Нативный DWG в ТЗ | Fail-closed intake: dwg_native=NOT_IMPLEMENTED / FAILED | DWG-ready / тихий пропуск DWG | `not_licensed` |
-| SAM-05 | samolet | Коллизии / MEP / «точность >90%» | Generic IfcClash на fixture; tiny-skip fail-closed; protocol TP/(TP+FP)≥0.60 | Customer clash precision; mep_system_clash=OK; TZ >90% | `protocol_planning` |
-| SAM-06 | samolet | SLA «до 30 минут» | measure_package_sla на согласованном fixture; StageBudget sum=30 min | Customer SLA / любой комплект Самолёта | `protocol_planning` |
-| SAM-07 | samolet | BCF замечания в СОД | BCF 2.1 ZIP export (структурный) | CDE import VERIFIED / T2 roundtrip | `fixture_demo` |
-| SAM-08 | samolet | ТР-16/19: площади помещений / чертёж↔IFC | AR IFC: rooms exist as objects; area QTO not runnable; coverage_map_only | Площади квартир сверены с ТЭП; RT-001 CLOSED | `engine_regression` |
-| SAM-09 | samolet | ТР-8: огнестойкость стены vs ТЗ (класс II / C0) | Wall FireRating sparse and ≠ TZ II/C0; coverage_map_only | Fire check delivered; fixture REI60 = customer finding | `engine_regression` |
-| SAM-10 | samolet | ТЗ v1 (6 стр. бриф конкурса) vs v2 ТР vs семь сравнений vs проектное ТЗ | v1 pin is coverage of the public brief; TBD filled in v2; >90% is not a product score | Четыре бумаги Самолёта — один документ; v1 >90% измерено; семь задач сданы этим PDF | `engine_regression` |
-| PLAN-00 | techlab | Инвентарь files/ (локальный NDA) как покрытие, не pack_hash | 27.08 public rehearsal pin plus 30.08 evening recensus after deleting covered source archives. Counts live in engineering pins, not the jury map. Live scan only under .local/. Not processed. | sha256 пакета Самолёта в git; имена площадок в публичном дереве | `operational_hygiene` |
+| CH-01 | customer | ТР-1: ассистент эксперта, не замена ГИП | HITL + Claims Lock + ADR-001: модель не ставит summary.passed | Система заменяет экспертизу / лицензированного специалиста | `fixture_demo` |
+| CH-02 | customer | IFC + IDS / атрибуты BIM | IfcOpenShell + IfcTester на fixture и open packs; IDS 1.0 checking | Профиль приёмки заказчика канала / CIM-compliance / RT-002 CLOSED | `engine_regression` |
+| CH-03 | customer | 2D PDF + подсветка замечания | pypdfium2 overlay на fixture; finding_id / evidence_refs | CV-счёт дверей/окон; AECV-Bench как product accuracy | `fixture_demo` |
+| CH-04 | customer | Нативный DWG в ТЗ | Fail-closed intake: dwg_native=NOT_IMPLEMENTED / FAILED | DWG-ready / тихий пропуск DWG | `not_licensed` |
+| CH-05 | customer | Коллизии / MEP / «точность >90%» | Generic IfcClash на fixture; tiny-skip fail-closed; protocol TP/(TP+FP)≥0.60 | Customer clash precision; mep_system_clash=OK; TZ >90% | `protocol_planning` |
+| CH-06 | customer | SLA «до 30 минут» | measure_package_sla на согласованном fixture; StageBudget sum=30 min | Customer SLA / любой комплект заказчика | `protocol_planning` |
+| CH-07 | customer | BCF замечания в СОД | BCF 2.1 ZIP export (структурный) | CDE import VERIFIED / T2 roundtrip | `fixture_demo` |
+| CH-08 | customer | ТР-16/19: площади помещений / чертёж↔IFC | AR IFC: rooms exist as objects; area QTO not runnable; coverage_map_only | Площади квартир сверены с ТЭП; RT-001 CLOSED | `engine_regression` |
+| CH-09 | customer | ТР-8: огнестойкость стены vs ТЗ (класс II / C0) | Wall FireRating sparse and ≠ TZ II/C0; coverage_map_only | Fire check delivered; fixture REI60 = customer finding | `engine_regression` |
+| CH-10 | customer | ТЗ v1 (6 стр. бриф конкурса) vs v2 ТР vs семь сравнений vs проектное ТЗ | v1 pin is coverage of the public brief; TBD filled in v2; >90% is not a product score | Четыре бумаги заказчика канала — один документ; v1 >90% измерено; семь задач сданы этим PDF | `engine_regression` |
+| PLAN-00 | techlab | Инвентарь files/ (локальный NDA) как покрытие, не pack_hash | 27.08 public rehearsal pin plus 30.08 evening recensus after deleting covered source archives. Counts live in engineering pins, not the jury map. Live scan only under .local/. Not processed. | sha256 пакета заказчика в git; имена площадок в публичном дереве | `operational_hygiene` |
 | PLAN-01 | techlab | QTO помещений или подписанный OOS (задача 3) | Unsigned qto_space_area template; Missing QTO ≠ TEP Does-not | Площади сверены с ТЭП; unsigned OOS = skip licensed | `protocol_planning` |
 | PLAN-02 | techlab | ИОС IFC или подписанный MEP-OOS (задача 5 / RT-003) | Unsigned mep_federated template; mep_system_clash=NOT_VERIFIED | MEP delivered; unsigned OOS closes RT-003 | `protocol_planning` |
 | PLAN-03 | techlab | Стержни IFC или подписанный OOS п.7 (Solihin 4) | Unsigned rebar_class4 template; .lir not parsed | Арматура сверена с расчётом; pitch pset = class 4 | `protocol_planning` |
@@ -47,17 +47,17 @@ claim_boundary: >-
 | TRK-04 | tracker | Задача 4: научный консультант | Вопросы и демо-ссылка в репозитории | Выдуманные минуты консультаций | `operational_hygiene` |
 | TRK-05 | tracker | Задача 5: KPI = назначенные демо (3–5) | Живой счёт только в локальном операторском слое (не в git) | Назначенные демо как git-факт | `operational_hygiene` |
 | TRK-06 | tracker | Задача 6: монетизация при открытом коде | Варианты A/B к обсуждению; LICENSE MIT; ADR-002 accepted | Трекер согласовал Tangl/10D/SKU | `operational_hygiene` |
-| SIG-01 | tracker | Восемь задач 29.08: объём находок на канале IFC/PDF | Report phrase: объём находок на канале получен. unrestricted_eq_sample is a capped unsigned ALL+eq sample, not a defect. EI 45 vs demo REI60 is SAM-09, not SP 2.13130. | Product accuracy; pack processed; customer defect list; unsigned ALL+eq as SP; raising the mismatch cap as a defect export | `operational_hygiene` |
+| SIG-01 | tracker | Восемь задач 29.08: объём находок на канале IFC/PDF | Report phrase: объём находок на канале получен. unrestricted_eq_sample is a capped unsigned ALL+eq sample, not a defect. EI 45 vs demo REI60 is CH-09, not SP 2.13130. | Product accuracy; pack processed; customer defect list; unsigned ALL+eq as SP; raising the mismatch cap as a defect export | `operational_hygiene` |
 | SIG-02 | tracker | Восемь задач 29.08: инвентарь канала (формат / processed / priority / legal) | pack_probe + census pin; calc binaries are the majority of unpack bytes; Office token shortlist is not CC-2 MATCH. Uncompressed byte totals stay out of git. | 43 GB processed; native .lir parse; token shortlist as CC-2 MATCH; byte totals of the NDA tree in git | `operational_hygiene` |
 | JURY-01 | mik | Отборочная комиссия №7: роли на карте жюри, не ФИО и не census NDA | Seat briefs are roles; three partner seats by agreement; unpack counts stay off TIER0; tracker paths have no personal names. | Sitting-member list in git; OSINT bios as confirmed; unpack fingerprint counts on the jury map; pack processed | `operational_hygiene` |
 | FMT-01 | tracker | Восемь задач 29.08: закрытые CAD/solver как объект обмена, не как парсеры | KT#3 exchange is IFC + PDF/A. Closed Autodesk CAD and .lir stay fail-closed. Stock Navisworks does not write IFC. ODA trial is measurement, not a product. | DWG product; native RVT/NWD reader; parse .lir; OCR delivered; Sustaining 7500 USD = RVT; DrawingVQA as AeroBIM accuracy | `operational_hygiene` |
 | SPG-01 | tracker | Консалтинг СПГ август 2026: речь про данные ПД/РД, не рынок FM и не SAM | 8-page construction cut is attributed speech. 60-page FM/PM cut is adjacent. PDFs stay off git. Filename stays off TIER0. | SPG figures as AeroBIM SAM or accuracy; 49% TIM as pack ready; digital twin / FM product; HubEx percent as ours; ISUP by 21.09 | `operational_hygiene` |
 | UI-01 | tracker | ТЗ интерфейс: рабочее место полного цикла, не review shell как сдача | Shell inspects persisted reports. This pass wires upload, job poll, KPI, eight-screen IA, and a dev-only git walls+IDS seed. UI does not write summary.passed. Natives fail-closed. Jury laptop stays CLI. | Full-cycle workplace delivered; native RVT in UI; 30 min SLA measured; 10D live; XLSX export; Checkpoint GO from chrome; seed as customer pack | `operational_hygiene` |
 | TL-01 | techlab | КТ#2 (до 20.08): этап МИК «доработка» | Предварительная версия в ЛК; GitHub прототип; видео не прилагаем, показ = живой CLI | Валидация эффективности начата; внедрение начато | `fixture_demo` |
-| TL-02 | techlab | Критерии пилота 2 млн ₽ (interim ≥0.60, SLA, BCF в СОД) | Протокол измерения согласован как методика | Фактическое достижение критериев на комплекте Самолёта | `protocol_planning` |
+| TL-02 | techlab | Критерии пилота 2 млн ₽ (interim ≥0.60, SLA, BCF в СОД) | Протокол измерения согласован как методика | Фактическое достижение критериев на комплекте заказчика | `protocol_planning` |
 | TL-03 | techlab | Участие в «Техлаб Москва»: физлица или команда 1–10 (FAQ i.moscow/techlab) | ИП/ООО не условие входа; приз — платный пилот 2 млн ₽ | Без юрлица нельзя участвовать / нельзя принять приз — как факт Положения | `operational_hygiene` |
 | TL-04 | techlab | Сравнение 1: ПД/РД ↔ АГО/АГР (листы, фасады, ТЭП) | Filename coindex on coverage map; overlay remains fixture-only | АГР/QTO сданы; задача 1 закрыта | `engine_regression` |
-| TL-05 | techlab | Сравнение 2: ПД ↔ каталоги / EIR LOD | Catalog and EIR workbooks as carriers; not customer_approved IDS | IDS Самолёта утверждён из Стандарта | `protocol_planning` |
+| TL-05 | techlab | Сравнение 2: ПД ↔ каталоги / EIR LOD | Catalog and EIR workbooks as carriers; not customer_approved IDS | IDS заказчика канала утверждён из Стандарта | `protocol_planning` |
 | TL-06 | techlab | Сравнение 3: планировки ОПР/ПД/РД (оси, помещения, двери) | IfcSpace/IfcDoor presence is coverage_map_only; QTO absent is Missing | Планировки сверены по стадиям; площади проверены | `engine_regression` |
 | TL-07 | techlab | Сравнение 4: планировки ↔ ИРД / проектное ТЗ | II/C0, wall EI, door EI, fixture REI60 are different constructs | Планировки соответствуют ТЗ; огнестойкость сертифицирована | `engine_regression` |
 | TL-08 | techlab | Сравнение 5: АР/КР/ПБ/ТХ/ИОС между собой | AR+KR IFC; other disciplines PDF; IfcFlowTerminal in AR ≠ IOS model | MEP delivered; federated clash delivered | `protocol_planning` |
@@ -65,10 +65,10 @@ claim_boundary: >-
 | TL-10 | techlab | Сравнение 7: армирование ↔ расчётные карты (Solihin 4) | No IfcReinforcingBar; wall pitch pset ≠ class 4; .lir not parsed | Арматура сверена с расчётом; LIRA solved | `engine_regression` |
 | MIK-01 | mik | Соглашение / акт / финотчётность Фонда (M2, M7, M8) | Контур документирован; формы не сочиняем; 449-ПП ≠ вход в Техлаб | Самодельные шаблоны Фонда; акт с fixture-цифрами; ИП как вход | `not_licensed` |
 | MIK-02 | mik | Четырёхэтапная модель: доработка → валидация → внедрение | Стадия = доработка (КТ#2) | Валидация эффективности / внедрение как текущий факт | `operational_hygiene` |
-| IND-01 | industry | buildingSMART IDS 1.0 (final standard, 1 June 2024) | IDS checking (IfcTester) + IDS audit (XmlIdsDocumentAuditor / XSD 1.0) | IDS audit = checking = Samolet EIR; IDS 1.1 как approved standard | `engine_regression` |
+| IND-01 | industry | buildingSMART IDS 1.0 (final standard, 1 June 2024) | IDS checking (IfcTester) + IDS audit (XmlIdsDocumentAuditor / XSD 1.0) | IDS audit = checking = the appointing party EIR; IDS 1.1 как approved standard | `engine_regression` |
 | IND-02 | industry | ISO 19650-2:2018 cl. 5.6–5.7 (review / authorize) | summary.passed = Shared-gate technical status (ADR-001) | Automated check replaces appointing-party authorization | `fixture_demo` |
 | IND-03 | industry | Solihin & Eastman 2015 rule classes | Class 1–3 inventory of in-repo rules; class 4 not claimed | SP 63 template = proof of solution | `engine_regression` |
-| IND-04 | industry | ПНСТ 909-2024 (Renga publisher pack) | Aggregated 18/22 IDS runtime_clean snapshot 05.08 after ToS GO | Свежий 18/22; customer precision; эталон Самолёта | `open_bench` |
+| IND-04 | industry | ПНСТ 909-2024 (Renga publisher pack) | Aggregated 18/22 IDS runtime_clean snapshot 05.08 after ToS GO | Свежий 18/22; customer precision; эталон заказчика канала | `open_bench` |
 | IND-05 | industry | IFC-Bench v2 / Ishigaki-IDS-Bench (open science) | Countable 27/1026; gold XML processability 166/166; observation unit stated | Paper generation F1; 514 false-pass; product accuracy | `open_bench` |
 | IND-06 | industry | AEC-Bench (Mankodiya et al. 2026, arXiv:2603.29199) | Inventory 196 tasks / 9 families; Harbor agent NOT_RUN; authors: coding agents fail visual grounding | AEC-Bench run as product drawing literacy / RT-001 CLOSED | `open_bench` |
 | IND-07 | industry | LLM-as-judge 2026 (arXiv:2606.19544; 2509.20293; 2604.15224) | VLM remains advisory candidate; TP/FP require dual human raters and κ | Model confirms findings / judges precision / stakes-framed verdict | `protocol_planning` |
@@ -77,7 +77,7 @@ claim_boundary: >-
 | IND-10 | industry | buildingSMART IDS 1.1 (feedback 2026, not final) | IDS 1.0 remains the approved standard (1 June 2024) | IDS 1.1 as current standard / certified profile | `engine_regression` |
 | IND-11 | industry | EGCC 2026 (arXiv:2607.29058) constraint checking | False-pass 41-52%; authors: not for autonomous approval | EGCC % = AeroBIM on customer PD; autonomous approve | `open_bench` |
 | IND-12 | industry | DrawingVQA 2026 (arXiv:2607.15418) issued-for-construction sheets | Authors: main table professionals 94.9 vs Gemini-2.5-pro 71.7; supplementary Gemini-3-pro-preview 77.2 is not the main-table SOTA; QTO/R3 weak; not AeroBIM | DrawingVQA as AeroBIM product accuracy / TZ task 1 done | `open_bench` |
-| IND-13 | industry | Jurisdiction IFC pre-check 2026 (CORENET X, RAVA3.5.3, city AGR) | City-as-publisher pattern = RT-002a analog; not appointing-party EIR | Public permit IDS = Samolet-signed profile / Task 07 delivered | `open_bench` |
+| IND-13 | industry | Jurisdiction IFC pre-check 2026 (CORENET X, RAVA3.5.3, city AGR) | City-as-publisher pattern = RT-002a analog; not appointing-party EIR | Public permit IDS = appointing-party-signed profile / Task 07 delivered | `open_bench` |
 | IND-14 | industry | Panoptic CAD symbol spotting (FloorPlanCAD / ArchCAD-400k / VecFormer) | Luo et al. arXiv:2503.22346: semantic F1 87.8 and panoptic PQ 70.6 on ArchCAD; PQ not comparable across FloorPlanCAD papers; cv_human_level=MISSING | VecFormer/DPSS in-paper PQ or FloorPlanCAD as AeroBIM drawing literacy | `open_bench` |
 | IND-15 | industry | Clash-report relevance ML (Ailem AiC 2026; Lin & Huang 2019) | Ailem: false positives up to 60% on BIM clash reports. Lin hybrid 0.96 is their corpus. AeroBIM triage is deterministic dedup/band/rank and never drops a clash | Lin 0.96 or Ailem 60% as AeroBIM clash quality or a Navisworks killer | `protocol_planning` |
 | IND-16 | industry | SOTA 29.08: DWG layer/block/ATTRIB as almost-free symbol labels | Native DWG parser is not implemented; optional ezdxf is DXF; layer labels are not a product DWG reader | Most symbols identified from DWG layers without ML / native DWG delivered | `not_licensed` |
@@ -107,10 +107,10 @@ claim_boundary: >-
 | MIK-12 | mik | K4 after partner 1H2026 IFRS: zero entry, not a CAPEX ask | Pay-on-result speech is not a signed SKU; IFRS loss is not our saving; 200M AI program is theirs, not AeroBIM | Invest in us / we offset the IFRS loss / RAS +31% is group IFRS | `protocol_planning` |
 | TL-16 | techlab | Four catalog cards are filtered survivors, not all applicants | Neighbor-task 46 teams is a different Partner in the same first stream; peer card claims are not audited public fact | Four cards = everyone who applied / 15 pilots and 600+ norms are verified | `operational_hygiene` |
 | IND-26 | industry | Stand-alone RAS 1H2026 revenue +31% is not group IFRS -31% | Opposite signs on the same window; mixing them drops tech-customer trust | Cite RAS growth as the group IFRS picture / one figure two signs | `protocol_planning` |
-| SAM-11 | samolet | ТР-17: неэффективное использование пространства (продаваемая площадь / МОП / коридоры) | IfcSpace inventory remains ADVISORY_ONLY until appointing-party thresholds are signed; scope is OA-14 | Space efficiency delivered / customer does not need the row / numeric KPI without signature | `protocol_planning` |
+| CH-11 | customer | ТР-17: неэффективное использование пространства (продаваемая площадь / МОП / коридоры) | IfcSpace inventory remains ADVISORY_ONLY until appointing-party thresholds are signed; scope is OA-14 | Space efficiency delivered / customer does not need the row / numeric KPI without signature | `protocol_planning` |
 | IND-27 | industry | ODA Sustaining vs BimRv/BimNv extensions (public 2026 list) | Sustaining 7500/4500 USD is the SaaS DWG floor; RVT/NWD need 6250 USD extensions each | 7500 USD = native RVT/NWD / CADSoftTools 1660 USD as 2026 floor / LibreDWG in MIT core | `protocol_planning` |
 | IND-28 | industry | Wilson 1927 / Brown–Cai–DasGupta 2001: 6/6 is not unity for a jury | wilson_interval(6,6) 95% lower ~0.61; fixture AABB P/R stays unpublished to the jury | Show 1.0 at n=6 even with a caveat / treat as TZ clash >90% | `not_licensed` |
-| SAM-12 | samolet | п. 1.1.4: офис 500 МБ / модели 1,5 ГБ — ingest + RocksDB; SPF/WASM 256 МиБ | AEROBIM_MAX_IFC_BYTES stays 256 MiB SPF; files up to 1.5 GB open via IfcOpenShell RocksDB; WASM stays 256 MiB; HTTP 413 over 1.5 GB | We already SPF-open 1.5 GB / raise default SPF cap because it is config / bSI 256 MB = our 256 MiB / WASM shows 1.5 GB | `protocol_planning` |
+| CH-12 | customer | п. 1.1.4: офис 500 МБ / модели 1,5 ГБ — ingest + RocksDB; SPF/WASM 256 МиБ | AEROBIM_MAX_IFC_BYTES stays 256 MiB SPF; files up to 1.5 GB open via IfcOpenShell RocksDB; WASM stays 256 MiB; HTTP 413 over 1.5 GB | We already SPF-open 1.5 GB / raise default SPF cap because it is config / bSI 256 MB = our 256 MiB / WASM shows 1.5 GB | `protocol_planning` |
 | IND-29 | industry | IfcOpenShell SPF RAM ~8–10× disk (#7116, ~275–300 MB Riverside) | Planning multiplier 10: 256 MiB analyze → ~2.5 GiB RSS; 1.5 GB ingest → ~15 GiB | Raising the analyze cap is a one-line settings change / RSS equals file size | `not_licensed` |
 | PLAN-06 | techlab | LIRA/RD compare is four declared-value checks, not a solver | CC-2/CC-4 comparable when a readable note exists; CC-1/CC-3 sample; .lir closed | Independent recalculation / As from IFC without IfcReinforcingBar / LIRA accuracy % | `protocol_planning` |
 | TL-17 | techlab | Five former TBD TZ sections are a confirmation request, not a blank form | TZ v2 fills architecture, code/build, solution image, presentation, accompanying docs | Ask organizers to draft empty TBD from 09.07 / compare teams on unfilled bars | `operational_hygiene` |
@@ -121,16 +121,16 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 
 | ID | Условие КТ#3 |
 |---|---|
-| SAM-01 | Без изменения роли: эксперт остаётся уполномочивающим (ISO 19650-2 5.7) |
-| SAM-02 | Подписанный EIR/IDS Самолёта + customer_pack_hash |
-| SAM-03 | Размеченный 2D-корпус заказчика; VLM остаётся advisory |
-| SAM-04 | ODA trial = измерение KT#3, не покупка и не product claim |
-| SAM-05 | Корпус + ≥2 разметчика + κ/α; federated MEP + signed clearance (RT-003) |
-| SAM-06 | Замер на customer pack с corpus_kind=customer |
-| SAM-07 | Log + screenshot + hashes именованного CDE Самолёта |
-| SAM-08 | QTO area only after export with quantities or signed OOS |
-| SAM-09 | Customer IDS for fire class, not demo REI60 |
-| SAM-10 | Keep paper-objects unmixed; MIK act cites interim 0.60 |
+| CH-01 | Без изменения роли: эксперт остаётся уполномочивающим (ISO 19650-2 5.7) |
+| CH-02 | Подписанный EIR/IDS назначающей стороны + customer_pack_hash |
+| CH-03 | Размеченный 2D-корпус заказчика; VLM остаётся advisory |
+| CH-04 | ODA trial = измерение KT#3, не покупка и не product claim |
+| CH-05 | Корпус + ≥2 разметчика + κ/α; federated MEP + signed clearance (RT-003) |
+| CH-06 | Замер на customer pack с corpus_kind=customer |
+| CH-07 | Log + screenshot + hashes именованного CDE заказчика |
+| CH-08 | QTO area only after export with quantities or signed OOS |
+| CH-09 | Customer IDS for fire class, not demo REI60 |
+| CH-10 | Keep paper-objects unmixed; MIK act cites interim 0.60 |
 | PLAN-00 | Keep NDA binaries and hashes out of git |
 | PLAN-01 | QTO export or appointing-party signed OOS |
 | PLAN-02 | Federated MEP IFC or appointing-party signed OOS; RT-003 stays OPEN |
@@ -166,7 +166,7 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 | IND-03 | Class 4 только с расчётным solver, которого нет |
 | IND-04 | Полный extract + сценарии 3/18/21/22, если издатель даст IDS |
 | IND-05 | Не заменяет L3 customer corpus (Mushkani et al. project-level unit) |
-| IND-06 | Harbor only as labeled open-bench, never as Samolet PD |
+| IND-06 | Harbor only as labeled open-bench, never as the appointing party PD |
 | IND-07 | PrecisionClaim.publishable remains the only accuracy gate |
 | IND-08 | Signed clearance + federated customer IFC (RT-003) |
 | IND-09 | Do not claim Part 6; 5.7 stays human |
@@ -203,26 +203,26 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 | MIK-12 | Keep k4_asks_customer_capex and k4_offsets_partner_ifrs_loss False |
 | TL-16 | Keep catalog_four_are_all_applicants False |
 | IND-26 | Keep ras_ifrs_signs_are_the_same False |
-| SAM-11 | Owner records in-scope advisory vs out-of-MVP before the 22.09 rehearsal |
+| CH-11 | Owner records in-scope advisory vs out-of-MVP before the 22.09 rehearsal |
 | IND-27 | Keep native Autodesk fail-closed; IFC exchange, not SDK purchase, for MVP |
 | IND-28 | Protocol n~100 + two raters before any publishable rate |
-| SAM-12 | OA-16 RSS on a local over-SPF file via RocksDB; do not raise SPF default |
+| CH-12 | OA-16 RSS on a local over-SPF file via RocksDB; do not raise SPF default |
 | IND-29 | RocksDB is wired for over-SPF files; stream2/R-tree are not the analyze path |
 | PLAN-06 | Say the solver boundary aloud; partial method GO is not product accuracy |
 | TL-17 | Send our edition for confirmation (OA-8) |
 
 ## Evidence pointers
 
-- `SAM-01`: [ADR-001-verdict-ownership-2026.md](../architecture/ADR-001-verdict-ownership-2026.md)
-- `SAM-02`: `python -m aerobim.tools.run_demo_ifc_acceptance_gate`
-- `SAM-03`: `python -m aerobim.tools.run_demo_vertical_slice`
-- `SAM-04`: [ADR-003-dwg-oda-trial-kt3-2026.md](../architecture/ADR-003-dwg-oda-trial-kt3-2026.md)
-- `SAM-05`: [QUALITY_MEASUREMENT_PROTOCOL_2026_08.md](../pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md)
-- `SAM-06`: `python -m aerobim.tools.measure_package_sla`
-- `SAM-07`: [pilot-claim-boundary-2026.md](../pilot-claim-boundary-2026.md)
-- `SAM-08`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md)
-- `SAM-09`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md)
-- `SAM-10`: [TZ_V1_CONTEST_BRIEF_PIN_2026_08.md](../tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md)
+- `CH-01`: [ADR-001-verdict-ownership-2026.md](../architecture/ADR-001-verdict-ownership-2026.md)
+- `CH-02`: `python -m aerobim.tools.run_demo_ifc_acceptance_gate`
+- `CH-03`: `python -m aerobim.tools.run_demo_vertical_slice`
+- `CH-04`: [ADR-003-dwg-oda-trial-kt3-2026.md](../architecture/ADR-003-dwg-oda-trial-kt3-2026.md)
+- `CH-05`: [QUALITY_MEASUREMENT_PROTOCOL_2026_08.md](../pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md)
+- `CH-06`: `python -m aerobim.tools.measure_package_sla`
+- `CH-07`: [pilot-claim-boundary-2026.md](../pilot-claim-boundary-2026.md)
+- `CH-08`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md)
+- `CH-09`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md)
+- `CH-10`: [TZ_V1_CONTEST_BRIEF_PIN_2026_08.md](../tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md)
 - `PLAN-00`: [owner-ai-plan-execution-2026-08.json](../evidence/owner-ai-plan-execution-2026-08.json)
 - `PLAN-01`: [qto_space_area.unsigned.json](../../samples/oos/qto_space_area.unsigned.json)
 - `PLAN-02`: [mep_federated.unsigned.json](../../samples/oos/mep_federated.unsigned.json)
@@ -274,7 +274,7 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 - `MIK-04`: [MIK_COMMISSION_SCORING_2026_08.md](MIK_COMMISSION_SCORING_2026_08.md)
 - `MIK-05`: [KT3_FIXTURE_VALIDATION_COVER_2026_08.md](KT3_FIXTURE_VALIDATION_COVER_2026_08.md)
 - `MIK-06`: [ADR-002-open-core-commercial-boundary-2026.md](../architecture/ADR-002-open-core-commercial-boundary-2026.md)
-- `TL-11`: [TECHLAB_SAMOLET_APPLICATION_2026.md](../partners/TECHLAB_SAMOLET_APPLICATION_2026.md)
+- `TL-11`: [TECHLAB_APPLICATION_2026.md](../partners/TECHLAB_APPLICATION_2026.md)
 - `IND-18`: [AI_SYSTEM_IMPACT_ASSESSMENT_GOST_R_72514_2026.md](AI_SYSTEM_IMPACT_ASSESSMENT_GOST_R_72514_2026.md)
 - `IND-19`: [AI_TRANSPARENCY_TAXONOMY_GOST_R_72515_2026.md](AI_TRANSPARENCY_TAXONOMY_GOST_R_72515_2026.md)
 - `IND-20`: [AI_TRANSPARENCY_TAXONOMY_GOST_R_72515_2026.md](AI_TRANSPARENCY_TAXONOMY_GOST_R_72515_2026.md)
@@ -290,15 +290,15 @@ NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, н
 - `IND-25`: [PNST_841_AI_QUALITY_EVAL_2026.md](PNST_841_AI_QUALITY_EVAL_2026.md)
 - `TL-14`: [MIK_SEAT_BRIEFS_2026_08.md](MIK_SEAT_BRIEFS_2026_08.md)
 - `MIK-10`: [MIK_A_LEVERS_PAST_50_2026_08.md](MIK_A_LEVERS_PAST_50_2026_08.md)
-- `TL-15`: [TECHLAB_SAMOLET_APPLICATION_2026.md](../partners/TECHLAB_SAMOLET_APPLICATION_2026.md)
+- `TL-15`: [TECHLAB_APPLICATION_2026.md](../partners/TECHLAB_APPLICATION_2026.md)
 - `MIK-11`: [MIK_COMMISSION_SCORING_2026_08.md](MIK_COMMISSION_SCORING_2026_08.md)
 - `MIK-12`: [K4_COMMERCIAL_PATH_2026_08.md](K4_COMMERCIAL_PATH_2026_08.md)
 - `TL-16`: [K2_NOVELTY_VS_PEERS_2026_08.md](K2_NOVELTY_VS_PEERS_2026_08.md)
 - `IND-26`: [K4_COMMERCIAL_PATH_2026_08.md](K4_COMMERCIAL_PATH_2026_08.md)
-- `SAM-11`: [FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md](FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md)
+- `CH-11`: [FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md](FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md)
 - `IND-27`: [NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md](NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md)
 - `IND-28`: [README.md](../evidence/clash-measurement-slice-2026-08/README.md)
-- `SAM-12`: [IFC_ANALYZE_VS_INGEST_CAP_2026_08.md](IFC_ANALYZE_VS_INGEST_CAP_2026_08.md)
+- `CH-12`: [IFC_ANALYZE_VS_INGEST_CAP_2026_08.md](IFC_ANALYZE_VS_INGEST_CAP_2026_08.md)
 - `IND-29`: [IFC_ANALYZE_VS_INGEST_CAP_2026_08.md](IFC_ANALYZE_VS_INGEST_CAP_2026_08.md)
 - `PLAN-06`: [CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md](CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md)
-- `TL-17`: [TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md](../tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md)
+- `TL-17`: [TZ_TECHLAB_TASK_07_V2_2026.md](../tz/TZ_TECHLAB_TASK_07_V2_2026.md)

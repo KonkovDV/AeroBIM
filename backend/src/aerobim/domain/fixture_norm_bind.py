@@ -1,7 +1,7 @@
 """Bind committed demo-TZ clauses onto known fixture IDS specs.
 
 Source: ``samples/specifications/techlab-tz.txt`` (п. 4.1–4.5). Not SP 2.13130,
-not customer class II/C0, not a signed Samolet profile.
+not customer class II/C0, not a signed the appointing party profile.
 Checkpoint GO (regulatory_measurement_mvp; customer_go false).
 """
 

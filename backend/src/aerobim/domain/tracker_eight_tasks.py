@@ -12,7 +12,7 @@ from typing import Any, Final
 
 from aerobim.core.security.upload_limits import (
     DEV_DEFAULT_UPLOAD_BYTES,
-    SAMOLET_STATED_MODEL_BYTES,
+    PILOT_STATED_MODEL_BYTES,
 )
 from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.system_capabilities import build_auth_bff_capability
@@ -30,14 +30,14 @@ SIG01_REPORT_PHRASE: Final = "объём находок на канале пол
 ASSIGNED_AT: Final = "2026-08-29"
 KT3_WINDOW: Final = "2026-09-03..2026-09-21"
 FEATURE_FREEZE: Final = "2026-09-18"
-SAMOLET_APPENDIX4_TASK: Final = 6
+TECHLAB_APPENDIX4_TASK: Final = 6
 COMMISSION_ORDER_NUMBER: Final = 7
 CADSOFTTOOLS_USD_RETRIEVED_2026_08_30: Final = 765
 
 TRACKER_EIGHT: Final[tuple[dict[str, str], ...]] = (
     {
         "id": "SIG-01",
-        "title": "Run on Samolet IFC/PDF; finding volume + type breakdown",
+        "title": "Run on the appointing party IFC/PDF; finding volume + type breakdown",
         "git": "volume_taxonomy_and_lite_cli",
         "owner": "blocked_channel_pack",
         "show": "python -m aerobim.tools.run_finding_volume --findings-lite-dir <local>",
@@ -64,15 +64,15 @@ TRACKER_EIGHT: Final[tuple[dict[str, str], ...]] = (
         "title": "Two-criterion accuracy + draft typical-error classifier",
         "git": "catalog_ge_20_unconfirmed",
         "owner": "blocked_dual_rater",
-        "show": "samples/benchmarks/samolet-typical-errors-catalog.json",
+        "show": "samples/benchmarks/typical-errors-catalog.json",
         "stop": "Treat unsigned catalog as customer-confirmed; mix fixture F1 with channel volume",
     },
     {
         "id": "SIG-05",
-        "title": "Question pack to Samolet via organizers",
+        "title": "Question pack to the appointing party via organizers",
         "git": "draft_in_partners",
         "owner": "blocked_send_mail",
-        "show": "docs/partners/SAMOLET_QUESTION_PACK_KT3_2026_08.md",
+        "show": "docs/partners/CUSTOMER_QUESTION_PACK_KT3_2026_08.md",
         "stop": "Republish the share URL; treat TBD as write-from-scratch",
     },
     {
@@ -117,10 +117,10 @@ def tracker_eight_snapshot() -> dict[str, Any]:
         "assigned_at": ASSIGNED_AT,
         "kt3_window": KT3_WINDOW,
         "feature_freeze": FEATURE_FREEZE,
-        "samolet_appendix4_task": SAMOLET_APPENDIX4_TASK,
+        "customer_appendix4_task": TECHLAB_APPENDIX4_TASK,
         "commission_order_number": COMMISSION_ORDER_NUMBER,
         "spf_analyze_cap_bytes": DEV_DEFAULT_UPLOAD_BYTES,
-        "ingest_cap_bytes": SAMOLET_STATED_MODEL_BYTES,
+        "ingest_cap_bytes": PILOT_STATED_MODEL_BYTES,
         "raises_spf_default_for_ingest": False,
         "cadsofttools_usd_retrieved": CADSOFTTOOLS_USD_RETRIEVED_2026_08_30,
         "cadsofttools_stale_list_price": True,

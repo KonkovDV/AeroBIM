@@ -38,7 +38,7 @@ export default function BlockerHonestyPanel() {
   }, []);
 
   const trueGates = payload?.customer_intake_gate.true_gates ?? [];
-  const answers = payload?.samolet_mvp_answers;
+  const answers = payload?.customer_channel_answers;
   const rt001 = answers?.closes_rt001 === true;
   const rt002 = answers?.closes_rt002 === true;
   const rt003 = answers?.closes_rt003 === true;

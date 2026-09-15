@@ -120,7 +120,7 @@ def _build_object_store(settings: Settings) -> ObjectStore:
         except RuntimeError:
             # Production / pilot: never hide enterprise object-store failure behind local FS.
             if not settings.is_dev_environment or settings.signoff_profile in {
-                "samolet_pilot",
+                "customer_pilot",
                 "production",
             }:
                 raise
@@ -358,7 +358,7 @@ def _build_advisory_vlm_pipeline(current: Container) -> RegionRestrictedVlmPipel
     """Region-restricted advisory VLM; fail-closed and NOT on the verdict path.
 
     Constructed ready only when ``settings.vlm_advisory_ready()`` (opt-in, and
-    hard-disabled on samolet_pilot / production). Even when ready it is not wired
+    hard-disabled on customer_pilot / production). Even when ready it is not wired
     into the deterministic use case, so toggling the flag cannot change
     ``summary.passed`` (advisory OFF==ON). A future advisory surface may consume
     it, but must keep candidate regions out of ``engine_issues``.

@@ -34,7 +34,7 @@ _HONESTY_FALSE_FIELDS = (
     "closes_rt001",
     "closes_rt002",
     "closes_rt003",
-    "samolet_alias",
+    "customer_alias",
 )
 
 

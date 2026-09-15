@@ -27,7 +27,7 @@ describe("BlockerHonestyPanel", () => {
       },
       auth_bff: { status: "not_implemented" },
       bcf_t2: { status: "not_verified", claim_allowed: false, raw_status: "NOT_VERIFIED" },
-      samolet_mvp_answers: {
+      customer_channel_answers: {
         closes_rt001: false,
         closes_rt002: false,
         closes_rt003: false,

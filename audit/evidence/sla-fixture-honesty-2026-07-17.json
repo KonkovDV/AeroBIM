@@ -1,8 +1,8 @@
 {
-  "artifact_type": "samolet_package_sla",
+  "artifact_type": "customer_package_sla",
   "schema_version": "1.2.0",
   "generated_at": "2026-07-16T21:23:07.116448+00:00",
-  "customer_reference": "https://i.moscow/techlab/samolet",
+  "customer_reference": "https://i.moscow/techlab",
   "sla_target_minutes": 30.0,
   "sla_pass": true,
   "max_minutes_observed": 0.0096,

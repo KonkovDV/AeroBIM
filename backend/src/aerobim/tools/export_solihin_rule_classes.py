@@ -57,7 +57,7 @@ _PREFIX_CLASS: tuple[tuple[str, int, str], ...] = (
     ("AEROBIM-REVISION", 1, "revision / edition label"),
     ("AEROBIM-SHEET", 1, "sheet identity / naming"),
     ("AEROBIM-UNIT", 1, "declared unit / scale"),
-    ("SAM-AR-", 1, "synthetic AR property exists"),
+    ("TYP-AR-", 1, "synthetic AR property exists"),
     ("SAM-R-", 1, "synthetic residential template"),
     ("V2-AR-", 1, "schema 2 AR draft template"),
     ("REQ-", 1, "fixture requirement text rules"),

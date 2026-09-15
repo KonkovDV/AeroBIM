@@ -19,7 +19,7 @@ claim_boundary: >
 
 Машина: `python -c "from aerobim.domain.tracker_eight_tasks import tracker_eight_snapshot"`.
 
-Это **не** шесть задач от 14.08 ([карточка](../demo/KT3_TRACKER_SIX_TASKS_2026_08.md)). Окно КТ#3: **3–21.09**. Фича-фриз внешнего контура: **18.09**. Задача Самолёта в приложении 4 — **№6**; отборочная комиссия в приказе — **№7**. Не произносить «07» как номер Положения.
+Это **не** шесть задач от 14.08 ([карточка](../demo/KT3_TRACKER_SIX_TASKS_2026_08.md)). Окно КТ#3: **3–21.09**. Фича-фриз внешнего контура: **18.09**. Задача заказчика канала в приложении 4 — **№6**; отборочная комиссия в приказе — **№7**. Не произносить «07» как номер Положения.
 
 Checkpoint **`GO`**; `customer_go` false. Пакет канала **не** в git. Локатор share **не** публикуется.
 
@@ -35,7 +35,7 @@ Checkpoint **`GO`**; `customer_go` false. Пакет канала **не** в gi
 | SIG-02 | Инвентаризация 43 ГБ | `pack_probe` + overlap локально; агрегат без имён после OA-9 | Реестр в чат до 02.09 (после OA-9); не коммитить имена | **нельзя** говорить, что пакет обработан. «43 ГБ» — формулировка задачи, не замер |
 | SIG-03 | Внешний контур, две роли | `expert`/`user` в API; `GET /v1/auth/bff` **501** | Production IdP; фриз 18.09 | Lab cookie = SSO |
 | SIG-04 | Два критерия точности + классификатор | Каталог ≥20 классов; `customer_confirmed_patterns=0`; наблюдения носителей в каталоге (не confirmation) | Два разметчика; сверка с их набором | Смешать F1 фикстур с объёмом канала |
-| SIG-05 | Пакет вопросов | Черновик [`../partners/SAMOLET_QUESTION_PACK_KT3_2026_08.md`](../partners/SAMOLET_QUESTION_PACK_KT3_2026_08.md) | Отправить 31.08 через организаторов | «заполните TBD с нуля» |
+| SIG-05 | Пакет вопросов | Черновик [`../partners/CUSTOMER_QUESTION_PACK_KT3_2026_08.md`](../partners/CUSTOMER_QUESTION_PACK_KT3_2026_08.md) | Отправить 31.08 через организаторов | «заполните TBD с нуля» |
 | SIG-06 | ЛИРА к КТ#3 | Четыре проверки; shortlist ≠ MATCH | Каноничная записка | «конструкции пересчитаны»; токен = MATCH |
 | SIG-07 | RVT/NWD + CV | [триаж форматов](FORMAT_INGEST_TRIAGE_2026_09.md) · [одностраничник](../demo/KT3_RVT_NWD_CV_ONEPAGER_2026_08.md) | Юрлицо / закупка SDK | Sustaining = BimRv; CADSoftTools 1660 $ |
 | SIG-08 | РУТ (МИИТ) | OA-10 | Письмо до 01.09 | Учебный комплект закрывает RT-001 |
@@ -44,7 +44,7 @@ Checkpoint **`GO`**; `customer_go` false. Пакет канала **не** в gi
 
 1. **Не** «поднять SPF 256 МиБ до 1,5 ГБ». SPF in-memory остаётся 256 МиБ. До 1,5 ГБ — RocksDB. WASM 256 МиБ.
 2. CADSoftTools на 30.08 — **от 765 USD**, не 1 660.
-3. RT-002 **split**: 002a CLOSED (городские IDS + `pack_hash`); 002b CLOSED (EIR v4 как текст); 002c OPEN (нет подписи Самолёта). Не «норм нет».
+3. RT-002 **split**: 002a CLOSED (городские IDS + `pack_hash`); 002b CLOSED (EIR v4 как текст); 002c OPEN (нет подписи заказчика канала). Не «норм нет».
 4. Задача 3 упирается в **OIDC BFF 501**, не в отсутствие HTML. Откат к 21.09: API + ссылки на отчёты.
 5. «Неэффективное пространство»: в git **`advisory_unsigned`** — inventory IfcSpace, пороги не подписаны, не delivered. Не оставлять строку без позиции.
 6. Fixture clash n=6 / P=1,0 **не показывать** (Wilson lower ≈ 0,61).
@@ -82,4 +82,4 @@ Checkpoint **`GO`**; `customer_go` false. Пакет канала **не** в gi
 
 Письмо организаторов: заказчику нужны **три отчёта** по направленным комплектам и **самостоятельный** прогон. Это не SIG-01…08. GitHub не канал. Демо-seed не отчёт. Целостность доставки: [`../partners/DELIVERY_INTEGRITY_2026_09.md`](../partners/DELIVERY_INTEGRITY_2026_09.md). Пустой индекс `ready_for_deadline=false` — правильное состояние, пока пакет не отправлен.
 
-Связанные: [`../partners/SAMOLET_OFFICIAL_LETTER_AND_QUESTIONS_2026_09.md`](../partners/SAMOLET_OFFICIAL_LETTER_AND_QUESTIONS_2026_09.md) · [`FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md`](FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md).
+Связанные: [`../partners/CUSTOMER_OFFICIAL_LETTER_AND_QUESTIONS_2026_09.md`](../partners/CUSTOMER_OFFICIAL_LETTER_AND_QUESTIONS_2026_09.md) · [`FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md`](FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md).

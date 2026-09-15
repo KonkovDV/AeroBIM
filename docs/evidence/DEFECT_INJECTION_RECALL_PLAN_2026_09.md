@@ -9,7 +9,7 @@ closes_rt001: false
 closes_rt002: false
 closes_rt003: false
 claim_boundary: >
-  Plan for mutation-test recall on an injected pack. Not Samolet accuracy.
+  Plan for mutation-test recall on an injected pack. Not appointing-party accuracy.
   Not product accuracy >90%. Recall on synthetics does not transfer to the
   partner pack. Checkpoint GO; customer_go false.
 ---
@@ -51,7 +51,7 @@ analyze API и не пишет `summary.passed`.
 [`DEFECT_INJECTION_RECALL_RUN_2026_09.md`](DEFECT_INJECTION_RECALL_RUN_2026_09.md).
 Не закрывает RT-001. Не шовно-чистый `summary.passed=true`.
 
-Граница: recall на синтетике **не** переносится на комплект Самолёта.
+Граница: recall на синтетике **не** переносится на комплект заказчика.
 `confirmed_partner_validation_metrics() == False`.
 
 ## Precision ~100 находок, два разметчика

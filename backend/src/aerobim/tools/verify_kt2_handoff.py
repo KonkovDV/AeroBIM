@@ -177,9 +177,9 @@ def verify_kt2_handoff(*, handoff_dir: Path, repo: Path) -> dict[str, Any]:
         _check("overlay_fixture_rendered", False, "missing overlay STATUS", rows)
 
     align = repo / "docs" / "tz" / "KT2_TRI_SOURCE_ALIGNMENT_2026_08_12.md"
-    ask = repo / "docs" / "partners" / "SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md"
+    ask = repo / "docs" / "partners" / "CUSTOMER_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md"
     _check("tri_source_alignment", align.is_file(), str(align), rows)
-    _check("samolet_acceptance_profile", ask.is_file(), str(ask), rows)
+    _check("customer_acceptance_profile", ask.is_file(), str(ask), rows)
 
     second_overlay = (
         repo / "docs" / "evidence" / "drawing-overlay-smoke-2026-08" / "overlay-sheet-header.png"

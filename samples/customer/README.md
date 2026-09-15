@@ -3,7 +3,7 @@
 Place NDA-bound customer packages here only. Paths under `samples/customer/`
 are ignored by git except this README.
 
-Do **not** commit IFC, drawings, or labels from Samolet / customer pilots.
+Do **not** commit IFC, drawings, or labels from the appointing party / customer pilots.
 
 Share channel received 2026-08-25 (NDA). The locator is **not** in this public tree. Keep any locator outside git. GitHub copies, Actions logs, and forks are outside this tree and are not claimed purged.
 

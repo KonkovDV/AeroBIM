@@ -11,7 +11,7 @@ from aerobim.domain.models import (
 class TemplateRemarkGenerator:
     """Deterministic remark templates for RU/EN product locales (TZ P0).
 
-    Samolet answer 2.1.5 (2026-08-25): essence (one sentence) + bound norm/STO
+    the appointing party answer 2.1.5 (2026-08-25): essence (one sentence) + bound norm/STO
     clause (never invented) + location detail (axis / storey / sheet / element).
     """
 

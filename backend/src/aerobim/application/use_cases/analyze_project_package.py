@@ -153,15 +153,15 @@ class AnalyzeProjectPackageUseCase:
         self._signoff_profile = signoff_profile
         _valid_severities = {"error", "warning", "info"}
         # Hard profiles always escalate cross-doc contradictions to ERROR (RTATOM-G05).
-        hard_profile = signoff_profile in {"samolet_pilot", "production"}
-        demo_profile = signoff_profile in {"samolet_pilot_demo", "moscow_agr_2026"}
+        hard_profile = signoff_profile in {"customer_pilot", "production"}
+        demo_profile = signoff_profile in {"customer_pilot_demo", "moscow_agr_2026"}
         effective_cross_doc = "error" if hard_profile or demo_profile else cross_doc_severity
         self._cross_doc_severity = Severity(
             effective_cross_doc if effective_cross_doc in _valid_severities else "warning"
         )
         self._hard_signoff_profile = hard_profile
         self._priority_profile = (
-            priority_profile if priority_profile in {"default", "samolet"} else "default"
+            priority_profile if priority_profile in {"default", "pilot"} else "default"
         )
         self._external_evidence_verifier = (
             external_evidence_verifier or _NullExternalEvidenceVerifier()
@@ -389,7 +389,7 @@ class AnalyzeProjectPackageUseCase:
             require_bsi_schema=self._require_bsi_schema,
             raster_analyzer_configured=self._raster_drawing_analyzer is not None,
         )
-        if self._signoff_profile in {"samolet_pilot_demo", "moscow_agr_2026"}:
+        if self._signoff_profile in {"customer_pilot_demo", "moscow_agr_2026"}:
             return apply_demo_scope_honesty(assembled, profile=self._signoff_profile)
         return assembled
 

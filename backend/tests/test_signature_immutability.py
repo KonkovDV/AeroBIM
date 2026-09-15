@@ -402,8 +402,8 @@ class SignatureUseCaseWiringTests(unittest.TestCase):
         for profile in (
             "development",
             "fixture",
-            "samolet_pilot",
-            "samolet_pilot_demo",
+            "customer_pilot",
+            "customer_pilot_demo",
             "moscow_agr_2026",
             "production",
         ):

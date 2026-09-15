@@ -156,7 +156,7 @@ class OidcBffPhase25PkceTests(unittest.TestCase):
         self.assertEqual(url, draft)
 
 
-class WithoutSamoletProxySearchHonestyTests(unittest.TestCase):
+class WithoutCustomerProxySearchHonestyTests(unittest.TestCase):
     def test_public_proxy_search_does_not_close_rt_blockers(self) -> None:
         path = (
             Path(__file__).resolve().parents[2]
@@ -412,7 +412,7 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
             self.assertNotIn("2259", text, msg=path.name)
 
     def test_acceptance_profile_stays_unsigned(self) -> None:
-        path = self._repo() / "docs" / "partners" / "SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md"
+        path = self._repo() / "docs" / "partners" / "CUSTOMER_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md"
         text = path.read_text(encoding="utf-8")
         self.assertIn("closes_rt001: false", text)
         self.assertIn("closes_rt002: false", text)
@@ -447,7 +447,7 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
 
     def test_unsigned_profile_keeps_blockers_open(self) -> None:
         profile = (
-            self._repo() / "docs" / "partners" / "SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md"
+            self._repo() / "docs" / "partners" / "CUSTOMER_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md"
         ).read_text(encoding="utf-8")
         self.assertIn("closes_rt002: false", profile)
         self.assertNotIn("closes_rt002: true", profile)
@@ -517,7 +517,7 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         self.assertIn("run_kt3_without_customer", submission)
 
     def test_alignment_f1_cell_is_fixture_qualified(self) -> None:
-        path = self._repo() / "docs" / "samolet-techlab-alignment-2026.md"
+        path = self._repo() / "docs" / "techlab-alignment-2026.md"
         text = path.read_text(encoding="utf-8")
         self.assertIn("RU **fixture** ground truth", text)
         self.assertIn("macro F1 ≈ 0.86 (fixture-only; RT-001 OPEN", text)
@@ -544,7 +544,7 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         self.assertNotIn("CHANNEL_LOCAL_MAX_PASS", text)
         self.assertNotIn("CHANNEL_PACK_TRIAGE", text)
         self.assertNotIn("pack-family-facts-2026-08.md", text)
-        self.assertNotIn("SAMOLET_QUESTION_PACK", text)
+        self.assertNotIn("CUSTOMER_QUESTION_PACK", text)
         self.assertIn("K4_COMMERCIAL_PATH_2026_08.md", text)
         self.assertNotIn("SPG_CONSTRUCTION", text)
         self.assertNotIn("OWNER_ACTIONS_2026_09.md", text)
@@ -553,7 +553,10 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         listed = _git_ls_files()
         self.assertNotIn("SIGINEVICH", listed)
         self.assertNotIn("TRACKER_DMITRY", listed)
-        self.assertNotIn("CHANNEL_SAMOLET_MAX_PASS", listed)
+        self.assertNotIn("CHANNEL_CUSTOMER_MAX_PASS", listed)
+        brand = "samo" + "let"
+        self.assertNotIn(brand, listed.lower())
+        self.assertEqual(_tracked_channel_brand_hits(), [])
 
     def test_qa_defense_stays_no_go_and_omits_contest_count(self) -> None:
         path = self._repo() / "docs" / "qa-defense-2026.md"
@@ -592,6 +595,63 @@ def _git_ls_files(*args: str) -> str:
     )
 
 
+def _tracked_channel_brand_hits() -> list[str]:
+    """Public tree must not name the channel customer (latin, cyrillic, ledger prefixes)."""
+    git = shutil.which("git")
+    if not git:
+        raise unittest.SkipTest("git executable not found")
+    repo = Path(__file__).resolve().parents[2]
+    latin = "samo" + "let"
+    cyr_e = "\u0441\u0430\u043c\u043e\u043b\u0435\u0442"
+    cyr_yo = "\u0441\u0430\u043c\u043e\u043b\u0451\u0442"
+    typ_tok = "SAM" + "-TYP"
+    ar_tok = "SAM" + "-AR"
+    proc = subprocess.run(
+        [
+            git,
+            "grep",
+            "-I",
+            "-n",
+            "-i",
+            "-E",
+            "-e",
+            latin,
+            "-e",
+            cyr_e,
+            "-e",
+            cyr_yo,
+            "-e",
+            typ_tok,
+            "-e",
+            ar_tok,
+        ],
+        cwd=repo,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+    )
+    hits: list[str] = []
+    allow_prefix = "samples/xsd/minstroy/"
+    for line in (proc.stdout or "").splitlines():
+        rel = line.split(":", 1)[0].replace("\\", "/")
+        if rel.startswith(allow_prefix):
+            continue
+        hits.append(line)
+    listed = subprocess.check_output(
+        [git, "ls-files"],
+        cwd=repo,
+        text=True,
+        encoding="utf-8",
+    )
+    for rel in listed.splitlines():
+        norm = rel.strip().replace("\\", "/")
+        if not norm or norm.startswith(allow_prefix):
+            continue
+        if latin in norm.lower():
+            hits.append(norm)
+    return hits
+
+
 class JuryPackHygieneTests(unittest.TestCase):
     def _repo(self) -> Path:
         return Path(__file__).resolve().parents[2]
@@ -609,10 +669,10 @@ class JuryPackHygieneTests(unittest.TestCase):
             "docs/architecture/WORLD_PRACTICES_LITERATURE_REFRESH_2026_07_28.md",
             "docs/ai/LLM_COMPARATIVE_BENCHMARK.md",
             "docs/pilot/HARNESS_AND_DEMO_RUNBOOK_2026.md",
-            "docs/partners/LETTER_OF_INTEREST_SAMOLET_TEMPLATE_2026_08.md",
+            "docs/partners/LETTER_OF_INTEREST_CUSTOMER_TEMPLATE_2026_08.md",
             "docs/evidence/runtime-baseline-wave-a-windows-2026-08-15.md",
             "docs/evidence/kt2-handoff-2026-08-11/vertical-slice/report.html",
-            "docs/gtm/SAMOLET_OSINT_VECTOR_KT2_2026_08_14.md",
+            "docs/gtm/CUSTOMER_OSINT_VECTOR_KT2_2026_08_14.md",
             "docs/demo/TRACKER_MEETING_2026_08_14_FOLLOWUP.md",
             "docs/quality/RED_TEAM_REAUDIT2_2026_08_16.md",
             "docs/quality/RED_TEAM_ATOMIC4_2026_08_16.md",

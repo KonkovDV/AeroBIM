@@ -14,7 +14,7 @@ house-5 pack from the owner tree, which is **not** seam-clean; attribution is
 therefore done via the CONTROL baseline diff instead of a clean-pass gate.
 Recall on injected synthetics does not transfer to the partner pack.
 
-Claim boundary: synthetic mutation test on a local NDA pack. Not Samolet
+Claim boundary: synthetic mutation test on a local NDA pack. Not appointing-party
 accuracy. Not product accuracy >90%. Does not close RT-001/002/003.
 Checkpoint GO (regulatory_measurement_mvp; customer_go false).
 
@@ -46,7 +46,7 @@ from aerobim.tools._cli_base import run_cli
 SCHEMA_VERSION = "1.0.0"
 CLAIM_BOUNDARY = (
     "Mutation-kill recall on injected synthetics. Output-sensitivity proxy, "
-    "not semantic defect confirmation. Not Samolet accuracy. Not product "
+    "not semantic defect confirmation. Not appointing-party accuracy. Not product "
     "accuracy. Does not close RT-001/002/003. Checkpoint GO (regulatory_measurement_mvp; customer_go false)."
 )
 PLAN_DEVIATION = (
@@ -313,7 +313,7 @@ def render_markdown(artifact: Mapping[str, Any]) -> str:
         "closes_rt003: false",
         "claim_boundary: >",
         "  Mutation-kill recall on injected synthetics. Output-sensitivity",
-        "  proxy, not semantic defect confirmation. Not Samolet accuracy.",
+        "  proxy, not semantic defect confirmation. Not appointing-party accuracy.",
         "  Not product accuracy. Checkpoint GO (regulatory_measurement_mvp; customer_go false).",
         "---",
         "",
@@ -330,7 +330,7 @@ def render_markdown(artifact: Mapping[str, Any]) -> str:
         "дорожной карты 2026-09-03 источник — канальный IFC (дерево владельца;",
         "режим данных не согласован; не публикуется), который",
         "чистым не является; атрибуция — через CONTROL-дифф мультимножеств находок.",
-        "Recall на синтетике **не** переносится на комплект Самолёта.",
+        "Recall на синтетике **не** переносится на комплект заказчика.",
         "",
         "## По классам инъекций",
         "",

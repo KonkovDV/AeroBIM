@@ -6,11 +6,11 @@ Checkpoint **GO**; customer_go false. This pack does **not** paint RT-002 CLOSED
 
 ## Verbatim boundary
 
-City published the CIM AGR filing requirements (joint DIT/DGP order № ДГП-Р-1/26/64-16-6/26, effective 2026-04-02, plus the public stroimprosto IDS). The city is the **publisher of the NPA / IDS**, not AeroBIM’s customer, and did not endorse the product. Samolet internals remain out of scope.
+City published the CIM AGR filing requirements (joint DIT/DGP order № ДГП-Р-1/26/64-16-6/26, effective 2026-04-02, plus the public stroimprosto IDS). The city is the **publisher of the NPA / IDS**, not AeroBIM’s customer, and did not endorse the product. Appointing-party internals remain out of scope.
 
-RT-002 is closed in **regulatory** volume (`RT-002a`): this pack has `status=approved`, a full `approval` object, city as `approved_by`, and a content `pack_hash`. Channel-pack EIR v4 / BIM-standard v4 as text is a separate carrier volume (`RT-002b`) — not this city pack. RT-002 stays open in **signed corporate** volume (`RT-002c` / `b_corporate`): no Samolet-signed IDS / `pack_hash`. The string RT-002b in older notes meant signature; that residual is now RT-002c.
+RT-002 is closed in **regulatory** volume (`RT-002a`): this pack has `status=approved`, a full `approval` object, city as `approved_by`, and a content `pack_hash`. Channel-pack EIR v4 / BIM-standard v4 as text is a separate carrier volume (`RT-002b`) — not this city pack. RT-002 stays open in **signed corporate** volume (`RT-002c` / `b_corporate`): no appointing-party-signed IDS / `pack_hash`. The string RT-002b in older notes meant signature; that residual is now RT-002c.
 
-JSON schema vocabulary maps pack `status=approved` onto the engine badge `customer_approved`. That badge here means **city-as-publisher**, not “Samolet signed this pack”. Do not say “customer stack = Renga”. Do not say product accuracy >90%. Do not say RT-003 is closed. Clash/MEP stay honest SKIPPED under `AEROBIM_SIGNOFF_PROFILE=moscow_agr_2026`.
+JSON schema vocabulary maps pack `status=approved` onto the engine badge `customer_approved`. That badge here means **city-as-publisher**, not “the appointing party signed this pack”. Do not say “customer stack = Renga”. Do not say product accuracy >90%. Do not say RT-003 is closed. Clash/MEP stay honest SKIPPED under `AEROBIM_SIGNOFF_PROFILE=moscow_agr_2026`.
 
 This pack is a **measurement ruler**, not a commercial AGR self-check. From 2026-06-29 Moscow requires a free positive city CIM report at AGR filing; AeroBIM does not sell a substitute for that portal.
 
@@ -24,7 +24,7 @@ Schema 2.0.0 `expert_confirmation_journal` is present and **empty**: the JSON en
 
 ## What this pack is not
 
-- Not a Samolet acceptance profile.
+- Not a customer acceptance profile.
 - Not GrK art. 49 expertise.
 - Not an AGR certificate.
 - Not CDE-ready BCF.

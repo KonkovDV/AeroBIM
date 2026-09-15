@@ -130,7 +130,7 @@ class DemoDayAuditorPackTests(unittest.TestCase):
 
     def test_e1_e5_match_economics_file(self) -> None:
         text = (
-            _REPO / "docs" / "partners" / "SAMOLET_CYCLE_ECONOMICS_ASSUMPTIONS_2026_09.md"
+            _REPO / "docs" / "partners" / "CUSTOMER_CYCLE_ECONOMICS_ASSUMPTIONS_2026_09.md"
         ).read_text(encoding="utf-8")
         for needle in (E1_TEXT, E2_TEXT, E3_TEXT, E4_TEXT, E5_TEXT):
             self.assertIn(needle, text)

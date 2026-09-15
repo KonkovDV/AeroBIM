@@ -87,7 +87,7 @@ TZ_GAP_ROWS: tuple[dict[str, str], ...] = (
         "label": "Эффективность использования пространства",
         "status": "not_checked",
         "reason": (
-            "Самолёт 25.08: продаваемая площадь, избыточные техпомещения, "
+            "заказчик канала 25.08: продаваемая площадь, избыточные техпомещения, "
             "широкие коридоры, мёртвые зоны МОП. Пороги не подписаны; "
             "advisory inventory ≠ delivered metric"
         ),
@@ -100,7 +100,7 @@ TZ_GAP_ROWS: tuple[dict[str, str], ...] = (
         "label": "Решатель LIRA / расчётная корректность",
         "status": "not_checked",
         "reason": (
-            "Самолёт 25.08: сверка объявленных PDF/Excel с РД/BIM, не solver; "
+            "заказчик канала 25.08: сверка объявленных PDF/Excel с РД/BIM, не solver; "
             "native LIR NOT_IMPLEMENTED; calculation_correctness=NOT_IMPLEMENTED"
         ),
         "tz_matrix": "§3.2 vs calculation results / ТР-13",

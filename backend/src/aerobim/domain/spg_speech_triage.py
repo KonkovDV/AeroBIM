@@ -28,7 +28,7 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
     {
         "id": "RT-SPG-TIM-PACK",
         "verdict": "KILL",
-        "attack": "49% TIM among developers means the Samolet pack is measurable",
+        "attack": "49% TIM among developers means the appointing party pack is measurable",
         "brake": "Pilot TIM is not PD+RD+IFC ready for IDS; RT-001 OPEN",
     },
     {

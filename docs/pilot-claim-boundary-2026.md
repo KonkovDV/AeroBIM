@@ -12,7 +12,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 
 **Формула стадии (дословно):** Мы на стадии доработки контура заказчика. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение у назначающей стороны ещё не начались. Checkpoint `GO` — регуляторно-измерительный MVP. `customer_go` остаётся false, пока нет независимого размеченного корпуса, двух разметчиков, подписанного профиля назначающей стороны и подтверждения импорта в СОД.
 
-**Checkpoint:** **`GO`** (`regulatory_measurement_mvp`). `customer_go` **false**. Undifferentiated RT-001 / RT-002 / RT-003 stay **OPEN**. Measurement substitutes (2026-09-04): **RT-001** `a_content_pairing` CLOSED; **RT-001** `b_protocol_rehearsal` CLOSED (simulated dual pass, not humans); **RT-002a** CLOSED; **RT-002b** `b_eir_carrier` CLOSED (EIR v4 + BIM-standard v4 as text on the channel pack); **RT-003a** planted geometric CLOSED; **RT-003b** HVAC `IfcSystem` graph CLOSED; **RT-003** NWD federation carrier CLOSED. Residuals: **RT-001b** dual human raters, **RT-001c** customer corpus, **RT-002c** Samolet signature, **RT-003c** `mep_system_clash` NOT_VERIFIED. Form 5/5 ≠ `customer_go`. Volumes: [`evidence/rt-blocker-volumes-2026-09.md`](evidence/rt-blocker-volumes-2026-09.md) · dual-rater: [`evidence/rt001-dual-rater-simulation-2026-09.md`](evidence/rt001-dual-rater-simulation-2026-09.md). Дословная формула речи: [`demo/KT2_JURY_FAQ_2026_08_12.md`](demo/KT2_JURY_FAQ_2026_08_12.md) · КТ#3: [`demo/KT3_JURY_FAQ_2026_08_25.md`](demo/KT3_JURY_FAQ_2026_08_25.md). Blockers: [`../audit/reports/CRITICAL_BLOCKERS.md`](../audit/reports/CRITICAL_BLOCKERS.md).
+**Checkpoint:** **`GO`** (`regulatory_measurement_mvp`). `customer_go` **false**. Undifferentiated RT-001 / RT-002 / RT-003 stay **OPEN**. Measurement substitutes (2026-09-04): **RT-001** `a_content_pairing` CLOSED; **RT-001** `b_protocol_rehearsal` CLOSED (simulated dual pass, not humans); **RT-002a** CLOSED; **RT-002b** `b_eir_carrier` CLOSED (EIR v4 + BIM-standard v4 as text on the channel pack); **RT-003a** planted geometric CLOSED; **RT-003b** HVAC `IfcSystem` graph CLOSED; **RT-003** NWD federation carrier CLOSED. Residuals: **RT-001b** dual human raters, **RT-001c** customer corpus, **RT-002c** the appointing party signature, **RT-003c** `mep_system_clash` NOT_VERIFIED. Form 5/5 ≠ `customer_go`. Volumes: [`evidence/rt-blocker-volumes-2026-09.md`](evidence/rt-blocker-volumes-2026-09.md) · dual-rater: [`evidence/rt001-dual-rater-simulation-2026-09.md`](evidence/rt001-dual-rater-simulation-2026-09.md). Дословная формула речи: [`demo/KT2_JURY_FAQ_2026_08_12.md`](demo/KT2_JURY_FAQ_2026_08_12.md) · КТ#3: [`demo/KT3_JURY_FAQ_2026_08_25.md`](demo/KT3_JURY_FAQ_2026_08_25.md). Blockers: [`../audit/reports/CRITICAL_BLOCKERS.md`](../audit/reports/CRITICAL_BLOCKERS.md).
 
 **Stakeholder distribution:** share [`docs.md`](docs.md) (jury memo) + [`partners/TECHLAB_TASK_07_READINESS_2026.md`](partners/TECHLAB_TASK_07_READINESS_2026.md) at kickoff; map: [`TIER0_INDEX.md`](TIER0_INDEX.md).  
 **Индекс ТЗ:** [`tz/README.md`](tz/README.md).  
@@ -42,7 +42,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 | OpenRebar provenance digest (**сверка**, not correctness) | Digest endpoint + `claim_labels` |
 | ISO 19650-lite context fields on reports | Optional request/report fields (Shared-gate metadata, not CDE) |
 | Extraction quality metrics (RU **fixtures**) | `evaluate_extraction`; fixture macro_f1 ≠ product accuracy |
-| Package SLA on **fixture** pack (schema 1.2, `fixture_only`) | `audit/evidence/samolet-sla-fixture-honesty-2026-07-17.json` |
+| Package SLA on **fixture** pack (schema 1.2, `fixture_only`) | `audit/evidence/sla-fixture-honesty-2026-07-17.json` |
 | System honesty surface | `GET /v1/system/capabilities` |
 | Explicit report capabilities | `capabilities.{clash,ids,unit_scale,ifc_schema,norm_rule_packs,section_pairing,dwg_dxf,mep_system_clash,…}` ∈ ok/skipped/failed/not_verified; **FAILED blocks `summary.passed`** |
 | Shared-gate `summary.passed` ownership | ADR-001: deterministic inputs + EvidenceAssembler writer; AI/OCR cannot flip; ≠ Shared→Published |
@@ -69,14 +69,14 @@ This document separates **verified repository evidence** from **roadmap intent**
 | JSON norm / rule-pack loader | `NormRulePackLoader` + residential AR reference template (synthetic-template only) |
 | Deterministic PD↔RD section pairing scaffold | `SectionDiffAnalyzer` on normalized section JSON (one discipline pair) |
 | Detection precision harness (exact TP/FP/FN) | `aerobim-evaluate-detection-precision` + synthetic contract fixture + protocol gate |
-| Typical-errors catalog scaffold ≥20 patterns | `samples/benchmarks/samolet-typical-errors-catalog.json` + mapping tool; 28.08: 2 acceptance checklists detected in owner pack (counts only) — **not ingested**, `customer_confirmed_patterns` stays 0, catalog not customer-accepted |
+| Typical-errors catalog scaffold ≥20 patterns | `samples/benchmarks/typical-errors-catalog.json` + mapping tool; 28.08: 2 acceptance checklists detected in owner pack (counts only) — **not ingested**, `customer_confirmed_patterns` stays 0, catalog not customer-accepted |
 | Schema-valid IFC pre-gate available | `BasicIfcSchemaValidator` + `capabilities.ifc_schema` |
 | IDS document audit before model check | `XmlIdsDocumentAuditor` + `AEROBIM-IDS-AUDIT` |
 | BCF API 3.0 topic push (OpenCDE) | `POST .../export/bcf-api/push` with hub Bearer token |
 | ISO 19650-lite CDE state on reports | `iso19650` block on public report JSON |
 | OIDC JWT alongside static bearer | `AEROBIM_OIDC_*` + enterprise `PyJWT` |
 | Static API bearer scope (KT#2 honesty) | Shared `AEROBIM_API_BEARER_TOKEN` is **pilot transport auth only** — may authenticate uploads/reads; **must not** create expert HITL accept/reject/sign events (`is_service_token` denied). Expert verdicts require OIDC (or equivalent) principal with reviewer/admin role under pilot/production profiles |
-| HITL reviewer-role gate profile boundary (N-49) | `enforce_hitl_reviewer_auth` / `require_hitl_reviewer_roles` are **on only** for `signoff_profile` ∈ `{samolet_pilot, production}`. Development / fixture / default demo profiles do **not** require reviewer roles (static bearer still blocked). Do not demo role model under a non-pilot profile and claim the gate is live |
+| HITL reviewer-role gate profile boundary (N-49) | `enforce_hitl_reviewer_auth` / `require_hitl_reviewer_roles` are **on only** for `signoff_profile` ∈ `{customer_pilot, production}`. Development / fixture / default demo profiles do **not** require reviewer roles (static bearer still blocked). Do not demo role model under a non-pilot profile and claim the gate is live |
 | Optional bSI / local schema certificate id | `schema_validation_request_id` + `capabilities.ifc_schema.external_ref` |
 | Postgres/filesystem filtered report index | `GET /v1/reports?project=&discipline=&passed=` |
 | Revit thin-client deep-link helper | `clients/revit-plugin/scripts/export_and_open_report.py` + UI `?report=` |
@@ -118,7 +118,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Fixture AABB P/R = 1.0 at n=6 as a jury exhibit | Wilson 95% lower ≈ 0.61 (`wilson_interval(6, 6)`); stop-list KT#3 item 28 |
 | Space-efficiency numeric KPI | Coverage map: not implemented; owner scope OA-14 OPEN |
 | 5–10 packs/day | Customer-stated 25.08; not a measured SLA; `benchmark-thresholds.json` `publishable_sla=false` |
-| Analyze default 1.5 GB SPF `open(.ifc)` | Ingest + RocksDB under stated Samolet caps; `AEROBIM_MAX_IFC_BYTES` stays **256 MiB**; WASM **256 MiB** |
+| Analyze default 1.5 GB SPF `open(.ifc)` | Ingest + RocksDB under stated the appointing party caps; `AEROBIM_MAX_IFC_BYTES` stays **256 MiB**; WASM **256 MiB** |
 | IFC streaming / disk R-tree | **Designed, not implemented**; JSON sidecar of `IfcSpatialIndex` ≠ disk R-tree |
 | Published clash/inconsistency accuracy >90% | Not measured; do not claim until adjudication |
 | Synthetic precision fixture scores as product accuracy | Harness-only (`4 TP / 2 FP / 2 FN` contract); not customer evidence |
@@ -197,7 +197,7 @@ Use an **isolated** virtual environment under `AeroBIM/backend/.venv-pilot`, not
 
 Keep aligned with:
 
-- [partners/TECHLAB_SAMOLET_APPLICATION_2026.md](partners/TECHLAB_SAMOLET_APPLICATION_2026.md)
+- [partners/TECHLAB_APPLICATION_2026.md](partners/TECHLAB_APPLICATION_2026.md)
 - [README.md](../README.md) Scientific Reporting Standard section
 - [roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md](capability-claim-matrix-2026.md)
 - roadmap/P2_02_GEOMETRY_HONESTY_PLAN_2026_08.md

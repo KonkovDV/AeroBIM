@@ -43,7 +43,7 @@
       "status": "partial",
       "entries": [
         {
-          "path": "samples/ids/samolet-fire-rating.ids",
+          "path": "samples/ids/residential-fire-rating.ids",
           "role": "agreed-ids-pack",
           "expected_issue_classes": ["IDS_VALIDATION"]
         },
@@ -79,7 +79,7 @@
       "status": "scaffold",
       "entries": [
         {
-          "path": "samples/benchmarks/samolet-typical-errors-catalog.json",
+          "path": "samples/benchmarks/typical-errors-catalog.json",
           "role": "typical-errors-catalog",
           "expected_issue_classes": ["CROSS_DOCUMENT", "IFC_VALIDATION", "SPATIAL"]
         }

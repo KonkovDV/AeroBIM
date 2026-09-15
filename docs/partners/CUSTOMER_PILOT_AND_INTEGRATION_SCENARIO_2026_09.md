@@ -21,7 +21,7 @@ claim_boundary: >
 Этот файл — отдельный сценарий, который организаторы могут переслать заказчику.
 Репозиторий на GitHub **не** заменяет отчёты по трём направленным комплектам и
 **не** является пробным стендом. Канал — только организаторы. Прямой почты
-Самолёту из git нет.
+заказчику канала из git нет.
 
 Checkpoint **`GO`**; `customer_go` **false**. Учебный `POST /v1/demo/seed-fixture`
 на пробный контур **не** ставится.
@@ -39,7 +39,7 @@ Checkpoint **`GO`**; `customer_go` **false**. Учебный `POST /v1/demo/seed
 
 Это **карта выгрузки и комплектности**, не акт «дом бракованный» и не точность
 продукта. IDS в прогоне — публичный unsigned IFC2X3 presence, **не** подписанный
-профиль Самолёта. Native RVT / NWD / DWG в отчёте стоят как отказ чтения, не как
+профиль назначающей стороны. Native RVT / NWD / DWG в отчёте стоят как отказ чтения, не как
 «файл битый». AABB-clash без согласованного зазора в shortlist не входит.
 
 Ссылки на файлы отчётов **не публикуются на GitHub**. Владелец кладёт пакет в
@@ -102,10 +102,10 @@ Checkpoint **`GO`**; `customer_go` **false**. Учебный `POST /v1/demo/seed
 
 Три числа эффекта, без которых рубли не рисуем: рабочие дни круга РД по
 секции; часы ручной проверки «до»; сколько лишних кругов считают нормой.
-E1–E5: [`SAMOLET_CYCLE_ECONOMICS_ASSUMPTIONS_2026_09.md`](SAMOLET_CYCLE_ECONOMICS_ASSUMPTIONS_2026_09.md).
+E1–E5: [`CUSTOMER_CYCLE_ECONOMICS_ASSUMPTIONS_2026_09.md`](CUSTOMER_CYCLE_ECONOMICS_ASSUMPTIONS_2026_09.md).
 
 RACI: [`PILOT_RACI_ONEPAGER_2026_09.md`](PILOT_RACI_ONEPAGER_2026_09.md).
-Протокол измерения: [`../pilot-protocol-samolet-2026.md`](../pilot-protocol-samolet-2026.md).
+Протокол измерения: [`../pilot-protocol-customer-2026.md`](../pilot-protocol-customer-2026.md).
 
 ## 4. Сценарий последующей интеграции
 

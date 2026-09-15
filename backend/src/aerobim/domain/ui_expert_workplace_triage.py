@@ -170,7 +170,7 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
     {
         "id": "RT-UI-THEME",
         "verdict": "HOLD",
-        "attack": "Ship neon dark or invent brand-book hex as official Samolet UI",
+        "attack": "Ship neon dark or invent brand-book hex as official the appointing party UI",
         "brake": "Laconic light; blue aliases; brand book is not in git",
     },
     {

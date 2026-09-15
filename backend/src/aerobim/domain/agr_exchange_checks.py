@@ -6,7 +6,7 @@ IFC SPF, no IfcBuildingElementProxy, five-field filename, file ≤500 MB.
 This is NOT the moscow_agr profile: no УКЭП, no CRS, no MSSK.
 TEP XML sidecar presence is class-1 well-formed XML. Official ДГП example
 ``AGR_TEO.xml`` (root ``ArchitecturalUrbanPlanningSolution``) and official
-``Vedomost_AGR_VED_NEW.xsd`` are public city files, not a Samolet pack.
+``Vedomost_AGR_VED_NEW.xsd`` are public city files, not a customer pack.
 """
 
 from __future__ import annotations
@@ -33,7 +33,7 @@ OFFICIAL_TEP_ROOT = "ArchitecturalUrbanPlanningSolution"
 CLAIM_BOUNDARY = (
     "AGR exchange-shape checks on a fixture (class 1). Not moscow_agr profile. "
     "Not УКЭП. Not CRS. Not MSSK. Official ДГП TEP example + Vedomost XSD "
-    "are public city files, not a Samolet-signed acceptance pack. "
+    "are public city files, not a appointing-party-signed acceptance pack. "
     "Not customer CIM acceptance. Cited NPA is territorial (Moscow 17-PP + "
     "DGP-R-1/26); the stroimprosto IDS zip is not itself an NPA. Does not "
     "substitute GrK art. 49 expertise, PP 614 IM obligation, or an AGR certificate."
@@ -216,7 +216,7 @@ def collect_agr_vedomost_xsd_issues(
     xml_path: Path | None,
     xsd_path: Path,
 ) -> tuple[ValidationIssue, ...]:
-    """Official ДГП Vedomost_AGR XSD. Not TEP AGR_TEO.xml. Not Samolet pack."""
+    """Official ДГП Vedomost_AGR XSD. Not TEP AGR_TEO.xml. Not appointing-party pack."""
     if xml_path is None or not xml_path.is_file():
         return (
             _issue(

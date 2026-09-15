@@ -34,7 +34,7 @@ Jury-facing language must not say “no automatic verdict” without this distin
 
 Iversen & Huang (AuC 182, 2026) put the LLM on the check route: interpret a clause, select a tool, execute, report. Fuchs, Hellin & Borrmann (EC3, 2026) generate reusable checking functions from IDS-validated requirements and run them. Those papers close **encoding a clause into an executable check**. They do not close **who is allowed to say pass**.
 
-AeroBIM’s product choice for Samolet / expertise is the opposite of that route:
+AeroBIM’s product choice for the appointing party / expertise is the opposite of that route:
 
 1. **Drafts yes.** The model may compose a remark, an IDS fragment, or a candidate function.
 2. **Shared-gate no.** `call_tool` and `change_verdict` are forbidden provider actions. Generated checkers do not enter sign-off until a human-approved hashed pack with `approval_ref`.

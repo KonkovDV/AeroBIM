@@ -121,7 +121,7 @@ class Adv05PilotFailClosedTests(unittest.TestCase):
         }
         try:
             os.environ["AEROBIM_ENV"] = "production"
-            os.environ["AEROBIM_SIGNOFF_PROFILE"] = "samolet_pilot"
+            os.environ["AEROBIM_SIGNOFF_PROFILE"] = "customer_pilot"
             os.environ["AEROBIM_REQUIRE_CLASH"] = "false"
             os.environ["AEROBIM_CLASH_AFFECTS_PASS"] = "false"
             os.environ["AEROBIM_REQUIRE_BSI_SCHEMA"] = "false"

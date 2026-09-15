@@ -2,7 +2,7 @@
   "schema_version": "2.0.0",
   "pack_id": "MOSCOW-AGR-2026",
   "version": "0.1.0",
-  "title": "Moscow AGR CIM 2026 — AR property subset (city-published IDS, not Samolet)",
+  "title": "Moscow AGR CIM 2026 — AR property subset (city-published IDS, not appointing-party)",
   "typology": "residential-multifamily",
   "jurisdiction": "г. Москва",
   "edition": "2026-04",
@@ -12,7 +12,7 @@
     "AR"
   ],
   "status": "approved",
-  "customer_action_required": "City published CIM AGR filing requirements. The city is not AeroBIM's customer and did not endorse the product. Samolet internals remain out of scope. RT-002 is closed in regulatory volume only; corporate volume stays open.",
+  "customer_action_required": "City published CIM AGR filing requirements. The city is not AeroBIM's customer and did not endorse the product. Appointing-party internals remain out of scope. RT-002 is closed in regulatory volume only; corporate volume stays open.",
   "approval_ref": "ДГП-Р-1/26/64-16-6/26",
   "customer_approval_ref": "ДГП-Р-1/26/64-16-6/26",
   "approval": {
@@ -39,7 +39,7 @@
       "norm_edition": "2026-04",
       "clause_number": "CIM-AGR-IDS:IfcSpace:RUS_Name",
       "requirement_text": "IfcSpace in Moscow AGR CIM shall carry RusSet_Common.RUS_Name (city IDS applicability).",
-      "evidence_text": "Property presence on IfcSpace; city IDS pack, not a Samolet EIR.",
+      "evidence_text": "Property presence on IfcSpace; city IDS pack, not a customer EIR.",
       "discipline": "AR",
       "stage": "PD",
       "criticality": "warning",
@@ -194,5 +194,5 @@
       "expert_confirmation_journal": []
     }
   ],
-  "pack_hash": "f13fd0f06074fc03caf0ac311729229094c7447e5ddfea291153458344bdb104"
+  "pack_hash": "5677885009ab1ff3a00c74217d6387b2547de9c7a2e761da6d2ed743e46290a6"
 }

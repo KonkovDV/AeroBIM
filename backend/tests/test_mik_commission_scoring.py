@@ -435,7 +435,7 @@ class Kt3CommissionPackTests(unittest.TestCase):
         self.assertIn("угт 4", faq)
         self.assertIn("не заявляем", faq)
         self.assertIn("02.04.2026", faq)
-        self.assertIn("сто самолёта", faq)
+        self.assertIn("сто заказчика канала", faq)
         self.assertIn("не измерялось", faq)
         self.assertIn("B_FINAL_SCORING_TICKSHEET_2026_09.md", tier0)
         self.assertIn("BEFORE_AFTER_MEASUREMENT_PROTOCOL_2026_09.md", tier0)

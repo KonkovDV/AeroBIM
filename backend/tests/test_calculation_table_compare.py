@@ -15,12 +15,12 @@ from aerobim.domain.calculation_table_compare import (
     table_compare_honesty_snapshot,
     table_digest,
 )
+from aerobim.domain.customer_channel_answers import customer_channel_answers_payload
 from aerobim.domain.ifc_streaming_design import (
     DEFAULT_ANALYZE_IFC_BYTES,
     streaming_design_snapshot,
 )
 from aerobim.domain.models import RequirementSource, SourceKind, ValidationRequest
-from aerobim.domain.samolet_mvp_answers import samolet_mvp_answers_payload
 from aerobim.infrastructure.adapters.spreadsheet_load_evidence_adapter import (
     SpreadsheetLoadEvidenceAdapter,
     compare_office_tables,
@@ -83,7 +83,7 @@ class CalculationTableCompareTests(unittest.TestCase):
         snap = table_compare_honesty_snapshot()
         self.assertEqual(snap["solver"], "not_implemented")
         self.assertEqual(snap["pdf_tables"], "fragile")
-        payload = samolet_mvp_answers_payload()
+        payload = customer_channel_answers_payload()
         compare = payload["calculation_table_compare"]
         self.assertIsInstance(compare, dict)
         self.assertEqual(compare["native_lir"], "not_implemented")
@@ -184,7 +184,7 @@ class IfcStreamingDesignTests(unittest.TestCase):
             debug=True,
         )
         self.assertEqual(settings.max_ifc_bytes, DEFAULT_ANALYZE_IFC_BYTES)
-        payload = samolet_mvp_answers_payload()
+        payload = customer_channel_answers_payload()
         streaming = payload["ifc_streaming"]
         self.assertIsInstance(streaming, dict)
         self.assertFalse(streaming["raises_default_cap"])

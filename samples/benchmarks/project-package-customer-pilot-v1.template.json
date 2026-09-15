@@ -1,18 +1,18 @@
 {
   "schema_version": "1.0.0",
   "pack_version": "1.0.0",
-  "pack_id": "project-package-samolet-pilot-v1",
-  "description": "TEMPLATE — copy to project-package-samolet-pilot-v1.json locally (gitignored). Fill paths after Samolet intake / NDA.",
-  "project_name": "Самолёт — пилотный корпус (заполнить)",
+  "pack_id": "project-package-customer-pilot-v1",
+  "description": "TEMPLATE — copy to project-package-customer-pilot-v1.json locally (gitignored). Fill paths after the appointing party intake / NDA.",
+  "project_name": "заказчик канала — пилотный корпус (заполнить)",
   "discipline": "fire-safety+structure",
   "stage": "S2",
   "revision": "P-01",
   "doc_status": "Shared",
-  "information_container_id": "cde-samolet-pilot-001",
+  "information_container_id": "cde-customer-pilot-001",
   "request": {
     "ifc_path": "LOCAL_PATH/samples/ifc/<customer-model>.ifc",
-    "requirement_path": "LOCAL_PATH/samples/requirements/samolet-fire-safety-rules.txt",
-    "ids_path": "LOCAL_PATH/samples/ids/samolet-fire-rating.ids",
+    "requirement_path": "LOCAL_PATH/samples/requirements/residential-fire-safety-rules.txt",
+    "ids_path": "LOCAL_PATH/samples/ids/residential-fire-rating.ids",
     "technical_spec_path": "LOCAL_PATH/samples/specifications/<customer-tz>.txt",
     "calculation_path": "LOCAL_PATH/samples/calculations/<customer-calc>.txt",
     "drawings": [
@@ -25,7 +25,7 @@
   },
   "_intake_notes": {
     "nda_required": true,
-    "do_not_commit": "See .gitignore — project-package-samolet-pilot-v1.json",
+    "do_not_commit": "See .gitignore — project-package-customer-pilot-v1.json",
     "checklist": "samples/customer/README.md"
   }
 }

@@ -39,7 +39,7 @@ claim_boundary: >
 ## МСФО группы ≠ РСБУ головной (не путать знаки)
 
 Официальный отчёт группы 6m2026 (МСФО):
-[media.samolet.ru 6m2026.pdf](https://media.samolet.ru/investors/shareholders/presentations/6m2026.pdf).
+[media.customer.ru 6m2026.pdf](https://media.customer.ru/investors/shareholders/presentations/6m2026.pdf).
 Сводка в прессе 28.08.2026: «Ведомости», «Коммерсантъ».
 
 | Показатель 1П2026 | Что можно сказать | Чего нельзя |

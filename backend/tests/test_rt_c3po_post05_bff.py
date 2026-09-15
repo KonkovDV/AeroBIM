@@ -35,7 +35,7 @@ def _phase3_kwargs(storage: Path, *, signoff_profile: str) -> dict[str, object]:
 class Post05Phase3LabOnlyTests(unittest.TestCase):
     def test_hard_profile_never_reports_phase3_ready(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            for profile in ("samolet_pilot", "production"):
+            for profile in ("customer_pilot", "production"):
                 settings = Settings(**_phase3_kwargs(Path(tmp), signoff_profile=profile))
                 self.assertTrue(settings.oidc_bff_phase3_credentials_configured())
                 self.assertFalse(settings.oidc_bff_phase3_ready)
@@ -48,7 +48,7 @@ class Post05Phase3LabOnlyTests(unittest.TestCase):
     def test_from_env_rejects_phase3_secrets_on_hard_profile(self) -> None:
         env = {
             "AEROBIM_ENV": "development",
-            "AEROBIM_SIGNOFF_PROFILE": "samolet_pilot",
+            "AEROBIM_SIGNOFF_PROFILE": "customer_pilot",
             "AEROBIM_ALLOW_ANONYMOUS_DEV": "true",
             "AEROBIM_OIDC_BFF_CLIENT_ID": "lab-client",
             "AEROBIM_OIDC_BFF_AUTHORIZE_URL": "https://idp.example.test/authorize",

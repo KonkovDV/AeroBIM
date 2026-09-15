@@ -194,7 +194,7 @@
       "title": "Appointing-party IDS with approval_ref + pack_hash (RT-002b)",
       "agent": "protocol_ready",
       "owner": "blocked_signature",
-      "stop": "city AGR pack = Samolet customer_approved"
+      "stop": "city AGR pack = the appointing party customer_approved"
     },
     {
       "id": "P2-PUBLISH",

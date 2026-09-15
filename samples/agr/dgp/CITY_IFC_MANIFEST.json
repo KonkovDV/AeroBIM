@@ -3,7 +3,7 @@
   "source_page": "https://stroimprosto.mos.ru/knowledge/article/cim-agr/",
   "retrieved_head": "2026-08-24",
   "local_root": ".local/moscow-agr-examples/ifc",
-  "claim_boundary": "City-published AGR CIM examples from the same article as the official IDS/TEP. Not a PD pack (no sheets, TZ, two revisions, calcs, expertise remarks). Not a Samolet pack. Not RT-001. Binaries stay gitignored.",
+  "claim_boundary": "City-published AGR CIM examples from the same article as the official IDS/TEP. Not a PD pack (no sheets, TZ, two revisions, calcs, expertise remarks). Not a customer pack. Not RT-001. Binaries stay gitignored.",
   "closes_rt001": false,
   "closes_rt002b": false,
   "closes_rt003": false,

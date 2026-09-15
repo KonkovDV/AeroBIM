@@ -87,7 +87,7 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "id": "RT-V1-01",
         "verdict": "KILL",
         "attack": "Cite TZ v1 clash/nonconformity target as a measured AeroBIM score",
-        "brake": "mik_act_may_cite_tz_v1_accuracy_as_measured() is False; IUA SAM-10",
+        "brake": "mik_act_may_cite_tz_v1_accuracy_as_measured() is False; IUA CH-10",
     },
     {
         "id": "RT-V1-02",
@@ -213,7 +213,9 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "id": "RT-002-SPPACK",
         "verdict": "KILL",
         "attack": "An unsigned SP 63/20 pack closes RT-002b / RT-002",
-        "brake": "RT-002a city IDS; RT-002b needs Samolet signature; closes_rt002 false",
+        "brake": (
+            "RT-002a city IDS; RT-002b needs the appointing party signature; closes_rt002 false"
+        ),
     },
     {
         "id": "RT-LIRA-SOLVER",
@@ -704,7 +706,7 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
     {
         "id": "RT-AGR-002",
         "verdict": "HOLD",
-        "attack": "moscow_agr_2026 status=approved means Samolet customer_approved",
+        "attack": "moscow_agr_2026 status=approved means the appointing party customer_approved",
         "brake": "RT-002a city pack; RT-002c signed OPEN; profile not customer-hard",
     },
     {
@@ -753,7 +755,10 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "id": "RT-002-NORMS",
         "verdict": "KILL",
         "attack": "RT-002 OPEN means there are no machine-readable norms",
-        "brake": "RT-002a city IDS (MOEXP 06.03.2026) CLOSED; only 002b (Samolet signature) OPEN",
+        "brake": (
+            "RT-002a city IDS (MOEXP 06.03.2026) CLOSED; only 002b "
+            "(the appointing party signature) OPEN"
+        ),
     },
     {
         "id": "RT-TBD-FILL",
@@ -788,7 +793,7 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
     {
         "id": "RT-INGEST-ANALYZE",
         "verdict": "KILL",
-        "attack": "Samolet 1.5 GB model ingest is already the analyze/WASM cap",
+        "attack": "the appointing party 1.5 GB model ingest is already the analyze/WASM cap",
         "brake": "SPF 256 MiB; RocksDB up to 1.5 GB; WASM 256 MiB",
     },
     {

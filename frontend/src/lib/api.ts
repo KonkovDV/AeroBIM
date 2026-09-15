@@ -736,7 +736,7 @@ export type SystemCapabilitiesPayload = {
   auth_bff?: { status: string };
   bcf_t2?: { status: string; claim_allowed: boolean; raw_status?: string };
   honesty?: Record<string, { status: string; reason?: string | null }>;
-  samolet_mvp_answers?: {
+  customer_channel_answers?: {
     closes_rt001: boolean;
     closes_rt002: boolean;
     closes_rt003: boolean;

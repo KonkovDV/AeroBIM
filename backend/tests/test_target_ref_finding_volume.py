@@ -57,7 +57,7 @@ from aerobim.infrastructure.adapters.ifc_quantity_consistency_adapter import (
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 IFC_REI60 = REPO_ROOT / "samples" / "ifc" / "wall-fire-rating-rei60.ifc"
-FIRE_RULES = REPO_ROOT / "samples" / "requirements" / "samolet-fire-safety-rules.txt"
+FIRE_RULES = REPO_ROOT / "samples" / "requirements" / "residential-fire-safety-rules.txt"
 
 _SPF_HEADER = """ISO-10303-21;
 HEADER;
@@ -157,7 +157,7 @@ class TargetRefWildcardTests(unittest.TestCase):
         self.assertTrue(element_matches_named_target_ref(wall, "w-ss"))
         self.assertTrue(target_ref_matches("Straße", "STRASSE"))
 
-    def test_samolet_fire_pack_parses_all_as_unrestricted(self) -> None:
+    def test_customer_fire_pack_parses_all_as_unrestricted(self) -> None:
         requirements = StructuredRequirementExtractor().extract(
             RequirementSource(path=FIRE_RULES, source_kind=SourceKind.STRUCTURED_TEXT)
         )
@@ -358,7 +358,7 @@ class AllTargetRefValidatorTests(unittest.TestCase):
             {1: {"Pset_WallCommon": {"FireRating": "REI60"}}, 2: {}},
         )
         requirement = ParsedRequirement(
-            rule_id="SAM-AR-018",
+            rule_id="TYP-AR-018",
             ifc_entity="IFCWALL",
             target_ref="ALL",
             property_set="Pset_WallCommon",
@@ -602,11 +602,11 @@ class FindingVolumeTaxonomyTests(unittest.TestCase):
             "coverage_unsigned",
         )
         self.assertEqual(
-            classify_volume_record({"rule_id": "SAM-AR-001"}),
+            classify_volume_record({"rule_id": "TYP-AR-001"}),
             "coverage_unsigned",
         )
         self.assertEqual(
-            classify_volume_record({"rule_id": "SAM-AR-020"}),
+            classify_volume_record({"rule_id": "TYP-AR-020"}),
             "element_detection_unsigned",
         )
         self.assertEqual(
@@ -624,7 +624,7 @@ class FindingVolumeTaxonomyTests(unittest.TestCase):
         self.assertEqual(
             classify_volume_record(
                 {
-                    "rule_id": "SAM-AR-020",
+                    "rule_id": "TYP-AR-020",
                     "element_guid": "rail-1",
                     "message": (
                         "Property Pset_RailingCommon.Height does not match the expected value"
@@ -657,7 +657,7 @@ class FindingVolumeTaxonomyTests(unittest.TestCase):
         self.assertEqual(
             classify_volume_record(
                 {
-                    "rule_id": "SAM-AR-005",
+                    "rule_id": "TYP-AR-005",
                     "message": (
                         "Property Pset_SpaceCommon.OccupancyType is missing "
                         "on 12 of 16000 IFCSPACE elements"
@@ -686,7 +686,7 @@ class FindingVolumeTaxonomyTests(unittest.TestCase):
                 {"rule_id": "AEROBIM-DRAWING-REGION-HITL", "severity": "info"},
                 {"rule_id": "AEROBIM-CLASH-CAPABILITY", "severity": "error"},
                 {
-                    "rule_id": "SAM-AR-020",
+                    "rule_id": "TYP-AR-020",
                     "element_guid": "g1",
                     "severity": "error",
                     "category": "ifc-validation",
@@ -749,7 +749,7 @@ class FindingVolumeTaxonomyTests(unittest.TestCase):
                     "category": "ifc-validation",
                 },
                 {
-                    "rule_id": "SAM-AR-011",
+                    "rule_id": "TYP-AR-011",
                     "message": (
                         "Property Pset_WallCommon.FireRating "
                         "is missing on 10 of 12 IFCWALL elements"

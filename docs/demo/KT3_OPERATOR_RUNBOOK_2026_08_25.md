@@ -15,7 +15,7 @@ claim_boundary: >
 # КТ#3 — что нажимать
 
 Карточка речи: [`KT3_JURY_FAQ_2026_08_25.md`](KT3_JURY_FAQ_2026_08_25.md).  
-ТЗ v2: [`../tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md`](../tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md).
+ТЗ v2: [`../tz/TZ_TECHLAB_TASK_07_V2_2026.md`](../tz/TZ_TECHLAB_TASK_07_V2_2026.md).
 
 На защите жюри — только этот трек: живой CLI из git. Файлов заказчика в репозитории нет.
 
@@ -48,7 +48,7 @@ python -m aerobim.tools.run_kt3_without_customer
 
 Stderr `MEP system graph probe failed` / `MEP-CLASH-001` на учебной модели — fail-closed, процесс всё равно заканчивается кодом 0. Это не падение демо. Capability `mep_system_clash=NOT_VERIFIED`.
 
-**Не** ставить `AEROBIM_SIGNOFF_PROFILE=samolet_pilot` на чужом ноутбуке: clash/MEP форсируются и демо покраснеет не про шов. Если нужен городской контур:
+**Не** ставить `AEROBIM_SIGNOFF_PROFILE=customer_pilot` на чужом ноутбуке: clash/MEP форсируются и демо покраснеет не про шов. Если нужен городской контур:
 
 cmd:
 

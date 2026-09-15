@@ -1,4 +1,4 @@
-"""IfcTester coverage of public jurisdiction IDS packs that are not Samolet.
+"""IfcTester coverage of public jurisdiction IDS packs that are not appointing-party.
 
 Moscow AGR IDS (stroimprosto.mos.ru) and SPb GAU CGE IDS (spbexp.ru).
 Does not close RT-002. No new port.
@@ -28,11 +28,11 @@ PACKS: dict[str, dict[str, Any]] = {
         "claim_boundary": (
             "Official Moscow AGR IDS zip from stroimprosto.mos.ru (АР / БиО / ПС / МССК). "
             "IfcTester engine coverage on a wall fixture is not CIM AGR acceptance, "
-            "not УКЭП, and not a Samolet-signed pack. RT-002 stays OPEN."
+            "not УКЭП, and not a appointing-party-signed pack. RT-002 stays OPEN."
         ),
         "evidence_stem": "norm-pack-moscow-agr-coverage-2026-08",
         "artifacts_dir": "artifacts/norm-pack-moscow-agr",
-        "allow_reason": "Official Moscow AGR IDS engine coverage; not Samolet profile",
+        "allow_reason": "Official Moscow AGR IDS engine coverage; not appointing-party profile",
     },
     "spbexp": {
         "artifact_type": "spbexp_ids_coverage",
@@ -42,11 +42,11 @@ PACKS: dict[str, dict[str, Any]] = {
         "claim_boundary": (
             "Official SPb GAU CGE IDS 1.0 zips (ЦИМ ОКС 3.1.0 + ЦИМ РИИ 1.1.0). "
             "Second public GAU jurisdiction pack. Not MosoblGosExpertiza. "
-            "Not a Samolet-signed acceptance profile. RT-002 stays OPEN."
+            "Not a appointing-party-signed acceptance profile. RT-002 stays OPEN."
         ),
         "evidence_stem": "norm-pack-spbexp-coverage-2026-08",
         "artifacts_dir": "artifacts/norm-pack-spbexp",
-        "allow_reason": "Official SPb CGE IDS engine coverage; not Samolet profile",
+        "allow_reason": "Official SPb CGE IDS engine coverage; not appointing-party profile",
     },
 }
 
@@ -104,7 +104,7 @@ def export_pack(pack_id: str, *, root: Path, ifc_path: Path) -> dict[str, Any]:
         source_page=str(meta["source_page"]),
         extra_fields={
             "pack_id": pack_id,
-            "samolet_alias": False,
+            "customer_alias": False,
             "customer_signed": False,
             "legal_force": "not_npa",
             "substitutes_customer_eir": False,

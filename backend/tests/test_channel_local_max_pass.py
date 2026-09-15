@@ -1,4 +1,4 @@
-"""Maximum licensed Samolet-copy pass stays coverage_map_only."""
+"""Maximum licensed the appointing party-copy pass stays coverage_map_only."""
 
 from __future__ import annotations
 
@@ -45,7 +45,7 @@ class ChannelLocalMaxPassTests(unittest.TestCase):
             Path(__file__).resolve().parents[2]
             / "samples"
             / "benchmarks"
-            / "samolet-typical-errors-catalog.json"
+            / "typical-errors-catalog.json"
         )
         catalog = json.loads(path.read_text(encoding="utf-8"))
         self.assertEqual(catalog["schema_version"], "1.4.1")

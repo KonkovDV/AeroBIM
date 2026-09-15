@@ -100,7 +100,7 @@ Publish the **lower Wilson bound**, not the point estimate. P₁/P₂ measure ve
 
 ## 5. Interim pilot confirmed-finding rate
 
-**Target:** TP / (TP + FP) ≥ **0.60** on the held-out adjudicated slice (Samolet / MIK interim contract — not ТЗ aspirational >0.90).
+**Target:** TP / (TP + FP) ≥ **0.60** on the held-out adjudicated slice (the appointing party / MIK interim contract — not ТЗ aspirational >0.90).
 
 Publish only when:
 
@@ -160,7 +160,7 @@ L1 public benches (IFC-Bench smoke, AECV live counting, AEC-Bench inventory) are
 
 ## 10. Task-07 acceptance additions (18.08.2026)
 
-These constraints are mandatory when Samolet labels exist. They do **not** authorize publishing product accuracy from fixtures, AEC-Bench inventory, or MOEXP engine coverage.
+These constraints are mandatory when the appointing party labels exist. They do **not** authorize publishing product accuracy from fixtures, AEC-Bench inventory, or MOEXP engine coverage.
 
 | Rule | Why |
 | --- | --- |
@@ -185,7 +185,7 @@ Wilson intervals (§4) remain the planner for a **project-level** rate after clu
 | Cluster bootstrap / κ / α | `aerobim.domain.eval_statistics` · `measure_adjudicator_agreement` |
 | False-pass on AEC-Bench | Harbor **NOT_RUN**; gold-only `null_always_clean` in `aec-bench-false-pass-2026-08` |
 
-Do not publish a product accuracy number from any of these without a Samolet (or RF-expertise) corpus.
+Do not publish a product accuracy number from any of these without a customer (or RF-expertise) corpus.
 
 ## 12. Interpretation/Use ledger (КТ#2 → КТ#3)
 

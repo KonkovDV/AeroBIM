@@ -36,7 +36,7 @@ describe("reportMatchesQuery", () => {
 
   it("не срабатывает ложно при пустых имени и разделе", () => {
     const entry = makeEntry({ project_name: null, discipline: null });
-    expect(reportMatchesQuery(entry, "samolet")).toBe(false);
+    expect(reportMatchesQuery(entry, "customer")).toBe(false);
   });
 
   it("по-прежнему находит по report_id", () => {

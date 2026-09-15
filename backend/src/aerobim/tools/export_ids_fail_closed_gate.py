@@ -31,7 +31,7 @@ CLAIM_LEVEL = "ids_fail_closed_gate"
 CLAIM_BOUNDARY = (
     "AeroBIM fail-closes IDS ifcVersion vs IFC FILE_SCHEMA and IfcTester SKIPPED "
     "specs. buildingSMART case 0101 documents version-as-metadata; we disagree "
-    "on purpose. Not product accuracy. Not CIM compliance. Not Samolet acceptance."
+    "on purpose. Not product accuracy. Not CIM compliance. Not appointing-party acceptance."
 )
 CASE_0101 = "pass-specification_version_is_purely_metadata_and_does_not_impact_pass_or_fail_result"
 

@@ -9,7 +9,7 @@ Customer NDA packs stay outside git — see `samples/customer/README.md` and roo
 | `02-working-docs/` | Working documentation (RD) | Structured drawing annotations |
 | `03-standards/` | Standards / norms | IDS rule packs |
 | `04-design-brief/` | Design TZ | `samples/specifications/` |
-| `05-typical-errors/` | Typical errors | `samolet-typical-errors-catalog.json` |
+| `05-typical-errors/` | Typical errors | `typical-errors-catalog.json` |
 | `06-calculations/` | Calc models / results | `samples/calculations/` + OpenRebar samples |
 
 Canonical index: [`MANIFEST.json`](MANIFEST.json).

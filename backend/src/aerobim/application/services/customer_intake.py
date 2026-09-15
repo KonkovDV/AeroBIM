@@ -24,7 +24,7 @@ class IntakeResult:
 
 
 class CustomerIntakeGate:
-    """Evaluate ``customer-intake-gate.json`` for samolet_pilot fail-closed."""
+    """Evaluate ``customer-intake-gate.json`` for customer_pilot fail-closed."""
 
     @staticmethod
     def evaluate(path: Path) -> IntakeResult:

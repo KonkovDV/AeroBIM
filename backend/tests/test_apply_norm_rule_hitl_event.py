@@ -36,7 +36,7 @@ class ApplyNormRuleHitlEventTests(unittest.TestCase):
         self._tmp.cleanup()
 
     def test_edit_creates_v2_and_preserves_v1_bytes(self) -> None:
-        pack_id = "SAMOLET-RESIDENTIAL-AR-REFERENCE"
+        pack_id = "CUSTOMER-RESIDENTIAL-AR-REFERENCE"
         v1_bytes = REFERENCE_PACK.read_bytes()
         # Seed immutable v1 explicitly, then apply HITL edit as v2.
         self.versions.save_version(
@@ -53,7 +53,7 @@ class ApplyNormRuleHitlEventTests(unittest.TestCase):
             base_pack_path=REFERENCE_PACK,
             event_type="norm_rule_edited",
             rule_diff={
-                "rule_id": "SAM-AR-001",
+                "rule_id": "TYP-AR-001",
                 "evidence_text": "HITL edited evidence (still synthetic).",
                 "norm_source": "СП 54.13330",
             },
@@ -74,10 +74,10 @@ class ApplyNormRuleHitlEventTests(unittest.TestCase):
     def test_customer_approved_without_approval_ref_rejected(self) -> None:
         with self.assertRaisesRegex(ValueError, "approval_ref"):
             self.use_case.execute(
-                pack_id="SAMOLET-RESIDENTIAL-AR-REFERENCE",
+                pack_id="CUSTOMER-RESIDENTIAL-AR-REFERENCE",
                 base_pack_path=REFERENCE_PACK,
                 event_type="norm_rule_proposed",
-                rule_diff={"rule_id": "SAM-AR-001", "evidence_text": "x"},
+                rule_diff={"rule_id": "TYP-AR-001", "evidence_text": "x"},
                 proposed_by="engineer-a",
                 target_approval_status="customer_approved",
                 approval_ref=None,
@@ -86,7 +86,7 @@ class ApplyNormRuleHitlEventTests(unittest.TestCase):
     def test_version_store_rejects_customer_approved_without_approval_ref(self) -> None:
         with self.assertRaisesRegex(ValueError, "approval_ref"):
             self.versions.save_version(
-                pack_id="SAMOLET-RESIDENTIAL-AR-REFERENCE",
+                pack_id="CUSTOMER-RESIDENTIAL-AR-REFERENCE",
                 version="9.9.9-bad",
                 payload=REFERENCE_PACK.read_bytes(),
                 created_by="attacker",
@@ -96,13 +96,13 @@ class ApplyNormRuleHitlEventTests(unittest.TestCase):
             )
 
     def test_finding_provenance_points_at_hitl_pack_version(self) -> None:
-        pack_id = "SAMOLET-RESIDENTIAL-AR-REFERENCE"
+        pack_id = "CUSTOMER-RESIDENTIAL-AR-REFERENCE"
         record, _event = self.use_case.execute(
             pack_id=pack_id,
             base_pack_path=REFERENCE_PACK,
             event_type="norm_rule_proposed",
             rule_diff={
-                "rule_id": "SAM-AR-NEW",
+                "rule_id": "TYP-AR-NEW",
                 "scope": "ifc-property",
                 "ifc_entity": "IfcWall",
                 "property_set": "Pset_WallCommon",
@@ -120,7 +120,7 @@ class ApplyNormRuleHitlEventTests(unittest.TestCase):
             path = Path(temporary_directory) / "hitl.json"
             path.write_bytes(payload)
             loaded = self.loader.load(path)
-        rule = next(item for item in loaded.rules if item.rule_id == "SAM-AR-NEW")
+        rule = next(item for item in loaded.rules if item.rule_id == "TYP-AR-NEW")
         self.assertIn(record.version, rule.source)
         self.assertEqual(rule.approval_status, "draft")
         self.assertEqual(rule.norm_source, "СП 54.13330")

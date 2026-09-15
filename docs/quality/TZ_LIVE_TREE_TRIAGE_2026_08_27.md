@@ -47,8 +47,8 @@ Checkpoint **`GO`**; `customer_go` false. `detected_count: 0`.
 
 | ID | Атака | Тормоз |
 |---|---|---|
-| RT-V1-01 | Цифра точности из ТЗ v1 как замер AeroBIM | `mik_act_may_cite_tz_v1_accuracy_as_measured()==False` · `SAM-10` |
-| RT-V1-02 | Четыре бумаги Самолёта — один документ | `PAPER_OBJECTS` |
+| RT-V1-01 | Цифра точности из ТЗ v1 как замер AeroBIM | `mik_act_may_cite_tz_v1_accuracy_as_measured()==False` · `CH-10` |
+| RT-V1-02 | Четыре бумаги заказчика канала — один документ | `PAPER_OBJECTS` |
 | RT-V1-03 | Бинарь PDF в git / sha256 брифа = NDA `pack_hash` | `binary_in_git=false`; в снимке нет `pack_hash` |
 | RT-V1-04 | Акт МИК цитирует v1 вместо interim 0.60 | горизонт `interim_tp_fp_ge_0_60` |
 | RT-INJ-NEST | `inject_defects` output внутри source → `rmtree` пакета | деревья не равны и не вложены |
@@ -169,7 +169,7 @@ Checkpoint **`GO`**; `customer_go` false. `detected_count: 0`.
 |---|---|---|
 | RT-SEAM-HOLD | Карта семи задач = Meets / RT CLOSED | §5 TZ seam уже KILL; критерий Uncertain |
 | RT-FULL-D01 | `/v1/validate/ifc` зелёный в production через development | DI берёт `settings.signoff_profile`; soft `passed` не authoritative |
-| RT-AGR-002 | `moscow_agr_2026` `status=approved` = профиль Самолёта | RT-002a ≠ RT-002c; профиль не customer-hard |
+| RT-AGR-002 | `moscow_agr_2026` `status=approved` = профиль назначающей стороны | RT-002a ≠ RT-002c; профиль не customer-hard |
 | RT-INV-HOLD | Счётчики 2383/15/1 = `pack_hash` / RT-001 CLOSED | `coverage_map_only`; имён нет; intake blocked |
 
 ## ACCEPT (тормоз уже стоит)

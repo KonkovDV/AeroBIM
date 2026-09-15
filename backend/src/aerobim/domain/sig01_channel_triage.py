@@ -32,7 +32,7 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
     {
         "id": "RT-SIG01-DEFECT",
         "verdict": "KILL",
-        "attack": "Call the channel volume a Samolet defect list",
+        "attack": "Call the channel volume a customer defect list",
         "brake": "is_customer_defect_list False; REPORT_PHRASE only",
     },
     {
@@ -45,13 +45,13 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "id": "RT-SIG01-SP",
         "verdict": "KILL",
         "attack": "Unsigned ALL+eq REI60 is an SP 2.13130 / SP 63 check",
-        "brake": "samolet-*-rules and SAM-AR template are synthetic; RT-002c OPEN",
+        "brake": "customer-*-rules and TYP-AR template are synthetic; RT-002c OPEN",
     },
     {
         "id": "RT-SIG01-EI45",
         "verdict": "KILL",
         "attack": "Observed wall FireRating EI 45 vs demo REI60 is a fire fail",
-        "brake": "IUA SAM-09; firerating_wall_class_observed EI 45; not TZ II/C0",
+        "brake": "IUA CH-09; firerating_wall_class_observed EI 45; not TZ II/C0",
     },
     {
         "id": "RT-SIG01-CAP-RAISE",
@@ -74,7 +74,7 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
     {
         "id": "RT-SIG01-OVERLAP",
         "verdict": "KILL",
-        "attack": "Sum REQ-FIRE-001 and SAM-AR-011 (same wall FireRating) as two defects",
+        "attack": "Sum REQ-FIRE-001 and TYP-AR-011 (same wall FireRating) as two defects",
         "brake": "unsigned_rule_overlap groups; exists+eq on one key is one property",
     },
     {
@@ -87,7 +87,7 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "id": "RT-SIG01-PDF-HITL",
         "verdict": "KILL",
         "attack": "PDF HITL rows are drawing findings or a CV door/window count",
-        "brake": "service_hitl; drawing_annotation_count 0 on the sample; IUA SAM-03",
+        "brake": "service_hitl; drawing_annotation_count 0 on the sample; IUA CH-03",
     },
     {
         "id": "RT-SIG01-PDF-GIT",
@@ -105,7 +105,7 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "id": "RT-SIG01-SLA",
         "verdict": "KILL",
         "attack": "RocksDB elapsed on the over-cap IFC is a customer SLA measurement",
-        "brake": "thresholds publishable_sla false; IUA SAM-06 protocol_planning only",
+        "brake": "thresholds publishable_sla false; IUA CH-06 protocol_planning only",
     },
     {
         "id": "RT-SIG01-MEP",
@@ -117,7 +117,7 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "id": "RT-SIG01-IDS",
         "verdict": "KILL",
         "attack": "The unsigned fire/structure/AR packs close RT-002",
-        "brake": "RT-002a city IDS ≠ RT-002b Samolet signature; closes_rt002 false",
+        "brake": "RT-002a city IDS ≠ RT-002b the appointing party signature; closes_rt002 false",
     },
     {
         "id": "RT-SIG01-F1",
@@ -128,7 +128,7 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
     {
         "id": "RT-SIG01-RAIL",
         "verdict": "KILL",
-        "attack": "SAM-AR-020 Height ≥ 1.2 m is an SP railing check",
+        "attack": "TYP-AR-020 Height ≥ 1.2 m is an SP railing check",
         "brake": "Demo threshold in the AR template; unrestricted_eq_sample",
     },
     {

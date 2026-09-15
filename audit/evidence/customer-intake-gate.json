@@ -63,7 +63,7 @@
   ],
   "references": [
     "samples/customer/README.md",
-    "docs/partners/SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md",
+    "docs/partners/CUSTOMER_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md",
     "docs/demo/KT3_JURY_FAQ_2026_08_25.md",
     "audit/reports/CLAIMS_LOCK_2026_07_17.md",
     "audit/reports/CRITICAL_BLOCKERS.md",

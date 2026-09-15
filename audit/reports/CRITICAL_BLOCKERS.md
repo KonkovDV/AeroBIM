@@ -1,10 +1,10 @@
-# CRITICAL BLOCKERS — Samolet Checkpoint
+# CRITICAL BLOCKERS — the appointing party Checkpoint
 
 **Publishable test counts** are only in [`docs/evidence/runtime-baseline-latest.json`](../../docs/evidence/runtime-baseline-latest.json) (`attested_by=ci`: `commit_sha`, `tests_passed`, `tests_collected`). Do **not** copy those integers into this file. **Operational freeze SHA (historical, 2026-07-21):** `f2615e7` (eng F–L: precision gates, SLA claim gate, BCF ladder, revision compare, threat model, open-core ADR). Do **not** treat this SHA as HEAD or as the publishable metrics pin. Prior same-day pin `019962141606` is **historical**. A clean-clone `pytest` on HEAD (README extras, no optional publication-denylist secrets) is **not** this pin; HEAD may be several commits ahead. Jury contract on the documented extra is **0 failed** (skips allowed).  
 **Historical Red Team freeze:** `c0c4b2b` / `8efbef8` — see `CLAIMS_LOCK_2026_07_17.md` (pre-remediation narrative; do not treat defect prose below CLOSED tables as current).  
 Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 
-**Checkpoint verdict:** product **`GO`** (`regulatory_measurement_mvp`). `customer_go` **false**. Engineering remediations do **not** close customer sign-off. **Addendum 2026-09-04 (measurement substitutes + channel carriers):** RT-001 `a_content_pairing` CLOSED; RT-001 `b1_protocol_rehearsal` CLOSED (two simulated independent passes, live κ/α/AC1; not humans); RT-002a CLOSED (public IDS); RT-002b `b_eir_carrier` CLOSED (EIR v4.0 + BIM-standard v4.0 as text on the channel pack; not `customer_approved`); RT-003a planted IfcClash CLOSED; RT-003 NWD federation carrier CLOSED (three NWD federations; native unread). Residuals stay OPEN: RT-001b dual *human* raters (`b2_criterion_dual_rater`), RT-001c customer corpus, RT-002c Samolet signature (`b_corporate` / `c_corporate_signed`), `b3_mep_system_clash=NOT_VERIFIED` (speech **RT-003c**; 0 duct/pipe/cable IFC; pipe vs wall is geometry), `c_customer_federated_ifc` OPEN, CDE T2. Undifferentiated `closes_rt001/002/003` stay **false**. SSOT: [`docs/evidence/rt-blocker-volumes-2026-09.md`](../../docs/evidence/rt-blocker-volumes-2026-09.md). Dual-rater pin: [`docs/evidence/rt001-dual-rater-simulation-2026-09.md`](../../docs/evidence/rt001-dual-rater-simulation-2026-09.md). Never write undifferentiated «RT-002 CLOSED». Do not write «нет утверждённого нормативного пакета». MEP delivered is not claimed.
+**Checkpoint verdict:** product **`GO`** (`regulatory_measurement_mvp`). `customer_go` **false**. Engineering remediations do **not** close customer sign-off. **Addendum 2026-09-04 (measurement substitutes + channel carriers):** RT-001 `a_content_pairing` CLOSED; RT-001 `b1_protocol_rehearsal` CLOSED (two simulated independent passes, live κ/α/AC1; not humans); RT-002a CLOSED (public IDS); RT-002b `b_eir_carrier` CLOSED (EIR v4.0 + BIM-standard v4.0 as text on the channel pack; not `customer_approved`); RT-003a planted IfcClash CLOSED; RT-003 NWD federation carrier CLOSED (three NWD federations; native unread). Residuals stay OPEN: RT-001b dual *human* raters (`b2_criterion_dual_rater`), RT-001c customer corpus, RT-002c the appointing party signature (`b_corporate` / `c_corporate_signed`), `b3_mep_system_clash=NOT_VERIFIED` (speech **RT-003c**; 0 duct/pipe/cable IFC; pipe vs wall is geometry), `c_customer_federated_ifc` OPEN, CDE T2. Undifferentiated `closes_rt001/002/003` stay **false**. SSOT: [`docs/evidence/rt-blocker-volumes-2026-09.md`](../../docs/evidence/rt-blocker-volumes-2026-09.md). Dual-rater pin: [`docs/evidence/rt001-dual-rater-simulation-2026-09.md`](../../docs/evidence/rt001-dual-rater-simulation-2026-09.md). Never write undifferentiated «RT-002 CLOSED». Do not write «нет утверждённого нормативного пакета». MEP delivered is not claimed.
 
 **Reclassification (v4):** N-18 CLOSED 2026-08-09 (attestation cannot be forged locally). Current engineering surface: [`docs/capability-claim-matrix-2026.md`](../../docs/capability-claim-matrix-2026.md).
 
@@ -54,7 +54,7 @@ Severity key: BLOCKER / CRITICAL / HIGH / MEDIUM / LOW.
 | RTATOM A2.5 / RT-POST-09 hashes | **CLOSED*** | `--require-hashes` + `--generate-hashes` locks; CI/Docker wire-up; pinned `pip==25.2` / `uv==0.8.22`. *Residual: unhashed pip/uv bootstrap wheels. |
 | RTATOM A3 hygiene | **PARTIAL→A3 CLOSED*** | CSP/nosniff/Referrer/XFO; NFKC tokens; JWKS↔issuer host bind; ZIP stream inspect; `open_storage_file` on report JSON + IFC/drawing FileResponse re-jail; **ElementTree caps** (`xml_limits` + defusedxml); **S3/Local stream get caps** (`max_get_bytes`). *Residual: production OIDC BFF remains **DESIGNED / NOT_IMPLEMENTED**; Phase 3 is lab-only (`oidc_bff_phase3_ready`). |
 
-Still open for checkpoint: residual volumes RT-001b/c (dual rater + customer corpus), RT-002c (Samolet signature), RT-003b/c (`mep_system_clash` + customer federated IFC). Measurement substitutes (RT-001a / RT-002a / RT-002b EIR text / RT-003a / NWD carrier) do not flip undifferentiated CLOSED. Residual: production OIDC BFF (**DESIGNED / NOT_IMPLEMENTED**; Phase 3 lab path landed — default still 501 / `auth_bff=NOT_IMPLEMENTED`). Eng surface: [`docs/capability-claim-matrix-2026.md`](../../docs/capability-claim-matrix-2026.md).
+Still open for checkpoint: residual volumes RT-001b/c (dual rater + customer corpus), RT-002c (the appointing party signature), RT-003b/c (`mep_system_clash` + customer federated IFC). Measurement substitutes (RT-001a / RT-002a / RT-002b EIR text / RT-003a / NWD carrier) do not flip undifferentiated CLOSED. Residual: production OIDC BFF (**DESIGNED / NOT_IMPLEMENTED**; Phase 3 lab path landed — default still 501 / `auth_bff=NOT_IMPLEMENTED`). Eng surface: [`docs/capability-claim-matrix-2026.md`](../../docs/capability-claim-matrix-2026.md).
 
 ## Closed in post-remediation wave (2026-07-19)
 
@@ -115,14 +115,14 @@ Architecture SSOT: `docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md` · 
 - **Addendum 25.08.2026:** customer indicated a private data channel. That is not a hashed pack in git. `customer_package_in_samples_customer` stays false. RT-001 stays OPEN.
 - **Addendum 28.08.2026 (п. 3.1.2 ответов — условие заказчика, не наша осторожность):** заказчик сам записал «обезличенные комплекты в рамках NDA». Фактическая передача этому не соответствует. Запрос к организаторам — исполнить этот пункт и сказать, что делать с файлами, которые обезличенными не являются (RT-NDA-STATED). Не закрывает RT-001.
 
-### RT-002 — Samolet-signed acceptance profile absent (public examination IDS exist)
+### RT-002 — appointing-party-signed acceptance profile absent (public examination IDS exist)
 - **Severity:** BLOCKER (customer sign-off)  
 - **Category:** Norms  
 - **«Нет утверждённого нормативного пакета» is false.** GAU MO «Мособлгосэкспертиза» published IDS + IFC4 mappings on [TIM / BIM](https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/). Also public: Москомэкспертиза МКЭ-ОД/19-39 (ред. 10.10.2024), МКЭ-ОД/24-178 (25.12.2024), Moscow AGR CIM requirements, Glavgosexpertiza IM recommendations, «Требования к ИМ ОКС, Часть 1» ред. 4.0 (clash-absence section), SPb CGE element→IFC tables, СП 333 / 331, ГОСТ Р 10.*, ПНСТ 909-2024. Pack + engine coverage: `samples/ids/moexp/` · [`docs/evidence/norm-pack-moexp-coverage-2026-08.md`](../../docs/evidence/norm-pack-moexp-coverage-2026-08.md).  
-- **Still true (two different deficits):** no Samolet **model corpus**, and no Samolet-signed `customer_approved` acceptance profile (`approval` object + `pack_hash` + jurisdiction + per-rule clause).  
-- **Addendum 24.08.2026 10:45:** measurement profile = public examination IDS (RT-002a, city/MOEXP as publisher). Samolet signature is “deployed at the customer” (RT-002b), not “measured against live norms”. `closes_rt002` (customer) stays **false**. Do not unfreeze the CUT `moscow_agr` DI port.
-- **Product HOLD — undifferentiated RT-002 still OPEN as a customer blocker** until signed Samolet profile. Public MOEXP / SPb CGE / AGR IDS close **RT-002a** (measurement ruler), not the Samolet signature (**RT-002c**; historically labelled RT-002b before 2026-09-04). Never write undifferentiated «RT-002 CLOSED».
-- **Addendum 24.08.2026 (SPb GAU CGE profile):** `samples/profiles/spb-cge/` indexes the published CGE IDS 1.0 pack (`samples/ids/spbexp/`). Provenance `OFFICIAL_PUBLISHED`. `signed_by_customer=false`. Does **not** close RT-001 or RT-002 (RT-002b remains Samolet-signed acceptance). Fail-closed load; not an expertise verdict.
+- **Still true (two different deficits):** no customer **model corpus**, and no appointing-party-signed `customer_approved` acceptance profile (`approval` object + `pack_hash` + jurisdiction + per-rule clause).  
+- **Addendum 24.08.2026 10:45:** measurement profile = public examination IDS (RT-002a, city/MOEXP as publisher). the appointing party signature is “deployed at the customer” (RT-002b), not “measured against live norms”. `closes_rt002` (customer) stays **false**. Do not unfreeze the CUT `moscow_agr` DI port.
+- **Product HOLD — undifferentiated RT-002 still OPEN as a customer blocker** until signed the appointing party profile. Public MOEXP / SPb CGE / AGR IDS close **RT-002a** (measurement ruler), not the appointing party signature (**RT-002c**; historically labelled RT-002b before 2026-09-04). Never write undifferentiated «RT-002 CLOSED».
+- **Addendum 24.08.2026 (SPb GAU CGE profile):** `samples/profiles/spb-cge/` indexes the published CGE IDS 1.0 pack (`samples/ids/spbexp/`). Provenance `OFFICIAL_PUBLISHED`. `signed_by_customer=false`. Does **not** close RT-001 or RT-002 (RT-002b remains appointing-party-signed acceptance). Fail-closed load; not an expertise verdict.
 - **Addendum 28.08.2026 (перечень ВЫДАН, блокер = доступ):** критическое издание документа ответов 25.08: внутренняя проверка по стандартам **обязательна**, перечень стандартов компании и регламентов BIM выдан двумя ссылками в ответе 1.2.1 — но это внутренние пути двух разных проектов СОД, снаружи не открываются. Блокер перешёл из «нет данных» в «нет доступа к выданному»: запрос = опубликовать две папки тем же способом, что датасет (или одним архивом), для старта достаточно двух документов. Замечание обязано цитировать пункт нормы **или СТО** (п. 2.1.5) — без папок класс цитат недостижим. Имена и пути — вне git.
 - **Addendum 2026-09-04 evening (EIR на комплекте):** deep-study pin: `eir_v4_present=true`, `bim_standard_v4_present=true`, `customer_approved_ids=false`. Том `b_eir_carrier` (**RT-002b**) CLOSED — носитель EIR назначающей стороны как текст. Подпись / `customer_approved` — **RT-002c** (`b_corporate`) OPEN. Публичный IDS экспертизы остаётся RT-002a, не EIR. Исторические строки 24.08, где RT-002b = «подпись», читать как RT-002c.
 
@@ -144,7 +144,7 @@ Architecture SSOT: `docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md` · 
 - **Category:** Capability honesty / False pass risk  
 - **Exact file:** `application/use_cases/analyze_project_package.py::_run_clash_detection`, `application/services/signoff_policy.py`  
 - **Observed (pre-fix):** missing optional clash stack → `CapabilityState.SKIPPED` → empty results → pass allowed  
-- **Expected:** For Samolet packages requiring clash, missing engine must be FAILED or explicit policy gate  
+- **Expected:** For the appointing party packages requiring clash, missing engine must be FAILED or explicit policy gate  
 - **Reproduction:** run analyze without `ifcclash` installed; inspect `capabilities.clash`  
 - **Impact (pre-fix):** Green report without geometric coordination work  
 - **Fix applied:** Profile flag `require_clash=true` for pilot packages; SKIPPED→FAILED under that profile  
@@ -184,7 +184,7 @@ Architecture SSOT: `docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md` · 
 - **Exact file:** `domain/models.py::ValidationIssue`, `domain/architecture.py::EvidenceRef`  
 - **Observed (pre-fix):** Missing mandatory `finding_id`, `source_refs`, `evidence_refs`, `capability`, `document_identity` on findings; `EvidenceRef` exists but is not enforced on issues  
 - **Expected:** every finding bindable to source+rule+evidence  
-- **Impact (pre-fix):** report can lose provenance; weak audit trail for Samolet  
+- **Impact (pre-fix):** report can lose provenance; weak audit trail for the appointing party  
 - **Fix applied:** extend ValidationIssue; reject persist without evidence  
 - **Verification:** contract / provenance tests  
 
@@ -267,7 +267,7 @@ Architecture SSOT: `docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md` · 
 - **СТАТУС: ЗАКРЫТО (honesty / claim boundary, 2026-07-17)** — fixture SLA не выдаётся за customer; `customer_measurable` refuse-without-evidence. Customer SLA **НЕ ДОКАЗАНО**.  
 - **Severity (historical prose):** HIGH — do not quote as open defect; see CLOSED table above  
 - **Category:** SLA claims  
-- **Exact file:** `docs/evidence/samolet-sla-pilot-moscow-2026-05-21.json`  
+- **Exact file:** `docs/evidence/sla-pilot-moscow-2026-05-21.json`  
 - **Observed (pre-honesty framing):** `sla_pass: true` on tiny Moscow fixture (~0.01 min class), not customer комплект  
 - **Expected:** Measured SLA only with package hash + sizes + machine + cold/warm  
 - **Evidence:** Claims/TZ audit (session); wording SSOT: [`CLAIMS_LOCK_2026_07_17.md`](CLAIMS_LOCK_2026_07_17.md) · claim boundary: [`../../docs/pilot-claim-boundary-2026.md`](../../docs/pilot-claim-boundary-2026.md)  

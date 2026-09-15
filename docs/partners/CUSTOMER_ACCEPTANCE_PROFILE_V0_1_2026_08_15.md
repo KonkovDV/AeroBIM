@@ -1,6 +1,6 @@
-<!-- claims-lint: allow-file reason="Unsigned Samolet acceptance profile template; RT-002 OPEN; not customer approval" -->
+<!-- claims-lint: allow-file reason="Unsigned the appointing party acceptance profile template; RT-002 OPEN; not customer approval" -->
 ---
-title: "Samolet Acceptance Profile v0.1 — unsigned template"
+title: "the appointing party Acceptance Profile v0.1 — unsigned template"
 date: "2026-08-15"
 status: draft
 closes_rt001: false
@@ -12,10 +12,10 @@ claim_boundary: >
   Checkpoint GO; customer_go false. Does not close RT-002.
 ---
 
-# Samolet Acceptance Profile v0.1 (черновик на согласование)
+# the appointing party Acceptance Profile v0.1 (черновик на согласование)
 
 **Статус:** unsigned. `profile_owner` = null. `approval_date` = null. `profile_hash` = null.  
-**RT-002:** **OPEN**, пока нет подписи / письменного согласования Самолёта.  
+**RT-002:** **OPEN**, пока нет подписи / письменного согласования заказчика канала.  
 Публичные IDS МОГЭ / АГР / СПб — reference layer, не этот профиль.
 
 Просим согласовать **не платформу**, а минимальный профиль приёмки для одного пилотного сценария: IFC + PDF + ТЗ, один раздел, одна ревизия, фиксированный набор правил. Эксперт остаётся ответственным за итоговое решение.
@@ -35,7 +35,7 @@ claim_boundary: >
 | MEP | Generic clash ≠ system-aware; `mep_system_clash=NOT_VERIFIED` без federated scope |
 | Расчёты | Сверка величин; независимая корректность расчёта NOT_IMPLEMENTED |
 | Исходы пакета | PASS / PASS_WITH_WARNINGS / REVIEW_REQUIRED / BLOCKED |
-| Customer owner | *пусто — заполняет Самолёт* |
+| Customer owner | *пусто — заполняет заказчик канала* |
 | Approval date | *пусто* |
 | Hash profile | SHA-256 подписанного PDF/JSON после согласования |
 | Подпись | *нет* |

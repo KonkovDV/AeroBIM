@@ -1,4 +1,4 @@
-"""KT#3 without Samolet files: re-scope is the product decision, not a wait state.
+"""KT#3 without the appointing party files: re-scope is the product decision, not a wait state.
 
 Does not close RT-001/002/003. Does not publish product accuracy.
 """
@@ -50,7 +50,7 @@ REQUIRED_EVIDENCE: Final[tuple[tuple[str, str], ...]] = (
     ("tz_proxy_rehearsal", "docs/evidence/tz-proxy-rehearsal-2026-08.md"),
     ("planted_federated_clash", "docs/evidence/federated-clash-planted-2026-08.md"),
     ("intake_gate", "audit/evidence/customer-intake-gate.json"),
-    ("tz_v2", "docs/tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md"),
+    ("tz_v2", "docs/tz/TZ_TECHLAB_TASK_07_V2_2026.md"),
     ("moscow_agr_ruler", "samples/norm-packs/moscow_agr_2026/pack.json"),
     ("kt3_jury_card", "docs/demo/KT3_JURY_FAQ_2026_08_25.md"),
     ("kt3_operator_runbook", "docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md"),
@@ -64,7 +64,7 @@ REQUIRED_EVIDENCE: Final[tuple[tuple[str, str], ...]] = (
     ("iua_ledger", "docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md"),
     (
         "typical_errors_catalog",
-        "samples/benchmarks/samolet-typical-errors-catalog.json",
+        "samples/benchmarks/typical-errors-catalog.json",
     ),
     ("rt_blocker_volumes", "docs/evidence/rt-blocker-volumes-2026-09.md"),
     ("rt001_dual_rater_simulation", "docs/evidence/rt001-dual-rater-simulation-2026-09.md"),
@@ -134,7 +134,7 @@ def _true_intake_gates(intake: Mapping[str, Any]) -> list[str]:
 
 
 def _typical_errors_pin(repo: Path) -> dict[str, Any]:
-    path = repo / "samples" / "benchmarks" / "samolet-typical-errors-catalog.json"
+    path = repo / "samples" / "benchmarks" / "typical-errors-catalog.json"
     catalog = _load_json(path)
     patterns = catalog.get("patterns")
     count = len(patterns) if isinstance(patterns, list) else 0
@@ -212,7 +212,7 @@ def assemble_kt3_without_customer(
         "intake_status": gate.get("status"),
         "intake_true_gates": true_gates,
         "synthetic_freeze_closes_rt001": bool(freeze.get("closes_rt001")),
-        "jurisdiction_samolet_alias": bool(pointer.get("samolet_alias")),
+        "jurisdiction_customer_alias": bool(pointer.get("customer_alias")),
         "customer_pack_hash": pointer.get("customer_pack_hash"),
     }
     require_honest_kt3_payload(payload, missing=missing)
@@ -254,8 +254,8 @@ def require_honest_kt3_payload(
         errors.append("intake gates still true: " + ", ".join(str(g) for g in true_gates))
     if payload.get("synthetic_freeze_closes_rt001") is True:
         errors.append("synthetic freeze must not close RT-001")
-    if payload.get("jurisdiction_samolet_alias") is True:
-        errors.append("jurisdiction pointer must not alias Samolet")
+    if payload.get("jurisdiction_customer_alias") is True:
+        errors.append("jurisdiction pointer must not alias the appointing party")
     if payload.get("customer_pack_hash") not in (None, "", False):
         errors.append("customer_pack_hash must stay null without customer files")
     if payload.get("nda_corpus_in_git") is not False:
@@ -292,7 +292,7 @@ def require_honest_kt3_payload(
         errors.append("tz_explicit_gaps must keep publishable >90% as a gap")
     papers = payload.get("paper_objects")
     if not isinstance(papers, list) or len(papers) != 4:
-        errors.append("paper_objects must stay the four unmixed Samolet papers")
+        errors.append("paper_objects must stay the four unmixed the appointing party papers")
     typical = payload.get("typical_errors")
     if not isinstance(typical, dict):
         errors.append("typical_errors pin missing")
@@ -323,7 +323,7 @@ def render_markdown(payload: Mapping[str, Any]) -> str:
         '"KT#3 re-scope without customer files; RT blockers stay OPEN; '
         'forbidden phrases as non-claims" -->',
         "---",
-        'title: "KT#3 without Samolet files — owner re-scope"',
+        'title: "KT#3 without the appointing party files — owner re-scope"',
         f'date: "{OWNER_DECISION_DATE}"',
         f"claim_level: {payload['claim_level']}",
         f"claim_boundary: {json.dumps(payload['claim_boundary'], ensure_ascii=False)}",
@@ -338,7 +338,7 @@ def render_markdown(payload: Mapping[str, Any]) -> str:
         f"plan_b_decision: {payload['plan_b_decision']}",
         "---",
         "",
-        "# КТ#3 без файлов Самолёта в git",
+        "# КТ#3 без файлов заказчика канала в git",
         "",
         "Файлов заказчика **в git нет и не ожидается**. Календарная развилка программы "
         f"**{PROGRAM_FORK_DATE}** не отменяется и не ждётся. Локальный диск владельца "

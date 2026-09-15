@@ -60,7 +60,7 @@ Sprint 2.1 lightweight CLI **honestly reports** `tp/fp/fn = null` and declares g
 | summary.outcome / passed | null (analyze skipped) |
 | failed_capabilities | [] |
 
-## Samolet TZ traceability
+## the appointing party TZ traceability
 
 | Требование ТЗ | Что измеряем | Baseline result | Evidence | Status |
 |---|---|---|---|---|

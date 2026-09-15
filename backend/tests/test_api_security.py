@@ -858,7 +858,7 @@ class ApiAnalyzeProjectPackageEndpointTests(unittest.TestCase):
         self.assertIn("calculation_correctness_verified", forbidden)
         self.assertIn("CDE_READY", forbidden)
         self.assertIn("dwg_supported", forbidden)
-        answers = body["samolet_mvp_answers"]
+        answers = body["customer_channel_answers"]
         self.assertFalse(answers["closes_rt001"])
         self.assertFalse(answers["share_ingested_in_git"])
         self.assertTrue(answers["share_url_received"])

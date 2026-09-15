@@ -60,7 +60,7 @@ def write_notice(root: Path) -> None:
             "AeroBIM does not claim authorship.",
             "",
             "Allowed: cite the article; aggregate engine metrics.",
-            "Not allowed here: commit IFC/TRM binaries to git; claim Samolet accuracy;",
+            "Not allowed here: commit IFC/TRM binaries to git; claim the appointing party accuracy;",
             "claim RT-001 / RT-002b / RT-003 closed; treat this as a PD pack.",
             "",
             CLAIM_BOUNDARY,

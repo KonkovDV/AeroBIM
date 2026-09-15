@@ -30,7 +30,7 @@ _KINDS: tuple[str, ...] = (
     "drawing",
     "calculation",
     "customer_corpus",
-    "samolet_data",
+    "customer_data",
     "pii",
     "api_key",
     "token",

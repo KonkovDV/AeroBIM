@@ -80,13 +80,13 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
         "id": "RT-PACK-DXF-DWG",
         "verdict": "KILL",
         "attack": "321 ASCII DXF files make native DWG ready",
-        "brake": "DXF is partial; DWG stays fail-closed; IUA SAM-04",
+        "brake": "DXF is partial; DWG stays fail-closed; IUA CH-04",
     },
     {
         "id": "RT-PACK-OCR",
         "verdict": "KILL",
         "attack": "728 scan-like PDFs are OCR-delivered findings",
-        "brake": "HITL queue only; owner decides OCR budget; IUA SAM-03",
+        "brake": "HITL queue only; owner decides OCR budget; IUA CH-03",
     },
     {
         "id": "RT-PACK-SCAN-FINDING",
@@ -121,7 +121,7 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
     {
         "id": "RT-PACK-TXT-STUB",
         "verdict": "KILL",
-        "attack": "Treat the small .local/pack txt tree as the Samolet construction pack",
+        "attack": "Treat the small .local/pack txt tree as the appointing party construction pack",
         "brake": "Live carriers are the unpack tree; stub is not the NDA BIM set",
     },
     {

@@ -289,7 +289,7 @@ class Hd2SettingsTests(unittest.TestCase):
                 else:
                     os.environ[key] = value
 
-    def test_samolet_pilot_rejects_zero_rate_limit(self) -> None:
+    def test_customer_pilot_rejects_zero_rate_limit(self) -> None:
         from aerobim.core.config.settings import Settings
 
         previous = {
@@ -304,7 +304,7 @@ class Hd2SettingsTests(unittest.TestCase):
         }
         try:
             os.environ["AEROBIM_ENV"] = "production"
-            os.environ["AEROBIM_SIGNOFF_PROFILE"] = "samolet_pilot"
+            os.environ["AEROBIM_SIGNOFF_PROFILE"] = "customer_pilot"
             os.environ["AEROBIM_API_BEARER_TOKEN"] = "tok"
             os.environ["AEROBIM_REDIS_URL"] = "redis://127.0.0.1:6379/0"
             os.environ["AEROBIM_HTTP_RATE_LIMIT_PER_MINUTE"] = "0"

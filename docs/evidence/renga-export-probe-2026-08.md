@@ -1,15 +1,15 @@
-<!-- claims-lint: allow-file reason="Renga publisher IFC probe; not Samolet; NO_GO" -->
+<!-- claims-lint: allow-file reason="Renga publisher IFC probe; not appointing-party; NO_GO" -->
 ---
 title: "Renga IFC export probe"
 date: 2026-08-15
 claim_level: renga_export_probe
 claim_boundary: >-
-  Header-level probe of one IFC: FILE_SCHEMA, FILE_NAME originating_system, and official MOEXP ifcVersion=IFC4 fail-closed. Publisher PNST 909 sample is not a Samolet export, not product accuracy, not Exp A 18/22 rerun. Vertical-slice demo IFC stays IfcOpenShell. This Renga 8.7 pack sample is FILE_SCHEMA IFC4 (not IFC4X3). IFC4X3 fail-closed remains on the IfcOpenShell fixture. Checkpoint GO; customer_go false.
+  Header-level probe of one IFC: FILE_SCHEMA, FILE_NAME originating_system, and official MOEXP ifcVersion=IFC4 fail-closed. Publisher PNST 909 sample is not a customer export, not product accuracy, not Exp A 18/22 rerun. Vertical-slice demo IFC stays IfcOpenShell. This Renga 8.7 pack sample is FILE_SCHEMA IFC4 (not IFC4X3). IFC4X3 fail-closed remains on the IfcOpenShell fixture. Checkpoint GO; customer_go false.
 ---
 
 # Renga IFC export probe
 
-Vertical-slice demo IFC is **not** replaced. Publisher PNST 909 sample is **not** a Samolet export. Checkpoint **GO**; customer_go false.
+Vertical-slice demo IFC is **not** replaced. Publisher PNST 909 sample is **not** a customer export. Checkpoint **GO**; customer_go false.
 
 - status: **MEASURED**
 - ifc: `.local/renga-pnst909/pack/IFC/pnst909-c14-mf-renga-87.ifc` (103112 bytes)
@@ -20,7 +20,7 @@ Vertical-slice demo IFC is **not** replaced. Publisher PNST 909 sample is **not*
 - originating_family: **renga**
 - is_renga_export: **True**
 - publisher_pnst909_sample: **True**
-- samolet_export: **False**
+- customer_export: **False**
 - FILE_SCHEMA: `IFC4`
 - MOEXP IDS: `samples/ids/moexp/pack/oks/IDS_v1.0_Требования_МОГЭ_к_ЦИМ_АР_v3.2.ids`
 - schema_mismatch_count: **0** / 20 specs

@@ -351,7 +351,7 @@ class PackageCompletenessUseCaseWiringTests(unittest.TestCase):
         caps = ReportCapabilities(
             package_completeness=CapabilityStatus(CapabilityState.FAILED, "missing PZ")
         )
-        for profile in ("samolet_pilot", "production"):
+        for profile in ("customer_pilot", "production"):
             policy = build_signoff_policy(profile=profile)
             self.assertIn(
                 "package_completeness",

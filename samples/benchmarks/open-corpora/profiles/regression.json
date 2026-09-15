@@ -14,7 +14,7 @@
       "expected_passed": true,
       "pins": {
         "ids_sha256": "d6c01a1ea030ba4862cae748ebe0c6acbb0d6cd7c0b4412912e492995ee5ad99",
-        "ifc_sha256": "bd3064055b32bf2d1c1cd2256e050a4c6b3ae9095db651e8a4cc715711d21785"
+        "ifc_sha256": "68ef14fdc9bc96848d6acce4fcaba29ed9d6be4b72e0c5ded9e535417134d31f"
       }
     },
     {
@@ -24,7 +24,7 @@
       "expected_passed": false,
       "pins": {
         "ids_sha256": "d6c01a1ea030ba4862cae748ebe0c6acbb0d6cd7c0b4412912e492995ee5ad99",
-        "ifc_sha256": "a33127abed919db8fd46617554ec669a6519b2f6c292ee5df5db2797318d5d7b"
+        "ifc_sha256": "01d833dbc9a840bfe526d55cb19c08b065024a7773ebf7be3d2d924af1b3aa1c"
       }
     },
     {
@@ -34,7 +34,7 @@
       "expected_passed": false,
       "pins": {
         "ids_sha256": "4ab52e9c93e0669cd8165af406a51a6b7d2554f7ee3a4adee6c2e307b847a932",
-        "ifc_sha256": "b64f7ea2ce88183f6a9c08969327d516ba7fe75057083fe3b326f49cebfa4ebe"
+        "ifc_sha256": "40e546fa793212dbebc94acbf29546d35d75fbafd47f3b85b4ec5c9277451cbd"
       }
     },
     {
@@ -58,23 +58,23 @@
       }
     },
     {
-      "case_id": "samolet-fire-rating-pass",
-      "ids_path": "samples/ids/samolet-fire-rating.ids",
+      "case_id": "residential-fire-rating-pass",
+      "ids_path": "samples/ids/residential-fire-rating.ids",
       "ifc_path": "samples/ifc/wall-fire-rating-rei60.ifc",
       "expected_passed": true,
       "pins": {
-        "ids_sha256": "a399da3f10309e78493c8e2dff215ac77065de7c892716e0f744edbb54a1f516",
-        "ifc_sha256": "bd3064055b32bf2d1c1cd2256e050a4c6b3ae9095db651e8a4cc715711d21785"
+        "ids_sha256": "96e3d1c3182cdaf37d39d8dd0a7b7c8e9b9ea40f19803caf732e8a90efbca96b",
+        "ifc_sha256": "68ef14fdc9bc96848d6acce4fcaba29ed9d6be4b72e0c5ded9e535417134d31f"
       }
     },
     {
-      "case_id": "samolet-fire-rating-fail",
-      "ids_path": "samples/ids/samolet-fire-rating.ids",
+      "case_id": "residential-fire-rating-fail",
+      "ids_path": "samples/ids/residential-fire-rating.ids",
       "ifc_path": "samples/ifc/wall-fire-rating-rei30.ifc",
       "expected_passed": false,
       "pins": {
-        "ids_sha256": "a399da3f10309e78493c8e2dff215ac77065de7c892716e0f744edbb54a1f516",
-        "ifc_sha256": "a33127abed919db8fd46617554ec669a6519b2f6c292ee5df5db2797318d5d7b"
+        "ids_sha256": "96e3d1c3182cdaf37d39d8dd0a7b7c8e9b9ea40f19803caf732e8a90efbca96b",
+        "ifc_sha256": "01d833dbc9a840bfe526d55cb19c08b065024a7773ebf7be3d2d924af1b3aa1c"
       }
     }
   ]

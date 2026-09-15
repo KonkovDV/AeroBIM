@@ -14,7 +14,7 @@ Minimal, hash-locked package for Sprint 2.1:
 
 ## What this is not
 
-- not a Samolet customer corpus;
+- not a customer customer corpus;
 - not product accuracy;
 - not customer SLA ≤30 min.
 

@@ -5,7 +5,7 @@ date: 2026-08-24
 status: PACK_PINNED_LOCAL
 claim_boundary: >-
   Integrity + ToS note. IFC binaries live only under .local/ (gitignored).
-  Official IDS/TEP/Vedomost stay in samples/. Not a PD pack. Not Samolet.
+  Official IDS/TEP/Vedomost stay in samples/. Not a PD pack. Not appointing-party.
   Does not close RT-001 / RT-002b / RT-003. Checkpoint GO; customer_go false.
 closes_rt001: false
 closes_rt002b: false
@@ -37,7 +37,7 @@ City article [cim-agr](https://stroimprosto.mos.ru/knowledge/article/cim-agr/) p
 ## What is not connected (and must not be claimed)
 
 - PD sheets, TZ, two revisions, calculations, expertise remarks, dual raters.
-- `summary.passed` as Samolet accuracy.
+- `summary.passed` as the appointing party accuracy.
 - RT-001 / RT-002b / RT-003 closed.
 - `inject_defects` — blocked until a **clean PD pack** exists. City CIM examples are not that pack.
 

@@ -57,7 +57,7 @@ claim_boundary: >-
 | B2.2 | `backend/src/aerobim/application/services/analyze_orchestrators.py` | вызывает revision-merge | Тот же контракт |
 | B2.3 | `backend/tests/test_p0_remediation_fail_closed.py` | one-sided revision | Тесты текущей логики |
 | B2.4 | `docs/dataset/IFCDIFF_TZ_GAP_NOTE_2026_08_04.md` | STAGE/VERSION_MISMATCH ≠ multi-package CDE | Честный gap |
-| B2.5 | `docs/architecture/KIMI_K3_SCENARIO_MATRIX_2026_07_27.md` | SAM-TYP-015 VERSION_MISMATCH | Сценарий, не ГОСТ |
+| B2.5 | `docs/architecture/KIMI_K3_SCENARIO_MATRIX_2026_07_27.md` | TYP-ERR-015 VERSION_MISMATCH | Сценарий, не ГОСТ |
 
 ### B3. Норм-пак: поля редакции (есть каркас, нет 21.101)
 

@@ -1,6 +1,6 @@
 """Overlap between unsigned educational packs (not a customer defect list).
 
-``samples/requirements/samolet-*.txt`` (eq/gte/lte on ALL) and
+``samples/requirements/residential-*.txt`` (eq/gte/lte on ALL) and
 ``samples/rule-packs/residential-ar-reference-template.json`` (mostly exists)
 share (entity, pset, property) keys. Running both inflates SIG-01 volume.
 That is a pack-composition artifact, not two independent defects.
@@ -24,8 +24,8 @@ CLAIM_BOUNDARY: Final = (
 )
 
 _UNSIGNED_PACKS: Final[tuple[str, ...]] = (
-    "samples/requirements/samolet-fire-safety-rules.txt",
-    "samples/requirements/samolet-structure-rules.txt",
+    "samples/requirements/residential-fire-safety-rules.txt",
+    "samples/requirements/residential-structure-rules.txt",
     "samples/rule-packs/residential-ar-reference-template.json",
 )
 

@@ -1,10 +1,10 @@
-"""Reviewer priority scoring for assistive QA workflows (incl. Samolet TechLab)."""
+"""Reviewer priority scoring for assistive QA workflows (incl. TechLab)."""
 
 from __future__ import annotations
 
 from aerobim.domain.models import ConflictKind, FindingCategory, ValidationIssue
 
-_VALID_PROFILES = frozenset({"default", "samolet"})
+_VALID_PROFILES = frozenset({"default", "pilot"})
 
 
 def compute_issue_priority(issue: ValidationIssue, profile: str = "default") -> int:
@@ -28,8 +28,8 @@ def compute_issue_priority(issue: ValidationIssue, profile: str = "default") -> 
     )
     score = sev_score + cat_score + conflict_score + _clash_triage_boost(issue)
 
-    if normalized == "samolet":
-        score += _samolet_profile_boost(issue)
+    if normalized == "pilot":
+        score += _pilot_profile_boost(issue)
 
     return score
 
@@ -49,8 +49,8 @@ def _clash_triage_boost(issue: ValidationIssue) -> int:
     return 0
 
 
-def _samolet_profile_boost(issue: ValidationIssue) -> int:
-    """Boost fire-safety and cross-document findings per Samolet task emphasis."""
+def _pilot_profile_boost(issue: ValidationIssue) -> int:
+    """Boost fire-safety and cross-document findings per TechLab task emphasis."""
     boost = 0
     rule_id = (issue.rule_id or "").upper()
 

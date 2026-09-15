@@ -26,7 +26,7 @@ ARTIFACT_TYPE: Final = "accuracy_answer"
 _CLASH_PR = Path("docs/evidence/clash-measurement-slice-2026-08/precision-recall.json")
 _INJECTION = Path("docs/evidence/defect-injection-recall-run-fixture-latest.json")
 _KAPPA = Path("docs/evidence/rt001-dual-rater-simulation-2026-09.json")
-_TYPICAL = Path("samples/benchmarks/samolet-typical-errors-catalog.json")
+_TYPICAL = Path("samples/benchmarks/typical-errors-catalog.json")
 _SPRINT3_MD = Path("docs/evidence/sprint3-open-corpus-battery-2026-08.md")
 
 

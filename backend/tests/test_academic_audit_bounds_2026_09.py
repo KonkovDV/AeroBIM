@@ -19,9 +19,9 @@ class RuleDiffBoundTests(unittest.TestCase):
         payload = NormRuleHitlEventRequest(
             event_type="norm_rule_proposed",
             base_pack_path="packs/demo.json",
-            rule_diff={"rule_id": "SAM-AR-001", "evidence_text": "a"},
+            rule_diff={"rule_id": "TYP-AR-001", "evidence_text": "a"},
         )
-        self.assertEqual(payload.rule_diff["rule_id"], "SAM-AR-001")
+        self.assertEqual(payload.rule_diff["rule_id"], "TYP-AR-001")
 
     def test_rule_diff_rejects_too_many_keys(self) -> None:
         with self.assertRaises(ValidationError):
@@ -36,7 +36,7 @@ class RuleDiffBoundTests(unittest.TestCase):
             NormRuleHitlEventRequest(
                 event_type="norm_rule_proposed",
                 base_pack_path="packs/demo.json",
-                rule_diff={"rule_id": "SAM-AR-001", "blob": "x" * 40_000},
+                rule_diff={"rule_id": "TYP-AR-001", "blob": "x" * 40_000},
             )
 
 

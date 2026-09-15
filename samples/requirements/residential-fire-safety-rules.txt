@@ -1,4 +1,4 @@
-# Samolet unsigned pilot pack (fire) — not a signed IDS / not SP 2.13130 as law.
+# the appointing party unsigned pilot pack (fire) — not a signed IDS / not SP 2.13130 as law.
 # target_ref ALL = every instance of ifc_entity (not an element named "ALL").
 # exists on ALL is coverage (missing N of M), not "at least one". eq on ALL is
 # capped per-element mismatches; signed IDS must restrict applicability.

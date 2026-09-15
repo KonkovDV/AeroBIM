@@ -15,7 +15,7 @@ class LintClaimsTests(unittest.TestCase):
     def test_detects_forbidden_production_ready(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "bad.md"
-            path.write_text("We are production-ready for Samolet.\n", encoding="utf-8")
+            path.write_text("We are production-ready for the appointing party.\n", encoding="utf-8")
             sys.path.insert(0, str(_REPO / "scripts"))
             try:
                 from lint_claims import lint_claims  # type: ignore[import-not-found]

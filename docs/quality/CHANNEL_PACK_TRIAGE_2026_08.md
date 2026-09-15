@@ -44,7 +44,7 @@ Checkpoint **`GO`**; `customer_go` false. `detected_count: 0`. `processed: false
 | RT-PACK-MAX-EVIDENCE | 3ds Max / картинки = доказательства проекта | Вне priority 1 |
 | RT-PACK-DXF-DWG | 321 ASCII DXF = DWG-ready | DXF `partial`; DWG fail-closed |
 | RT-PACK-OCR | 728 скан-PDF = OCR сдан | HITL; бюджет OCR — владелец |
-| RT-PACK-SCAN-FINDING | HITL сканов = находки чертежа | `service_hitl`; IUA SAM-03 |
+| RT-PACK-SCAN-FINDING | HITL сканов = находки чертежа | `service_hitl`; IUA CH-03 |
 | RT-PACK-PP87 | Токены ПЗ/АР/КР/КЖ = 87-ПП | `statutory_pp87=false` |
 | RT-PACK-RD | Большой пакет ⇒ PD↔RD runnable | `tz_class_2_rd_files=0` |
 | RT-PACK-MEETS | Семейства ⇒ Meets/Does-not семи задач | Criterion **Uncertain** |

@@ -253,7 +253,7 @@ def validate_profile(
         "human_name": profile.human_name,
         "provenance_status": profile.provenance_status,
         "signed_by_customer": False,
-        "samolet_alias": False,
+        "customer_alias": False,
         "closes_rt001": False,
         "closes_rt002": False,
         "closes_rt003": False,
@@ -438,7 +438,7 @@ def verify_committed_evidence(
         "closes_rt001",
         "closes_rt002",
         "closes_rt003",
-        "samolet_alias",
+        "customer_alias",
     ):
         if committed.get(flag) is not False:
             raise OfficialIdsProfileError(f"committed evidence {flag} must be JSON false")
@@ -461,7 +461,7 @@ def verify_committed_evidence(
             "closes_rt001",
             "closes_rt002",
             "closes_rt003",
-            "samolet_alias",
+            "customer_alias",
         ):
             if committed.get(key) != live.get(key):
                 raise OfficialIdsProfileError(

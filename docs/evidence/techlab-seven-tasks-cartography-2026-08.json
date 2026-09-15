@@ -95,10 +95,10 @@
         "dwg_per_ar_sheet": 61
       },
       "sam_typ": [
-        "SAM-TYP-005",
-        "SAM-TYP-012",
-        "SAM-TYP-013",
-        "SAM-TYP-014"
+        "TYP-ERR-005",
+        "TYP-ERR-012",
+        "TYP-ERR-013",
+        "TYP-ERR-014"
       ],
       "licensed_speech": "Sheet ciphers co-index with IFC section cuts. TEP not measurable.",
       "forbidden_speech": "AGR/QTO signed off; task 1 closed"
@@ -135,8 +135,8 @@
         }
       ],
       "sam_typ": [
-        "SAM-TYP-017",
-        "SAM-TYP-024"
+        "TYP-ERR-017",
+        "TYP-ERR-024"
       ],
       "licensed_speech": "Catalogs and EIR exist as files. Draft contour only.",
       "forbidden_speech": "customer_approved IDS from Standard 5.0"
@@ -209,12 +209,12 @@
         }
       ],
       "sam_typ": [
-        "SAM-TYP-007",
-        "SAM-TYP-008",
-        "SAM-TYP-009",
-        "SAM-TYP-010",
-        "SAM-TYP-011",
-        "SAM-TYP-012"
+        "TYP-ERR-007",
+        "TYP-ERR-008",
+        "TYP-ERR-009",
+        "TYP-ERR-010",
+        "TYP-ERR-011",
+        "TYP-ERR-012"
       ],
       "licensed_speech": "PD AR has rooms and doors as objects; no area; no axes on package A; no RD.",
       "forbidden_speech": "layouts verified across stages; areas checked"
@@ -280,12 +280,12 @@
         }
       ],
       "sam_typ": [
-        "SAM-TYP-001",
-        "SAM-TYP-002",
-        "SAM-TYP-003",
-        "SAM-TYP-004",
-        "SAM-TYP-008",
-        "SAM-TYP-023"
+        "TYP-ERR-001",
+        "TYP-ERR-002",
+        "TYP-ERR-003",
+        "TYP-ERR-004",
+        "TYP-ERR-008",
+        "TYP-ERR-023"
       ],
       "licensed_speech": "TZ lines vs export: which predicates have a property to read.",
       "forbidden_speech": "layouts match TZ; fire class certified"
@@ -346,9 +346,9 @@
         }
       ],
       "sam_typ": [
-        "SAM-TYP-006",
-        "SAM-TYP-019",
-        "SAM-TYP-020"
+        "TYP-ERR-006",
+        "TYP-ERR-019",
+        "TYP-ERR-020"
       ],
       "licensed_speech": "AR+KR IFC; other disciplines PDF; terminals ≠ IOS model.",
       "forbidden_speech": "MEP delivered; federated clash delivered"
@@ -403,7 +403,7 @@
         }
       ],
       "sam_typ": [
-        "SAM-TYP-015"
+        "TYP-ERR-015"
       ],
       "licensed_speech": "After is thicker; letter calendar exists; OEP statuses partial; not closure.",
       "forbidden_speech": "remarks closed; gold labels"
@@ -441,88 +441,88 @@
         }
       ],
       "sam_typ": [
-        "SAM-TYP-021",
-        "SAM-TYP-022",
-        "SAM-TYP-025"
+        "TYP-ERR-021",
+        "TYP-ERR-022",
+        "TYP-ERR-025"
       ],
       "licensed_speech": "No bar entities to compare. Pitch ≠ proof of solution.",
       "forbidden_speech": "rebar vs calc done; LIRA solved"
     }
   ],
   "sam_typ_to_task": {
-    "SAM-TYP-001": [
+    "TYP-ERR-001": [
       4,
       5
     ],
-    "SAM-TYP-002": [
+    "TYP-ERR-002": [
       4
     ],
-    "SAM-TYP-003": [
+    "TYP-ERR-003": [
       4
     ],
-    "SAM-TYP-004": [
+    "TYP-ERR-004": [
       3,
       4
     ],
-    "SAM-TYP-005": [
+    "TYP-ERR-005": [
       1
     ],
-    "SAM-TYP-006": [
+    "TYP-ERR-006": [
       5
     ],
-    "SAM-TYP-007": [
+    "TYP-ERR-007": [
       3
     ],
-    "SAM-TYP-008": [
+    "TYP-ERR-008": [
       3,
       4
     ],
-    "SAM-TYP-009": [
+    "TYP-ERR-009": [
       3
     ],
-    "SAM-TYP-010": [
+    "TYP-ERR-010": [
       3
     ],
-    "SAM-TYP-011": [
+    "TYP-ERR-011": [
       3
     ],
-    "SAM-TYP-012": [
+    "TYP-ERR-012": [
       1,
       3
     ],
-    "SAM-TYP-013": [
+    "TYP-ERR-013": [
       1
     ],
-    "SAM-TYP-014": [
+    "TYP-ERR-014": [
       1
     ],
-    "SAM-TYP-015": [
+    "TYP-ERR-015": [
       6
     ],
-    "SAM-TYP-016": [],
-    "SAM-TYP-017": [
+    "TYP-ERR-016": [],
+    "TYP-ERR-017": [
       2
     ],
-    "SAM-TYP-018": [],
-    "SAM-TYP-019": [
+    "TYP-ERR-018": [],
+    "TYP-ERR-019": [
       5
     ],
-    "SAM-TYP-020": [
+    "TYP-ERR-020": [
       5
     ],
-    "SAM-TYP-021": [
+    "TYP-ERR-021": [
       7
     ],
-    "SAM-TYP-022": [
+    "TYP-ERR-022": [
       7
     ],
-    "SAM-TYP-023": [
+    "TYP-ERR-023": [
       4
     ],
-    "SAM-TYP-024": [
+    "TYP-ERR-024": [
       2
     ],
-    "SAM-TYP-025": [
+    "TYP-ERR-025": [
       7
     ]
   },

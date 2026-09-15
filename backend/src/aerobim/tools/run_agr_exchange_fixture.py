@@ -120,7 +120,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
         "",
         "IFC4 + ReferenceView + no `IfcBuildingElementProxy` + five-field filename + ",
         "500 MB cap + TEP XML sidecar + official ДГП Vedomost XSD. **Not** the frozen ",
-        "`moscow_agr` profile (no УКЭП, CRS, MSSK). Not a Samolet pack. ",
+        "`moscow_agr` profile (no УКЭП, CRS, MSSK). Not a customer pack. ",
         "Territorial Moscow NPA citation; IDS zip is not itself an NPA; not GrK art. 49.",
         "",
         f"- cases: **{summary.get('case_count')}**",

@@ -9,7 +9,7 @@ claim_boundary: "Structural ZIP OK only. CDE import NOT_VERIFIED. Not production
 
 - Artifact: `bcf-structural-handoff.json` from `aerobim.tools.verify_bcf_structural_handoff`
 - `structural_ok=true` for BCF 2.1 + 3.0 XSD/structure + consumer agreement
-- `cde_import.status=NOT_VERIFIED` — no Samolet CDE log/screenshot
+- `cde_import.status=NOT_VERIFIED` — no customer CDE log/screenshot
 
 Regenerate:
 

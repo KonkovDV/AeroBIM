@@ -142,7 +142,7 @@
     "command": "python -m aerobim.tools.run_vertical_slice --manifest samples/demo/vertical-slice-2026-08-11/manifest.json --output artifacts/vertical-slice-2026-08-11",
     "cwd": "backend/",
     "inputs_sha256": {
-      "samples/ifc/walls-multi-entity.ifc": "b64f7ea2ce88183f6a9c08969327d516ba7fe75057083fe3b326f49cebfa4ebe",
+      "samples/ifc/walls-multi-entity.ifc": "40e546fa793212dbebc94acbf29546d35d75fbafd47f3b85b4ec5c9277451cbd",
       "samples/ids/walls-multi-entity.ids": "4ab52e9c93e0669cd8165af406a51a6b7d2554f7ee3a4adee6c2e307b847a932",
       "samples/requirements/techlab-demo-rules.txt": "ff331a2056124811b0460679bcc16cbfbde22256e0cf6a5d717fd79b708bf0a3",
       "samples/specifications/techlab-tz.txt": "b2e27c58d7e58a341edc3e198dca3cbff5c17da07c97a3c3c99fcfb3d0a74a7d",

@@ -56,9 +56,9 @@
       "detail": "C:\\AeroBIM\\docs\\tz\\KT2_TRI_SOURCE_ALIGNMENT_2026_08_12.md"
     },
     {
-      "check": "samolet_acceptance_profile",
+      "check": "customer_acceptance_profile",
       "ok": true,
-      "detail": "C:\\AeroBIM\\docs\\partners\\SAMOLET_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md"
+      "detail": "C:\\AeroBIM\\docs\\partners\\CUSTOMER_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md"
     },
     {
       "check": "overlay_second_zone",

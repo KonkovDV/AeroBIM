@@ -2,7 +2,7 @@
 
 Validity is a property of an inference from a score to a use (Messick 1995;
 Kane 2013), not of the tool. This module is the executable SSOT for that
-boundary across Samolet TZ, TechLab/MIK checkpoints, tracker tasks, and
+boundary across the appointing party TZ, TechLab/MIK checkpoints, tracker tasks, and
 industry standards.
 
 No row licenses customer precision, customer GO, native DWG, MEP delivered,
@@ -101,8 +101,8 @@ def _row(
 
 LEDGER: tuple[InferenceRow, ...] = (
     _row(
-        "SAM-01",
-        "samolet",
+        "CH-01",
+        "channel",
         "ТР-1: ассистент эксперта, не замена ГИП",
         "HITL + Claims Lock + ADR-001: модель не ставит summary.passed",
         "Система заменяет экспертизу / лицензированного специалиста",
@@ -111,18 +111,18 @@ LEDGER: tuple[InferenceRow, ...] = (
         "fixture_demo",
     ),
     _row(
-        "SAM-02",
-        "samolet",
+        "CH-02",
+        "channel",
         "IFC + IDS / атрибуты BIM",
         "IfcOpenShell + IfcTester на fixture и open packs; IDS 1.0 checking",
-        "Профиль приёмки Самолёта / CIM-compliance / RT-002 CLOSED",
+        "Профиль приёмки заказчика канала / CIM-compliance / RT-002 CLOSED",
         "python -m aerobim.tools.run_demo_ifc_acceptance_gate",
-        "Подписанный EIR/IDS Самолёта + customer_pack_hash",
+        "Подписанный EIR/IDS назначающей стороны + customer_pack_hash",
         "engine_regression",
     ),
     _row(
-        "SAM-03",
-        "samolet",
+        "CH-03",
+        "channel",
         "2D PDF + подсветка замечания",
         "pypdfium2 overlay на fixture; finding_id / evidence_refs",
         "CV-счёт дверей/окон; AECV-Bench как product accuracy",
@@ -131,8 +131,8 @@ LEDGER: tuple[InferenceRow, ...] = (
         "fixture_demo",
     ),
     _row(
-        "SAM-04",
-        "samolet",
+        "CH-04",
+        "channel",
         "Нативный DWG в ТЗ",
         "Fail-closed intake: dwg_native=NOT_IMPLEMENTED / FAILED",
         "DWG-ready / тихий пропуск DWG",
@@ -141,8 +141,8 @@ LEDGER: tuple[InferenceRow, ...] = (
         "not_licensed",
     ),
     _row(
-        "SAM-05",
-        "samolet",
+        "CH-05",
+        "channel",
         "Коллизии / MEP / «точность >90%»",
         "Generic IfcClash на fixture; tiny-skip fail-closed; protocol TP/(TP+FP)≥0.60",
         "Customer clash precision; mep_system_clash=OK; TZ >90%",
@@ -151,28 +151,28 @@ LEDGER: tuple[InferenceRow, ...] = (
         "protocol_planning",
     ),
     _row(
-        "SAM-06",
-        "samolet",
+        "CH-06",
+        "channel",
         "SLA «до 30 минут»",
         "measure_package_sla на согласованном fixture; StageBudget sum=30 min",
-        "Customer SLA / любой комплект Самолёта",
+        "Customer SLA / любой комплект заказчика",
         "python -m aerobim.tools.measure_package_sla",
         "Замер на customer pack с corpus_kind=customer",
         "protocol_planning",
     ),
     _row(
-        "SAM-07",
-        "samolet",
+        "CH-07",
+        "channel",
         "BCF замечания в СОД",
         "BCF 2.1 ZIP export (структурный)",
         "CDE import VERIFIED / T2 roundtrip",
         "docs/pilot-claim-boundary-2026.md",
-        "Log + screenshot + hashes именованного CDE Самолёта",
+        "Log + screenshot + hashes именованного CDE заказчика",
         "fixture_demo",
     ),
     _row(
-        "SAM-08",
-        "samolet",
+        "CH-08",
+        "channel",
         "ТР-16/19: площади помещений / чертёж↔IFC",
         "AR IFC: rooms exist as objects; area QTO not runnable; coverage_map_only",
         "Площади квартир сверены с ТЭП; RT-001 CLOSED",
@@ -181,8 +181,8 @@ LEDGER: tuple[InferenceRow, ...] = (
         "engine_regression",
     ),
     _row(
-        "SAM-09",
-        "samolet",
+        "CH-09",
+        "channel",
         "ТР-8: огнестойкость стены vs ТЗ (класс II / C0)",
         "Wall FireRating sparse and ≠ TZ II/C0; coverage_map_only",
         "Fire check delivered; fixture REI60 = customer finding",
@@ -191,11 +191,12 @@ LEDGER: tuple[InferenceRow, ...] = (
         "engine_regression",
     ),
     _row(
-        "SAM-10",
-        "samolet",
+        "CH-10",
+        "channel",
         "ТЗ v1 (6 стр. бриф конкурса) vs v2 ТР vs семь сравнений vs проектное ТЗ",
         "v1 pin is coverage of the public brief; TBD filled in v2; >90% is not a product score",
-        "Четыре бумаги Самолёта — один документ; v1 >90% измерено; семь задач сданы этим PDF",
+        "Четыре бумаги заказчика канала — один документ; v1 >90% измерено; "
+        "семь задач сданы этим PDF",
         "docs/tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md",
         "Keep paper-objects unmixed; MIK act cites interim 0.60",
         "engine_regression",
@@ -207,7 +208,7 @@ LEDGER: tuple[InferenceRow, ...] = (
         "27.08 public rehearsal pin plus 30.08 evening recensus after "
         "deleting covered source archives. Counts live in engineering pins, "
         "not the jury map. Live scan only under .local/. Not processed.",
-        "sha256 пакета Самолёта в git; имена площадок в публичном дереве",
+        "sha256 пакета заказчика в git; имена площадок в публичном дереве",
         "docs/evidence/owner-ai-plan-execution-2026-08.json",
         "Keep NDA binaries and hashes out of git",
         "operational_hygiene",
@@ -329,7 +330,7 @@ LEDGER: tuple[InferenceRow, ...] = (
         "Восемь задач 29.08: объём находок на канале IFC/PDF",
         "Report phrase: объём находок на канале получен. "
         "unrestricted_eq_sample is a capped unsigned ALL+eq sample, not a defect. "
-        "EI 45 vs demo REI60 is SAM-09, not SP 2.13130.",
+        "EI 45 vs demo REI60 is CH-09, not SP 2.13130.",
         "Product accuracy; pack processed; customer defect list; "
         "unsigned ALL+eq as SP; raising the mismatch cap as a defect export",
         "docs/quality/FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md",
@@ -414,7 +415,7 @@ LEDGER: tuple[InferenceRow, ...] = (
         "techlab",
         "Критерии пилота 2 млн ₽ (interim ≥0.60, SLA, BCF в СОД)",
         "Протокол измерения согласован как методика",
-        "Фактическое достижение критериев на комплекте Самолёта",
+        "Фактическое достижение критериев на комплекте заказчика",
         "docs/partners/PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md",
         "Замеры только после intake-gates",
         "protocol_planning",
@@ -444,7 +445,7 @@ LEDGER: tuple[InferenceRow, ...] = (
         "techlab",
         "Сравнение 2: ПД ↔ каталоги / EIR LOD",
         "Catalog and EIR workbooks as carriers; not customer_approved IDS",
-        "IDS Самолёта утверждён из Стандарта",
+        "IDS заказчика канала утверждён из Стандарта",
         "docs/quality/TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md",
         "Appointing-party IDS with pack_hash (RT-002b)",
         "protocol_planning",
@@ -524,7 +525,7 @@ LEDGER: tuple[InferenceRow, ...] = (
         "industry",
         "buildingSMART IDS 1.0 (final standard, 1 June 2024)",
         "IDS checking (IfcTester) + IDS audit (XmlIdsDocumentAuditor / XSD 1.0)",
-        "IDS audit = checking = Samolet EIR; IDS 1.1 как approved standard",
+        "IDS audit = checking = the appointing party EIR; IDS 1.1 как approved standard",
         "samples/ids-xsd/ids.xsd",
         "Customer IDS pack remains RT-002",
         "engine_regression",
@@ -554,7 +555,7 @@ LEDGER: tuple[InferenceRow, ...] = (
         "industry",
         "ПНСТ 909-2024 (Renga publisher pack)",
         "Aggregated 18/22 IDS runtime_clean snapshot 05.08 after ToS GO",
-        "Свежий 18/22; customer precision; эталон Самолёта",
+        "Свежий 18/22; customer precision; эталон заказчика канала",
         "docs/evidence/PNST909_22_SCENARIO_COVERAGE_AXIS_2026_08.md",
         "Полный extract + сценарии 3/18/21/22, если издатель даст IDS",
         "open_bench",
@@ -577,7 +578,7 @@ LEDGER: tuple[InferenceRow, ...] = (
         "authors: coding agents fail visual grounding",
         "AEC-Bench run as product drawing literacy / RT-001 CLOSED",
         "docs/evidence/aec-bench-false-pass-2026-08.md",
-        "Harbor only as labeled open-bench, never as Samolet PD",
+        "Harbor only as labeled open-bench, never as the appointing party PD",
         "open_bench",
     ),
     _row(
@@ -647,7 +648,7 @@ LEDGER: tuple[InferenceRow, ...] = (
         "industry",
         "Jurisdiction IFC pre-check 2026 (CORENET X, RAVA3.5.3, city AGR)",
         "City-as-publisher pattern = RT-002a analog; not appointing-party EIR",
-        "Public permit IDS = Samolet-signed profile / Task 07 delivered",
+        "Public permit IDS = appointing-party-signed profile / Task 07 delivered",
         "docs/quality/TZ_SEAM_COVERAGE_MAP_2026_08.md",
         "Keep RT-002a and RT-002b unmixed",
         "open_bench",
@@ -747,7 +748,7 @@ LEDGER: tuple[InferenceRow, ...] = (
         "K1 scores the filed team (up to 10), not oral advisors",
         "FAQ already allows 1-10 with mixed scientific and engineering skill",
         "Consultants named in chat are on the scored roster / K1 closed",
-        "docs/partners/TECHLAB_SAMOLET_APPLICATION_2026.md",
+        "docs/partners/TECHLAB_APPLICATION_2026.md",
         "Owner files roles with evidence; git does not invent the roster",
         "operational_hygiene",
     ),
@@ -909,7 +910,7 @@ LEDGER: tuple[InferenceRow, ...] = (
         "Public task-page names and sponsor quote vs signed commission",
         "Catalog FIO are publication; sponsor quote is not attested chair",
         "Those names sit the jury / fill K1 / chair the commission",
-        "docs/partners/TECHLAB_SAMOLET_APPLICATION_2026.md",
+        "docs/partners/TECHLAB_APPLICATION_2026.md",
         "Keep sponsor_quote_is_commission_chair False",
         "operational_hygiene",
     ),
@@ -957,8 +958,8 @@ LEDGER: tuple[InferenceRow, ...] = (
         "protocol_planning",
     ),
     _row(
-        "SAM-11",
-        "samolet",
+        "CH-11",
+        "channel",
         "ТР-17: неэффективное использование пространства (продаваемая площадь / МОП / коридоры)",
         "IfcSpace inventory remains ADVISORY_ONLY until appointing-party "
         "thresholds are signed; scope is OA-14",
@@ -989,8 +990,8 @@ LEDGER: tuple[InferenceRow, ...] = (
         "not_licensed",
     ),
     _row(
-        "SAM-12",
-        "samolet",
+        "CH-12",
+        "channel",
         "п. 1.1.4: офис 500 МБ / модели 1,5 ГБ — ingest + RocksDB; SPF/WASM 256 МиБ",
         "AEROBIM_MAX_IFC_BYTES stays 256 MiB SPF; files up to 1.5 GB open via "
         "IfcOpenShell RocksDB; WASM stays 256 MiB; HTTP 413 over 1.5 GB",
@@ -1026,7 +1027,7 @@ LEDGER: tuple[InferenceRow, ...] = (
         "Five former TBD TZ sections are a confirmation request, not a blank form",
         "TZ v2 fills architecture, code/build, solution image, presentation, accompanying docs",
         "Ask organizers to draft empty TBD from 09.07 / compare teams on unfilled bars",
-        "docs/tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md",
+        "docs/tz/TZ_TECHLAB_TASK_07_V2_2026.md",
         "Send our edition for confirmation (OA-8)",
         "operational_hygiene",
     ),
@@ -1093,7 +1094,7 @@ def ledger_payload(*, generated_at: str) -> dict[str, Any]:
                 "IfcOpenShell #7116 SPF RAM ~8–10× disk (Riverside ~275–300 MB); "
                 "1.5 GB ingest is not that RSS"
             ),
-            "MOEXP IDS 06.03.2026 is RT-002a (city-as-publisher), not Samolet RT-002b",
+            "MOEXP IDS 06.03.2026 is RT-002a (city-as-publisher), not appointing-party RT-002b",
         ],
         "closes_rt001": False,
         "closes_rt002": False,
@@ -1112,7 +1113,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
         "<!-- claims-lint: allow-file "
         'reason="Kane IUA ledger; TZ 90%/SLA as blocked inferences; NO_GO" -->',
         "---",
-        'title: "Interpretation/Use ledger — Самолёт × трекер × Техлаб/МИК × отрасль"',
+        'title: "Interpretation/Use ledger — заказчик канала × трекер × Техлаб/МИК × отрасль"',
         f'date: "{str(payload.get("generated_at") or "")[:10]}"',
         "status: active",
         f'version: "{payload.get("schema_version")}"',
@@ -1127,7 +1128,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
         "",
         "Валидность — свойство **вывода из оценки**, не свойства программы "
         "(Messick 1995; Kane 2013). Этот файл — SSOT: что текущие цифры AeroBIM "
-        "имеют право значить для Самолёта, трекера проекта, Техлаба, МИК и "
+        "имеют право значить для заказчика канала, трекера проекта, Техлаба, МИК и "
         "отраслевых стандартов, и чего они значить не имеют.",
         "",
         f"- Checkpoint **{CHECKPOINT}**",

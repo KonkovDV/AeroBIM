@@ -31,7 +31,7 @@ TASK_APPENDIX_4: Final = 6
 COMMISSION_NUMBER: Final = 7
 DECK_FILE: Final = "AeroBIM_demo_day_2026-09-13"
 
-# Public IDS engine coverage (not a Samolet-signed profile).
+# Public IDS engine coverage (not a appointing-party-signed profile).
 MOEXP_IDS_FILES: Final = 24
 MOEXP_IDS_SPECS: Final = 389
 SPBEXP_IDS_FILES: Final = 22

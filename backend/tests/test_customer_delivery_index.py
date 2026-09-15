@@ -39,7 +39,7 @@ class CustomerDeliveryIndexTests(unittest.TestCase):
         self.assertFalse(payload["git_hosts_reports"])
         self.assertFalse(payload["trial"]["independent_test"])
         self.assertFalse(payload["customer_go"])
-        self.assertFalse(payload["samolet_direct_contact"])
+        self.assertFalse(payload["customer_direct_contact"])
         self.assertEqual(payload["delivery_channel"], "organizers_only")
         self.assertTrue(payload["customer_deadline_is_final"])
         self.assertTrue(payload["post_deadline_slot_is_not_delivery"])
@@ -82,9 +82,9 @@ class CustomerDeliveryIndexTests(unittest.TestCase):
         with self.assertRaises(DeliveryIndexError):
             validate_delivery_index(payload)
 
-    def test_direct_samolet_contact_rejected(self) -> None:
+    def test_direct_customer_contact_rejected(self) -> None:
         payload = _filled()
-        payload["samolet_direct_contact"] = True
+        payload["customer_direct_contact"] = True
         with self.assertRaises(DeliveryIndexError):
             validate_delivery_index(payload)
 

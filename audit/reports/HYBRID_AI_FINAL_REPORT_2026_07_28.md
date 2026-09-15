@@ -52,7 +52,7 @@ Human Review. **Только Deterministic Verdict владеет `summary.passe
 ## 7. Матрица классификации данных
 `PUBLIC < INTERNAL < CONFIDENTIAL < RESTRICTED < SECRET` (`data_classification.py`).
 Неизвестный вид → **CONFIDENTIAL** (не PUBLIC); агрегат — `most_restrictive` (никогда не
-понижает). IFC/чертежи/расчёты → CONFIDENTIAL; customer/NDA/Самолёт/нормопак/ПДн →
+понижает). IFC/чертежи/расчёты → CONFIDENTIAL; customer/NDA/заказчик канала/нормопак/ПДн →
 RESTRICTED; ключи/токены → SECRET.
 
 ## 8. Матрица маршрутизации
@@ -123,7 +123,7 @@ Hybrid AI помогает **извлекать/маршрутизировать
 кросс-докам/clash/нормам — детерминированный. MEP системный clash — NOT_VERIFIED (RT-003);
 нормопак — synthetic (RT-002); BCF — структурный, CDE-импорт не проверен.
 
-## 21–23. «Самолёт» / Техлаб / МИК
+## 21–23. заказчик канала / Техлаб / МИК
 Hybrid AI **не закрывает** RT-001 (adjudicated-корпус), RT-002 (нормопак), RT-003
 (федеративный MEP). В акт МИК — только измеренное/воспроизводимое/adjudicated/с provenance/
 не расширяющее claim. Данные заказчика — внешний вход.

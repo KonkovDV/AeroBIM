@@ -1,14 +1,14 @@
 # Claims lock — Red Team freeze
 
-**Status:** locked for Samolet TechLab Task 07 public wording.  
-**Checkpoint verdict:** `NO_GO` until RF PD+expertise corpus, Samolet-signed profile, and measured federated MEP.  
+**Status:** locked for TechLab Task 07 public wording.  
+**Checkpoint verdict:** `NO_GO` until RF PD+expertise corpus, appointing-party-signed profile, and measured federated MEP.  
 **Last Red Team docs pass:** 2026-07-19 (`main` @ post-remediation + jury-pack trim).  
 **Claims Lock v2 sync (2026-07-30, `main` @ `98c6701`):** coverage / revision diff / geometry core wording added (P1 features shipped 2026-07-29).
 
 ## Forbidden public wording (until evidence exists)
 
 - «точность >90%» / product accuracy percentages
-- «утверждённый заказчиком нормативный пакет / профиль приёмки» (MOEXP IDS public; Samolet profile: **НЕТ**)
+- «утверждённый заказчиком нормативный пакет / профиль приёмки» (MOEXP IDS public; the appointing party profile: **НЕТ**)
 - «нет утверждённых норм» / «норм-пакета нет» — false as of 2026-08-13; official IDS: https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/
 - «MEP clash» as delivered capability
 - «полный MEP clash» / full MEP system-aware as AVAILABLE without customer federated IFC + signed matrix (RT-003)
@@ -24,7 +24,7 @@
 - Green pass when required clash/OCR/schema checks were skipped
 - Fixture SLA as customer комплект ≤30 мин
 - «I9 DONE», «GraphRAG готов», «IfcLLM в AeroBIM» — I9 is **advisory scaffold** only
-- Closing RT-001/002/003 without the remaining honest evidence (RF corpus / Samolet profile / measured federated MEP)
+- Closing RT-001/002/003 without the remaining honest evidence (RF corpus / the appointing party profile / measured federated MEP)
 - «нет утверждённых норм» / «норм-пакета нет» / «нет утверждённого нормативного пакета»
 - Treating grant token quota increase as progress on RT-001 / Checkpoint GO
 - «нет автоматического вердикта» without clarifying Shared-gate `summary.passed` (see ADR-001)
@@ -41,7 +41,7 @@
 - «УКЭП проверена» / «подпись документа проверена» — QUALIFIED_SIGNATURE_VALIDATION is **missing** (no cryptographic adapter/tests); hash-provenance ≠ signature validation
 - «маскирование = анонимизация» / hybrid contour makes the public API safe for customer data (masking reduces disclosure, not anonymity; contour NOT wired to verdict / live egress)
 - «точность продукта выше 90%» as Sprint 2.1 baseline result
-- «подтверждено на реальных проектах Самолёта» without RT-001 customer corpus + adjudication
+- «подтверждено на реальных проектах заказчика канала» without RT-001 customer corpus + adjudication
 - «SLA ≤30 минут для любого комплекта» (fixture/scoped ≠ customer)
 - «полная проверка проектной документации»
 - «проверка корректности расчётов» / independent calculation correctness
@@ -58,7 +58,7 @@
 
 - Fixture extraction macro_f1 (not product accuracy)
 - Generic IFC clash **when** `ifcclash` installed and capability OK
-- Official MOEXP IDS executed by IfcTester (engine coverage only; not Samolet sign-off)
+- Official MOEXP IDS executed by IfcTester (engine coverage only; not appointing-party sign-off)
 - Synthetic / draft **customer** norm packs only until `customer_approved`
 - BCF ZIP **structural** OK; CDE import **НЕ ДОКАЗАНО**
 - Fixture SLA schema 1.2.0 with `claim_level=fixture_only`
@@ -75,7 +75,7 @@
 - Advisory LLM: model never sets severity; token budget charges failed transport and per-429-retry; day ledger optional via `AEROBIM_LLM_BUDGET_LEDGER`
 - `summary.passed` = automatic **Shared-gate** from deterministic engine + blocking capabilities (ADR-001); **not** Shared→Published / contractual fitness; OCR/LLM cannot flip it; expert confirms findings for handoff
 - Non-dev `AEROBIM_ENV` defaults `AEROBIM_SIGNOFF_PROFILE=production` (fail-closed clash/MEP/bSI/unit_scale)
-- Explicit `AEROBIM_SIGNOFF_PROFILE=samolet_pilot` likewise fail-closes required MEP/clash/BSI/audit corruption
+- Explicit `AEROBIM_SIGNOFF_PROFILE=customer_pilot` likewise fail-closes required MEP/clash/BSI/audit corruption
 - Cross-tenant ACL denial returns **404** (not 403) to avoid object enumeration
 - Outbound JWKS / bSI / OpenCDE fetches pass SSRF URL guard
 - Hard geometric IFC clash **when** evidenced — separate from MEP system-aware (RT-003 OPEN)
@@ -91,7 +91,7 @@
 - `extraction_integrity` capability wired (default **NOT_VERIFIED**: сигналы ingestion-слоем ещё не производятся; FAILED блокирует pass) — «render-vs-extract проверка PDF реализована» по-прежнему НЕ заявляется
 - `extraction_integrity` PDF text-layer producer wired on analyze path (2026-07-31 evening): clean PDF → OK; hidden/zero-size → NOT_VERIFIED; FAILED still blocks pass — still **not** a full render-vs-extract product claim
 - «Offline install+runtime bundle пройден» (образ восстановлен из tar через docker load после удаления тега и обслужен при --network none; evidence 2026-07-31) — допустимо для контура С Docker; «bare-metal установка без Docker подтверждена» — НЕТ (wheelhouse NOT VERIFIED)
-- Checkpoint remains **NO_GO** until RF PD+expertise corpus, Samolet-signed profile, and measured federated MEP
+- Checkpoint remains **NO_GO** until RF PD+expertise corpus, appointing-party-signed profile, and measured federated MEP
 - Sprint 2.1: инженерный baseline на public/synthetic package (reproducible on declared commit + manifest)
 - Sprint 2.1: система фиксирует deterministic findings и capability statuses
 - Sprint 2.1: LLM только как advisory layer; model comparison на synthetic/public (mock in CI)
@@ -105,9 +105,9 @@
 - Tier-0: `docs/TIER0_INDEX.md`
 - Jury memo: `docs/docs.md`
 - BCF T1: `audit/evidence/bcf-structural-handoff-2026-07-25.json` (канон; 2026-07-18 superseded — без XSD-прогона)
-- SLA fixture honesty: `audit/evidence/samolet-sla-fixture-honesty-2026-07-17.json`
+- SLA fixture honesty: `audit/evidence/sla-fixture-honesty-2026-07-17.json`
 - Intake gates: `audit/evidence/customer-intake-gate.json`
 - System honesty API: `GET /v1/system/capabilities`
-- TZ: `docs/tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md`
+- TZ: `docs/tz/TZ_TECHLAB_TASK_07_V2_2026.md`
 - Public audit index: `audit/reports/README.md`
 - Red Team phase deltas: local only (`.local/engineering-docs/`) — not on GitHub

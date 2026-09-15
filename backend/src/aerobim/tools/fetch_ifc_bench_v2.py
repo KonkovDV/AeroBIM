@@ -2,7 +2,7 @@
 
 Prefers a local checkout (``--from-dir``). Hub download is best-effort and
 tries huggingface.co then hf-mirror.com. Skips GPLv3 project directories
-listed in IMPORT_PINS.json unless ``--samolet-demo-copyleft --include-gplv3``
+listed in IMPORT_PINS.json unless ``--demo-copyleft --include-gplv3``
 (local gitignored ``.local/`` only; refused in CI). Does not add
 huggingface_hub as a product dependency.
 """
@@ -23,7 +23,7 @@ from typing import Any
 
 from aerobim.domain.copyleft_lane import (
     GPLV3_IFC_BENCH_PROJECTS,
-    local_samolet_demo_copyleft_inputs_permitted,
+    local_demo_copyleft_inputs_permitted,
 )
 from aerobim.tools.benchmark_project_package import repo_root
 
@@ -220,23 +220,23 @@ def main(argv: list[str] | None = None) -> int:
         help="Also download remaining non-GPLv3 project IFC (larger).",
     )
     parser.add_argument(
-        "--samolet-demo-copyleft",
+        "--demo-copyleft",
         action="store_true",
-        help="Opt into Samolet-local copyleft inputs (gitignored .local/ only).",
+        help="Opt into customer-local copyleft inputs (gitignored .local/ only).",
     )
     parser.add_argument(
         "--include-gplv3",
         action="store_true",
-        help="Also copy/download GPLv3 IFC-Bench project dirs. Requires --samolet-demo-copyleft.",
+        help="Also copy/download GPLv3 IFC-Bench project dirs. Requires --demo-copyleft.",
     )
     args = parser.parse_args(argv)
     include_gpl = bool(args.include_gplv3)
-    opted_in = bool(args.samolet_demo_copyleft)
-    if include_gpl and not local_samolet_demo_copyleft_inputs_permitted(
+    opted_in = bool(args.demo_copyleft)
+    if include_gpl and not local_demo_copyleft_inputs_permitted(
         opted_in=opted_in, ci=_ci_environment()
     ):
         print(
-            "refusing --include-gplv3: need --samolet-demo-copyleft and a non-CI host "
+            "refusing --include-gplv3: need --demo-copyleft and a non-CI host "
             "(public MIT tree / Docker / other customers stay copyleft-free)",
             file=sys.stderr,
         )
@@ -285,13 +285,13 @@ def main(argv: list[str] | None = None) -> int:
         "downloaded": len(downloaded),
         "errors": errors,
         "skipped_gplv3": skipped_gpl,
-        "copyleft_lane": "samolet_demo_local" if include_gpl else "public_mit",
+        "copyleft_lane": "customer_demo_local" if include_gpl else "public_mit",
         "gplv3_vendored_in_git": False,
         "files": downloaded,
         "claim_boundary": (
             "Local gitignored checkout. "
             + (
-                "GPLv3 project dirs included for Samolet-local demo only. "
+                "GPLv3 project dirs included for customer-local demo only. "
                 if include_gpl
                 else "GPLv3 project dirs skipped. "
             )

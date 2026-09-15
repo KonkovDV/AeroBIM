@@ -36,7 +36,7 @@ vi.mock("../lib/api", async () => {
         checkpoint: "GO",
         source: "audit/evidence/customer-intake-gate.json",
       },
-      samolet_mvp_answers: {
+      customer_channel_answers: {
         closes_rt001: false,
         closes_rt002: false,
         closes_rt003: false,

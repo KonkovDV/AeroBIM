@@ -1,6 +1,6 @@
 """target_ref matching: named element vs unrestricted (all instances of the type).
 
-Pipe-format packs (``samples/requirements/samolet-*.txt``, techlab demo rules)
+Pipe-format packs (``samples/requirements/residential-*.txt``, techlab demo rules)
 put ``ALL`` in the target_ref column to mean every entity of ``ifc_entity``.
 The IFC validator historically treated that token as a Name/GlobalId filter,
 so rules fired ``No elements found for entity IFCWALL`` on models that had

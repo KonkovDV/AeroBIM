@@ -385,7 +385,7 @@ class NormRulePack:
     a customer; loading a draft or synthetic template does not make it normative.
     Schema 2.0.0 adds RASE / execution_mode / expert confirmation journal; those
     gates live in ``domain.norm_rule_eligibility`` (WP-04). Public MOEXP IDS
-    are not a Samolet-signed acceptance profile.
+    are not a appointing-party-signed acceptance profile.
     """
 
     pack_id: str

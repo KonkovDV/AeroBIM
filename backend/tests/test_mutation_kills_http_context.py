@@ -444,7 +444,7 @@ class IfcSizeLimitBoundaryTests(unittest.TestCase):
             self.assertIsInstance(exc.detail, dict)
             self.assertEqual(exc.detail["message"], "IFC exceeds analyze size limit")
             self.assertEqual(exc.detail["reason_code"], "ifc_over_ingest_cap")
-            self.assertEqual(exc.detail["required_profile"], "samolet_pilot")
+            self.assertEqual(exc.detail["required_profile"], "customer_pilot")
             self.assertEqual(
                 exc.detail["see"],
                 "docs/quality/IFC_ANALYZE_VS_INGEST_CAP_2026_08.md",

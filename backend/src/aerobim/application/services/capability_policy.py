@@ -15,16 +15,16 @@ from aerobim.domain.models import CapabilityState, CapabilityStatus, ReportCapab
 SignOffProfileName = Literal[
     "development",
     "fixture",
-    "samolet_pilot",
-    "samolet_pilot_demo",
+    "customer_pilot",
+    "customer_pilot_demo",
     "moscow_agr_2026",
     "production",
 ]
 
-CUSTOMER_HARD_PROFILES: frozenset[str] = frozenset({"samolet_pilot", "production"})
-HONEST_SCOPE_PROFILES: frozenset[str] = frozenset({"samolet_pilot_demo", "moscow_agr_2026"})
+CUSTOMER_HARD_PROFILES: frozenset[str] = frozenset({"customer_pilot", "production"})
+HONEST_SCOPE_PROFILES: frozenset[str] = frozenset({"customer_pilot_demo", "moscow_agr_2026"})
 CLOSED_EGRESS_PROFILES: frozenset[str] = frozenset(
-    {"samolet_pilot", "samolet_pilot_demo", "moscow_agr_2026", "production"}
+    {"customer_pilot", "customer_pilot_demo", "moscow_agr_2026", "production"}
 )
 _DEMO_REWRITE_STATES = frozenset(
     {
@@ -187,7 +187,7 @@ _PROFILE_DEFAULTS: dict[SignOffProfileName, dict[str, bool]] = {
         "enforce_object_acl": False,
         "audit_fail_closed": False,
     },
-    "samolet_pilot": {
+    "customer_pilot": {
         "require_clash": True,
         "clash_affects_pass": True,
         "require_bsi_schema": True,
@@ -195,7 +195,7 @@ _PROFILE_DEFAULTS: dict[SignOffProfileName, dict[str, bool]] = {
         "enforce_object_acl": True,
         "audit_fail_closed": True,
     },
-    "samolet_pilot_demo": {
+    "customer_pilot_demo": {
         "require_clash": False,
         "clash_affects_pass": False,
         "require_bsi_schema": False,
@@ -228,10 +228,10 @@ def normalize_signoff_profile(raw: str | None) -> SignOffProfileName:
         return "development"
     if value in {"fixture", "fixtures"}:
         return "fixture"
-    if value in {"samolet", "samolet_pilot", "pilot"}:
-        return "samolet_pilot"
-    if value in {"samolet_pilot_demo", "pilot_demo"}:
-        return "samolet_pilot_demo"
+    if value in {"customer_pilot", "pilot"}:
+        return "customer_pilot"
+    if value in {"customer_pilot_demo", "pilot_demo"}:
+        return "customer_pilot_demo"
     if value in {"moscow_agr_2026", "moscow_agr", "agr_2026"}:
         return "moscow_agr_2026"
     if value in {"production", "prod"}:
@@ -258,7 +258,7 @@ def apply_demo_scope_honesty(
     ``moscow_agr_2026`` cites AGR CIM scope, not demo convenience.
     """
 
-    name = normalize_signoff_profile(profile) if profile else "samolet_pilot_demo"
+    name = normalize_signoff_profile(profile) if profile else "customer_pilot_demo"
     clash_reason = _AGR_CLASH_REASON if name == "moscow_agr_2026" else _DEMO_CLASH_REASON
     mep_reason = _AGR_MEP_REASON if name == "moscow_agr_2026" else _DEMO_MEP_REASON
     clash = capabilities.clash
@@ -283,9 +283,9 @@ def build_signoff_policy(
     """Merge explicit overrides onto profile defaults.
 
     Soft profiles (``development`` / ``fixture``) allow explicit overrides.
-    Hard customer profiles (``samolet_pilot`` / ``production``) always use
+    Hard customer profiles (``customer_pilot`` / ``production``) always use
     profile defaults — weakening overrides are ignored (RT D03).
-    ``samolet_pilot_demo`` / ``moscow_agr_2026`` are locked honest-scope
+    ``customer_pilot_demo`` / ``moscow_agr_2026`` are locked honest-scope
     contours: clash/MEP stay out of scope (not faked); ACL/audit stay on.
     Neither closes RT-003. ``moscow_agr_2026`` is not a customer-hard profile.
     """

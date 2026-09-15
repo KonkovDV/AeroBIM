@@ -24,7 +24,7 @@ from aerobim.tools.export_moexp_ids_coverage import (
 CLAIM_LEVEL = "gni_student_vs_official_ids"
 CLAIM_BOUNDARY = (
     "Official MOEXP IDS executed on one GNI student IFC. Not CIM compliance, "
-    "not Samolet acceptance, not product accuracy. Does not overwrite the "
+    "not appointing-party acceptance, not product accuracy. Does not overwrite the "
     "fixture MOEXP coverage snapshot."
 )
 DEFAULT_REL = "2025_BIMfundamentals/2025_BIMfundamentals/model_190.ifc"
@@ -131,7 +131,7 @@ def main(argv: list[str] | None = None) -> int:
                 "",
                 f"- sample: `{coverage.get('gni_sample')}`",
                 f"- executable: **{summary.get('executable')}** pass **{summary.get('executable_pass_on_fixture')}** fail **{summary.get('executable_fail_on_fixture')}**",
-                "- this is a student model, **not** CIM compliance, **not** Samolet",
+                "- this is a student model, **not** CIM compliance, **not** the appointing party",
                 f"- content_sha256: `{coverage.get('content_sha256')}`",
                 "",
                 "Does not overwrite [`norm-pack-moexp-coverage-2026-08.md`](norm-pack-moexp-coverage-2026-08.md).",

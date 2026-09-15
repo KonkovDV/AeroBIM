@@ -12,6 +12,6 @@
   },
   "runtime": {
     "require_mep_system_clash": true,
-    "signoff_profile": "samolet_pilot"
+    "signoff_profile": "customer_pilot"
   }
 }

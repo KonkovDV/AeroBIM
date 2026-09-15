@@ -1,17 +1,17 @@
 <!-- claims-lint: allow-file reason="KT#2 tri-source alignment; KPI phrases only as protocol non-claims" -->
 ---
-title: "КТ#2 — выравнивание Самолёт × Техлаб × МИК (2026-08-12)"
+title: "КТ#2 — выравнивание заказчик канала × Техлаб × МИК (2026-08-12)"
 date: "2026-08-12"
 claim_boundary: "Alignment map only. Interim 0.60 / SLA / BCF-in-CDE require customer evidence. Checkpoint GO; customer_go false."
 ---
 
 # Tri-source alignment for KT#2 (→ 20.08.2026)
 
-Authority: Самолёт ТЗ → контрактные критерии Техлаба → формы МИК. Matrices navigate; they do not invent Fund text.
+Authority: заказчик канала ТЗ → контрактные критерии Техлаба → формы МИК. Matrices navigate; they do not invent Fund text.
 
 ## 1. Master table
 
-| Criterion | Самолёт | Техлаб Task 07 | МИК | AeroBIM eng (12.08) | KT#2 closure |
+| Criterion | заказчик канала | Техлаб Task 07 | МИК | AeroBIM eng (12.08) | KT#2 closure |
 | --- | --- | --- | --- | --- | --- |
 | Intermediate version on agreed scenario | КТ2 calendar | Pilot stage | M4 schedule | Handoff pack | **L1 ready** |
 | Dual-human adjudication protocol | ТР / §9 + labeling instruction | Expert accountability | M3/M5 | Instruction + harness κ/α tools | **method ready** |
@@ -35,7 +35,7 @@ Authority: Самолёт ТЗ → контрактные критерии Те�
 | World practice | AeroBIM mapping | Gap to call “done” |
 | --- | --- | --- |
 | IDS 1.0 as ACC information contract | IDS validator + samples | Customer IDS pack hash |
-| IDS discrepancies → BCF → CDE | BCF export ladder T0–T4 | T2 evidence in Samolet CDE |
+| IDS discrepancies → BCF → CDE | BCF export ladder T0–T4 | T2 evidence in the appointing party CDE |
 | OpenCDE / BCF-API 3.0 | Design/residual | Not production SSO/CDE |
 | Dual-blind + α/κ before published accuracy | `measure_adjudicator_agreement`, publishable gate | Customer raters |
 | Deterministic validation owns pass/fail | ADR-001 / orchestrators | Keep VLM advisory |

@@ -9,7 +9,7 @@ claim_boundary: "Jury pack only. Checkpoint GO; customer_go false until RT-001/0
 
 # Карта для жюри Техлаба и МИК
 
-**Checkpoint `GO` (regulatory_measurement_mvp).** `customer_go` **false**. Стадия МИК — **доработка**. На учебном комплекте проверка запускается. Измерений (κ, held-out, два разметчика) на комплекте Самолёта **в git** нет. Канал 25.08 получен — **не** говорить «нет данных заказчика»; хеш-пакет в репозитории отсутствует. Частные тех+UX аудиты, переписка и вложения в публичный GitHub **не** переносятся. Блокеры: [реестр](../audit/reports/CRITICAL_BLOCKERS.md). Граница заявлений: [что проверено](pilot-claim-boundary-2026.md). Кто ставит технический статус: [ADR-001](architecture/ADR-001-verdict-ownership-2026.md).
+**Checkpoint `GO` (regulatory_measurement_mvp).** `customer_go` **false**. Стадия МИК — **доработка**. На учебном комплекте проверка запускается. Измерений (κ, held-out, два разметчика) на комплекте заказчика **в git** нет. Канал 25.08 получен — **не** говорить «нет данных заказчика»; хеш-пакет в репозитории отсутствует. Частные тех+UX аудиты, переписка и вложения в публичный GitHub **не** переносятся. Блокеры: [реестр](../audit/reports/CRITICAL_BLOCKERS.md). Граница заявлений: [что проверено](pilot-claim-boundary-2026.md). Кто ставит технический статус: [ADR-001](architecture/ADR-001-verdict-ownership-2026.md).
 
 **Формула стадии (дословно; источник — [карточка речи](demo/KT2_JURY_FAQ_2026_08_12.md)):** Мы на стадии доработки контура заказчика. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение у назначающей стороны ещё не начались. Checkpoint `GO` — регуляторно-измерительный MVP. `customer_go` остаётся false, пока нет независимого размеченного корпуса, двух разметчиков, подписанного профиля назначающей стороны и подтверждения импорта в СОД.
 
@@ -26,7 +26,7 @@ claim_boundary: "Jury pack only. Checkpoint GO; customer_go false until RT-001/0
 | Документ | Зачем |
 |---|---|
 | [Техобоснование](docs.md) | Суть решения |
-| [ТЗ заказчика](tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md) | Текст задачи 07 |
+| [ТЗ заказчика](tz/TZ_TECHLAB_TASK_07_V2_2026.md) | Текст задачи 07 |
 | [Матрица ТЗ](tz/TZ_COMPLIANCE_MATRIX_2026.md) | Построчное соответствие |
 | [Карта покрытия подачи](../submission/TZ_REQUIREMENTS_COVERAGE_2026_08.md) | Эта подача |
 | [Граница заявлений](pilot-claim-boundary-2026.md) | Проверено vs план |
@@ -58,7 +58,7 @@ claim_boundary: "Jury pack only. Checkpoint GO; customer_go false until RT-001/0
 | [Лист системы B Б1–Б5](quality/B_FINAL_SCORING_TICKSHEET_2026_09.md) | Полосы, не прогноз; Приложение 3 Положения не в git |
 | [Лабораторный до/после](partners/BEFORE_AFTER_MEASUREMENT_PROTOCOL_2026_09.md) | Не часы партнёра; A1–A8 пустые; journal только `t_tool_ms` |
 | [Related-work preprint](RELATED_WORK_PREPRINT_2026_09.md) | Цитаты 2026; чужой объём не наш; ADR-001 |
-| [План recall на инъекциях](evidence/DEFECT_INJECTION_RECALL_PLAN_2026_09.md) | Синтетика; seed 20260824; не корпус Самолёта |
+| [План recall на инъекциях](evidence/DEFECT_INJECTION_RECALL_PLAN_2026_09.md) | Синтетика; seed 20260824; не корпус заказчика |
 | [Прогон E2 03.09](evidence/DEFECT_INJECTION_RECALL_RUN_2026_09.md) | Mutation-kill 0/6 канальный IFC, 1/8 mini-IFC; Wilson lower 0.000 / 0.022; `synthetic_only`; customer_go false |
 | [ADR-004 MIT vs п. 6.3](architecture/ADR-004-prize-ip-mit-fork-2026.md) | Развилка; LICENSE не меняем |
 | [Сверка весов с PDF](quality/ORDER_WEIGHTS_VERIFICATION_2026_09.md) | Десктоп 14.09: MATCH по весам; конфликт порога в прил. 3 п. 1.4; PDF не в git |
@@ -74,10 +74,10 @@ claim_boundary: "Jury pack only. Checkpoint GO; customer_go false until RT-001/0
 | [ПНСТ 841](quality/PNST_841_AI_QUALITY_EVAL_2026.md) | Карта на протокол 0,60; не SQuaRE-сертификат |
 | [Брифы кресел](quality/MIK_SEAT_BRIEFS_2026_08.md) | Роли, не ФИО; отбор и финал — среднее; кресла не владеют 65 |
 | [Playbook комиссии](quality/MIK_COMMISSION_SEAT_PLAYBOOK_2026_09.md) | Удары, три письма, двухчастная защита; ФИО [Г] |
-| [Шесть вопросов Самолёту](partners/SAMOLET_QUESTIONS_GROUNDED_2026_09_03.md) | Блокеры ТЗ; не NDA; не формы Фонда |
+| [Шесть вопросов заказчику канала](partners/CUSTOMER_QUESTIONS_GROUNDED_2026_09_03.md) | Блокеры ТЗ; не NDA; не формы Фонда |
 | [Целостность доставки пакета](partners/DELIVERY_INTEGRITY_2026_09.md) | Git не отправляет почту; P0 канала |
 | [Пилот, пробный доступ, интеграция](partners/CUSTOMER_PILOT_AND_INTEGRATION_SCENARIO_2026_09.md) | Три отчёта не GitHub; on-prem или time-boxed HTTPS; не seed-fixture |
-| [Пакет ревью 10–25 карточек](partners/CUSTOMER_REVIEW_PACK_RUNBOOK_2026_09.md) | CLI shortlist; не точность; git не шлёт Самолёту |
+| [Пакет ревью 10–25 карточек](partners/CUSTOMER_REVIEW_PACK_RUNBOOK_2026_09.md) | CLI shortlist; не точность; git не шлёт заказчику канала |
 | [Пороги заказчика](quality/CUSTOMER_THRESHOLD_VS_ACTUAL_2026_08.md) | Целевое vs фактическое; 256 МиБ; cap не поднимаем |
 | [Обложка 0,60](partners/PARTNER_PROTOCOL_SIGNREADY_COVER_2026_08.md) | Письмо «готово подписать»; не 90% |
 

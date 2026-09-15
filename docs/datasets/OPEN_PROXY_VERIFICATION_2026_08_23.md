@@ -8,7 +8,7 @@ closes_rt002: false
 closes_rt003: false
 claim_boundary: >
   Link check + mapping onto pins already in this repo. Open IFC/IDS/BCF
-  do not close RT-001 (RF PD + expertise labels), RT-002 (Samolet-signed
+  do not close RT-001 (RF PD + expertise labels), RT-002 (appointing-party-signed
   profile), or RT-003 (federated MEP delivered). Not product accuracy.
   Not a customer SLA. Not a published-state CDE. Manual TP/FP on student
   IFC is not dual-expert κ.
@@ -17,9 +17,9 @@ claim_boundary: >
 # Открытые источники: что реально скачивается и чего они не закрывают
 
 Срез поиска 23.08 вечером сверен с пинами репозитория и с живыми URL.  
-**Вердикт:** это усиление **L1/L2** (open bench / fixture). Это **не** CLOSED по RT-001/002/003 и не замена комплекта Самолёта.
+**Вердикт:** это усиление **L1/L2** (open bench / fixture). Это **не** CLOSED по RT-001/002/003 и не замена комплекта заказчика.
 
-Смежные описи: [`RT001_002_003_WITHOUT_SAMOLET_2026_08_14.md`](../evidence/kt3-without-customer-2026-08.md) · [`../DATASETS.md`](../DATASETS.md) · [`../dataset/RENGA_PNST909_LOCAL_PIN_2026_08_05.md`](../dataset/RENGA_PNST909_LOCAL_PIN_2026_08_05.md).
+Смежные описи: [`RT001_002_003_WITHOUT_CUSTOMER_2026_08_14.md`](../evidence/kt3-without-customer-2026-08.md) · [`../DATASETS.md`](../DATASETS.md) · [`../dataset/RENGA_PNST909_LOCAL_PIN_2026_08_05.md`](../dataset/RENGA_PNST909_LOCAL_PIN_2026_08_05.md).
 
 ## Исправления URL (не копировать из черновика поиска вслепую)
 
@@ -34,7 +34,7 @@ claim_boundary: >
 | `github.com/EdvardGK/ifcfast/issues/141` | [EdvardGK/ifcfast#141](https://github.com/EdvardGK/ifcfast/issues/141) | Issue **есть**. Архив TMK **не публикуется** (клиент, `scratch/g55`) |
 | `github.com/devkon-at/ifc-clash-experiments` | [devkon-at/ifc-clash-experiments](https://github.com/devkon-at/ifc-clash-experiments) (`column_duct_touching.ifc`) | Smoke clash, MIT-adjacent experiments |
 | `github.com/clashcontrol-io/ClashControl` | [clashcontrol-io/ClashControl](https://github.com/clashcontrol-io/ClashControl) | **SSPL** — не копировать в MIT-дерево; только внешняя ссылка |
-| PDF Мосэкспертизы / СПб ЦГЭ с разовыми `upload/iblock` | Живые комплекты IDS: МОГЭ, АГР «СтроимПросто», СПб ГАУ ЦГЭ — уже в `samples/ids/` | Разовые PDF на `mos.ru/upload` проверять перед цитированием; не = подпись Самолёта |
+| PDF Мосэкспертизы / СПб ЦГЭ с разовыми `upload/iblock` | Живые комплекты IDS: МОГЭ, АГР «СтроимПросто», СПб ГАУ ЦГЭ — уже в `samples/ids/` | Разовые PDF на `mos.ru/upload` проверять перед цитированием; не = подпись заказчика канала |
 
 ## RT-001 — корпус точности
 
@@ -49,7 +49,7 @@ claim_boundary: >
 | IfcOpenShell-files | Issue-привязанные баги парсера | **Нет.** Баги тулинга | Нет нужды вендорить |
 | Schependomlaan + BCF | Реальный NL-проект, clash topics | **Нет.** Коллизии ≠ замечания экспертизы РФ | Partial (IFC-Bench / BatchPlan examples) |
 
-**Честный ход до 30.08:** не качать 10 ГБ заново, если GNI уже на диске. Взять **20–30** уже распарсенных IFC, заложить дефект *или* разметить IDS-fail как engine regression. Публиковать только как **fixture / open-bench**, с `n`, протоколом и «не точность Самолёта».
+**Честный ход до 30.08:** не качать 10 ГБ заново, если GNI уже на диске. Взять **20–30** уже распарсенных IFC, заложить дефект *или* разметить IDS-fail как engine regression. Публиковать только как **fixture / open-bench**, с `n`, протоколом и «не точность заказчика канала».
 
 ## RT-002 — подписанный профиль приёмки
 
@@ -57,12 +57,12 @@ claim_boundary: >
 
 | Источник | Что даёт | Закрывает RT-002? |
 |---|---|---|
-| ПНСТ 909 + комплект Renga (22 сценария IDS) | RU IDS + IFC; ToS «ознакомительные» | **Нет.** Издательский pack ≠ профиль Самолёта. У нас runtime **18/22**, 4 без IDS в pack |
-| IDS МОГЭ / АГР / СПб ЦГЭ в `samples/ids/` | Официальные гос. IDS | **Нет.** Уже было. Не `pack_hash` Самолёта |
+| ПНСТ 909 + комплект Renga (22 сценария IDS) | RU IDS + IFC; ToS «ознакомительные» | **Нет.** Издательский pack ≠ профиль назначающей стороны. У нас runtime **18/22**, 4 без IDS в pack |
+| IDS МОГЭ / АГР / СПб ЦГЭ в `samples/ids/` | Официальные гос. IDS | **Нет.** Уже было. Не `pack_hash` заказчика канала |
 | SmartIDS / ValidBIM (ИСП РАН) | Редактор/сервис | Инструмент, не подпись |
-| Pilot-BIM trial | Чужая СОД с IDS | **Не** наше CDE-proof, не T2 импорт Самолёта |
+| Pilot-BIM trial | Чужая СОД с IDS | **Не** наше CDE-proof, не T2 импорт заказчика канала |
 
-«Адаптировать IDS ПНСТ под Самолёта и назвать signed profile» — **запрещено**. Подпись ставит организация, отдавшая корпус, своим `pack_hash`.
+«Адаптировать IDS ПНСТ под заказчика канала и назвать signed profile» — **запрещено**. Подпись ставит организация, отдавшая корпус, своим `pack_hash`.
 
 ## RT-003 — федеративный MEP clash
 
@@ -70,7 +70,7 @@ claim_boundary: >
 
 | Источник | Что даёт | Закрывает RT-003? |
 |---|---|---|
-| Schependomlaan BCF (Solibri/Tekla) | Размеченные коллизии NL-проекта | **Нет.** Не MEP delivered Самолёта. Можно как **L2 rehearsal**, если zip уйдёт в `.local/` |
+| Schependomlaan BCF (Solibri/Tekla) | Размеченные коллизии NL-проекта | **Нет.** Не MEP delivered заказчика канала. Можно как **L2 rehearsal**, если zip уйдёт в `.local/` |
 | G55 / TMK12–15 ([ifcfast#141](https://github.com/EdvardGK/ifcfast/issues/141)) | Оракул vs Solibri BCF | **Не датасет.** Клиентские IFC+BCF вне GitHub. **Не копировать** |
 | `column_duct_touching.ifc` | 1 касание колонна↔воздуховод | Smoke. Уже есть посаженные пары в evidence |
 | ClashControl (SSPL) | Пример UI clash | Не вендорить; IfcClash уже в контуре |

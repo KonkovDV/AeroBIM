@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "pack_id": "SAMOLET-RESIDENTIAL-AR-REFERENCE",
+  "pack_id": "CUSTOMER-RESIDENTIAL-AR-REFERENCE",
   "version": "0.1.0",
   "title": "Residential AR acceptance-criteria reference template",
   "typology": "residential-multifamily",
@@ -11,7 +11,7 @@
   "customer_action_required": "Replace demo values and approve every criterion against the pilot scope memo before use as a sign-off pack. RT-002 remains OPEN until a signed customer_approved pack exists.",
   "rules": [
     {
-      "rule_id": "SAM-AR-001",
+      "rule_id": "TYP-AR-001",
       "scope": "ifc-property",
       "ifc_entity": "IfcProject",
       "property_set": "Pset_ProjectCommon",
@@ -25,7 +25,7 @@
       "approval_ref": null
     },
     {
-      "rule_id": "SAM-AR-002",
+      "rule_id": "TYP-AR-002",
       "scope": "ifc-property",
       "ifc_entity": "IfcBuilding",
       "property_set": "Pset_BuildingCommon",
@@ -34,7 +34,7 @@
       "evidence_text": "Reference-template identification criterion; customer approval required."
     },
     {
-      "rule_id": "SAM-AR-003",
+      "rule_id": "TYP-AR-003",
       "scope": "ifc-property",
       "ifc_entity": "IfcBuildingStorey",
       "property_set": "Pset_BuildingStoreyCommon",
@@ -43,7 +43,7 @@
       "evidence_text": "Reference-template storey identification criterion."
     },
     {
-      "rule_id": "SAM-AR-004",
+      "rule_id": "TYP-AR-004",
       "scope": "ifc-property",
       "ifc_entity": "IfcSpace",
       "property_set": "Pset_SpaceCommon",
@@ -52,7 +52,7 @@
       "evidence_text": "Reference-template room identification criterion."
     },
     {
-      "rule_id": "SAM-AR-005",
+      "rule_id": "TYP-AR-005",
       "scope": "ifc-property",
       "ifc_entity": "IfcSpace",
       "property_set": "Pset_SpaceCommon",
@@ -61,7 +61,7 @@
       "evidence_text": "Reference-template room function criterion."
     },
     {
-      "rule_id": "SAM-AR-006",
+      "rule_id": "TYP-AR-006",
       "scope": "ifc-property",
       "ifc_entity": "IfcSpace",
       "property_set": "Pset_SpaceCommon",
@@ -70,7 +70,7 @@
       "evidence_text": "Reference-template space classification criterion."
     },
     {
-      "rule_id": "SAM-AR-007",
+      "rule_id": "TYP-AR-007",
       "scope": "ifc-quantity",
       "ifc_entity": "IfcSpace",
       "property_set": "Qto_SpaceBaseQuantities",
@@ -80,7 +80,7 @@
       "evidence_text": "Reference-template gross-area availability criterion."
     },
     {
-      "rule_id": "SAM-AR-008",
+      "rule_id": "TYP-AR-008",
       "scope": "ifc-quantity",
       "ifc_entity": "IfcSpace",
       "property_set": "Qto_SpaceBaseQuantities",
@@ -90,7 +90,7 @@
       "evidence_text": "Reference-template net-area availability criterion."
     },
     {
-      "rule_id": "SAM-AR-009",
+      "rule_id": "TYP-AR-009",
       "scope": "ifc-property",
       "ifc_entity": "IfcWall",
       "property_set": "Pset_WallCommon",
@@ -99,7 +99,7 @@
       "evidence_text": "Reference-template wall classification criterion."
     },
     {
-      "rule_id": "SAM-AR-010",
+      "rule_id": "TYP-AR-010",
       "scope": "ifc-property",
       "ifc_entity": "IfcWall",
       "property_set": "Pset_WallCommon",
@@ -108,7 +108,7 @@
       "evidence_text": "Reference-template wall load-bearing classification criterion."
     },
     {
-      "rule_id": "SAM-AR-011",
+      "rule_id": "TYP-AR-011",
       "scope": "ifc-property",
       "ifc_entity": "IfcWall",
       "property_set": "Pset_WallCommon",
@@ -117,7 +117,7 @@
       "evidence_text": "Reference-template fire-rating availability criterion; no rating is asserted."
     },
     {
-      "rule_id": "SAM-AR-012",
+      "rule_id": "TYP-AR-012",
       "scope": "ifc-property",
       "ifc_entity": "IfcDoor",
       "property_set": "Pset_DoorCommon",
@@ -126,7 +126,7 @@
       "evidence_text": "Reference-template door fire-rating availability criterion."
     },
     {
-      "rule_id": "SAM-AR-013",
+      "rule_id": "TYP-AR-013",
       "scope": "ifc-property",
       "ifc_entity": "IfcDoor",
       "property_set": "Pset_DoorCommon",
@@ -135,7 +135,7 @@
       "evidence_text": "Reference-template door classification criterion."
     },
     {
-      "rule_id": "SAM-AR-014",
+      "rule_id": "TYP-AR-014",
       "scope": "ifc-property",
       "ifc_entity": "IfcDoor",
       "property_set": "Pset_DoorCommon",
@@ -144,7 +144,7 @@
       "evidence_text": "Reference-template accessibility evidence criterion; customer scope required."
     },
     {
-      "rule_id": "SAM-AR-015",
+      "rule_id": "TYP-AR-015",
       "scope": "ifc-property",
       "ifc_entity": "IfcWindow",
       "property_set": "Pset_WindowCommon",
@@ -153,7 +153,7 @@
       "evidence_text": "Reference-template window classification criterion."
     },
     {
-      "rule_id": "SAM-AR-016",
+      "rule_id": "TYP-AR-016",
       "scope": "ifc-property",
       "ifc_entity": "IfcWindow",
       "property_set": "Pset_WindowCommon",
@@ -162,7 +162,7 @@
       "evidence_text": "Reference-template acoustic-rating availability criterion; no rating is asserted."
     },
     {
-      "rule_id": "SAM-AR-017",
+      "rule_id": "TYP-AR-017",
       "scope": "ifc-property",
       "ifc_entity": "IfcSlab",
       "property_set": "Pset_SlabCommon",
@@ -171,7 +171,7 @@
       "evidence_text": "Reference-template slab classification criterion."
     },
     {
-      "rule_id": "SAM-AR-018",
+      "rule_id": "TYP-AR-018",
       "scope": "ifc-property",
       "ifc_entity": "IfcSlab",
       "property_set": "Pset_SlabCommon",
@@ -180,7 +180,7 @@
       "evidence_text": "Reference-template slab fire-rating availability criterion."
     },
     {
-      "rule_id": "SAM-AR-019",
+      "rule_id": "TYP-AR-019",
       "scope": "ifc-property",
       "ifc_entity": "IfcStair",
       "property_set": "Pset_StairCommon",
@@ -189,7 +189,7 @@
       "evidence_text": "Reference-template stair classification criterion."
     },
     {
-      "rule_id": "SAM-AR-020",
+      "rule_id": "TYP-AR-020",
       "scope": "ifc-property",
       "ifc_entity": "IfcRailing",
       "property_set": "Pset_RailingCommon",

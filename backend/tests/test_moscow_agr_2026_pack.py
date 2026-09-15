@@ -64,11 +64,11 @@ class MoscowAgr2026PackTests(unittest.TestCase):
         for rule in pack.rules:
             self.assertFalse(is_rule_checkable(rule, pack=pack), rule.rule_id)
 
-    def test_does_not_claim_samolet_customer_profile(self) -> None:
+    def test_does_not_claim_customer_signed_profile(self) -> None:
         boundary = (PACK_PATH.parent / "APPROVAL_BOUNDARY.md").read_text(encoding="utf-8")
         self.assertIn("RT-002b", boundary)
         self.assertIn("customer_go", boundary)
-        self.assertIn("Samolet internals remain out of scope", boundary)
+        self.assertIn("Appointing-party internals remain out of scope", boundary)
 
 
 if __name__ == "__main__":

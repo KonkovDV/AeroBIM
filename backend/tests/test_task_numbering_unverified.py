@@ -27,7 +27,7 @@ _SURFACE_FILES = (
     "README.ru.md",
     "docs/docs.md",
     "docs/partners/TECHLAB_TASK_07_READINESS_2026.md",
-    "docs/partners/TECHLAB_SAMOLET_APPLICATION_2026.md",
+    "docs/partners/TECHLAB_APPLICATION_2026.md",
     "docs/partners/MIK_PILOT_COMPLIANCE_2026.md",
 )
 
@@ -75,8 +75,8 @@ class TaskNumberingUnverifiedTests(unittest.TestCase):
     def test_canonical_phrase_on_readme_and_application(self) -> None:
         readme_ru = (_REPO / "README.ru.md").read_text(encoding="utf-8")
         self.assertIn("автоматизированной верификации проектной и рабочей документации", readme_ru)
-        self.assertIn("Самолёт", readme_ru)
-        application = (_REPO / "docs/partners/TECHLAB_SAMOLET_APPLICATION_2026.md").read_text(
+        self.assertIn("заказчик канала", readme_ru)
+        application = (_REPO / "docs/partners/TECHLAB_APPLICATION_2026.md").read_text(
             encoding="utf-8"
         )
         self.assertIn(

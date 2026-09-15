@@ -4,7 +4,7 @@ Mutates IFC STEP text and sheet/brief sidecars **before** AeroBIM sees them.
 Does not call the analyze API. Does not write ``summary.passed``. Does not
 claim recall until a clean pack exists and a protocol is run.
 
-Claim boundary: injected defects are a mutation test, not Samolet accuracy,
+Claim boundary: injected defects are a mutation test, not appointing-party accuracy,
 not product accuracy >90%, not RT-001 closed. Checkpoint GO (regulatory_measurement_mvp; customer_go false).
 
 Recall CLI: ``python -m aerobim.tools.evaluate_injection_recall``.
@@ -274,7 +274,7 @@ def inject_defects(
         "source": str(source.resolve()),
         "source_tree_hint": source.name,
         "claim_boundary": (
-            "Mutation test inputs. Not Samolet accuracy. Not product accuracy. "
+            "Mutation test inputs. Not appointing-party accuracy. Not product accuracy. "
             "Recall is not measured until a clean pack passes moscow_agr_2026 "
             "with summary.passed=true. Checkpoint GO (regulatory_measurement_mvp; customer_go false). RT-001 stays OPEN."
         ),

@@ -68,7 +68,7 @@ class HitlRbacTests(unittest.TestCase):
 
             @property
             def enforce_hitl_reviewer_auth(self) -> bool:
-                return self.signoff_profile in {"samolet_pilot", "production"}
+                return self.signoff_profile in {"customer_pilot", "production"}
 
         principal = AuthPrincipal(tenant_id="t1", subject="api-bearer", is_service_token=True)
         settings = _Settings()
@@ -143,7 +143,7 @@ class HitlRbacTests(unittest.TestCase):
         no_role = AuthPrincipal(tenant_id="t1", subject="oidc-user", roles=frozenset())
 
         for profile, roles_required in (
-            ("samolet_pilot", True),
+            ("customer_pilot", True),
             ("production", True),
             ("development", False),
             ("fixture", False),

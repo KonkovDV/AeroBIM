@@ -1,6 +1,6 @@
 <!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock (WP-A5)" -->
 ---
-title: "AeroBIM Target Hybrid Architecture for Samolet TechLab TZ"
+title: "AeroBIM Target Hybrid Architecture for TechLab TZ"
 status: active
 version: "1.1.4"
 last_updated: "2026-09-05"
@@ -8,7 +8,7 @@ tags: [aerobim, architecture, openbim, tz, sota-2026, hybrid-ai]
 claim_boundary: "Design proposal only. Checkpoint GO (regulatory_measurement_mvp); customer_go false until RT-001b/c, RT-002c, RT-003c. ADR-001 owns summary.passed wording."
 ---
 
-# Target Hybrid Architecture — AeroBIM × ТЗ Техлаб / Самолёт (SOTA 2026)
+# Target Hybrid Architecture — AeroBIM × ТЗ Техлаб / заказчик канала (SOTA 2026)
 
 **Scope:** architecture, Protocol port signatures, DI tokens, evaluation plan.  
 **Not in scope:** full adapter implementations; claims of product accuracy >90%; CDE-ready BCF; customer SLA.
@@ -160,7 +160,7 @@ for each finding_id:
 
 Policy already partially present via `signoff_policy.py` (FAILED capabilities block pass) and `IdsAssistDraftPort` boundary. Target: elevate to an explicit application service with persisted `DivergenceRecord` on the report.
 
-**Product decision (Samolet / expertise, 2026-09-02):** hybrid, not “LLM on the check route”. Iversen & Huang (AuC 182) select tools; Fuchs et al. (EC3) generate functions. AeroBIM may draft remarks/IDS; `DeterminismGate` demotes advisory-only findings to INFO and never flips `summary.passed`. Generated checkers enter sign-off only after a human journal + hashed/`approval_ref` pack. Do not claim higher accuracy than Iversen.
+**Product decision (the appointing party / expertise, 2026-09-02):** hybrid, not “LLM on the check route”. Iversen & Huang (AuC 182) select tools; Fuchs et al. (EC3) generate functions. AeroBIM may draft remarks/IDS; `DeterminismGate` demotes advisory-only findings to INFO and never flips `summary.passed`. Generated checkers enter sign-off only after a human journal + hashed/`approval_ref` pack. Do not claim higher accuracy than Iversen.
 
 ---
 

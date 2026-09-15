@@ -543,7 +543,7 @@ python -m aerobim.tools.export_evidence_bundle \\
 
 ## Claim boundary
 
-- Fixture / synthetic packs ≠ customer accuracy or Samolet SLA.
+- Fixture / synthetic packs ≠ customer accuracy or the appointing party SLA.
 - BCF structural export is separate; CDE import is NOT_VERIFIED until Tier-2 evidence.
 - Forbidden: {", ".join(_FORBIDDEN)}.
 """

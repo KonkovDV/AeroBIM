@@ -19,7 +19,7 @@ from typing import Any
 
 from aerobim.domain.copyleft_lane import (
     GPLV3_IFC_BENCH_PROJECTS,
-    local_samolet_demo_copyleft_inputs_permitted,
+    local_demo_copyleft_inputs_permitted,
 )
 from aerobim.domain.ids_schema_gate import parse_ifc_file_schema, parse_ifc_view_definition
 from aerobim.tools.benchmark_project_package import repo_root
@@ -252,7 +252,7 @@ def build_payload(*, repo: Path, include_gplv3: bool = False) -> dict[str, Any]:
     boundary = CLAIM_BOUNDARY
     if include_gplv3:
         boundary = (
-            "Samolet-local copyleft lane. GPLv3 IFC-Bench files may be opened from "
+            "customer-local copyleft lane. GPLv3 IFC-Bench files may be opened from "
             "gitignored .local/. AABB overlap is not geometric clash. "
             "mep_system_clash remains NOT_VERIFIED. Not RT-003 delivered. "
             "Not customer MEP. Not a public MIT distribution."
@@ -262,7 +262,7 @@ def build_payload(*, repo: Path, include_gplv3: bool = False) -> dict[str, Any]:
         "artifact_type": "federated_mep_inventory",
         "claim_level": CLAIM_LEVEL,
         "claim_boundary": boundary,
-        "copyleft_lane": "samolet_demo_local" if include_gplv3 else "public_mit",
+        "copyleft_lane": "customer_demo_local" if include_gplv3 else "public_mit",
         "generated_at": datetime.now(tz=UTC).isoformat(),
         "mep_system_clash": "NOT_VERIFIED",
         "closes_rt003": False,
@@ -335,18 +335,18 @@ def render_markdown(payload: dict[str, Any]) -> str:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--samolet-demo-copyleft",
+        "--demo-copyleft",
         action="store_true",
         help="Open gitignored GPLv3 IFC-Bench files if present. Never writes them to docs/evidence.",
     )
     args = parser.parse_args(argv)
-    include_gpl = local_samolet_demo_copyleft_inputs_permitted(
-        opted_in=bool(args.samolet_demo_copyleft),
+    include_gpl = local_demo_copyleft_inputs_permitted(
+        opted_in=bool(args.demo_copyleft),
         ci=_ci_environment(),
     )
-    if args.samolet_demo_copyleft and not include_gpl:
+    if args.demo_copyleft and not include_gpl:
         print(
-            "refusing --samolet-demo-copyleft on CI (public MIT evidence stays copyleft-free)",
+            "refusing --demo-copyleft on CI (public MIT evidence stays copyleft-free)",
             file=sys.stderr,
         )
         return 2

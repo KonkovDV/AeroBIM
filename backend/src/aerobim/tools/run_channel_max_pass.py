@@ -1,4 +1,4 @@
-"""Run the maximum licensed local pass on a Samolet quarantine copy.
+"""Run the maximum licensed local pass on a customer quarantine copy.
 
 Writes only under ``.local/`` or outside the git tree. Does not re-analyze
 IFC (use an existing findings-lite tree). Does not parse RVT/NWD/.lir.

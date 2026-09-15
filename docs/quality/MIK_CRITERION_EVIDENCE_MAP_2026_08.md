@@ -18,7 +18,7 @@ claim_boundary: >
 Комиссия ставит балл за то, что **находит**. Этот файл — указатель, не прогноз.
 `predicted_aerobim_total() is None`. Checkpoint **`GO`**; `customer_go` false.
 
-Публичная сверка приложения 4 (ЛЭТИ, 30.04.2026): задача Самолёта — **№6**,
+Публичная сверка приложения 4 (ЛЭТИ, 30.04.2026): задача заказчика канала — **№6**,
 приз — платное пилотное тестирование 2 млн ₽.
 Источник: [etu.ru](https://new.etu.ru/ru/home/nauka/konkursy-i-granty-na-provedenie-niokr/konkursy-i-granty-na-provedenie-nauchno-issledovatelskih-rabot/programma-dorabotki-i-vnedreniya-naukoemkih-ii-reshenij).
 Историческое «07» в именах файлов **не** этот номер. На витрине i.moscow
@@ -39,7 +39,7 @@ claim_boundary: >
 | Код | Что комиссия должна увидеть | Где в git | Что git не закрывает |
 |---|---|---|---|
 | Б1 | Функционал + ограничения | [`B_FINAL_SCORING_TICKSHEET_2026_09.md`](B_FINAL_SCORING_TICKSHEET_2026_09.md); TIER0; native RVT/NWD fail-closed; cap 256 МиБ; [`NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md`](NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md) | KPI партнёра письмом; ODA BimRv не куплен |
-| Б2 | Протоколы **и** метрики валидации | ticksheet Б2; обложка фикстуры + WP-07; [`DEFECT_INJECTION_RECALL_PLAN_2026_09.md`](../evidence/DEFECT_INJECTION_RECALL_PLAN_2026_09.md); [`CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md`](CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md) | Dual-rater на партнёре; синтетика ≠ корпус Самолёта |
+| Б2 | Протоколы **и** метрики валидации | ticksheet Б2; обложка фикстуры + WP-07; [`DEFECT_INJECTION_RECALL_PLAN_2026_09.md`](../evidence/DEFECT_INJECTION_RECALL_PLAN_2026_09.md); [`CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md`](CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md) | Dual-rater на партнёре; синтетика ≠ корпус заказчика |
 | Б3 | Импорт/экспорт MVP | ticksheet Б3; Upload + BCF export; OIDC NOT_IMPLEMENTED; [`KT3_DELIVERY_BOM_2026_08.md`](KT3_DELIVERY_BOM_2026_08.md) | SSO; 1,5 ГБ analyze |
 | Б4 | До/после | ticksheet Б4; A1–A8; [`BEFORE_AFTER_MEASUREMENT_PROTOCOL_2026_09.md`](../partners/BEFORE_AFTER_MEASUREMENT_PROTOCOL_2026_09.md) | Часы партнёра |
 | Б5 | Поставка + прозрачность | ticksheet Б5; [`KT3_DELIVERY_BOM_2026_08.md`](KT3_DELIVERY_BOM_2026_08.md); [`ADR-004-prize-ip-mit-fork-2026.md`](../architecture/ADR-004-prize-ip-mit-fork-2026.md) | Передача исключительных прав |

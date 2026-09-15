@@ -1,4 +1,4 @@
-# 1. Место AeroBIM в контуре Самолёта
+# 1. Место AeroBIM в контуре заказчика канала
 
 ```mermaid
 flowchart TB

@@ -5,7 +5,7 @@
   "customer_accuracy_not_established": true,
   "closes_rt002_customer_profile": false,
   "public_moexp_ids_present": true,
-  "claim_boundary": "Official MOEXP IDS executed on one GNI student IFC. Not CIM compliance, not Samolet acceptance, not product accuracy. Does not overwrite the fixture MOEXP coverage snapshot.",
+  "claim_boundary": "Official MOEXP IDS executed on one GNI student IFC. Not CIM compliance, not appointing-party acceptance, not product accuracy. Does not overwrite the fixture MOEXP coverage snapshot.",
   "source_page": "https://www.moexp.ru/services/tekhnologii-informatsionnogo-modelirovaniya/",
   "generated_at": "2026-08-14T13:12:00.619380+00:00",
   "machine": {

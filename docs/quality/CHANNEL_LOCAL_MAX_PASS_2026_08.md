@@ -1,4 +1,4 @@
-<!-- claims-lint: allow-file reason="Local Samolet max pass; coverage_map_only; SIG-01 volume≠accuracy; seven tasks Uncertain; NO_GO" -->
+<!-- claims-lint: allow-file reason="Local the appointing party max pass; coverage_map_only; SIG-01 volume≠accuracy; seven tasks Uncertain; NO_GO" -->
 ---
 title: "Maximum licensed pass on a local NDA copy — 31.08.2026"
 date: "2026-08-31"
@@ -17,7 +17,7 @@ claim_boundary: >
   Not Meets/Does-not. Not a jury exhibit. Checkpoint GO; customer_go false.
 ---
 
-# Максимум на локальной копии Самолёта (31.08)
+# Максимум на локальной копии заказчика канала (31.08)
 
 Машина: `python -c "from aerobim.domain.channel_local_max_pass import channel_local_max_pass_snapshot"`.
 
@@ -48,7 +48,7 @@ Checkpoint **`GO`**; `customer_go` false. Формулировка SIG-01: **«�
 
 Вечерний census 30.08: wrapper **2552**, unpack **6408**. Deep-study: 15 IFC **IFC2X3**; `NetFloorArea` **0**; стены FireRating при заполнении **EI 45**; `IfcReinforcingBar` **0**; воздуховоды/трубы/кабели **0**. Один IFC выше SPF 256 МиБ — RocksDB, **не** подъём default.
 
-Unsigned-пакеты `REQ-*` eq + `SAM-AR-*` exists на одном pset.prop — overlap, не два дефекта.
+Unsigned-пакеты `REQ-*` eq + `TYP-AR-*` exists на одном pset.prop — overlap, не два дефекта.
 
 ## Глубокий состав пакета (31.08, unpack-дерево 6408 файлов)
 

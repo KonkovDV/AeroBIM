@@ -129,7 +129,7 @@ class KitchenDenylistHygieneTests(unittest.TestCase):
         self.assertIn("scripts/kitchen_denylist.py", rels)
         self.assertIn("scripts/lint_claims.py", rels)
         self.assertIn("backend/tests/test_kitchen_denylist_hygiene.py", rels)
-        self.assertIn("backend/tests/test_samolet_answers_2026_08_25.py", rels)
+        self.assertIn("backend/tests/test_customer_channel_answers_2026_08_25.py", rels)
         self.assertIn("backend/tests/test_rt_customer_blocker_honesty_lock.py", rels)
 
     def test_scan_finds_token_past_two_mib_window(self) -> None:

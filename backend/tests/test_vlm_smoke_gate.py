@@ -62,17 +62,17 @@ class VlmSmokeGateTests(unittest.TestCase):
 
     def test_pilot_signoff_blocks_smoke(self) -> None:
         class _Pilot:
-            signoff_profile = "samolet_pilot"
+            signoff_profile = "customer_pilot"
 
         reason = smoke_signoff_blocks_external(settings=_Pilot())
         self.assertIsNotNone(reason)
-        self.assertIn("samolet_pilot", reason or "")
+        self.assertIn("customer_pilot", reason or "")
 
     def test_documented_aliases_block_smoke_without_settings(self) -> None:
         for alias, canonical in (
             ("moscow_agr", "moscow_agr_2026"),
             ("agr_2026", "moscow_agr_2026"),
-            ("pilot_demo", "samolet_pilot_demo"),
+            ("pilot_demo", "customer_pilot_demo"),
         ):
             with self.subTest(alias=alias):
                 with patch.dict("os.environ", {"AEROBIM_SIGNOFF_PROFILE": alias}):

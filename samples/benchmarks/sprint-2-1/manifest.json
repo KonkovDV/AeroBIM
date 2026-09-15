@@ -24,7 +24,7 @@
     {
       "asset_id": "ifc-walls-multi",
       "path": "samples/ifc/walls-multi-entity.ifc",
-      "sha256": "b64f7ea2ce88183f6a9c08969327d516ba7fe75057083fe3b326f49cebfa4ebe",
+      "sha256": "40e546fa793212dbebc94acbf29546d35d75fbafd47f3b85b4ec5c9277451cbd",
       "file_type": "ifc",
       "discipline": "AR",
       "stage": "unknown",
@@ -57,7 +57,7 @@
     {
       "asset_id": "ifc-wall-fire",
       "path": "samples/ifc/wall-fire-rating-rei60.ifc",
-      "sha256": "bd3064055b32bf2d1c1cd2256e050a4c6b3ae9095db651e8a4cc715711d21785",
+      "sha256": "68ef14fdc9bc96848d6acce4fcaba29ed9d6be4b72e0c5ded9e535417134d31f",
       "file_type": "ifc",
       "discipline": "AR",
       "dataset_class": "fixture",

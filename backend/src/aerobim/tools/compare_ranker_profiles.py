@@ -1,7 +1,7 @@
 """A/B comparison of two ranker profiles via paired tie-aware nDCG.
 
 Closes the Wave N deferred item: AeroBIM ships two real priority rankers
-(``compute_issue_priority`` profiles ``default`` and ``samolet``), so the
+(``compute_issue_priority`` profiles ``default`` and ``customer``), so the
 paired comparison is now wired. Input: two ``ranking_quality_labels``
 artifacts over the *same* cases/findings/relevance grades, differing only
 in ``priority_score`` (profile A vs profile B).

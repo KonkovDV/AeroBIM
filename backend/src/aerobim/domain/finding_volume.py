@@ -42,7 +42,7 @@ _UNSIGNED_ALL_PREFIXES: Final[tuple[str, ...]] = (
     "REQ-STR-",
     "REQ-MEP-",
     "REQ-HEIGHT-",
-    "SAM-AR-",
+    "TYP-AR-",
 )
 
 # Rule ids that are not element defects: HITL queue, capability flags, unsigned
@@ -133,9 +133,9 @@ def classify_volume_record(item: Mapping[str, Any]) -> str:
         return VOLUME_CLASS_UNRESTRICTED_EQ_SAMPLE
     if item.get("element_guid"):
         return "element_detection_unsigned"
-    if rule_id == "SAM-AR-020":
+    if rule_id == "TYP-AR-020":
         return "element_detection_unsigned"
-    if rule_id.startswith("SAM-AR-"):
+    if rule_id.startswith("TYP-AR-"):
         return "coverage_unsigned"
     if rule_id.startswith(("REQ-FIRE-", "REQ-STR-", "REQ-MEP-", "REQ-HEIGHT-")):
         return "unsigned_universal_rule"

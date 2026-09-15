@@ -9,7 +9,7 @@ claim_boundary: "Protocol draft only. No corpus measured. Checkpoint GO; custome
 
 # RT-001 labeling protocol (RT-026)
 
-**Purpose:** make RT-001 inter-rater metrics defensible **before** Samolet corpus lands.  
+**Purpose:** make RT-001 inter-rater metrics defensible **before** customer corpus lands.  
 **Status:** draft for preregistration — freeze schema before first labeler sees cases.
 
 ## Scope

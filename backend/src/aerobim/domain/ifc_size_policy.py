@@ -1,7 +1,7 @@
 """IFC analyze cap vs ingest envelope vs bSI vs WASM.
 
 SPF ``ifcopenshell.open`` stays 256 MiB (``AEROBIM_MAX_IFC_BYTES``). Files
-above that and up to the Samolet-stated 1.5 GB model envelope are analyzed
+above that and up to the customer-stated 1.5 GB model envelope are analyzed
 via IfcOpenShell RocksDB (streaming convert, then open the key-value store).
 That is not an in-memory SPF raise and not a WASM raise.
 
@@ -16,7 +16,7 @@ from typing import Any, Final
 
 from aerobim.core.security.upload_limits import (
     DEV_DEFAULT_UPLOAD_BYTES,
-    SAMOLET_STATED_MODEL_BYTES,
+    PILOT_STATED_MODEL_BYTES,
     WASM_IFC_VIEWER_CAP_BYTES,
 )
 from aerobim.domain.checkpoint import CHECKPOINT
@@ -51,7 +51,7 @@ BACKEND_NONE: Final = "none"
 
 PUBLIC_ANALYZE_CAP_DETAIL: Final = "IFC exceeds analyze size limit"
 PUBLIC_ANALYZE_CAP_REASON_CODE: Final = "ifc_over_ingest_cap"
-PUBLIC_ANALYZE_CAP_REQUIRED_PROFILE: Final = "samolet_pilot"
+PUBLIC_ANALYZE_CAP_REQUIRED_PROFILE: Final = "customer_pilot"
 PUBLIC_ANALYZE_CAP_SEE: Final = "docs/quality/IFC_ANALYZE_VS_INGEST_CAP_2026_08.md"
 PUBLIC_IFC_DISK_BACKEND_DETAIL: Final = "IFC disk backend unavailable"
 ROCKSDB_BACKEND_STATUS: Final = "wired_over_spf_cap"
@@ -99,7 +99,7 @@ def analyze_cap_from_env(*, default: int = DEV_DEFAULT_UPLOAD_BYTES) -> int:
     return int(raw)
 
 
-def ingest_cap_from_env(*, default: int = SAMOLET_STATED_MODEL_BYTES) -> int:
+def ingest_cap_from_env(*, default: int = PILOT_STATED_MODEL_BYTES) -> int:
     raw = os.getenv("AEROBIM_MAX_MODEL_BYTES")
     if raw is None or not str(raw).strip():
         return default
@@ -122,7 +122,7 @@ def classify_ifc_bytes(
 
     size = max(0, int(file_bytes))
     analyze = DEV_DEFAULT_UPLOAD_BYTES if analyze_cap_bytes is None else int(analyze_cap_bytes)
-    ingest = SAMOLET_STATED_MODEL_BYTES if ingest_cap_bytes is None else int(ingest_cap_bytes)
+    ingest = PILOT_STATED_MODEL_BYTES if ingest_cap_bytes is None else int(ingest_cap_bytes)
     if size <= analyze:
         band = BAND_ANALYZE_OK
         backend = BACKEND_SPF
@@ -153,7 +153,7 @@ def size_policy_snapshot() -> dict[str, object]:
     """Honesty snapshot for capabilities / streaming design consumers."""
 
     analyze = DEV_DEFAULT_UPLOAD_BYTES
-    ingest = SAMOLET_STATED_MODEL_BYTES
+    ingest = PILOT_STATED_MODEL_BYTES
     return {
         "artifact_type": "ifc_size_policy",
         "claim_level": "coverage_map_only",

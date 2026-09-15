@@ -72,7 +72,7 @@ RT-DEMO-TRL5 · RT-DEMO-837-CUSTOMER · RT-DEMO-GRID-ALL-PACKS · RT-DEMO-AREA-G
 2. Часы ручной проверки того же комплекта «до» — знает нормоконтроль / ГИП комплекта.
 3. Сколько лишних кругов они считают нормой на секции — знает дирекция технологического заказчика.
 
-Допущения E1–E5: [`../partners/SAMOLET_CYCLE_ECONOMICS_ASSUMPTIONS_2026_09.md`](../partners/SAMOLET_CYCLE_ECONOMICS_ASSUMPTIONS_2026_09.md).
+Допущения E1–E5: [`../partners/CUSTOMER_CYCLE_ECONOMICS_ASSUMPTIONS_2026_09.md`](../partners/CUSTOMER_CYCLE_ECONOMICS_ASSUMPTIONS_2026_09.md).
 
 ## Демо 20 секунд
 

@@ -4,14 +4,14 @@ title: "AeroBIM Benchmark Evidence 2026"
 status: active
 version: "1.0.0"
 last_updated: "2026-07-19"
-claim_boundary: "Fixture/synthetic metrics are not transferable to Samolet customer packs without re-measurement."
+claim_boundary: "Fixture/synthetic metrics are not transferable to the appointing party customer packs without re-measurement."
 ---
 
 # Benchmark Evidence 2026
 
 ## What is measured (fixtures)
 
-| Metric | Protocol / tool | Typical result | Transferable to Samolet? |
+| Metric | Protocol / tool | Typical result | Transferable to the appointing party? |
 |---|---|---|---|
 | RU extraction macro_f1 | `evaluate_extraction` | ≈0.86 on fixture GT | **No** — RT-001 |
 | Detection precision harness | `evaluate_detection_precision` + synthetic labels | Contract gate ≥0.6 | **No** until customer labels |
@@ -33,4 +33,4 @@ Fixture corpora are small. Do not publish confidence intervals as if they were p
 
 ## Customer path
 
-Dual-human adjudication + κ/α + frozen split — see [`pilot-protocol-samolet-2026.md`](pilot-protocol-samolet-2026.md). Until intake gates flip, checkpoint stays **NO_GO**.
+Dual-human adjudication + κ/α + frozen split — see [`pilot-protocol-customer-2026.md`](pilot-protocol-customer-2026.md). Until intake gates flip, checkpoint stays **NO_GO**.

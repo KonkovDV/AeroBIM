@@ -242,7 +242,7 @@ class Adr001AdvisoryCannotWriteVerdictTests(unittest.TestCase):
         self.assertNotIn('payload.get("severity")', src)
 
     def test_customer_profiles_hard_disable_advisory_egress_even_if_flag_on(self) -> None:
-        for profile in ("samolet_pilot", "production"):
+        for profile in ("customer_pilot", "production"):
             settings = Settings(
                 application_name="test",
                 environment="test",

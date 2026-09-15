@@ -31,7 +31,7 @@ CLAIM_BOUNDARY = (
 )
 
 INTERIM_CONFIRMED_FINDING_RATE_TARGET = 0.60
-"""Interim pilot target: TP/(TP+FP) ≥ 0.60 (MIK / Samolet contract interim)."""
+"""Interim pilot target: TP/(TP+FP) ≥ 0.60 (MIK / the appointing party contract interim)."""
 
 
 def _confidence_to_alpha(confidence: float) -> float:

@@ -1,6 +1,6 @@
 """Measurement vs residual volumes for RT-001 / RT-002 / RT-003.
 
-Owner re-scope 2026-09-04: what Samolet did not hand over is replaced by
+Owner re-scope 2026-09-04: what the appointing party did not hand over is replaced by
 public / synthetic proxies for *measurement*. Channel-pack carriers already
 pinned in ``deep_study_facts`` (EIR v4 + BIM-standard v4 as text; three NWD
 federations) close those measurement volumes. They are not a signed IDS and
@@ -56,7 +56,7 @@ CLAIM_BOUNDARY: Final = (
     "gold, planted IfcClash, a two-pass protocol rehearsal, and git-safe "
     "channel-pack carriers (EIR v4 + BIM-standard v4 as text; three NWD "
     "federations), and an in-repo IfcSystem graph rehearsal (HVAC fixture). "
-    "That is not product accuracy, not two human raters, not a Samolet "
+    "That is not product accuracy, not two human raters, not a customer "
     "signature, not mep_system_clash=OK, not CDE import. "
     "closes_rt001/002/003 stay false. Checkpoint GO "
     "(regulatory_measurement_mvp; customer_go false)."
@@ -84,7 +84,7 @@ def _spb_manifest_honest(manifest: Mapping[str, Any]) -> bool:
     return (
         manifest.get("provenance_status") == "OFFICIAL_PUBLISHED"
         and manifest.get("signed_by_customer") is False
-        and manifest.get("samolet_alias") is False
+        and manifest.get("customer_alias") is False
         and manifest.get("closes_rt002") is False
     )
 
@@ -216,7 +216,7 @@ def assemble_rt_blocker_volumes(repo: Path) -> dict[str, Any]:
     regulatory = (
         agr_approved
         and _spb_manifest_honest(spb)
-        and pointer.get("samolet_alias") is not True
+        and pointer.get("customer_alias") is not True
         and pointer.get("closes_rt002") is not True
         and moexp_ids >= MIN_MOEXP_IDS
         and spb_ids >= MIN_SPB_IDS
@@ -286,7 +286,7 @@ def assemble_rt_blocker_volumes(repo: Path) -> dict[str, Any]:
                 "appointing-party EIR. Text EIR is not a signed IDS."
             ),
             "agr_pack_status": agr.get("status"),
-            "pointer_samolet_alias": bool(pointer.get("samolet_alias")),
+            "pointer_customer_alias": bool(pointer.get("customer_alias")),
             "eir_v4_present": bool(study.get("eir_v4_present")),
             "bim_standard_v4_present": bool(study.get("bim_standard_v4_present")),
             "eir_lod_mep_disciplines_named": bool(study.get("eir_lod_mep_disciplines_named")),
@@ -414,8 +414,8 @@ def require_honest_rt_blocker_volumes(payload: Mapping[str, Any]) -> None:
         errors.append("RT-002b needs bim_standard_v4_present on the deep-study pin")
     if isinstance(rt002, dict) and rt002.get("eir_lod_mep_disciplines_named") is not True:
         errors.append("EIR LOD MEP discipline names must stay pinned from the cartography")
-    if isinstance(rt002, dict) and rt002.get("pointer_samolet_alias") is True:
-        errors.append("jurisdiction pointer must not alias Samolet")
+    if isinstance(rt002, dict) and rt002.get("pointer_customer_alias") is True:
+        errors.append("jurisdiction pointer must not alias the appointing party")
     counts = rt002.get("ids_counts") if isinstance(rt002, dict) else None
     if not isinstance(counts, dict):
         errors.append("RT-002a must pin public IDS counts")

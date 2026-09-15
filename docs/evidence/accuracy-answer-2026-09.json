@@ -91,7 +91,7 @@
       "is_product_accuracy": false,
       "publishable": false,
       "not": "precision; customer-confirmed typical-error gold",
-      "source": "samples/benchmarks/samolet-typical-errors-catalog.json"
+      "source": "samples/benchmarks/typical-errors-catalog.json"
     }
   ],
   "why_not_transferable": [

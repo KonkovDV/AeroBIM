@@ -1,11 +1,11 @@
-<!-- claims-lint: allow-file reason="Official Moscow AGR IDS engine coverage; not Samolet profile" -->
+<!-- claims-lint: allow-file reason="Official Moscow AGR IDS engine coverage; not appointing-party profile" -->
 # Official Moscow AGR IDS (ДГП / СтроимПросто)
 
 **claim_level:** `official_ids_engine_coverage`
 **customer_accuracy_not_established:** `True`
 **closes_rt002_customer_profile:** `False`
 
-Official Moscow AGR IDS zip from stroimprosto.mos.ru (АР / БиО / ПС / МССК). IfcTester engine coverage on a wall fixture is not CIM AGR acceptance, not УКЭП, and not a Samolet-signed pack. RT-002 stays OPEN.
+Official Moscow AGR IDS zip from stroimprosto.mos.ru (АР / БиО / ПС / МССК). IfcTester engine coverage on a wall fixture is not CIM AGR acceptance, not УКЭП, and not a appointing-party-signed pack. RT-002 stays OPEN.
 
 Source: https://stroimprosto.mos.ru/knowledge/article/cim-agr/
 

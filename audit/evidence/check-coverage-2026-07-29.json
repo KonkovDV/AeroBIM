@@ -215,14 +215,14 @@
       "jury_speech": "IfcSpace inventory as INFO; no signed sellable-area KPI; not delivered",
       "kt3_scope": "advisory_unsigned",
       "label": "Эффективность использования пространства",
-      "reason": "Самолёт 25.08: продаваемая площадь, избыточные техпомещения, широкие коридоры, мёртвые зоны МОП. Пороги не подписаны; advisory inventory ≠ delivered metric",
+      "reason": "заказчик канала 25.08: продаваемая площадь, избыточные техпомещения, широкие коридоры, мёртвые зоны МОП. Пороги не подписаны; advisory inventory ≠ delivered metric",
       "status": "not_checked",
       "tz_matrix": "§2 целевые задачи / space efficiency"
     },
     {
       "gap_id": "calculation_solver",
       "label": "Решатель LIRA / расчётная корректность",
-      "reason": "Самолёт 25.08: сверка объявленных PDF/Excel с РД/BIM, не solver; native LIR NOT_IMPLEMENTED; calculation_correctness=NOT_IMPLEMENTED",
+      "reason": "заказчик канала 25.08: сверка объявленных PDF/Excel с РД/BIM, не solver; native LIR NOT_IMPLEMENTED; calculation_correctness=NOT_IMPLEMENTED",
       "status": "not_checked",
       "tz_matrix": "§3.2 vs calculation results / ТР-13"
     }

@@ -74,12 +74,12 @@ Full publication rail: [`academic-publication-evidence-2026.md`](REPRODUCIBILITY
 | [`evidence/README.md`](evidence/README.md) | Citeable fixtures index |
 | [`evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json) | Runtime LOC / tests / F1 |
 | [`evidence/benchmark-report-2026-05-21.md`](evidence/benchmark-report-2026-05-21.md) | Academic benchmark snapshot |
-| [`evidence/samolet-sla-pilot-moscow-2026-05-21.json`](evidence/samolet-sla-pilot-moscow-2026-05-21.json) | Fixture SLA (not customer) |
+| [`evidence/sla-pilot-moscow-2026-05-21.json`](evidence/sla-pilot-moscow-2026-05-21.json) | Fixture SLA (not customer) |
 | [`evidence/tz-matrix-status-latest.json`](evidence/tz-matrix-status-latest.json) | TZ matrix status |
 | [`../audit/evidence/bcf-structural-handoff-2026-07-25.json`](../audit/evidence/bcf-structural-handoff-2026-07-25.json) | BCF structural T1 |
 | [`../audit/evidence/cde-import-proof/STATUS.json`](../audit/evidence/cde-import-proof/STATUS.json) | CDE import gate (`NOT_VERIFIED`) |
-| [`samolet-techlab-alignment-2026.md`](samolet-techlab-alignment-2026.md) | Samolet TechLab R1–R15 |
-| [`../samples/benchmarks/samolet-typical-errors-catalog.json`](../samples/benchmarks/samolet-typical-errors-catalog.json) | Typical error catalog scaffold |
+| [`techlab-alignment-2026.md`](techlab-alignment-2026.md) | TechLab R1–R15 |
+| [`../samples/benchmarks/typical-errors-catalog.json`](../samples/benchmarks/typical-errors-catalog.json) | Typical error catalog scaffold |
 | [`../samples/benchmarks/russian-aec-ground-truth.json`](../samples/benchmarks/russian-aec-ground-truth.json) | RU extraction corpus |
 | Customer SLA | `docs/evidence/internal/` / `samples/customer/` (gitignored) |
 

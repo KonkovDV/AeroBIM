@@ -17,7 +17,7 @@ def build_rate_limit_backend(
 ) -> RateLimitBackend:
     """Prefer Redis when configured; in-process only when not fail-closed."""
 
-    hard_profile = signoff_profile in {"samolet_pilot", "production"}
+    hard_profile = signoff_profile in {"customer_pilot", "production"}
     if not redis_url:
         if fail_closed:
             raise RuntimeError(

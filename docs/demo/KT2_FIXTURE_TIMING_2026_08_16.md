@@ -10,7 +10,7 @@ claim_boundary: >
 
 # Fixture timing — порядок величины
 
-Жюри спрашивает «≤30 минут — да или нет?». Короткий ответ: **на комплекте Самолёта — не измерено** (нет pack + machine + mandatory caps). На учебной фикстуре есть wall-clock **порядка секунды**, не контракт.
+Жюри спрашивает «≤30 минут — да или нет?». Короткий ответ: **на комплекте заказчика — не измерено** (нет pack + machine + mandatory caps). На учебной фикстуре есть wall-clock **порядка секунды**, не контракт.
 
 Источник SLA-гейта: `python -m aerobim.tools.measure_package_sla` (schema **1.4.0**). Без customer pack / fingerprint / `--mandatory-capabilities-complete` формулировка «≤30 мин» **запрещена**. Протокол: [`../sla-benchmark-protocol-2026.md`](../sla-benchmark-protocol-2026.md).
 
@@ -18,12 +18,12 @@ claim_boundary: >
 
 | Прогон | Дата | Машина | Число | Что это **не** |
 |---|---|---|---|---|
-| `measure_package_sla` cold p95 | 2026-08-03 | Windows 11, 32 GB RAM, Python 3.13 | **p95 = 533 ms** (max 533 ms, avg 186 ms, 3 итерации) | Не SLA Самолёта. Пакет **4784 байт**, `representative_scale=false` |
+| `measure_package_sla` cold p95 | 2026-08-03 | Windows 11, 32 GB RAM, Python 3.13 | **p95 = 533 ms** (max 533 ms, avg 186 ms, 3 итерации) | Не SLA заказчика канала. Пакет **4784 байт**, `representative_scale=false` |
 | Wall-guid analyze | 2026-08-11 | тот же контур handoff | **analyze_elapsed_ms = 1725** | Overlay/handoff path, не sell-path Gate; не streaming latency |
 
 Артефакты (не пересказывать `sla_pass=true` жюри — это гейт на игрушечном пакете):
 
-- [`../evidence/samolet-sla-fixture-p95-2026-08-04.json`](../evidence/samolet-sla-fixture-p95-2026-08-04.json) — `claim_level: fixture_only`, `allowed_wording: Fixture wall-clock only; gate=p95; not customer комплект SLA`
+- [`../evidence/sla-fixture-p95-2026-08-04.json`](../evidence/sla-fixture-p95-2026-08-04.json) — `claim_level: fixture_only`, `allowed_wording: Fixture wall-clock only; gate=p95; not customer комплект SLA`
 - [`../evidence/kt2-handoff-2026-08-11/wall-guid/timings.json`](../evidence/kt2-handoff-2026-08-11/wall-guid/timings.json)
 
 Sell-path КТ#2: `python -m aerobim.tools.run_demo_ifc_acceptance_gate`. Живое время — только с экрана живого прогона; **не** подставлять p95 игрушечного пакета как время Acceptance Gate.

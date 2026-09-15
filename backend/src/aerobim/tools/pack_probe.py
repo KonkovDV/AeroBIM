@@ -26,7 +26,7 @@ from typing import Any
 
 from aerobim.core.security.upload_limits import (
     DEV_DEFAULT_UPLOAD_BYTES,
-    SAMOLET_STATED_MODEL_BYTES,
+    PILOT_STATED_MODEL_BYTES,
 )
 from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.owner_files_inventory import require_local_only_output
@@ -76,7 +76,7 @@ ORD_TOKENS: tuple[str, ...] = (
     "страхов",
 )
 IFC_CAP_BYTES = DEV_DEFAULT_UPLOAD_BYTES
-INGEST_CAP_BYTES = SAMOLET_STATED_MODEL_BYTES
+INGEST_CAP_BYTES = PILOT_STATED_MODEL_BYTES
 
 _SUPPORTED_YES = {".ifc", ".pdf"}
 _SUPPORTED_PARTIAL = {".dxf"}

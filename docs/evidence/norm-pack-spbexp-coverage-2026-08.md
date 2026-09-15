@@ -1,11 +1,11 @@
-<!-- claims-lint: allow-file reason="Official SPb CGE IDS engine coverage; not Samolet profile" -->
+<!-- claims-lint: allow-file reason="Official SPb CGE IDS engine coverage; not appointing-party profile" -->
 # Official SPb GAU CGE IDS 1.0
 
 **claim_level:** `official_ids_engine_coverage`
 **customer_accuracy_not_established:** `True`
 **closes_rt002_customer_profile:** `False`
 
-Official SPb GAU CGE IDS 1.0 zips (ЦИМ ОКС 3.1.0 + ЦИМ РИИ 1.1.0). Second public GAU jurisdiction pack. Not MosoblGosExpertiza. Not a Samolet-signed acceptance profile. RT-002 stays OPEN.
+Official SPb GAU CGE IDS 1.0 zips (ЦИМ ОКС 3.1.0 + ЦИМ РИИ 1.1.0). Second public GAU jurisdiction pack. Not MosoblGosExpertiza. Not a appointing-party-signed acceptance profile. RT-002 stays OPEN.
 
 Source: https://www.spbexp.ru/bim/docs/
 

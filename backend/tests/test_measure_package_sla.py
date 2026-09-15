@@ -1,4 +1,4 @@
-"""Tests for Samolet SLA measurement tool."""
+"""Tests for the appointing party SLA measurement tool."""
 
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ class MeasurePackageSlaTests(unittest.TestCase):
         self.assertTrue(result["sla_pass"])
         self.assertLessEqual(result["p95_minutes_observed"], 30.0)
         self.assertLessEqual(result["max_minutes_observed"], 30.0)
-        self.assertEqual(result["artifact_type"], "samolet_package_sla")
+        self.assertEqual(result["artifact_type"], "customer_package_sla")
         self.assertEqual(result["schema_version"], "1.4.0")
         self.assertEqual(result["sla_gate_metric"], "p95_minutes_observed")
         self.assertEqual(result["corpus_kind"], "fixture")

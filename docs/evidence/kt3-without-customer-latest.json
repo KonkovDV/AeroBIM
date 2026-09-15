@@ -44,7 +44,7 @@
     "undifferentiated_closed_forbidden": true,
     "substitute": "City/MOEXP/CGE published IDS as the measurement ruler (RT-002a). Channel-pack EIR v4.0 + BIM-standard v4.0 as text (RT-002b carrier). Public examination IDS is not the appointing-party EIR. Text EIR is not a signed IDS.",
     "agr_pack_status": "approved",
-    "pointer_samolet_alias": false,
+    "pointer_customer_alias": false,
     "eir_v4_present": true,
     "bim_standard_v4_present": true,
     "eir_lod_mep_disciplines_named": true,
@@ -196,7 +196,7 @@
     "assigned_at": "2026-08-29",
     "kt3_window": "2026-09-03..2026-09-21",
     "feature_freeze": "2026-09-18",
-    "samolet_appendix4_task": 6,
+    "customer_appendix4_task": 6,
     "commission_order_number": 7,
     "spf_analyze_cap_bytes": 268435456,
     "ingest_cap_bytes": 1500000000,
@@ -217,7 +217,7 @@
     "items": [
       {
         "id": "SIG-01",
-        "title": "Run on Samolet IFC/PDF; finding volume + type breakdown",
+        "title": "Run on the appointing party IFC/PDF; finding volume + type breakdown",
         "git": "volume_taxonomy_and_lite_cli",
         "owner": "blocked_channel_pack",
         "show": "python -m aerobim.tools.run_finding_volume --findings-lite-dir <local>",
@@ -244,15 +244,15 @@
         "title": "Two-criterion accuracy + draft typical-error classifier",
         "git": "catalog_ge_20_unconfirmed",
         "owner": "blocked_dual_rater",
-        "show": "samples/benchmarks/samolet-typical-errors-catalog.json",
+        "show": "samples/benchmarks/typical-errors-catalog.json",
         "stop": "Treat unsigned catalog as customer-confirmed; mix fixture F1 with channel volume"
       },
       {
         "id": "SIG-05",
-        "title": "Question pack to Samolet via organizers",
+        "title": "Question pack to the appointing party via organizers",
         "git": "draft_in_partners",
         "owner": "blocked_send_mail",
-        "show": "docs/partners/SAMOLET_QUESTION_PACK_KT3_2026_08.md",
+        "show": "docs/partners/CUSTOMER_QUESTION_PACK_KT3_2026_08.md",
         "stop": "Republish the share URL; treat TBD as write-from-scratch"
       },
       {
@@ -322,7 +322,7 @@
     },
     {
       "role": "tz_v2",
-      "path": "docs/tz/TZ_SAMOLET_TECHLAB_TASK_07_V2_2026.md",
+      "path": "docs/tz/TZ_TECHLAB_TASK_07_V2_2026.md",
       "present": true
     },
     {
@@ -367,7 +367,7 @@
     },
     {
       "role": "typical_errors_catalog",
-      "path": "samples/benchmarks/samolet-typical-errors-catalog.json",
+      "path": "samples/benchmarks/typical-errors-catalog.json",
       "present": true
     },
     {
@@ -389,6 +389,6 @@
   "intake_status": "BLOCKED_NO_CUSTOMER_DATA",
   "intake_true_gates": [],
   "synthetic_freeze_closes_rt001": false,
-  "jurisdiction_samolet_alias": false,
+  "jurisdiction_customer_alias": false,
   "customer_pack_hash": null
 }

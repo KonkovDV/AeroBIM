@@ -1,4 +1,4 @@
-"""Samolet-stated upload caps vs development / analyze / WASM limits.
+"""customer-stated upload caps vs development / analyze / WASM limits.
 
 Answers 1.1.4 (2026-08-25): office documents ≤ 500 MB decimal; model files ≤ 1.5 GB
 decimal. Those numbers are customer statements, not the development default and not
@@ -12,8 +12,8 @@ from __future__ import annotations
 from aerobim.core.security.upload_content import extension_of
 
 # Decimal megabytes / gigabytes as stated by the customer (not 1024-based MiB/GiB).
-SAMOLET_STATED_OFFICE_BYTES = 500_000_000
-SAMOLET_STATED_MODEL_BYTES = 1_500_000_000
+PILOT_STATED_OFFICE_BYTES = 500_000_000
+PILOT_STATED_MODEL_BYTES = 1_500_000_000
 
 # Development / fixture default and analyze/WASM cap (256 MiB).
 # Comparable to buildingSMART Validation Service 256 MB, not the same unit.
@@ -59,8 +59,8 @@ def upload_limit_bytes(
 
 __all__ = [
     "DEV_DEFAULT_UPLOAD_BYTES",
-    "SAMOLET_STATED_MODEL_BYTES",
-    "SAMOLET_STATED_OFFICE_BYTES",
+    "PILOT_STATED_MODEL_BYTES",
+    "PILOT_STATED_OFFICE_BYTES",
     "WASM_IFC_VIEWER_CAP_BYTES",
     "classify_upload_kind",
     "upload_limit_bytes",

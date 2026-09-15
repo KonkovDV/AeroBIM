@@ -2,7 +2,7 @@
 
 **Source page:** https://stroimprosto.mos.ru/knowledge/article/cim-agr/  
 **Retrieved:** 2026-08-14  
-**Claim:** public city example TEP XML + official Vedomost XSD. Class-1 exchange checks. Not the frozen `moscow_agr` DI port. Not a Samolet pack. Does not close RT-002.
+**Claim:** public city example TEP XML + official Vedomost XSD. Class-1 exchange checks. Not the frozen `moscow_agr` DI port. Not a customer pack. Does not close RT-002.
 
 ## Files
 

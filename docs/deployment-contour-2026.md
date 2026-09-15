@@ -7,7 +7,7 @@
 
 | Архитектура | Где лежат файлы ПД во время проверки | Доказательство у AeroBIM |
 |---|---|---|
-| Облачный SaaS с внешним LLM | у провайдера модели / в его регионе | профиль `samolet_pilot`: внешний egress fail-closed |
+| Облачный SaaS с внешним LLM | у провайдера модели / в его регионе | профиль `customer_pilot`: внешний egress fail-closed |
 | Гибрид (облако + on-prem) | частично у оператора, частично у провайдера | `HybridRouteGate` + PrivacyGuard; OFF==ON для вердикта |
 | Закрытый контур заказчика | только в периметре заказчика | `offline_bundle closed-contour --smoke`; Docker image-track |
 | Bare-metal air-gap | на машине без сети | **DEFERRED** (не заявляется как ready) |

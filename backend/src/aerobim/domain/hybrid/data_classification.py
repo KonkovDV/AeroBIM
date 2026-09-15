@@ -71,7 +71,7 @@ _KIND_DEFAULTS: dict[str, DataClassification] = {
     "bcf_real": DataClassification.CONFIDENTIAL,
     # RESTRICTED
     "customer_corpus": DataClassification.RESTRICTED,
-    "samolet_data": DataClassification.RESTRICTED,
+    "customer_data": DataClassification.RESTRICTED,
     "nda_document": DataClassification.RESTRICTED,
     "approved_norm_pack": DataClassification.RESTRICTED,
     "pii": DataClassification.RESTRICTED,

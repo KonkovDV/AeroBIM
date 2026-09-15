@@ -12,7 +12,7 @@ from typing import Final
 
 from aerobim.core.security.upload_limits import (
     DEV_DEFAULT_UPLOAD_BYTES,
-    SAMOLET_STATED_MODEL_BYTES,
+    PILOT_STATED_MODEL_BYTES,
 )
 from aerobim.domain.checkpoint import CHECKPOINT
 from aerobim.domain.ifc_size_policy import (
@@ -46,7 +46,7 @@ def streaming_design_snapshot() -> dict[str, object]:
         "in_memory_spatial_index": True,
         "spatial_index_json_sidecar": "dump_only",
         "default_analyze_bytes": DEFAULT_ANALYZE_IFC_BYTES,
-        "stated_model_ingest_bytes": SAMOLET_STATED_MODEL_BYTES,
+        "stated_model_ingest_bytes": PILOT_STATED_MODEL_BYTES,
         "raises_default_cap": False,
         "spf_ram_multiplier_literature": SPF_RAM_MULTIPLIER_LITERATURE,
         "spf_ram_multiplier_source": SPF_RAM_MULTIPLIER_SOURCE,

@@ -10,7 +10,7 @@ from unittest.mock import patch
 
 from aerobim.core.security.upload_limits import (
     DEV_DEFAULT_UPLOAD_BYTES,
-    SAMOLET_STATED_MODEL_BYTES,
+    PILOT_STATED_MODEL_BYTES,
 )
 from aerobim.domain.ifc_size_policy import (
     BACKEND_ROCKSDB,
@@ -51,7 +51,7 @@ class IfcSizePolicyTests(unittest.TestCase):
         self.assertTrue(decision.over_bsi_uncompressed)
 
     def test_over_stated_ingest(self) -> None:
-        decision = classify_ifc_bytes(SAMOLET_STATED_MODEL_BYTES + 1)
+        decision = classify_ifc_bytes(PILOT_STATED_MODEL_BYTES + 1)
         self.assertEqual(decision.band, BAND_OVER_INGEST)
         self.assertFalse(decision.ingest_would_accept)
 
@@ -75,12 +75,12 @@ class IfcSizePolicyTests(unittest.TestCase):
         self.assertTrue(snap["bsi_faq_heading_not_used_for_classification"])
         self.assertEqual(
             snap["literature_rss_at_ingest_cap_bytes"],
-            SAMOLET_STATED_MODEL_BYTES * 10,
+            PILOT_STATED_MODEL_BYTES * 10,
         )
 
     def test_raise_if_over_analyze_cap(self) -> None:
         with self.assertRaises(IfcAnalyzeCapError) as ctx:
-            raise_if_over_analyze_cap(SAMOLET_STATED_MODEL_BYTES + 1)
+            raise_if_over_analyze_cap(PILOT_STATED_MODEL_BYTES + 1)
         self.assertEqual(str(ctx.exception), PUBLIC_ANALYZE_CAP_DETAIL)
         self.assertEqual(ctx.exception.decision.band, BAND_OVER_INGEST)
 
@@ -191,7 +191,7 @@ class IfcSizePolicyTests(unittest.TestCase):
 
         body = public_ifc_analyze_cap_body()
         self.assertEqual(body["message"], PUBLIC_ANALYZE_CAP_DETAIL)
-        self.assertEqual(body["required_profile"], "samolet_pilot")
+        self.assertEqual(body["required_profile"], "customer_pilot")
         self.assertFalse(body["rss_measured"])
 
 

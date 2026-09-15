@@ -1,4 +1,4 @@
-"""Bundle the honest maximum for ТР-11/14/15 / RT-001–003 without Samolet files.
+"""Bundle the honest maximum for ТР-11/14/15 / RT-001–003 without the appointing party files.
 
 Writes artifacts only by default. Does not mark blockers CLOSED. Does not
 open GPLv3 IFC-Bench trees. Optional duplex IfcClash is off unless flagged.
@@ -307,7 +307,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
     lines = [
         '<!-- claims-lint: allow-file reason="TZ proxy rehearsal; RT blockers stay OPEN" -->',
         "---",
-        'title: "TZ proxy rehearsal without Samolet files"',
+        'title: "TZ proxy rehearsal without the appointing party files"',
         f"date: {str(payload.get('generated_at') or '')[:10]}",
         f"claim_level: {payload.get('claim_level')}",
         "claim_boundary: >-",
@@ -317,7 +317,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
         "closes_rt003: false",
         "---",
         "",
-        "# TZ proxy rehearsal (без корпуса «Самолёта»)",
+        "# TZ proxy rehearsal (без корпуса «заказчика канала»)",
         "",
         f"- checkpoint: **{payload.get('checkpoint')}**",
         f"- closes_rt001: **{payload.get('closes_rt001')}**",
@@ -328,7 +328,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
         f"- MOEXP specs (coverage artifact): **{ids.get('specification_count')}**",
         f"- public jurisdiction packs: **{len(payload.get('rt002_public_ids_packs') or ())}**",
         f"- customer_signed: **{ids.get('customer_signed')}**",
-        f"- samolet_alias: **{ids.get('samolet_alias')}**",
+        f"- customer_alias: **{ids.get('customer_alias')}**",
         f"- egrz_intake_xml: **{(payload.get('rt001_egrz_intake_xml') or {}).get('claim_level')}** "
         f"(closes_rt001={(payload.get('rt001_egrz_intake_xml') or {}).get('closes_rt001')})",
         f"- mep_system_clash: **{clash.get('mep_system_clash')}**",
@@ -503,7 +503,7 @@ def write_payload(
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Honest TZ proxy rehearsal without Samolet customer files."
+        description="Honest TZ proxy rehearsal without the appointing party customer files."
     )
     parser.add_argument(
         "--include-open-federated",

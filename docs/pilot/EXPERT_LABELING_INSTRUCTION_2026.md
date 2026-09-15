@@ -74,7 +74,7 @@ python -m aerobim.tools.measure_adjudicator_agreement \
 
 Целевой старт: κ ≥ 0.60 (согласовать). Конвенция Krippendorff’s α: ≥ 0.67 —
 tentatively useful; ≥ 0.80 — предпочтительный порог для публикации (content-analysis
-practice; не заменяет письменное согласование с Самолётом). При κ/α ниже порога —
+practice; не заменяет письменное согласование с заказчиком канала). При κ/α ниже порога —
 уточнить инструкции классов, не «подкручивать» метки.
 
 После согласия пары → `build_detection_labels` / labels JSON со `dataset_status=adjudicated` (≥2 adjudicators, без unresolved).

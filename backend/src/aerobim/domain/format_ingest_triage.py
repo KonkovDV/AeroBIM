@@ -121,7 +121,7 @@ TRIAGE_ROWS: Final[tuple[dict[str, str], ...]] = (
     {
         "id": "RT-FMT-SDK-SIGN",
         "verdict": "HOLD",
-        "attack": "Buy Sustaining+BimRv+BimNv before a signed Samolet profile",
+        "attack": "Buy Sustaining+BimRv+BimNv before a signed the appointing party profile",
         "brake": "ADR-003 buy rule: DWG-only share plus signed profile, then owner",
     },
     {

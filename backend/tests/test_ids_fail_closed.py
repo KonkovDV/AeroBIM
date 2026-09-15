@@ -261,7 +261,7 @@ class IdsFailClosedCapabilityPolicyTests(unittest.TestCase):
         caps = _pilot_ok_caps(
             ids=CapabilityStatus(CapabilityState.SKIPPED, "IfcTester skipped specification")
         )
-        policy = build_signoff_policy(profile="samolet_pilot")
+        policy = build_signoff_policy(profile="customer_pilot")
         self.assertIn("ids", policy.required_capability_blocks_pass(caps))
         self.assertFalse(policy.summary_passed(error_count=0, capabilities=caps))
 
@@ -269,7 +269,7 @@ class IdsFailClosedCapabilityPolicyTests(unittest.TestCase):
         caps = _pilot_ok_caps(
             ids=CapabilityStatus(CapabilityState.SKIPPED, "IDS validation not requested")
         )
-        policy = build_signoff_policy(profile="samolet_pilot")
+        policy = build_signoff_policy(profile="customer_pilot")
         self.assertNotIn("ids", policy.required_capability_blocks_pass(caps))
 
     def test_development_skipped_ids_does_not_block(self) -> None:
@@ -283,7 +283,7 @@ class IdsFailClosedCapabilityPolicyTests(unittest.TestCase):
         """RT-C3PO-001: missing IDS stamp is silence, not a pass, on customer-hard profiles."""
 
         caps = replace(_pilot_ok_caps(), ids=None)  # type: ignore[arg-type]
-        for profile in ("samolet_pilot", "production"):
+        for profile in ("customer_pilot", "production"):
             policy = build_signoff_policy(profile=profile)
             self.assertIn("ids", policy.required_capability_blocks_pass(caps))
             self.assertFalse(policy.summary_passed(error_count=0, capabilities=caps))
@@ -292,14 +292,14 @@ class IdsFailClosedCapabilityPolicyTests(unittest.TestCase):
         caps = _pilot_ok_caps(
             ids=CapabilityStatus(CapabilityState.NOT_VERIFIED, "IDS not evaluated")
         )
-        for profile in ("samolet_pilot", "production"):
+        for profile in ("customer_pilot", "production"):
             policy = build_signoff_policy(profile=profile)
             self.assertIn("ids", policy.required_capability_blocks_pass(caps))
             self.assertFalse(policy.summary_passed(error_count=0, capabilities=caps))
 
     def test_hard_profile_ids_missing_blocks_pass(self) -> None:
         caps = _pilot_ok_caps(ids=CapabilityStatus(CapabilityState.MISSING, "IDS file absent"))
-        for profile in ("samolet_pilot", "production"):
+        for profile in ("customer_pilot", "production"):
             policy = build_signoff_policy(profile=profile)
             self.assertIn("ids", policy.required_capability_blocks_pass(caps))
             self.assertFalse(policy.summary_passed(error_count=0, capabilities=caps))
@@ -310,7 +310,7 @@ class IdsFailClosedCapabilityPolicyTests(unittest.TestCase):
         caps = _pilot_ok_caps(
             ids=CapabilityStatus(CapabilityState.NOT_VERIFIED, "IDS not evaluated")
         )
-        for profile in ("samolet_pilot_demo", "moscow_agr_2026"):
+        for profile in ("customer_pilot_demo", "moscow_agr_2026"):
             policy = build_signoff_policy(profile=profile)
             self.assertNotIn("ids", policy.required_capability_blocks_pass(caps))
 

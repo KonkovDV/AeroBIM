@@ -1,4 +1,4 @@
-"""Renga IFC probe: originating system + MOEXP IFC4 fail-closed. Not Samolet."""
+"""Renga IFC probe: originating system + MOEXP IFC4 fail-closed. Not appointing-party."""
 
 from __future__ import annotations
 
@@ -87,11 +87,11 @@ class RengaExportProbeTests(unittest.TestCase):
             "renga",
         )
 
-    def test_skipped_payload_does_not_close_samolet_intake(self) -> None:
+    def test_skipped_payload_does_not_close_customer_intake(self) -> None:
         payload = skipped_payload(reason="missing")
         self.assertEqual(payload["status"], "SKIPPED")
-        self.assertFalse(payload["samolet_export"])
-        self.assertFalse(payload["closes_c4_samolet_intake"])
+        self.assertFalse(payload["customer_export"])
+        self.assertFalse(payload["closes_c4_customer_intake"])
         self.assertFalse(payload["vertical_slice_ifc_replaced"])
         self.assertEqual(payload["checkpoint"], CHECKPOINT)
 
@@ -107,7 +107,7 @@ class RengaExportProbeTests(unittest.TestCase):
         self.assertTrue(row["schema_fail_closed"])
         self.assertFalse(row["is_renga_export"])
         self.assertEqual(row["originating_family"], "ifcopenshell")
-        self.assertFalse(row["samolet_export"])
+        self.assertFalse(row["customer_export"])
         self.assertFalse(row["publisher_pnst909_sample"])
 
     def test_renga_shaped_header_is_classified_and_fail_closed(self) -> None:
@@ -120,7 +120,7 @@ class RengaExportProbeTests(unittest.TestCase):
         self.assertEqual(row["model_schema"], "IFC4X3")
         self.assertTrue(row["schema_fail_closed"])
         self.assertFalse(row["publisher_pnst909_sample"])
-        self.assertFalse(row["samolet_export"])
+        self.assertFalse(row["customer_export"])
 
     def test_demo_ifc_vs_moexp_is_schema_ok_and_not_renga(self) -> None:
         row = probe_ifc(WALLS, MOEXP_AR, repo=REPO)

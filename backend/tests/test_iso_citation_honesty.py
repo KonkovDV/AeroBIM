@@ -29,7 +29,7 @@ _SURFACES = (
     "README.md",
     "README.ru.md",
     "docs/ifc-compatibility-matrix.md",
-    "docs/samolet-techlab-alignment-2026.md",
+    "docs/techlab-alignment-2026.md",
     "backend/src/aerobim/domain/quantity.py",
     "backend/src/aerobim/domain/models.py",
     "backend/src/aerobim/application/services/cross_document_contradictions.py",

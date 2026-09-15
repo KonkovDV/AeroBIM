@@ -70,7 +70,7 @@
             "elapsed_ms": 5.301
           },
           {
-            "case_id": "samolet-fire-rating-pass",
+            "case_id": "residential-fire-rating-pass",
             "expected_passed": true,
             "actual_passed": true,
             "match": true,
@@ -78,7 +78,7 @@
             "elapsed_ms": 4.761
           },
           {
-            "case_id": "samolet-fire-rating-fail",
+            "case_id": "residential-fire-rating-fail",
             "expected_passed": false,
             "actual_passed": false,
             "match": true,
@@ -97,8 +97,8 @@
             },
             "ifc": {
               "path": "samples/ifc/wall-fire-rating-rei60.ifc",
-              "expected_sha256": "bd3064055b32bf2d1c1cd2256e050a4c6b3ae9095db651e8a4cc715711d21785",
-              "actual_sha256": "bd3064055b32bf2d1c1cd2256e050a4c6b3ae9095db651e8a4cc715711d21785",
+              "expected_sha256": "68ef14fdc9bc96848d6acce4fcaba29ed9d6be4b72e0c5ded9e535417134d31f",
+              "actual_sha256": "68ef14fdc9bc96848d6acce4fcaba29ed9d6be4b72e0c5ded9e535417134d31f",
               "ok": true
             }
           },
@@ -112,8 +112,8 @@
             },
             "ifc": {
               "path": "samples/ifc/wall-fire-rating-rei30.ifc",
-              "expected_sha256": "a33127abed919db8fd46617554ec669a6519b2f6c292ee5df5db2797318d5d7b",
-              "actual_sha256": "a33127abed919db8fd46617554ec669a6519b2f6c292ee5df5db2797318d5d7b",
+              "expected_sha256": "01d833dbc9a840bfe526d55cb19c08b065024a7773ebf7be3d2d924af1b3aa1c",
+              "actual_sha256": "01d833dbc9a840bfe526d55cb19c08b065024a7773ebf7be3d2d924af1b3aa1c",
               "ok": true
             }
           },
@@ -127,8 +127,8 @@
             },
             "ifc": {
               "path": "samples/ifc/walls-multi-entity.ifc",
-              "expected_sha256": "b64f7ea2ce88183f6a9c08969327d516ba7fe75057083fe3b326f49cebfa4ebe",
-              "actual_sha256": "b64f7ea2ce88183f6a9c08969327d516ba7fe75057083fe3b326f49cebfa4ebe",
+              "expected_sha256": "40e546fa793212dbebc94acbf29546d35d75fbafd47f3b85b4ec5c9277451cbd",
+              "actual_sha256": "40e546fa793212dbebc94acbf29546d35d75fbafd47f3b85b4ec5c9277451cbd",
               "ok": true
             }
           },
@@ -163,32 +163,32 @@
             }
           },
           {
-            "case_id": "samolet-fire-rating-pass",
+            "case_id": "residential-fire-rating-pass",
             "ids": {
-              "path": "samples/ids/samolet-fire-rating.ids",
-              "expected_sha256": "a399da3f10309e78493c8e2dff215ac77065de7c892716e0f744edbb54a1f516",
-              "actual_sha256": "a399da3f10309e78493c8e2dff215ac77065de7c892716e0f744edbb54a1f516",
+              "path": "samples/ids/residential-fire-rating.ids",
+              "expected_sha256": "96e3d1c3182cdaf37d39d8dd0a7b7c8e9b9ea40f19803caf732e8a90efbca96b",
+              "actual_sha256": "96e3d1c3182cdaf37d39d8dd0a7b7c8e9b9ea40f19803caf732e8a90efbca96b",
               "ok": true
             },
             "ifc": {
               "path": "samples/ifc/wall-fire-rating-rei60.ifc",
-              "expected_sha256": "bd3064055b32bf2d1c1cd2256e050a4c6b3ae9095db651e8a4cc715711d21785",
-              "actual_sha256": "bd3064055b32bf2d1c1cd2256e050a4c6b3ae9095db651e8a4cc715711d21785",
+              "expected_sha256": "68ef14fdc9bc96848d6acce4fcaba29ed9d6be4b72e0c5ded9e535417134d31f",
+              "actual_sha256": "68ef14fdc9bc96848d6acce4fcaba29ed9d6be4b72e0c5ded9e535417134d31f",
               "ok": true
             }
           },
           {
-            "case_id": "samolet-fire-rating-fail",
+            "case_id": "residential-fire-rating-fail",
             "ids": {
-              "path": "samples/ids/samolet-fire-rating.ids",
-              "expected_sha256": "a399da3f10309e78493c8e2dff215ac77065de7c892716e0f744edbb54a1f516",
-              "actual_sha256": "a399da3f10309e78493c8e2dff215ac77065de7c892716e0f744edbb54a1f516",
+              "path": "samples/ids/residential-fire-rating.ids",
+              "expected_sha256": "96e3d1c3182cdaf37d39d8dd0a7b7c8e9b9ea40f19803caf732e8a90efbca96b",
+              "actual_sha256": "96e3d1c3182cdaf37d39d8dd0a7b7c8e9b9ea40f19803caf732e8a90efbca96b",
               "ok": true
             },
             "ifc": {
               "path": "samples/ifc/wall-fire-rating-rei30.ifc",
-              "expected_sha256": "a33127abed919db8fd46617554ec669a6519b2f6c292ee5df5db2797318d5d7b",
-              "actual_sha256": "a33127abed919db8fd46617554ec669a6519b2f6c292ee5df5db2797318d5d7b",
+              "expected_sha256": "01d833dbc9a840bfe526d55cb19c08b065024a7773ebf7be3d2d924af1b3aa1c",
+              "actual_sha256": "01d833dbc9a840bfe526d55cb19c08b065024a7773ebf7be3d2d924af1b3aa1c",
               "ok": true
             }
           }
@@ -8303,7 +8303,7 @@
     "run_internal_corpus_continuation.py": {
       "status": "ok",
       "exit_code": 0,
-      "stdout_tail": "probing IFC...\nrunning Analyze...\ninventory non-IFC...\n{\n  \"status\": \"PARTIALLY_READY\",\n  \"ifc_probes_ok\": 59,\n  \"ifc_probes_fail\": 0,\n  \"analyze_cases\": 10,\n  \"analyze_exceptions\": 0,\n  \"analyze_passed_true\": 0,\n  \"confirmed_parser_bugs_fixed\": 0,\n  \"customer_samolet_files\": 0,\n  \"claim\": \"internal_open_corpus_only\"\n}\n",
+      "stdout_tail": "probing IFC...\nrunning Analyze...\ninventory non-IFC...\n{\n  \"status\": \"PARTIALLY_READY\",\n  \"ifc_probes_ok\": 59,\n  \"ifc_probes_fail\": 0,\n  \"analyze_cases\": 10,\n  \"analyze_exceptions\": 0,\n  \"analyze_passed_true\": 0,\n  \"confirmed_parser_bugs_fixed\": 0,\n  \"customer_pack_files\": 0,\n  \"claim\": \"internal_open_corpus_only\"\n}\n",
       "stderr_tail": "ystem_graph_provider.py\", line 39, in build\n    return self._fallback.build(ifc_path)\n           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^\n  File \"backend/src/aerobim/domain/mep.py\", line 347, in build\n    raise RuntimeError(\n    ...<2 lines>...\n    )\nRuntimeError: MEP system graph is not configured (MEP-CLASH-001): requires federated MEP IFC with systems and a signed scope memo\nMEP system graph probe failed for samples/ids/buildingsmart-testcases/cases/0189/fail-specifying_a_value_fails_against_different_values.ifc\nTraceback (most recent call last):\n  File \"backend/src/aerobim/application/services/mep_scope_probe.py\", line 109, in probe\n    graph = self._provider.build(ifc_path)\n  File \"backend/src/aerobim/infrastructure/adapters/scoped_mep_system_graph_provider.py\", line 39, in build\n    return self._fallback.build(ifc_path)\n           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^\n  File \"backend/src/aerobim/domain/mep.py\", line 347, in build\n    raise RuntimeError(\n    ...<2 lines>...\n    )\nRuntimeError: MEP system graph is not configured (MEP-CLASH-001): requires federated MEP IFC with systems and a signed scope memo\nMEP system graph probe failed for samples/ids/buildingsmart-testcases/cases/0006/fail-attributes_with_an_empty_list_always_fail.ifc\nTraceback (most recent call last):\n  File \"backend/src/aerobim/application/services/mep_scope_probe.py\", line 109, in probe\n    graph = self._provider.build(ifc_path)\n  File \"backend/src/aerobim/infrastructure/adapters/scoped_mep_system_graph_provider.py\", line 39, in build\n    return self._fallback.build(ifc_path)\n           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^\n  File \"backend/src/aerobim/domain/mep.py\", line 347, in build\n    raise RuntimeError(\n    ...<2 lines>...\n    )\nRuntimeError: MEP system graph is not configured (MEP-CLASH-001): requires federated MEP IFC with systems and a signed scope memo\n"
     },
     "run_large_open_aerobim.py": {

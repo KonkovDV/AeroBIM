@@ -33,9 +33,9 @@ claim_boundary: >
 
 ## Что нельзя называть метрикой партнёра
 
-Файл [`../evidence/samolet-sla-fixture-p95-2026-08-04.json`](../evidence/samolet-sla-fixture-p95-2026-08-04.json):
+Файл [`../evidence/sla-fixture-p95-2026-08-04.json`](../evidence/sla-fixture-p95-2026-08-04.json):
 `package_scale.is_representative=false`, `total_input_bytes=4784`. p95 на этом
-пакете **не** «укладываемся в 30 минут на комплект Самолёта».
+пакете **не** «укладываемся в 30 минут на комплект заказчика».
 
 Open-bench (AECV и прочие) остаётся `open_bench_only`.
 

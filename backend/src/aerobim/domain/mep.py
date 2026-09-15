@@ -340,7 +340,7 @@ class MepSystemGraphProvider(Protocol):
 
 
 class UnconfiguredMepSystemGraphProvider:
-    """Fail-closed placeholder until Samolet federated MEP IFC + scope memo exist."""
+    """Fail-closed placeholder until the appointing party federated MEP IFC + scope memo exist."""
 
     def build(self, ifc_path: Path) -> MepSystemGraph:
         del ifc_path
