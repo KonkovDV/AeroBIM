@@ -2,9 +2,9 @@
 ---
 title: "Целостность доставки пакета заказчику — 2026-09-09"
 date: "2026-09-09"
-last_updated: "2026-09-10"
+last_updated: "2026-09-15"
 status: active
-version: "1.3.0"
+version: "1.4.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -59,9 +59,14 @@ IFC). Организатора просим **переслать эксперт�
 | канал ссылок | почта организаторов; пересылка эксперту **до** 14.09 | on-prem Docker или time-boxed HTTPS |
 | не канал | GitHub | облако; аноним; шаринг экрана |
 
+Сценарий пилота, пробного доступа и интеграции (отдельный лист заказчику):
+[`CUSTOMER_PILOT_AND_INTEGRATION_SCENARIO_2026_09.md`](CUSTOMER_PILOT_AND_INTEGRATION_SCENARIO_2026_09.md).
 См. [`CUSTOMER_REVIEW_PACK_RUNBOOK_2026_09.md`](CUSTOMER_REVIEW_PACK_RUNBOOK_2026_09.md).
 Исходящий список вопросов: [`SAMOLET_QUESTIONS_GROUNDED_2026_09_03.md`](SAMOLET_QUESTIONS_GROUNDED_2026_09_03.md).
 Краткая выжимка в HTML/PDF (`id='executive-brief'`). SKIPPED / NOT_VERIFIED /
 advisory **не вырезаются**.
+
+Локальный пакет трёх выжимок (не git): `.local/pack-out/delivery-2026-09-14/ORGANIZER_PACKET/`.
+Пока организаторам не ушло письмо, индекс — `ready_local`, не `sent`. Git почту не шлёт.
 
 Checkpoint **GO**; `customer_go` false.

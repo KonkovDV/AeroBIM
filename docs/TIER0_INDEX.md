@@ -76,6 +76,7 @@ claim_boundary: "Jury pack only. Checkpoint GO; customer_go false until RT-001/0
 | [Playbook комиссии](quality/MIK_COMMISSION_SEAT_PLAYBOOK_2026_09.md) | Удары, три письма, двухчастная защита; ФИО [Г] |
 | [Шесть вопросов Самолёту](partners/SAMOLET_QUESTIONS_GROUNDED_2026_09_03.md) | Блокеры ТЗ; не NDA; не формы Фонда |
 | [Целостность доставки пакета](partners/DELIVERY_INTEGRITY_2026_09.md) | Git не отправляет почту; P0 канала |
+| [Пилот, пробный доступ, интеграция](partners/CUSTOMER_PILOT_AND_INTEGRATION_SCENARIO_2026_09.md) | Три отчёта не GitHub; on-prem или time-boxed HTTPS; не seed-fixture |
 | [Пакет ревью 10–25 карточек](partners/CUSTOMER_REVIEW_PACK_RUNBOOK_2026_09.md) | CLI shortlist; не точность; git не шлёт Самолёту |
 | [Пороги заказчика](quality/CUSTOMER_THRESHOLD_VS_ACTUAL_2026_08.md) | Целевое vs фактическое; 256 МиБ; cap не поднимаем |
 | [Обложка 0,60](partners/PARTNER_PROTOCOL_SIGNREADY_COVER_2026_08.md) | Письмо «готово подписать»; не 90% |

@@ -2,9 +2,9 @@
 ---
 title: "Рамка исходящего письма Самолёту (без цифр пакета)"
 date: "2026-09-03"
-last_updated: "2026-09-09"
+last_updated: "2026-09-15"
 status: active
-version: "2.5.0"
+version: "2.6.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -71,7 +71,9 @@ LLM/VLM: черновики формулировок только в совещ�
 **14.09 — финальная дата** для заказчика. GitHub не заменяет отчёты. Шаринг
 экрана не заменяет пробный доступ.
 Целостность доставки: [`DELIVERY_INTEGRITY_2026_09.md`](DELIVERY_INTEGRITY_2026_09.md).
-Шлёт владелец.
+Отдельный сценарий пилота / пробного доступа / интеграции (переслать заказчику):
+[`CUSTOMER_PILOT_AND_INTEGRATION_SCENARIO_2026_09.md`](CUSTOMER_PILOT_AND_INTEGRATION_SCENARIO_2026_09.md).
+Шлёт владелец. Локальные три выжимки — `.local/pack-out/delivery-2026-09-14/ORGANIZER_PACKET/` (не git).
 
 ## Запрещено в этой рамке
 
