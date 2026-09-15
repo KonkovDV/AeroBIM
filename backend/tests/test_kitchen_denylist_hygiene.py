@@ -107,6 +107,12 @@ class KitchenDenylistHygieneTests(unittest.TestCase):
         )
         self.assertNotIn("AEROBIM_KITCHEN_DENYLIST:-", action)
         self.assertIn("Base64 only", action)
+        self.assertNotIn("AEROBIM_KITCHEN_ALLOW_UPLOADS", workflow)
+        frontend_plan = (_REPO / ".github" / "workflows" / "frontend-plan.yml").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("AEROBIM_KITCHEN_ALLOW_UPLOADS", frontend_plan)
+        self.assertNotIn("AEROBIM_KITCHEN_ALLOW_UPLOADS", action)
 
     def test_ci_readme_extras_job_matches_jury_clone_install(self) -> None:
         workflow = (_REPO / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")

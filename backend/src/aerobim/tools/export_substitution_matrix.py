@@ -143,10 +143,15 @@ def main(argv: list[str] | None = None) -> int:
     payload = build_payload()
     classified = payload["classified"]
     assert isinstance(classified, dict)
-    if int(classified["token_count"]) != int(payload["di_tokens_expected"]):
+    token_count = classified.get("token_count")
+    expected = payload.get("di_tokens_expected")
+    if not isinstance(token_count, int) or not isinstance(expected, int):
         raise SystemExit(
-            f"token_count {classified['token_count']} != "
-            f"architecture_inventory.di_tokens {payload['di_tokens_expected']}"
+            f"token_count {token_count!r} != architecture_inventory.di_tokens {expected!r}"
+        )
+    if token_count != expected:
+        raise SystemExit(
+            f"token_count {token_count} != architecture_inventory.di_tokens {expected}"
         )
     text = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
     root = repo_root()

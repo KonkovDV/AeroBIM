@@ -34,7 +34,7 @@ def generate_tz_matrix_status(
     caps = capabilities or ReportCapabilities()
     evidence = evidence_manifest or {}
     customer_evidence = bool(evidence.get("customer_corpus_present"))
-    rows = [
+    rows: list[dict[str, object]] = [
         {
             "requirement": "BIM IFC + IDS",
             "contour": Contour.DETERMINISTIC_VALIDATION.value,

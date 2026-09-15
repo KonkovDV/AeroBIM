@@ -69,7 +69,8 @@ def _scale_honesty(inventory: list[dict[str, object]]) -> dict[str, object]:
     referenced = inventory[1:] if inventory else []
     for entry in referenced:
         path = str(entry.get("path") or "").replace("\\", "/").lower()
-        nbytes = int(entry["bytes"]) if isinstance(entry.get("bytes"), int | float) else 0
+        raw_bytes = entry.get("bytes")
+        nbytes = int(raw_bytes) if isinstance(raw_bytes, int | float) else 0
         if path.endswith(".ifc"):
             by_kind["ifc"] += nbytes
         elif path.endswith(".ids"):
