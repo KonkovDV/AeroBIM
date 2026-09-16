@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import tempfile
 import unittest
@@ -267,6 +268,7 @@ class EndToEndHarnessTests(unittest.TestCase):
                         "pass_threshold_0_60": True,
                         "krippendorff_alpha": 1.0,
                         "pass_alpha_0_67": True,
+                        "labels_sha256": hashlib.sha256(labels_path.read_bytes()).hexdigest(),
                     }
                 ),
                 encoding="utf-8",

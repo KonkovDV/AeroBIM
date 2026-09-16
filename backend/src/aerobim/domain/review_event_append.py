@@ -84,18 +84,47 @@ def latest_finding_sequence(
     return latest
 
 
+_FINDING_LEVEL_EVENT_TYPES = frozenset(
+    {
+        "opened",
+        "accepted",
+        "rejected",
+        "edited_remark",
+        "edited",
+        "triaged",
+        "drawing_region_escalated",
+        "escalated",
+        "waived",
+        "superseded",
+    }
+)
+_REPORT_LEVEL_EVENT_TYPES = frozenset({"norm_rule_proposed", "norm_rule_edited"})
+
+
 def assert_review_target_in_report(
     report: ValidationReport,
     *,
     finding_id: str | None,
     issue_rule_id: str | None,
+    event_type: str | None = None,
 ) -> None:
-    """Reject events that name a finding/rule not present on the authorized report."""
+    """Reject finding-level events that do not name one existing finding.
 
-    if not report.issues:
+    Report-level / norm-pack types use a different contract and skip this check.
+    Clash-only reports without ``issues`` cannot accept finding-level HITL.
+    """
+
+    kind = (event_type or "").strip()
+    if kind in _REPORT_LEVEL_EVENT_TYPES:
         return
+    if kind and kind not in _FINDING_LEVEL_EVENT_TYPES:
+        raise ValueError("unknown review event_type for target check")
     fid = (finding_id or "").strip()
     rid = (issue_rule_id or "").strip()
+    if not report.issues:
+        raise ValueError("finding-level review requires a finding on the report")
+    if not fid and not rid:
+        raise ValueError("finding-level review requires finding_id or unique issue_rule_id")
     if fid:
         matches = [issue for issue in report.issues if (issue.finding_id or "").strip() == fid]
         if not matches:
@@ -103,10 +132,9 @@ def assert_review_target_in_report(
         if rid and any((issue.rule_id or "").strip() != rid for issue in matches):
             raise ValueError("issue_rule_id does not match finding_id on this report")
         return
-    if rid:
-        matches = [issue for issue in report.issues if (issue.rule_id or "").strip() == rid]
-        if len(matches) != 1:
-            raise ValueError("issue_rule_id is missing or not unique on this report")
+    matches = [issue for issue in report.issues if (issue.rule_id or "").strip() == rid]
+    if len(matches) != 1:
+        raise ValueError("issue_rule_id is missing or not unique on this report")
 
 
 __all__ = [

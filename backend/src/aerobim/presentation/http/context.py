@@ -12,6 +12,7 @@ annotations`` here: FastAPI must evaluate dependency annotations at runtime.
 
 import re as _re
 import secrets
+import unicodedata
 from dataclasses import asdict
 from pathlib import Path
 from typing import Annotated, Any
@@ -110,7 +111,7 @@ def _oidc_tenant_from_claim(value: object) -> str:
             detail="OIDC token tenant claim must be a string",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    return value.strip()
+    return unicodedata.normalize("NFC", value.strip())
 
 
 def attachment_content_disposition(filename: str) -> str:

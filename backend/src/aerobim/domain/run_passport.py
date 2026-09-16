@@ -20,6 +20,7 @@ PASSPORT_STAGES: Final[tuple[str, ...]] = (
     "drawing",
     "cross-doc",
     "clash",
+    "advisory",
     "report",
 )
 
@@ -132,7 +133,7 @@ def _source_kwargs(item: Mapping[str, Any]) -> dict[str, Any]:
 def build_run_passport(
     *,
     sources: Sequence[Mapping[str, Any]] = (),
-    stage_timings_ms: Mapping[str, int] | None = None,
+    stage_timings_ms: Mapping[str, int | None] | None = None,
     git_sha: str = "",
     rules_version: str = "",
     report_id: str | None = None,
@@ -141,10 +142,19 @@ def build_run_passport(
     timings = dict(stage_timings_ms or {})
     stages = []
     cumulative = 0
+    cumulative_known = True
     for name in PASSPORT_STAGES:
-        ms = int(timings.get(name, 0))
-        cumulative += ms
-        stages.append({"name": name, "duration_ms": ms, "cumulative_ms": cumulative})
+        raw = timings.get(name, None)
+        if raw is None:
+            stages.append({"name": name, "duration_ms": None, "cumulative_ms": None})
+            cumulative_known = False
+            continue
+        ms = int(raw)
+        if cumulative_known:
+            cumulative += ms
+            stages.append({"name": name, "duration_ms": ms, "cumulative_ms": cumulative})
+        else:
+            stages.append({"name": name, "duration_ms": ms, "cumulative_ms": None})
     coverage = format_coverage_table(sources)
     basis = (timing_basis or "sources_only").strip() or "sources_only"
     return {

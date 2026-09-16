@@ -67,6 +67,49 @@ class LlmAdvisoryInvarianceTests(unittest.TestCase):
         self.assertFalse(LLM_SELECTS_CHECK_ON_VERDICT_PATH)
         self.assertFalse(LLM_GENERATED_FUNCTION_WRITES_SUMMARY_PASSED)
 
+    def test_malicious_advisory_cannot_raise_severity_or_invent_refs(self) -> None:
+        from aerobim.application.services.determinism_gate import DeterminismGate
+        from aerobim.domain.models import FindingCategory, Severity, ValidationIssue
+
+        engine = [
+            ValidationIssue(
+                rule_id="AEROBIM-CROSS-DOC",
+                severity=Severity.WARNING,
+                message="values differ",
+                category=FindingCategory.CROSS_DOCUMENT,
+                origin="deterministic",
+                finding_id="eng-1",
+                element_guid="2nJrDaLQfJ1QPhdJR0o97J",
+                evidence_refs=("engine:1",),
+            )
+        ]
+        advisory = [
+            ValidationIssue(
+                rule_id="AEROBIM-CROSS-DOC",
+                severity=Severity.ERROR,
+                message="LLM flips this to ERROR and invents a GUID",
+                category=FindingCategory.CROSS_DOCUMENT,
+                origin="advisory",
+                finding_id="adv-hallucinated",
+                element_guid="ZZZZZZZZZZZZZZZZZZZZZZ",
+                evidence_refs=("invented-ref",),
+            )
+        ]
+        merged, divergences = DeterminismGate().reconcile(
+            engine_issues=engine,
+            advisory_issues=advisory,
+            evidence_universe=frozenset({"2nJrDaLQfJ1QPhdJR0o97J"}),
+        )
+        self.assertTrue(any(issue.origin == "deterministic" for issue in merged))
+        advisory_only = [issue for issue in merged if issue.origin == "advisory"]
+        self.assertTrue(advisory_only)
+        self.assertTrue(all(issue.severity is Severity.INFO for issue in advisory_only))
+        self.assertTrue(any("ungrounded" in (issue.message or "") for issue in advisory_only))
+        self.assertTrue(divergences)
+        self.assertFalse(
+            any(issue.severity is Severity.ERROR and issue.origin == "advisory" for issue in merged)
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

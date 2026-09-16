@@ -39,10 +39,11 @@ class RunPassportTests(unittest.TestCase):
                 "drawing": 5,
                 "cross-doc": 8,
                 "clash": 12,
+                "advisory": 0,
                 "report": 3,
             }
         )
-        self.assertEqual(len(passport["stages"]), 7)
+        self.assertEqual(len(passport["stages"]), 8)
         self.assertTrue(stages_are_monotonic(passport))
         self.assertEqual(passport["stages"][-1]["cumulative_ms"], 98)
         self.assertEqual(passport["stage_timing_basis"], "sources_only")

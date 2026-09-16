@@ -11,6 +11,9 @@ from pathlib import Path
 from aerobim.core.config.settings import Settings
 from aerobim.core.di.tokens import Tokens
 from aerobim.domain.models import (
+    FindingCategory,
+    Severity,
+    ValidationIssue,
     ValidationReport,
     ValidationSummary,
 )
@@ -249,7 +252,16 @@ class FollowOnAuditFindingTests(unittest.TestCase):
                     ifc_path=Path("seed.ifc"),
                     created_at=datetime.now(tz=UTC).isoformat(),
                     requirements=(),
-                    issues=(),
+                    issues=(
+                        ValidationIssue(
+                            rule_id="IDS-1",
+                            severity=Severity.ERROR,
+                            message="seed",
+                            category=FindingCategory.IFC_VALIDATION,
+                            finding_id="f-seed",
+                            origin="deterministic",
+                        ),
+                    ),
                     summary=ValidationSummary(0, 0, 0, 0, True),
                     tenant_id="lab-anonymous",
                 )
@@ -257,7 +269,7 @@ class FollowOnAuditFindingTests(unittest.TestCase):
             client = TestClient(create_http_app(container))
             response = client.post(
                 f"/v1/reports/{report_id}/review-events",
-                json={"event_type": "opened", "actor": "attacker"},
+                json={"event_type": "opened", "actor": "attacker", "finding_id": "f-seed"},
             )
             self.assertEqual(response.status_code, 200, response.text)
             actor = response.json()["event"]["actor"]

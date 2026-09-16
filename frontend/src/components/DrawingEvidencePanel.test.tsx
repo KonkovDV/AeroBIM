@@ -163,6 +163,47 @@ describe("DrawingEvidencePanel", () => {
     expect(screen.getByText(/точного превью/i)).toBeTruthy();
   });
 
+  it("does not overlay a finding on another page of the same sheet", () => {
+    render(
+      <DrawingEvidencePanel
+        report={buildReport()}
+        activeIssue={buildIssue({
+          problem_zone: {
+            sheet_id: "A-101",
+            page_number: 2,
+            x: 10,
+            y: 20,
+            width: 100,
+            height: 60,
+            element_guid: null,
+          },
+        })}
+      />,
+    );
+    expect(screen.getByText(UI_COPY.overlayWrongPage)).toBeTruthy();
+    expect(screen.queryByText(UI_COPY.overlayTarget)).toBeNull();
+  });
+
+  it("refuses unsupported coordinate systems instead of guessing a box", async () => {
+    const report = buildReport();
+    report.drawing_regions = [
+      {
+        sheet_id: "A-101",
+        modality: "ocr",
+        confidence: 1,
+        layout_role: "content",
+        coordinate_system: "cropbox-rotated",
+        bbox_xyxy: [0.1, 0.1, 0.2, 0.2],
+      },
+    ];
+    render(<DrawingEvidencePanel report={report} activeIssue={null} />);
+    const image = screen.getByRole("img", { name: /Превью чертежа a-101/i });
+    Object.defineProperty(image, "naturalWidth", { configurable: true, value: 320 });
+    Object.defineProperty(image, "naturalHeight", { configurable: true, value: 200 });
+    fireEvent.load(image);
+    expect(await screen.findByText(UI_COPY.overlayUnsupportedCoords)).toBeTruthy();
+  });
+
   it("lists HITL regions that require expert review", () => {
     const report = buildReport();
     report.drawing_regions = [

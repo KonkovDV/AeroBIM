@@ -9,6 +9,9 @@ import {
 } from "../lib/api";
 import {
   asReviewEventRow,
+  canDecideFinding,
+  canEditFinding,
+  canOpenFinding,
   effectiveRemarkText,
   hitlOperationFingerprint,
   latestHitlState,
@@ -20,6 +23,7 @@ import type { ValidationIssue, ValidationReport } from "../lib/types";
 import { UI_COPY } from "../lib/ui-copy";
 
 export type RemarkSaveState = "idle" | "saving" | "saved" | "failed";
+export type HitlRequestState = "idle" | "saving" | "failed";
 export type HitlDecisionState = "idle" | "saving" | "accepted" | "rejected" | "failed";
 
 /**
@@ -49,19 +53,22 @@ export type SelectedReportState = {
   selectedClashIndex: number | null;
   remarkDraft: string;
   remarkSaveState: RemarkSaveState;
+  hitlRequestState: HitlRequestState;
   hitlDecisionState: HitlDecisionState;
+  persistedHitlState: string | null;
   pendingSelect: PendingFindingSelect | null;
   conflictMessage: string | null;
   setSelectedIssueIndex: Dispatch<SetStateAction<number>>;
   setSelectedClashIndex: Dispatch<SetStateAction<number | null>>;
   setRemarkDraft: Dispatch<SetStateAction<string>>;
   setRemarkSaveState: Dispatch<SetStateAction<RemarkSaveState>>;
-  setHitlDecisionState: Dispatch<SetStateAction<HitlDecisionState>>;
   selectIssue: (index: number, issue: ValidationIssue, options?: { force?: boolean }) => void;
   confirmPendingSelect: (mode: "save" | "discard") => Promise<void>;
   dismissPendingSelect: () => void;
   saveRemarkEdit: (issue: ValidationIssue | null) => Promise<boolean>;
   decideRemark: (eventType: "accepted" | "rejected", issue: ValidationIssue | null) => Promise<void>;
+  openRemark: (issue: ValidationIssue | null) => Promise<void>;
+  discardRemarkDraft: () => void;
   isDirty: boolean;
 };
 
@@ -72,7 +79,7 @@ function resetEditor(
   setReportError: Dispatch<SetStateAction<RequestFailureKind | null>>,
   setRemarkDraft: Dispatch<SetStateAction<string>>,
   setRemarkSaveState: Dispatch<SetStateAction<RemarkSaveState>>,
-  setHitlDecisionState: Dispatch<SetStateAction<HitlDecisionState>>,
+  setHitlRequestState: Dispatch<SetStateAction<HitlRequestState>>,
   setPendingSelect: Dispatch<SetStateAction<PendingFindingSelect | null>>,
   setConflictMessage: Dispatch<SetStateAction<string | null>>,
 ): void {
@@ -82,7 +89,7 @@ function resetEditor(
   setReportError(null);
   setRemarkDraft("");
   setRemarkSaveState("idle");
-  setHitlDecisionState("idle");
+  setHitlRequestState("idle");
   setPendingSelect(null);
   setConflictMessage(null);
 }
@@ -102,7 +109,7 @@ export function useSelectedReport(
   const [selectedClashIndex, setSelectedClashIndex] = useState<number | null>(null);
   const [remarkDraft, setRemarkDraft] = useState("");
   const [remarkSaveState, setRemarkSaveState] = useState<RemarkSaveState>("idle");
-  const [hitlDecisionState, setHitlDecisionState] = useState<HitlDecisionState>("idle");
+  const [hitlRequestState, setHitlRequestState] = useState<HitlRequestState>("idle");
   const [pendingSelect, setPendingSelect] = useState<PendingFindingSelect | null>(null);
   const [conflictMessage, setConflictMessage] = useState<string | null>(null);
   const reviewEventsRef = useRef<ReviewEventRow[]>([]);
@@ -130,7 +137,7 @@ export function useSelectedReport(
         setReportError,
         setRemarkDraft,
         setRemarkSaveState,
-        setHitlDecisionState,
+        setHitlRequestState,
         setPendingSelect,
         setConflictMessage,
       );
@@ -151,7 +158,7 @@ export function useSelectedReport(
       setReportError,
       setRemarkDraft,
       setRemarkSaveState,
-      setHitlDecisionState,
+      setHitlRequestState,
       setPendingSelect,
       setConflictMessage,
     );
@@ -176,7 +183,7 @@ export function useSelectedReport(
         const landingIssue = report.issues[landingIndex];
         setRemarkDraft(landingIssue ? effectiveRemarkText(landingIssue, []) : "");
         setRemarkSaveState("idle");
-        setHitlDecisionState("idle");
+        setHitlRequestState("idle");
         setReportLoading(false);
         const eventsResult = await eventsPromise;
         if (cancelled || controller.signal.aborted) {
@@ -229,7 +236,7 @@ export function useSelectedReport(
     setSelectedClashIndex(null);
     setRemarkDraft(effectiveRemarkText(issue, reviewEventsRef.current));
     setRemarkSaveState("idle");
-    setHitlDecisionState("idle");
+    setHitlRequestState("idle");
     setPendingSelect(null);
     setConflictMessage(null);
   }, []);
@@ -329,10 +336,30 @@ export function useSelectedReport(
     return (current?.finding_id ?? current?.rule_id) === (issue.finding_id ?? issue.rule_id);
   };
 
+  const reloadEventsKeepDraft = useCallback(async (reportId: string) => {
+    try {
+      const payload = await fetchReviewEvents(reportId);
+      if (selectedReportRef.current?.report_id !== reportId) {
+        return;
+      }
+      setReviewEvents(payload.events);
+      setReviewEventsError(null);
+    } catch (error: unknown) {
+      if (selectedReportRef.current?.report_id !== reportId) {
+        return;
+      }
+      setReviewEventsError(error instanceof Error ? error.message : UI_COPY.historyFailed);
+    }
+  }, []);
+
   const saveRemarkEdit = useCallback(
     async (issue: ValidationIssue | null): Promise<boolean> => {
       const report = selectedReportRef.current;
       if (!report || !issue || reportLoading || historyPendingRef.current || hitlBusyRef.current) {
+        return false;
+      }
+      const previous = latestHitlState(reviewEventsRef.current, issue);
+      if (!canEditFinding(previous)) {
         return false;
       }
       const draft = remarkDraftRef.current;
@@ -347,7 +374,6 @@ export function useSelectedReport(
         if (!stillOnFinding(reportId, issue)) {
           return true;
         }
-        // The response confirms the submitted draft, not text typed while saving.
         const draftUnchanged = remarkDraftRef.current === draft;
         setRemarkSaveState(draftUnchanged ? "saved" : "idle");
         setConflictMessage(null);
@@ -359,13 +385,14 @@ export function useSelectedReport(
         setRemarkSaveState("failed");
         if (error instanceof ApiHttpError && error.status === 409) {
           setConflictMessage(UI_COPY.hitlConflict);
+          await reloadEventsKeepDraft(reportId);
         }
         return false;
       } finally {
         hitlBusyRef.current = false;
       }
     },
-    [postHitlEvent, reportLoading],
+    [postHitlEvent, reloadEventsKeepDraft, reportLoading],
   );
 
   const decideRemark = useCallback(
@@ -376,30 +403,97 @@ export function useSelectedReport(
       }
       const reportId = report.report_id;
       const draft = remarkDraftRef.current;
+      const original = effectiveRemarkText(issue, reviewEventsRef.current);
+      const previous = latestHitlState(reviewEventsRef.current, issue);
       hitlBusyRef.current = true;
-      setHitlDecisionState("saving");
+      setHitlRequestState("saving");
       try {
-        const note = eventType === "rejected" && !draft.trim() ? UI_COPY.rejectDefaultNote : draft;
+        if (draft.trim() && draft !== original) {
+          if (!canEditFinding(previous)) {
+            setHitlRequestState("failed");
+            return;
+          }
+          await postHitlEvent(issue, "edited_remark", draft, reportId);
+          if (remarkDraftRef.current !== draft) {
+            setHitlRequestState("idle");
+            return;
+          }
+        }
+        const afterEdit = latestHitlState(reviewEventsRef.current, issue);
+        if (!canDecideFinding(afterEdit)) {
+          setHitlRequestState("failed");
+          return;
+        }
+        const note =
+          eventType === "rejected"
+            ? draft.trim() || UI_COPY.rejectDefaultNote
+            : "";
         await postHitlEvent(issue, eventType, note, reportId);
         if (!stillOnFinding(reportId, issue)) {
           return;
         }
-        setHitlDecisionState(eventType);
+        setHitlRequestState("idle");
         setConflictMessage(null);
       } catch (error: unknown) {
         if (!stillOnFinding(reportId, issue)) {
           return;
         }
-        setHitlDecisionState("failed");
+        setHitlRequestState("failed");
         if (error instanceof ApiHttpError && error.status === 409) {
           setConflictMessage(UI_COPY.hitlConflict);
+          await reloadEventsKeepDraft(reportId);
         }
       } finally {
         hitlBusyRef.current = false;
       }
     },
-    [postHitlEvent, reportLoading],
+    [postHitlEvent, reloadEventsKeepDraft, reportLoading],
   );
+
+  const openRemark = useCallback(
+    async (issue: ValidationIssue | null) => {
+      const report = selectedReportRef.current;
+      if (!report || !issue || reportLoading || historyPendingRef.current || hitlBusyRef.current) {
+        return;
+      }
+      const previous = latestHitlState(reviewEventsRef.current, issue);
+      if (!canOpenFinding(previous)) {
+        return;
+      }
+      const reportId = report.report_id;
+      hitlBusyRef.current = true;
+      setHitlRequestState("saving");
+      try {
+        await postHitlEvent(issue, "opened", "", reportId);
+        if (!stillOnFinding(reportId, issue)) {
+          return;
+        }
+        setHitlRequestState("idle");
+        setConflictMessage(null);
+      } catch (error: unknown) {
+        if (!stillOnFinding(reportId, issue)) {
+          return;
+        }
+        setHitlRequestState("failed");
+        if (error instanceof ApiHttpError && error.status === 409) {
+          setConflictMessage(UI_COPY.hitlConflict);
+          await reloadEventsKeepDraft(reportId);
+        }
+      } finally {
+        hitlBusyRef.current = false;
+      }
+    },
+    [postHitlEvent, reloadEventsKeepDraft, reportLoading],
+  );
+
+  const discardRemarkDraft = useCallback(() => {
+    const current = selectedReportRef.current?.issues[selectedIssueIndexRef.current];
+    setRemarkDraft(current ? effectiveRemarkText(current, reviewEventsRef.current) : "");
+    setRemarkSaveState("idle");
+    setHitlRequestState("idle");
+    setConflictMessage(null);
+    setPendingSelect(null);
+  }, []);
 
   const confirmPendingSelect = useCallback(
     async (mode: "save" | "discard") => {
@@ -413,10 +507,12 @@ export function useSelectedReport(
         if (!saved) {
           return;
         }
+      } else {
+        discardRemarkDraft();
       }
       applySelect(pending.index, pending.issue);
     },
-    [applySelect, pendingSelect, saveRemarkEdit],
+    [applySelect, discardRemarkDraft, pendingSelect, saveRemarkEdit],
   );
 
   const dismissPendingSelect = useCallback(() => {
@@ -441,6 +537,17 @@ export function useSelectedReport(
   const selectedIssue = selectedReport?.issues[selectedIssueIndex];
   const originalRemark = selectedIssue ? effectiveRemarkText(selectedIssue, reviewEvents) : "";
   const isDirty = remarkDraft !== originalRemark;
+  const persistedHitlState = selectedIssue ? latestHitlState(reviewEvents, selectedIssue) : null;
+  const hitlDecisionState: HitlDecisionState =
+    hitlRequestState === "saving"
+      ? "saving"
+      : hitlRequestState === "failed"
+        ? "failed"
+        : persistedHitlState === "accepted"
+          ? "accepted"
+          : persistedHitlState === "rejected"
+            ? "rejected"
+            : "idle";
 
   return {
     selectedReport,
@@ -453,19 +560,22 @@ export function useSelectedReport(
     selectedClashIndex,
     remarkDraft,
     remarkSaveState,
+    hitlRequestState,
     hitlDecisionState,
+    persistedHitlState,
     pendingSelect,
     conflictMessage,
     setSelectedIssueIndex,
     setSelectedClashIndex,
     setRemarkDraft,
     setRemarkSaveState,
-    setHitlDecisionState,
     selectIssue,
     confirmPendingSelect,
     dismissPendingSelect,
     saveRemarkEdit,
     decideRemark,
+    openRemark,
+    discardRemarkDraft,
     isDirty,
   };
 }

@@ -30,7 +30,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
 
-_MASK_VERSION = "1.0.0"
+_MASK_VERSION = "1.1.0"
 # HD4-PG-02: substring scan skips needles shorter than this (JSON punctuation /
 # trivial tokens such as "A1"). Short secrets are a documented residual.
 _MIN_LEAK_SCAN_CHARS = 3
@@ -57,18 +57,51 @@ def _canonical_tenant(tenant_id: str) -> str:
     return text
 
 
+_MAX_NEEDLE_DEPTH = 6
+_MAX_NEEDLES = 64
+
+
 def _residual_needles(value: Any) -> tuple[str, ...]:
-    """Python ``str`` and JSON atom forms (HD4-PG-02: ``True`` vs ``true``)."""
-    python_form = str(value)
-    try:
-        json_form = json.dumps(value, ensure_ascii=False)
-    except TypeError:
-        json_form = json.dumps(python_form, ensure_ascii=False)
-    needles: list[str] = []
-    for candidate in (python_form, json_form):
-        if len(candidate) >= _MIN_LEAK_SCAN_CHARS and candidate not in needles:
-            needles.append(candidate)
-    return tuple(needles)
+    """Scalar leaves plus Python/JSON atom forms (HD4-PG-02: ``True`` vs ``true``).
+
+    Nested dict/list values are walked so a removed parent object cannot hide a
+    secret that is still present in a kept sibling field (RT04).
+    """
+
+    found: list[str] = []
+    remaining = _MAX_NEEDLES
+
+    def add(candidate: str) -> None:
+        nonlocal remaining
+        if remaining <= 0:
+            return
+        if len(candidate) >= _MIN_LEAK_SCAN_CHARS and candidate not in found:
+            found.append(candidate)
+            remaining -= 1
+
+    def walk(node: Any, level: int) -> None:
+        if remaining <= 0 or level > _MAX_NEEDLE_DEPTH:
+            return
+        if isinstance(node, Mapping):
+            for item in node.values():
+                walk(item, level + 1)
+            return
+        if isinstance(node, (list, tuple, set)):
+            for item in node:
+                walk(item, level + 1)
+            return
+        python_form = str(node)
+        try:
+            json_form = json.dumps(node, ensure_ascii=False)
+        except TypeError:
+            json_form = json.dumps(python_form, ensure_ascii=False)
+        add(python_form)
+        add(json_form)
+        if isinstance(node, str):
+            add(node)
+
+    walk(value, 0)
+    return tuple(found)
 
 
 def _assert_no_residual_leak(masked: Mapping[str, Any], sensitive_values: list[Any]) -> None:

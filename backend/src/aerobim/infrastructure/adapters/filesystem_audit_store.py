@@ -444,6 +444,12 @@ class FilesystemAuditStore:
                 raise TimeoutError(
                     f"PDF preview timed out after {_PDF_OPEN_TIMEOUT_S:.0f}s: {source_path}"
                 ) from exc
+            except Exception:
+                _logger.exception(
+                    "PDF preview failed for %s; report continues without preview",
+                    source_path,
+                )
+                return [asset]
         return persisted_assets
 
     def _persist_raster_asset(

@@ -20,6 +20,31 @@ class IdempotencyPayloadConflictError(RuntimeError):
     """Same Idempotency-Key already bound to a different analyze payload."""
 
 
+class JobConcurrencyLimitError(RuntimeError):
+    """Tenant would exceed max concurrent QUEUED+RUNNING analyze jobs."""
+
+
+def _text_digest(text: str | None) -> str:
+    if not text:
+        return ""
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def _file_identity(path: Path | None, *, sha256: str | None = None) -> dict[str, str]:
+    row = {"path": _path_key(path), "sha256": str(sha256 or "")}
+    if path is None:
+        return row
+    try:
+        resolved = path.resolve()
+        if resolved.is_file():
+            stat = resolved.stat()
+            row["size"] = str(int(stat.st_size))
+            row["mtime_ns"] = str(int(stat.st_mtime_ns))
+    except OSError:
+        pass
+    return row
+
+
 def _path_key(path: Path | None) -> str:
     if path is None:
         return ""
@@ -30,7 +55,13 @@ def _path_key(path: Path | None) -> str:
 
 
 def analyze_job_payload_fingerprint(request: ValidationRequest) -> str:
-    """Stable SHA-256 of the submitted package identity (paths and ids)."""
+    """Stable SHA-256 of semantically significant analyze inputs.
+
+    Includes inline texts, file identity (path + digest or size/mtime), and
+    modes that change the check. ``request_id`` is not part of the job
+    identity. Fingerprint version ``v2`` so legacy stored hashes conflict
+    fail-closed when compared via ``fingerprints_conflict``.
+    """
 
     def _source_id(source: object | None) -> str:
         if source is None:
@@ -44,32 +75,59 @@ def analyze_job_payload_fingerprint(request: ValidationRequest) -> str:
         value = getattr(kind, "value", kind)
         return str(value or "")
 
+    def _requirement_identity(source: object | None) -> dict[str, str]:
+        if source is None:
+            return {
+                "path": "",
+                "sha256": "",
+                "text_sha256": "",
+                "kind": "",
+                "id": "",
+                "revision": "",
+            }
+        path = getattr(source, "path", None)
+        declared = getattr(source, "sha256", None)
+        identity = _file_identity(path if isinstance(path, Path) else None, sha256=declared)
+        identity["text_sha256"] = _text_digest(str(getattr(source, "text", "") or ""))
+        identity["kind"] = _kind(source)
+        identity["id"] = _source_id(source)
+        identity["revision"] = str(getattr(source, "revision", None) or "")
+        return identity
+
     drawings = sorted(
         (
             {
-                "path": _path_key(getattr(item, "path", None)),
+                **_file_identity(
+                    getattr(item, "path", None)
+                    if isinstance(getattr(item, "path", None), Path)
+                    else None,
+                    sha256=getattr(item, "sha256", None),
+                ),
                 "sheet_id": str(getattr(item, "sheet_id", None) or ""),
                 "format": str(getattr(item, "format", None) or ""),
+                "revision": str(getattr(item, "revision", None) or ""),
+                "text_sha256": _text_digest(str(getattr(item, "text", "") or "")),
             }
             for item in request.drawing_sources
         ),
-        key=lambda row: (row["path"], row["sheet_id"], row["format"]),
+        key=lambda row: (row["path"], row["sheet_id"], row["format"], row["text_sha256"]),
     )
     payload = {
-        "ifc_path": _path_key(request.ifc_path),
-        "ids_path": _path_key(request.ids_path),
-        "requirement_path": _path_key(request.requirement_source.path),
-        "requirement_kind": _kind(request.requirement_source),
-        "requirement_id": _source_id(request.requirement_source),
-        "technical_spec_path": _path_key(
-            request.technical_spec_source.path if request.technical_spec_source else None
-        ),
-        "calculation_path": _path_key(
-            request.calculation_source.path if request.calculation_source else None
-        ),
+        "fingerprint_version": "v2",
+        "ifc": _file_identity(request.ifc_path),
+        "ids": _file_identity(request.ids_path),
+        "requirement": _requirement_identity(request.requirement_source),
+        "technical_spec": _requirement_identity(request.technical_spec_source),
+        "calculation": _requirement_identity(request.calculation_source),
         "drawings": drawings,
-        "reinforcement_report_path": _path_key(request.reinforcement_report_path),
+        "reinforcement_report": _file_identity(request.reinforcement_report_path),
         "reinforcement_source_digest": str(request.reinforcement_source_digest or ""),
+        "reinforcement_provenance_mode": str(request.reinforcement_provenance_mode or ""),
+        "reinforcement_waste_warning_threshold_percent": str(
+            request.reinforcement_waste_warning_threshold_percent
+            if request.reinforcement_waste_warning_threshold_percent is not None
+            else ""
+        ),
         "origin": str(request.origin or ""),
         "project_name": str(request.project_name or ""),
         "discipline": str(request.discipline or ""),
@@ -90,10 +148,17 @@ def analyze_job_payload_fingerprint(request: ValidationRequest) -> str:
 
 
 def fingerprints_conflict(stored: str | None, incoming: str | None) -> bool:
-    """Legacy rows with no fingerprint cannot be conflicted. Both set and unequal → yes."""
+    """Fail-closed: missing stored fingerprint cannot prove the same payload.
 
-    if not stored or not incoming:
+    Incoming empty cannot be checked and is not treated as a conflict (caller
+    always supplies a v2 hash). Unequal hashes conflict. ``request_id`` is
+    outside the hash, so changing only that field does not 409.
+    """
+
+    if not incoming:
         return False
+    if not stored:
+        return True
     return stored != incoming
 
 
@@ -121,4 +186,5 @@ def job_from_stored_mapping(item: Mapping[str, Any]) -> AnalyzeProjectPackageJob
         payload_fingerprint=(
             str(item["payload_fingerprint"]) if item.get("payload_fingerprint") else None
         ),
+        lease_owner=(str(item["lease_owner"]) if item.get("lease_owner") else None),
     )

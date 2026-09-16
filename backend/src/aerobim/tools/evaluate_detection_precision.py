@@ -8,6 +8,7 @@ optional protocol gate for datasets that claim to have completed adjudication.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 from collections.abc import Callable
@@ -70,35 +71,49 @@ class MetricCounts:
     fn: int
 
     @property
-    def precision(self) -> float:
+    def precision(self) -> float | None:
         denominator = self.tp + self.fp
         if denominator:
             return self.tp / denominator
-        return 1.0 if self.fn == 0 else 0.0
+        return None
 
     @property
-    def recall(self) -> float:
+    def recall(self) -> float | None:
         denominator = self.tp + self.fn
-        return self.tp / denominator if denominator else 1.0
+        if denominator:
+            return self.tp / denominator
+        return None
 
     @property
-    def f1(self) -> float:
-        denominator = self.precision + self.recall
-        return 2 * self.precision * self.recall / denominator if denominator else 0.0
+    def f1(self) -> float | None:
+        precision = self.precision
+        recall = self.recall
+        if precision is None or recall is None:
+            return None
+        denominator = precision + recall
+        return 2 * precision * recall / denominator if denominator else 0.0
 
-    def as_dict(self) -> dict[str, int | float]:
+    def as_dict(self) -> dict[str, int | float | str | bool | None]:
         support = self.tp + self.fn
         total = self.tp + self.fp + self.fn
+        precision = self.precision
+        recall = self.recall
+        f1 = self.f1
         return {
             "tp": self.tp,
             "fp": self.fp,
             "fn": self.fn,
-            "precision": round(self.precision, 6),
-            "recall": round(self.recall, 6),
-            "f1": round(self.f1, 6),
-            "critical_recall": round(self.recall, 6),
+            "precision": None if precision is None else round(precision, 6),
+            "recall": None if recall is None else round(recall, 6),
+            "f1": None if f1 is None else round(f1, 6),
+            "precision_status": "defined" if precision is not None else "undefined_no_predictions",
+            "recall_status": "defined" if recall is not None else "undefined_no_positives",
+            "critical_recall": None if recall is None else round(recall, 6),
+            "critical_recall_subset": "all_labeled_findings_not_a_severity_filter",
             "false_positive_burden": round(self.fp / total, 6) if total else 0.0,
+            "false_positive_burden_denominator": "tp+fp+fn",
             "support": support,
+            "empty_support": total == 0,
         }
 
 
@@ -159,13 +174,23 @@ def evaluate_detection_precision(
         per_class[finding_class] = counts.as_dict()
 
     if class_counts:
+        defined_precision = [c.precision for c in class_counts if c.precision is not None]
+        defined_recall = [c.recall for c in class_counts if c.recall is not None]
+        defined_f1 = [c.f1 for c in class_counts if c.f1 is not None]
         macro: dict[str, object] = {
-            "precision": round(
-                sum(counts.precision for counts in class_counts) / len(class_counts), 6
+            "precision": (
+                round(sum(defined_precision) / len(defined_precision), 6)
+                if defined_precision
+                else None
             ),
-            "recall": round(sum(counts.recall for counts in class_counts) / len(class_counts), 6),
-            "f1": round(sum(counts.f1 for counts in class_counts) / len(class_counts), 6),
+            "recall": (
+                round(sum(defined_recall) / len(defined_recall), 6) if defined_recall else None
+            ),
+            "f1": round(sum(defined_f1) / len(defined_f1), 6) if defined_f1 else None,
             "class_count": len(class_counts),
+            "defined_precision_classes": len(defined_precision),
+            "defined_recall_classes": len(defined_recall),
+            "macro_averaging": "unweighted_mean_of_classes_with_defined_metric",
             "empty_classes": False,
         }
     else:
@@ -216,6 +241,7 @@ def evaluate_detection_precision(
     )
 
     agreement_payload: dict[str, object] | None = None
+    labels_hash = hashlib.sha256(labels_path.read_bytes()).hexdigest()
     if agreement_path is not None:
         agreement_payload = _load_agreement_json(agreement_path)
         if agreement_payload.get("artifact_type") != "adjudicator_agreement":
@@ -223,13 +249,19 @@ def evaluate_detection_precision(
 
     # Fixture/synthetic claim_level must never skip agreement (latent publishable flip).
     agreement_required = require_agreement_for_publishable or corpus_kind != "customer"
-    publishable = precision_claim_publishable_with_agreement(
-        claim,
-        agreement=agreement_payload,
-        require_agreement=agreement_required,
-        held_out_split=labels.held_out_split,
-        fn_tracked=fn_tracked,
-    )
+    try:
+        publishable = precision_claim_publishable_with_agreement(
+            claim,
+            agreement=agreement_payload,
+            require_agreement=agreement_required,
+            held_out_split=labels.held_out_split,
+            fn_tracked=fn_tracked,
+            expected_corpus_hash=labels_hash if agreement_payload is not None else None,
+        )
+    except ValueError as exc:
+        publishable = False
+        contract = f"agreement contract rejected: {exc}"
+        warning = f"{warning} {contract}" if warning else contract
     if corpus_kind != "customer":
         publishable = False
     if macro.get("empty_classes"):
@@ -272,7 +304,16 @@ def evaluate_detection_precision(
             "fn_tracked": claim.fn_tracked,
             "base_publishable": claim.publishable,
             "publishable": publishable,
-            "render": claim.render_value(),
+            "labels_sha256": labels_hash,
+            "render": (
+                claim.render_value()
+                if publishable
+                else (
+                    f"{claim.metric}=withheld "
+                    f"(corpus_kind={claim.corpus_kind}, adjudicators={claim.adjudicators}; "
+                    "not publishable as product accuracy)"
+                )
+            ),
         },
         "labels": {
             "confirmed": len(labels.expected),
@@ -324,9 +365,13 @@ def threshold_failures(
             continue
         if not 0.0 <= threshold <= 1.0:
             raise ValueError(f"{metric} threshold must be in [0, 1]")
-        actual = float(micro[metric])
-        if actual < threshold:
-            failures.append(f"micro {metric} {actual:.6f} < required {threshold:.6f}")
+        actual = micro[metric]
+        if actual is None:
+            failures.append(f"micro {metric} is undefined (empty support)")
+            continue
+        actual_f = float(actual)
+        if actual_f < threshold:
+            failures.append(f"micro {metric} {actual_f:.6f} < required {threshold:.6f}")
     return failures
 
 
@@ -370,8 +415,10 @@ def _load_agreement_json(path: Path) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise ValueError("Agreement root must be a JSON object")
     schema = payload.get("schema_version")
-    if schema not in {"1.0.0", "1.1.0", "1.2.0"}:
-        raise ValueError("Agreement schema_version must be '1.0.0', '1.1.0', or '1.2.0'")
+    if schema not in {"1.0.0", "1.1.0", "1.2.0", "1.3.0"}:
+        raise ValueError(
+            "Agreement schema_version must be '1.0.0', '1.1.0', '1.2.0', or '1.3.0'"
+        )
     return payload
 
 

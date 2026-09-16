@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from collections.abc import Sequence
 from dataclasses import replace
 from pathlib import Path
@@ -251,50 +252,52 @@ class AnalyzeProjectPackageUseCase:
             ingested = self._ingestion.run(request)
         request = ingested.request
         if not ingested.requirements and request.ids_path is None:
-            raise ValueError(
-                "No requirements were extracted or synthesized from the provided sources"
-            )
+            if request.ifc_path is None or not request.drawing_sources:
+                raise ValueError(
+                    "No requirements were extracted or synthesized from the provided sources"
+                )
         with collector.span(Contour.DETERMINISTIC_VALIDATION):
             deterministic = self._deterministic.run(request, ingested)
         with collector.span(Contour.AI_ADVISORY):
             advisory = self._advisory.run(request, deterministic, ingested)
         with collector.span(Contour.EVIDENCE_REPORTING):
-            report = self._evidence.assemble(request, ingested, deterministic, advisory)
+            report = self._evidence.assemble(
+                request, ingested, deterministic, advisory, persist=False
+            )
         nested = dict(deterministic.stage_ms or {})
-        stage_ms = {
-            "ingest": int(collector.elapsed(Contour.INGESTION) * 1000),
-            "ifc": int(nested.get("ifc") or 0),
-            "ids": int(nested.get("ids") or 0),
-            "drawing": int(nested.get("drawing") or 0),
-            "cross-doc": int(nested.get("cross-doc") or 0),
-            "clash": int(nested.get("clash") or 0),
-            "report": int(collector.elapsed(Contour.EVIDENCE_REPORTING) * 1000),
+
+        def _ms(value: object) -> int | None:
+            if value is None:
+                return None
+            try:
+                return int(value)
+            except (TypeError, ValueError):
+                return None
+
+        stage_ms: dict[str, int | None] = {
+            "ingest": _ms(collector.elapsed(Contour.INGESTION) * 1000),
+            "ifc": _ms(nested.get("ifc")),
+            "ids": _ms(nested.get("ids")),
+            "drawing": _ms(nested.get("drawing")),
+            "cross-doc": _ms(nested.get("cross-doc")),
+            "clash": _ms(nested.get("clash")),
+            "advisory": _ms(collector.elapsed(Contour.AI_ADVISORY) * 1000),
+            "report": _ms(collector.elapsed(Contour.EVIDENCE_REPORTING) * 1000),
         }
         from aerobim.domain.run_passport import (
-            SPF_CAP_BYTES,
             build_run_passport,
             passport_trace,
         )
 
-        sources: list[dict[str, object]] = []
-        if request.ifc_path is not None:
-            size = request.ifc_path.stat().st_size if request.ifc_path.exists() else None
-            source: dict[str, object] = {"name": request.ifc_path.name, "size_bytes": size}
-            if size is not None and size > SPF_CAP_BYTES:
-                source["disposition"] = "read"
-                source["reason"] = "opened on disk (RocksDB); over SPF RAM cap; not a silent skip"
-            sources.append(source)
-        if request.ids_path is not None:
-            sources.append({"name": request.ids_path.name})
-        for drawing in request.drawing_sources:
-            name = drawing.path.name if drawing.path is not None else (drawing.format or "drawing")
-            sources.append({"name": str(name)})
+        sources = self._passport_sources(request, ingested)
+        git_sha = (os.environ.get("AEROBIM_GIT_SHA") or os.environ.get("GITHUB_SHA") or "").strip()
         passport = build_run_passport(
             sources=sources,
             stage_timings_ms=stage_ms,
             report_id=report.report_id,
-            rules_version=str(report.schema_version or ""),
-            timing_basis="per_engine",
+            git_sha=git_sha,
+            rules_version="deterministic-engine",
+            timing_basis="wall_clock_plus_nested",
         )
         report = replace(
             report,
@@ -302,6 +305,70 @@ class AnalyzeProjectPackageUseCase:
         )
         self._audit_report_store.save(report)
         return report
+
+    def _passport_sources(self, request, ingested) -> list[dict[str, object]]:
+        from aerobim.domain.run_passport import SPF_CAP_BYTES
+
+        sources: list[dict[str, object]] = []
+
+        def _add(
+            name: str,
+            *,
+            size: int | None = None,
+            disposition: str | None = None,
+            reason: str | None = None,
+        ) -> None:
+            row: dict[str, object] = {"name": Path(str(name)).name}
+            if size is not None:
+                row["size_bytes"] = size
+            if disposition is not None:
+                row["disposition"] = disposition
+            if reason is not None:
+                row["reason"] = reason
+            sources.append(row)
+
+        if request.ifc_path is not None:
+            size = request.ifc_path.stat().st_size if request.ifc_path.exists() else None
+            extra: dict[str, object] = {}
+            if size is not None and size > SPF_CAP_BYTES:
+                extra["disposition"] = "read"
+                extra["reason"] = "opened on disk (RocksDB); over SPF RAM cap; not a silent skip"
+            _add(request.ifc_path.name, size=size, **extra)  # type: ignore[arg-type]
+        if request.ids_path is not None:
+            _add(request.ids_path.name)
+        req_src = request.requirement_source
+        if req_src.path is not None:
+            _add(req_src.path.name)
+        elif (req_src.text or "").strip():
+            _add("requirement.inline.txt", disposition="read", reason="inline text ingested")
+        if request.technical_spec_source is not None:
+            spec = request.technical_spec_source
+            if spec.path is not None:
+                _add(spec.path.name)
+            elif (spec.text or "").strip():
+                _add("technical-spec.inline.txt", disposition="read", reason="inline text ingested")
+        if request.calculation_source is not None:
+            calc = request.calculation_source
+            if calc.path is not None:
+                _add(calc.path.name)
+            elif (calc.text or "").strip():
+                _add("calculation.inline.txt", disposition="read", reason="inline text ingested")
+        rejected_drawings = {
+            (issue.source_id or "")
+            for issue in getattr(ingested, "raster_issues", ())
+            if getattr(issue, "source_id", None)
+        }
+        for drawing in request.drawing_sources:
+            name = drawing.path.name if drawing.path is not None else (drawing.format or "drawing")
+            if drawing.path is not None and str(drawing.path) in rejected_drawings:
+                _add(str(name), disposition="rejected", reason="drawing ingest failed")
+            elif (drawing.text or "").strip() and drawing.path is None:
+                _add(str(name), disposition="read", reason="inline drawing text ingested")
+            else:
+                _add(str(name))
+        for pack in request.norm_rule_pack_paths:
+            _add(pack.name)
+        return sources
 
     def _cross_doc_detector(self) -> CrossDocumentContradictionDetector:
         # Built on demand: tests construct partial instances and mutate _tolerance.

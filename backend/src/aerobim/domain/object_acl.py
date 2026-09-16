@@ -53,8 +53,11 @@ def principal_may_append_hitl_event(
 
     if event_type not in HITL_EXPERT_EVENT_TYPES:
         return True
-    # Shared API bearer has no expert identity — never a legal acceptance actor.
+    # Shared API bearer / anonymous-dev never sign an expert verdict.
     if principal.is_service_token:
+        return False
+    subject = (principal.subject or "").strip().casefold()
+    if not subject or subject in {"anonymous-dev", LAB_ANONYMOUS_ACTOR.casefold()}:
         return False
     if not enforce_hitl_reviewer_auth:
         return True

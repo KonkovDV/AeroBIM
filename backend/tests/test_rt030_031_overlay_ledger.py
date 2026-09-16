@@ -10,6 +10,7 @@ from pathlib import Path
 from aerobim.application.services.analyze_orchestrators import EvidenceAssembler
 from aerobim.application.services.hybrid_route_gate import HybridRouteGate
 from aerobim.core.config.settings import Settings
+from aerobim.domain.hybrid import PrivacyGuard
 from aerobim.domain.llm_advisory import DisabledLlmProvider, MockLlmProvider
 from aerobim.domain.models import (
     RequirementSource,
@@ -63,7 +64,7 @@ class Rt030OverlayGateTests(unittest.TestCase):
         self.assertEqual(trace["target"], "public")
         self.assertEqual(trace["status"], "blocked")
 
-    def test_yandex_on_public_fixture_allows_overlay(self) -> None:
+    def test_yandex_on_public_fixture_without_guard_cannot_egress(self) -> None:
         provider = OpenAICompatLlmProvider(
             base_url="http://127.0.0.1:9/v1",
             model="qwen",
@@ -81,8 +82,35 @@ class Rt030OverlayGateTests(unittest.TestCase):
             tenant_id="tenant-a",
         )
         allowed, trace = assembler._evaluate_llm_overlay_gate(request)
+        self.assertFalse(allowed)
+        assert trace is not None
+        self.assertEqual(trace["status"], "public_masked")
+        self.assertFalse(trace["may_call_external"])
+
+    def test_yandex_on_public_fixture_with_guard_allows_overlay(self) -> None:
+        provider = OpenAICompatLlmProvider(
+            base_url="http://127.0.0.1:9/v1",
+            model="qwen",
+            provider="yandex-ai-studio",
+            model_revision="pin",
+            transport=lambda *_a, **_k: b"{}",
+        )
+        host = _Host(
+            provider=provider,
+            gate=HybridRouteGate(privacy_guard=PrivacyGuard(tenant_salt="deploy-salt")),
+        )
+        assembler = EvidenceAssembler(host)  # type: ignore[arg-type]
+        request = ValidationRequest(
+            request_id="rt030-fix-guard",
+            ifc_path=Path("samples/ifc/wall.ifc"),
+            requirement_source=RequirementSource(),
+            ids_path=Path("dummy.ids"),
+            tenant_id="tenant-a",
+        )
+        allowed, trace = assembler._evaluate_llm_overlay_gate(request)
         self.assertTrue(allowed)
         assert trace is not None
+        self.assertTrue(trace["may_call_external"])
         self.assertEqual(trace["status"], "public_masked")
 
     def test_missing_gate_suppresses_overlay(self) -> None:

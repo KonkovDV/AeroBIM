@@ -93,7 +93,7 @@ class IfcOpenShellValidator:
             raise FileNotFoundError(ifc_path)
 
         try:
-            from ifcopenshell.util.element import get_psets
+            from ifcopenshell.util.element import get_psets  # noqa: F401 — import gate
         except ModuleNotFoundError as exc:
             raise RuntimeError("Install ifcopenshell to run IFC validation") from exc
 
@@ -101,6 +101,26 @@ class IfcOpenShellValidator:
 
         session = open_ifc_session(ifc_path)
         model = session.model
+        try:
+            return self._validate_opened_model(
+                ifc_path=ifc_path,
+                requirements=requirements,
+                model=model,
+                session=session,
+            )
+        finally:
+            session.close()
+
+    def _validate_opened_model(
+        self,
+        *,
+        ifc_path: Path,
+        requirements: Sequence[ParsedRequirement],
+        model: Any,
+        session: Any,
+    ) -> list[ValidationIssue]:
+        from ifcopenshell.util.element import get_psets
+
         unit_scales, unit_scales_ok = self._get_unit_scales(model)
         issues: list[ValidationIssue] = []
         entity_cache: dict[str, tuple[Any, ...]] = {}

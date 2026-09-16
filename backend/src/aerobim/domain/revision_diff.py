@@ -61,6 +61,7 @@ class RevisionDiff:
     still_reported: tuple[str, ...]
     elements_only_in_old: tuple[str, ...]
     elements_only_in_new: tuple[str, ...]
+    compare_kind: str = "unrelated_reports"
 
     def summary(self) -> dict[str, int]:
         return {
@@ -88,8 +89,19 @@ class RevisionDiff:
             "still_reported": list(self.still_reported),
             "elements_only_in_old": list(self.elements_only_in_old),
             "elements_only_in_new": list(self.elements_only_in_new),
+            "compare_kind": self.compare_kind,
             "summary": self.summary(),
         }
+
+
+def _lineage_token(report: ValidationReport) -> str:
+    container = (report.information_container_id or "").strip()
+    if container:
+        return f"container:{container.casefold()}"
+    project = (report.project_name or "").strip()
+    if project:
+        return f"project:{project.casefold()}"
+    return ""
 
 
 def compare_report_revisions(old: ValidationReport, new: ValidationReport) -> RevisionDiff:
@@ -97,11 +109,15 @@ def compare_report_revisions(old: ValidationReport, new: ValidationReport) -> Re
 
     Verdict-neutral: reads only issues + identity/revision metadata, never
     ``summary.passed``. Keys are sorted for reproducibility.
+    Same-package lineage is recorded; this is still a finding delta, not geometry.
     """
     old_keys = _finding_keys(old.issues)
     new_keys = _finding_keys(new.issues)
     old_elements = _element_guids(old.issues)
     new_elements = _element_guids(new.issues)
+    old_line = _lineage_token(old)
+    new_line = _lineage_token(new)
+    same_lineage = bool(old_line and new_line and old_line == new_line)
     return RevisionDiff(
         old_report_id=old.report_id,
         new_report_id=new.report_id,
@@ -112,6 +128,7 @@ def compare_report_revisions(old: ValidationReport, new: ValidationReport) -> Re
         still_reported=tuple(sorted(new_keys & old_keys)),
         elements_only_in_old=tuple(sorted(old_elements - new_elements)),
         elements_only_in_new=tuple(sorted(new_elements - old_elements)),
+        compare_kind="same_package" if same_lineage else "unrelated_reports",
     )
 
 

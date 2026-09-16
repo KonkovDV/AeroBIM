@@ -106,7 +106,7 @@ export const WORKPLACE_COPY = {
   keyboardHelpNext: "Следующая находка",
   keyboardHelpPrev: "Предыдущая находка",
   keyboardHelpEdit: "Перейти к тексту замечания",
-  keyboardHelpAccept: "Подтвердить замечание",
+  keyboardHelpAccept: "Сохранить и подтвердить",
   keyboardHelpReject: "Отклонить замечание",
   keyboardHelpSave: "Сохранить текст из редактора",
   keyboardHelpOpen: "Открыть справку",

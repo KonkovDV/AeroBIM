@@ -307,6 +307,10 @@ class DrawingRegionRef:
     dimension_chain (stamp = PII risk for cloud VLM). Heuristic baseline only."""
     page_rotation: int | None = None
     """PDF ``/Rotate`` in {0,90,180,270}; None = unknown (PII fail-closed when required)."""
+    finding_id: str | None = None
+    """Optional stable finding identity for overlay click; never invented by UI."""
+    evidence_ref: str | None = None
+    """Optional evidence pointer shared with ``ValidationIssue.evidence_refs``."""
 
 
 @dataclass(frozen=True)
@@ -742,6 +746,8 @@ class AnalyzeProjectPackageJob:
     """Owning tenant; required for object ACL on job get/cancel."""
     payload_fingerprint: str | None = None
     """SHA-256 of the analyze request identity. Same Idempotency-Key, different hash → 409."""
+    lease_owner: str | None = None
+    """Fencing token of the runner that claimed QUEUED→RUNNING. Heartbeat/commit must match."""
 
 
 @dataclass(frozen=True)
@@ -775,19 +781,39 @@ class ToleranceConfig:
     imperial_length_epsilon: float = 0.003
     area_epsilon: float = 0.01
     angle_epsilon: float = 0.1
+    """Engineering band in **degrees**. SI compare converts this to radians."""
+    force_epsilon: float = 1.0
+    """Engineering band in SI newton."""
+    pressure_epsilon: float = 1.0
+    """Engineering band in SI pascal."""
     default_epsilon: float = 1e-6
 
     def epsilon_for_unit(self, unit: str | None) -> float:
-        """Return the appropriate ε based on the measurement unit."""
+        """Return ε in the SI compare space for ``unit``.
+
+        Angle ε is ``radians(angle_epsilon)`` because ``parse_quantity`` stores
+        angle ``si_value`` in radians. Percent/ratio use ``default_epsilon``
+        on the 0–1 ratio scale.
+        """
         if unit is None:
             return self.default_epsilon
-        normalised = normalize_unit_token(unit)
-        if normalised in {"m", "м", "mm", "мм", "cm", "см"}:
+        normalised = normalize_unit_token(unit).lower()
+        if normalised in {"m", "м", "mm", "мм", "cm", "см", "km", "км"}:
             return self.length_epsilon
         if normalised in {"ft", "feet", "foot", "in", "inch", "inches"}:
             return self.imperial_length_epsilon
         if normalised in {"m2", "м2", "sqm", "sq.m", "m²", "м²"}:
             return self.area_epsilon
+        if normalised in {"m3", "м3", "cub.m", "m³", "м³"}:
+            return self.area_epsilon
         if normalised in {"deg", "degree", "degrees", "°", "rad", "radian", "radians"}:
-            return self.angle_epsilon
+            import math
+
+            return math.radians(self.angle_epsilon)
+        if normalised in {"n", "н", "kn", "кн", "mn", "тс", "tf"}:
+            return self.force_epsilon
+        if normalised in {"pa", "kpa", "mpa", "мпа", "kn/m2", "кн/м2", "kn/m²"}:
+            return self.pressure_epsilon
+        if normalised in {"%", "percent", "ratio", "1"}:
+            return self.default_epsilon
         return self.default_epsilon

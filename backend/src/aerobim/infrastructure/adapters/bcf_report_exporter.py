@@ -62,6 +62,21 @@ class _BcfTopicPayload:
     """BCF Topic/Priority text (e.g. triage band Critical/Major/Minor)."""
     topic_index: int | None = None
     """BCF Topic/Index sort order (deterministic triage rank for clashes)."""
+    camera_x: float = 10.0
+    camera_y: float = 10.0
+    camera_z: float = 10.0
+    camera_is_model_space: bool = False
+
+
+def _schematic_camera(seed: str) -> tuple[float, float, float]:
+    """Distinct fallback eye per topic. Not IFC model-space coordinates."""
+
+    digest = hashlib.sha256(f"aerobim:bcf-camera:{seed}".encode()).digest()
+    return (
+        6.0 + digest[0] / 255.0 * 12.0,
+        6.0 + digest[1] / 255.0 * 12.0,
+        6.0 + digest[2] / 255.0 * 12.0,
+    )
 
 
 def _stable_uuid(seed: str) -> str:
@@ -237,6 +252,19 @@ def _collect_topics(
         if issue.priority:
             title = f"[P{issue.priority}] {title}"
         seed = issue.finding_id or f"{issue.rule_id}|{issue.element_guid}|{issue.target_ref}"
+        cam_x, cam_y, cam_z = _schematic_camera(seed)
+        zone = issue.problem_zone
+        camera_is_model_space = False
+        if zone is not None and zone.x is not None and zone.y is not None:
+            cam_x, cam_y, cam_z = float(zone.x), float(zone.y), 10.0
+            # Sheet millimetres are not IFC world metres; still a distinct focus.
+            camera_is_model_space = False
+        if not camera_is_model_space:
+            description = (
+                f"{description}\n\n"
+                "[AeroBIM] Orthogonal camera is a schematic fallback; "
+                "model-space coordinates were not available for this topic."
+            )
         labels = tuple(
             label
             for label in (
@@ -260,6 +288,10 @@ def _collect_topics(
                 selected_guids=selected_guids,
                 topic_type=topic_type,
                 labels=labels,
+                camera_x=cam_x,
+                camera_y=cam_y,
+                camera_z=cam_z,
+                camera_is_model_space=camera_is_model_space,
             )
         )
 
@@ -302,7 +334,9 @@ def _clash_topic_payload(
             f"Distance: {clash.distance:.6f} m. "
             f"Elements: {clash.element_a_guid}, {clash.element_b_guid}.\n\n"
             f"triage:{item.rationale}\n"
-            f"triage:duplicates_merged={item.duplicates_merged}"
+            f"triage:duplicates_merged={item.duplicates_merged}\n\n"
+            "[AeroBIM] Orthogonal camera is a schematic fallback; "
+            "model-space clash coordinates are not exported."
         ),
         creation_date=report.created_at,
         creation_author="aerobim-backend",
@@ -316,6 +350,10 @@ def _clash_topic_payload(
         ),
         priority=item.band.value.capitalize(),
         topic_index=item.rank,
+        camera_x=_schematic_camera(seed)[0],
+        camera_y=_schematic_camera(seed)[1],
+        camera_z=_schematic_camera(seed)[2],
+        camera_is_model_space=False,
     )
 
 
@@ -367,7 +405,7 @@ def _build_viewpoint(topic: _BcfTopicPayload) -> str:
 
     # OrthogonalCamera (release_2_1): no AspectRatio element (3.0-only).
     camera = SubElement(root, "OrthogonalCamera")
-    _vector_node(camera, "CameraViewPoint", 10.0, 10.0, 10.0)
+    _vector_node(camera, "CameraViewPoint", topic.camera_x, topic.camera_y, topic.camera_z)
     _vector_node(camera, "CameraDirection", -0.577350269, -0.577350269, -0.577350269)
     _vector_node(camera, "CameraUpVector", 0.0, 0.0, 1.0)
     SubElement(camera, "ViewToWorldScale").text = "10.0"

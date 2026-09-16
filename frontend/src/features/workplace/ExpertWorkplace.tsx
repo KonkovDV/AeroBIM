@@ -37,6 +37,7 @@ export type ExpertWorkplaceProps = {
   remarkDraft: string;
   remarkSaveState: "idle" | "saving" | "saved" | "failed";
   hitlDecisionState: HitlDecisionState;
+  persistedHitlState?: string | null;
   hitlEnabled: boolean;
   reviewEvents: ReviewEventRow[];
   reviewEventsError: string | null;
@@ -55,6 +56,7 @@ export type ExpertWorkplaceProps = {
   onSave: () => void;
   onAccept: () => void;
   onReject: () => void;
+  onOpen?: () => void;
   onNavigateToFindings: () => void;
   onOpenScreen?: (view: WorkspaceView) => void;
   unsavedRemark?: boolean;
@@ -81,6 +83,7 @@ export default function ExpertWorkplace({
   remarkDraft,
   remarkSaveState,
   hitlDecisionState,
+  persistedHitlState = null,
   hitlEnabled,
   reviewEvents,
   reviewEventsError,
@@ -99,6 +102,7 @@ export default function ExpertWorkplace({
   onSave,
   onAccept,
   onReject,
+  onOpen,
   onNavigateToFindings,
   onOpenScreen,
   unsavedRemark = false,
@@ -136,7 +140,11 @@ export default function ExpertWorkplace({
           <p className="compact-copy" data-testid="training-rules-banner" role="note">
             {UI_COPY.trainingRulesBanner}
           </p>
-          <MachineGatewayStrip report={selectedReport} hitlDecisionState={hitlDecisionState} />
+          <MachineGatewayStrip
+            report={selectedReport}
+            hitlDecisionState={hitlDecisionState}
+            persistedHitlState={persistedHitlState}
+          />
         </>
       ) : null}
 
@@ -275,6 +283,7 @@ export default function ExpertWorkplace({
                   onSave={onSave}
                   onAccept={onAccept}
                   onReject={onReject}
+                  onOpen={onOpen}
                 />
                 <ProvenancePanel activeIssue={activeIssue} />
                 <article className="detail-block">

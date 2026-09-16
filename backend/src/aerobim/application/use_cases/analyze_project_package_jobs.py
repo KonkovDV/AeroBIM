@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import threading
 from datetime import UTC, datetime
 from uuid import uuid4
 
 from aerobim.application.use_cases.analyze_project_package import AnalyzeProjectPackageUseCase
 from aerobim.domain.analyze_job_idempotency import (
     IdempotencyPayloadConflictError,
+    JobConcurrencyLimitError,
     analyze_job_payload_fingerprint,
     fingerprints_conflict,
 )
@@ -14,12 +16,58 @@ from aerobim.domain.models import AnalyzeProjectPackageJob, JobStatus, Validatio
 from aerobim.domain.ports import AnalyzeProjectPackageJobStore, AuditReportStore
 
 
-class JobConcurrencyLimitError(RuntimeError):
-    """Raised when a tenant exceeds max concurrent QUEUED+RUNNING analyze jobs."""
-
-
 def _now_iso() -> str:
     return datetime.now(tz=UTC).isoformat()
+
+
+class _LeaseHeartbeat:
+    """Extend the job lease on a side thread while analyze runs."""
+
+    def __init__(
+        self,
+        job_store: AnalyzeProjectPackageJobStore,
+        job_id: str,
+        *,
+        owner: str,
+        interval_seconds: float,
+        lease_seconds: int,
+    ) -> None:
+        self._job_store = job_store
+        self._job_id = job_id
+        self._owner = owner
+        self._interval = max(float(interval_seconds), 0.05)
+        self._lease_seconds = lease_seconds
+        self._stop = threading.Event()
+        self._lost = threading.Event()
+        self._thread: threading.Thread | None = None
+
+    def start(self) -> None:
+        self._thread = threading.Thread(
+            target=self._run,
+            name=f"job-lease-{self._job_id[:8]}",
+            daemon=True,
+        )
+        self._thread.start()
+
+    def _run(self) -> None:
+        while not self._stop.wait(self._interval):
+            beat = self._job_store.heartbeat(
+                self._job_id,
+                lease_seconds=self._lease_seconds,
+                owner=self._owner,
+            )
+            if beat is None or beat.status is not JobStatus.RUNNING:
+                self._lost.set()
+                return
+
+    def stop(self) -> None:
+        self._stop.set()
+        thread = self._thread
+        if thread is not None:
+            thread.join(timeout=2.0)
+
+    def lost(self) -> bool:
+        return self._lost.is_set()
 
 
 class SubmitAnalyzeProjectPackageJobUseCase:
@@ -62,12 +110,6 @@ class SubmitAnalyzeProjectPackageJobUseCase:
                     "Analyze job concurrency limit requires a bound tenant_id "
                     f"(limit {max_concurrent_per_tenant})"
                 )
-            active = self._job_store.count_active_for_tenant(tenant_id)
-            if active >= max_concurrent_per_tenant:
-                raise JobConcurrencyLimitError(
-                    f"Tenant {tenant_id!r} has {active} active analyze jobs "
-                    f"(limit {max_concurrent_per_tenant})"
-                )
         job = AnalyzeProjectPackageJob(
             job_id=uuid4().hex,
             request_id=request.request_id,
@@ -77,7 +119,9 @@ class SubmitAnalyzeProjectPackageJobUseCase:
             tenant_id=tenant_id,
             payload_fingerprint=fingerprint,
         )
-        created_id = self._job_store.create(job)
+        created_id = self._job_store.create(
+            job, max_concurrent_per_tenant=max_concurrent_per_tenant
+        )
         if created_id != job.job_id:
             recovered = self._job_store.get(created_id)
             if recovered is not None:
@@ -128,9 +172,10 @@ class AnalyzeProjectPackageJobRunner:
             discard(report_id)
 
     def run(self, job_id: str, request: ValidationRequest) -> None:
-        claimed = self._job_store.mark_running(job_id)
+        owner = uuid4().hex
+        claimed = self._job_store.mark_running(job_id, owner=owner)
         if claimed is None:
-            # Missing job, illegal transition, or idempotent retry against terminal state.
+            # Missing job, illegal transition, or second claim against RUNNING.
             self._logger.info(
                 "analyze_project_package async job skip (not claimable)",
                 job_id=job_id,
@@ -145,8 +190,18 @@ class AnalyzeProjectPackageJobRunner:
             job_id=job_id,
             request_id=request.request_id,
         )
+        lease_seconds = int(getattr(self._job_store, "_lease_seconds", 120) or 120)
+        keeper = _LeaseHeartbeat(
+            self._job_store,
+            job_id,
+            owner=owner,
+            interval_seconds=max(lease_seconds / 3.0, 0.05),
+            lease_seconds=lease_seconds,
+        )
+        keeper.start()
+        report = None
         try:
-            beat = self._job_store.heartbeat(job_id)
+            beat = self._job_store.heartbeat(job_id, lease_seconds=lease_seconds, owner=owner)
             if beat is not None and beat.status is JobStatus.CANCELLED:
                 self._logger.info(
                     "analyze_project_package async job cancelled",
@@ -154,9 +209,34 @@ class AnalyzeProjectPackageJobRunner:
                     request_id=request.request_id,
                 )
                 return
+            if beat is None or keeper.lost():
+                self._logger.error(
+                    "analyze_project_package async job lost lease before analyze",
+                    job_id=job_id,
+                    request_id=request.request_id,
+                )
+                return
             report = self._analyze_use_case.execute(request)
-            beat = self._job_store.heartbeat(job_id)
-            if beat is not None and beat.status is JobStatus.CANCELLED:
+            if keeper.lost():
+                self._discard_report(report.report_id)
+                self._logger.error(
+                    "analyze_project_package async job lost lease during analyze",
+                    job_id=job_id,
+                    request_id=request.request_id,
+                    report_id=report.report_id,
+                )
+                return
+            beat = self._job_store.heartbeat(job_id, lease_seconds=lease_seconds, owner=owner)
+            if beat is None:
+                self._discard_report(report.report_id)
+                self._logger.error(
+                    "analyze_project_package async job lost lease after analyze",
+                    job_id=job_id,
+                    request_id=request.request_id,
+                    report_id=report.report_id,
+                )
+                return
+            if beat.status is JobStatus.CANCELLED:
                 self._discard_report(report.report_id)
                 self._logger.info(
                     "analyze_project_package async job cancelled after analyze",
@@ -165,12 +245,12 @@ class AnalyzeProjectPackageJobRunner:
                     report_id=report.report_id,
                 )
                 return
-            if beat is not None and beat.cancel_requested:
+            if beat.cancel_requested:
                 self._discard_report(report.report_id)
                 self._job_store.mark_cancelled(job_id, "Cancelled after analyze")
                 return
         except Exception as exc:
-            self._job_store.mark_failed(job_id, str(exc))
+            self._job_store.mark_failed(job_id, str(exc), owner=owner)
             self._logger.error(
                 "analyze_project_package async job failed",
                 job_id=job_id,
@@ -178,8 +258,21 @@ class AnalyzeProjectPackageJobRunner:
                 detail=str(exc),
             )
             return
+        finally:
+            keeper.stop()
 
-        self._job_store.mark_succeeded(job_id, report.report_id)
+        if report is None or keeper.lost():
+            return
+        succeeded = self._job_store.mark_succeeded(job_id, report.report_id, owner=owner)
+        if succeeded is None:
+            self._discard_report(report.report_id)
+            self._logger.error(
+                "analyze_project_package async job commit rejected (lease/owner)",
+                job_id=job_id,
+                request_id=request.request_id,
+                report_id=report.report_id,
+            )
+            return
         self._logger.info(
             "analyze_project_package async job completed",
             job_id=job_id,

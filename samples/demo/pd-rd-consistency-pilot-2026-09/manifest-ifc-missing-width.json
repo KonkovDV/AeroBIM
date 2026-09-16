@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0.0",
+  "pack_version": "1.0.0",
+  "pack_id": "pd-rd-consistency-pilot-ifc-missing-width",
+  "description": "SYNTHETIC: IfcWall WALL-01 has no Width QTO. Missing field is not zero and not a pass.",
+  "project_name": "PD-RD consistency pilot (synthetic missing IFC Width)",
+  "discipline": "architecture",
+  "stage": "RD",
+  "revision": "R1",
+  "corpus_kind": "synthetic",
+  "request": {
+    "ifc_path": "samples/demo/pd-rd-consistency-pilot-2026-09/wall-01-missing-width.ifc",
+    "drawings": [
+      {
+        "path": "samples/demo/pd-rd-consistency-pilot-2026-09/a-101-thickness-200mm.pdf",
+        "sheet_id": "A-101",
+        "format": "pdf",
+        "revision": "R1"
+      }
+    ]
+  }
+}

@@ -103,21 +103,59 @@ export function isHitlClickableRegion(region: DrawingRegionRef): boolean {
   return role !== "stamp" && role !== "title_block" && role !== "title";
 }
 
+export type RegionIssueMatch =
+  | { kind: "match"; row: IndexedIssue }
+  | { kind: "ambiguous"; rows: IndexedIssue[] }
+  | { kind: "none" };
+
 /**
- * Связь регион → находка только по листу. DrawingRegionRef не несёт finding_id —
- * не выдумываем GUID и не матчим по bbox.
+ * Связь регион → находка по finding_id / evidence_ref, иначе однозначный лист.
+ * Несколько кандидатов — неоднозначность, не первый элемент массива.
  */
+export function matchIssueForDrawingRegion(
+  issues: IndexedIssue[],
+  region: DrawingRegionRef,
+): RegionIssueMatch {
+  const fid = region.finding_id?.trim() || "";
+  if (fid) {
+    const hits = issues.filter(({ issue }) => (issue.finding_id ?? "").trim() === fid);
+    if (hits.length === 1) {
+      return { kind: "match", row: hits[0]! };
+    }
+    if (hits.length > 1) {
+      return { kind: "ambiguous", rows: hits };
+    }
+  }
+  const evidence = region.evidence_ref?.trim() || "";
+  if (evidence) {
+    const hits = issues.filter(({ issue }) => (issue.evidence_refs ?? []).includes(evidence));
+    if (hits.length === 1) {
+      return { kind: "match", row: hits[0]! };
+    }
+    if (hits.length > 1) {
+      return { kind: "ambiguous", rows: hits };
+    }
+  }
+  const sheet = region.sheet_id.trim();
+  if (!sheet) {
+    return { kind: "none" };
+  }
+  const onSheet = issues.filter(({ issue }) => issue.problem_zone?.sheet_id === sheet);
+  if (onSheet.length === 1) {
+    return { kind: "match", row: onSheet[0]! };
+  }
+  if (onSheet.length > 1) {
+    return { kind: "ambiguous", rows: onSheet };
+  }
+  return { kind: "none" };
+}
+
 export function findIssueForDrawingRegion(
   issues: IndexedIssue[],
   region: DrawingRegionRef,
 ): IndexedIssue | null {
-  const sheet = region.sheet_id.trim();
-  if (!sheet) {
-    return null;
-  }
-  const onSheet = issues.filter(({ issue }) => issue.problem_zone?.sheet_id === sheet);
-  const hitl = onSheet.find(({ issue }) => issue.rule_id === HITL_RULE_ID);
-  return hitl ?? onSheet[0] ?? null;
+  const matched = matchIssueForDrawingRegion(issues, region);
+  return matched.kind === "match" ? matched.row : null;
 }
 
 /** Deterministic clash triage band carried in evidence_refs (backend Wave B). */

@@ -48,20 +48,23 @@ services:
       AEROBIM_CORS_ORIGINS: ${AEROBIM_CORS_ORIGINS:-}
       # Compose fails fast if the variable is missing — no default token.
       AEROBIM_API_BEARER_TOKEN: ${AEROBIM_API_BEARER_TOKEN:?Set AEROBIM_API_BEARER_TOKEN to a long random secret}
+      # Bound tenant for the service bearer. Required for production ACL paths.
+      # This token is a machine principal — never an expert HITL signer.
+      AEROBIM_API_TENANT_ID: ${AEROBIM_API_TENANT_ID:?Set AEROBIM_API_TENANT_ID to the service tenant}
       AEROBIM_ALLOW_ANONYMOUS_DEV: "false"
       AEROBIM_REDIS_URL: redis://:${AEROBIM_REDIS_PASSWORD:?Set AEROBIM_REDIS_PASSWORD}@redis:6379/0
     depends_on:
       redis:
-        condition: service_started
+        condition: service_healthy
     volumes:
       - reports-data:/data/reports
       - ./samples:/data/samples:ro
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health')"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/ready')"]
       interval: 15s
       timeout: 5s
       retries: 3
-      start_period: 10s
+      start_period: 20s
 
   redis:
     image: redis:7.4-alpine
@@ -73,6 +76,11 @@ services:
         "--requirepass",
         "${AEROBIM_REDIS_PASSWORD:?}",
       ]
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${AEROBIM_REDIS_PASSWORD:?}", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
     volumes:
       - redis-data:/data
 

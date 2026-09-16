@@ -11,7 +11,7 @@ import {
   type DrawingViewTransform,
 } from "../lib/drawing-zoom";
 import {
-  findIssueForDrawingRegion,
+  matchIssueForDrawingRegion,
   isHitlClickableRegion,
   type IndexedIssue,
 } from "../lib/issue-triage";
@@ -44,30 +44,60 @@ function findMatchingAsset(report: ValidationReport, issue: ValidationIssue | nu
   if (problemZone?.sheet_id === null || problemZone?.sheet_id === undefined) {
     return null;
   }
-
-  const exactMatch = report.drawing_assets.find(
-    (asset) =>
-      asset.sheet_id === problemZone.sheet_id &&
-      (problemZone.page_number === null || asset.page_number === problemZone.page_number),
+  const page = problemZone.page_number;
+  const wantedId = (issue?.evidence_refs ?? []).find((ref) =>
+    report.drawing_assets.some((asset) => asset.asset_id === ref),
   );
-  if (exactMatch) {
-    return exactMatch;
+  if (wantedId) {
+    return report.drawing_assets.find((asset) => asset.asset_id === wantedId) ?? null;
   }
+  const exact = report.drawing_assets.filter((asset) => {
+    if (asset.sheet_id !== problemZone.sheet_id) {
+      return false;
+    }
+    if (page === null || page === undefined) {
+      return true;
+    }
+    return asset.page_number === page;
+  });
+  if (exact.length === 1) {
+    return exact[0] ?? null;
+  }
+  return null;
+}
 
-  return report.drawing_assets.find((asset) => asset.sheet_id === problemZone.sheet_id) ?? null;
+function sheetPageMismatch(report: ValidationReport, issue: ValidationIssue | null): boolean {
+  const zone = issue?.problem_zone;
+  if (!zone?.sheet_id || zone.page_number === null || zone.page_number === undefined) {
+    return false;
+  }
+  const onSheet = report.drawing_assets.filter((asset) => asset.sheet_id === zone.sheet_id);
+  if (onSheet.length === 0) {
+    return false;
+  }
+  return !onSheet.some((asset) => asset.page_number === zone.page_number);
 }
 
 function describeAsset(asset: DrawingAsset): string {
   return UI_COPY.drawingPage(asset.sheet_id, asset.page_number);
 }
 
-function isNormalizedBBox(region: DrawingRegionRef): boolean {
+function isNormalizedBBox(region: DrawingRegionRef): boolean | null {
   const system = (region.coordinate_system ?? "").toLowerCase();
   if (system.includes("normalized")) {
     return true;
   }
+  if (system.includes("pixel") || system.includes("page-")) {
+    return false;
+  }
+  if (system) {
+    return null;
+  }
   const [x0, y0, x1, y1] = region.bbox_xyxy;
-  return [x0, y0, x1, y1].every((value) => value >= 0 && value <= 1.0001);
+  if ([x0, y0, x1, y1].every((value) => value >= 0 && value <= 1.0001)) {
+    return true;
+  }
+  return false;
 }
 
 function regionPixelBox(
@@ -80,7 +110,11 @@ function regionPixelBox(
   if (!(x1 > x0 && y1 > y0)) {
     return null;
   }
-  if (isNormalizedBBox(region)) {
+  const normalized = isNormalizedBBox(region);
+  if (normalized === null) {
+    return null;
+  }
+  if (normalized) {
     return {
       left: x0 * imageMetrics.width,
       top: y0 * imageMetrics.height,
@@ -182,6 +216,8 @@ export default function DrawingEvidencePanel({
     }
 
     let cancelled = false;
+    setPreviewUrl(null);
+    setImageMetrics(null);
     fetchDrawingAssetPreviewBlobUrl(report.report_id, selectedAsset.asset_id)
       .then((url) => {
         if (cancelled) {
@@ -252,7 +288,16 @@ export default function DrawingEvidencePanel({
     if (!selectedAsset || !report?.drawing_regions) {
       return [] as DrawingRegionRef[];
     }
-    return report.drawing_regions.filter((region) => region.sheet_id === selectedAsset.sheet_id);
+    return report.drawing_regions.filter((region) => {
+      if (region.sheet_id !== selectedAsset.sheet_id) {
+        return false;
+      }
+      const pointer = region.evidence_ref?.trim();
+      if (pointer) {
+        return pointer === selectedAsset.asset_id;
+      }
+      return true;
+    });
   }, [report, selectedAsset]);
 
   const regionOverlays = useMemo(() => {
@@ -492,13 +537,17 @@ export default function DrawingEvidencePanel({
                       data-testid="drawing-hitl-region"
                       aria-label={UI_COPY.regionSelectFinding(overlay.region.sheet_id)}
                       onClick={() => {
-                        const match = findIssueForDrawingRegion(issues, overlay.region!);
-                        if (!match || !onSelectIssue) {
+                        const matched = matchIssueForDrawingRegion(issues, overlay.region!);
+                        if (matched.kind === "ambiguous") {
+                          setRegionNote(UI_COPY.regionAmbiguous);
+                          return;
+                        }
+                        if (matched.kind !== "match" || !onSelectIssue) {
                           setRegionNote(UI_COPY.regionNoFinding);
                           return;
                         }
                         setRegionNote(null);
-                        onSelectIssue(match.index, match.issue);
+                        onSelectIssue(matched.row.index, matched.row.issue);
                       }}
                     />
                   ) : (
@@ -530,9 +579,14 @@ export default function DrawingEvidencePanel({
             )}
             {problemZone !== null && matchedAsset === null && selectedAsset !== null && (
               <p>
-                {UI_COPY.unmatchedSheet(problemZone.sheet_id ?? "лист")}
+                {report && sheetPageMismatch(report, activeIssue)
+                  ? UI_COPY.overlayWrongPage
+                  : UI_COPY.unmatchedSheet(problemZone.sheet_id ?? "лист")}
               </p>
             )}
+            {sheetRegions.some((region) => isNormalizedBBox(region) === null) ? (
+              <p>{UI_COPY.overlayUnsupportedCoords}</p>
+            ) : null}
             {!isOverlayTarget && selectedAsset !== null && matchedAsset !== null && (
               <p>
                 {UI_COPY.drawingBrowsingOther(describeAsset(selectedAsset), describeAsset(matchedAsset))}

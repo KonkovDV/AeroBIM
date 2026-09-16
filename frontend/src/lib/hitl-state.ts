@@ -50,6 +50,35 @@ export function effectiveRemarkText(
   return latest;
 }
 
+const HITL_ALLOWED_TRANSITIONS: Record<string, readonly string[]> = {
+  escalated: ["opened", "superseded"],
+  opened: ["accepted", "rejected", "edited", "waived", "superseded"],
+  edited: ["accepted", "rejected", "edited", "waived", "opened", "superseded"],
+  accepted: ["superseded"],
+  rejected: ["opened", "superseded"],
+  waived: ["superseded"],
+  superseded: [],
+};
+
+export function hitlTransitionAllowed(current: string | null, target: string): boolean {
+  if (current === null || current === "") {
+    return target === "opened" || target === "escalated";
+  }
+  return (HITL_ALLOWED_TRANSITIONS[current] ?? []).includes(target);
+}
+
+export function canEditFinding(state: string | null): boolean {
+  return state === null || state === "opened" || state === "edited";
+}
+
+export function canDecideFinding(state: string | null): boolean {
+  return state === "opened" || state === "edited";
+}
+
+export function canOpenFinding(state: string | null): boolean {
+  return state === null || state === "escalated" || state === "rejected";
+}
+
 export function latestHitlState(
   events: readonly ReviewEventRow[],
   issue: ValidationIssue,

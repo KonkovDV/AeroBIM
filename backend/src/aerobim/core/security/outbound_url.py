@@ -365,6 +365,7 @@ def resolve_and_pin_outbound_url(
 _pin_lock = threading.Lock()
 _orig_create_connection = socket.create_connection
 _dial_pins_installed = False
+_urllib3_pins_installed = False
 _dial_pins: dict[str, str] = {}
 
 
@@ -375,6 +376,17 @@ def _dial_pin_key(host: object) -> str:
     return text
 
 
+def rewrite_dial_address(address: Any) -> Any:
+    """Replace a pinned hostname with its validated IP. TLS hostname is unchanged."""
+
+    if isinstance(address, tuple) and address:
+        host, rest = address[0], address[1:]
+        pinned_ip = outbound_dial_pin_for(str(host))
+        if pinned_ip is not None:
+            return (pinned_ip, *rest)
+    return address
+
+
 def _pinned_create_connection(
     address: tuple[Any, ...] | Any,
     *args: Any,
@@ -382,29 +394,60 @@ def _pinned_create_connection(
 ) -> Any:
     """Dial a validated IP when the hostname was pinned; keep Host/SNI unchanged."""
 
-    if isinstance(address, tuple) and address:
-        host, rest = address[0], address[1:]
-        key = _dial_pin_key(host)
-        with _pin_lock:
-            pinned_ip = _dial_pins.get(key)
-        if pinned_ip is not None:
-            address = (pinned_ip, *rest)
-    return _orig_create_connection(address, *args, **kwargs)
+    return _orig_create_connection(rewrite_dial_address(address), *args, **kwargs)
+
+
+def _install_urllib3_dial_pin() -> None:
+    """Rewrite urllib3's own dialer. urllib3 2.x does not call ``socket.create_connection``.
+
+    TLS/SNI still uses the original hostname on the HTTPConnection; only the TCP
+    peer is pinned. This is not a boto3 integration proof until locked versions run.
+    """
+
+    global _urllib3_pins_installed
+    try:
+        import urllib3.util.connection as urllib3_connection
+    except ImportError:
+        return
+    orig = urllib3_connection.create_connection
+    if not getattr(orig, "_aerobim_outbound_pin", False):
+
+        def _pinned_urllib3_create_connection(address: Any, *args: Any, **kwargs: Any) -> Any:
+            return orig(rewrite_dial_address(address), *args, **kwargs)
+
+        _pinned_urllib3_create_connection._aerobim_outbound_pin = True  # type: ignore[attr-defined]
+        urllib3_connection.create_connection = _pinned_urllib3_create_connection
+
+    try:
+        import urllib3.connection as urllib3_http
+    except ImportError:
+        urllib3_http = None  # type: ignore[assignment]
+    if urllib3_http is not None:
+        bound = getattr(urllib3_http, "create_connection", None)
+        if bound is not None and not getattr(bound, "_aerobim_outbound_pin", False):
+
+            def _pinned_urllib3_http_create_connection(
+                address: Any, *args: Any, **kwargs: Any
+            ) -> Any:
+                return bound(rewrite_dial_address(address), *args, **kwargs)
+
+            _pinned_urllib3_http_create_connection._aerobim_outbound_pin = True  # type: ignore[attr-defined]
+            urllib3_http.create_connection = _pinned_urllib3_http_create_connection
+
+    _urllib3_pins_installed = True
 
 
 def ensure_outbound_dial_pins_installed() -> None:
-    """Wrap ``socket.create_connection`` once so boto3 can keep hostname SNI/Host."""
+    """Wrap stdlib and urllib3 dialers so TCP uses the validated IP (SNI unchanged)."""
 
     global _dial_pins_installed, _orig_create_connection
     with _pin_lock:
-        if _dial_pins_installed:
-            return
-        if socket.create_connection is _pinned_create_connection:
+        if not _dial_pins_installed:
+            if socket.create_connection is not _pinned_create_connection:
+                _orig_create_connection = socket.create_connection
+                socket.create_connection = _pinned_create_connection
             _dial_pins_installed = True
-            return
-        _orig_create_connection = socket.create_connection
-        socket.create_connection = _pinned_create_connection
-        _dial_pins_installed = True
+        _install_urllib3_dial_pin()
 
 
 def set_outbound_dial_pin(hostname: str, ip: str) -> None:

@@ -5,6 +5,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Query, Request
 from fastapi.responses import JSONResponse
 
+from aerobim.core.di.tokens import Tokens
 from aerobim.domain.object_acl import AuthPrincipal
 from aerobim.domain.system_capabilities import (
     build_auth_bff_capability,
@@ -88,6 +89,39 @@ def build_system_router(ctx: ApiContext) -> APIRouter:
             "service": ctx.settings.application_name,
             "status": "ok",
         }
+
+    @router.get("/ready")
+    def ready() -> JSONResponse:
+        """Readiness: storage + required Redis. Liveness stays on ``/health``."""
+
+        missing: list[str] = []
+        storage = ctx.settings.storage_dir
+        try:
+            storage.mkdir(parents=True, exist_ok=True)
+            probe = storage / ".aerobim-ready"
+            probe.write_text("ok", encoding="utf-8")
+            probe.unlink(missing_ok=True)
+        except OSError:
+            missing.append("storage")
+        redis_url = (getattr(ctx.settings, "redis_url", None) or "").strip()
+        requires_redis = bool(redis_url) or not ctx.settings.is_dev_environment
+        if requires_redis:
+            store = ctx.container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_JOB_STORE)
+            client = getattr(store, "_redis", None)
+            ping = getattr(client, "ping", None)
+            if not callable(ping):
+                missing.append("redis")
+            else:
+                try:
+                    ping()
+                except Exception:
+                    missing.append("redis")
+        if missing:
+            return JSONResponse(
+                status_code=503,
+                content={"status": "not_ready", "missing": missing},
+            )
+        return JSONResponse(status_code=200, content={"status": "ready"})
 
     @router.get("/v1/auth/bff")
     def get_auth_bff_status() -> JSONResponse:

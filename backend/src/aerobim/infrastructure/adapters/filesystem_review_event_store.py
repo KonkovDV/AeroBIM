@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import shutil
 import time
 from dataclasses import asdict, replace
 from pathlib import Path
@@ -88,12 +89,46 @@ def _acquire_excl_lock(lock_path: Path) -> int:
         return os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
 
 
-def _write_event_exclusive(target: Path, event: ReviewEvent, *, sequence: int) -> Path:
-    """Create the sequence file with full event payload under O_EXCL + fsync (N-54).
+def _write_all(fd: int, payload: bytes) -> None:
+    offset = 0
+    while offset < len(payload):
+        written = os.write(fd, payload[offset:])
+        if written <= 0:
+            raise OSError("short write to review-event slot")
+        offset += written
 
-    The slot *is* the durable event: either the whole record exists, or the
-    sequence number does not — never an empty marker that can be mistaken for
-    a deleted journal entry.
+
+def _commit_sequence_slot(staging: Path, slot: Path) -> None:
+    """Publish a fully written staging file as ``.seq.N`` without replacing a peer.
+
+    POSIX: ``os.link`` fails if the slot exists. Windows: ``os.rename`` fails if
+    the destination exists. Never ``os.replace`` onto a live sequence file.
+    """
+
+    try:
+        os.link(str(staging), str(slot))
+        staging.unlink(missing_ok=True)
+        return
+    except FileExistsError as exc:
+        staging.unlink(missing_ok=True)
+        raise SequenceClaimError(f"sequence already claimed for {slot.name}") from exc
+    except OSError:
+        pass
+    if slot.exists():
+        staging.unlink(missing_ok=True)
+        raise SequenceClaimError(f"sequence already claimed for {slot.name}")
+    try:
+        os.rename(str(staging), str(slot))
+    except FileExistsError as exc:
+        staging.unlink(missing_ok=True)
+        raise SequenceClaimError(f"sequence already claimed for {slot.name}") from exc
+
+
+def _write_event_exclusive(target: Path, event: ReviewEvent, *, sequence: int) -> Path:
+    """Create the sequence file with a full write, then an exclusive publish.
+
+    Staging ``.writing.*`` files are not committed journal records. A crash
+    after create and before publish leaves no ``.seq.N`` slot.
     """
 
     slot = target.with_name(f"{target.name}.seq.{sequence}")
@@ -101,15 +136,17 @@ def _write_event_exclusive(target: Path, event: ReviewEvent, *, sequence: int) -
     payload = line.encode("utf-8")
     if len(payload) > _MAX_LINE_BYTES:
         raise ValueError(f"Review event exceeds max line size ({_MAX_LINE_BYTES} bytes)")
+    staging = slot.with_name(f"{slot.name}.writing.{os.getpid()}.{time.time_ns()}")
+    fd = os.open(str(staging), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
     try:
-        fd = os.open(str(slot), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
-    except FileExistsError as exc:
-        raise SequenceClaimError(f"sequence {sequence} already claimed for {target.name}") from exc
-    try:
-        os.write(fd, payload)
+        _write_all(fd, payload)
         os.fsync(fd)
-    finally:
+    except Exception:
         os.close(fd)
+        staging.unlink(missing_ok=True)
+        raise
+    os.close(fd)
+    _commit_sequence_slot(staging, slot)
     return slot
 
 
@@ -178,7 +215,51 @@ class FilesystemReviewEventStore:
                 time.sleep(_lock_backoff_s(attempt))
         raise RuntimeError(f"Could not acquire review-event lock for discard {target.name}")
 
+    def _migrate_legacy_jsonl_under_lock(self, target: Path) -> None:
+        """Promote a legacy JSONL journal to seq files once, with a backup.
+
+        After this commit, reads prefer seq files. The JSONL sidecar is removed
+        (backup remains as ``.pre-seq.bak``). Hash-chain is not a signature
+        and does not protect a disk-admin rewrite of every file.
+        """
+
+        prefix = f"{target.name}.seq."
+        seq_exists = any(
+            path.name.startswith(prefix) and path.name[len(prefix) :].isdigit()
+            for path in target.parent.glob(f"{target.name}.seq.*")
+        )
+        if seq_exists or not target.exists():
+            return
+        raw = target.read_text(encoding="utf-8")
+        if not raw.strip():
+            return
+        backup = target.with_name(f"{target.name}.pre-seq.bak")
+        if not backup.exists():
+            shutil.copy2(target, backup)
+        parsed = self._parse_journal_lines(
+            report_id=target.stem,
+            lines=raw.splitlines(),
+            raise_on_corrupt=self._fail_closed,
+            modern=False,
+        )
+        previous = genesis_previous_hash()
+        for index, event in enumerate(parsed, start=1):
+            prev_hash = event.previous_event_hash or previous
+            content = event.content_hash or review_event_content_hash(
+                event, previous_event_hash=prev_hash
+            )
+            stamped = replace(
+                event,
+                sequence_number=event.sequence_number or index,
+                previous_event_hash=prev_hash,
+                content_hash=content,
+            )
+            _write_event_exclusive(target, stamped, sequence=index)
+            previous = content
+        target.unlink(missing_ok=True)
+
     def _append_api_under_lock(self, target: Path, spec: ReviewEventAppendSpec) -> ReviewEvent:
+        self._migrate_legacy_jsonl_under_lock(target)
         existing = self._iter_events(
             report_id=spec.report_id,
             raise_on_corrupt=self._fail_closed,
@@ -283,6 +364,7 @@ class FilesystemReviewEventStore:
                 finally:
                     os.close(fd)
                 try:
+                    self._migrate_legacy_jsonl_under_lock(target)
                     existing = self._iter_events(
                         report_id=report_id,
                         raise_on_corrupt=self._fail_closed,
@@ -363,7 +445,22 @@ class FilesystemReviewEventStore:
         target = self._path(report_id)
         self.last_invalid_line_count = 0
         self.last_load_degraded = False
-        lines = self._load_event_lines(target, raise_on_corrupt=raise_on_corrupt)
+        lines, modern = self._load_event_lines(target, raise_on_corrupt=raise_on_corrupt)
+        return self._parse_journal_lines(
+            report_id=report_id,
+            lines=lines,
+            raise_on_corrupt=raise_on_corrupt,
+            modern=modern,
+        )
+
+    def _parse_journal_lines(
+        self,
+        *,
+        report_id: str,
+        lines: list[str],
+        raise_on_corrupt: bool,
+        modern: bool,
+    ) -> list[ReviewEvent]:
         if not lines:
             return []
         events: list[ReviewEvent] = []
@@ -373,6 +470,13 @@ class FilesystemReviewEventStore:
         expected_prev_hash = genesis_previous_hash()
         for line in lines:
             if not line.strip():
+                if modern:
+                    self.last_invalid_line_count += 1
+                    msg = f"empty committed review-event slot for {report_id}"
+                    if raise_on_corrupt:
+                        raise AuditEventCorruptionError(msg)
+                    _logger.warning(msg)
+                    self.last_load_degraded = True
                 continue
             if len(line.encode("utf-8")) > _MAX_LINE_BYTES:
                 self.last_invalid_line_count += 1
@@ -412,6 +516,12 @@ class FilesystemReviewEventStore:
                         f"review-events sequence gap for {report_id}: "
                         f"got {event.sequence_number} expected {expected_seq}"
                     )
+                    if raise_on_corrupt:
+                        raise ReviewEventChainError(msg)
+                    _logger.warning(msg)
+                    self.last_load_degraded = True
+                if modern and not event.content_hash:
+                    msg = f"modern review-event missing content_hash for {report_id}"
                     if raise_on_corrupt:
                         raise ReviewEventChainError(msg)
                     _logger.warning(msg)
@@ -465,12 +575,13 @@ class FilesystemReviewEventStore:
                 )
         return events
 
-    def _load_event_lines(self, target: Path, *, raise_on_corrupt: bool) -> list[str]:
+    def _load_event_lines(
+        self, target: Path, *, raise_on_corrupt: bool
+    ) -> tuple[list[str], bool]:
         """Prefer exclusive sequence files; fall back to legacy JSONL.
 
-        N-54/N-57: sequence files are the durable journal. A missing ``.seq.N`` in
-        an otherwise contiguous series is treated as a deleted record. A sidecar
-        ``.jsonl`` that diverges from the sequence files is also fail-closed.
+        Sequence files are the modern journal. Empty committed slots are corrupt,
+        not a valid empty history. ``.writing.*`` staging files are ignored.
         """
 
         prefix = f"{target.name}.seq."
@@ -510,7 +621,7 @@ class FilesystemReviewEventStore:
                     _logger.warning(msg)
                     self.last_load_degraded = True
                     self.last_invalid_line_count += 1
-            return lines
+            return lines, True
         if target.exists():
-            return target.read_text(encoding="utf-8").splitlines()
-        return []
+            return target.read_text(encoding="utf-8").splitlines(), False
+        return [], False

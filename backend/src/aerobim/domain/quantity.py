@@ -11,6 +11,7 @@ References:
 
 from __future__ import annotations
 
+import math
 import unicodedata
 from dataclasses import dataclass
 
@@ -157,14 +158,15 @@ def _integer_thousands(body: str, separator: str) -> float | None:
 
 
 def normalize_unit_token(unit: str | None) -> str:
-    """NFKC + case-fold a unit token so «м²» and «м2» compare equal.
+    """NFKC-normalize a unit token so «м²» and «м2» compare equal.
 
     Superscript two (U+00B2) and compatibility superscripts (U+2072) fold to
-    ASCII ``2``. Call this before every registry lookup and unit-string compare.
+    ASCII ``2``. Case is preserved so SI prefixes such as ``Mm`` vs ``mm`` are
+    not collapsed. Registry lookup may still try a folded Cyrillic alias.
     """
     if not unit:
         return ""
-    return unicodedata.normalize("NFKC", unit.strip()).lower()
+    return unicodedata.normalize("NFKC", unit.strip())
 
 
 @dataclass(frozen=True)
@@ -223,17 +225,17 @@ _UNIT_REGISTRY: dict[str, tuple[str, float, str]] = {
     "cub.m": ("m3", 1.0, "volume"),
     "m³": ("m3", 1.0, "volume"),
     "м³": ("m3", 1.0, "volume"),
-    # Angle
-    "deg": ("deg", 1.0, "angle"),
-    "degree": ("deg", 1.0, "angle"),
-    "degrees": ("deg", 1.0, "angle"),
-    "°": ("deg", 1.0, "angle"),
+    # Angle — SI compare space is radian
+    "deg": ("deg", math.pi / 180.0, "angle"),
+    "degree": ("deg", math.pi / 180.0, "angle"),
+    "degrees": ("deg", math.pi / 180.0, "angle"),
+    "°": ("deg", math.pi / 180.0, "angle"),
     "rad": ("rad", 1.0, "angle"),
     "radian": ("rad", 1.0, "angle"),
     "radians": ("rad", 1.0, "angle"),
-    # Dimensionless / Percent
-    "%": ("%", 1.0, "dimensionless"),
-    "percent": ("%", 1.0, "dimensionless"),
+    # Dimensionless / percent — SI compare space is ratio (1 = 100%)
+    "%": ("%", 0.01, "dimensionless"),
+    "percent": ("%", 0.01, "dimensionless"),
     "ratio": ("1", 1.0, "dimensionless"),
     # Force / load (common AEC calc sheets) — SI newton
     "n": ("N", 1.0, "force"),
@@ -254,14 +256,38 @@ _UNIT_REGISTRY: dict[str, tuple[str, float, str]] = {
 }
 
 
+def _registry_entry(unit: str) -> tuple[str, float, str] | None:
+    """Look up a unit without collapsing distinct SI prefixes.
+
+    Exact NFKC form is tried first, then a lowercase alias for Cyrillic and
+    mixed-case English spellings (``ММ``, ``Feet``). A Latin token that only
+    matches after case-folding onto a prefix-sensitive key (``Mm`` → ``mm``)
+    is treated as unknown rather than millimetres.
+    """
+    normalized = normalize_unit_token(unit)
+    if not normalized:
+        return None
+    direct = _UNIT_REGISTRY.get(normalized)
+    if direct is not None:
+        return direct
+    folded = normalized.lower()
+    if folded == normalized:
+        return None
+    aliased = _UNIT_REGISTRY.get(folded)
+    if aliased is None:
+        return None
+    if normalized[0].isupper() and folded[0].islower() and folded in {"mm"}:
+        return None
+    return aliased
+
+
 def parse_quantity(value: float, unit: str) -> QuantityValue:
     """Parse a raw value+unit pair into a typed QuantityValue.
 
     Unknown units are accepted but will have ucum_code=None,
     dimension=None, and si_value=None.
     """
-    normalized = normalize_unit_token(unit)
-    registry_entry = _UNIT_REGISTRY.get(normalized)
+    registry_entry = _registry_entry(unit)
     if registry_entry is None:
         return QuantityValue(value=value, unit=unit)
     ucum_code, factor, dimension = registry_entry

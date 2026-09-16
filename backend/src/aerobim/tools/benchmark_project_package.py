@@ -166,6 +166,9 @@ def _load_drawing_sources(
                 if drawing_data.get("sheet_id")
                 else None,
                 format=drawing_format,
+                revision=str(drawing_data["revision"]).strip()
+                if drawing_data.get("revision")
+                else None,
             )
         )
     return tuple(drawing_sources)

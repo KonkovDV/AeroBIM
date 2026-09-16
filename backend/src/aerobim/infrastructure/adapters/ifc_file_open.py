@@ -35,9 +35,18 @@ _DEFAULT_MAX_CACHED_MODELS = 8
 # Default 256 MiB (268435456). Comparable to bSI Validation Service 256 MB
 # uncompressed .ifc — not the same unit.
 _DEFAULT_MAX_BYTES_PER_CACHED_MODEL = 256 * 1024 * 1024
+
+
+@dataclass
+class _CacheEntry:
+    model: Any
+    refs: int = 0
+
+
 _lock = threading.Lock()
-_memory: OrderedDict[tuple[str, int, int], Any] = OrderedDict()
+_memory: OrderedDict[tuple[str, int, int], _CacheEntry] = OrderedDict()
 _index_memory: dict[tuple[str, int, int], IfcSpatialIndex] = {}
+_inflight: dict[tuple[str, int, int], threading.Event] = {}
 _cache_dir: Path | None = None
 _max_cached_models = _DEFAULT_MAX_CACHED_MODELS
 _stats: dict[str, int] = {
@@ -58,6 +67,17 @@ class IfcParseSession:
     spatial_index: IfcSpatialIndex
     cache_hit: bool
     ifc_path: Path
+    cache_key: tuple[str, int, int] | None = None
+
+    def close(self) -> None:
+        if self.cache_key is not None:
+            release_cached_model(self.cache_key)
+
+    def __enter__(self) -> IfcParseSession:
+        return self
+
+    def __exit__(self, *exc: object) -> None:
+        self.close()
 
 
 def configure_ifc_parse_cache(
@@ -85,9 +105,10 @@ def reset_ifc_parse_cache_for_tests() -> None:
     global _cache_dir, _max_cached_models
     with _lock:
         for cached in list(_memory.values()):
-            close_ifc_model(cached)
+            close_ifc_model(cached.model)
         _memory.clear()
         _index_memory.clear()
+        _inflight.clear()
         _cache_dir = None
         _max_cached_models = _DEFAULT_MAX_CACHED_MODELS
         for key in _stats:
@@ -176,15 +197,32 @@ def close_ifc_model(model: Any) -> None:
 
 
 def _evict_overflow_locked() -> None:
+    """Close unreferenced LRU entries only. Pinned (refs>0) models stay open."""
+
+    pinned: list[tuple[tuple[str, int, int], _CacheEntry]] = []
     while len(_memory) > _max_cached_models:
-        old_key, old_model = _memory.popitem(last=False)
+        old_key, entry = _memory.popitem(last=False)
+        if entry.refs > 0:
+            pinned.append((old_key, entry))
+            continue
         _index_memory.pop(old_key, None)
-        close_ifc_model(old_model)
+        close_ifc_model(entry.model)
         _stats["evictions"] += 1
+    for key, entry in pinned:
+        _memory[key] = entry
+        _memory.move_to_end(key)
+
+
+def release_cached_model(key: tuple[str, int, int]) -> None:
+    with _lock:
+        entry = _memory.get(key)
+        if entry is None:
+            return
+        entry.refs = max(0, entry.refs - 1)
 
 
 def open_ifc_session(ifc_path: Path) -> IfcParseSession:
-    """Open IFC with memoized model and spatial index."""
+    """Open IFC with memoized model and spatial index. Call ``close()`` when done."""
 
     resolved = ifc_path.resolve()
     stat = resolved.stat()
@@ -193,6 +231,10 @@ def open_ifc_session(ifc_path: Path) -> IfcParseSession:
         model_cache_hit = key in _memory
         cached_index = _index_memory.get(key)
     model = open_ifc_model(ifc_path)
+    with _lock:
+        entry = _memory.get(key)
+        if entry is not None:
+            entry.refs += 1
     if cached_index is None:
         dense = getattr(model, "storage", None) is None
         cached_index = IfcSpatialIndex.from_model(model, dense=dense)
@@ -204,6 +246,7 @@ def open_ifc_session(ifc_path: Path) -> IfcParseSession:
         spatial_index=cached_index,
         cache_hit=model_cache_hit,
         ifc_path=resolved,
+        cache_key=key,
     )
 
 
@@ -293,6 +336,8 @@ def open_ifc_model(ifc_path: Path) -> Any:
         ingest_cap_bytes=ingest_cap_from_env(),
     )
     key = (str(resolved), int(stat.st_mtime_ns), int(stat.st_size))
+    wait_event: threading.Event | None = None
+    we_open = False
     with _lock:
         cached = _memory.get(key)
         if cached is not None:
@@ -300,19 +345,48 @@ def open_ifc_model(ifc_path: Path) -> Any:
             _touch_marker(resolved, hit=True)
             _stats["opens"] += 1
             _stats["hits"] += 1
-            return cached
+            return cached.model
+        inflight = _inflight.get(key)
+        if inflight is None:
+            wait_event = threading.Event()
+            _inflight[key] = wait_event
+            we_open = True
+        else:
+            wait_event = inflight
         _stats["opens"] += 1
-        _stats["misses"] += 1
-    if decision.band == BAND_ANALYZE_DISK:
-        model = _open_rocksdb(resolved, ifcopenshell, int(stat.st_mtime_ns), int(stat.st_size))
-    else:
-        model = ifcopenshell.open(str(resolved))
-    with _lock:
-        _memory[key] = model
-        _memory.move_to_end(key)
-        _evict_overflow_locked()
-        _touch_marker(resolved, hit=False)
-    return model
+        if we_open:
+            _stats["misses"] += 1
+    if not we_open:
+        wait_event.wait()
+        with _lock:
+            cached = _memory.get(key)
+            if cached is not None:
+                _memory.move_to_end(key)
+                _touch_marker(resolved, hit=True)
+                _stats["hits"] += 1
+                return cached.model
+        raise RuntimeError(f"IFC cache single-flight failed for {resolved}")
+    try:
+        if decision.band == BAND_ANALYZE_DISK:
+            model = _open_rocksdb(resolved, ifcopenshell, int(stat.st_mtime_ns), int(stat.st_size))
+        else:
+            model = ifcopenshell.open(str(resolved))
+        with _lock:
+            existing = _memory.get(key)
+            if existing is not None:
+                close_ifc_model(model)
+                _memory.move_to_end(key)
+                return existing.model
+            _memory[key] = _CacheEntry(model=model, refs=0)
+            _memory.move_to_end(key)
+            _evict_overflow_locked()
+            _touch_marker(resolved, hit=False)
+        return model
+    finally:
+        with _lock:
+            event = _inflight.pop(key, None)
+            if event is not None:
+                event.set()
 
 
 def _touch_marker(ifc_path: Path, *, hit: bool) -> None:

@@ -38,7 +38,7 @@ import {
 
 const ACTION = {
   saveRemark: "Сохранить правку",
-  confirmRemark: "Подтвердить замечание",
+  confirmRemark: "Сохранить и подтвердить",
   remarkSaved: "Правка сохранена",
   remarkSaveFailed: "Не удалось сохранить",
   confirmed: "Подтверждено",

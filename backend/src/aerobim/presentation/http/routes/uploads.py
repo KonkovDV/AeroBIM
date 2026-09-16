@@ -72,13 +72,15 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
             raise HTTPException(status_code=400, detail="Invalid upload filename") from exc
 
         max_bytes = settings.upload_limit_for_filename(safe_name)
+        envelope_bytes = settings.max_upload_bytes
         content_length = request.headers.get("content-length")
         if content_length:
             try:
                 declared = int(content_length)
             except ValueError:
                 declared = -1
-            if declared > max_bytes:
+            # Content-Length is the whole multipart body, not the file cap.
+            if declared > envelope_bytes:
                 raise HTTPException(
                     status_code=413,
                     detail=public_upload_too_large_detail(),
@@ -130,11 +132,18 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
         except PathJailError as exc:
             _drop_quota()
             raise HTTPException(status_code=400, detail="Invalid upload path") from exc
-        quarantine.parent.mkdir(parents=True, exist_ok=True)
         try:
+            quarantine.parent.mkdir(parents=True, exist_ok=True)
             reject_symlinks(quarantine.parent, base=base)
             if not quarantine.resolve().is_relative_to(base):
                 raise PathJailError("Quarantine path escapes storage boundary")
+        except OSError as exc:
+            _drop_quota()
+            logger.error("upload quarantine mkdir failed", detail=str(exc))
+            raise HTTPException(
+                status_code=500,
+                detail=public_upload_write_failed_detail(),
+            ) from exc
         except PathJailError as exc:
             _drop_quota()
             raise HTTPException(status_code=409, detail="Upload path rejected") from exc
@@ -160,6 +169,10 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
                         sniff_buf.extend(chunk[:need])
                     handle.write(chunk)
         except HTTPException:
+            quarantine.unlink(missing_ok=True)
+            _drop_quota()
+            raise
+        except asyncio.CancelledError:
             quarantine.unlink(missing_ok=True)
             _drop_quota()
             raise
@@ -255,8 +268,14 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
                 _drop_quota()
 
             try:
-                await asyncio.to_thread(_put_object)
+                put_task = asyncio.ensure_future(asyncio.to_thread(_put_object))
+                await put_task
             except asyncio.CancelledError:
+                if not put_task.done():
+                    try:
+                        await asyncio.shield(put_task)
+                    except Exception:  # noqa: S110 — wait for writer then compensate
+                        pass
                 _cleanup_failed_put()
                 raise
             except Exception as exc:

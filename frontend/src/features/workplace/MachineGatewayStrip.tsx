@@ -6,17 +6,29 @@ export type HitlDecisionState = "idle" | "saving" | "accepted" | "rejected" | "f
 export type MachineGatewayStripProps = {
   report: ValidationReport;
   hitlDecisionState: HitlDecisionState;
+  persistedHitlState?: string | null;
 };
 
-function hitlLabel(state: HitlDecisionState): string {
-  if (state === "accepted") return UI_COPY.hitlConfirmed;
-  if (state === "rejected") return UI_COPY.hitlRejected;
-  if (state === "saving") return UI_COPY.hitlRecording;
-  if (state === "failed") return UI_COPY.hitlNotRecorded;
+function persistedLabel(persisted: string | null): string {
+  if (persisted === "accepted") return UI_COPY.hitlConfirmed;
+  if (persisted === "rejected") return UI_COPY.hitlRejected;
+  if (persisted === "edited") return UI_COPY.hitlEdited;
+  if (persisted === "opened") return UI_COPY.hitlOpened;
   return UI_COPY.hitlNone;
 }
 
-export default function MachineGatewayStrip({ report, hitlDecisionState }: MachineGatewayStripProps) {
+function hitlLabel(persisted: string | null, request: HitlDecisionState): string {
+  const known = persistedLabel(persisted);
+  if (request === "saving") {
+    return persisted ? `${known} · ${UI_COPY.hitlRecording}` : UI_COPY.hitlRecording;
+  }
+  if (request === "failed") {
+    return persisted ? `${known} · ${UI_COPY.hitlNotRecorded}` : UI_COPY.hitlNotRecorded;
+  }
+  return known;
+}
+
+export default function MachineGatewayStrip({ report, hitlDecisionState, persistedHitlState = null }: MachineGatewayStripProps) {
   const project = report.project_name?.trim();
   return (
     <div className="machine-human-split" data-testid="machine-human-split">
@@ -29,7 +41,7 @@ export default function MachineGatewayStrip({ report, hitlDecisionState }: Machi
       </article>
       <article className="expert-hitl">
         <p className="panel-kicker">{UI_COPY.hitlVerdict}</p>
-        <strong aria-live="polite" aria-atomic="true">{hitlLabel(hitlDecisionState)}</strong>
+        <strong aria-live="polite" aria-atomic="true">{hitlLabel(persistedHitlState, hitlDecisionState)}</strong>
         <p className="compact-copy">{UI_COPY.hitlSeparate}</p>
       </article>
     </div>

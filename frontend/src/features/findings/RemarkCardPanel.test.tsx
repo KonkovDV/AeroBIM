@@ -206,7 +206,7 @@ describe("RemarkCardPanel", () => {
       />,
     );
     expect((screen.getByRole("button", { name: "Сохраняем…" }) as HTMLButtonElement).disabled).toBe(true);
-    expect((screen.getByRole("button", { name: "Подтвердить замечание" }) as HTMLButtonElement).disabled).toBe(
+    expect((screen.getByRole("button", { name: "Сохранить и подтвердить" }) as HTMLButtonElement).disabled).toBe(
       true,
     );
     expect((screen.getByRole("button", { name: "Отклонить замечание" }) as HTMLButtonElement).disabled).toBe(true);

@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0.0",
+  "pack_version": "1.0.0",
+  "pack_id": "pd-rd-consistency-pilot-unsupported",
+  "description": "SYNTHETIC: unsupported drawing suffix. Cannot-verify, not a project violation.",
+  "project_name": "PD-RD consistency pilot (synthetic unsupported input)",
+  "discipline": "architecture",
+  "stage": "RD",
+  "revision": "R1",
+  "corpus_kind": "synthetic",
+  "request": {
+    "ifc_path": "samples/demo/pd-rd-consistency-pilot-2026-09/wall-01-width-200mm.ifc",
+    "drawings": [
+      {
+        "path": "samples/demo/pd-rd-consistency-pilot-2026-09/sheet.xyz",
+        "sheet_id": "A-101",
+        "format": "xyz",
+        "revision": "R1"
+      }
+    ]
+  }
+}

@@ -95,7 +95,7 @@ class AdvisoryGroundingTests(unittest.TestCase):
         )
         issue = merged[0]
         self.assertEqual(issue.severity, Severity.INFO)
-        self.assertIn("grounding:verified_reference", issue.evidence_refs)
+        self.assertIn("grounding:reference_resolved", issue.evidence_refs)
         self.assertNotIn("[ungrounded]", issue.message)
         self.assertFalse(divergences[0].advisory_verdict.startswith("ungrounded:"))
 

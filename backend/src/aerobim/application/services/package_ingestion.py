@@ -10,7 +10,7 @@ from __future__ import annotations
 import logging
 import zipfile
 from collections.abc import Sequence
-from dataclasses import replace
+from dataclasses import dataclass, replace
 from pathlib import Path
 
 from aerobim.application.services.capability_matrix import (
@@ -62,6 +62,19 @@ from aerobim.domain.ports import (
 CAD_DRAWING_SUFFIXES = {".dxf", ".dwg"} | set(AUTODESK_NATIVE_SUFFIXES)
 DRAWING_ASSET_SUFFIXES = {".pdf", ".png", ".jpg", ".jpeg", ".webp"}
 OFFICE_SUFFIXES = {".docx", ".xlsx", ".pptx", ".doc", ".xls", ".odt", ".ods"}
+_TEXT_DRAWING_SUFFIXES = {".txt", ".json", ".md"}
+_SUPPORTED_DRAWING_SUFFIXES = (
+    RASTER_DRAWING_SUFFIXES | CAD_DRAWING_SUFFIXES | OFFICE_SUFFIXES | _TEXT_DRAWING_SUFFIXES
+)
+
+
+@dataclass(frozen=True)
+class DrawingIngestResult:
+    annotations: list[DrawingAnnotation]
+    regions: list[DrawingRegionRef]
+    raster_yield: int
+    issues: list[ValidationIssue]
+
 
 _logger = logging.getLogger("aerobim.analyze")
 
@@ -485,23 +498,66 @@ class PackageIngestionService:
     def collect_drawing_annotations(
         self, request: ValidationRequest
     ) -> tuple[list[DrawingAnnotation], list[DrawingRegionRef], int]:
+        ingested = self.ingest_drawing_sources(request)
+        return ingested.annotations, ingested.regions, ingested.raster_yield
+
+    def ingest_drawing_sources(self, request: ValidationRequest) -> DrawingIngestResult:
+        from aerobim.domain.drawing_ifc_consistency import (
+            RULE_UNSUPPORTED,
+            parser_failure_issue,
+        )
+
         annotations: list[DrawingAnnotation] = []
         regions: list[DrawingRegionRef] = []
+        issues: list[ValidationIssue] = []
         raster_yield = 0
         for drawing_source in request.drawing_sources:
+            if drawing_source.path is not None:
+                suffix = drawing_source.path.suffix.lower()
+                if suffix and suffix not in _SUPPORTED_DRAWING_SUFFIXES:
+                    issues.append(
+                        ValidationIssue(
+                            rule_id=RULE_UNSUPPORTED,
+                            severity=Severity.WARNING,
+                            message=(
+                                "Невозможно проверить документ: формат "
+                                f"{suffix} не поддерживается. "
+                                "Не утверждение, что проект содержит нарушение."
+                            ),
+                            category=FindingCategory.DRAWING_VALIDATION,
+                            source_id="drawing-ingest",
+                            origin="deterministic",
+                            evidence_refs=("cannot_verify:unsupported_input",),
+                        )
+                    )
+                    continue
             if self.has_structured_drawing_input(drawing_source):
                 annotations.extend(self._drawing_analyzer.analyze(drawing_source))
             if self.is_raster_drawing_source(drawing_source):
                 before = len(annotations)
                 if self._multimodal_drawing_pipeline is not None:
-                    result = self._multimodal_drawing_pipeline.analyze(drawing_source, mode="auto")
-                    annotations.extend(result.annotations)
-                    regions.extend(result.regions)
+                    try:
+                        result = self._multimodal_drawing_pipeline.analyze(
+                            drawing_source, mode="auto"
+                        )
+                        annotations.extend(result.annotations)
+                        regions.extend(result.regions)
+                    except Exception as exc:
+                        issues.append(parser_failure_issue(drawing_source, exc))
                 elif self._raster_drawing_analyzer is not None:
-                    annotations.extend(self.collect_raster_annotations(drawing_source))
+                    extra, raster_issues = self.collect_raster_annotations_with_issues(
+                        drawing_source
+                    )
+                    annotations.extend(extra)
+                    issues.extend(raster_issues)
                 # else: requested raster without analyzer → empty yield; FAILED in capabilities
                 raster_yield += len(annotations) - before
-        return annotations, regions, raster_yield
+        return DrawingIngestResult(
+            annotations=annotations,
+            regions=regions,
+            raster_yield=raster_yield,
+            issues=issues,
+        )
 
     def collect_drawing_assets(self, request: ValidationRequest) -> list[DrawingAsset]:
         assets: list[DrawingAsset] = []
@@ -534,6 +590,15 @@ class PackageIngestionService:
         self,
         drawing_source: DrawingSource,
     ) -> list[DrawingAnnotation]:
+        annotations, _issues = self.collect_raster_annotations_with_issues(drawing_source)
+        return annotations
+
+    def collect_raster_annotations_with_issues(
+        self,
+        drawing_source: DrawingSource,
+    ) -> tuple[list[DrawingAnnotation], list[ValidationIssue]]:
+        from aerobim.domain.drawing_ifc_consistency import parser_failure_issue
+
         if drawing_source.path is None:
             raise ValueError("Raster drawing analysis requires a drawing file path")
         if self._raster_drawing_analyzer is None:
@@ -541,17 +606,18 @@ class PackageIngestionService:
                 "Raster drawing analysis requested but no raster drawing analyzer is configured"
             )
         try:
-            return list(
-                self._raster_drawing_analyzer.analyze_image(
-                    drawing_source.path,
-                    sheet_id=drawing_source.sheet_id,
-                )
+            return (
+                list(
+                    self._raster_drawing_analyzer.analyze_image(
+                        drawing_source.path,
+                        sheet_id=drawing_source.sheet_id,
+                    )
+                ),
+                [],
             )
         except Exception as exc:
             _logger.exception("Raster drawing analysis failed for %s", drawing_source.path)
-            # Zero yield → capabilities.raster FAILED (not silent OK / PASS).
-            _ = exc
-            return []
+            return [], [parser_failure_issue(drawing_source, exc)]
 
     def has_structured_drawing_input(self, drawing_source: DrawingSource) -> bool:
         if drawing_source.text.strip():

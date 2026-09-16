@@ -7,6 +7,7 @@ import {
   findingCategoryLabel,
   findingListTitle,
   findIssueForDrawingRegion,
+  matchIssueForDrawingRegion,
   groupFindings,
   HITL_RULE_ID,
   isAdvisoryIssue,
@@ -252,6 +253,27 @@ describe("issue-triage", () => {
     expect(isHitlClickableRegion({ ...region, layout_role: "stamp" })).toBe(false);
     expect(findIssueForDrawingRegion([hitl, other], region)?.index).toBe(0);
     expect(findIssueForDrawingRegion([other], region)).toBeNull();
+    const duplicate = {
+      issue: issue({
+        rule_id: "DRAW-002",
+        finding_id: "fid-dup",
+        problem_zone: {
+          sheet_id: "A-101",
+          page_number: 1,
+          x: 3,
+          y: 3,
+          width: 2,
+          height: 2,
+          element_guid: null,
+        },
+      }),
+      index: 2,
+    };
+    expect(findIssueForDrawingRegion([hitl, duplicate], region)).toBeNull();
+    expect(matchIssueForDrawingRegion([hitl, duplicate], region).kind).toBe("ambiguous");
+    expect(
+      matchIssueForDrawingRegion([hitl, duplicate], { ...region, finding_id: "fid-dup" }).kind,
+    ).toBe("match");
   });
 
   it("hides engine capability rows and collapses HITL duplicates", () => {

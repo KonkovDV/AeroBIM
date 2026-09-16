@@ -51,13 +51,14 @@ class InspectZipPathStreamTests(unittest.TestCase):
                 inspect_zip_path(archive_path, max_archive_file_bytes=1)
 
 
-class NfkcStorageTokenTests(unittest.TestCase):
-    def test_compatibility_chars_normalize_before_encode(self) -> None:
-        # U+FF21 is fullwidth Latin 'A' → NFKC → 'A'
+class NfcStorageTokenTests(unittest.TestCase):
+    def test_compatibility_lookalikes_do_not_share_a_namespace(self) -> None:
+        # U+FF21 fullwidth Latin 'A' must not collapse onto ASCII 'A' (RT02).
         fullwidth = safe_storage_token("\uff21enant")
         plain = safe_storage_token("Aenant")
-        self.assertEqual(fullwidth, plain)
+        self.assertNotEqual(fullwidth, plain)
         self.assertEqual(plain, "Aenant")
+        self.assertTrue(fullwidth.startswith("!"))
 
 
 class SecurityHeadersTests(unittest.TestCase):

@@ -128,6 +128,29 @@ class HitlRbacTests(unittest.TestCase):
             )
         )
 
+    def test_anonymous_dev_cannot_assign_expert_status(self) -> None:
+        principal = AuthPrincipal(
+            tenant_id="lab-anonymous",
+            subject="anonymous-dev",
+            auth_scheme="anonymous",
+        )
+        self.assertFalse(
+            principal_may_append_hitl_event(
+                enforce_hitl_reviewer_auth=False,
+                require_hitl_reviewer_roles=False,
+                principal=principal,
+                event_type="accepted",
+            )
+        )
+        self.assertTrue(
+            principal_may_append_hitl_event(
+                enforce_hitl_reviewer_auth=False,
+                require_hitl_reviewer_roles=False,
+                principal=principal,
+                event_type="opened",
+            )
+        )
+
     def test_hitl_role_gate_profile_matrix(self) -> None:
         """N-49: reviewer roles required only under pilot/production; demo/default off."""
 

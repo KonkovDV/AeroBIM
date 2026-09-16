@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { ValidationIssue } from "../../lib/types";
 import type { ReviewEventRow } from "../../lib/api";
 import { hitlEventTypeLabel } from "../../lib/hitl-event-copy";
-import { eventMatchesIssue } from "../../lib/hitl-state";
+import { eventMatchesIssue, latestHitlState, canDecideFinding, canEditFinding, canOpenFinding } from "../../lib/hitl-state";
 import { clauseLine, essenceLine, findingListTitle, spatialOrMissing } from "../../lib/issue-triage";
 import { UI_COPY } from "../../lib/ui-copy";
 import EvidenceStepper from "./EvidenceStepper";
@@ -64,6 +64,7 @@ export type RemarkCardPanelProps = {
   onSave: () => void;
   onAccept: () => void;
   onReject: () => void;
+  onOpen?: () => void;
 };
 
 export default function RemarkCardPanel({
@@ -81,13 +82,18 @@ export default function RemarkCardPanel({
   onSave,
   onAccept,
   onReject,
+  onOpen,
 }: RemarkCardPanelProps) {
   const history = activeIssue
     ? reviewEvents.filter((event) => eventMatchesIssue(event, activeIssue))
     : [];
   const historyError = reportId ? reviewEventsError : null;
+  const persisted = activeIssue ? latestHitlState(reviewEvents, activeIssue) : null;
   const hitlLocked =
     historyPending || remarkSaveState === "saving" || hitlDecisionState === "saving";
+  const editorLocked = hitlLocked || !canEditFinding(persisted);
+  const acceptLocked = hitlLocked || !canDecideFinding(persisted);
+  const openLocked = hitlLocked || !canOpenFinding(persisted);
 
   return (
     <article className="detail-block" data-testid="remark-card">
@@ -174,11 +180,12 @@ export default function RemarkCardPanel({
                 id="remark-editor"
                 value={remarkDraft}
                 rows={5}
+                disabled={editorLocked}
                 onChange={(event) => onDraftChange(event.target.value)}
                 onKeyDown={(event) => {
                   if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
                     event.preventDefault();
-                    if (!hitlLocked) {
+                    if (!editorLocked) {
                       onSave();
                     }
                   }
@@ -187,10 +194,15 @@ export default function RemarkCardPanel({
                 aria-label={UI_COPY.editRemark}
               />
               <div className="remark-actions">
+                {canOpenFinding(persisted) ? (
+                  <button type="button" onClick={onOpen} disabled={openLocked || !onOpen}>
+                    {persisted === "rejected" ? UI_COPY.reopenFinding : UI_COPY.takeInWork}
+                  </button>
+                ) : null}
                 <button
                   type="button"
                   onClick={onSave}
-                  disabled={hitlLocked}
+                  disabled={editorLocked}
                   title={UI_COPY.remarkSaveHotkey}
                 >
                   {remarkSaveState === "saving" ? UI_COPY.savingRemark : UI_COPY.saveRemark}
@@ -198,17 +210,21 @@ export default function RemarkCardPanel({
                 <button
                   type="button"
                   onClick={onAccept}
-                  disabled={hitlLocked}
+                  disabled={acceptLocked}
+                  title={UI_COPY.confirmSavesDraft}
                 >
                   {UI_COPY.confirmRemark}
                 </button>
                 <button
                   type="button"
                   onClick={onReject}
-                  disabled={hitlLocked}
+                  disabled={acceptLocked}
                 >
                   {UI_COPY.rejectRemark}
                 </button>
+                {persisted === "accepted" || persisted === "waived" ? (
+                  <span className="compact-copy">{UI_COPY.findingAcceptedLocked}</span>
+                ) : null}
                 {remarkSaveState === "saved" ? <span className="compact-copy">{UI_COPY.remarkSaved}</span> : null}
                 {remarkSaveState === "failed" ? <span className="compact-copy">{UI_COPY.remarkSaveFailed}</span> : null}
                 {conflictMessage ? (
@@ -216,8 +232,12 @@ export default function RemarkCardPanel({
                     {conflictMessage}
                   </p>
                 ) : null}
-                {hitlDecisionState === "accepted" ? <span className="compact-copy">{UI_COPY.confirmed}</span> : null}
-                {hitlDecisionState === "rejected" ? <span className="compact-copy">{UI_COPY.rejected}</span> : null}
+                {hitlDecisionState === "accepted" || persisted === "accepted" ? (
+                  <span className="compact-copy">{UI_COPY.confirmed}</span>
+                ) : null}
+                {hitlDecisionState === "rejected" || persisted === "rejected" ? (
+                  <span className="compact-copy">{UI_COPY.rejected}</span>
+                ) : null}
                 {hitlDecisionState === "failed" ? <span className="compact-copy">{UI_COPY.remarkDecisionFailed}</span> : null}
               </div>
             </>
@@ -229,8 +249,12 @@ export default function RemarkCardPanel({
           <div className="review-history" data-testid="review-history">
             <h4>{UI_COPY.hitlHistory}</h4>
             {historyPending ? <p className="compact-copy">{UI_COPY.historyLoading}</p> : null}
-            {historyError ? <p className="compact-copy">{historyError}</p> : null}
-            {historyPending ? null : history.length === 0 ? (
+            {historyError ? (
+              <p className="compact-copy" role="alert">
+                {historyError}
+              </p>
+            ) : null}
+            {historyPending || historyError ? null : history.length === 0 ? (
               <p className="compact-copy">{UI_COPY.noEvents}</p>
             ) : (
               <ol className="kpi-list">

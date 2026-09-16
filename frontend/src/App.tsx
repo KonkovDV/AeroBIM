@@ -151,6 +151,7 @@ export default function App() {
           remarkDraft={review.remarkDraft}
           remarkSaveState={review.remarkSaveState}
           hitlDecisionState={review.hitlDecisionState}
+          persistedHitlState={review.persistedHitlState}
           hitlEnabled={authBff.hitlEnabled}
           reviewEvents={review.reviewEvents}
           reviewEventsError={review.reviewEventsError}
@@ -190,6 +191,9 @@ export default function App() {
           }}
           onReject={() => {
             void decideActiveRemark("rejected");
+          }}
+          onOpen={() => {
+            void review.openRemark(triage.activeIssue);
           }}
           onNavigateToFindings={landing.landOnFindings}
           onOpenScreen={requestWorkspaceView}

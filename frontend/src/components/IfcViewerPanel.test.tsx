@@ -29,6 +29,7 @@ vi.mock("../lib/ifc-scene", () => ({
   IfcSceneController: class {
     init = () => Promise.resolve();
     loadModel = loadModelMock;
+    beginLoad = () => 1;
     getElementProps = getElementPropsMock;
     listStoreys = listStoreysMock;
     setStoreyFilter = vi.fn();
@@ -139,5 +140,47 @@ describe("IfcViewerPanel", () => {
     const download = screen.getByRole("link", { name: UI_COPY.viewerDownloadIfc });
     expect(download.getAttribute("href")).toBe(`/v1/reports/${"c".repeat(32)}/source/ifc`);
     expect(loadModelMock).not.toHaveBeenCalled();
+  });
+
+  it("does not apply a slower previous report after a newer report is selected", async () => {
+    let resolveA: ((value: Uint8Array) => void) | undefined;
+    const reportA = { ...report(), report_id: "a".repeat(32) };
+    const reportB = { ...report(), report_id: "b".repeat(32) };
+    fetchReportIfcSourceMock.mockImplementation((reportId: string) => {
+      if (reportId === reportA.report_id) {
+        return new Promise<Uint8Array>((resolve) => {
+          resolveA = resolve;
+        });
+      }
+      return Promise.resolve(new Uint8Array([9, 9, 9]));
+    });
+
+    const { rerender } = render(
+      <IfcViewerPanel
+        report={reportA}
+        selectedGuids={[]}
+        selectionMode="none"
+        selectionHeading=""
+        selectionDetail=""
+      />,
+    );
+    rerender(
+      <IfcViewerPanel
+        report={reportB}
+        selectedGuids={[]}
+        selectionMode="none"
+        selectionHeading=""
+        selectionDetail=""
+      />,
+    );
+    await waitFor(() => {
+      expect(loadModelMock).toHaveBeenCalledWith(new Uint8Array([9, 9, 9]), expect.anything());
+    });
+    const callsAfterB = loadModelMock.mock.calls.length;
+    resolveA?.(new Uint8Array([1, 1, 1]));
+    await waitFor(() => {
+      expect(loadModelMock.mock.calls.length).toBe(callsAfterB);
+    });
+    expect(loadModelMock).not.toHaveBeenCalledWith(new Uint8Array([1, 1, 1]), expect.anything());
   });
 });

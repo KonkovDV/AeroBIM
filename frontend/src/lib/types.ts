@@ -224,6 +224,8 @@ export interface DrawingRegionRef {
   coordinate_system?: string | null;
   page_width?: number | null;
   page_height?: number | null;
+  finding_id?: string | null;
+  evidence_ref?: string | null;
 }
 
 export interface IdsCompileDraft {

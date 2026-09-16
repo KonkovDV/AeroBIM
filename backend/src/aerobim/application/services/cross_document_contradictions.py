@@ -10,6 +10,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 
 from aerobim.domain.models import (
+    ComparisonOperator,
     ConflictKind,
     FindingCategory,
     ParsedRequirement,
@@ -78,19 +79,20 @@ class CrossDocumentContradictionDetector:
         the nature of the conflict for downstream policy filtering.
         """
         issues: list[ValidationIssue] = []
-        keyed: dict[tuple[str, str, str], list[ParsedRequirement]] = {}
+        keyed: dict[tuple[str, str, str, str], list[ParsedRequirement]] = {}
 
         for req in requirements:
             if not req.ifc_entity or not req.property_name:
                 continue
             key = (
                 req.ifc_entity.upper(),
-                (req.property_set or "").lower(),
+                self._normalize_pset(req.property_set),
                 req.property_name.lower(),
+                (req.target_ref or "").strip(),
             )
             keyed.setdefault(key, []).append(req)
 
-        for (entity, property_set, prop), reqs in keyed.items():
+        for (entity, property_set, prop, _target), reqs in keyed.items():
             if len(reqs) < 2:
                 continue
             seen: list[ParsedRequirement] = []
@@ -98,24 +100,32 @@ class CrossDocumentContradictionDetector:
                 if req.expected_value is None:
                     continue
                 for prev_req in seen:
-                    if prev_req.source_kind == req.source_kind:
+                    if self._same_document(prev_req, req):
                         continue
-                    soft = self.values_soft_conflict(
-                        prev_req.expected_value,
-                        prev_req.unit,
-                        req.expected_value,
-                        req.unit,
-                        quantity_a=prev_req.quantity,
-                        quantity_b=req.quantity,
-                    )
-                    hard = self.values_conflict(
-                        prev_req.expected_value,
-                        prev_req.unit,
-                        req.expected_value,
-                        req.unit,
-                        quantity_a=prev_req.quantity,
-                        quantity_b=req.quantity,
-                    )
+                    interval = self._interval_compatibility(prev_req, req)
+                    if interval is True:
+                        continue
+                    soft = False
+                    hard = False
+                    if interval is False:
+                        hard = True
+                    else:
+                        soft = self.values_soft_conflict(
+                            prev_req.expected_value,
+                            prev_req.unit,
+                            req.expected_value,
+                            req.unit,
+                            quantity_a=prev_req.quantity,
+                            quantity_b=req.quantity,
+                        )
+                        hard = self.values_conflict(
+                            prev_req.expected_value,
+                            prev_req.unit,
+                            req.expected_value,
+                            req.unit,
+                            quantity_a=prev_req.quantity,
+                            quantity_b=req.quantity,
+                        )
                     if not soft and not hard:
                         continue
                     prev_val = (prev_req.expected_value or "").strip()
@@ -135,6 +145,11 @@ class CrossDocumentContradictionDetector:
                             quantity_a=prev_req.quantity,
                             quantity_b=req.quantity,
                         )
+                        if interval is False and conflict_kind not in {
+                            ConflictKind.UNIT_MISMATCH,
+                            ConflictKind.UNPARSED_NUMERIC,
+                        }:
+                            conflict_kind = ConflictKind.HARD_CONFLICT
                         severity = self._severity
                     if conflict_kind is ConflictKind.UNPARSED_NUMERIC:
                         message = (
@@ -150,6 +165,8 @@ class CrossDocumentContradictionDetector:
                             f"but '{val}' (from {req.source_kind.value})"
                         )
                     match_method = "entity+pset+prop" if property_set else "entity+prop"
+                    if (req.target_ref or prev_req.target_ref or "").strip():
+                        match_method = f"{match_method}+target_ref"
                     issues.append(
                         ValidationIssue(
                             rule_id=f"CROSS-DOC-{entity}-{prop}",
@@ -164,8 +181,10 @@ class CrossDocumentContradictionDetector:
                             conflict_kind=conflict_kind,
                             origin="deterministic",
                             match_method=match_method,
+                            target_ref=(req.target_ref or prev_req.target_ref),
                             source_id=(
-                                f"cross-doc:{prev_req.source_kind.value}|{req.source_kind.value}"
+                                f"cross-doc:{self._document_identity(prev_req)}"
+                                f"|{self._document_identity(req)}"
                             ),
                             evidence_modality="cross-document",
                             evidence_refs=(
@@ -198,16 +217,19 @@ class CrossDocumentContradictionDetector:
 
         issues: list[ValidationIssue] = []
         for (entity, prop), reqs in by_entity_prop.items():
-            kinds = {req.source_kind for req in reqs}
-            if len(kinds) < 2:
+            identities = {self._document_identity(req) for req in reqs}
+            if len(identities) < 2:
                 continue
-            psets = {(req.property_set or "").strip() for req in reqs}
+            psets = {self._normalize_pset(req.property_set) for req in reqs}
             if len(psets) < 2:
                 continue
-            # Distinct non-empty psets (or empty vs named) across sources → unresolved.
             labeled = sorted(pset or "<none>" for pset in psets)
             sample = reqs[0]
-            other = next(req for req in reqs if req.source_kind != sample.source_kind)
+            other = next(
+                req
+                for req in reqs
+                if self._document_identity(req) != self._document_identity(sample)
+            )
             issues.append(
                 ValidationIssue(
                     rule_id=f"CROSS-DOC-AMBIGUOUS-{entity}-{prop}",
@@ -237,6 +259,79 @@ class CrossDocumentContradictionDetector:
                 )
             )
         return issues
+
+    @staticmethod
+    def _normalize_pset(property_set: str | None) -> str:
+        return (property_set or "").strip().lower()
+
+    @staticmethod
+    def _document_identity(req: ParsedRequirement) -> str:
+        """Concrete document, not merely the source_kind class.
+
+        Empty ``source`` does not collapse two records of the same kind into one
+        document — that would hide two drawings of one type.
+        """
+        source = (req.source or "").strip()
+        if source:
+            return f"{req.source_kind.value}:{source}"
+        return f"{req.source_kind.value}:anon:{req.rule_id}"
+
+    def _same_document(self, left: ParsedRequirement, right: ParsedRequirement) -> bool:
+        return self._document_identity(left) == self._document_identity(right)
+
+    def _interval_compatibility(
+        self,
+        left: ParsedRequirement,
+        right: ParsedRequirement,
+    ) -> bool | None:
+        """Compare gte/lte/eq as intervals in SI space.
+
+        Returns True when the allowed sets intersect, False when they are
+        disjoint, None when the pair is a plain equality (use SI compare).
+        """
+        interval_ops = {
+            ComparisonOperator.GREATER_OR_EQUAL,
+            ComparisonOperator.LESS_OR_EQUAL,
+            ComparisonOperator.EQUALS,
+        }
+        if left.operator not in interval_ops or right.operator not in interval_ops:
+            return None
+        if (
+            left.operator is ComparisonOperator.EQUALS
+            and right.operator is ComparisonOperator.EQUALS
+        ):
+            return None
+        q_left = self.resolve_quantity(left.expected_value, left.unit, left.quantity)
+        q_right = self.resolve_quantity(right.expected_value, right.unit, right.quantity)
+        if (
+            q_left is not None
+            and q_right is not None
+            and q_left.dimension
+            and q_right.dimension
+            and q_left.dimension != q_right.dimension
+        ):
+            return False
+        left_si = q_left.si_value if q_left is not None else None
+        right_si = q_right.si_value if q_right is not None else None
+        if left_si is None:
+            left_si = to_float((left.expected_value or "").strip())
+        if right_si is None:
+            right_si = to_float((right.expected_value or "").strip())
+        if left_si is None or right_si is None:
+            return None
+        low = float("-inf")
+        high = float("inf")
+        for operator, value in ((left.operator, left_si), (right.operator, right_si)):
+            if operator is ComparisonOperator.EQUALS:
+                low = max(low, value)
+                high = min(high, value)
+            elif operator is ComparisonOperator.GREATER_OR_EQUAL:
+                low = max(low, value)
+            else:
+                high = min(high, value)
+        unit = (q_left.ucum_code if q_left is not None else None) or left.unit or right.unit
+        eps = self._tolerance.epsilon_for_unit(unit)
+        return low <= high + eps
 
     def resolve_quantity(
         self,
@@ -374,8 +469,6 @@ class CrossDocumentContradictionDetector:
             return False
         a_str = value_a.strip()
         b_str = value_b.strip()
-        if a_str.lower() == b_str.lower():
-            return False
 
         q_a = self.resolve_quantity(value_a, unit_a, quantity_a)
         q_b = self.resolve_quantity(value_b, unit_b, quantity_b)
@@ -402,11 +495,18 @@ class CrossDocumentContradictionDetector:
                     return True
                 eps = self._tolerance.epsilon_for_unit(parsed_a.ucum_code)
                 return not si_compare(parsed_a, parsed_b, epsilon=eps)
-
+            unit_a_norm = normalize_unit_token(unit_a)
+            unit_b_norm = normalize_unit_token(unit_b)
+            if unit_a_norm and unit_b_norm and unit_a_norm.lower() != unit_b_norm.lower():
+                return True
+            if a_str.lower() == b_str.lower() and (
+                not unit_a_norm or unit_a_norm.lower() == (unit_b_norm or "").lower()
+            ):
+                return False
             eps = self._tolerance.epsilon_for_unit(unit_a or unit_b or "")
             return abs(a_num - b_num) > eps
 
-        return True
+        return a_str.lower() != b_str.lower()
 
     def normalize_numeric_value(
         self,

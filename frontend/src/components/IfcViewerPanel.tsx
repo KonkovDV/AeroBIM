@@ -115,14 +115,24 @@ export default function IfcViewerPanel({
     }
 
     let cancelled = false;
+    const abort = new AbortController();
+    const generation =
+      typeof (controller as { beginLoad?: () => number }).beginLoad === "function"
+        ? (controller as { beginLoad: () => number }).beginLoad()
+        : 0;
     setViewerStatus("loading");
     setViewerError(null);
     setViewerCapBlocked(false);
     setIsolateSelection(false);
     setStoreyFilter("");
 
-    fetchReportIfcSource(reportId)
-      .then((ifcBytes) => controller.loadModel(ifcBytes))
+    fetchReportIfcSource(reportId, { signal: abort.signal })
+      .then((ifcBytes) => {
+        if (cancelled) {
+          return;
+        }
+        return controller.loadModel(ifcBytes, generation);
+      })
       .then(() => {
         if (cancelled) {
           return;
@@ -133,6 +143,9 @@ export default function IfcViewerPanel({
       })
       .catch((error: unknown) => {
         if (cancelled) {
+          return;
+        }
+        if (error instanceof DOMException && error.name === "AbortError") {
           return;
         }
         setViewerStatus("error");
@@ -147,6 +160,7 @@ export default function IfcViewerPanel({
 
     return () => {
       cancelled = true;
+      abort.abort();
     };
   }, [controllerReady, reportId]);
 

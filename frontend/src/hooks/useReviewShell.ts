@@ -48,7 +48,7 @@ export function useReviewShell() {
   const review = useSelectedReport(selectedReportId, reportsEpoch);
   const {
     selectedReport, selectedIssueIndex, selectedClashIndex, selectIssue,
-    pendingSelect, confirmPendingSelect, saveRemarkEdit, decideRemark, isDirty,
+    pendingSelect, confirmPendingSelect, saveRemarkEdit, decideRemark, openRemark, discardRemarkDraft, isDirty,
   } = review;
   const pack = usePackDraft();
   const landing = useWorkspaceLanding({
@@ -146,6 +146,8 @@ export function useReviewShell() {
         if (!saved) {
           return;
         }
+      } else {
+        discardRemarkDraft();
       }
       const nav = pendingNav;
       setPendingNav(null);
@@ -165,7 +167,7 @@ export function useReviewShell() {
       }
       setWorkspaceView(nav.view);
     },
-    [activeIssue, confirmPendingSelect, pendingNav, pendingSelect, saveRemarkEdit],
+    [activeIssue, confirmPendingSelect, discardRemarkDraft, pendingNav, pendingSelect, saveRemarkEdit],
   );
 
   const runPolling = useRunPolling(handleSeededReport, authBff.discovery.status !== "LOADING");

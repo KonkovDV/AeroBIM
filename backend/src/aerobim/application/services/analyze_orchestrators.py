@@ -7,7 +7,10 @@ coordinate phases and make contour boundaries testable in isolation.
 
 from __future__ import annotations
 
+import hashlib
+import json
 from collections import Counter
+from collections.abc import Sequence
 from dataclasses import dataclass, field, replace
 from datetime import UTC, datetime
 from pathlib import Path
@@ -20,7 +23,12 @@ from aerobim.application.services.compliance_agent_orchestrator import merge_adv
 from aerobim.application.services.confidence_scorer import score_confidence
 from aerobim.application.services.customer_intake import CustomerIntakeGate
 from aerobim.application.services.determinism_gate import build_evidence_universe
+from aerobim.application.services.drawing_ifc_consistency import (
+    DrawingIfcConsistencyService,
+    merge_quantity_capability,
+)
 from aerobim.application.services.package_outcome import compute_package_outcome
+from aerobim.domain.advisory_remark_compose import finding_payload_from_issue
 from aerobim.domain.annotation_ifc_matching import AnnotationIfcLink, match_annotations_to_regions
 from aerobim.domain.drawing_region_hitl import (
     issues_for_hitl_regions,
@@ -78,6 +86,7 @@ class IngestionBundle:
     office_capability: CapabilityStatus | None = None
     annotation_ifc_links: tuple[AnnotationIfcLink, ...] = ()
     extraction_integrity: CapabilityStatus | None = None
+    raster_issues: tuple[ValidationIssue, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -161,9 +170,10 @@ class IngestionOrchestrator:
         requirements = tuple(
             [*structured_requirements, *synthesized_requirements, *norm_pack_requirements]
         )
-        annotation_list, region_list, raster_annotation_count = (
-            self._host._ingestion_service().collect_drawing_annotations(request)
-        )
+        drawing_ingest = self._host._ingestion_service().ingest_drawing_sources(request)
+        annotation_list = drawing_ingest.annotations
+        region_list = drawing_ingest.regions
+        raster_annotation_count = drawing_ingest.raster_yield
         cad_annotations, cad_capability, cad_issues = (
             self._host._ingestion_service().run_cad_ingest(request)
         )
@@ -194,6 +204,7 @@ class IngestionOrchestrator:
             office_capability=office_capability,
             annotation_ifc_links=annotation_ifc_links,
             extraction_integrity=extraction_integrity,
+            raster_issues=tuple(drawing_ingest.issues),
         )
 
 
@@ -282,6 +293,14 @@ class DeterministicValidationOrchestrator:
         quantity_issues, quantity_capability = self._host._clash_runner().run_quantity_consistency(
             request.ifc_path, requirements
         )
+        drawing_ifc_issues, drawing_ifc_capability = DrawingIfcConsistencyService().evaluate(
+            ifc_path=request.ifc_path,
+            annotations=ingested.drawing_annotations,
+            drawing_sources=request.drawing_sources,
+            ifc_revision=request.revision,
+        )
+        quantity_issues = [*quantity_issues, *drawing_ifc_issues]
+        quantity_capability = merge_quantity_capability(quantity_capability, drawing_ifc_capability)
         clash_ms = max(0, int((perf_counter() - t4) * 1000))
         load_issues, calculation_match = self._host._clash_runner().run_load_evidence(request)
         logic_issues = self._host._clash_runner().run_logic_consistency(request)
@@ -312,6 +331,7 @@ class DeterministicValidationOrchestrator:
                 *load_issues,
                 *logic_issues,
                 *ingested.region_hitl_issues,
+                *ingested.raster_issues,
                 *signature_issues,
                 *package_completeness_issues,
             ]
@@ -461,6 +481,7 @@ class DeterministicValidationOrchestrator:
                 *load_issues,
                 *logic_issues,
                 *ingested.region_hitl_issues,
+                *ingested.raster_issues,
                 *signature_issues,
                 *package_completeness_issues,
             ]
@@ -649,14 +670,35 @@ def _advisory_object_kind(request: ValidationRequest) -> str:
     Trusted public fixtures are only repo corpus trees under discrete ``samples`` /
     ``fixtures`` path components followed by a known public child (``ifc``, …).
 
-    Never classify from absolute-path substrings alone (deploy under
-    ``…/samples/AeroBIM/var/tenants/…`` must stay confidential). Never treat
-    ``samples/customer`` or tenant uploads as public.
+    Mixed packages (public IFC + tenant text/drawing) stay confidential: every
+    actually submitted path must be a public fixture.
     """
 
-    raw = getattr(request, "ifc_path", None)
-    if raw is None:
+    paths: list[Path] = []
+    ifc = getattr(request, "ifc_path", None)
+    if ifc is not None:
+        paths.append(Path(str(ifc)))
+    for source in (
+        getattr(request, "requirement_source", None),
+        getattr(request, "technical_spec_source", None),
+        getattr(request, "calculation_source", None),
+    ):
+        path = getattr(source, "path", None) if source is not None else None
+        if path is not None:
+            paths.append(Path(str(path)))
+    for drawing in getattr(request, "drawing_sources", ()) or ():
+        path = getattr(drawing, "path", None)
+        if path is not None:
+            paths.append(Path(str(path)))
+    if not paths:
         return "ifc"
+    kinds = [_path_object_kind(path) for path in paths]
+    if all(kind == "public_fixture" for kind in kinds):
+        return "public_fixture"
+    return "ifc"
+
+
+def _path_object_kind(raw: Path) -> str:
     parts = [part.lower() for part in Path(str(raw)).parts]
     if "tenants" in parts or "uploads" in parts or "customer" in parts:
         return "ifc"
@@ -668,6 +710,18 @@ def _advisory_object_kind(request: ValidationRequest) -> str:
         if parts[index + 1] in _PUBLIC_CORPUS_CHILDREN:
             return "public_fixture"
     return "ifc"
+
+
+_OVERLAY_GATE_MASK_RULES = {
+    "payload_sha256": "keep",
+    "finding_count": "keep",
+    "object_kind": "keep",
+}
+
+
+def _overlay_payload_digest(findings: list[dict[str, object]]) -> str:
+    blob = json.dumps(findings, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(blob.encode("utf-8")).hexdigest()
 
 
 def _llm_overlay_route_target(provider: object) -> RouteTarget:
@@ -690,12 +744,16 @@ class EvidenceAssembler:
         self._host = host
 
     def _evaluate_llm_overlay_gate(
-        self, request: ValidationRequest
+        self,
+        request: ValidationRequest,
+        issues: Sequence[ValidationIssue] = (),
     ) -> tuple[bool, dict[str, object] | None]:
-        """HybridRouteGate before Studio/local remark overlay (RT-030 / WP-02 parity).
+        """HybridRouteGate before Studio/local remark overlay (RT-030 / WP-02 / RT05).
 
         Missing gate → suppress. Cloud (Yandex) uses PUBLIC target — CONFIDENTIAL IFC
-        packages stay blocked (Claims Lock). Local/mock uses LOCAL.
+        packages stay blocked (Claims Lock). Local/mock uses LOCAL. PUBLIC egress
+        requires a bound payload digest + PrivacyGuard; ``payload=None`` is not
+        later-document approval.
         """
 
         from aerobim.domain.hybrid.trust_policy import RouteStatus
@@ -721,6 +779,13 @@ class EvidenceAssembler:
 
         target = _llm_overlay_route_target(provider)
         tenant_id = (request.tenant_id or "").strip()
+        findings = [finding_payload_from_issue(issue) for issue in issues]
+        digest = _overlay_payload_digest(findings)
+        payload = {
+            "payload_sha256": digest,
+            "finding_count": len(findings),
+            "object_kind": _advisory_object_kind(request),
+        }
         result = gate.evaluate(
             object_kind=_advisory_object_kind(request),
             target=target,
@@ -728,11 +793,21 @@ class EvidenceAssembler:
             task_type="advisory_remark_overlay",
             request_id=request.request_id,
             project_id=request.project_id,
-            payload=None,
+            payload=payload,
+            mask_rules=_OVERLAY_GATE_MASK_RULES,
         )
-        allowed = result.may_create_advisory
+        if target is RouteTarget.PUBLIC:
+            allowed = result.may_call_external
+        else:
+            allowed = result.may_create_advisory
         if result.decision.status is RouteStatus.HUMAN_REVIEW:
             allowed = False
+        if allowed:
+            again = _overlay_payload_digest(
+                [finding_payload_from_issue(issue) for issue in issues]
+            )
+            if again != digest:
+                allowed = False
         trace = {
             "tool": "hybrid_route_gate",
             "status": result.decision.status.value,
@@ -742,6 +817,7 @@ class EvidenceAssembler:
             "classification": result.decision.classification.value,
             "target": result.decision.target.value,
             "task_type": "advisory_remark_overlay",
+            "payload_sha256": digest,
             "egress_bytes_estimate": result.egress_bytes_estimate,
             "verdict_impact": result.audit_event.verdict_impact,
             "event_id": result.audit_event.event_id,
@@ -754,6 +830,8 @@ class EvidenceAssembler:
         ingested: IngestionBundle,
         deterministic: DeterministicBundle,
         advisory: AdvisoryBundle,
+        *,
+        persist: bool = True,
     ) -> ValidationReport:
         intake_issues: list[ValidationIssue] = []
         intake_blocked = False
@@ -802,7 +880,9 @@ class EvidenceAssembler:
             self._host._remark_enricher().attach_remarks(prioritized_issues)
         )
         overlay_traces: list[dict[str, object]] = []
-        may_overlay, overlay_trace = self._evaluate_llm_overlay_gate(request)
+        may_overlay, overlay_trace = self._evaluate_llm_overlay_gate(
+            request, issues_with_remarks
+        )
         if overlay_trace is not None:
             overlay_traces.append(overlay_trace)
         if may_overlay:
@@ -955,12 +1035,15 @@ class EvidenceAssembler:
             ):
                 self._host._review_event_store.append(event)
         try:
-            self._host._audit_report_store.save(report)
+            if persist:
+                self._host._audit_report_store.save(report)
         except Exception:
             if self._host._review_event_store is not None:
                 discard = getattr(self._host._review_event_store, "discard_report", None)
                 if callable(discard):
                     discard(report.report_id)
             raise
-        persisted_report = self._host._audit_report_store.get(report.report_id)
-        return persisted_report or report
+        if persist:
+            persisted_report = self._host._audit_report_store.get(report.report_id)
+            return persisted_report or report
+        return report

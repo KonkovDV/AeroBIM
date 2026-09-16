@@ -23,7 +23,10 @@ from aerobim.core.security.path_jail import (
 from aerobim.core.security.upload_quota import FilesystemUploadQuotaStore
 from aerobim.domain.models import (
     ClashResult,
+    FindingCategory,
     ReviewEvent,
+    Severity,
+    ValidationIssue,
     ValidationReport,
     ValidationSummary,
 )
@@ -160,7 +163,16 @@ class HitlPreviousStateSsotTests(unittest.TestCase):
                     ifc_path=ifc_path,
                     created_at=datetime.now(tz=UTC).isoformat(),
                     requirements=(),
-                    issues=(),
+                    issues=(
+                        ValidationIssue(
+                            rule_id="IDS-1",
+                            severity=Severity.ERROR,
+                            message="seed",
+                            category=FindingCategory.IFC_VALIDATION,
+                            finding_id="finding-1",
+                            origin="deterministic",
+                        ),
+                    ),
                     summary=ValidationSummary(0, 0, 0, 0, True),
                     tenant_id="tenant-a",
                 )

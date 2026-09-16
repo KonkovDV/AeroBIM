@@ -9,8 +9,12 @@ from __future__ import annotations
 import json
 from dataclasses import asdict, replace
 from datetime import UTC, datetime
+from uuid import uuid4
 
-from aerobim.domain.analyze_job_idempotency import job_from_stored_mapping
+from aerobim.domain.analyze_job_idempotency import (
+    JobConcurrencyLimitError,
+    job_from_stored_mapping,
+)
 from aerobim.domain.job_transitions import can_transition
 from aerobim.domain.models import AnalyzeProjectPackageJob, JobStatus
 
@@ -40,6 +44,7 @@ class RedisAnalyzeProjectPackageJobStore:
         self._redis_mod = redis
         self._prefix = key_prefix
         self._queued_ttl_seconds = queued_ttl_seconds
+        self._lease_seconds = 120
 
     def _key(self, job_id: str) -> str:
         return f"{self._prefix}{job_id}"
@@ -53,7 +58,17 @@ class RedisAnalyzeProjectPackageJobStore:
         item = json.loads(raw)
         return job_from_stored_mapping(item)
 
-    def create(self, job: AnalyzeProjectPackageJob) -> str:
+    def create(
+        self,
+        job: AnalyzeProjectPackageJob,
+        *,
+        max_concurrent_per_tenant: int | None = None,
+    ) -> str:
+        idem_index = (
+            self._idempotency_key(job.idempotency_key, tenant_id=job.tenant_id)
+            if job.idempotency_key
+            else None
+        )
         if job.idempotency_key:
             existing = self.get_by_idempotency_key(
                 job.idempotency_key,
@@ -61,23 +76,54 @@ class RedisAnalyzeProjectPackageJobStore:
             )
             if existing is not None:
                 return existing.job_id
-            # Atomic claim of tenant-scoped idempotency index.
-            claimed = self._redis.set(
-                self._idempotency_key(job.idempotency_key, tenant_id=job.tenant_id),
-                job.job_id,
-                nx=True,
-            )
-            if not claimed:
+        claimed_index = False
+        if idem_index is not None:
+            claimed_index = bool(self._redis.set(idem_index, job.job_id, nx=True))
+            if not claimed_index:
                 raced = self.get_by_idempotency_key(
-                    job.idempotency_key,
+                    job.idempotency_key or "",
                     tenant_id=job.tenant_id,
                 )
                 if raced is not None:
                     return raced.job_id
-                raise RuntimeError("Idempotency key claimed by concurrent submit; retry shortly")
-        created = self._redis.set(self._key(job.job_id), self._serialize(job), nx=True)
+                dangling = self._redis.get(idem_index)
+                if dangling and self.get(str(dangling)) is None:
+                    self._redis.delete(idem_index)
+                    claimed_index = bool(self._redis.set(idem_index, job.job_id, nx=True))
+                if not claimed_index:
+                    raise RuntimeError(
+                        "Idempotency key claimed by concurrent submit; retry shortly"
+                    )
+        active_key = self._active_key(job.tenant_id) if job.tenant_id else None
+        if max_concurrent_per_tenant is not None and max_concurrent_per_tenant > 0:
+            tenant = (job.tenant_id or "").strip()
+            if not tenant:
+                if claimed_index and idem_index is not None:
+                    self._redis.delete(idem_index)
+                raise JobConcurrencyLimitError(
+                    "Analyze job concurrency limit requires a bound tenant_id "
+                    f"(limit {max_concurrent_per_tenant})"
+                )
+            active = int(self._redis.scard(active_key) or 0) if active_key else 0
+            if active >= max_concurrent_per_tenant:
+                if claimed_index and idem_index is not None:
+                    self._redis.delete(idem_index)
+                raise JobConcurrencyLimitError(
+                    f"Tenant {tenant!r} has {active} active analyze jobs "
+                    f"(limit {max_concurrent_per_tenant})"
+                )
+        try:
+            created = self._redis.set(self._key(job.job_id), self._serialize(job), nx=True)
+        except Exception:
+            if claimed_index and idem_index is not None:
+                self._redis.delete(idem_index)
+            raise
         if not created:
+            if claimed_index and idem_index is not None:
+                self._redis.delete(idem_index)
             raise ValueError(f"Job already exists: {job.job_id}")
+        if active_key is not None:
+            self._redis.sadd(active_key, job.job_id)
         return job.job_id
 
     def get(self, job_id: str) -> AnalyzeProjectPackageJob | None:
@@ -98,7 +144,7 @@ class RedisAnalyzeProjectPackageJobStore:
             wanted_tenant = (tenant_id or "").strip().casefold()
             for key in self._redis.scan_iter(match=f"{self._prefix}*"):
                 key_str = str(key)
-                if ":idem:" in key_str:
+                if ":idem:" in key_str or ":active:" in key_str:
                     continue
                 raw = self._redis.get(key)
                 if raw is None:
@@ -123,7 +169,7 @@ class RedisAnalyzeProjectPackageJobStore:
         count = 0
         for key in self._redis.scan_iter(match=f"{self._prefix}*"):
             key_str = str(key)
-            if ":idem:" in key_str:
+            if ":idem:" in key_str or ":active:" in key_str:
                 continue
             raw = self._redis.get(key)
             if raw is None:
@@ -135,25 +181,46 @@ class RedisAnalyzeProjectPackageJobStore:
                 count += 1
         return count
 
+    def _active_key(self, tenant_id: str | None) -> str:
+        tenant = (tenant_id or "").strip().casefold() or "_"
+        return f"{self._prefix}active:{tenant}"
+
     def _idempotency_key(self, idempotency_key: str, *, tenant_id: str | None = None) -> str:
         tenant = (tenant_id or "").strip().casefold() or "_"
         return f"{self._prefix}idem:{tenant}:{idempotency_key}"
 
-    def mark_running(self, job_id: str) -> AnalyzeProjectPackageJob | None:
-        return self._update(job_id, status=JobStatus.RUNNING, started_at=_now_iso())
+    def mark_running(
+        self, job_id: str, *, owner: str | None = None
+    ) -> AnalyzeProjectPackageJob | None:
+        owner_token = (owner or uuid4().hex).strip() or uuid4().hex
+        return self._update(
+            job_id,
+            status=JobStatus.RUNNING,
+            started_at=_now_iso(),
+            require_status=JobStatus.QUEUED,
+            lease_owner=owner_token,
+        )
 
-    def mark_succeeded(self, job_id: str, report_id: str) -> AnalyzeProjectPackageJob | None:
+    def mark_succeeded(
+        self, job_id: str, report_id: str, *, owner: str | None = None
+    ) -> AnalyzeProjectPackageJob | None:
         return self._update(
             job_id,
             status=JobStatus.SUCCEEDED,
             report_id=report_id,
             completed_at=_now_iso(),
             error_message=None,
+            require_owner=owner,
+            lease_owner=None,
         )
 
-    def mark_failed(self, job_id: str, error_message: str) -> AnalyzeProjectPackageJob | None:
+    def mark_failed(
+        self, job_id: str, error_message: str, *, owner: str | None = None
+    ) -> AnalyzeProjectPackageJob | None:
         current = self.get(job_id)
         if current is None:
+            return None
+        if owner and current.lease_owner and current.lease_owner != owner:
             return None
         retries = current.retry_count + 1
         if retries > 3 and can_transition(current.status, JobStatus.DEAD_LETTER):
@@ -165,6 +232,8 @@ class RedisAnalyzeProjectPackageJobStore:
                 retry_count=retries,
                 lease_expires_at=None,
                 stage_progress="dead_letter",
+                require_owner=owner,
+                lease_owner=None,
             )
         return self._update(
             job_id,
@@ -174,10 +243,12 @@ class RedisAnalyzeProjectPackageJobStore:
             retry_count=retries,
             lease_expires_at=None,
             stage_progress="failed",
+            require_owner=owner,
+            lease_owner=None,
         )
 
     def heartbeat(
-        self, job_id: str, *, lease_seconds: int = 120
+        self, job_id: str, *, lease_seconds: int = 120, owner: str | None = None
     ) -> AnalyzeProjectPackageJob | None:
         from datetime import timedelta
 
@@ -192,6 +263,8 @@ class RedisAnalyzeProjectPackageJobStore:
             status=JobStatus.RUNNING,
             heartbeat_at=_now_iso(),
             lease_expires_at=lease_until,
+            require_status=JobStatus.RUNNING,
+            require_owner=owner,
         )
 
     def request_cancel(self, job_id: str) -> AnalyzeProjectPackageJob | None:
@@ -242,7 +315,7 @@ class RedisAnalyzeProjectPackageJobStore:
         reclaimed: list[AnalyzeProjectPackageJob] = []
         for key in self._redis.scan_iter(match=f"{self._prefix}*"):
             key_str = str(key)
-            if ":idem:" in key_str:
+            if ":idem:" in key_str or ":active:" in key_str:
                 continue
             raw = self._redis.get(key)
             if raw is None:
@@ -292,7 +365,7 @@ class RedisAnalyzeProjectPackageJobStore:
         reclaimed: list[AnalyzeProjectPackageJob] = []
         for key in self._redis.scan_iter(match=f"{self._prefix}*"):
             key_str = str(key)
-            if ":idem:" in key_str:
+            if ":idem:" in key_str or ":active:" in key_str:
                 continue
             raw = self._redis.get(key)
             if raw is None:
@@ -313,6 +386,8 @@ class RedisAnalyzeProjectPackageJobStore:
         target_status = changes.get("status")
         if not isinstance(target_status, JobStatus):
             raise TypeError("status must be a JobStatus")
+        require_status = changes.pop("require_status", None)
+        require_owner = changes.pop("require_owner", None)
 
         while True:
             try:
@@ -323,6 +398,16 @@ class RedisAnalyzeProjectPackageJobStore:
                         pipe.unwatch()
                         return None
                     current = self._deserialize(str(raw))
+                    if require_status is not None and current.status is not require_status:
+                        pipe.unwatch()
+                        return None
+                    if (
+                        require_owner
+                        and current.lease_owner
+                        and current.lease_owner != require_owner
+                    ):
+                        pipe.unwatch()
+                        return None
                     if current.status is not target_status and not can_transition(
                         current.status, target_status
                     ):
@@ -331,6 +416,11 @@ class RedisAnalyzeProjectPackageJobStore:
                     updated = replace(current, **changes)  # type: ignore[arg-type]
                     pipe.multi()
                     pipe.set(key, self._serialize(updated))
+                    active_key = self._active_key(updated.tenant_id or current.tenant_id)
+                    if updated.status in {JobStatus.QUEUED, JobStatus.RUNNING}:
+                        pipe.sadd(active_key, job_id)
+                    else:
+                        pipe.srem(active_key, job_id)
                     pipe.execute()
                     return updated
             except self._redis_mod.WatchError:

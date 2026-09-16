@@ -83,6 +83,33 @@ class LiveReviewSmokeHelperTests(unittest.TestCase):
         self.assertEqual(env["AEROBIM_SIGNOFF_PROFILE"], "development")
         self.assertEqual(env["AEROBIM_ENV"], "development")
 
+    def test_build_backend_env_strips_inherited_cloud_and_llm(self) -> None:
+        env = build_backend_env(
+            base_env={
+                "PATH": "example",
+                "AEROBIM_REDIS_URL": "redis://prod.example:6379/0",
+                "AEROBIM_S3_BUCKET": "prod-bucket",
+                "AEROBIM_OIDC_ISSUER": "https://idp.example",
+                "AEROBIM_LLM_API_KEY": "secret",
+                "AEROBIM_VLM_API_KEY": "secret",
+                "OPENAI_API_KEY": "secret",
+                "AWS_SECRET_ACCESS_KEY": "secret",
+                "DATABASE_URL": "postgres://prod",
+            },
+            storage_dir=Path("c:/tmp/live-smoke"),
+            port=8081,
+            frontend_origin="http://127.0.0.1:3000",
+        )
+        self.assertEqual(env["PATH"], "example")
+        self.assertNotIn("AEROBIM_REDIS_URL", env)
+        self.assertNotIn("AEROBIM_S3_BUCKET", env)
+        self.assertNotIn("AEROBIM_OIDC_ISSUER", env)
+        self.assertNotIn("AEROBIM_LLM_API_KEY", env)
+        self.assertNotIn("AEROBIM_VLM_API_KEY", env)
+        self.assertNotIn("OPENAI_API_KEY", env)
+        self.assertNotIn("AWS_SECRET_ACCESS_KEY", env)
+        self.assertNotIn("DATABASE_URL", env)
+
     def test_build_frontend_env_points_at_backend_base_url(self) -> None:
         env = build_frontend_env(
             base_env={

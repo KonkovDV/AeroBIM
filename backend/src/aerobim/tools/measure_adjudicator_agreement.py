@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
 from collections import Counter, defaultdict
 from collections.abc import Sequence
@@ -88,18 +89,24 @@ def krippendorff_alpha_nominal(units: Sequence[Sequence[str]]) -> float:
 
 
 def _item_key(row: dict[str, str]) -> str:
+    """Stable item identity: case + finding, else delimiter-proof composite."""
+
+    case_id = (row.get("case_id") or "").strip()
     finding_id = (row.get("finding_id") or "").strip()
-    if finding_id:
-        return finding_id
-    parts = [
-        (row.get("case_id") or "").strip(),
+    if case_id or finding_id:
+        return json.dumps(
+            {"case_id": case_id, "finding_id": finding_id},
+            ensure_ascii=True,
+            separators=(",", ":"),
+        )
+    parts = (
         (row.get("finding_class") or "").strip(),
         (row.get("rule_id") or "").strip(),
         (row.get("target_ref") or "").strip(),
         (row.get("element_guid") or "").strip(),
         (row.get("match_key") or "").strip(),
-    ]
-    return "|".join(parts)
+    )
+    return "key:" + json.dumps(parts, ensure_ascii=True, separators=(",", ":"))
 
 
 def measure_adjudication_csv(path: Path) -> dict[str, object]:
@@ -107,13 +114,26 @@ def measure_adjudication_csv(path: Path) -> dict[str, object]:
 
     with path.open(encoding="utf-8", newline="") as handle:
         rows = list(csv.DictReader(handle))
+    source_csv_sha256 = hashlib.sha256(path.read_bytes()).hexdigest()
     by_item: dict[str, dict[str, str]] = defaultdict(dict)
+    skipped_blank = 0
+    exact_duplicate = 0
     for row in rows:
         adjudicator = (row.get("adjudicator_id") or "").strip()
         verdict = (row.get("verdict") or "").strip().upper()
         if not adjudicator or not verdict:
+            skipped_blank += 1
             continue
-        by_item[_item_key(row)][adjudicator] = verdict
+        key = _item_key(row)
+        previous = by_item[key].get(adjudicator)
+        if previous is not None and previous != verdict:
+            raise ValueError(
+                f"conflicting duplicate labels for item {key} adjudicator {adjudicator}"
+            )
+        if previous == verdict:
+            exact_duplicate += 1
+            continue
+        by_item[key][adjudicator] = verdict
 
     adjudicators = sorted({aid for mapping in by_item.values() for aid in mapping})
     if len(adjudicators) < 2:
@@ -143,15 +163,19 @@ def measure_adjudication_csv(path: Path) -> dict[str, object]:
     matrix = {f"{a}/{b}": count for (a, b), count in sorted(confusion.items())}
     return {
         "artifact_type": "adjudicator_agreement",
-        "schema_version": "1.2.0",
+        "schema_version": "1.3.0",
         "generated_at": datetime.now(tz=UTC).isoformat(),
         "source_csv": str(path.as_posix()),
+        "source_csv_sha256": source_csv_sha256,
         "adjudicator_a": a_id,
         "adjudicator_b": b_id,
         "adjudicator_count": len(adjudicators),
         "adjudicators": adjudicators,
         "paired_items": len(paired_a),
         "alpha_units": len(alpha_units),
+        "items_with_any_label": len(by_item),
+        "skipped_blank_rows": skipped_blank,
+        "exact_duplicate_rows": exact_duplicate,
         "cohens_kappa": round(kappa, 4),
         "gwet_ac1": round(ac1, 4),
         "krippendorff_alpha": round(alpha, 4),

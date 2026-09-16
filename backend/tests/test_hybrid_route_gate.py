@@ -75,7 +75,7 @@ class HybridRouteGateTests(unittest.TestCase):
         self.assertTrue(r.may_call_external)
         self.assertNotIn("GID-SECRET-1", json.dumps(r.masked))
         self.assertIn("gid", r.audit_event.fields_sent)
-        self.assertEqual(r.audit_event.mask_version, "1.0.0")
+        self.assertEqual(r.audit_event.mask_version, "1.1.0")
 
     def test_egress_without_guard_is_failclosed(self) -> None:
         # Policy-eligible for public egress, but no guard/rules -> must NOT send.
@@ -90,9 +90,21 @@ class HybridRouteGateTests(unittest.TestCase):
         self.assertFalse(r.may_call_external)
 
     def test_question_only_egress_allowed(self) -> None:
-        r = self._eval(_gate(), object_kind="public_fixture", target=_T.PUBLIC, payload=None)
+        r = self._eval(
+            _gate(),
+            object_kind="public_fixture",
+            target=_T.PUBLIC,
+            payload=None,
+            question_only=True,
+        )
         self.assertEqual(r.masked, {})
         self.assertTrue(r.may_call_external)
+
+    def test_payload_none_is_not_document_approval(self) -> None:
+        r = self._eval(_gate(), object_kind="public_fixture", target=_T.PUBLIC, payload=None)
+        self.assertIsNone(r.masked)
+        self.assertFalse(r.may_call_external)
+        self.assertIn("payload required", r.audit_event.failure_reason or "")
 
     def test_local_processing_allowed_no_egress(self) -> None:
         r = self._eval(_gate(), object_kind="ifc", target=_T.LOCAL)
@@ -119,7 +131,13 @@ class HybridRouteGateTests(unittest.TestCase):
         self.assertFalse(refusal.may_call_external)
         self.assertIn("fail-closed", refusal.audit_event.failure_reason or "")
         # Question-only egress: no refusal reason.
-        question = self._eval(_gate(), object_kind="public_fixture", target=_T.PUBLIC, payload=None)
+        question = self._eval(
+            _gate(),
+            object_kind="public_fixture",
+            target=_T.PUBLIC,
+            payload=None,
+            question_only=True,
+        )
         self.assertEqual(question.masked, {})
         self.assertTrue(question.may_call_external)
         self.assertIsNone(question.audit_event.failure_reason)

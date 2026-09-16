@@ -400,6 +400,16 @@ def coverage_from_report(
     for asset in report.drawing_assets:
         if asset.sheet_id:
             declared.append(asset.sheet_id)
+    from aerobim.domain.run_passport import passport_from_traces
+
+    passport = passport_from_traces(getattr(report, "tool_traces", ()) or ())
+    if isinstance(passport, dict):
+        for row in passport.get("sources") or ():
+            if not isinstance(row, dict):
+                continue
+            name = str(row.get("name") or "").strip()
+            if name:
+                declared.append(name)
     return build_check_coverage(
         source_ids=declared,
         issues=report.issues,

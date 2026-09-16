@@ -83,6 +83,26 @@ def build_backend_env(
     """
 
     env = dict(base_env)
+    for key in list(env):
+        upper = key.upper()
+        if upper.startswith(
+            (
+                "AEROBIM_REDIS",
+                "AEROBIM_S3",
+                "AEROBIM_OIDC",
+                "AEROBIM_LLM",
+                "AEROBIM_VLM",
+                "OPENAI",
+                "AWS_",
+                "DATABASE",
+            )
+        ) or upper in {
+            "AEROBIM_REDIS_URL",
+            "AEROBIM_OBJECT_STORE_URL",
+            "AEROBIM_DATABASE_URL",
+            "DATABASE_URL",
+        }:
+            env.pop(key, None)
     env.pop("AEROBIM_API_BEARER_TOKEN", None)
     # Inherited pilot/production signoff must not ride in on a review-shell laptop.
     env.pop("AEROBIM_SIGNOFF_PROFILE", None)

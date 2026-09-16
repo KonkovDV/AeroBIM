@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import tempfile
 import unittest
@@ -31,8 +32,13 @@ class DetectionPrecisionHarnessTests(unittest.TestCase):
                 "recall": 0.666667,
                 "f1": 0.666667,
                 "critical_recall": 0.666667,
+                "critical_recall_subset": "all_labeled_findings_not_a_severity_filter",
                 "false_positive_burden": 0.25,
+                "false_positive_burden_denominator": "tp+fp+fn",
                 "support": 6,
+                "precision_status": "defined",
+                "recall_status": "defined",
+                "empty_support": False,
             },
         )
         self.assertEqual(report["labels"]["excluded"], 1)
@@ -111,6 +117,7 @@ class DetectionPrecisionHarnessTests(unittest.TestCase):
             report = evaluate_detection_precision(labels_path, DETECTIONS)
             self.assertTrue(report["precision_claim"]["base_publishable"])
             self.assertFalse(report["precision_claim"]["publishable"])
+            self.assertIn("withheld", report["precision_claim"]["render"])
             with self.assertRaisesRegex(ValueError, "PrecisionClaim is not publishable"):
                 evaluate_detection_precision(
                     labels_path,
@@ -140,6 +147,7 @@ class DetectionPrecisionHarnessTests(unittest.TestCase):
             labels_path = Path(temporary_directory) / "labels.json"
             agreement_path = Path(temporary_directory) / "agreement.json"
             labels_path.write_text(json.dumps(payload), encoding="utf-8")
+            agreement["labels_sha256"] = hashlib.sha256(labels_path.read_bytes()).hexdigest()
             agreement_path.write_text(json.dumps(agreement), encoding="utf-8")
             with self.assertRaisesRegex(ValueError, "PrecisionClaim is not publishable"):
                 evaluate_detection_precision(

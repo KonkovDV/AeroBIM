@@ -1,0 +1,105 @@
+"""Extract IfcWall Qto_WallBaseQuantities.Width as SI length observations."""
+
+from __future__ import annotations
+
+import hashlib
+from pathlib import Path
+
+from aerobim.domain.drawing_ifc_consistency import QTO_WIDTH, IfcQuantityObservation
+from aerobim.domain.quantity import parse_quantity
+from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_session
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(65536), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _as_float(raw: object) -> float | None:
+    if isinstance(raw, bool):
+        return None
+    if isinstance(raw, int | float):
+        return float(raw)
+    if isinstance(raw, str):
+        text = raw.strip().replace(",", ".")
+        if not text:
+            return None
+        try:
+            return float(text.split()[0])
+        except ValueError:
+            return None
+    return None
+
+
+class IfcWallWidthExtractor:
+    """Read wall Width QTO; missing property stays missing (not 0)."""
+
+    def extract(
+        self,
+        ifc_path: Path,
+        *,
+        ifc_revision: str | None = None,
+    ) -> list[IfcQuantityObservation]:
+        if not ifc_path.exists():
+            raise FileNotFoundError(ifc_path)
+        try:
+            from ifcopenshell.util.element import get_psets
+            from ifcopenshell.util.unit import calculate_unit_scale
+        except ModuleNotFoundError as exc:
+            raise RuntimeError("Install ifcopenshell for drawing↔IFC width compare") from exc
+
+        session = open_ifc_session(ifc_path)
+        model = session.model
+        try:
+            length_scale = float(calculate_unit_scale(model, "LENGTHUNIT") or 1.0)
+        except Exception:
+            length_scale = 1.0
+        digest = _sha256_file(ifc_path)
+        observations: list[IfcQuantityObservation] = []
+        try:
+            walls = tuple(model.by_type("IfcWall"))
+        except Exception:
+            walls = ()
+        for wall in walls:
+            guid = str(getattr(wall, "GlobalId", "") or "").strip()
+            name = str(getattr(wall, "Name", "") or "").strip()
+            tag = str(getattr(wall, "Tag", "") or "").strip()
+            display_name = name or tag
+            if not guid or not display_name:
+                continue
+            psets = get_psets(wall)
+            qto_width = None
+            any_width = None
+            for pset_name, props in psets.items():
+                if not isinstance(props, dict):
+                    continue
+                for prop_name, prop_value in props.items():
+                    if prop_name.strip().casefold() != QTO_WIDTH.casefold():
+                        continue
+                    parsed = _as_float(prop_value)
+                    if parsed is None:
+                        continue
+                    if "qto" in pset_name.casefold():
+                        qto_width = parsed
+                    else:
+                        any_width = parsed
+            raw_width = qto_width if qto_width is not None else any_width
+            if raw_width is None:
+                continue
+            si_metres = raw_width * length_scale
+            quantity = parse_quantity(si_metres, "m")
+            observations.append(
+                IfcQuantityObservation(
+                    global_id=guid,
+                    name=display_name,
+                    quantity_name=QTO_WIDTH,
+                    value=quantity,
+                    ifc_path=ifc_path,
+                    ifc_sha256=digest,
+                    ifc_revision=ifc_revision,
+                )
+            )
+        return observations

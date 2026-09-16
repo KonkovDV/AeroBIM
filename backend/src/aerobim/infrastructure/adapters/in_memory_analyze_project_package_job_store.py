@@ -5,8 +5,12 @@ from dataclasses import asdict, replace
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from threading import Lock
+from uuid import uuid4
 
-from aerobim.domain.analyze_job_idempotency import job_from_stored_mapping
+from aerobim.domain.analyze_job_idempotency import (
+    JobConcurrencyLimitError,
+    job_from_stored_mapping,
+)
 from aerobim.domain.job_transitions import can_transition
 from aerobim.domain.models import AnalyzeProjectPackageJob, JobStatus
 
@@ -100,7 +104,12 @@ class InMemoryAnalyzeProjectPackageJobStore:
             encoding="utf-8",
         )
 
-    def create(self, job: AnalyzeProjectPackageJob) -> str:
+    def create(
+        self,
+        job: AnalyzeProjectPackageJob,
+        *,
+        max_concurrent_per_tenant: int | None = None,
+    ) -> str:
         with self._lock:
             if job.idempotency_key:
                 existing = self._find_by_idempotency_key_unlocked(
@@ -109,6 +118,26 @@ class InMemoryAnalyzeProjectPackageJobStore:
                 )
                 if existing is not None:
                     return existing.job_id
+            if max_concurrent_per_tenant is not None and max_concurrent_per_tenant > 0:
+                tenant = (job.tenant_id or "").strip()
+                if not tenant:
+                    raise JobConcurrencyLimitError(
+                        "Analyze job concurrency limit requires a bound tenant_id "
+                        f"(limit {max_concurrent_per_tenant})"
+                    )
+                self._reclaim_stale_unlocked(_now())
+                wanted = tenant.casefold()
+                active = sum(
+                    1
+                    for item in self._jobs.values()
+                    if item.status in {JobStatus.QUEUED, JobStatus.RUNNING}
+                    and (item.tenant_id or "").strip().casefold() == wanted
+                )
+                if active >= max_concurrent_per_tenant:
+                    raise JobConcurrencyLimitError(
+                        f"Tenant {tenant!r} has {active} active analyze jobs "
+                        f"(limit {max_concurrent_per_tenant})"
+                    )
             self._jobs[job.job_id] = job
             self._persist_snapshot()
         return job.job_id
@@ -157,18 +186,28 @@ class InMemoryAnalyzeProjectPackageJobStore:
                 return job
         return None
 
-    def mark_running(self, job_id: str) -> AnalyzeProjectPackageJob | None:
+    def mark_running(
+        self, job_id: str, *, owner: str | None = None
+    ) -> AnalyzeProjectPackageJob | None:
+        owner_token = (owner or uuid4().hex).strip() or uuid4().hex
         lease_until = (_now() + timedelta(seconds=self._lease_seconds)).isoformat()
-        return self._update(
-            job_id,
-            status=JobStatus.RUNNING,
-            started_at=_now_iso(),
-            heartbeat_at=_now_iso(),
-            lease_expires_at=lease_until,
-            stage_progress="running",
-        )
+        with self._lock:
+            job = self._jobs.get(job_id)
+            if job is None or job.status is not JobStatus.QUEUED:
+                return None
+            return self._update_unlocked(
+                job_id,
+                status=JobStatus.RUNNING,
+                started_at=_now_iso(),
+                heartbeat_at=_now_iso(),
+                lease_expires_at=lease_until,
+                stage_progress="running",
+                lease_owner=owner_token,
+            )
 
-    def mark_succeeded(self, job_id: str, report_id: str) -> AnalyzeProjectPackageJob | None:
+    def mark_succeeded(
+        self, job_id: str, report_id: str, *, owner: str | None = None
+    ) -> AnalyzeProjectPackageJob | None:
         return self._update(
             job_id,
             status=JobStatus.SUCCEEDED,
@@ -177,12 +216,17 @@ class InMemoryAnalyzeProjectPackageJobStore:
             error_message=None,
             lease_expires_at=None,
             stage_progress="succeeded",
+            require_owner=owner,
         )
 
-    def mark_failed(self, job_id: str, error_message: str) -> AnalyzeProjectPackageJob | None:
+    def mark_failed(
+        self, job_id: str, error_message: str, *, owner: str | None = None
+    ) -> AnalyzeProjectPackageJob | None:
         with self._lock:
             job = self._jobs.get(job_id)
             if job is None:
+                return None
+            if owner and job.lease_owner and job.lease_owner != owner:
                 return None
             retries = job.retry_count + 1
             if retries > self._max_retries and can_transition(job.status, JobStatus.DEAD_LETTER):
@@ -194,6 +238,7 @@ class InMemoryAnalyzeProjectPackageJobStore:
                     retry_count=retries,
                     lease_expires_at=None,
                     stage_progress="dead_letter",
+                    lease_owner=None,
                 )
             if not can_transition(job.status, JobStatus.FAILED):
                 return None
@@ -205,14 +250,17 @@ class InMemoryAnalyzeProjectPackageJobStore:
                 retry_count=retries,
                 lease_expires_at=None,
                 stage_progress="failed",
+                lease_owner=None,
             )
 
     def heartbeat(
-        self, job_id: str, *, lease_seconds: int = 120
+        self, job_id: str, *, lease_seconds: int = 120, owner: str | None = None
     ) -> AnalyzeProjectPackageJob | None:
         with self._lock:
             job = self._jobs.get(job_id)
             if job is None or job.status is not JobStatus.RUNNING:
+                return None
+            if owner and job.lease_owner and job.lease_owner != owner:
                 return None
             if job.cancel_requested:
                 return self._update_unlocked(
@@ -222,6 +270,7 @@ class InMemoryAnalyzeProjectPackageJobStore:
                     error_message="Cancelled by request",
                     lease_expires_at=None,
                     stage_progress="cancelled",
+                    lease_owner=None,
                 )
             lease_until = (_now() + timedelta(seconds=lease_seconds)).isoformat()
             return self._update_unlocked(
@@ -346,6 +395,8 @@ class InMemoryAnalyzeProjectPackageJobStore:
         retry_count: int | None = None,
         stage_progress: str | None = None,
         cancel_requested: bool | None = None,
+        require_owner: str | None = None,
+        lease_owner: str | None | object = ...,
     ) -> AnalyzeProjectPackageJob | None:
         with self._lock:
             return self._update_unlocked(
@@ -360,6 +411,8 @@ class InMemoryAnalyzeProjectPackageJobStore:
                 retry_count=retry_count,
                 stage_progress=stage_progress,
                 cancel_requested=cancel_requested,
+                require_owner=require_owner,
+                lease_owner=lease_owner,
             )
 
     def _update_unlocked(
@@ -376,12 +429,24 @@ class InMemoryAnalyzeProjectPackageJobStore:
         retry_count: int | None = None,
         stage_progress: str | None = None,
         cancel_requested: bool | None = None,
+        require_owner: str | None = None,
+        lease_owner: str | None | object = ...,
     ) -> AnalyzeProjectPackageJob | None:
         job = self._jobs.get(job_id)
         if job is None:
             return None
+        if require_owner and job.lease_owner and job.lease_owner != require_owner:
+            return None
         if job.status is not status and not can_transition(job.status, status):
             return None
+        next_owner = job.lease_owner if lease_owner is ... else lease_owner
+        if status in {
+            JobStatus.SUCCEEDED,
+            JobStatus.FAILED,
+            JobStatus.CANCELLED,
+            JobStatus.DEAD_LETTER,
+        } and lease_owner is ...:
+            next_owner = None
         updated = replace(
             job,
             status=status,
@@ -398,6 +463,7 @@ class InMemoryAnalyzeProjectPackageJobStore:
             cancel_requested=(
                 cancel_requested if cancel_requested is not None else job.cancel_requested
             ),
+            lease_owner=next_owner,  # type: ignore[arg-type]
         )
         self._jobs[job_id] = updated
         self._persist_snapshot()

@@ -104,7 +104,11 @@ def _grounding_state(
     issue: ValidationIssue,
     universe: frozenset[str],
 ) -> tuple[str, tuple[str, ...]]:
-    """Classify advisory references: verified / unverified / no reference."""
+    """Classify advisory references: resolved / unverified / no reference.
+
+    ``reference_resolved`` means the GUID/target token exists in the engine
+    universe. It is **not** ``claim_supported`` and not expert acceptance.
+    """
 
     references = tuple(ref for ref in (issue.element_guid, issue.target_ref) if ref)
     if not references:
@@ -112,7 +116,7 @@ def _grounding_state(
     unknown = tuple(ref for ref in references if ref not in universe)
     if unknown:
         return "unverified_reference", unknown
-    return "verified_reference", ()
+    return "reference_resolved", ()
 
 
 class DeterminismGate:

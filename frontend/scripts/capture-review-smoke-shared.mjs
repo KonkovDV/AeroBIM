@@ -263,6 +263,10 @@ export function inspectExportBundle({ json, html, bcfBytes, pdfBytes, phase, nee
   if (!pdfBytes || pdfBytes.length < 64) {
     throw new Error(`${phase} PDF is missing or empty`);
   }
+  const pdfHead = Buffer.from(pdfBytes.subarray(0, 5)).toString("latin1");
+  if (pdfHead !== "%PDF-") {
+    throw new Error(`${phase} export is not a PDF (%PDF- header missing)`);
+  }
   assertNoFalseFixed(`${phase} pdf-utf8-bytes`, Buffer.from(pdfBytes).toString("utf8"));
 
   if (phase === "draft") {

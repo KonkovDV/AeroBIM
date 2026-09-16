@@ -213,6 +213,12 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
             Tokens.SUBMIT_ANALYZE_PROJECT_PACKAGE_JOB_USE_CASE
         )
         job_runner = ctx.container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_JOB_RUNNER)
+        existing_id: str | None = None
+        if idem is not None:
+            job_store = ctx.container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_JOB_STORE)
+            prior = job_store.get_by_idempotency_key(idem, tenant_id=request.tenant_id)
+            if prior is not None:
+                existing_id = prior.job_id
         try:
             job = submit_job_use_case.execute(
                 request,
@@ -229,11 +235,9 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
                 status_code=409,
                 detail=public_idempotency_payload_conflict_detail(),
             ) from exc
-        if job.status.value == "queued":
-            # JOB-01: FastAPI BackgroundTasks in this API process — not a durable
-            # worker with lease/heartbeat. Idempotency-Key, per-tenant concurrency
-            # (HTTP 429), request_cancel, and reclaim_stale_queued exist; a crash
-            # after 202 still leaves QUEUED until reclaim.
+        if job.status.value == "queued" and job.job_id != existing_id:
+            # JOB-01: FastAPI BackgroundTasks in this API process. Replay of a
+            # still-queued job must not spawn a second runner.
             background_tasks.add_task(job_runner.run, job.job_id, request)
         return ctx.serialize_analyze_project_package_job(job)
 

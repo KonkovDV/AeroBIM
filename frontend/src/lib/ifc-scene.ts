@@ -40,6 +40,8 @@ export class IfcSceneController {
   private readonly resizeObserver: ResizeObserver;
   private animationHandle: number | null = null;
   private ifcApi: IfcAPI | null = null;
+  private disposed = false;
+  private loadGeneration = 0;
   private modelId: number | null = null;
   private selectedExpressIds: number[] = [];
   private isolateSelection = false;
@@ -88,17 +90,28 @@ export class IfcSceneController {
   }
 
   async init(): Promise<void> {
+    if (this.disposed) {
+      return;
+    }
     if (this.ifcApi !== null) {
       return;
     }
     const ifcApi = new IfcAPI();
     await ifcApi.Init((path, prefix) => (path.endsWith(".wasm") ? webIfcWasmUrl : `${prefix}${path}`), true);
+    if (this.disposed) {
+      ifcApi.Dispose();
+      return;
+    }
     this.ifcApi = ifcApi;
     this.startRenderLoop();
   }
 
-  async loadModel(ifcBytes: Uint8Array): Promise<void> {
+  async loadModel(ifcBytes: Uint8Array, generation?: number): Promise<void> {
+    const token = generation ?? this.loadGeneration;
     await this.init();
+    if (this.disposed || token !== this.loadGeneration) {
+      return;
+    }
     this.clearModel();
     assertFitsIfcViewerCap(ifcBytes.byteLength);
 
@@ -116,14 +129,31 @@ export class IfcSceneController {
       throw new Error("web-ifc failed to open the selected model.");
     }
     this.modelId = modelId;
+    if (this.disposed || token !== this.loadGeneration) {
+      ifcApi.CloseModel(modelId);
+      this.modelId = null;
+      return;
+    }
 
     ifcApi.StreamAllMeshes(modelId, (flatMesh) => {
+      if (this.disposed || token !== this.loadGeneration) {
+        return;
+      }
       this.addFlatMesh(modelId, flatMesh);
       flatMesh.delete();
     });
+    if (this.disposed || token !== this.loadGeneration) {
+      this.clearModel();
+      return;
+    }
 
     this.rebuildSpatialIndex();
     this.fitCameraToBox(new THREE.Box3().setFromObject(this.modelRoot));
+  }
+
+  beginLoad(): number {
+    this.loadGeneration += 1;
+    return this.loadGeneration;
   }
 
   clearModel(): void {
@@ -230,6 +260,8 @@ export class IfcSceneController {
   }
 
   dispose(): void {
+    this.disposed = true;
+    this.loadGeneration += 1;
     this.clearModel();
     this.stopRenderLoop();
     this.controls.removeEventListener("change", this.renderOnce);

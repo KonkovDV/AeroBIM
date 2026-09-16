@@ -124,6 +124,7 @@ def build_reports_router(ctx: ApiContext) -> APIRouter:
                 report,
                 finding_id=payload.finding_id,
                 issue_rule_id=payload.issue_rule_id,
+                event_type=payload.event_type,
             )
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=public_bad_request_detail()) from exc

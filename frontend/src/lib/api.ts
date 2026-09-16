@@ -219,26 +219,36 @@ async function readBodyUpTo(
 async function readBytes(
   url: string,
   cap: ByteCap,
+  signal?: AbortSignal,
 ): Promise<{ bytes: Uint8Array; contentType: string | null }> {
   const controller = new AbortController();
-  const response = await fetch(url, {
-    headers: authHeaders({ Accept: "*/*" }),
-    credentials: "include",
-    signal: controller.signal,
-  });
-  if (!response.ok) {
-    throw await failedResponseError(response);
-  }
-  // Number(null) === 0, поэтому отсутствующий content-length не срабатывает ложно.
-  const declared = Number(response.headers.get("content-length"));
-  if (Number.isFinite(declared) && declared > cap.maxBytes) {
+  const onAbort = () => controller.abort();
+  if (signal?.aborted) {
     controller.abort();
-    throw cap.makeError();
+  } else {
+    signal?.addEventListener("abort", onAbort, { once: true });
   }
-  return {
-    bytes: await readBodyUpTo(response, cap, controller),
-    contentType: response.headers.get("Content-Type"),
-  };
+  try {
+    const response = await fetch(url, {
+      headers: authHeaders({ Accept: "*/*" }),
+      credentials: "include",
+      signal: controller.signal,
+    });
+    if (!response.ok) {
+      throw await failedResponseError(response);
+    }
+    const declared = Number(response.headers.get("content-length"));
+    if (Number.isFinite(declared) && declared > cap.maxBytes) {
+      controller.abort();
+      throw cap.makeError();
+    }
+    return {
+      bytes: await readBodyUpTo(response, cap, controller),
+      contentType: response.headers.get("Content-Type"),
+    };
+  } finally {
+    signal?.removeEventListener("abort", onAbort);
+  }
 }
 
 export function getApiBaseUrl(): string {
@@ -363,8 +373,11 @@ export async function fetchReportCoverage(reportId: string): Promise<CheckCovera
   return readJson<CheckCoverageMap>(`${apiBaseUrl}/v1/reports/${reportId}/coverage`);
 }
 
-export async function fetchReportIfcSource(reportId: string): Promise<Uint8Array> {
-  const { bytes } = await readBytes(buildReportIfcSourceUrl(reportId), IFC_VIEWER_CAP);
+export async function fetchReportIfcSource(
+  reportId: string,
+  init?: { signal?: AbortSignal },
+): Promise<Uint8Array> {
+  const { bytes } = await readBytes(buildReportIfcSourceUrl(reportId), IFC_VIEWER_CAP, init?.signal);
   return bytes;
 }
 
@@ -506,6 +519,7 @@ export type RevisionDiffPayload = {
   still_reported: string[];
   elements_only_in_old: string[];
   elements_only_in_new: string[];
+  compare_kind?: string;
   summary: {
     newly_reported: number;
     no_longer_reported: number;

@@ -51,6 +51,7 @@ export default function VersionDiffPanel({ reports }: VersionDiffPanelProps) {
   const [diff, setDiff] = useState<RevisionDiffPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [loadedPair, setLoadedPair] = useState<string>("");
 
   const effectiveBaseline = baselineId ?? sorted[0]?.report_id ?? "";
   const effectiveHead =
@@ -61,21 +62,27 @@ export default function VersionDiffPanel({ reports }: VersionDiffPanelProps) {
   useEffect(() => {
     if (!effectiveBaseline || !effectiveHead || effectiveBaseline === effectiveHead) {
       setDiff(null);
+      setLoading(false);
+      setLoadedPair("");
       return;
     }
+    const pair = `${effectiveBaseline}:${effectiveHead}`;
     const controller = new AbortController();
+    setDiff(null);
     setLoading(true);
     setError(null);
     fetchRevisionDiff(effectiveBaseline, effectiveHead, { signal: controller.signal })
       .then((payload) => {
         if (!controller.signal.aborted) {
           setDiff(payload);
+          setLoadedPair(pair);
         }
       })
       .catch((err: unknown) => {
         if (!controller.signal.aborted) {
           setError(err instanceof Error ? err.message : UI_COPY.diffFailed);
           setDiff(null);
+          setLoadedPair("");
         }
       })
       .finally(() => {
@@ -135,7 +142,7 @@ export default function VersionDiffPanel({ reports }: VersionDiffPanelProps) {
           {error}
         </p>
       ) : null}
-      {diff ? (
+      {diff && loadedPair === `${effectiveBaseline}:${effectiveHead}` ? (
         <>
           <p className="compact-copy">{diff.note}</p>
           <div className="summary-grid">

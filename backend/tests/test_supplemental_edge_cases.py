@@ -533,8 +533,11 @@ class ToleranceConfigTests(unittest.TestCase):
         from aerobim.domain.models import ToleranceConfig
 
         tc = ToleranceConfig(angle_epsilon=0.25)
+        import math
+
+        expected = math.radians(0.25)
         for unit in ("deg", "degree", "degrees", "°", "rad", "radian", "radians"):
-            self.assertEqual(tc.epsilon_for_unit(unit), 0.25, f"Failed for unit={unit}")
+            self.assertEqual(tc.epsilon_for_unit(unit), expected, f"Failed for unit={unit}")
 
 
 # ---------------------------------------------------------------------------

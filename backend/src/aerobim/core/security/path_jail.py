@@ -134,17 +134,22 @@ def safe_storage_token(value: str) -> str:
 
     Alphanumeric plus ``_-`` are kept; ``.`` and other specials become ``!{ord:02x}``
     so ``Tenant/A`` and ``Tenant_A`` never collide, and ``.`` / ``..`` cannot escape
-    storage joins. Input is NFKC-normalized first.
+    storage joins. Input is NFC-normalized; NFKC lookalikes are encoded, not folded.
     """
     if "\x00" in value:
         raise PathJailError("Null bytes are not allowed in storage tokens")
-    normalized = unicodedata.normalize("NFKC", value.strip())
+    # NFC only: NFKC would collapse fullwidth ``Ａ`` onto ASCII ``A`` and merge
+    # distinct tenant identities into one directory (RT02). Compatibility
+    # lookalikes are encoded code-point-wise instead.
+    normalized = unicodedata.normalize("NFC", value.strip())
     if not normalized or normalized in {".", ".."}:
         raise PathJailError("Empty or path-traversal storage token is not allowed")
     encoded: list[str] = []
     for ch in normalized:
-        # Keep alnum + _- only; encode '.' so ".." cannot survive as a path segment.
-        if ch.isalnum() or ch in "_-":
+        collapsed = unicodedata.normalize("NFKC", ch)
+        if collapsed != ch:
+            encoded.append(f"!{ord(ch):02x}")
+        elif ch.isalnum() or ch in "_-":
             encoded.append(ch)
         else:
             encoded.append(f"!{ord(ch):02x}")
@@ -295,6 +300,25 @@ def _open_write_fallback(path: Path, *, base: Path, mode: str) -> IO[Any]:
     raise PathJailError(f"Cannot open storage path without following links: {path}")
 
 
+def _assert_storage_path_still_jailed(path: Path, *, base: Path) -> None:
+    """Re-check jail after open. Does not close a parent-directory race (RT09)."""
+
+    reject_symlinks(path, base=base)
+    try:
+        path.resolve().relative_to(base.resolve())
+    except ValueError as exc:
+        raise PathJailError(f"Opened path escaped storage boundary: {path}") from exc
+
+
+def _finish_storage_open(handle: IO[Any], path: Path, *, base: Path) -> IO[Any]:
+    try:
+        _assert_storage_path_still_jailed(path, base=base)
+    except Exception:
+        handle.close()
+        raise
+    return handle
+
+
 def open_storage_file(path: Path, *, base: Path, mode: str = "rb") -> IO[Any]:
     """Open a storage file after symlink rejection; prefer O_NOFOLLOW on POSIX.
 
@@ -312,7 +336,7 @@ def open_storage_file(path: Path, *, base: Path, mode: str = "rb") -> IO[Any]:
             raise PathJailError(
                 f"Cannot open storage path without following links: {path}"
             ) from exc
-        return os.fdopen(fd, mode)
+        return _finish_storage_open(os.fdopen(fd, mode), path, base=base)
     write_flags = {
         "wb": os.O_WRONLY | os.O_CREAT | os.O_TRUNC,
         "ab": os.O_WRONLY | os.O_CREAT | os.O_APPEND,
@@ -325,11 +349,13 @@ def open_storage_file(path: Path, *, base: Path, mode: str = "rb") -> IO[Any]:
             raise PathJailError(
                 f"Cannot open storage path without following links: {path}"
             ) from exc
-        return os.fdopen(fd, mode)
+        return _finish_storage_open(os.fdopen(fd, mode), path, base=base)
 
     if mode in write_flags and os.name == "nt":
         try:
-            return _windows_open_write_nofollow(path, mode)
+            return _finish_storage_open(
+                _windows_open_write_nofollow(path, mode), path, base=base
+            )
         except PathJailError:
             raise
         except FileExistsError:
@@ -340,17 +366,12 @@ def open_storage_file(path: Path, *, base: Path, mode: str = "rb") -> IO[Any]:
             ) from exc
 
     if mode in write_flags:
-        return _open_write_fallback(path, base=base, mode=mode)
+        return _finish_storage_open(
+            _open_write_fallback(path, base=base, mode=mode), path, base=base
+        )
 
     handle = path.open(mode)
-    try:
-        reject_symlinks(path, base=base)
-        if path.is_symlink():
-            raise PathJailError(f"Symlinks are not allowed in storage paths: {path}")
-    except Exception:
-        handle.close()
-        raise
-    return handle
+    return _finish_storage_open(handle, path, base=base)
 
 
 def tenant_storage_prefix(tenant_id: str) -> str:

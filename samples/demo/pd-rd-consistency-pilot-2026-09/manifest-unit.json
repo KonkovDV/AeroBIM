@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0.0",
+  "pack_version": "1.0.0",
+  "pack_id": "pd-rd-consistency-pilot-unit",
+  "description": "SYNTHETIC: drawing 0.20 m vs IFC 200 mm after SI normalisation. Not a customer pack.",
+  "project_name": "PD-RD consistency pilot (synthetic unit)",
+  "discipline": "architecture",
+  "stage": "RD",
+  "revision": "R1",
+  "corpus_kind": "synthetic",
+  "request": {
+    "ifc_path": "samples/demo/pd-rd-consistency-pilot-2026-09/wall-01-width-200mm.ifc",
+    "drawings": [
+      {
+        "path": "samples/demo/pd-rd-consistency-pilot-2026-09/a-101-thickness-0.20m.pdf",
+        "sheet_id": "A-101",
+        "format": "pdf",
+        "revision": "R1"
+      }
+    ]
+  }
+}

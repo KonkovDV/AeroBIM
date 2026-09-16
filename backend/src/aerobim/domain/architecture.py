@@ -203,6 +203,17 @@ def assert_precision_publishable(claim: PrecisionClaim) -> None:
         )
 
 
+def _agreement_json_bool(agreement: Mapping[str, object], key: str) -> bool:
+    """Reject truthy strings such as ``\"false\"`` (RT06). Missing key is fail-closed."""
+
+    if key not in agreement:
+        return False
+    value = agreement[key]
+    if isinstance(value, bool):
+        return value
+    raise ValueError(f"agreement.{key} must be a JSON boolean")
+
+
 def precision_claim_publishable_with_agreement(
     claim: PrecisionClaim,
     *,
@@ -210,6 +221,7 @@ def precision_claim_publishable_with_agreement(
     require_agreement: bool = True,
     held_out_split: bool | None = None,
     fn_tracked: bool | None = None,
+    expected_corpus_hash: str | None = None,
 ) -> bool:
     """Product publishable gate (RT-001).
 
@@ -231,9 +243,13 @@ def precision_claim_publishable_with_agreement(
         return False
     if agreement is None:
         return True
-    if not bool(agreement.get("pass_threshold_0_60")):
+    if not _agreement_json_bool(agreement, "pass_threshold_0_60"):
         return False
     if "krippendorff_alpha" in agreement or "pass_alpha_0_67" in agreement:
-        if not bool(agreement.get("pass_alpha_0_67")):
+        if not _agreement_json_bool(agreement, "pass_alpha_0_67"):
+            return False
+    if expected_corpus_hash is not None:
+        bound = agreement.get("labels_sha256")
+        if not isinstance(bound, str) or bound != expected_corpus_hash:
             return False
     return True

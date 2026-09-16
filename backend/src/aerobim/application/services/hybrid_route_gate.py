@@ -86,13 +86,13 @@ class HybridRouteGate:
         private_mode_confirmed: bool = False,
         event_id: str | None = None,
         timestamp: str | None = None,
+        question_only: bool = False,
     ) -> HybridGateResult:
         """Classify + decide route + (mask on egress) + audit; returns routing only.
 
-        ``payload=None`` = question-only egress (no document leaves) and is allowed on
-        an egress route. A non-None payload requires a PrivacyGuard + ``mask_rules`` to
-        egress; otherwise (or if masking refuses/raises) ``masked`` is ``None`` and
-        ``may_call_external`` is ``False`` (fail-closed), with the reason audited.
+        ``payload=None`` is not approval of a later document send. External egress
+        of a payload requires PrivacyGuard + ``mask_rules``. ``question_only=True``
+        is the explicit empty-body case (no findings leave).
         """
         classification = classify_object(object_kind)
         decision = decide_route(
@@ -110,10 +110,13 @@ class HybridRouteGate:
         mask_version: str | None = None
         egress_failure: str | None = None
         if decision.external_call:
-            # External egress requires masking. Fail closed if we cannot mask, and
-            # record WHY so the audit distinguishes a refusal from a real egress (§13).
-            if payload is None:
-                masked = {}  # question-only egress: nothing to send
+            if payload is None and not question_only:
+                egress_failure = (
+                    "external egress fail-closed: payload required; "
+                    "question-only is not later-document approval"
+                )
+            elif payload is None and question_only:
+                masked = {}
             elif self._guard is None or mask_rules is None:
                 egress_failure = "external egress fail-closed: no privacy guard / mask rules"
             else:
