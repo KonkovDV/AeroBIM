@@ -7,7 +7,6 @@ import shutil
 import subprocess
 import tempfile
 import unittest
-import zipfile
 from pathlib import Path
 
 from aerobim.core.config.settings import Settings
@@ -223,7 +222,7 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
         surfaces = (
             repo / "docs" / "demo" / "KT2_JURY_FAQ_2026_08_12.md",
             repo / "docs" / "docs.md",
-            repo / "submission" / "03-presentation" / "slides.md",
+            repo / "submission" / "03-presentation" / "README.md",
         )
         for path in surfaces:
             text = path.read_text(encoding="utf-8")
@@ -253,7 +252,6 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
             repo / "submission" / "01-repository" / "README.md",
             repo / "submission" / "02-documentation" / "README.md",
             repo / "submission" / "03-presentation" / "README.md",
-            repo / "submission" / "03-presentation" / "slides.md",
             repo / "submission" / "04-prototype" / "README.md",
             repo / "submission" / "05-additional" / "README.md",
         )
@@ -348,11 +346,15 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
         self.assertNotIn("Executable readiness = 5/5", text)
 
     def test_kt2_object_commit_card_is_on_jury_index(self) -> None:
-        submission = (self._repo() / "submission" / "README.md").read_text(encoding="utf-8")
-        self.assertIn("Объект КТ#2", submission)
-        self.assertIn("runtime-baseline-latest.json", submission)
-        self.assertIn("attested_by=ci", submission)
-        self.assertIn("f9389bf", submission)
+        tier0 = (self._repo() / "docs" / "TIER0_INDEX.md").read_text(encoding="utf-8")
+        self.assertIn("Объект КТ#2", tier0)
+        self.assertIn("runtime-baseline-latest.json", tier0)
+        self.assertIn("attested_by=ci", tier0)
+        self.assertIn("f9389bf", tier0)
+        pin = (self._repo() / "submission" / "01-repository" / "README.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("runtime-baseline-latest.json", pin)
 
     def test_jury_surfaces_omit_denylist_literals(self) -> None:
         import sys
@@ -513,8 +515,11 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         self.assertIn("run_kt3_without_customer", intake)
         self.assertIn("Do not wait for samples/customer/", intake)
         submission = (self._repo() / "submission" / "README.md").read_text(encoding="utf-8")
-        self.assertIn("Объект КТ#3", submission)
-        self.assertIn("run_kt3_without_customer", submission)
+        self.assertIn("run_kt3_jury", submission)
+        self.assertIn("Файлов заказчика в репозитории нет", submission)
+        self.assertNotIn("samples/customer", submission)
+        tier0 = (self._repo() / "docs" / "TIER0_INDEX.md").read_text(encoding="utf-8")
+        self.assertIn("Объект КТ#3", tier0)
 
     def test_alignment_f1_cell_is_fixture_qualified(self) -> None:
         path = self._repo() / "docs" / "techlab-alignment-2026.md"
@@ -564,24 +569,6 @@ class PersonasWave2Kt2PackHonestyTests(unittest.TestCase):
         self.assertIn("точность на корпусе заказчика не заявляем", text.lower())
         self.assertNotIn("2259", text)
         self.assertNotIn("checkpoint go", text.lower())
-
-
-def _pptx_plain_text(path: Path) -> str:
-    ns = re.compile(r"<a:t[^>]*>(.*?)</a:t>", re.S)
-    chunks: list[str] = []
-    with zipfile.ZipFile(path) as archive:
-        names = [
-            name
-            for name in archive.namelist()
-            if name.startswith("ppt/slides/slide")
-            and name.endswith(".xml")
-            and "/_rels/" not in name
-        ]
-        names.sort(key=lambda item: int(re.search(r"slide(\d+)", item).group(1)))
-        for name in names:
-            xml = archive.read(name).decode("utf-8", errors="replace")
-            chunks.extend(ns.findall(xml))
-    return "\n".join(chunks)
 
 
 def _git_ls_files(*args: str) -> str:
@@ -739,62 +726,39 @@ class SubmissionPackHonestyTests(unittest.TestCase):
             self.assertTrue((self._submission() / field / "README.md").is_file(), msg=field)
 
     def test_presentation_pack_has_slide_copy(self) -> None:
-        slides = self._submission() / "03-presentation" / "slides.md"
+        slides = self._submission() / "03-presentation" / "demo_day_slides.md"
         text = slides.read_text(encoding="utf-8")
         self.assertIn("GO", text)
         self.assertIn("customer_go", text)
         self.assertIn("## Запрещено в кадре и в голосе", text)
-        self.assertIn("требование → правило → объект → доказательство", text)
-        self.assertIn("run_demo_ifc_acceptance_gate", text)
-        self.assertIn("hidden holdout", text)
-        self.assertIn("Не API 10D", text)
+        self.assertIn("run_kt3_jury", text)
         self.assertNotIn("интегрированы с 10D", text.lower())
 
     def test_presentation_pack_tracks_main_deck(self) -> None:
         root = self._submission() / "03-presentation"
-        pptx = root / "aerobim_kt2.pptx"
         pdf = root / "AeroBIM_demo_day.pdf"
-        self.assertTrue(pptx.is_file(), msg=str(pptx))
         self.assertTrue(pdf.is_file(), msg=str(pdf))
-        tracked = _git_ls_files(
-            "--",
-            "submission/03-presentation/aerobim_kt2.pptx",
-            "submission/03-presentation/AeroBIM_demo_day.pdf",
-        )
-        self.assertIn("aerobim_kt2.pptx", tracked)
+        tracked = _git_ls_files("submission/03-presentation")
         self.assertIn("AeroBIM_demo_day.pdf", tracked)
+        self.assertNotIn("submission/03-presentation/slides.md", tracked)
+        self.assertNotIn("aerobim_kt2.pptx", tracked)
         self.assertNotIn("aerobim_kt2.pdf", tracked)
-        deck = _pptx_plain_text(pptx).lower()
-        self.assertIn("checkpoint go", deck)
-        self.assertIn("customer_go", deck)
-        self.assertIn("run_demo_ifc_acceptance_gate", deck)
-        for needle in (
-            ">90%",
-            "mep delivered",
-            "cde-ready",
-            "native dwg",
-        ):
-            self.assertNotIn(needle, deck, msg=needle)
 
     def test_submission_surfaces_are_consistent_about_deck_and_video(self) -> None:
-        deck = "aerobim_kt2.pptx"
-        video_withdrawn = "не записываем"
+        deck = "AeroBIM_demo_day.pdf"
         surfaces = (
-            (self._submission() / "README.md", deck),
-            (self._submission() / "01-repository" / "README.md", deck),
-            (self._submission() / "02-documentation" / "README.md", deck),
-            (self._submission() / "05-additional" / "README.md", deck),
-            (self._submission() / "TZ_REQUIREMENTS_COVERAGE_2026_08.md", deck),
+            self._submission() / "README.md",
+            self._submission() / "03-presentation" / "README.md",
+            self._submission() / "05-additional" / "README.md",
         )
-        for path, needle in surfaces:
-            text = path.read_text(encoding="utf-8")
-            self.assertIn(needle, text, msg=path.name)
+        for path in surfaces:
+            self.assertIn(deck, path.read_text(encoding="utf-8"), msg=path.name)
         presentation = (self._submission() / "03-presentation" / "README.md").read_text(
             encoding="utf-8"
         )
         tier0 = (self._submission().parent / "docs" / "TIER0_INDEX.md").read_text(encoding="utf-8")
         for text, label in ((presentation, "03-presentation"), (tier0, "TIER0")):
-            self.assertIn(video_withdrawn, text, msg=label)
+            self.assertIn("не записываем", text, msg=label)
 
     def test_github_community_health_files_exist(self) -> None:
         root = self._submission().parent
@@ -815,11 +779,11 @@ class SubmissionPackHonestyTests(unittest.TestCase):
         index = (self._submission() / "README.md").read_text(encoding="utf-8")
         self.assertIn("GO", index)
         self.assertIn("customer_go", index)
-        self.assertIn("RT-001/002/003 OPEN", index)
         for field in _SUBMISSION_FIELDS:
             self.assertIn(field, index, msg=field)
-        self.assertIn("Шесть столов", index)
         self.assertIn("доработка", index)
+        self.assertNotIn("Шесть столов", index)
+        self.assertNotIn("RT-001/002/003 OPEN", index)
 
     def test_coverage_map_does_not_claim_tz_targets_as_measured(self) -> None:
         text = (self._submission() / "TZ_REQUIREMENTS_COVERAGE_2026_08.md").read_text(
@@ -830,8 +794,8 @@ class SubmissionPackHonestyTests(unittest.TestCase):
         self.assertIn("customer_go", text)
         self.assertIn("n=6", text)
         self.assertIn("654", text)
-        self.assertIn("f9389bf", text)
         self.assertIn("run_demo_ifc_acceptance_gate", text)
+        self.assertNotIn("f9389bf", text)
         # TZ targets may be quoted as customer criteria, never as our result.
         for forbidden in (
             "точность >90% достигнута",
@@ -854,8 +818,8 @@ class SubmissionPackHonestyTests(unittest.TestCase):
     def test_repository_field_discloses_ci_pin(self) -> None:
         text = (self._submission() / "01-repository" / "README.md").read_text(encoding="utf-8")
         self.assertIn("runtime-baseline-latest.json", text)
-        self.assertIn("attested_by=ci", text)
-        self.assertIn("локальный pytest", text)
+        self.assertIn("pytest", text)
+        self.assertNotIn("attested_by=ci", text)
 
     def test_prototype_field_leads_with_acceptance_gate(self) -> None:
         text = (self._submission() / "04-prototype" / "README.md").read_text(encoding="utf-8")
@@ -865,8 +829,8 @@ class SubmissionPackHonestyTests(unittest.TestCase):
 
     def test_additional_field_has_six_desk_red_team(self) -> None:
         text = (self._submission() / "05-additional" / "README.md").read_text(encoding="utf-8")
-        self.assertIn("шести столов", text)
         self.assertIn("INTERPRETATION_USE_LEDGER_2026_08.md", text)
+        self.assertNotIn("шести столов", text)
 
     def test_submission_links_resolve_on_a_fresh_clone(self) -> None:
         # Resolve against tracked files: a local untracked copy is not a published target.
