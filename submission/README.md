@@ -20,7 +20,7 @@ Checkpoint `GO` — регуляторно-измерительный MVP. `cust
 | Прототип | [`04-prototype/`](04-prototype/README.md) | Команда запуска |
 | Дополнительно | [`05-additional/`](05-additional/README.md) | Доказательства и границы цифр |
 
-Построчная карта ТЗ: [`TZ_REQUIREMENTS_COVERAGE_2026_08.md`](TZ_REQUIREMENTS_COVERAGE_2026_08.md).
+Построчная карта ТЗ: [`TZ_REQUIREMENTS_COVERAGE_2026_08.md`](TZ_REQUIREMENTS_COVERAGE_2026_08.md). Цифры тестов CI — [`docs/evidence/runtime-baseline-latest.json`](../docs/evidence/runtime-baseline-latest.json).
 
 Показ: `python -m aerobim.tools.run_kt3_jury` на учебном комплекте из git. Файлов заказчика в репозитории нет.
 
