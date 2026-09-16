@@ -1,4 +1,8 @@
 <!-- claims-lint: allow-file reason="Claims-boundary doc citing forbidden phrases as non-claims per pilot-claim-boundary / Claims Lock" -->
+<p align="center">
+  <img src="AeroBIM.png" alt="AeroBIM" width="420">
+</p>
+
 # AeroBIM
 
 [English version](README.md)
