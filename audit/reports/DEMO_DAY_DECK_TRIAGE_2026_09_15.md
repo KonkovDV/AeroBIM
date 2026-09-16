@@ -2,16 +2,15 @@
 ---
 title: "Триаж деки демо-дня против пинов репозитория — 15.09.2026"
 status: active
-version: "1.1.0"
+version: "1.2.0"
 last_updated: "2026-09-16"
 claim_level: coverage_map_only
 claim_boundary: >
   Red Team pass over the demo-day deck exported 2026-09-15 17:14 UTC (32 pages)
   against git pins at 4ddbe4d2, plus the record of fixes applied to the deck
   file on 2026-09-16. Deck lines are quoted as attack surface, not as licensed
-  speech. No measurement is created here: every count is read from an existing
-  artifact. Task numbering is fixed as "задача № 7" by owner decision.
-  Checkpoint GO; customer_go false.
+  speech. After 8c7fb00d the public overlay says «комиссия № 7»; appendix 4
+  remains unverified. No measurement is created here. Checkpoint GO; customer_go false.
 ---
 
 # Триаж деки демо-дня 29–30.09 — Red Team, 15.09.2026 (вечер)
@@ -184,3 +183,9 @@ A1 объявлял: «Уровень 1 — открытый бенч AECV», «
 Проверка после правки: вхождений `1398967`, `34961528984`, «3 177», «3 195», «в части пакетов», «класс дефекта», «Уровень 1 —», «прогона ≤ 30», «A1–A20» — **0**; `8f0a462d` — 6, `35003401086` — 1, «3 197» — 6, «3 217» — 5, «3 215» — 2, «16 152» — 2, «0, 13 и 53» — 2; страниц — 32.
 
 Сознательно оставлено без изменений (вне объёма «только важное»): формулировки рынка и SOM на A8 и A8+ (T-09, T-10 снимаем голосом), самооценка TRL 4 в приложении, лимиты 1,5 ГБ / 256 МиБ, сторонние отраслевые проценты и кейсы, порог «≤ 30» в заголовке A14 — он подписан как критерий ТЗ, а не как достигнутый срок.
+
+## 14. Слой после 44-страничной деки (v1.2.0)
+
+Этот файл — триаж **32-страничного** вечернего экспорта 15.09 против пина `8f0a462d`. Слайд-копия в `main` после `eff7100d` — overlay 44-страничного PDF; конфликт этого PR по `demo_day_slides.md` разрешён в пользу `main`.
+
+Публичная нумерация в overlay — **комиссия № 7**. Номер приложения 4 Положения в публичных формулировках не утверждаем до ответа оператора. Строки «задача № 7» ниже — цитата тогдашнего кадра, не лицензированная речь.
