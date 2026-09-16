@@ -280,7 +280,7 @@
   ],
   "architecture_inventory": {
     "public_domain_protocols": 48,
-    "adapter_modules": 75,
+    "adapter_modules": 76,
     "di_tokens": 63
   },
   "attestation": {

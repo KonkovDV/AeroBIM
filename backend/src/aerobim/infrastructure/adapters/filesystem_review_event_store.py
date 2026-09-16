@@ -575,9 +575,7 @@ class FilesystemReviewEventStore:
                 )
         return events
 
-    def _load_event_lines(
-        self, target: Path, *, raise_on_corrupt: bool
-    ) -> tuple[list[str], bool]:
+    def _load_event_lines(self, target: Path, *, raise_on_corrupt: bool) -> tuple[list[str], bool]:
         """Prefer exclusive sequence files; fall back to legacy JSONL.
 
         Sequence files are the modern journal. Empty committed slots are corrupt,

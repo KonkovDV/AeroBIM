@@ -803,9 +803,7 @@ class EvidenceAssembler:
         if result.decision.status is RouteStatus.HUMAN_REVIEW:
             allowed = False
         if allowed:
-            again = _overlay_payload_digest(
-                [finding_payload_from_issue(issue) for issue in issues]
-            )
+            again = _overlay_payload_digest([finding_payload_from_issue(issue) for issue in issues])
             if again != digest:
                 allowed = False
         trace = {
@@ -880,9 +878,7 @@ class EvidenceAssembler:
             self._host._remark_enricher().attach_remarks(prioritized_issues)
         )
         overlay_traces: list[dict[str, object]] = []
-        may_overlay, overlay_trace = self._evaluate_llm_overlay_gate(
-            request, issues_with_remarks
-        )
+        may_overlay, overlay_trace = self._evaluate_llm_overlay_gate(request, issues_with_remarks)
         if overlay_trace is not None:
             overlay_traces.append(overlay_trace)
         if may_overlay:

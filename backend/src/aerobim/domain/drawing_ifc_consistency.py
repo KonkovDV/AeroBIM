@@ -53,9 +53,7 @@ _RASTER_SUFFIXES = frozenset({".pdf", ".png", ".jpg", ".jpeg", ".webp"})
 _CAD_SUFFIXES = frozenset({".dxf", ".dwg", ".rvt", ".nwd", ".nwc", ".rte", ".rfa"})
 _TEXT_SUFFIXES = frozenset({".txt", ".json", ".md"})
 _OFFICE_SUFFIXES = frozenset({".docx", ".xlsx", ".pptx", ".doc", ".xls", ".odt", ".ods"})
-_SUPPORTED_DRAWING_SUFFIXES = (
-    _RASTER_SUFFIXES | _CAD_SUFFIXES | _TEXT_SUFFIXES | _OFFICE_SUFFIXES
-)
+_SUPPORTED_DRAWING_SUFFIXES = _RASTER_SUFFIXES | _CAD_SUFFIXES | _TEXT_SUFFIXES | _OFFICE_SUFFIXES
 
 
 @dataclass(frozen=True)
@@ -398,9 +396,7 @@ def compare_drawing_length_to_ifc(
                 _issue(
                     rule_id=RULE_INCOMPLETE,
                     severity=Severity.WARNING,
-                    message=(
-                        "Qto Width в IFC не нормализуется в SI; значение не считается нулём."
-                    ),
+                    message=("Qto Width в IFC не нормализуется в SI; значение не считается нулём."),
                     conflict_kind=ConflictKind.UNPARSED_NUMERIC,
                     annotation=annotation,
                     observation=observation,
@@ -414,9 +410,7 @@ def compare_drawing_length_to_ifc(
             continue
         drawing_mm = parsed.si_value * 1000.0 if parsed.si_value is not None else None
         ifc_mm = (
-            observation.value.si_value * 1000.0
-            if observation.value.si_value is not None
-            else None
+            observation.value.si_value * 1000.0 if observation.value.si_value is not None else None
         )
         link = (
             f"Аннотация {annotation.target_ref} на листе {annotation.sheet_id} "

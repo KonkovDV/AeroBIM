@@ -134,9 +134,7 @@ def run_pd_rd_consistency_pilot(
     bcf_path = output_dir / "findings.bcfzip"
     bcf_path.write_bytes(bcf_bytes)
     xsd_dir = _REPO / "samples" / "bcf-xsd" / "release_2_1"
-    structural = verify_bcf_zip_structure(
-        bcf_bytes, xsd_dir=xsd_dir if xsd_dir.is_dir() else None
-    )
+    structural = verify_bcf_zip_structure(bcf_bytes, xsd_dir=xsd_dir if xsd_dir.is_dir() else None)
     try:
         consumed = consume_bcf21_zip(bcf_bytes)
         consume_error = None
@@ -148,9 +146,7 @@ def run_pd_rd_consistency_pilot(
     if expert_verdict:
         subject = (expert_subject or "").strip()
         if subject.casefold() in _ANONYMOUS_SUBJECTS:
-            raise ValueError(
-                "expert_subject is required and cannot be anonymous; LLM cannot sign"
-            )
+            raise ValueError("expert_subject is required and cannot be anonymous; LLM cannot sign")
         pd_rd = next(
             (issue for issue in report.issues if issue.rule_id == RULE_ID and issue.finding_id),
             None,
@@ -193,9 +189,7 @@ def run_pd_rd_consistency_pilot(
         path.stat().st_size for path in drawing_paths if path.is_file()
     )
     pd_rd_issues = [
-        issue
-        for issue in report.issues
-        if (issue.rule_id or "").startswith("AEROBIM-PD-RD-")
+        issue for issue in report.issues if (issue.rule_id or "").startswith("AEROBIM-PD-RD-")
     ]
     summary = {
         "schema_version": "1.0.0",
@@ -232,14 +226,17 @@ def run_pd_rd_consistency_pilot(
             "python": platform.python_version(),
         },
         "input": {
-            "ifc_path": None if ifc_path is None else str(ifc_path.relative_to(_REPO)).replace(
-                "\\", "/"
-            ),
+            "ifc_path": None
+            if ifc_path is None
+            else str(ifc_path.relative_to(_REPO)).replace("\\", "/"),
             "ifc_bytes": ifc_path.stat().st_size if ifc_path and ifc_path.is_file() else 0,
             "ifc_sha256": _sha256_file(ifc_path) if ifc_path and ifc_path.is_file() else None,
             "ifc_wall_count": _ifc_wall_count(ifc_path) if ifc_path else 0,
             "drawing_bytes": [
-                {"path": str(path.relative_to(_REPO)).replace("\\", "/"), "bytes": path.stat().st_size}
+                {
+                    "path": str(path.relative_to(_REPO)).replace("\\", "/"),
+                    "bytes": path.stat().st_size,
+                }
                 for path in drawing_paths
                 if path.is_file()
             ],

@@ -416,9 +416,7 @@ def _load_agreement_json(path: Path) -> dict[str, Any]:
         raise ValueError("Agreement root must be a JSON object")
     schema = payload.get("schema_version")
     if schema not in {"1.0.0", "1.1.0", "1.2.0", "1.3.0"}:
-        raise ValueError(
-            "Agreement schema_version must be '1.0.0', '1.1.0', '1.2.0', or '1.3.0'"
-        )
+        raise ValueError("Agreement schema_version must be '1.0.0', '1.1.0', '1.2.0', or '1.3.0'")
     return payload
 
 

@@ -353,9 +353,7 @@ def open_storage_file(path: Path, *, base: Path, mode: str = "rb") -> IO[Any]:
 
     if mode in write_flags and os.name == "nt":
         try:
-            return _finish_storage_open(
-                _windows_open_write_nofollow(path, mode), path, base=base
-            )
+            return _finish_storage_open(_windows_open_write_nofollow(path, mode), path, base=base)
         except PathJailError:
             raise
         except FileExistsError:

@@ -440,12 +440,16 @@ class InMemoryAnalyzeProjectPackageJobStore:
         if job.status is not status and not can_transition(job.status, status):
             return None
         next_owner = job.lease_owner if lease_owner is ... else lease_owner
-        if status in {
-            JobStatus.SUCCEEDED,
-            JobStatus.FAILED,
-            JobStatus.CANCELLED,
-            JobStatus.DEAD_LETTER,
-        } and lease_owner is ...:
+        if (
+            status
+            in {
+                JobStatus.SUCCEEDED,
+                JobStatus.FAILED,
+                JobStatus.CANCELLED,
+                JobStatus.DEAD_LETTER,
+            }
+            and lease_owner is ...
+        ):
             next_owner = None
         updated = replace(
             job,
