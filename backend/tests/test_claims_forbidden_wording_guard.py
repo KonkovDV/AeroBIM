@@ -99,7 +99,7 @@ def test_ssot_covers_ru_markers_and_core_surfaces() -> None:
         "submission/01-repository/README.md",
         "submission/02-documentation/README.md",
         "submission/03-presentation/README.md",
-        "submission/03-presentation/slides.md",
+        "submission/03-presentation/demo_day_slides.md",
         "submission/04-prototype/README.md",
         "submission/05-additional/README.md",
         "submission/TZ_REQUIREMENTS_COVERAGE_2026_08.md",
