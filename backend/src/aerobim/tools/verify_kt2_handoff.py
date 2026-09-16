@@ -210,8 +210,22 @@ def verify_kt2_handoff(*, handoff_dir: Path, repo: Path) -> dict[str, Any]:
         "KT#2 video is withdrawn; live CLI is the demo",
         rows,
     )
-    deck_pdf = repo / "submission" / "03-presentation" / "AeroBIM_demo_day.pdf"
-    _check("kt2_presentation_pdf", deck_pdf.is_file(), str(deck_pdf), rows)
+    slides = repo / "submission" / "03-presentation" / "demo_day_slides.md"
+    _check("kt2_presentation_slides", slides.is_file(), str(slides), rows)
+    deck_rel = "submission/03-presentation/AeroBIM_demo_day.pdf"
+    tracked = subprocess.run(
+        ["git", "ls-files", "--", deck_rel],
+        cwd=repo,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    _check(
+        "kt2_presentation_pdf_untracked",
+        tracked.returncode == 0 and not tracked.stdout.strip(),
+        deck_rel,
+        rows,
+    )
 
     handoff_readme = handoff_dir / "README.md"
     handoff_text = handoff_readme.read_text(encoding="utf-8") if handoff_readme.is_file() else ""

@@ -2,7 +2,7 @@
 
 # Текст слайдов
 
-Канон для показа — PDF [`AeroBIM_demo_day.pdf`](AeroBIM_demo_day.pdf): **9 основных экранов** и приложения **A0–A32** (44 страницы). Checkpoint `GO`. `customer_go` false. Самооценка по ГОСТ Р 58048 — УГТ 4 (TRL 4); УГТ 5 и УГТ 6 не заявляем.
+Канон речи **в git** — этот файл: **9 основных экранов** и приложения **A0–A32** (44 страницы). Бинарный `AeroBIM_demo_day.pdf` не отслеживается (kitchen B-01). Checkpoint `GO`. `customer_go` false. Самооценка по ГОСТ Р 58048 — УГТ 4 (TRL 4); УГТ 5 и УГТ 6 не заявляем.
 
 Показ: `python -m aerobim.tools.run_kt3_jury`.
 
