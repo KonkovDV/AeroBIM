@@ -430,7 +430,7 @@ frontend/     Browser review shell (IFC 3D + drawing overlay)
 samples/      IFC, IDS, drawing and specification fixtures; benchmark packs
 docs/         Documentation and evidence artifacts
 audit/        Claims lock, blocker register, citable honesty fixtures
-submission/   Checkpoint pack index (KT#3 current; KT#2 archived)
+submission/   Checkpoint pack index for the TechLab jury
 ```
 
 Code volume and the pass counts recorded by CI are generated, never typed by hand:
@@ -447,7 +447,7 @@ This repository publishes the reviewable set: code, requirements, claim boundari
 | Topic | Document |
 |---|---|
 | Start here | [Jury map](docs/TIER0_INDEX.md) · [Technical justification](docs/docs.md) |
-| Checkpoint pack | [Submission pack (KT#3 index; KT#2 archive)](submission/README.md) |
+| Checkpoint pack | [Submission pack](submission/README.md) |
 | KT#3 speech | [Jury FAQ](docs/demo/KT3_JURY_FAQ_2026_08_25.md) |
 | Blockers | [Critical blockers](audit/reports/CRITICAL_BLOCKERS.md) |
 | What is claimed | [Claim boundary](docs/pilot-claim-boundary-2026.md) |
