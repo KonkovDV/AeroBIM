@@ -10,6 +10,7 @@
 | [`INTERPRETATION_USE_LEDGER_2026_08.md`](../../docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md) | Что текущие цифры вправе значить |
 | [`QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](../../docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) | Методика до данных заказчика |
 | [`AeroBIM_demo_day.pdf`](../03-presentation/AeroBIM_demo_day.pdf) | Дека поля формы |
+| [`demo_day_slides.md`](../03-presentation/demo_day_slides.md) | A21–A26 аналоги и SOTA; A25 CORENET X по DC26-08 |
 
 ## Пины (учебные и синтетические)
 

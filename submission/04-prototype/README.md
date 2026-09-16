@@ -15,7 +15,7 @@ python -m aerobim.tools.run_kt3_jury
 На учебной фикстуре отказ комплекта — штатный сценарий: в комплекте заложены дефекты.
 
 Шлюз приёмки (тот же клон): `python -m aerobim.tools.run_demo_ifc_acceptance_gate`.  
-Наложение на чертёж (P1, не ядро вердикта): `python -m aerobim.tools.run_demo_vertical_slice`.
+Наложение на чертёж (P1-smoke на фикстуре, не ядро вердикта и не рабочее место эксперта): `python -m aerobim.tools.run_demo_vertical_slice`. В UI эксперта подсветки ошибки на листе нет.
 
 Отчёты пишутся в локальный `artifacts/` и в git не входят: JSON, HTML, `findings.bcfzip`.
 

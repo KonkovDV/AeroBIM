@@ -16,7 +16,7 @@ Checkpoint `GO` — регуляторно-измерительный MVP. `cust
 |---|---|---|
 | Репозиторий | [`01-repository/`](01-repository/README.md) | Сборка, лицензия, CI |
 | Документация | [`02-documentation/`](02-documentation/README.md) | Техобоснование и матрица ТЗ |
-| Презентация | [`03-presentation/`](03-presentation/README.md) | [`AeroBIM_demo_day.pdf`](03-presentation/AeroBIM_demo_day.pdf) |
+| Презентация | [`03-presentation/`](03-presentation/README.md) | [`AeroBIM_demo_day.pdf`](03-presentation/AeroBIM_demo_day.pdf) — 44 стр. |
 | Прототип | [`04-prototype/`](04-prototype/README.md) | Команда запуска |
 | Дополнительно | [`05-additional/`](05-additional/README.md) | Доказательства и границы цифр |
 
