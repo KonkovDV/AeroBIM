@@ -4,6 +4,7 @@
   "vars": {
     "AEROBIM_AUDIT_FAIL_CLOSED": "Lab/dev override; forced true under customer_pilot/production",
     "AEROBIM_BSI_LOCAL_CERT": "Development-only local SPF certificate; forced off under pilot/production",
+    "AEROBIM_DEV_REVIEWER_TOKEN": "Lab-only HITL reviewer bearer; ignored outside development; must differ from AEROBIM_API_BEARER_TOKEN; not OIDC and not a customer SSO claim",
     "AEROBIM_ENFORCE_OBJECT_ACL": "Lab/dev override; forced true under customer_pilot/production",
     "AEROBIM_HYBRID_DRAWING_ENABLED": "Internal hybrid drawing path toggle; not an operator claim surface",
     "AEROBIM_KIMI_CACHE_TTL_DAYS": "Deprecated alias of AEROBIM_VLM_CACHE_TTL_DAYS",
