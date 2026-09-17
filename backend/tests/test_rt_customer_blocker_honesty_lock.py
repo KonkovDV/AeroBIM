@@ -740,7 +740,7 @@ class SubmissionPackHonestyTests(unittest.TestCase):
         self.assertTrue(slides.is_file(), msg=str(slides))
         tracked = _git_ls_files("submission/03-presentation")
         self.assertIn("demo_day_slides.md", tracked)
-        self.assertNotIn("AeroBIM_demo_day.pdf", tracked)
+        self.assertIn("AeroBIM_demo_day.pdf", tracked)
         self.assertNotIn("submission/03-presentation/slides.md", tracked)
         self.assertNotIn("aerobim_kt2.pptx", tracked)
         self.assertNotIn("aerobim_kt2.pdf", tracked)

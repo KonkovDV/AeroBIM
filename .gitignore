@@ -242,10 +242,6 @@ Thumbs.db
 .idea/
 .vs/
 
-# Binary demo-day deck: kitchen denylist hits the blob (B-01). Keep a local copy
-# for the form field; in-repo canon is demo_day_slides.md.
-submission/03-presentation/AeroBIM_demo_day.pdf
-
 # Internal corpus must stay outside Git; block if accidentally copied under tree
 aerobim-internal-data/
 **/aerobim-internal-data/

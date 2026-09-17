@@ -221,8 +221,8 @@ def verify_kt2_handoff(*, handoff_dir: Path, repo: Path) -> dict[str, Any]:
         check=False,
     )
     _check(
-        "kt2_presentation_pdf_untracked",
-        tracked.returncode == 0 and not tracked.stdout.strip(),
+        "kt2_presentation_pdf_tracked",
+        tracked.returncode == 0 and tracked.stdout.strip() == deck_rel,
         deck_rel,
         rows,
     )

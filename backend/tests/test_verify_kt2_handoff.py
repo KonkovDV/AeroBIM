@@ -30,13 +30,13 @@ class VerifyKt2HandoffTests(unittest.TestCase):
         self.assertIn("kt2_jury_index", names)
         self.assertIn("kt2_video_not_recorded", names)
         self.assertIn("kt2_presentation_slides", names)
-        self.assertIn("kt2_presentation_pdf_untracked", names)
+        self.assertIn("kt2_presentation_pdf_tracked", names)
         slides_ok = next(c for c in result["checks"] if c["check"] == "kt2_presentation_slides")
         self.assertTrue(slides_ok["ok"], msg=slides_ok)
-        pdf_untracked = next(
-            c for c in result["checks"] if c["check"] == "kt2_presentation_pdf_untracked"
+        pdf_tracked = next(
+            c for c in result["checks"] if c["check"] == "kt2_presentation_pdf_tracked"
         )
-        self.assertTrue(pdf_untracked["ok"], msg=pdf_untracked)
+        self.assertTrue(pdf_tracked["ok"], msg=pdf_tracked)
         self.assertIn("kt2_demo_mp4_not_in_docs", names)
         withdrawn = next(c for c in result["checks"] if c["check"] == "kt2_video_not_recorded")
         self.assertTrue(withdrawn["ok"], msg=withdrawn)
