@@ -43,24 +43,24 @@ class SafeStorageTokenTests(unittest.TestCase):
         underscore = safe_storage_token("Tenant_A")
         self.assertNotEqual(slash, underscore)
         self.assertEqual(underscore, "Tenant_A")
-        self.assertEqual(slash, "Tenant!2fA")
+        self.assertEqual(slash, "Tenant!2f;A")
 
     def test_colon_is_hex_encoded(self) -> None:
-        self.assertEqual(safe_storage_token("a:b"), "a!3ab")
+        self.assertEqual(safe_storage_token("a:b"), "a!3a;b")
 
     def test_empty_token_rejected(self) -> None:
         with self.assertRaises(PathJailError):
             safe_storage_token("   ")
 
     def test_tenant_prefix_uses_encoding(self) -> None:
-        self.assertEqual(tenant_storage_prefix("Tenant/A"), "tenants/Tenant!2fA/")
+        self.assertEqual(tenant_storage_prefix("Tenant/A"), "tenants/Tenant!2f;A/")
 
 
 class PathJailTenantPrefixTests(unittest.TestCase):
     def test_assert_path_under_tenant_prefix(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             base = Path(tmp)
-            allowed = base / "tenants" / "Tenant!2fA" / "uploads" / "x.ifc"
+            allowed = base / "tenants" / "Tenant!2f;A" / "uploads" / "x.ifc"
             allowed.parent.mkdir(parents=True)
             allowed.write_text("ok", encoding="utf-8")
             assert_path_under_tenant_prefix(allowed, base=base, tenant_id="Tenant/A")

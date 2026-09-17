@@ -224,11 +224,12 @@ class FilesystemReviewEventStore:
         """
 
         prefix = f"{target.name}.seq."
-        seq_exists = any(
-            path.name.startswith(prefix) and path.name[len(prefix) :].isdigit()
+        seq_nums = sorted(
+            int(path.name[len(prefix) :])
             for path in target.parent.glob(f"{target.name}.seq.*")
+            if path.name.startswith(prefix) and path.name[len(prefix) :].isdigit()
         )
-        if seq_exists or not target.exists():
+        if not target.exists():
             return
         raw = target.read_text(encoding="utf-8")
         if not raw.strip():
@@ -242,8 +243,21 @@ class FilesystemReviewEventStore:
             raise_on_corrupt=self._fail_closed,
             modern=False,
         )
+        start = (seq_nums[-1] if seq_nums else 0) + 1
         previous = genesis_previous_hash()
+        if seq_nums:
+            last_path = target.parent / f"{target.name}.seq.{seq_nums[-1]}"
+            last_parsed = self._parse_journal_lines(
+                report_id=target.stem,
+                lines=last_path.read_text(encoding="utf-8").splitlines(),
+                raise_on_corrupt=self._fail_closed,
+                modern=True,
+            )
+            if last_parsed and last_parsed[-1].content_hash:
+                previous = last_parsed[-1].content_hash
         for index, event in enumerate(parsed, start=1):
+            if index < start:
+                continue
             prev_hash = event.previous_event_hash or previous
             content = event.content_hash or review_event_content_hash(
                 event, previous_event_hash=prev_hash
@@ -254,7 +268,10 @@ class FilesystemReviewEventStore:
                 previous_event_hash=prev_hash,
                 content_hash=content,
             )
-            _write_event_exclusive(target, stamped, sequence=index)
+            try:
+                _write_event_exclusive(target, stamped, sequence=index)
+            except SequenceClaimError:
+                pass
             previous = content
         target.unlink(missing_ok=True)
 
@@ -443,6 +460,8 @@ class FilesystemReviewEventStore:
 
     def _iter_events(self, *, report_id: str, raise_on_corrupt: bool) -> list[ReviewEvent]:
         target = self._path(report_id)
+        if target.exists():
+            self._migrate_legacy_jsonl_under_lock(target)
         self.last_invalid_line_count = 0
         self.last_load_degraded = False
         lines, modern = self._load_event_lines(target, raise_on_corrupt=raise_on_corrupt)
@@ -609,7 +628,10 @@ class FilesystemReviewEventStore:
                     if line.strip()
                 ]
                 seq_lines = [line for line in lines if line.strip()]
-                if jsonl_lines != seq_lines:
+                incomplete_promotion = (
+                    len(jsonl_lines) > len(seq_lines) and jsonl_lines[: len(seq_lines)] == seq_lines
+                )
+                if jsonl_lines != seq_lines and not incomplete_promotion:
                     msg = (
                         f"review-events jsonl diverges from seq files for {target.name} "
                         "(shadow store — N-57)"

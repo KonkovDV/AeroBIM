@@ -215,7 +215,14 @@ class UploadObjectStoreEventLoopTests(unittest.IsolatedAsyncioTestCase):
                 with self.assertRaises(asyncio.CancelledError):
                     await upload_task
                 store.release.set()
-                await asyncio.sleep(0.05)
+                leftover: list[Path] = []
+                for _ in range(40):
+                    leftover = [
+                        path for path in root.rglob("*.ifc") if "quarantine" not in path.parts
+                    ]
+                    if not leftover and store.deleted:
+                        break
+                    await asyncio.sleep(0.05)
             leftover = [path for path in root.rglob("*.ifc") if "quarantine" not in path.parts]
             self.assertEqual(leftover, [])
             self.assertEqual(len(store.deleted), 1)

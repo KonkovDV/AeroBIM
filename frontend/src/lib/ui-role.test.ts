@@ -23,12 +23,25 @@ describe("roleAliasFromOidcRoles", () => {
 });
 
 describe("hitlEnabledForShell", () => {
-  it("keeps the localStorage mock when BFF is 501", () => {
+  it("keeps HITL off for anonymous 501 unless a lab-reviewer token is configured", () => {
     expect(
       hitlEnabledForShell({ bffStatus: "NOT_IMPLEMENTED", session: null, uiRole: "expert" }),
+    ).toBe(false);
+    expect(
+      hitlEnabledForShell({
+        bffStatus: "NOT_IMPLEMENTED",
+        session: null,
+        uiRole: "expert",
+        labReviewerConfigured: true,
+      }),
     ).toBe(true);
     expect(
-      hitlEnabledForShell({ bffStatus: "NOT_IMPLEMENTED", session: null, uiRole: "user" }),
+      hitlEnabledForShell({
+        bffStatus: "NOT_IMPLEMENTED",
+        session: null,
+        uiRole: "user",
+        labReviewerConfigured: true,
+      }),
     ).toBe(false);
   });
 

@@ -62,6 +62,7 @@ export type SelectedReportState = {
   setSelectedClashIndex: Dispatch<SetStateAction<number | null>>;
   setRemarkDraft: Dispatch<SetStateAction<string>>;
   setRemarkSaveState: Dispatch<SetStateAction<RemarkSaveState>>;
+  changeDraft: (value: string) => void;
   selectIssue: (index: number, issue: ValidationIssue, options?: { force?: boolean }) => void;
   confirmPendingSelect: (mode: "save" | "discard") => Promise<void>;
   dismissPendingSelect: () => void;
@@ -486,6 +487,12 @@ export function useSelectedReport(
     [postHitlEvent, reloadEventsKeepDraft, reportLoading],
   );
 
+  const changeDraft = useCallback((value: string) => {
+    setRemarkDraft(value);
+    setRemarkSaveState("idle");
+    setHitlRequestState("idle");
+  }, []);
+
   const discardRemarkDraft = useCallback(() => {
     const current = selectedReportRef.current?.issues[selectedIssueIndexRef.current];
     setRemarkDraft(current ? effectiveRemarkText(current, reviewEventsRef.current) : "");
@@ -569,6 +576,7 @@ export function useSelectedReport(
     setSelectedClashIndex,
     setRemarkDraft,
     setRemarkSaveState,
+    changeDraft,
     selectIssue,
     confirmPendingSelect,
     dismissPendingSelect,

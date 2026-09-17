@@ -89,11 +89,13 @@ def classify_submitted_source(
             disposition = "rejected"
             reason = reason or "format not supported"
     return {
+        "name": Path(name.replace("\\", "/").split("/")[-1]).name or name,
         "name_class": suffix or "unknown",
         "suffix": suffix,
         "size_bytes": size_bytes,
         "disposition": disposition,
         "reason": reason,
+        "processing_state": disposition,
         "office_cap_bytes": OFFICE_CAP_BYTES,
         "customer_model_cap_bytes": CUSTOMER_MODEL_CAP_BYTES,
         "spf_cap_bytes": SPF_CAP_BYTES,
@@ -173,6 +175,7 @@ def build_run_passport(
             "на комплекте заказчика"
         ),
         "stages": stages,
+        "sources": list(coverage.get("rows") or ()),
         "format_coverage": coverage,
     }
 

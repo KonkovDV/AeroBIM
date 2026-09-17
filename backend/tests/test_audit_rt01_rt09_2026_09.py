@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import csv
+import inspect
+import os
 import tempfile
 import unittest
 from pathlib import Path
@@ -14,7 +16,14 @@ from aerobim.core.security.outbound_url import (
     rewrite_dial_address,
     set_outbound_dial_pin,
 )
-from aerobim.core.security.path_jail import safe_storage_token, tenant_storage_prefix
+from aerobim.core.security.path_jail import (
+    PathJailError,
+    _assert_fd_still_is_path,
+    _windows_path_is_under_base,
+    open_storage_file,
+    safe_storage_token,
+    tenant_storage_prefix,
+)
 from aerobim.domain.architecture import PrecisionClaim, precision_claim_publishable_with_agreement
 from aerobim.domain.hybrid.privacy_guard import PrivacyGuard, PrivacyLeakError
 from aerobim.domain.models import FindingCategory, Severity, ValidationIssue
@@ -48,6 +57,29 @@ class RT01Urllib3DialPinTests(unittest.TestCase):
         self.assertTrue(
             getattr(urllib3_connection.create_connection, "_aerobim_outbound_pin", False)
         )
+
+    def test_urllib3_connection_module_is_wrapped_when_present(self) -> None:
+        try:
+            import urllib3.connection as urllib3_http
+        except ImportError:
+            self.skipTest("urllib3.connection not installed")
+        ensure_outbound_dial_pins_installed()
+        bound = getattr(urllib3_http, "create_connection", None)
+        if bound is None:
+            self.skipTest("urllib3.connection.create_connection is not a module attribute")
+        self.assertTrue(getattr(bound, "_aerobim_outbound_pin", False))
+
+    def test_urllib3_httpconnection_new_conn_is_wrapped_when_present(self) -> None:
+        try:
+            import urllib3.connection as urllib3_http
+        except ImportError:
+            self.skipTest("urllib3.connection not installed")
+        ensure_outbound_dial_pins_installed()
+        http_conn = getattr(urllib3_http, "HTTPConnection", None)
+        orig_new = getattr(http_conn, "_new_conn", None) if http_conn is not None else None
+        if orig_new is None:
+            self.skipTest("urllib3 HTTPConnection._new_conn is not present")
+        self.assertTrue(getattr(orig_new, "_aerobim_outbound_pin", False))
 
 
 class RT02TenantIdentityTests(unittest.TestCase):
@@ -249,6 +281,53 @@ class RT08DuplicateLabelTests(unittest.TestCase):
             b = measure_adjudication_csv(right)
             self.assertEqual(a["cohens_kappa"], b["cohens_kappa"])
             self.assertEqual(a["paired_items"], b["paired_items"])
+
+
+class RT09ParentOpenTests(unittest.TestCase):
+    def test_open_storage_file_uses_parent_dirfd_and_windows_handle_path(self) -> None:
+        from aerobim.core.security import path_jail as path_jail_module
+
+        source = inspect.getsource(path_jail_module.open_storage_file)
+        self.assertIn("_posix_open_at_parent", source)
+        self.assertIn("_windows_open_nofollow", source)
+        self.assertIn("dir_fd=dirfd", inspect.getsource(path_jail_module._posix_open_at_parent))
+        self.assertIn("GetFinalPathNameByHandleW", inspect.getsource(path_jail_module))
+
+    def test_fd_inode_mismatch_is_fail_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            left = base / "left.bin"
+            right = base / "right.bin"
+            left.write_bytes(b"L")
+            right.write_bytes(b"R")
+            with left.open("rb") as handle:
+                opened = os.fstat(handle.fileno())
+                named = os.lstat(right)
+                if (opened.st_dev, opened.st_ino) == (named.st_dev, named.st_ino):
+                    self.skipTest("platform does not distinguish file inodes")
+                with self.assertRaises(PathJailError):
+                    _assert_fd_still_is_path(handle.fileno(), right)
+
+    def test_windows_case_and_prefix_stay_inside_base(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            child = base / "nested" / "file.bin"
+            child.parent.mkdir()
+            child.write_bytes(b"x")
+            self.assertTrue(_windows_path_is_under_base(child, base))
+            if os.name == "nt":
+                self.assertTrue(_windows_path_is_under_base(Path(str(child).swapcase()), base))
+            outsider = Path(tmp).resolve().parent / "outside.bin"
+            self.assertFalse(_windows_path_is_under_base(outsider, base))
+
+    def test_open_storage_file_round_trip(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp).resolve()
+            target = base / "model.ifc"
+            with open_storage_file(target, base=base, mode="wb") as handle:
+                handle.write(b"ISO-10303-21;")
+            with open_storage_file(target, base=base, mode="rb") as handle:
+                self.assertEqual(handle.read(), b"ISO-10303-21;")
 
 
 if __name__ == "__main__":

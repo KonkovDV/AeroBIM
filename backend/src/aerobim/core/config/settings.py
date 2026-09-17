@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import os
+import secrets
 from dataclasses import dataclass, replace
 from pathlib import Path
 from urllib.parse import urlparse
@@ -344,6 +345,8 @@ class Settings:
     (Phase-3 BFF is lab-only and never ready on those profiles).
     """
     api_bearer_token: str | None = None
+    dev_reviewer_token: str | None = None
+    """Development-only lab HITL bearer. Not OIDC, not the shared API service token."""
     cross_doc_contradiction_severity: str = "warning"
     """Severity for cross-document contradictions: ``error`` | ``warning`` | ``info``."""
     priority_profile: str = "default"
@@ -980,6 +983,7 @@ class Settings:
             cors_origins=origins,
             cors_allow_credentials=cors_allow_credentials,
             api_bearer_token=(os.getenv("AEROBIM_API_BEARER_TOKEN") or "").strip() or None,
+            dev_reviewer_token=(os.getenv("AEROBIM_DEV_REVIEWER_TOKEN") or "").strip() or None,
             cross_doc_contradiction_severity=cross_doc_severity,
             priority_profile=priority_profile,
             db_url=(os.getenv("AEROBIM_DB_URL") or "").strip() or None,
@@ -1310,6 +1314,15 @@ class Settings:
                 assert_safe_datastore_url(candidate)
             except UnsafeOutboundUrlError as exc:
                 raise RuntimeError(f"Unsafe datastore URL in {label}: {exc}") from exc
+        if settings.dev_reviewer_token:
+            if not settings.is_dev_environment:
+                settings = replace(settings, dev_reviewer_token=None)
+            elif settings.api_bearer_token and secrets.compare_digest(
+                settings.dev_reviewer_token, settings.api_bearer_token
+            ):
+                raise RuntimeError(
+                    "AEROBIM_DEV_REVIEWER_TOKEN must differ from AEROBIM_API_BEARER_TOKEN"
+                )
         settings.require_secure_auth()
         settings.require_oidc_runtime_deps()
         settings.require_durable_runtime()

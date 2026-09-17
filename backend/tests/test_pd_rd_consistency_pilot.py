@@ -244,6 +244,7 @@ class PdRdPilotHitlApiTests(unittest.TestCase):
         storage: Path,
         token: str | None = "secret-token",
         allow_anonymous_dev: bool = False,
+        reviewer_token: str | None = None,
     ):
         from fastapi.testclient import TestClient
 
@@ -260,6 +261,7 @@ class PdRdPilotHitlApiTests(unittest.TestCase):
             api_tenant_id="tenant-a",
             enforce_object_acl=True,
             allow_anonymous_dev=allow_anonymous_dev,
+            dev_reviewer_token=reviewer_token,
         )
         container = bootstrap_container(settings)
         return TestClient(create_http_app(container)), container
@@ -268,7 +270,13 @@ class PdRdPilotHitlApiTests(unittest.TestCase):
         from datetime import UTC, datetime
         from uuid import uuid4
 
-        from aerobim.domain.models import ValidationReport, ValidationSummary
+        from aerobim.domain.models import (
+            FindingCategory,
+            Severity,
+            ValidationIssue,
+            ValidationReport,
+            ValidationSummary,
+        )
 
         settings = container.resolve(Tokens.SETTINGS)
         store = container.resolve(Tokens.AUDIT_REPORT_STORE)
@@ -283,8 +291,16 @@ class PdRdPilotHitlApiTests(unittest.TestCase):
                 ifc_path=ifc_path,
                 created_at=datetime.now(tz=UTC).isoformat(),
                 requirements=(),
-                issues=(),
-                summary=ValidationSummary(0, 0, 0, 0, True),
+                issues=(
+                    ValidationIssue(
+                        rule_id="R1",
+                        severity=Severity.ERROR,
+                        message="seed",
+                        category=FindingCategory.IFC_VALIDATION,
+                        finding_id="fid-1",
+                    ),
+                ),
+                summary=ValidationSummary(0, 1, 1, 0, False),
                 tenant_id="tenant-a",
             )
         )
@@ -343,9 +359,54 @@ class PdRdPilotHitlApiTests(unittest.TestCase):
             self.assertEqual(response.status_code, 403, response.text)
             opened = client.post(
                 f"/v1/reports/{report_id}/review-events",
-                json={"event_type": "opened"},
+                json={"event_type": "opened", "finding_id": "fid-1", "issue_rule_id": "R1"},
             )
             self.assertEqual(opened.status_code, 200, opened.text)
+
+    def test_lab_reviewer_bearer_can_open_then_accept(self) -> None:
+        try:
+            from fastapi.testclient import TestClient  # noqa: F401
+        except ModuleNotFoundError as extra:
+            raise unittest.SkipTest("FastAPI/httpx not installed") from extra
+        with tempfile.TemporaryDirectory() as tmp:
+            client, container = self._client(
+                storage=Path(tmp),
+                token="api-secret",
+                reviewer_token="reviewer-secret",
+            )
+            report_id = self._seed(container)
+            reviewer = {"Authorization": "Bearer reviewer-secret"}
+            opened = client.post(
+                f"/v1/reports/{report_id}/review-events",
+                headers=reviewer,
+                json={"event_type": "opened", "finding_id": "fid-1", "issue_rule_id": "R1"},
+            )
+            self.assertEqual(opened.status_code, 200, opened.text)
+            accepted = client.post(
+                f"/v1/reports/{report_id}/review-events",
+                headers=reviewer,
+                json={
+                    "event_type": "accepted",
+                    "finding_id": "fid-1",
+                    "issue_rule_id": "R1",
+                    "previous_state": "opened",
+                    "note": "lab reviewer accept",
+                },
+            )
+            self.assertEqual(accepted.status_code, 200, accepted.text)
+            self.assertEqual(accepted.json()["event"]["event_type"], "accepted")
+            self.assertEqual(accepted.json()["event"]["actor"], "lab-reviewer-dev")
+            denied = client.post(
+                f"/v1/reports/{report_id}/review-events",
+                headers={"Authorization": "Bearer api-secret"},
+                json={
+                    "event_type": "rejected",
+                    "finding_id": "fid-1",
+                    "issue_rule_id": "R1",
+                    "previous_state": "accepted",
+                },
+            )
+            self.assertEqual(denied.status_code, 403, denied.text)
 
 
 class PdRdRequestShapeTests(unittest.TestCase):

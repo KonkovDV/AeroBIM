@@ -48,7 +48,8 @@ export function useReviewShell() {
   const review = useSelectedReport(selectedReportId, reportsEpoch);
   const {
     selectedReport, selectedIssueIndex, selectedClashIndex, selectIssue,
-    pendingSelect, confirmPendingSelect, saveRemarkEdit, decideRemark, openRemark, discardRemarkDraft, isDirty,
+    pendingSelect, confirmPendingSelect, saveRemarkEdit, decideRemark, discardRemarkDraft, isDirty,
+    changeDraft,
   } = review;
   const pack = usePackDraft();
   const landing = useWorkspaceLanding({
@@ -204,12 +205,6 @@ export function useReviewShell() {
     }
     setSelectedReportId(reportId);
     setWorkspaceView("review");
-  };
-
-  const changeDraft = (value: string) => {
-    review.setRemarkDraft(value);
-    review.setRemarkSaveState("idle");
-    review.setHitlDecisionState("idle");
   };
 
   const stayOnCurrent = () => {

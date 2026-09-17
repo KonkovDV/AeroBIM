@@ -434,6 +434,25 @@ def _install_urllib3_dial_pin() -> None:
             _pinned_urllib3_http_create_connection._aerobim_outbound_pin = True  # type: ignore[attr-defined]
             urllib3_http.create_connection = _pinned_urllib3_http_create_connection
 
+        http_conn = getattr(urllib3_http, "HTTPConnection", None)
+        orig_new = getattr(http_conn, "_new_conn", None) if http_conn is not None else None
+        if callable(orig_new) and not getattr(orig_new, "_aerobim_outbound_pin", False):
+
+            def _pinned_urllib3_new_conn(self: Any, *args: Any, **kwargs: Any) -> Any:
+                host = getattr(self, "_dns_host", None) or getattr(self, "host", None)
+                pinned_ip = outbound_dial_pin_for(str(host or ""))
+                if pinned_ip is None:
+                    return orig_new(self, *args, **kwargs)
+                saved = getattr(self, "_dns_host", host)
+                self._dns_host = pinned_ip
+                try:
+                    return orig_new(self, *args, **kwargs)
+                finally:
+                    self._dns_host = saved
+
+            _pinned_urllib3_new_conn._aerobim_outbound_pin = True  # type: ignore[attr-defined]
+            http_conn._new_conn = _pinned_urllib3_new_conn  # type: ignore[method-assign]
+
     _urllib3_pins_installed = True
 
 

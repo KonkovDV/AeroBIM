@@ -106,7 +106,7 @@ class ClassifierPublicFixtureTests(unittest.TestCase):
             ids_path=Path("dummy.ids"),
             tenant_id="acme",
         )
-        allowed, trace = assembler._evaluate_llm_overlay_gate(request)
+        allowed, trace, *_ = assembler._evaluate_llm_overlay_gate(request)
         self.assertFalse(allowed)
         assert trace is not None
         self.assertEqual(trace["status"], "blocked")
@@ -120,14 +120,14 @@ class StorageTokenJailTests(unittest.TestCase):
             safe_storage_token(".")
 
     def test_dot_in_tenant_is_encoded(self) -> None:
-        self.assertEqual(safe_storage_token("a.b"), "a!2eb")
+        self.assertEqual(safe_storage_token("a.b"), "a!2e;b")
 
     def test_slash_vs_encoded_no_double_encode_collision(self) -> None:
         # tenant_storage_prefix encodes once; a/b and a!2fb must not collide.
         slash = tenant_storage_prefix("a/b")
         literal = tenant_storage_prefix("a!2fb")
-        self.assertEqual(slash, "tenants/a!2fb/")
-        self.assertEqual(literal, "tenants/a!212fb/")
+        self.assertEqual(slash, "tenants/a!2f;b/")
+        self.assertEqual(literal, "tenants/a!21;2fb/")
         self.assertNotEqual(slash, literal)
 
     def test_quota_rejects_dotdot_tenant(self) -> None:

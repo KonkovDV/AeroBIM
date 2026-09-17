@@ -37,6 +37,9 @@ from aerobim.presentation.http.errors import (
     public_upload_zip_rejected_detail,
 )
 
+# Detached waiters: anyio cancel scopes must not drop object-store compensation.
+_PUT_COMPENSATE_TASKS: set[asyncio.Task[None]] = set()
+
 
 def build_uploads_router(ctx: ApiContext) -> APIRouter:
     router = APIRouter()
@@ -269,14 +272,20 @@ def build_uploads_router(ctx: ApiContext) -> APIRouter:
 
             try:
                 put_task = asyncio.ensure_future(asyncio.to_thread(_put_object))
-                await put_task
+                await asyncio.shield(put_task)
             except asyncio.CancelledError:
-                if not put_task.done():
+
+                async def _compensate_cancelled_put() -> None:
                     try:
-                        await asyncio.shield(put_task)
+                        await put_task
                     except Exception:  # noqa: S110 — wait for writer then compensate
                         pass
-                _cleanup_failed_put()
+                    _cleanup_failed_put()
+
+                loop = asyncio.get_running_loop()
+                compensate = loop.create_task(_compensate_cancelled_put())
+                _PUT_COMPENSATE_TASKS.add(compensate)
+                compensate.add_done_callback(_PUT_COMPENSATE_TASKS.discard)
                 raise
             except Exception as exc:
                 _cleanup_failed_put()

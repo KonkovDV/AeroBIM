@@ -45,6 +45,7 @@ export function hitlEnabledForShell(input: {
   bffStatus: AuthBffDiscoveryStatus;
   session: AuthBffSession | null;
   uiRole: UiRoleAlias;
+  labReviewerConfigured?: boolean;
 }): boolean {
   if (input.bffStatus === "LAB") {
     return (
@@ -54,7 +55,7 @@ export function hitlEnabledForShell(input: {
     );
   }
   if (input.bffStatus === "NOT_IMPLEMENTED") {
-    return input.uiRole === "expert";
+    return input.uiRole === "expert" && input.labReviewerConfigured === true;
   }
   return false;
 }

@@ -86,6 +86,11 @@ describe("D02 persisted indicator", () => {
     expect(hook.result.current.persistedHitlState).toBe("accepted");
     expect(hook.result.current.hitlDecisionState).toBe("accepted");
     expect(api.postReviewEvent).not.toHaveBeenCalled();
+    act(() => hook.result.current.changeDraft("typed after reload"));
+    expect(hook.result.current.persistedHitlState).toBe("accepted");
+    expect(hook.result.current.hitlDecisionState).toBe("accepted");
+    expect(hook.result.current.remarkDraft).toBe("typed after reload");
+    expect(hook.result.current.hitlRequestState).toBe("idle");
   });
 });
 

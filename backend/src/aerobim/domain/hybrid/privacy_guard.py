@@ -61,7 +61,7 @@ _MAX_NEEDLE_DEPTH = 6
 _MAX_NEEDLES = 64
 
 
-def _residual_needles(value: Any) -> tuple[str, ...]:
+def _residual_needles(value: Any) -> tuple[tuple[str, ...], bool]:
     """Scalar leaves plus Python/JSON atom forms (HD4-PG-02: ``True`` vs ``true``).
 
     Nested dict/list values are walked so a removed parent object cannot hide a
@@ -70,6 +70,7 @@ def _residual_needles(value: Any) -> tuple[str, ...]:
 
     found: list[str] = []
     remaining = _MAX_NEEDLES
+    incomplete = False
 
     def add(candidate: str) -> None:
         nonlocal remaining
@@ -80,7 +81,13 @@ def _residual_needles(value: Any) -> tuple[str, ...]:
             remaining -= 1
 
     def walk(node: Any, level: int) -> None:
-        if remaining <= 0 or level > _MAX_NEEDLE_DEPTH:
+        nonlocal incomplete
+        if remaining <= 0:
+            incomplete = True
+            return
+        if level > _MAX_NEEDLE_DEPTH:
+            if isinstance(node, (Mapping, list, tuple, set)):
+                incomplete = True
             return
         if isinstance(node, Mapping):
             for item in node.values():
@@ -101,7 +108,7 @@ def _residual_needles(value: Any) -> tuple[str, ...]:
             add(node)
 
     walk(value, 0)
-    return tuple(found)
+    return tuple(found), incomplete
 
 
 def _assert_no_residual_leak(masked: Mapping[str, Any], sensitive_values: list[Any]) -> None:
@@ -111,7 +118,10 @@ def _assert_no_residual_leak(masked: Mapping[str, Any], sensitive_values: list[A
     """
     serialized = json.dumps(masked, ensure_ascii=False, default=str)
     for raw in sensitive_values:
-        for needle in _residual_needles(raw):
+        needles, incomplete = _residual_needles(raw)
+        if incomplete:
+            raise PrivacyLeakError("residual scan incomplete; refuse egress")
+        for needle in needles:
             if needle in serialized:
                 raise PrivacyLeakError("masked output still contains a sensitive raw value")
 

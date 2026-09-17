@@ -57,7 +57,7 @@ class Rt030OverlayGateTests(unittest.TestCase):
             ids_path=Path("dummy.ids"),
             tenant_id="tenant-a",
         )
-        allowed, trace = assembler._evaluate_llm_overlay_gate(request)
+        allowed, trace, *_ = assembler._evaluate_llm_overlay_gate(request)
         self.assertFalse(allowed)
         assert trace is not None
         self.assertEqual(trace["task_type"], "advisory_remark_overlay")
@@ -81,7 +81,7 @@ class Rt030OverlayGateTests(unittest.TestCase):
             ids_path=Path("dummy.ids"),
             tenant_id="tenant-a",
         )
-        allowed, trace = assembler._evaluate_llm_overlay_gate(request)
+        allowed, trace, *_ = assembler._evaluate_llm_overlay_gate(request)
         self.assertFalse(allowed)
         assert trace is not None
         self.assertEqual(trace["status"], "public_masked")
@@ -107,7 +107,7 @@ class Rt030OverlayGateTests(unittest.TestCase):
             ids_path=Path("dummy.ids"),
             tenant_id="tenant-a",
         )
-        allowed, trace = assembler._evaluate_llm_overlay_gate(request)
+        allowed, trace, *_ = assembler._evaluate_llm_overlay_gate(request)
         self.assertTrue(allowed)
         assert trace is not None
         self.assertTrue(trace["may_call_external"])
@@ -123,7 +123,7 @@ class Rt030OverlayGateTests(unittest.TestCase):
             ids_path=Path("dummy.ids"),
             tenant_id="tenant-a",
         )
-        allowed, trace = assembler._evaluate_llm_overlay_gate(request)
+        allowed, trace, *_ = assembler._evaluate_llm_overlay_gate(request)
         self.assertFalse(allowed)
         assert trace is not None
         self.assertIn("not configured", str(trace["reason"]))
@@ -138,7 +138,7 @@ class Rt030OverlayGateTests(unittest.TestCase):
             ids_path=Path("dummy.ids"),
             tenant_id="tenant-a",
         )
-        allowed, trace = assembler._evaluate_llm_overlay_gate(request)
+        allowed, trace, *_ = assembler._evaluate_llm_overlay_gate(request)
         self.assertTrue(allowed)
         self.assertIsNone(trace)
 

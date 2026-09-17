@@ -13,7 +13,7 @@ import hashlib
 import json
 import threading
 from collections import OrderedDict
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -68,8 +68,12 @@ class IfcParseSession:
     cache_hit: bool
     ifc_path: Path
     cache_key: tuple[str, int, int] | None = None
+    _closed: list[bool] = field(default_factory=lambda: [False], compare=False, repr=False)
 
     def close(self) -> None:
+        if self._closed[0]:
+            return
+        self._closed[0] = True
         if self.cache_key is not None:
             release_cached_model(self.cache_key)
 
@@ -230,24 +234,26 @@ def open_ifc_session(ifc_path: Path) -> IfcParseSession:
     with _lock:
         model_cache_hit = key in _memory
         cached_index = _index_memory.get(key)
-    model = open_ifc_model(ifc_path)
-    with _lock:
-        entry = _memory.get(key)
-        if entry is not None:
-            entry.refs += 1
-    if cached_index is None:
-        dense = getattr(model, "storage", None) is None
-        cached_index = IfcSpatialIndex.from_model(model, dense=dense)
+    model = open_ifc_model(ifc_path, pin=True)
+    try:
         with _lock:
-            _index_memory[key] = cached_index
-            _stats["indexes_built"] += 1
-    return IfcParseSession(
-        model=model,
-        spatial_index=cached_index,
-        cache_hit=model_cache_hit,
-        ifc_path=resolved,
-        cache_key=key,
-    )
+            cached_index = _index_memory.get(key)
+        if cached_index is None:
+            dense = getattr(model, "storage", None) is None
+            cached_index = IfcSpatialIndex.from_model(model, dense=dense)
+            with _lock:
+                _index_memory[key] = cached_index
+                _stats["indexes_built"] += 1
+        return IfcParseSession(
+            model=model,
+            spatial_index=cached_index,
+            cache_hit=model_cache_hit,
+            ifc_path=resolved,
+            cache_key=key,
+        )
+    except Exception:
+        release_cached_model(key)
+        raise
 
 
 def ifc_engine_path(ifc_path: Path) -> Path:
@@ -312,7 +318,7 @@ def _open_rocksdb(ifc_path: Path, ifcopenshell: Any, mtime_ns: int, size: int) -
         raise IfcDiskBackendError() from exc
 
 
-def open_ifc_model(ifc_path: Path) -> Any:
+def open_ifc_model(ifc_path: Path, *, pin: bool = False) -> Any:
     """Open IFC via ifcopenshell with process-local memoization.
 
     SPF in-memory open stays at ``AEROBIM_MAX_IFC_BYTES`` (default 256 MiB).
@@ -342,6 +348,8 @@ def open_ifc_model(ifc_path: Path) -> Any:
         cached = _memory.get(key)
         if cached is not None:
             _memory.move_to_end(key)
+            if pin:
+                cached.refs += 1
             _touch_marker(resolved, hit=True)
             _stats["opens"] += 1
             _stats["hits"] += 1
@@ -375,9 +383,11 @@ def open_ifc_model(ifc_path: Path) -> Any:
             existing = _memory.get(key)
             if existing is not None:
                 close_ifc_model(model)
+                if pin:
+                    existing.refs += 1
                 _memory.move_to_end(key)
                 return existing.model
-            _memory[key] = _CacheEntry(model=model, refs=0)
+            _memory[key] = _CacheEntry(model=model, refs=1 if pin else 0)
             _memory.move_to_end(key)
             _evict_overflow_locked()
             _touch_marker(resolved, hit=False)

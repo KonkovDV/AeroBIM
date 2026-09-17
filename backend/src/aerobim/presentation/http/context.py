@@ -42,6 +42,8 @@ from aerobim.domain.models import (
 )
 from aerobim.domain.object_acl import (
     LAB_ANONYMOUS_TENANT_ID,
+    LAB_REVIEWER_AUTH_SCHEME,
+    LAB_REVIEWER_SUBJECT,
     AuthPrincipal,
     principal_may_access_job,
     principal_may_access_norm_pack,
@@ -212,7 +214,7 @@ class ApiContext:
             if cookie_principal is not None:
                 return self._bind_authenticated(request, cookie_principal)
 
-        if configured_token is None and not oidc_ready:
+        if configured_token is None and not oidc_ready and not authorization:
             if settings.oidc_bff_phase3_ready:
                 raise HTTPException(
                     status_code=401,
@@ -278,6 +280,24 @@ class ApiContext:
                     subject="api-bearer",
                     is_service_token=True,
                     auth_scheme="bearer",
+                ),
+            )
+
+        reviewer_token = settings.dev_reviewer_token
+        if (
+            reviewer_token is not None
+            and settings.is_dev_environment
+            and secrets.compare_digest(token, reviewer_token)
+        ):
+            bound_tenant = (settings.api_tenant_id or "").strip() or LAB_ANONYMOUS_TENANT_ID
+            return self._bind_authenticated(
+                request,
+                AuthPrincipal(
+                    tenant_id=bound_tenant,
+                    subject=LAB_REVIEWER_SUBJECT,
+                    is_service_token=False,
+                    roles=frozenset({"reviewer"}),
+                    auth_scheme=LAB_REVIEWER_AUTH_SCHEME,
                 ),
             )
 

@@ -410,6 +410,14 @@ def coverage_from_report(
             name = str(row.get("name") or "").strip()
             if name:
                 declared.append(name)
+        coverage = passport.get("format_coverage")
+        if isinstance(coverage, dict):
+            for row in coverage.get("rows") or ():
+                if not isinstance(row, dict):
+                    continue
+                name = str(row.get("name") or "").strip()
+                if name:
+                    declared.append(name)
     return build_check_coverage(
         source_ids=declared,
         issues=report.issues,

@@ -20,6 +20,7 @@ from aerobim.application.services.cross_document_contradictions import (
 from aerobim.application.use_cases.analyze_project_package_jobs import (
     AnalyzeProjectPackageJobRunner,
     SubmitAnalyzeProjectPackageJobUseCase,
+    _LeaseHeartbeat,
 )
 from aerobim.domain.analyze_job_idempotency import (
     IdempotencyPayloadConflictError,
@@ -284,7 +285,7 @@ class A04IdempotencyFingerprintTests(unittest.TestCase):
                     requirement_source=RequirementSource(path=path, text=""),
                 )
             )
-            path.write_text("two", encoding="utf-8")
+            path.write_text("two-longer", encoding="utf-8")
             second = analyze_job_payload_fingerprint(
                 ValidationRequest(
                     request_id="r",
@@ -408,6 +409,27 @@ class A05A06A07JobClaimTests(unittest.TestCase):
         self.assertTrue(reclaimed)
         self.assertIsNone(store.mark_succeeded("job-dead", "late", owner="alive"))
         self.assertEqual(store.get("job-dead").status, JobStatus.FAILED)  # type: ignore[union-attr]
+
+    def test_heartbeat_exception_marks_lease_lost(self) -> None:
+        class _BoomStore:
+            def heartbeat(self, job_id: str, *, lease_seconds: int = 120, owner: str | None = None):
+                raise RuntimeError("redis unavailable")
+
+        keeper = _LeaseHeartbeat(
+            _BoomStore(),  # type: ignore[arg-type]
+            "job-boom",
+            owner="worker-1",
+            interval_seconds=0.05,
+            lease_seconds=1,
+        )
+        keeper.start()
+        deadline = time.time() + 2.0
+        while time.time() < deadline and not keeper.lost():
+            time.sleep(0.05)
+        try:
+            self.assertTrue(keeper.lost())
+        finally:
+            keeper.stop()
 
     def test_concurrent_submit_respects_limit(self) -> None:
         store = InMemoryAnalyzeProjectPackageJobStore()

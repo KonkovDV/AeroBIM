@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import replace
 
 from aerobim.domain.finding_gate import stamp_finding_gate
@@ -41,6 +41,7 @@ class RemarkEnricher:
         *,
         request_id: str,
         allow_synthetic_public: bool = False,
+        prepared_findings: Sequence[Mapping[str, object]] | None = None,
     ) -> tuple[tuple[ValidationIssue, ...], CapabilityStatus]:
         from aerobim.application.services.advisory_remark_overlay import overlay_llm_remarks
 
@@ -52,4 +53,5 @@ class RemarkEnricher:
             max_issues=self._llm_advisory_max_issues,
             max_workers=self._llm_max_concurrent,
             allow_synthetic_public=allow_synthetic_public,
+            prepared_findings=prepared_findings,
         )

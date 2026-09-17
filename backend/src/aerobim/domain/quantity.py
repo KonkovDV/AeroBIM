@@ -193,92 +193,87 @@ class QuantityValue:
         object.__setattr__(self, "unit", self.unit.strip())
 
 
-# Mapping of common Russian AEC units to (UCUM code, SI conversion factor, dimension).
-# Factor converts FROM the given unit TO the SI base unit.
-_UNIT_REGISTRY: dict[str, tuple[str, float, str]] = {
-    # Length
+# Case-sensitive SI / UCUM symbols. Latin prefixes are never folded.
+_SI_SYMBOLS: dict[str, tuple[str, float, str]] = {
     "m": ("m", 1.0, "length"),
-    "м": ("m", 1.0, "length"),
     "mm": ("mm", 0.001, "length"),
-    "мм": ("mm", 0.001, "length"),
     "cm": ("cm", 0.01, "length"),
-    "см": ("cm", 0.01, "length"),
     "km": ("km", 1000.0, "length"),
-    "км": ("km", 1000.0, "length"),
-    # Imperial length
     "ft": ("[ft_i]", 0.3048, "length"),
-    "feet": ("[ft_i]", 0.3048, "length"),
-    "foot": ("[ft_i]", 0.3048, "length"),
     "in": ("[in_i]", 0.0254, "length"),
-    "inch": ("[in_i]", 0.0254, "length"),
-    "inches": ("[in_i]", 0.0254, "length"),
-    # Area
     "m2": ("m2", 1.0, "area"),
-    "м2": ("m2", 1.0, "area"),
     "sqm": ("m2", 1.0, "area"),
     "sq.m": ("m2", 1.0, "area"),
     "m²": ("m2", 1.0, "area"),
-    "м²": ("m2", 1.0, "area"),
-    # Volume
     "m3": ("m3", 1.0, "volume"),
-    "м3": ("m3", 1.0, "volume"),
     "cub.m": ("m3", 1.0, "volume"),
     "m³": ("m3", 1.0, "volume"),
-    "м³": ("m3", 1.0, "volume"),
-    # Angle — SI compare space is radian
     "deg": ("deg", math.pi / 180.0, "angle"),
-    "degree": ("deg", math.pi / 180.0, "angle"),
-    "degrees": ("deg", math.pi / 180.0, "angle"),
     "°": ("deg", math.pi / 180.0, "angle"),
     "rad": ("rad", 1.0, "angle"),
-    "radian": ("rad", 1.0, "angle"),
-    "radians": ("rad", 1.0, "angle"),
-    # Dimensionless / percent — SI compare space is ratio (1 = 100%)
     "%": ("%", 0.01, "dimensionless"),
-    "percent": ("%", 0.01, "dimensionless"),
     "ratio": ("1", 1.0, "dimensionless"),
-    # Force / load (common AEC calc sheets) — SI newton
-    "n": ("N", 1.0, "force"),
-    "н": ("N", 1.0, "force"),
-    "kn": ("kN", 1000.0, "force"),
-    "кн": ("kN", 1000.0, "force"),
-    "mn": ("MN", 1_000_000.0, "force"),
-    "тс": ("tf", 9806.65, "force"),
+    "N": ("N", 1.0, "force"),
+    "mN": ("mN", 0.001, "force"),
+    "kN": ("kN", 1000.0, "force"),
+    "MN": ("MN", 1_000_000.0, "force"),
     "tf": ("tf", 9806.65, "force"),
-    # Pressure / distributed load
-    "pa": ("Pa", 1.0, "pressure"),
-    "kpa": ("kPa", 1000.0, "pressure"),
-    "мпа": ("MPa", 1_000_000.0, "pressure"),
-    "mpa": ("MPa", 1_000_000.0, "pressure"),
-    "kn/m2": ("kN/m2", 1000.0, "pressure"),
-    "кн/м2": ("kN/m2", 1000.0, "pressure"),
-    "kn/m²": ("kN/m2", 1000.0, "pressure"),
+    "Pa": ("Pa", 1.0, "pressure"),
+    "mPa": ("mPa", 0.001, "pressure"),
+    "kPa": ("kPa", 1000.0, "pressure"),
+    "MPa": ("MPa", 1_000_000.0, "pressure"),
+    "kN/m2": ("kN/m2", 1000.0, "pressure"),
+    "kN/m²": ("kN/m2", 1000.0, "pressure"),
+}
+
+# Human / Cyrillic aliases. Folded lookup never maps milli ↔ mega SI symbols.
+_UNIT_ALIASES: dict[str, str] = {
+    "м": "m",
+    "мм": "mm",
+    "см": "cm",
+    "км": "km",
+    "feet": "ft",
+    "foot": "ft",
+    "inch": "in",
+    "inches": "in",
+    "м2": "m2",
+    "м²": "m2",
+    "м3": "m3",
+    "м³": "m3",
+    "degree": "deg",
+    "degrees": "deg",
+    "radian": "rad",
+    "radians": "rad",
+    "percent": "%",
+    "n": "N",
+    "н": "N",
+    "kn": "kN",
+    "кн": "kN",
+    "тс": "tf",
+    "pa": "Pa",
+    "kpa": "kPa",
+    "мпа": "MPa",
+    "кн/м2": "kN/m2",
 }
 
 
 def _registry_entry(unit: str) -> tuple[str, float, str] | None:
     """Look up a unit without collapsing distinct SI prefixes.
 
-    Exact NFKC form is tried first, then a lowercase alias for Cyrillic and
-    mixed-case English spellings (``ММ``, ``Feet``). A Latin token that only
-    matches after case-folding onto a prefix-sensitive key (``Mm`` → ``mm``)
-    is treated as unknown rather than millimetres.
+    Exact SI symbols are tried first. Folded aliases cover Cyrillic and English
+    spellings. Latin milli/mega pairs (``mN``/``MN``, ``mPa``/``MPa``, ``mm``/``Mm``)
+    stay unknown unless the exact symbol is registered.
     """
     normalized = normalize_unit_token(unit)
     if not normalized:
         return None
-    direct = _UNIT_REGISTRY.get(normalized)
+    direct = _SI_SYMBOLS.get(normalized)
     if direct is not None:
         return direct
-    folded = normalized.lower()
-    if folded == normalized:
+    alias = _UNIT_ALIASES.get(normalized) or _UNIT_ALIASES.get(normalized.lower())
+    if alias is None:
         return None
-    aliased = _UNIT_REGISTRY.get(folded)
-    if aliased is None:
-        return None
-    if normalized[0].isupper() and folded[0].islower() and folded in {"mm"}:
-        return None
-    return aliased
+    return _SI_SYMBOLS.get(alias)
 
 
 def parse_quantity(value: float, unit: str) -> QuantityValue:

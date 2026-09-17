@@ -208,15 +208,19 @@ class CrossDocumentContradictionDetector:
         Silent non-pairing of FireRating across Pset_WallCommon vs Pset_FireSafety
         must not look like agreement — emit AMBIGUOUS_MAPPING for HITL.
         """
-        by_entity_prop: dict[tuple[str, str], list[ParsedRequirement]] = {}
+        by_entity_prop: dict[tuple[str, str, str], list[ParsedRequirement]] = {}
         for req in requirements:
             if not req.ifc_entity or not req.property_name or req.expected_value is None:
                 continue
-            key = (req.ifc_entity.upper(), req.property_name.lower())
+            key = (
+                req.ifc_entity.upper(),
+                req.property_name.lower(),
+                (req.target_ref or "").strip(),
+            )
             by_entity_prop.setdefault(key, []).append(req)
 
         issues: list[ValidationIssue] = []
-        for (entity, prop), reqs in by_entity_prop.items():
+        for (entity, prop, _target), reqs in by_entity_prop.items():
             identities = {self._document_identity(req) for req in reqs}
             if len(identities) < 2:
                 continue
@@ -313,10 +317,6 @@ class CrossDocumentContradictionDetector:
             return False
         left_si = q_left.si_value if q_left is not None else None
         right_si = q_right.si_value if q_right is not None else None
-        if left_si is None:
-            left_si = to_float((left.expected_value or "").strip())
-        if right_si is None:
-            right_si = to_float((right.expected_value or "").strip())
         if left_si is None or right_si is None:
             return None
         low = float("-inf")
@@ -329,8 +329,7 @@ class CrossDocumentContradictionDetector:
                 low = max(low, value)
             else:
                 high = min(high, value)
-        unit = (q_left.ucum_code if q_left is not None else None) or left.unit or right.unit
-        eps = self._tolerance.epsilon_for_unit(unit)
+        eps = self._tolerance.epsilon_for_quantities(q_left, q_right)
         return low <= high + eps
 
     def resolve_quantity(
@@ -390,13 +389,13 @@ class CrossDocumentContradictionDetector:
             if q_a.ucum_code and q_b.ucum_code:
                 if q_a.dimension != q_b.dimension:
                     return ConflictKind.UNIT_MISMATCH
-                eps = self._tolerance.epsilon_for_unit(q_a.ucum_code)
+                eps = self._tolerance.epsilon_for_quantities(q_a, q_b)
                 if si_compare(q_a, q_b, epsilon=eps):
                     return ConflictKind.SOFT_CONFLICT_WITHIN_TOLERANCE
                 return ConflictKind.HARD_CONFLICT
             if unit_a and unit_b and normalize_unit_token(unit_a) != normalize_unit_token(unit_b):
                 return ConflictKind.UNIT_MISMATCH
-            eps = self._tolerance.epsilon_for_unit(q_a.ucum_code or unit_a or unit_b or "")
+            eps = self._tolerance.epsilon_for_quantities(q_a, q_b)
             if si_compare(q_a, q_b, epsilon=eps):
                 return ConflictKind.SOFT_CONFLICT_WITHIN_TOLERANCE
             return ConflictKind.HARD_CONFLICT
@@ -404,10 +403,22 @@ class CrossDocumentContradictionDetector:
         a_num = to_float(value_a.strip())
         b_num = to_float(value_b.strip())
         if a_num is not None and b_num is not None:
-            if unit_a and unit_b and normalize_unit_token(unit_a) != normalize_unit_token(unit_b):
+            parsed_a = parse_quantity(a_num, unit_a or "")
+            parsed_b = parse_quantity(b_num, unit_b or "")
+            if not (parsed_a.ucum_code and parsed_b.ucum_code):
+                unit_a_norm = normalize_unit_token(unit_a)
+                unit_b_norm = normalize_unit_token(unit_b)
+                if (
+                    parsed_a.ucum_code
+                    or parsed_b.ucum_code
+                    or (unit_a_norm and unit_b_norm and unit_a_norm != unit_b_norm)
+                ):
+                    return ConflictKind.UNIT_MISMATCH
+                return ConflictKind.AMBIGUOUS_MAPPING
+            if parsed_a.dimension != parsed_b.dimension:
                 return ConflictKind.UNIT_MISMATCH
-            eps = self._tolerance.epsilon_for_unit(unit_a or unit_b or "")
-            if abs(a_num - b_num) <= eps:
+            eps = self._tolerance.epsilon_for_quantities(parsed_a, parsed_b)
+            if si_compare(parsed_a, parsed_b, epsilon=eps):
                 return ConflictKind.SOFT_CONFLICT_WITHIN_TOLERANCE
             return ConflictKind.HARD_CONFLICT
 
@@ -448,7 +459,13 @@ class CrossDocumentContradictionDetector:
 
         a_num = to_float(a_str)
         b_num = to_float(b_str)
-        return a_num is not None and b_num is not None and a_num != b_num
+        if a_num is None or b_num is None:
+            return False
+        parsed_a = parse_quantity(a_num, unit_a or "")
+        parsed_b = parse_quantity(b_num, unit_b or "")
+        if not (parsed_a.ucum_code and parsed_b.ucum_code):
+            return False
+        return a_num != b_num
 
     def values_conflict(
         self,
@@ -482,7 +499,7 @@ class CrossDocumentContradictionDetector:
         ):
             if q_a.dimension != q_b.dimension:
                 return True
-            eps = self._tolerance.epsilon_for_unit(q_a.ucum_code)
+            eps = self._tolerance.epsilon_for_quantities(q_a, q_b)
             return not si_compare(q_a, q_b, epsilon=eps)
 
         a_num = to_float(a_str)
@@ -493,18 +510,17 @@ class CrossDocumentContradictionDetector:
             if parsed_a.ucum_code and parsed_b.ucum_code:
                 if parsed_a.dimension != parsed_b.dimension:
                     return True
-                eps = self._tolerance.epsilon_for_unit(parsed_a.ucum_code)
+                eps = self._tolerance.epsilon_for_quantities(parsed_a, parsed_b)
                 return not si_compare(parsed_a, parsed_b, epsilon=eps)
             unit_a_norm = normalize_unit_token(unit_a)
             unit_b_norm = normalize_unit_token(unit_b)
-            if unit_a_norm and unit_b_norm and unit_a_norm.lower() != unit_b_norm.lower():
-                return True
-            if a_str.lower() == b_str.lower() and (
-                not unit_a_norm or unit_a_norm.lower() == (unit_b_norm or "").lower()
+            if (
+                parsed_a.ucum_code
+                or parsed_b.ucum_code
+                or (unit_a_norm and unit_b_norm and unit_a_norm != unit_b_norm)
             ):
-                return False
-            eps = self._tolerance.epsilon_for_unit(unit_a or unit_b or "")
-            return abs(a_num - b_num) > eps
+                return True
+            return False
 
         return a_str.lower() != b_str.lower()
 

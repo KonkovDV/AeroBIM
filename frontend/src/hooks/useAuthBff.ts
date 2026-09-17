@@ -47,6 +47,7 @@ export function useAuthBff(uiRole: UiRoleAlias): AuthBffShellState {
         bffStatus: discovery.status,
         session,
         uiRole,
+        labReviewerConfigured: import.meta.env.VITE_AEROBIM_LAB_REVIEWER === "1",
       }),
     };
   }, [discovery, session, uiRole]);

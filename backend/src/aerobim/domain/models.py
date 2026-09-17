@@ -797,23 +797,64 @@ class ToleranceConfig:
         """
         if unit is None:
             return self.default_epsilon
-        normalised = normalize_unit_token(unit).lower()
-        if normalised in {"m", "м", "mm", "мм", "cm", "см", "km", "км"}:
+        normalised = normalize_unit_token(unit)
+        folded = normalised.lower()
+        if normalised in {"[ft_i]", "[in_i]"}:
             return self.length_epsilon
-        if normalised in {"ft", "feet", "foot", "in", "inch", "inches"}:
+        if folded in {"m", "м", "mm", "мм", "cm", "см", "km", "км"}:
+            return self.length_epsilon
+        if folded in {"ft", "feet", "foot", "in", "inch", "inches"}:
             return self.imperial_length_epsilon
-        if normalised in {"m2", "м2", "sqm", "sq.m", "m²", "м²"}:
+        if folded in {"m2", "м2", "sqm", "sq.m", "m²", "м²"}:
             return self.area_epsilon
-        if normalised in {"m3", "м3", "cub.m", "m³", "м³"}:
+        if folded in {"m3", "м3", "cub.m", "m³", "м³"}:
             return self.area_epsilon
-        if normalised in {"deg", "degree", "degrees", "°", "rad", "radian", "radians"}:
+        if folded in {"deg", "degree", "degrees", "°", "rad", "radian", "radians"}:
             import math
 
             return math.radians(self.angle_epsilon)
-        if normalised in {"n", "н", "kn", "кн", "mn", "тс", "tf"}:
+        if folded in {"n", "н", "kn", "кн", "тс", "tf"} or normalised in {
+            "N",
+            "mN",
+            "kN",
+            "MN",
+        }:
             return self.force_epsilon
-        if normalised in {"pa", "kpa", "mpa", "мпа", "kn/m2", "кн/м2", "kn/m²"}:
+        if folded in {"pa", "kpa", "mpa", "мпа", "kn/m2", "кн/м2", "kn/m²"} or normalised in {
+            "Pa",
+            "mPa",
+            "kPa",
+            "MPa",
+        }:
             return self.pressure_epsilon
-        if normalised in {"%", "percent", "ratio", "1"}:
+        if folded in {"%", "percent", "ratio", "1"}:
             return self.default_epsilon
         return self.default_epsilon
+
+    def epsilon_for_dimension(self, dimension: str | None) -> float:
+        if dimension == "length":
+            return self.length_epsilon
+        if dimension == "area":
+            return self.area_epsilon
+        if dimension == "volume":
+            return self.area_epsilon
+        if dimension == "angle":
+            import math
+
+            return math.radians(self.angle_epsilon)
+        if dimension == "force":
+            return self.force_epsilon
+        if dimension == "pressure":
+            return self.pressure_epsilon
+        return self.default_epsilon
+
+    def epsilon_for_quantities(self, left: QuantityValue, right: QuantityValue) -> float:
+        """Symmetric SI-space band. Order of arguments must not change the result."""
+
+        dim_a = getattr(left, "dimension", None)
+        dim_b = getattr(right, "dimension", None)
+        if dim_a and dim_b == dim_a:
+            return self.epsilon_for_dimension(dim_a)
+        code_a = getattr(left, "ucum_code", None) or getattr(left, "unit", None)
+        code_b = getattr(right, "ucum_code", None) or getattr(right, "unit", None)
+        return max(self.epsilon_for_unit(code_a), self.epsilon_for_unit(code_b))

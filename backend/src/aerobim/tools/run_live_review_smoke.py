@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import secrets
 import socket
 import subprocess
 import sys
@@ -77,9 +78,10 @@ def build_backend_env(
     """Env for the throwaway rehearsal backend. Development only.
 
     The page is served with ``VITE_AEROBIM_API_BASE_URL``, so it calls the
-    backend directly and no Vite proxy injects ``Authorization``. Anonymous dev
-    access is therefore the only way the stack can answer, and an inherited
-    ``AEROBIM_API_BEARER_TOKEN`` would switch that branch off and return 401.
+    backend directly unless Vite proxies ``/v1``. Inherited
+    ``AEROBIM_API_BEARER_TOKEN`` would bind a service principal and 403 HITL.
+    HITL uses a throwaway ``AEROBIM_DEV_REVIEWER_TOKEN`` (lab-reviewer, not OIDC).
+    Anonymous-dev remains for unauthenticated GETs; it cannot append expert events.
     """
 
     env = dict(base_env)
@@ -104,6 +106,7 @@ def build_backend_env(
         }:
             env.pop(key, None)
     env.pop("AEROBIM_API_BEARER_TOKEN", None)
+    env.pop("AEROBIM_DEV_REVIEWER_TOKEN", None)
     # Inherited pilot/production signoff must not ride in on a review-shell laptop.
     env.pop("AEROBIM_SIGNOFF_PROFILE", None)
     env["AEROBIM_STORAGE_DIR"] = str(storage_dir)
@@ -114,6 +117,7 @@ def build_backend_env(
     env["AEROBIM_ENV"] = "development"
     env["AEROBIM_SIGNOFF_PROFILE"] = "development"
     env["AEROBIM_ALLOW_ANONYMOUS_DEV"] = "true"
+    env["AEROBIM_DEV_REVIEWER_TOKEN"] = secrets.token_urlsafe(32)
     # Must equal the tenant stamped on the seeded report, or «Проекты» is empty.
     env["AEROBIM_API_TENANT_ID"] = tenant_id
     env["AEROBIM_PRIORITY_PROFILE"] = "customer"
@@ -121,12 +125,24 @@ def build_backend_env(
     return env
 
 
-def build_frontend_env(base_env: Mapping[str, str], backend_base_url: str) -> dict[str, str]:
+def build_frontend_env(
+    base_env: Mapping[str, str],
+    backend_base_url: str,
+    *,
+    reviewer_token: str | None = None,
+) -> dict[str, str]:
     env = dict(base_env)
     env["VITE_AEROBIM_API_BASE_URL"] = backend_base_url
     # Same-origin /v1 and /health on the Vite origin must hit THIS backend,
     # not a leftover process on the default 8080 proxy target.
     env["AEROBIM_PROXY_TARGET"] = backend_base_url
+    token = (reviewer_token or "").strip()
+    if token:
+        env["AEROBIM_DEV_REVIEWER_TOKEN"] = token
+        env["VITE_AEROBIM_LAB_REVIEWER"] = "1"
+    else:
+        env.pop("AEROBIM_DEV_REVIEWER_TOKEN", None)
+        env.pop("VITE_AEROBIM_LAB_REVIEWER", None)
     # Drop inherited Playwright cache pins. Ephemeral sandbox directories
     # vanish; the rehearsal uses the user cache.
     env.pop("PLAYWRIGHT_BROWSERS_PATH", None)
@@ -338,7 +354,11 @@ def run_live_review_smoke(
         frontend_origin,
         host=host,
     )
-    frontend_env = build_frontend_env(os.environ, backend_base_url)
+    frontend_env = build_frontend_env(
+        os.environ,
+        backend_base_url,
+        reviewer_token=str(backend_env.get("AEROBIM_DEV_REVIEWER_TOKEN") or ""),
+    )
 
     backend_process: subprocess.Popen[str] | None = None
     frontend_process: subprocess.Popen[str] | None = None

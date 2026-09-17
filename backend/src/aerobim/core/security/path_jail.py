@@ -132,9 +132,11 @@ def sanitize_upload_filename(filename: str, *, max_length: int = 180) -> str:
 def safe_storage_token(value: str) -> str:
     """Encode a tenant / pack token as a single reversible path segment.
 
-    Alphanumeric plus ``_-`` are kept; ``.`` and other specials become ``!{ord:02x}``
+    Alphanumeric plus ``_-`` are kept; ``.`` and other specials become ``!{ord:x};``
     so ``Tenant/A`` and ``Tenant_A`` never collide, and ``.`` / ``..`` cannot escape
-    storage joins. Input is NFC-normalized; NFKC lookalikes are encoded, not folded.
+    storage joins. The trailing semicolon makes variable-length hex injective
+    (U+FF21 vs U+0FF2 + ``1``). Input is NFC-normalized; NFKC lookalikes are encoded,
+    not folded.
     """
     if "\x00" in value:
         raise PathJailError("Null bytes are not allowed in storage tokens")
@@ -148,24 +150,115 @@ def safe_storage_token(value: str) -> str:
     for ch in normalized:
         collapsed = unicodedata.normalize("NFKC", ch)
         if collapsed != ch:
-            encoded.append(f"!{ord(ch):02x}")
+            encoded.append(f"!{ord(ch):x};")
         elif ch.isalnum() or ch in "_-":
             encoded.append(ch)
         else:
-            encoded.append(f"!{ord(ch):02x}")
+            encoded.append(f"!{ord(ch):x};")
     safe = "".join(encoded)
     if not safe or safe in {".", ".."}:
         raise PathJailError("Empty or path-traversal storage token is not allowed")
     return safe
 
 
-def _windows_open_write_nofollow(path: Path, mode: str) -> IO[Any]:
-    """Open for write without following NTFS reparse points (F-01).
+def _posix_open_at_parent(path: Path, flags: int, mode: int = 0o644) -> int:
+    """Open ``path`` via a parent directory fd so a later parent swap is not followed."""
+
+    parent = path.parent
+    name = path.name
+    if not name or name in {".", ".."}:
+        raise PathJailError(f"Refusing to open a directory as a storage file: {path}")
+    dir_flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        dirfd = os.open(str(parent), dir_flags)
+    except OSError as exc:
+        raise PathJailError(
+            f"Cannot open storage parent without following links: {parent}"
+        ) from exc
+    try:
+        return os.open(name, flags, mode, dir_fd=dirfd)
+    except OSError as exc:
+        raise PathJailError(f"Cannot open storage path without following links: {path}") from exc
+    finally:
+        os.close(dirfd)
+
+
+def _assert_fd_still_is_path(fd: int, path: Path) -> None:
+    """Fail closed when the opened inode is no longer the named path (parent swap)."""
+
+    try:
+        opened = os.fstat(fd)
+        named = os.lstat(path)
+    except OSError as exc:
+        raise PathJailError(f"Cannot inspect opened storage path: {path}") from exc
+    if stat.S_ISLNK(named.st_mode):
+        raise PathJailError(f"Symlinks are not allowed in storage paths: {path}")
+    if (opened.st_dev, opened.st_ino) != (named.st_dev, named.st_ino):
+        raise PathJailError(f"Opened descriptor no longer matches storage path: {path}")
+
+
+def _windows_final_path(handle: int) -> str | None:
+    """Resolved path for an open handle. None when the API is unavailable."""
+
+    import ctypes
+    from ctypes import wintypes
+
+    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    get_final = kernel32.GetFinalPathNameByHandleW
+    get_final.argtypes = [ctypes.c_void_p, wintypes.LPWSTR, wintypes.DWORD, wintypes.DWORD]
+    get_final.restype = wintypes.DWORD
+    buf = ctypes.create_unicode_buffer(4096)
+    n = int(get_final(handle, buf, len(buf), 0))
+    if n >= len(buf):
+        buf = ctypes.create_unicode_buffer(n + 1)
+        n = int(get_final(handle, buf, len(buf), 0))
+    if n == 0 or n >= len(buf):
+        return None
+    text = buf.value
+    if text.startswith("\\\\?\\UNC\\"):
+        return "\\\\" + text[8:]
+    if text.startswith("\\\\?\\"):
+        return text[4:]
+    return text
+
+
+def _windows_path_is_under_base(opened: Path, base: Path) -> bool:
+    """True when *opened* is *base* or a descendant, including 8.3 / case variants."""
+
+    try:
+        opened.resolve().relative_to(base.resolve())
+        return True
+    except ValueError:
+        pass
+    try:
+        opened.absolute().relative_to(base.absolute())
+        return True
+    except ValueError:
+        pass
+    opened_cf = os.path.normcase(os.path.abspath(str(opened)))
+    base_cf = os.path.normcase(os.path.abspath(str(base)))
+    if opened_cf == base_cf:
+        return True
+    prefix = base_cf if base_cf.endswith(os.sep) else base_cf + os.sep
+    return opened_cf.startswith(prefix)
+
+
+def _assert_windows_handle_under_base(handle: int, *, base: Path, path: Path) -> None:
+    final = _windows_final_path(handle)
+    if not final:
+        raise PathJailError(f"Cannot resolve opened storage handle: {path}")
+    if not _windows_path_is_under_base(Path(final), base):
+        raise PathJailError(f"Opened path escaped storage boundary: {path}")
+
+
+def _windows_open_nofollow(path: Path, mode: str, *, base: Path) -> IO[Any]:
+    """Open without following NTFS reparse points (F-01 / RT09 handle path).
 
     ``path.open`` / ``os.open`` on Windows follow symlinks and can truncate the
     target before a post-open ``is_symlink`` check. ``CreateFileW`` with
     ``FILE_FLAG_OPEN_REPARSE_POINT`` opens the reparse point itself so we can
-    refuse it without touching the destination.
+    refuse it without touching the destination. ``GetFinalPathNameByHandleW``
+    then checks the opened object still sits under ``base``.
     """
     if sys.platform != "win32":
         raise PathJailError("Windows nofollow open is not available on this platform")
@@ -173,19 +266,31 @@ def _windows_open_write_nofollow(path: Path, mode: str) -> IO[Any]:
     import msvcrt
     from ctypes import wintypes
 
+    generic_read = 0x80000000
     generic_write = 0x40000000
     file_append_data = 0x0004
     file_share_read = 0x1
     file_share_write = 0x2
     file_share_delete = 0x4
     create_new = 1
+    open_existing = 3
     open_always = 4
     file_attribute_normal = 0x80
     file_flag_open_reparse_point = 0x00200000
     file_attribute_reparse_point = 0x400
 
-    access = file_append_data if mode == "ab" else generic_write
-    creation = create_new if mode == "xb" else open_always
+    if mode == "rb":
+        access = generic_read
+        creation = open_existing
+    elif mode == "ab":
+        access = file_append_data
+        creation = open_always
+    elif mode == "xb":
+        access = generic_write
+        creation = create_new
+    else:
+        access = generic_write
+        creation = open_always
 
     kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
     create_file = kernel32.CreateFileW
@@ -252,6 +357,11 @@ def _windows_open_write_nofollow(path: Path, mode: str) -> IO[Any]:
     if int(info.dwFileAttributes) & file_attribute_reparse_point:
         close_handle(handle)
         raise PathJailError(f"Symlinks are not allowed in storage paths: {path}")
+    try:
+        _assert_windows_handle_under_base(handle_int, base=base, path=path)
+    except Exception:
+        close_handle(handle)
+        raise
 
     if mode == "wb":
         set_pointer(handle, 0, None, 0)
@@ -301,7 +411,7 @@ def _open_write_fallback(path: Path, *, base: Path, mode: str) -> IO[Any]:
 
 
 def _assert_storage_path_still_jailed(path: Path, *, base: Path) -> None:
-    """Re-check jail after open. Does not close a parent-directory race (RT09)."""
+    """Re-check the named path still sits under the jail after open."""
 
     reject_symlinks(path, base=base)
     try:
@@ -312,6 +422,8 @@ def _assert_storage_path_still_jailed(path: Path, *, base: Path) -> None:
 
 def _finish_storage_open(handle: IO[Any], path: Path, *, base: Path) -> IO[Any]:
     try:
+        if os.name != "nt":
+            _assert_fd_still_is_path(handle.fileno(), path)
         _assert_storage_path_still_jailed(path, base=base)
     except Exception:
         handle.close()
@@ -324,14 +436,16 @@ def open_storage_file(path: Path, *, base: Path, mode: str = "rb") -> IO[Any]:
 
     Callers must pass a path already resolved under *base* (or about to be checked).
     Re-checks for planted symlinks immediately before open to shrink TOCTOU windows.
-    On Windows, write modes use ``CreateFileW`` + ``FILE_FLAG_OPEN_REPARSE_POINT``
-    so a raced symlink is not truncated before the post-open check (F-01).
+    On POSIX, open the parent with ``O_DIRECTORY|O_NOFOLLOW`` then ``openat`` the
+    leaf so a renamed parent cannot swap the jail (RT09). On Windows, every
+    mode uses ``CreateFileW`` + ``FILE_FLAG_OPEN_REPARSE_POINT`` and
+    ``GetFinalPathNameByHandleW`` must stay under *base*.
     """
     reject_symlinks(path, base=base)
     nofollow = getattr(os, "O_NOFOLLOW", 0)
     if mode == "rb" and nofollow:
         try:
-            fd = os.open(str(path), os.O_RDONLY | nofollow)
+            fd = _posix_open_at_parent(path, os.O_RDONLY | nofollow)
         except OSError as exc:
             raise PathJailError(
                 f"Cannot open storage path without following links: {path}"
@@ -344,16 +458,18 @@ def open_storage_file(path: Path, *, base: Path, mode: str = "rb") -> IO[Any]:
     }
     if mode in write_flags and nofollow:
         try:
-            fd = os.open(str(path), write_flags[mode] | nofollow, 0o644)
+            fd = _posix_open_at_parent(path, write_flags[mode] | nofollow, 0o644)
         except OSError as exc:
             raise PathJailError(
                 f"Cannot open storage path without following links: {path}"
             ) from exc
         return _finish_storage_open(os.fdopen(fd, mode), path, base=base)
 
-    if mode in write_flags and os.name == "nt":
+    if os.name == "nt" and mode in {"rb", "wb", "ab", "xb"}:
         try:
-            return _finish_storage_open(_windows_open_write_nofollow(path, mode), path, base=base)
+            return _finish_storage_open(
+                _windows_open_nofollow(path, mode, base=base), path, base=base
+            )
         except PathJailError:
             raise
         except FileExistsError:

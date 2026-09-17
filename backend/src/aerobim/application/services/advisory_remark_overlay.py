@@ -9,7 +9,7 @@ capped at 10 cloud quota). Sequential when ``max_workers<=1``.
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import replace
 
@@ -39,6 +39,7 @@ def overlay_llm_remarks(
     max_issues: int = _DEFAULT_MAX_ISSUES,
     max_workers: int = 1,
     allow_synthetic_public: bool = False,
+    prepared_findings: Sequence[Mapping[str, object]] | None = None,
 ) -> tuple[tuple[ValidationIssue, ...], CapabilityStatus]:
     """Replace template remarks with AI drafts when compose succeeds.
 
@@ -75,11 +76,18 @@ def overlay_llm_remarks(
     composed = 0
     attempted = len(eligible)
 
+    def _payload_for(index: int, issue: ValidationIssue) -> dict[str, object]:
+        if prepared_findings is not None and index < len(prepared_findings):
+            item = prepared_findings[index]
+            if isinstance(item, Mapping):
+                return dict(item)
+        return finding_payload_from_issue(issue)
+
     def _compose_one(
         index: int, issue: ValidationIssue
     ) -> tuple[int, ValidationIssue | None, str | None]:
         result = compose_remark(
-            findings=(finding_payload_from_issue(issue),),
+            findings=(_payload_for(index, issue),),
             locale=locale_norm,
             request_id=f"{request_id}:remark:{index + 1}",
             provider=provider,

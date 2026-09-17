@@ -96,8 +96,8 @@ def _ifc_wall_count(ifc_path: Path) -> int:
     try:
         from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_session
 
-        session = open_ifc_session(ifc_path)
-        return len(tuple(session.model.by_type("IfcWall")))
+        with open_ifc_session(ifc_path) as session:
+            return len(tuple(session.model.by_type("IfcWall")))
     except Exception:
         return -1
 
@@ -130,18 +130,7 @@ def run_pd_rd_consistency_pilot(
         encoding="utf-8",
     )
 
-    bcf_bytes = export_bcf(report)
-    bcf_path = output_dir / "findings.bcfzip"
-    bcf_path.write_bytes(bcf_bytes)
-    xsd_dir = _REPO / "samples" / "bcf-xsd" / "release_2_1"
-    structural = verify_bcf_zip_structure(bcf_bytes, xsd_dir=xsd_dir if xsd_dir.is_dir() else None)
-    try:
-        consumed = consume_bcf21_zip(bcf_bytes)
-        consume_error = None
-    except Exception as exc:
-        consumed = []
-        consume_error = f"{type(exc).__name__}: {exc}"
-
+    store = container.resolve(Tokens.REVIEW_EVENT_STORE)
     expert_event: dict[str, Any] | None = None
     if expert_verdict:
         subject = (expert_subject or "").strip()
@@ -154,7 +143,6 @@ def run_pd_rd_consistency_pilot(
         target = pd_rd or next((issue for issue in report.issues if issue.finding_id), None)
         if target is None or not target.finding_id:
             raise ValueError("no finding_id available for expert verdict")
-        store = container.resolve(Tokens.REVIEW_EVENT_STORE)
         now = datetime.now(tz=UTC).isoformat()
         opened = store.append_api_event(
             ReviewEventAppendSpec(
@@ -182,6 +170,19 @@ def run_pd_rd_consistency_pilot(
             )
         )
         expert_event = asdict(event)
+
+    review_events = store.list_for_report(report.report_id)
+    bcf_bytes = export_bcf(report, review_events=review_events or None)
+    bcf_path = output_dir / "findings.bcfzip"
+    bcf_path.write_bytes(bcf_bytes)
+    xsd_dir = _REPO / "samples" / "bcf-xsd" / "release_2_1"
+    structural = verify_bcf_zip_structure(bcf_bytes, xsd_dir=xsd_dir if xsd_dir.is_dir() else None)
+    try:
+        consumed = consume_bcf21_zip(bcf_bytes)
+        consume_error = None
+    except Exception as exc:
+        consumed = []
+        consume_error = f"{type(exc).__name__}: {exc}"
 
     ifc_path = request.ifc_path
     drawing_paths = [source.path for source in request.drawing_sources if source.path]

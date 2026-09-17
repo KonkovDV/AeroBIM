@@ -14,6 +14,8 @@ from aerobim.domain.models import AnalyzeProjectPackageJob, ValidationReport
 
 LAB_ANONYMOUS_TENANT_ID = "lab-anonymous"
 LAB_ANONYMOUS_ACTOR = "lab:anonymous"
+LAB_REVIEWER_SUBJECT = "lab-reviewer-dev"
+LAB_REVIEWER_AUTH_SCHEME = "lab-reviewer"
 
 
 @dataclass(frozen=True)
@@ -182,6 +184,8 @@ __all__ = [
     "HITL_EXPERT_EVENT_TYPES",
     "LAB_ANONYMOUS_ACTOR",
     "LAB_ANONYMOUS_TENANT_ID",
+    "LAB_REVIEWER_AUTH_SCHEME",
+    "LAB_REVIEWER_SUBJECT",
     "principal_may_access_job",
     "principal_may_access_norm_pack",
     "principal_may_access_report",

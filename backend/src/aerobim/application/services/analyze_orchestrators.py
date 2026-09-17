@@ -716,6 +716,7 @@ _OVERLAY_GATE_MASK_RULES = {
     "payload_sha256": "keep",
     "finding_count": "keep",
     "object_kind": "keep",
+    "findings_json": "keep",
 }
 
 
@@ -747,7 +748,7 @@ class EvidenceAssembler:
         self,
         request: ValidationRequest,
         issues: Sequence[ValidationIssue] = (),
-    ) -> tuple[bool, dict[str, object] | None]:
+    ) -> tuple[bool, dict[str, object] | None, list[dict[str, object]] | None]:
         """HybridRouteGate before Studio/local remark overlay (RT-030 / WP-02 / RT05).
 
         Missing gate → suppress. Cloud (Yandex) uses PUBLIC target — CONFIDENTIAL IFC
@@ -761,7 +762,7 @@ class EvidenceAssembler:
 
         provider = getattr(self._host, "_llm_advisory_provider", None)
         if provider is None or isinstance(provider, DisabledLlmProvider):
-            return True, None
+            return True, None, None
 
         gate = getattr(self._host, "_hybrid_route_gate", None)
         if gate is None:
@@ -775,6 +776,7 @@ class EvidenceAssembler:
                     "egress_bytes_estimate": 0,
                     "verdict_impact": "none",
                 },
+                None,
             )
 
         target = _llm_overlay_route_target(provider)
@@ -785,6 +787,9 @@ class EvidenceAssembler:
             "payload_sha256": digest,
             "finding_count": len(findings),
             "object_kind": _advisory_object_kind(request),
+            "findings_json": json.dumps(
+                findings, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+            ),
         }
         result = gate.evaluate(
             object_kind=_advisory_object_kind(request),
@@ -802,10 +807,29 @@ class EvidenceAssembler:
             allowed = result.may_create_advisory
         if result.decision.status is RouteStatus.HUMAN_REVIEW:
             allowed = False
+        prepared_out: list[dict[str, object]] | None = None
         if allowed:
-            again = _overlay_payload_digest([finding_payload_from_issue(issue) for issue in issues])
-            if again != digest:
-                allowed = False
+            if not result.decision.external_call:
+                prepared_out = findings
+            else:
+                gated = result.masked if isinstance(result.masked, dict) else None
+                raw = gated.get("findings_json") if gated else None
+                prepared: list[dict[str, object]] | None = None
+                if isinstance(raw, str):
+                    try:
+                        loaded = json.loads(raw)
+                    except json.JSONDecodeError:
+                        loaded = None
+                    if isinstance(loaded, list):
+                        prepared = loaded
+                if prepared is None:
+                    allowed = False
+                else:
+                    again = _overlay_payload_digest(prepared)
+                    if again != digest:
+                        allowed = False
+                    else:
+                        prepared_out = prepared
         trace = {
             "tool": "hybrid_route_gate",
             "status": result.decision.status.value,
@@ -820,7 +844,7 @@ class EvidenceAssembler:
             "verdict_impact": result.audit_event.verdict_impact,
             "event_id": result.audit_event.event_id,
         }
-        return allowed, trace
+        return allowed, trace, prepared_out
 
     def assemble(
         self,
@@ -878,7 +902,9 @@ class EvidenceAssembler:
             self._host._remark_enricher().attach_remarks(prioritized_issues)
         )
         overlay_traces: list[dict[str, object]] = []
-        may_overlay, overlay_trace = self._evaluate_llm_overlay_gate(request, issues_with_remarks)
+        may_overlay, overlay_trace, prepared_findings = self._evaluate_llm_overlay_gate(
+            request, issues_with_remarks
+        )
         if overlay_trace is not None:
             overlay_traces.append(overlay_trace)
         if may_overlay:
@@ -889,6 +915,7 @@ class EvidenceAssembler:
                     issues_with_remarks,
                     request_id=request.request_id,
                     allow_synthetic_public=allow_synth,
+                    prepared_findings=prepared_findings,
                 )
             )
         else:

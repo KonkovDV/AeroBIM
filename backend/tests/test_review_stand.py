@@ -40,6 +40,7 @@ class ReviewStandTests(unittest.TestCase):
         self.assertEqual(env["AEROBIM_ALLOW_ANONYMOUS_DEV"], "true")
         self.assertEqual(env["AEROBIM_API_TENANT_ID"], SMOKE_TENANT_ID)
         self.assertNotIn("AEROBIM_API_BEARER_TOKEN", env)
+        self.assertTrue((env.get("AEROBIM_DEV_REVIEWER_TOKEN") or "").strip())
         self.assertEqual(env["AEROBIM_SIGNOFF_PROFILE"], "development")
         self.assertEqual(env["AEROBIM_HOST"], "127.0.0.1")
         self.assertIn("customer_go false", CLAIM_BOUNDARY)

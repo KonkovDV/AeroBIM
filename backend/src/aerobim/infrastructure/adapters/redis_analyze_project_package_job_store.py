@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import asdict, replace
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from uuid import uuid4
 
 from aerobim.domain.analyze_job_idempotency import (
@@ -19,6 +19,67 @@ from aerobim.domain.job_transitions import can_transition
 from aerobim.domain.models import AnalyzeProjectPackageJob, JobStatus
 
 _DEFAULT_QUEUED_TTL_SECONDS = 600
+
+_CREATE_LUA = """
+local job_key = KEYS[1]
+local idem_key = KEYS[2]
+local active_key = KEYS[3]
+local job_id = ARGV[1]
+local payload = ARGV[2]
+local limit = tonumber(ARGV[3]) or 0
+if idem_key ~= '' then
+  local existing = redis.call('GET', idem_key)
+  if existing then
+    local prefix = string.sub(job_key, 1, string.len(job_key) - string.len(job_id))
+    if redis.call('EXISTS', prefix .. existing) == 1 then
+      return existing
+    end
+    return redis.error_reply('idempotency_pending')
+  end
+end
+if active_key ~= '' and limit > 0 then
+  if redis.call('SCARD', active_key) >= limit then
+    return redis.error_reply('concurrency')
+  end
+end
+if idem_key ~= '' then
+  if redis.call('SET', idem_key, job_id, 'NX') == false then
+    return redis.error_reply('idempotency_pending')
+  end
+end
+if redis.call('SET', job_key, payload, 'NX') == false then
+  if idem_key ~= '' then
+    redis.call('DEL', idem_key)
+  end
+  return redis.error_reply('exists')
+end
+if active_key ~= '' then
+  redis.call('SADD', active_key, job_id)
+end
+return job_id
+"""
+
+
+def _parse_iso(value: str | None) -> datetime | None:
+    if not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        return parsed.replace(tzinfo=UTC)
+    return parsed.astimezone(UTC)
+
+
+def _lease_expiry(job: AnalyzeProjectPackageJob, *, lease_seconds: int) -> datetime | None:
+    expires = _parse_iso(job.lease_expires_at) or _parse_iso(job.heartbeat_at)
+    if expires is not None:
+        return expires
+    started = _parse_iso(job.started_at) or _parse_iso(job.created_at)
+    if started is None:
+        return None
+    return started + timedelta(seconds=lease_seconds)
 
 
 def _now_iso() -> str:
@@ -76,55 +137,44 @@ class RedisAnalyzeProjectPackageJobStore:
             )
             if existing is not None:
                 return existing.job_id
-        claimed_index = False
-        if idem_index is not None:
-            claimed_index = bool(self._redis.set(idem_index, job.job_id, nx=True))
-            if not claimed_index:
+        tenant = (job.tenant_id or "").strip()
+        limit = int(max_concurrent_per_tenant or 0)
+        if limit > 0 and not tenant:
+            raise JobConcurrencyLimitError(
+                f"Analyze job concurrency limit requires a bound tenant_id (limit {limit})"
+            )
+        active_key = self._active_key(job.tenant_id) if job.tenant_id else ""
+        try:
+            result = self._redis.eval(
+                _CREATE_LUA,
+                3,
+                self._key(job.job_id),
+                idem_index or "",
+                active_key,
+                job.job_id,
+                self._serialize(job),
+                limit,
+            )
+        except self._redis_mod.ResponseError as exc:
+            msg = str(exc)
+            if "concurrency" in msg:
+                raise JobConcurrencyLimitError(
+                    f"Tenant {tenant!r} has active analyze jobs (limit {limit})"
+                ) from exc
+            if "idempotency_pending" in msg:
                 raced = self.get_by_idempotency_key(
                     job.idempotency_key or "",
                     tenant_id=job.tenant_id,
                 )
                 if raced is not None:
                     return raced.job_id
-                dangling = self._redis.get(idem_index)
-                if dangling and self.get(str(dangling)) is None:
-                    self._redis.delete(idem_index)
-                    claimed_index = bool(self._redis.set(idem_index, job.job_id, nx=True))
-                if not claimed_index:
-                    raise RuntimeError(
-                        "Idempotency key claimed by concurrent submit; retry shortly"
-                    )
-        active_key = self._active_key(job.tenant_id) if job.tenant_id else None
-        if max_concurrent_per_tenant is not None and max_concurrent_per_tenant > 0:
-            tenant = (job.tenant_id or "").strip()
-            if not tenant:
-                if claimed_index and idem_index is not None:
-                    self._redis.delete(idem_index)
-                raise JobConcurrencyLimitError(
-                    "Analyze job concurrency limit requires a bound tenant_id "
-                    f"(limit {max_concurrent_per_tenant})"
-                )
-            active = int(self._redis.scard(active_key) or 0) if active_key else 0
-            if active >= max_concurrent_per_tenant:
-                if claimed_index and idem_index is not None:
-                    self._redis.delete(idem_index)
-                raise JobConcurrencyLimitError(
-                    f"Tenant {tenant!r} has {active} active analyze jobs "
-                    f"(limit {max_concurrent_per_tenant})"
-                )
-        try:
-            created = self._redis.set(self._key(job.job_id), self._serialize(job), nx=True)
-        except Exception:
-            if claimed_index and idem_index is not None:
-                self._redis.delete(idem_index)
+                raise RuntimeError(
+                    "Idempotency key claimed by concurrent submit; retry shortly"
+                ) from exc
+            if "exists" in msg:
+                raise ValueError(f"Job already exists: {job.job_id}") from exc
             raise
-        if not created:
-            if claimed_index and idem_index is not None:
-                self._redis.delete(idem_index)
-            raise ValueError(f"Job already exists: {job.job_id}")
-        if active_key is not None:
-            self._redis.sadd(active_key, job.job_id)
-        return job.job_id
+        return str(result)
 
     def get(self, job_id: str) -> AnalyzeProjectPackageJob | None:
         raw = self._redis.get(self._key(job_id))
@@ -193,10 +243,14 @@ class RedisAnalyzeProjectPackageJobStore:
         self, job_id: str, *, owner: str | None = None
     ) -> AnalyzeProjectPackageJob | None:
         owner_token = (owner or uuid4().hex).strip() or uuid4().hex
+        lease_until = (datetime.now(tz=UTC) + timedelta(seconds=self._lease_seconds)).isoformat()
         return self._update(
             job_id,
             status=JobStatus.RUNNING,
             started_at=_now_iso(),
+            heartbeat_at=_now_iso(),
+            lease_expires_at=lease_until,
+            stage_progress="running",
             require_status=JobStatus.QUEUED,
             lease_owner=owner_token,
         )
@@ -250,8 +304,6 @@ class RedisAnalyzeProjectPackageJobStore:
     def heartbeat(
         self, job_id: str, *, lease_seconds: int = 120, owner: str | None = None
     ) -> AnalyzeProjectPackageJob | None:
-        from datetime import timedelta
-
         current = self.get(job_id)
         if current is None or current.status is not JobStatus.RUNNING:
             return None
@@ -298,19 +350,6 @@ class RedisAnalyzeProjectPackageJobStore:
     def reclaim_stale_running(
         self, *, now_iso: str | None = None
     ) -> list[AnalyzeProjectPackageJob]:
-        from datetime import timedelta
-
-        def _parse_iso(value: str | None) -> datetime | None:
-            if not value:
-                return None
-            try:
-                parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
-            except ValueError:
-                return None
-            if parsed.tzinfo is None:
-                return parsed.replace(tzinfo=UTC)
-            return parsed.astimezone(UTC)
-
         now = _parse_iso(now_iso) or datetime.now(tz=UTC)
         reclaimed: list[AnalyzeProjectPackageJob] = []
         for key in self._redis.scan_iter(match=f"{self._prefix}*"):
@@ -323,17 +362,20 @@ class RedisAnalyzeProjectPackageJobStore:
             job = self._deserialize(str(raw))
             if job.status is not JobStatus.RUNNING:
                 continue
-            expires = _parse_iso(job.lease_expires_at) or _parse_iso(job.heartbeat_at)
-            if expires is None:
-                started = _parse_iso(job.started_at) or _parse_iso(job.created_at)
-                if started is None:
-                    continue
-                expires = started + timedelta(seconds=120)
-            if expires >= now:
+            expires = _lease_expiry(job, lease_seconds=self._lease_seconds)
+            if expires is None or expires >= now:
                 continue
-            updated = self.mark_failed(
+            updated = self._update(
                 job.job_id,
-                "Lease expired; job marked failed for recovery/resubmit",
+                status=JobStatus.FAILED,
+                completed_at=_now_iso(),
+                error_message="Lease expired; job marked failed for recovery/resubmit",
+                retry_count=job.retry_count + 1,
+                lease_expires_at=None,
+                stage_progress="lease_expired",
+                lease_owner=None,
+                require_status=JobStatus.RUNNING,
+                require_lease_expired_before=now,
             )
             if updated is not None:
                 reclaimed.append(updated)
@@ -342,19 +384,6 @@ class RedisAnalyzeProjectPackageJobStore:
     def reclaim_stale_queued(
         self, ttl_seconds: int | None = None, *, now_iso: str | None = None
     ) -> list[AnalyzeProjectPackageJob]:
-        from datetime import timedelta
-
-        def _parse_iso(value: str | None) -> datetime | None:
-            if not value:
-                return None
-            try:
-                parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
-            except ValueError:
-                return None
-            if parsed.tzinfo is None:
-                return parsed.replace(tzinfo=UTC)
-            return parsed.astimezone(UTC)
-
         ttl = (
             int(ttl_seconds)
             if ttl_seconds is not None
@@ -388,6 +417,7 @@ class RedisAnalyzeProjectPackageJobStore:
             raise TypeError("status must be a JobStatus")
         require_status = changes.pop("require_status", None)
         require_owner = changes.pop("require_owner", None)
+        require_lease_expired_before = changes.pop("require_lease_expired_before", None)
 
         while True:
             try:
@@ -408,6 +438,14 @@ class RedisAnalyzeProjectPackageJobStore:
                     ):
                         pipe.unwatch()
                         return None
+                    if require_lease_expired_before is not None:
+                        cutoff = require_lease_expired_before
+                        if not isinstance(cutoff, datetime):
+                            cutoff = _parse_iso(str(cutoff))
+                        expires = _lease_expiry(current, lease_seconds=self._lease_seconds)
+                        if cutoff is None or expires is None or expires >= cutoff:
+                            pipe.unwatch()
+                            return None
                     if current.status is not target_status and not can_transition(
                         current.status, target_status
                     ):

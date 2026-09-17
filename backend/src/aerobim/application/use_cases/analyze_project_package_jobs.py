@@ -51,11 +51,15 @@ class _LeaseHeartbeat:
 
     def _run(self) -> None:
         while not self._stop.wait(self._interval):
-            beat = self._job_store.heartbeat(
-                self._job_id,
-                lease_seconds=self._lease_seconds,
-                owner=self._owner,
-            )
+            try:
+                beat = self._job_store.heartbeat(
+                    self._job_id,
+                    lease_seconds=self._lease_seconds,
+                    owner=self._owner,
+                )
+            except Exception:
+                self._lost.set()
+                return
             if beat is None or beat.status is not JobStatus.RUNNING:
                 self._lost.set()
                 return

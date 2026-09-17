@@ -18,6 +18,8 @@ function report(): ValidationReport {
       error_count: 1,
       warning_count: 0,
       passed: false,
+      drawing_annotation_count: 0,
+      generated_remark_count: 0,
     },
     drawing_annotations: [],
     drawing_assets: [],

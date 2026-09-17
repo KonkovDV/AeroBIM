@@ -177,6 +177,7 @@ def evaluate_detection_precision(
         defined_precision = [c.precision for c in class_counts if c.precision is not None]
         defined_recall = [c.recall for c in class_counts if c.recall is not None]
         defined_f1 = [c.f1 for c in class_counts if c.f1 is not None]
+        f1_for_macro = [c.f1 if c.f1 is not None else 0.0 for c in class_counts]
         macro: dict[str, object] = {
             "precision": (
                 round(sum(defined_precision) / len(defined_precision), 6)
@@ -186,11 +187,13 @@ def evaluate_detection_precision(
             "recall": (
                 round(sum(defined_recall) / len(defined_recall), 6) if defined_recall else None
             ),
-            "f1": round(sum(defined_f1) / len(defined_f1), 6) if defined_f1 else None,
+            "f1": round(sum(f1_for_macro) / len(f1_for_macro), 6) if f1_for_macro else None,
             "class_count": len(class_counts),
             "defined_precision_classes": len(defined_precision),
             "defined_recall_classes": len(defined_recall),
-            "macro_averaging": "unweighted_mean_of_classes_with_defined_metric",
+            "defined_f1_classes": len(defined_f1),
+            "class_coverage": round(len(defined_f1) / len(class_counts), 6),
+            "macro_averaging": ("unweighted_mean_over_evaluation_classes_zero_if_undefined"),
             "empty_classes": False,
         }
     else:

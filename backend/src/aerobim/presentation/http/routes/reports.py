@@ -119,6 +119,13 @@ def build_reports_router(ctx: ApiContext) -> APIRouter:
 
         ctx.validate_report_id(report_id)
         report = ctx.load_authorized_report(report_id, principal)
+        if not principal_may_append_hitl_event(
+            enforce_hitl_reviewer_auth=settings.enforce_hitl_reviewer_auth,
+            require_hitl_reviewer_roles=settings.require_hitl_reviewer_roles,
+            principal=principal,
+            event_type=payload.event_type,
+        ):
+            raise HTTPException(status_code=403, detail=public_hitl_forbidden_detail())
         try:
             assert_review_target_in_report(
                 report,
@@ -128,13 +135,6 @@ def build_reports_router(ctx: ApiContext) -> APIRouter:
             )
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=public_bad_request_detail()) from exc
-        if not principal_may_append_hitl_event(
-            enforce_hitl_reviewer_auth=settings.enforce_hitl_reviewer_auth,
-            require_hitl_reviewer_roles=settings.require_hitl_reviewer_roles,
-            principal=principal,
-            event_type=payload.event_type,
-        ):
-            raise HTTPException(status_code=403, detail=public_hitl_forbidden_detail())
         review_store = ctx.container.resolve(Tokens.REVIEW_EVENT_STORE)
         actor = review_actor_from_principal(principal)
         idem = (payload.idempotency_key or "").strip()

@@ -32,13 +32,14 @@ function aerobimHtmlSecurity(): Plugin {
 
 /**
  * Dev auth proxy: browser calls same-origin `/v1/*`; Vite injects
- * `Authorization: Bearer …` from **non-VITE** `AEROBIM_API_BEARER_TOKEN`
- * so the secret never ships in the JS bundle.
+ * `Authorization: Bearer …` from **non-VITE** `AEROBIM_DEV_REVIEWER_TOKEN`
+ * (lab HITL) or `AEROBIM_API_BEARER_TOKEN` (service). The secret never ships
+ * in the JS bundle. Lab reviewer is not OIDC.
  */
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, cwd(), "");
   const backend = (env.AEROBIM_PROXY_TARGET || "http://127.0.0.1:8080").replace(/\/$/, "");
-  const bearer = (env.AEROBIM_API_BEARER_TOKEN || "").trim();
+  const bearer = (env.AEROBIM_DEV_REVIEWER_TOKEN || env.AEROBIM_API_BEARER_TOKEN || "").trim();
 
   return {
     plugins: [react(), aerobimHtmlSecurity()],

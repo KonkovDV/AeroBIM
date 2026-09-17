@@ -69,9 +69,8 @@ class LiveReviewSmokeHelperTests(unittest.TestCase):
         self.assertEqual(env["AEROBIM_API_TENANT_ID"], SMOKE_TENANT_ID)
         self.assertEqual(env["AEROBIM_PRIORITY_PROFILE"], "customer")
         self.assertEqual(env["AEROBIM_REMARK_LOCALE"], "ru")
-        # An inherited token disables the anonymous branch; the browser calls the
-        # backend directly and has no way to present one.
         self.assertNotIn("AEROBIM_API_BEARER_TOKEN", env)
+        self.assertTrue((env.get("AEROBIM_DEV_REVIEWER_TOKEN") or "").strip())
 
     def test_build_backend_env_drops_inherited_pilot_signoff(self) -> None:
         env = build_backend_env(
@@ -117,11 +116,14 @@ class LiveReviewSmokeHelperTests(unittest.TestCase):
                 "PLAYWRIGHT_BROWSERS_PATH": "C:\\tmp\\ephemeral-browser-cache\\playwright",
             },
             backend_base_url="http://127.0.0.1:8081",
+            reviewer_token="lab-reviewer-fixture",
         )
 
         self.assertEqual(env["PATH"], "example")
         self.assertEqual(env["VITE_AEROBIM_API_BASE_URL"], "http://127.0.0.1:8081")
         self.assertEqual(env["AEROBIM_PROXY_TARGET"], "http://127.0.0.1:8081")
+        self.assertEqual(env["AEROBIM_DEV_REVIEWER_TOKEN"], "lab-reviewer-fixture")
+        self.assertEqual(env["VITE_AEROBIM_LAB_REVIEWER"], "1")
         self.assertNotIn("PLAYWRIGHT_BROWSERS_PATH", env)
 
     def test_python_deflated_zip_writes_sizes_in_the_local_header(self) -> None:
