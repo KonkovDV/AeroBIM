@@ -247,9 +247,7 @@ def bcf_hitl_overlay(
         )
     comments: list[BcfHitlComment] = []
     for event in events:
-        if not event_belongs_to_finding(
-            event, finding_id=issue.finding_id, rule_id=issue.rule_id
-        ):
+        if not event_belongs_to_finding(event, finding_id=issue.finding_id, rule_id=issue.rule_id):
             continue
         if event.event_type not in _HITL_BCF_COMMENT_TYPES:
             continue

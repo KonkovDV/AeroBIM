@@ -236,12 +236,8 @@ class ReviewStateExportTests(unittest.TestCase):
         self.assertEqual(modified.text, "lab-reviewer-dev")
         comments = [el for el in root if el.tag == "Comment" or el.tag.endswith("}Comment")]
         self.assertEqual(len(comments), 1)
-        author = next(
-            el for el in comments[0] if el.tag == "Author" or el.tag.endswith("}Author")
-        )
-        body = next(
-            el for el in comments[0] if el.tag == "Comment" or el.tag.endswith("}Comment")
-        )
+        author = next(el for el in comments[0] if el.tag == "Author" or el.tag.endswith("}Author"))
+        body = next(el for el in comments[0] if el.tag == "Comment" or el.tag.endswith("}Comment"))
         self.assertEqual(author.text, "lab-reviewer-dev")
         self.assertIn("подтверждаю", body.text or "")
 
