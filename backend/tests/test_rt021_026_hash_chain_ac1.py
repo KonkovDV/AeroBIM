@@ -80,7 +80,7 @@ class MeasureCsvAc1Tests(unittest.TestCase):
             repo / "samples" / "benchmarks" / "detection-precision" / "adjudication-template.csv"
         )
         payload = measure_adjudication_csv(csv_path)
-        self.assertEqual(payload["schema_version"], "1.2.0")
+        self.assertEqual(payload["schema_version"], "1.3.0")
         self.assertIn("gwet_ac1", payload)
         self.assertIn("pass_ac1_0_60", payload)
 

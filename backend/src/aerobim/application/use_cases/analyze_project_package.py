@@ -307,7 +307,10 @@ class AnalyzeProjectPackageUseCase:
             tool_traces=(*report.tool_traces, passport_trace(passport)),
         )
         self._audit_report_store.save(report)
-        return report
+        # Filesystem persist rewrites PDF asset ids (drawing-001 → drawing-001-page-001).
+        # Callers (demo seed, GET /v1/reports) must see the stored identity.
+        persisted = self._audit_report_store.get(report.report_id)
+        return persisted or report
 
     def _passport_sources(self, request, ingested) -> list[dict[str, object]]:
         from aerobim.domain.run_passport import SPF_CAP_BYTES

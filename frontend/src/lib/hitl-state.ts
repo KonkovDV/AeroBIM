@@ -75,6 +75,11 @@ export function canDecideFinding(state: string | null): boolean {
   return state === "opened" || state === "edited";
 }
 
+/** Idle finding: confirm/A may open then decide (postHitlEvent inserts `opened`). */
+export function canStartDecision(state: string | null): boolean {
+  return state === null || canDecideFinding(state);
+}
+
 export function canOpenFinding(state: string | null): boolean {
   return state === null || state === "escalated" || state === "rejected";
 }

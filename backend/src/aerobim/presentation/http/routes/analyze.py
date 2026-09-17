@@ -236,8 +236,8 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
                 detail=public_idempotency_payload_conflict_detail(),
             ) from exc
         if job.status.value == "queued" and job.job_id != existing_id:
-            # JOB-01: FastAPI BackgroundTasks in this API process. Replay of a
-            # still-queued job must not spawn a second runner.
+            # JOB-01: FastAPI BackgroundTasks in this API process — not a durable
+            # worker queue. Replay of a still-queued job must not spawn a second runner.
             background_tasks.add_task(job_runner.run, job.job_id, request)
         return ctx.serialize_analyze_project_package_job(job)
 

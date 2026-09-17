@@ -9,9 +9,9 @@ import {
 } from "../lib/api";
 import {
   asReviewEventRow,
-  canDecideFinding,
   canEditFinding,
   canOpenFinding,
+  canStartDecision,
   effectiveRemarkText,
   hitlOperationFingerprint,
   latestHitlState,
@@ -421,7 +421,7 @@ export function useSelectedReport(
           }
         }
         const afterEdit = latestHitlState(reviewEventsRef.current, issue);
-        if (!canDecideFinding(afterEdit)) {
+        if (!canStartDecision(afterEdit)) {
           setHitlRequestState("failed");
           return;
         }

@@ -13,6 +13,7 @@ const {
   fetchAuthBffMock,
   fetchAuthSessionMock,
   seedDemoFixtureMock,
+  fetchDrawingAssetPreviewBlobUrlMock,
 } = vi.hoisted(() => ({
   fetchReportsMock: vi.fn(),
   fetchReportMock: vi.fn(),
@@ -24,6 +25,7 @@ const {
   fetchAuthBffMock: vi.fn(),
   fetchAuthSessionMock: vi.fn(),
   seedDemoFixtureMock: vi.fn(),
+  fetchDrawingAssetPreviewBlobUrlMock: vi.fn(),
 }));
 
 const clipboardWriteTextMock = vi.fn();
@@ -44,7 +46,8 @@ vi.mock("./lib/api", async () => {
     fetchAuthBff: fetchAuthBffMock,
     fetchAuthSession: fetchAuthSessionMock,
     seedDemoFixture: seedDemoFixtureMock,
-    getApiBaseUrl: () => "http://localhost:8080",
+    fetchDrawingAssetPreviewBlobUrl: fetchDrawingAssetPreviewBlobUrlMock,
+    getApiBaseUrl: () => "",
   };
 });
 
@@ -305,6 +308,8 @@ describe("App", () => {
     fetchAnalyzeJobMock.mockReset();
     fetchAnalyzeJobMock.mockResolvedValue({ job_id: "idle", status: "running" });
     seedDemoFixtureMock.mockReset();
+    fetchDrawingAssetPreviewBlobUrlMock.mockReset();
+    fetchDrawingAssetPreviewBlobUrlMock.mockRejectedValue(new Error("no preview in unit test"));
     fetchReportsMock.mockResolvedValue({
       reports: [toReportSummary(report)],
       count: 1,
@@ -888,7 +893,7 @@ describe("App", () => {
   it("lets an expert confirm or reject a remark before export", async () => {
     render(<App />);
 
-    const confirm = await screen.findByRole("button", { name: /подтвердить замечание/i });
+    const confirm = await screen.findByRole("button", { name: UI_COPY.confirmRemark });
     fireEvent.click(confirm);
     await waitFor(() => {
       expect(postReviewEventMock).toHaveBeenCalledWith(
@@ -901,13 +906,17 @@ describe("App", () => {
       );
     });
     expect(await screen.findByText("Подтверждено")).toBeTruthy();
+    expect((screen.getByRole("button", { name: UI_COPY.rejectRemark }) as HTMLButtonElement).disabled).toBe(
+      true,
+    );
 
-    const reject = screen.getByRole("button", { name: /отклонить замечание/i });
+    fireEvent.click(screen.getByRole("option", { name: /DRAW-SECOND/i }));
+    const reject = await screen.findByRole("button", { name: UI_COPY.rejectRemark });
     fireEvent.click(reject);
     await waitFor(() => {
       expect(postReviewEventMock).toHaveBeenCalledWith(
         expect.any(String),
-        expect.objectContaining({ event_type: "rejected", previous_state: "accepted" }),
+        expect.objectContaining({ event_type: "rejected", issue_rule_id: "DRAW-SECOND" }),
       );
     });
     expect(await screen.findByText("Отклонено")).toBeTruthy();
@@ -982,13 +991,13 @@ describe("App", () => {
 
   it("treats the header role switch as a screen mock, not HITL access", async () => {
     render(<App />);
-    expect(await screen.findByRole("button", { name: /подтвердить замечание/i })).toBeTruthy();
+    expect(await screen.findByRole("button", { name: UI_COPY.confirmRemark })).toBeTruthy();
     expect(screen.getByTestId("role-honesty-banner").textContent).toContain("не предоставляет права доступа");
     fireEvent.change(screen.getByLabelText(UI_COPY.roleSelectLabel), { target: { value: "user" } });
     fireEvent.click(screen.getByRole("button", { name: "Эксперт" }));
     // UI3 P0.4: роль «Пользователь» не видит и не может вызвать правку/подтверждение/отклонение.
     expect(await screen.findByTestId("hitl-readonly-note")).toBeTruthy();
-    expect(screen.queryByRole("button", { name: /подтвердить замечание/i })).toBeNull();
+    expect(screen.queryByRole("button", { name: UI_COPY.confirmRemark })).toBeNull();
     expect(screen.queryByRole("button", { name: /отклонить замечание/i })).toBeNull();
     expect(screen.queryByRole("button", { name: /сохранить правку/i })).toBeNull();
     expect(screen.queryByLabelText(UI_COPY.editRemark)).toBeNull();
@@ -1007,7 +1016,7 @@ describe("App", () => {
     expect(await screen.findByTestId("hitl-readonly-note")).toBeTruthy();
     expect(screen.getByTestId("role-honesty-banner").textContent).toContain("Промышленный вход ещё не подключён");
     expect(screen.getByTestId("role-honesty-banner").textContent).toContain("Лабораторный режим");
-    expect(screen.queryByRole("button", { name: /подтвердить замечание/i })).toBeNull();
+    expect(screen.queryByRole("button", { name: UI_COPY.confirmRemark })).toBeNull();
     expect((screen.getByLabelText(UI_COPY.roleSelectLabel) as HTMLSelectElement).disabled).toBe(
       true,
     );
@@ -1021,7 +1030,7 @@ describe("App", () => {
     render(<App />);
     expect(await screen.findByTestId("hitl-readonly-note")).toBeTruthy();
     expect(screen.getByTestId("role-honesty-banner").textContent).toMatch(/Проверяем сессию/);
-    expect(screen.queryByRole("button", { name: /подтвердить замечание/i })).toBeNull();
+    expect(screen.queryByRole("button", { name: UI_COPY.confirmRemark })).toBeNull();
   });
 
   it("does not treat UNKNOWN discovery as a localStorage expert", async () => {
@@ -1029,7 +1038,7 @@ describe("App", () => {
     render(<App />);
     expect(await screen.findByTestId("hitl-readonly-note")).toBeTruthy();
     expect(screen.getByTestId("role-honesty-banner").textContent).toMatch(/Не удалось проверить права/);
-    expect(screen.queryByRole("button", { name: /подтвердить замечание/i })).toBeNull();
+    expect(screen.queryByRole("button", { name: UI_COPY.confirmRemark })).toBeNull();
     fireEvent.keyDown(window, { key: "a" });
     expect(postReviewEventMock).not.toHaveBeenCalled();
   });

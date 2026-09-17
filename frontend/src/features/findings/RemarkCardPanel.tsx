@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { ValidationIssue } from "../../lib/types";
 import type { ReviewEventRow } from "../../lib/api";
 import { hitlEventTypeLabel } from "../../lib/hitl-event-copy";
-import { eventMatchesIssue, latestHitlState, canDecideFinding, canEditFinding, canOpenFinding } from "../../lib/hitl-state";
+import { eventMatchesIssue, latestHitlState, canEditFinding, canOpenFinding, canStartDecision } from "../../lib/hitl-state";
 import { clauseLine, essenceLine, findingListTitle, spatialOrMissing } from "../../lib/issue-triage";
 import { UI_COPY } from "../../lib/ui-copy";
 import EvidenceStepper from "./EvidenceStepper";
@@ -92,7 +92,7 @@ export default function RemarkCardPanel({
   const hitlLocked =
     historyPending || remarkSaveState === "saving" || hitlDecisionState === "saving";
   const editorLocked = hitlLocked || !canEditFinding(persisted);
-  const acceptLocked = hitlLocked || !canDecideFinding(persisted);
+  const acceptLocked = hitlLocked || !canStartDecision(persisted);
   const openLocked = hitlLocked || !canOpenFinding(persisted);
 
   return (

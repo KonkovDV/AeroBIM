@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { asReviewEventRow, effectiveRemarkText, eventMatchesIssue, hitlOperationFingerprint, latestHitlState } from "./hitl-state";
+import { asReviewEventRow, canStartDecision, effectiveRemarkText, eventMatchesIssue, hitlOperationFingerprint, latestHitlState } from "./hitl-state";
 import type { ReviewEventRow } from "./api";
 import type { ValidationIssue } from "./types";
 
@@ -117,5 +117,13 @@ describe("hitl-state", () => {
       }),
     ).toMatchObject({ event_id: "x", resulting_state: "accepted" });
     expect(asReviewEventRow({ event_type: "opened" })).toBeNull();
+  });
+
+  it("lets confirm start from an idle finding and not from accepted", () => {
+    expect(canStartDecision(null)).toBe(true);
+    expect(canStartDecision("opened")).toBe(true);
+    expect(canStartDecision("edited")).toBe(true);
+    expect(canStartDecision("accepted")).toBe(false);
+    expect(canStartDecision("rejected")).toBe(false);
   });
 });

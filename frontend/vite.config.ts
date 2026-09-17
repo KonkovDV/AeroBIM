@@ -40,9 +40,20 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, cwd(), "");
   const backend = (env.AEROBIM_PROXY_TARGET || "http://127.0.0.1:8080").replace(/\/$/, "");
   const bearer = (env.AEROBIM_DEV_REVIEWER_TOKEN || env.AEROBIM_API_BEARER_TOKEN || "").trim();
+  // Do not define an empty string: that freezes over Vite/vitest env injection
+  // of VITE_AEROBIM_LAB_REVIEWER and hides HITL in the unit suite.
+  const defineEnv: Record<string, string> = {};
+  if (env.VITE_AEROBIM_LAB_REVIEWER) {
+    defineEnv["import.meta.env.VITE_AEROBIM_LAB_REVIEWER"] = JSON.stringify(
+      env.VITE_AEROBIM_LAB_REVIEWER,
+    );
+  } else if (env.AEROBIM_DEV_REVIEWER_TOKEN) {
+    defineEnv["import.meta.env.VITE_AEROBIM_LAB_REVIEWER"] = JSON.stringify("1");
+  }
 
   return {
     plugins: [react(), aerobimHtmlSecurity()],
+    define: defineEnv,
     build: {
       chunkSizeWarningLimit: 700,
       rollupOptions: {
@@ -70,7 +81,11 @@ export default defineConfig(({ mode }) => {
       // Same-origin is the shape the unit suite asserts. Without pinning it, a
       // shell that exports VITE_AEROBIM_API_BASE_URL for a local stack turns
       // relative hrefs absolute and reds the suite for environment reasons.
-      env: { VITE_AEROBIM_API_BASE_URL: "" },
+      env: {
+        VITE_AEROBIM_API_BASE_URL: "",
+        // Expert-shell unit tests assert the remark editor. Flag only, not a token.
+        VITE_AEROBIM_LAB_REVIEWER: "1",
+      },
       // Unit suite stays free of Playwright; browser smoke is `npm run smoke:browser`.
       include: ["src/**/*.{test,spec}.{ts,tsx}", "scripts/**/*.test.mjs"],
       exclude: ["**/node_modules/**", "**/dist/**"],

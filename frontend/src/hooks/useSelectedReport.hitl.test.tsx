@@ -131,3 +131,28 @@ describe("D03 conflict keeps draft", () => {
     expect(hook.result.current.reviewEvents.some((row) => row.event_id === "other")).toBe(true);
   });
 });
+
+describe("idle finding auto-open", () => {
+  it("posts opened then accepted when history is empty", async () => {
+    const calls: string[] = [];
+    api.fetchReviewEvents.mockResolvedValue({ events: [], count: 0 });
+    api.postReviewEvent.mockImplementation(async (_id: string, body: { event_type: string }) => {
+      calls.push(body.event_type);
+      return {
+        event: {
+          event_id: `${body.event_type}-${calls.length}`,
+          event_type: body.event_type,
+          finding_id: "first",
+          resulting_state: body.event_type === "opened" ? "opened" : "accepted",
+        },
+      };
+    });
+    const hook = renderHook(() => useSelectedReport("report"));
+    await waitFor(() => expect(hook.result.current.historyPending).toBe(false));
+    await act(async () => {
+      await hook.result.current.decideRemark("accepted", issue);
+    });
+    expect(calls).toEqual(["opened", "accepted"]);
+    expect(hook.result.current.persistedHitlState).toBe("accepted");
+  });
+});

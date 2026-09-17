@@ -92,7 +92,7 @@ describe("OA-21 export inspectors", () => {
   it("passes the draft/confirmed pair without «исправлено»", () => {
     assertDraftReview(draftJson);
     assertAcceptedReview(confirmedJson);
-    const pdf = Buffer.alloc(80, 1);
+    const pdf = Buffer.concat([Buffer.from("%PDF-"), Buffer.alloc(75, 32)]);
     inspectExportBundle({
       json: draftJson,
       html: "<html>machine</html>",

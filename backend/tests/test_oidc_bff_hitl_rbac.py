@@ -13,7 +13,14 @@ from uuid import uuid4
 
 from aerobim.core.config.settings import Settings
 from aerobim.core.di.tokens import Tokens
-from aerobim.domain.models import ValidationReport, ValidationSummary
+from aerobim.domain.models import (
+    FindingCategory,
+    GeneratedRemark,
+    Severity,
+    ValidationIssue,
+    ValidationReport,
+    ValidationSummary,
+)
 from aerobim.infrastructure.auth.oidc_bff_phase3 import (
     DEFAULT_BFF_SESSION_STORE,
     sign_session_cookie,
@@ -77,8 +84,17 @@ class OidcBffHitlRbacTests(unittest.TestCase):
                 ifc_path=ifc_path,
                 created_at=datetime.now(tz=UTC).isoformat(),
                 requirements=(),
-                issues=(),
-                summary=ValidationSummary(0, 0, 0, 0, True),
+                issues=(
+                    ValidationIssue(
+                        rule_id="IDS-IfcGrid",
+                        severity=Severity.ERROR,
+                        message="presence check",
+                        category=FindingCategory.IFC_VALIDATION,
+                        remark=GeneratedRemark(title="grid", body="presence"),
+                        finding_id="f-1",
+                    ),
+                ),
+                summary=ValidationSummary(0, 1, 1, 0, False),
                 tenant_id=tenant_id,
             )
         )

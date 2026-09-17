@@ -72,6 +72,7 @@ class Hd3BffTests(unittest.TestCase):
 class Hd3IfcLruTests(unittest.TestCase):
     def test_cache_evicts_beyond_max_models(self) -> None:
         from aerobim.infrastructure.adapters.ifc_file_open import (
+            _CacheEntry,
             _memory,
             configure_ifc_parse_cache,
             ifc_parse_cache_stats,
@@ -83,9 +84,9 @@ class Hd3IfcLruTests(unittest.TestCase):
         from aerobim.infrastructure.adapters import ifc_file_open as mod
 
         with mod._lock:
-            mod._memory[("a", 1, 1)] = object()
-            mod._memory[("b", 1, 1)] = object()
-            mod._memory[("c", 1, 1)] = object()
+            mod._memory[("a", 1, 1)] = _CacheEntry(model=object(), refs=0)
+            mod._memory[("b", 1, 1)] = _CacheEntry(model=object(), refs=0)
+            mod._memory[("c", 1, 1)] = _CacheEntry(model=object(), refs=0)
             mod._evict_overflow_locked()
         self.assertEqual(len(_memory), 2)
         self.assertGreaterEqual(ifc_parse_cache_stats()["evictions"], 1)
