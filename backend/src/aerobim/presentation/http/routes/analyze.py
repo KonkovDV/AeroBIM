@@ -204,10 +204,10 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
         if idem is not None and len(idem) > 128:
             raise HTTPException(status_code=400, detail="Idempotency-Key must be ≤128 characters")
 
-        from aerobim.application.use_cases.analyze_project_package_jobs import (
+        from aerobim.domain.analyze_job_idempotency import (
+            IdempotencyPayloadConflictError,
             JobConcurrencyLimitError,
         )
-        from aerobim.domain.analyze_job_idempotency import IdempotencyPayloadConflictError
 
         submit_job_use_case = ctx.container.resolve(
             Tokens.SUBMIT_ANALYZE_PROJECT_PACKAGE_JOB_USE_CASE

@@ -162,7 +162,7 @@ def evaluate_detection_precision(
     )
 
     classes = sorted({item.finding_class for item in labels.expected | detections.findings})
-    per_class: dict[str, dict[str, int | float]] = {}
+    per_class: dict[str, dict[str, int | float | str | bool | None]] = {}
     class_counts: list[MetricCounts] = []
     for finding_class in classes:
         counts = MetricCounts(
@@ -608,7 +608,7 @@ def _bucket_metrics(
     false_negatives: frozenset[FindingKey],
     *,
     key_fn: Callable[[FindingKey], str],
-) -> dict[str, dict[str, int | float]]:
+) -> dict[str, dict[str, int | float | str | bool | None]]:
     buckets = sorted(
         {
             key_fn(item)
@@ -616,7 +616,7 @@ def _bucket_metrics(
             if key_fn(item)
         }
     )
-    out: dict[str, dict[str, int | float]] = {}
+    out: dict[str, dict[str, int | float | str | bool | None]] = {}
     for bucket in buckets:
         counts = MetricCounts(
             tp=sum(1 for item in true_positives if key_fn(item) == bucket),

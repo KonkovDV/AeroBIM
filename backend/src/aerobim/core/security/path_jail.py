@@ -203,7 +203,10 @@ def _windows_final_path(handle: int) -> str | None:
     import ctypes
     from ctypes import wintypes
 
-    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    win_dll = getattr(ctypes, "WinDLL", None)
+    if win_dll is None:
+        return None
+    kernel32 = win_dll("kernel32", use_last_error=True)
     get_final = kernel32.GetFinalPathNameByHandleW
     get_final.argtypes = [ctypes.c_void_p, wintypes.LPWSTR, wintypes.DWORD, wintypes.DWORD]
     get_final.restype = wintypes.DWORD

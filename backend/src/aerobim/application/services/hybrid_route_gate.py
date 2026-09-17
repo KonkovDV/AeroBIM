@@ -110,13 +110,14 @@ class HybridRouteGate:
         mask_version: str | None = None
         egress_failure: str | None = None
         if decision.external_call:
-            if payload is None and not question_only:
-                egress_failure = (
-                    "external egress fail-closed: payload required; "
-                    "question-only is not later-document approval"
-                )
-            elif payload is None and question_only:
-                masked = {}
+            if payload is None:
+                if question_only:
+                    masked = {}
+                else:
+                    egress_failure = (
+                        "external egress fail-closed: payload required; "
+                        "question-only is not later-document approval"
+                    )
             elif self._guard is None or mask_rules is None:
                 egress_failure = "external egress fail-closed: no privacy guard / mask rules"
             else:

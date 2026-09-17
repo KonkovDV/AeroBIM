@@ -20,8 +20,9 @@ from aerobim.tools.benchmark_project_package import load_benchmark_pack, repo_ro
 # Pinned on project-package-baseline.json @ development profile (fixture only).
 # 2026-09-03 (seventh conscious refresh): dwg_dxf / qualified_signature missing
 # contour on the baseline pack. Hash is status+engine (not reason text).
-# Previous pin 5c891755…8b0e9d21 was 2026-08-14 IDS SKIPPED / ifcVersion.
-GOLDEN_BASELINE_REPRO_HASH = "a088dfa0da879bedb2420781c9e240f51a14f6aa32ceb9cfb2da300f7ded430d"
+# Previous pin a088dfa0…7ded430d was pre persist-reload drawing asset ids.
+# 2026-09-17: analyze returns FilesystemAuditStore identity (drawing-001-page-001).
+GOLDEN_BASELINE_REPRO_HASH = "259b42bb23851d7ba99a79232fcb8547f06c8413f23290b7777b02a47c85b9b3"
 
 
 class GoldenReportTests(unittest.TestCase):

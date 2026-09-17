@@ -315,8 +315,10 @@ class CrossDocumentContradictionDetector:
             and q_left.dimension != q_right.dimension
         ):
             return False
-        left_si = q_left.si_value if q_left is not None else None
-        right_si = q_right.si_value if q_right is not None else None
+        if q_left is None or q_right is None:
+            return None
+        left_si = q_left.si_value
+        right_si = q_right.si_value
         if left_si is None or right_si is None:
             return None
         low = float("-inf")

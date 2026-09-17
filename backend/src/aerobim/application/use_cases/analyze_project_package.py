@@ -9,6 +9,7 @@ from aerobim.application.services.analyze_orchestrators import (
     AdvisoryOrchestrator,
     DeterministicValidationOrchestrator,
     EvidenceAssembler,
+    IngestionBundle,
     IngestionOrchestrator,
 )
 from aerobim.application.services.capability_matrix import build_report_capabilities
@@ -270,12 +271,18 @@ class AnalyzeProjectPackageUseCase:
         nested = dict(deterministic.stage_ms or {})
 
         def _ms(value: object) -> int | None:
-            if value is None:
+            if isinstance(value, bool) or value is None:
                 return None
-            try:
+            if isinstance(value, int):
+                return value
+            if isinstance(value, float):
                 return int(value)
-            except (TypeError, ValueError):
-                return None
+            if isinstance(value, str):
+                try:
+                    return int(float(value))
+                except ValueError:
+                    return None
+            return None
 
         stage_ms: dict[str, int | None] = {
             "ingest": _ms(collector.elapsed(Contour.INGESTION) * 1000),
@@ -312,7 +319,9 @@ class AnalyzeProjectPackageUseCase:
         persisted = self._audit_report_store.get(report.report_id)
         return persisted or report
 
-    def _passport_sources(self, request, ingested) -> list[dict[str, object]]:
+    def _passport_sources(
+        self, request: ValidationRequest, ingested: IngestionBundle
+    ) -> list[dict[str, object]]:
         from aerobim.domain.run_passport import SPF_CAP_BYTES
 
         sources: list[dict[str, object]] = []

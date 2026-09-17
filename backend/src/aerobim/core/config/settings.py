@@ -1314,12 +1314,12 @@ class Settings:
                 assert_safe_datastore_url(candidate)
             except UnsafeOutboundUrlError as exc:
                 raise RuntimeError(f"Unsafe datastore URL in {label}: {exc}") from exc
-        if settings.dev_reviewer_token:
+        dev_reviewer_token = settings.dev_reviewer_token
+        api_bearer_token = settings.api_bearer_token
+        if dev_reviewer_token:
             if not settings.is_dev_environment:
                 settings = replace(settings, dev_reviewer_token=None)
-            elif settings.api_bearer_token and secrets.compare_digest(
-                settings.dev_reviewer_token, settings.api_bearer_token
-            ):
+            elif api_bearer_token and secrets.compare_digest(dev_reviewer_token, api_bearer_token):
                 raise RuntimeError(
                     "AEROBIM_DEV_REVIEWER_TOKEN must differ from AEROBIM_API_BEARER_TOKEN"
                 )

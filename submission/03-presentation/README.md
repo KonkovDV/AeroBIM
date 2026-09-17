@@ -1,5 +1,3 @@
-<!-- claims-lint: allow-file reason="Presentation index; forbidden-claims list as non-claims; Checkpoint GO; customer_go false" -->
-
 # Презентация
 
 **В git:** [`demo_day_slides.md`](demo_day_slides.md) (канон речи: 11 экранов и A0–A33) и [`AeroBIM_demo_day.pdf`](AeroBIM_demo_day.pdf) (поле формы, 48 стр., экспорт 17.09.2026). Экспорт PDF проходит kitchen-scan.

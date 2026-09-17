@@ -142,7 +142,7 @@ def build_run_passport(
     timing_basis: str = "sources_only",
 ) -> dict[str, Any]:
     timings = dict(stage_timings_ms or {})
-    stages = []
+    stages: list[dict[str, str | int | None]] = []
     cumulative = 0
     cumulative_known = True
     for name in PASSPORT_STAGES:

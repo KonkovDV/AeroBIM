@@ -53,7 +53,8 @@ def _overlay_export_locale(
         if source is None:
             item["remark_locale"] = "machine_fallback"
             continue
-        review = item.get("review") if isinstance(item.get("review"), dict) else {}
+        raw_review = item.get("review")
+        review: dict[str, object] = raw_review if isinstance(raw_review, dict) else {}
         state = str(review.get("state") or "").strip().lower()
         if state in {"accepted", "rejected", "edited", "waived"}:
             item["remark_locale"] = "expert"
