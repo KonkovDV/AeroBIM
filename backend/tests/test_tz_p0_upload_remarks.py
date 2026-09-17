@@ -10,6 +10,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from aerobim.core.config.settings import Settings
+from aerobim.core.security.upload_content import UPLOAD_MINIMAL_IFC_HEADER
 from aerobim.domain.models import (
     ComparisonOperator,
     FindingCategory,
@@ -64,7 +65,13 @@ class UploadApiTests(unittest.TestCase):
             client = TestClient(create_http_app(container))
             response = client.post(
                 "/v1/uploads",
-                files={"file": ("pilot.ifc", b"ISO-10303-21;", "application/octet-stream")},
+                files={
+                    "file": (
+                        "pilot.ifc",
+                        UPLOAD_MINIMAL_IFC_HEADER,
+                        "application/octet-stream",
+                    )
+                },
             )
             self.assertEqual(response.status_code, 200, response.text)
             body = response.json()
@@ -76,10 +83,10 @@ class UploadApiTests(unittest.TestCase):
                 or path.startswith("tenants/anonymous/uploads/"),
                 path,
             )
-            self.assertEqual(body["size_bytes"], len(b"ISO-10303-21;"))
+            self.assertEqual(body["size_bytes"], len(UPLOAD_MINIMAL_IFC_HEADER))
             stored = Path(tmp) / body["path"]
             self.assertTrue(stored.is_file())
-            self.assertEqual(stored.read_bytes(), b"ISO-10303-21;")
+            self.assertEqual(stored.read_bytes(), UPLOAD_MINIMAL_IFC_HEADER)
 
 
 if __name__ == "__main__":

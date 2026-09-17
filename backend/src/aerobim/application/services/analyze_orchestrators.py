@@ -293,7 +293,9 @@ class DeterministicValidationOrchestrator:
         quantity_issues, quantity_capability = self._host._clash_runner().run_quantity_consistency(
             request.ifc_path, requirements
         )
-        drawing_ifc_issues, drawing_ifc_capability = DrawingIfcConsistencyService().evaluate(
+        drawing_ifc_issues, drawing_ifc_capability = DrawingIfcConsistencyService(
+            extractor=self._host._wall_width_extractor,
+        ).evaluate(
             ifc_path=request.ifc_path,
             annotations=ingested.drawing_annotations,
             drawing_sources=request.drawing_sources,

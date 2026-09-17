@@ -5,6 +5,7 @@ from aerobim.core.config.settings import Settings
 from aerobim.core.di.container import Container, Lifecycle
 from aerobim.core.di.tokens import Tokens
 from aerobim.domain.models import ToleranceConfig
+from aerobim.infrastructure.adapters.ifc_wall_width_extractor import IfcWallWidthExtractor
 from aerobim.infrastructure.di._di_factories import (
     _resolve_default_norm_pack_path,
     _resolve_mep_federated_scope_path,
@@ -92,6 +93,7 @@ def register_all(container: Container, runtime_settings: Settings) -> None:
             llm_max_concurrent=current.resolve(Tokens.SETTINGS).llm_max_concurrent,
             space_efficiency_advisory_enabled=True,
             space_inventory_extractor=current.resolve(Tokens.IFC_SPACE_INVENTORY),
+            wall_width_extractor=IfcWallWidthExtractor(),
         ),
         lifecycle=Lifecycle.SINGLETON,
     )

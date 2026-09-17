@@ -23,11 +23,14 @@ from xml.etree import ElementTree as ET
 from aerobim.domain.models import (
     ClashResult,
     FindingCategory,
+    GeneratedRemark,
+    ReviewEvent,
     Severity,
     ValidationIssue,
     ValidationReport,
     ValidationSummary,
 )
+from aerobim.domain.review_projection import bcf_hitl_overlay
 from aerobim.infrastructure.adapters.bcf3_exporter import export_bcf3
 
 
@@ -191,6 +194,59 @@ class Bcf3MarkupStructureTests(unittest.TestCase):
         root = self._get_markup_root(_make_report())
         comments = root.find("Topic/Comments")
         self.assertIsNotNone(comments, msg="BCF 3.0 requires <Comments> under <Topic>")
+
+    def test_accepted_hitl_fills_comment_and_closes_topic(self) -> None:
+        from aerobim.domain.finding_provenance import ensure_finding_provenance
+
+        issue = ensure_finding_provenance(
+            ValidationIssue(
+                rule_id="IDS-Rule-0",
+                severity=Severity.ERROR,
+                message="BCF3 HITL",
+                category=FindingCategory.IDS_VALIDATION,
+                element_guid="3ZAR7ASd14MuxcHc7_fqIb",
+                remark=GeneratedRemark(title="m", body="machine"),
+                origin="deterministic",
+            )
+        )
+        report = ValidationReport(
+            report_id=uuid4().hex,
+            request_id="req-bcf3-hitl",
+            ifc_path=Path("test.ifc"),
+            created_at=datetime.now(tz=UTC).isoformat(),
+            requirements=(),
+            issues=(issue,),
+            summary=ValidationSummary(0, 1, 1, 0, False),
+        )
+        events = (
+            ReviewEvent(
+                event_id="e-acc-3",
+                report_id=report.report_id,
+                event_type="accepted",
+                created_at="2026-09-17T08:00:00+00:00",
+                issue_rule_id=issue.rule_id,
+                finding_id=issue.finding_id,
+                resulting_state="accepted",
+                actor="lab-reviewer-dev",
+                note="подтверждаю",
+            ),
+        )
+        overlay = bcf_hitl_overlay(issue, events)
+        self.assertEqual(overlay.topic_status, "Closed")
+        self.assertEqual(overlay.modified_author, "lab-reviewer-dev")
+        result = export_bcf3(report, review_events=events)
+        with zipfile.ZipFile(io.BytesIO(result)) as zf:
+            markup_entries = [n for n in zf.namelist() if n.endswith("markup.bcf")]
+            xml_str = zf.read(markup_entries[0]).decode("utf-8")
+        root = ET.fromstring(xml_str.split("\n", 1)[-1])
+        topic = root.find("Topic")
+        assert topic is not None
+        self.assertEqual(topic.get("TopicStatus"), "Closed")
+        comment = root.find("Topic/Comments/Comment")
+        self.assertIsNotNone(comment)
+        assert comment is not None
+        self.assertEqual(comment.findtext("Author"), "lab-reviewer-dev")
+        self.assertIn("подтверждаю", comment.findtext("Comment") or "")
 
     def test_viewpoints_element_present(self) -> None:
         # markup.xsd (release_3_0): Viewpoints is a child of Topic, not Markup.

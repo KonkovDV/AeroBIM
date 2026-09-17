@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM Pilot Claim Boundary 2026"
 status: active
-version: "1.13.15"
-last_updated: "2026-09-15"
+version: "1.13.16"
+last_updated: "2026-09-17"
 tags: [aerobim, pilot, claims, evidence]
 ---
 
@@ -37,7 +37,7 @@ This document separates **verified repository evidence** from **roadmap intent**
 | Vision endpoint accepts images | Grant smoke HTTP 200; **open-bench** AECV counting on Yandex Qwen measured (macro exact-match 0.4325, `open_bench_only`) — **not** product / RT-001 accuracy |
 | Fail-closed required clash / raster zero-yield / provenance persist | P0 tests; Claims Lock |
 | Object ACL on report artifacts | API principal + `tenant_id` |
-| BCF 2.1/3.0 ZIP export — **structural T1** | `audit/evidence/bcf-structural-handoff-2026-07-25.json` |
+| BCF 2.1/3.0 ZIP export — **structural T1** | `audit/evidence/bcf-structural-handoff-2026-07-25.json`. HITL accepted/waived → TopicStatus Closed + Comment* (CreationAuthor stays machine). CDE T2 **NOT_VERIFIED** |
 | Browser review shell (3D + 2D evidence; eight IA screens, all `partial`) | CI pin in `docs/evidence/runtime-baseline-latest.json` (`attested_by=ci`); do **not** copy `tests_passed` integers here. Live smoke: `run_live_review_smoke`. One-click rehearsal: development `POST /v1/demo/seed-fixture` (unpublished in OpenAPI; git walls+IDS, not a customer pack) |
 | OpenRebar provenance digest (**сверка**, not correctness) | Digest endpoint + `claim_labels` |
 | ISO 19650-lite context fields on reports | Optional request/report fields (Shared-gate metadata, not CDE) |

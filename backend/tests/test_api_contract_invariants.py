@@ -44,6 +44,7 @@ UPDATE_ENV = "AEROBIM_UPDATE_OPENAPI_SNAPSHOT"
 ALLOW_NO_AUTH = frozenset(
     {
         "/health",
+        "/ready",
         "/v1/auth/bff",
         "/v1/auth/login",
         "/v1/auth/callback",
@@ -153,7 +154,7 @@ class AuthGateTests(unittest.TestCase):
             path = getattr(route, "path", "")
             if getattr(route, "dependant", None) is None:
                 continue
-            if path.startswith(("/health", "/v1")):
+            if path.startswith(("/health", "/ready", "/v1")):
                 yield path, route
 
     def test_every_service_route_is_authenticated_or_allowlisted(self) -> None:
@@ -171,7 +172,7 @@ class AuthGateTests(unittest.TestCase):
                     failures.append(f"{path}: allowlisted but carries auth (stale allowlist)")
             elif not has_auth:
                 failures.append(f"{path}: MISSING require_bearer_auth dependency")
-        self.assertGreater(checked, 0, "no /health or /v1 routes found — app wiring broken")
+        self.assertGreater(checked, 0, "no /health, /ready or /v1 routes found — app wiring broken")
         self.assertEqual(failures, [])
 
     def test_allowlist_paths_all_exist(self) -> None:

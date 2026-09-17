@@ -240,7 +240,20 @@ def validate_upload_content(
             raise UploadContentError(
                 f"Content mismatch: extension {ext} does not match sniffed type {sniffed.kind}"
             )
+    if sniffed.kind == "ifc" and not ifc_payload_has_schema_header(payload):
+        raise UploadContentError(INCOMPLETE_IFC_REASON)
     return sniffed
+
+
+INCOMPLETE_IFC_REASON = "truncated or incomplete IFC (missing FILE_SCHEMA in header)"
+# Enough STEP header for upload sniff completeness. Not a parseable model.
+UPLOAD_MINIMAL_IFC_HEADER = b"ISO-10303-21;\nHEADER;\nFILE_SCHEMA(('IFC4'));\nENDSEC;\n"
+
+
+def ifc_payload_has_schema_header(payload: bytes) -> bool:
+    """True when the STEP header names FILE_SCHEMA inside the sniff window."""
+
+    return b"FILE_SCHEMA" in payload[:_SNIFF_WINDOW]
 
 
 def reject_autodesk_zip_bytes(payload: bytes) -> None:

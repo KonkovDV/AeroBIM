@@ -20,6 +20,7 @@ from aerobim.core.security.path_jail import (
     resolve_storage_path,
     tenant_storage_prefix,
 )
+from aerobim.core.security.upload_content import UPLOAD_MINIMAL_IFC_HEADER
 from aerobim.domain.models import (
     AnalyzeProjectPackageJob,
     CapabilityState,
@@ -168,7 +169,13 @@ class Adv02TenantUploadPrefixTests(unittest.TestCase):
             client = TestClient(create_http_app(bootstrap_container(settings)))
             response = client.post(
                 "/v1/uploads",
-                files={"file": ("pilot.ifc", b"ISO-10303-21;", "application/octet-stream")},
+                files={
+                    "file": (
+                        "pilot.ifc",
+                        UPLOAD_MINIMAL_IFC_HEADER,
+                        "application/octet-stream",
+                    )
+                },
             )
             self.assertEqual(response.status_code, 200, response.text)
             path = response.json()["path"]
@@ -214,13 +221,9 @@ class Adv03RedisIdempotencyRaceTests(unittest.TestCase):
             tenant_id="t1",
         )
 
-        # First get_by_idempotency miss, SET nx fails, second get hits winner.
-        redis.get.side_effect = [
-            None,  # first index lookup
-            existing.job_id,  # after race
-            store._serialize(existing),  # load winner job
-        ]
-        redis.set.side_effect = [False]  # nx claim lost
+        # First get_by_idempotency miss; Lua create returns the winner's job id.
+        redis.get.side_effect = [None]
+        redis.eval.return_value = existing.job_id
 
         raced = AnalyzeProjectPackageJob(
             job_id="b" * 32,
@@ -282,7 +285,7 @@ class AdvHitlTrailBeforeSaveTests(unittest.TestCase):
         enricher = MagicMock()
         enricher.attach_remarks.side_effect = lambda issues: list(issues)
 
-        def _overlay(issues, *, request_id: str, allow_synthetic_public: bool = False):
+        def _overlay(issues, *, request_id: str, allow_synthetic_public: bool = False, **_kwargs):
             return (
                 tuple(issues),
                 CapabilityStatus(CapabilityState.SKIPPED, "llm advisory not configured"),

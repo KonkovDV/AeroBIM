@@ -1389,6 +1389,23 @@
         "summary": "Health"
       }
     },
+    "/ready": {
+      "get": {
+        "description": "Readiness: storage + required Redis. Liveness stays on ``/health``.",
+        "operationId": "ready_ready_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Ready"
+      }
+    },
     "/v1/analyze/project-package": {
       "post": {
         "operationId": "analyze_project_package_v1_analyze_project_package_post",

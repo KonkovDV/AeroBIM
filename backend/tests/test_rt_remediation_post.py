@@ -12,6 +12,7 @@ from pathlib import Path
 from aerobim.application.services.capability_policy import build_signoff_policy
 from aerobim.core.config.settings import Settings
 from aerobim.core.security.outbound_url import UnsafeOutboundUrlError, assert_safe_outbound_url
+from aerobim.core.security.upload_content import UPLOAD_MINIMAL_IFC_HEADER
 from aerobim.core.security.zip_limits import ZipBombError, inspect_zip_bytes
 from aerobim.domain.models import (
     CapabilityState,
@@ -140,7 +141,13 @@ class Post08UploadOmitsObjectKeyTests(unittest.TestCase):
             client = TestClient(create_http_app(bootstrap_container(settings)))
             response = client.post(
                 "/v1/uploads",
-                files={"file": ("pilot.ifc", b"ISO-10303-21;", "application/octet-stream")},
+                files={
+                    "file": (
+                        "pilot.ifc",
+                        UPLOAD_MINIMAL_IFC_HEADER,
+                        "application/octet-stream",
+                    )
+                },
             )
             self.assertEqual(response.status_code, 200, response.text)
             body = response.json()

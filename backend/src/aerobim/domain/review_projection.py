@@ -7,6 +7,7 @@ and are projected as ``issue["review"]`` for GET /v1/reports and final exports.
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
 from typing import Any, Literal
 
 from aerobim.domain.models import ReviewEvent, ValidationIssue
@@ -190,8 +191,106 @@ def issue_is_rejected(
     return partition_from_state(str(overlay.get("state") or "") or None) == "rejected"
 
 
+_HITL_BCF_COMMENT_TYPES = frozenset(
+    {
+        "opened",
+        "accepted",
+        "rejected",
+        "edited",
+        "edited_remark",
+        "triaged",
+        "waived",
+        "escalated",
+    }
+)
+_BCF_CLOSED_STATES = frozenset({"accepted", "waived"})
+_MACHINE_BCF_AUTHOR = "aerobim-backend"
+
+
+@dataclass(frozen=True)
+class BcfHitlComment:
+    """One HITL event as a BCF Comment (Date/Author/Comment). Not a verdict."""
+
+    event_id: str
+    date: str
+    author: str
+    text: str
+    event_type: str
+
+
+@dataclass(frozen=True)
+class BcfHitlOverlay:
+    """TopicStatus / Modified* / Comment* derived from review events.
+
+    CreationAuthor stays the machine. Expert identity lives in Comment Author
+    and ModifiedAuthor. Never writes ``summary.passed``.
+    """
+
+    topic_status: str
+    modified_author: str | None
+    modified_date: str | None
+    comments: tuple[BcfHitlComment, ...]
+
+
+def bcf_hitl_overlay(
+    issue: ValidationIssue,
+    events: Sequence[ReviewEvent] | None,
+) -> BcfHitlOverlay:
+    """Map HITL events onto BCF TopicStatus, ModifiedAuthor, and comments."""
+
+    if not events:
+        return BcfHitlOverlay(
+            topic_status="Open",
+            modified_author=None,
+            modified_date=None,
+            comments=(),
+        )
+    comments: list[BcfHitlComment] = []
+    for event in events:
+        if not event_belongs_to_finding(
+            event, finding_id=issue.finding_id, rule_id=issue.rule_id
+        ):
+            continue
+        if event.event_type not in _HITL_BCF_COMMENT_TYPES:
+            continue
+        note = (event.note or "").strip()
+        text = note if note else f"event_type={event.event_type}"
+        fid = (issue.finding_id or "").strip()
+        if fid and f"finding_id={fid}" not in text:
+            text = f"{text}\nfinding_id={fid}"
+        comments.append(
+            BcfHitlComment(
+                event_id=event.event_id,
+                date=event.created_at,
+                author=(event.actor or "").strip() or _MACHINE_BCF_AUTHOR,
+                text=text,
+                event_type=event.event_type,
+            )
+        )
+    overlay = project_issue_review(
+        finding_id=issue.finding_id,
+        rule_id=issue.rule_id,
+        machine_text=issue.remark.body if issue.remark is not None else None,
+        events=events,
+    )
+    state = str(overlay.get("state") or "") or None
+    status = "Closed" if state in _BCF_CLOSED_STATES else "Open"
+    actor = overlay.get("actor")
+    modified_author = str(actor).strip() if isinstance(actor, str) and actor.strip() else None
+    modified_date = comments[-1].date if comments else None
+    return BcfHitlOverlay(
+        topic_status=status,
+        modified_author=modified_author,
+        modified_date=modified_date,
+        comments=tuple(comments),
+    )
+
+
 __all__ = [
+    "BcfHitlComment",
+    "BcfHitlOverlay",
     "attach_review_projection",
+    "bcf_hitl_overlay",
     "effective_text_for_issue",
     "event_belongs_to_finding",
     "issue_is_rejected",

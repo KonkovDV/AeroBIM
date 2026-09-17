@@ -8,6 +8,7 @@ import unittest
 from pathlib import Path
 
 from aerobim.core.config.settings import Settings
+from aerobim.core.security.upload_content import UPLOAD_MINIMAL_IFC_HEADER
 from aerobim.core.security.upload_quota import (
     FilesystemUploadQuotaStore,
     UploadQuotaExceeded,
@@ -36,7 +37,7 @@ class UploadQuotaTests(unittest.TestCase):
         except ModuleNotFoundError as exc:
             raise unittest.SkipTest("FastAPI/httpx not installed") from exc
 
-        payload = b"ISO-10303-21;\n"
+        payload = UPLOAD_MINIMAL_IFC_HEADER
         with tempfile.TemporaryDirectory() as tmp:
             settings = Settings(
                 application_name="aerobim-test",

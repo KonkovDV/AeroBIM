@@ -6,6 +6,7 @@ import hashlib
 from collections.abc import Sequence
 from dataclasses import replace
 from pathlib import Path
+from typing import Protocol, runtime_checkable
 
 from aerobim.domain.drawing_ifc_consistency import (
     RULE_PARSER,
@@ -22,7 +23,18 @@ from aerobim.domain.models import (
     Severity,
     ValidationIssue,
 )
-from aerobim.infrastructure.adapters.ifc_wall_width_extractor import IfcWallWidthExtractor
+
+
+@runtime_checkable
+class IfcWallWidthExtractorPort(Protocol):
+    """Read IfcWall Qto Width; adapter lives in infrastructure."""
+
+    def extract(
+        self,
+        ifc_path: Path,
+        *,
+        ifc_revision: str | None = None,
+    ) -> list[IfcQuantityObservation]: ...
 
 
 def _sha256_file(path: Path) -> str:
@@ -65,8 +77,8 @@ def merge_quantity_capability(
 
 
 class DrawingIfcConsistencyService:
-    def __init__(self, extractor: IfcWallWidthExtractor | None = None) -> None:
-        self._extractor = extractor or IfcWallWidthExtractor()
+    def __init__(self, extractor: IfcWallWidthExtractorPort | None = None) -> None:
+        self._extractor = extractor
 
     def evaluate(
         self,
@@ -76,7 +88,7 @@ class DrawingIfcConsistencyService:
         drawing_sources: Sequence[DrawingSource],
         ifc_revision: str | None,
     ) -> tuple[list[ValidationIssue], CapabilityStatus | None]:
-        if ifc_path is None:
+        if ifc_path is None or self._extractor is None:
             return [], None
         hashed_drawings = _with_drawing_hashes(drawing_sources)
         try:
@@ -84,18 +96,18 @@ class DrawingIfcConsistencyService:
                 ifc_path, ifc_revision=ifc_revision
             )
         except FileNotFoundError as exc:
-            result = compare_drawing_length_to_ifc(
+            missing = compare_drawing_length_to_ifc(
                 annotations=annotations,
                 observations=(),
                 drawing_sources=hashed_drawings,
                 ifc_revision=ifc_revision,
                 ifc_path=ifc_path,
             )
-            missing = CapabilityStatus(
+            missing_cap = CapabilityStatus(
                 CapabilityState.NOT_VERIFIED,
                 f"IFC missing for drawing↔width compare: {exc}",
             )
-            return list(result.issues), missing
+            return list(missing.issues), missing_cap
         except Exception as exc:
             return [
                 ValidationIssue(

@@ -24,6 +24,7 @@ from aerobim.application.services.determinism_gate import DeterminismGate
 from aerobim.application.services.drawing_annotation_validation import (
     DrawingAnnotationValidator,
 )
+from aerobim.application.services.drawing_ifc_consistency import IfcWallWidthExtractorPort
 from aerobim.application.services.extraction_integrity_probe import probe_extraction_integrity
 from aerobim.application.services.hybrid_route_gate import HybridRouteGate
 from aerobim.application.services.ids_compliance_runner import IdsComplianceRunner
@@ -136,6 +137,7 @@ class AnalyzeProjectPackageUseCase:
         llm_max_concurrent: int = 4,
         space_efficiency_advisory_enabled: bool = True,
         space_inventory_extractor: IfcSpaceInventoryExtractor | None = None,
+        wall_width_extractor: IfcWallWidthExtractorPort | None = None,
     ) -> None:
         self._requirement_extractor = requirement_extractor
         self._narrative_rule_synthesizer = narrative_rule_synthesizer
@@ -200,6 +202,7 @@ class AnalyzeProjectPackageUseCase:
         self._llm_max_concurrent = max(1, min(int(llm_max_concurrent), 10))
         self._space_efficiency_advisory_enabled = bool(space_efficiency_advisory_enabled)
         self._space_inventory_extractor = space_inventory_extractor
+        self._wall_width_extractor = wall_width_extractor
         self._package_trace_collector = None
         self._ingestion = IngestionOrchestrator(self)
         self._deterministic = DeterministicValidationOrchestrator(self)

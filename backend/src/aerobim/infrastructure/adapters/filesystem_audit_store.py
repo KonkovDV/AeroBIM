@@ -78,8 +78,17 @@ class FilesystemAuditStore:
         self._object_store = object_store or LocalObjectStore(self._storage_dir)
         self._report_ttl_days = report_ttl_days if report_ttl_days and report_ttl_days > 0 else None
         self._fail_closed = fail_closed
-        self._reports_dir.mkdir(parents=True, exist_ok=True)
-        self._drawing_assets_dir.mkdir(parents=True, exist_ok=True)
+        try:
+            self._reports_dir.mkdir(parents=True, exist_ok=True)
+            self._drawing_assets_dir.mkdir(parents=True, exist_ok=True)
+        except PermissionError as exc:
+            raise PermissionError(
+                f"Cannot create report storage under {self._storage_dir}. "
+                "In Docker this is usually a root-owned named volume from the "
+                "first empty mount. Recreate it (`docker compose down -v`) "
+                "after an image that owns /data/reports as aerobim, or chown "
+                "the volume to uid/gid 999."
+            ) from exc
 
     def save(self, report: ValidationReport) -> str:
         self._prune_expired_reports()

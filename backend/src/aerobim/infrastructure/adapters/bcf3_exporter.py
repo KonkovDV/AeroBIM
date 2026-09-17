@@ -55,7 +55,11 @@ from aerobim.domain.models import (
     ValidationIssue,
     ValidationReport,
 )
-from aerobim.domain.review_projection import effective_text_for_issue, issue_is_rejected
+from aerobim.domain.review_projection import (
+    bcf_hitl_overlay,
+    effective_text_for_issue,
+    issue_is_rejected,
+)
 from aerobim.infrastructure.adapters.bcf_report_exporter import bcf_topic_zip_dir
 
 _BCF30_VERSION = "3.0"
@@ -64,6 +68,14 @@ _BCF30_VERSION = "3.0"
 def _stable_uuid(seed: str) -> str:
     digest = hashlib.sha256(f"aerobim:bcf3:{seed}".encode()).hexdigest()
     return str(uuid.UUID(digest[:32]))
+
+
+@dataclass(frozen=True)
+class _Bcf3CommentPayload:
+    guid: str
+    date: str
+    author: str
+    text: str
 
 
 @dataclass(frozen=True)
@@ -81,6 +93,9 @@ class _Bcf3TopicPayload:
     labels: tuple[str, ...] = ()
     priority: str | None = None
     topic_index: int | None = None
+    modified_date: str | None = None
+    modified_author: str | None = None
+    comments: tuple[_Bcf3CommentPayload, ...] = ()
 
 
 def export_bcf3(
@@ -208,6 +223,16 @@ def _collect_topics(
         ]
         description = f"{base}\n\n" + "\n".join(extras) if extras else base
         seed = issue.finding_id or f"{issue.rule_id}|{issue.element_guid}|{issue.target_ref}"
+        hitl = bcf_hitl_overlay(issue, review_events)
+        hitl_comments = tuple(
+            _Bcf3CommentPayload(
+                guid=_stable_uuid(f"comment:{item.event_id}"),
+                date=item.date,
+                author=item.author,
+                text=item.text,
+            )
+            for item in hitl.comments
+        )
         topics.append(
             _Bcf3TopicPayload(
                 topic_guid=_stable_uuid(f"topic:{seed}"),
@@ -219,6 +244,10 @@ def _collect_topics(
                 reference_links=reference_links,
                 selected_guids=selected_guids,
                 topic_type=topic_type,
+                topic_status=hitl.topic_status,
+                modified_date=hitl.modified_date or report.created_at,
+                modified_author=hitl.modified_author or "aerobim-backend",
+                comments=hitl_comments,
             )
         )
 
@@ -305,12 +334,17 @@ def _build_markup3(topic: _Bcf3TopicPayload) -> str:
             SubElement(labels_node, "Label").text = label
     SubElement(topic_node, "CreationDate").text = topic.creation_date
     SubElement(topic_node, "CreationAuthor").text = topic.creation_author
-    SubElement(topic_node, "ModifiedDate").text = topic.creation_date
-    SubElement(topic_node, "ModifiedAuthor").text = topic.creation_author
+    SubElement(topic_node, "ModifiedDate").text = topic.modified_date or topic.creation_date
+    SubElement(topic_node, "ModifiedAuthor").text = topic.modified_author or topic.creation_author
     SubElement(topic_node, "Description").text = topic.description
 
     # BCF 3.0: Comments and Viewpoints are children of Topic (moved in 3.0).
-    SubElement(topic_node, "Comments")
+    comments_node = SubElement(topic_node, "Comments")
+    for comment in topic.comments:
+        comment_el = SubElement(comments_node, "Comment", Guid=comment.guid)
+        SubElement(comment_el, "Date").text = comment.date
+        SubElement(comment_el, "Author").text = comment.author
+        SubElement(comment_el, "Comment").text = comment.text
     viewpoints = SubElement(topic_node, "Viewpoints")
     vp = SubElement(viewpoints, "ViewPoint", Guid=topic.viewpoint_guid)
     SubElement(vp, "Viewpoint").text = "viewpoint.bcfv"

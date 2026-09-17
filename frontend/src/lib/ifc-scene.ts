@@ -12,6 +12,7 @@ import {
   type IfcStoreyOption,
   type SpatialRelationLine,
 } from "./ifc-element-props";
+import { releaseWebIfcHandle } from "./web-ifc-release";
 
 function getVertexStride(vertices: Float32Array, indices: Uint32Array): number {
   if (indices.length === 0) {
@@ -140,7 +141,7 @@ export class IfcSceneController {
         return;
       }
       this.addFlatMesh(modelId, flatMesh);
-      flatMesh.delete();
+      releaseWebIfcHandle(flatMesh);
     });
     if (this.disposed || token !== this.loadGeneration) {
       this.clearModel();
@@ -348,7 +349,7 @@ export class IfcSceneController {
       baseColor,
     };
 
-    ifcGeometry.delete();
+    releaseWebIfcHandle(ifcGeometry);
     return mesh;
   }
 

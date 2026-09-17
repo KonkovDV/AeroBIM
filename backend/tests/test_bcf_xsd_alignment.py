@@ -34,6 +34,8 @@ _TOPIC_ORDER_21 = [
     "Labels",
     "CreationDate",
     "CreationAuthor",
+    "ModifiedDate",
+    "ModifiedAuthor",
     "Description",
 ]
 _TOPIC_ORDER_30 = [
@@ -275,10 +277,51 @@ class OfficialXsdValidationTests(unittest.TestCase):
             description="duct vs pipe",
         )
 
-    def test_bcf21_export_passes_official_xsd(self) -> None:
+    def test_bcf21_hitl_comment_passes_official_xsd(self) -> None:
+        from aerobim.domain.finding_provenance import ensure_finding_provenance
+        from aerobim.domain.models import (
+            FindingCategory,
+            GeneratedRemark,
+            ReviewEvent,
+            Severity,
+            ValidationIssue,
+        )
         from aerobim.infrastructure.adapters.bcf_consumers import verify_bcf_zip_structure
 
-        result = verify_bcf_zip_structure(export_bcf(_report((self._valid_clash(),))))
+        issue = ensure_finding_provenance(
+            ValidationIssue(
+                rule_id="FIRE-1",
+                severity=Severity.ERROR,
+                message="mismatch",
+                category=FindingCategory.IFC_VALIDATION,
+                element_guid="3ZAR7ASd14MuxcHc7_fqIb",
+                remark=GeneratedRemark(title="m", body="T0"),
+                origin="deterministic",
+            )
+        )
+        report = ValidationReport(
+            report_id=uuid4().hex,
+            request_id="req-hitl-xsd",
+            ifc_path=Path("test.ifc"),
+            created_at=datetime.now(tz=UTC).isoformat(),
+            requirements=(),
+            issues=(issue,),
+            summary=ValidationSummary(0, 1, 1, 0, False),
+        )
+        events = (
+            ReviewEvent(
+                event_id="e-acc-xsd",
+                report_id=report.report_id,
+                event_type="accepted",
+                created_at="2026-09-17T08:00:00+00:00",
+                issue_rule_id=issue.rule_id,
+                finding_id=issue.finding_id,
+                resulting_state="accepted",
+                actor="lab-reviewer-dev",
+                note="подтверждаю",
+            ),
+        )
+        result = verify_bcf_zip_structure(export_bcf(report, review_events=events))
         self.assertEqual(result.xsd_status, "passed", msg=result.errors)
         self.assertTrue(result.ok, msg=result.errors)
 

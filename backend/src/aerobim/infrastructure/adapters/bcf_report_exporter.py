@@ -8,7 +8,10 @@ Detected clashes are exported as additional BCF topics in deterministic triage
 order (band → severity metric → pair key; see ``domain.clash_triage``) so
 coordination tools can consume them directly. Topic child-element order follows
 the official ``markup.xsd`` (release_2_1) sequence: ReferenceLink*, Title,
-Priority?, Index?, Labels*, CreationDate, CreationAuthor, Description?.
+Priority?, Index?, Labels*, CreationDate, CreationAuthor, ModifiedDate?,
+ModifiedAuthor?, Description?. Markup then emits Comment* (HITL events) before
+Viewpoints*. CreationAuthor is the machine; expert identity is Comment Author
+and ModifiedAuthor. TopicStatus is Closed after accepted/waived HITL.
 Official 2.1 XSDs declare no targetNamespace, so markup/version/visinfo are
 emitted without namespaces (matches buildingSMART sample files and enables
 local XSD validation against vendored ``samples/bcf-xsd/release_2_1``).
@@ -42,7 +45,19 @@ from aerobim.domain.models import (
     ValidationIssue,
     ValidationReport,
 )
-from aerobim.domain.review_projection import effective_text_for_issue, issue_is_rejected
+from aerobim.domain.review_projection import (
+    bcf_hitl_overlay,
+    effective_text_for_issue,
+    issue_is_rejected,
+)
+
+
+@dataclass(frozen=True)
+class _BcfCommentPayload:
+    guid: str
+    date: str
+    author: str
+    text: str
 
 
 @dataclass(frozen=True)
@@ -66,6 +81,9 @@ class _BcfTopicPayload:
     camera_y: float = 10.0
     camera_z: float = 10.0
     camera_is_model_space: bool = False
+    modified_date: str | None = None
+    modified_author: str | None = None
+    comments: tuple[_BcfCommentPayload, ...] = ()
 
 
 def _schematic_camera(seed: str) -> tuple[float, float, float]:
@@ -276,6 +294,16 @@ def _collect_topics(
             )
             if label
         )
+        hitl = bcf_hitl_overlay(issue, review_events)
+        hitl_comments = tuple(
+            _BcfCommentPayload(
+                guid=_stable_uuid(f"comment:{item.event_id}"),
+                date=item.date,
+                author=item.author,
+                text=item.text,
+            )
+            for item in hitl.comments
+        )
         topics.append(
             _BcfTopicPayload(
                 topic_guid=_stable_uuid(f"topic:{seed}"),
@@ -287,11 +315,15 @@ def _collect_topics(
                 reference_links=reference_links,
                 selected_guids=selected_guids,
                 topic_type=topic_type,
+                topic_status=hitl.topic_status,
                 labels=labels,
                 camera_x=cam_x,
                 camera_y=cam_y,
                 camera_z=cam_z,
                 camera_is_model_space=camera_is_model_space,
+                modified_date=hitl.modified_date,
+                modified_author=hitl.modified_author,
+                comments=hitl_comments,
             )
         )
 
@@ -380,7 +412,18 @@ def _build_markup(topic: _BcfTopicPayload) -> str:
         SubElement(topic_node, "Labels").text = label
     SubElement(topic_node, "CreationDate").text = topic.creation_date
     SubElement(topic_node, "CreationAuthor").text = topic.creation_author
+    if topic.modified_date:
+        SubElement(topic_node, "ModifiedDate").text = topic.modified_date
+    if topic.modified_author:
+        SubElement(topic_node, "ModifiedAuthor").text = topic.modified_author
     SubElement(topic_node, "Description").text = topic.description
+
+    # markup.xsd (release_2_1): Comment* between Topic and Viewpoints.
+    for comment in topic.comments:
+        comment_node = SubElement(root, "Comment", Guid=comment.guid)
+        SubElement(comment_node, "Date").text = comment.date
+        SubElement(comment_node, "Author").text = comment.author
+        SubElement(comment_node, "Comment").text = comment.text
 
     # markup.xsd: Viewpoints is a ViewPoint-typed element with Guid attribute.
     viewpoint = SubElement(root, "Viewpoints", Guid=topic.viewpoint_guid)

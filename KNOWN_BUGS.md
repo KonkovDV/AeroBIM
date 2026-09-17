@@ -69,6 +69,7 @@
 | XML-POSTPARSE-01 | Element/depth/text caps run after defusedxml builds a tree. Byte cap (16 MiB) applies **before** parse. | Availability inside the cap, not XXE. |
 | IFC-ISO-01 | IfcOpenShell opens in the API process (1.5 GB disk band). Pdfium crop and pdfminer drawing extract run in a child process with wall-clock kill. Windows Job Object is CPU/memory, not a network jail. | Crash/OOM ≠ silent `summary.passed=true`. Not MEP delivered. |
 | UPLOAD-OS-01 | Upload object-store path uses `put_file` + `asyncio.to_thread`. RSS of this branch was not measured. | Not an OOM-closed claim. IFC caps unchanged. |
+| CUST-REHEARSE-20260917 | Local customer-pack rehearsal 2026-09-17: upload → analyze → lab-reviewer HITL persist → structurally valid BCF. Verdict **PARTIAL**. | Not independent expert. Unsigned IDS ≠ signed profile. CDE import **NOT_VERIFIED**. Not a publishable accuracy pin. No customer hashes in git. |
 
 S3 presign cap, S3 dial pin, Windows pdfium Job Object, BFF token-exchange body cap,
 and path-jail percent-decode-to-fixpoint are closed below / in tests. Checkpoint
@@ -108,6 +109,50 @@ and path-jail percent-decode-to-fixpoint are closed below / in tests. Checkpoint
 | Effect | POSIX child still applies `RLIMIT_AS` (1 GiB) and `RLIMIT_CPU` (30s) via `preexec_fn`. Windows creates a Job Object with `JOB_OBJECT_LIMIT_PROCESS_MEMORY` (1 GiB) and `JOB_OBJECT_LIMIT_PROCESS_TIME` (30s). If `CreateJobObjectW` / `AssignProcessToJobObject` fails (nested job), the isolate falls back to subprocess timeout only. |
 | Honesty | Does not sit on the `summary.passed` path. Checkpoint **GO**; customer_go false. |
 | Status | Closed 2026-09-05. |
+
+### DOCKER-VOL-01 — first-boot named volume PermissionError — CLOSED
+
+| Field | Value |
+|-------|-------|
+| ID | `DOCKER-VOL-01` |
+| Adapter | `backend/Dockerfile` (`mkdir /data/reports` as aerobim) + `FilesystemAuditStore` |
+| Severity | **MEDIUM** (closed engineering) |
+| Effect | Image now owns `/data/reports` so a **new** named volume copies aerobim uid. Leftover root-owned volumes still need `docker compose down -v` or chown 999:999. |
+| Honesty | Operational first-boot, not Shared-gate. Checkpoint **GO**; customer_go false. |
+| Status | Closed 2026-09-17. |
+
+### BCF-HITL-01 — TopicStatus Open and empty HITL Comment — CLOSED
+
+| Field | Value |
+|-------|-------|
+| ID | `BCF-HITL-01` |
+| Adapter | `bcf_report_exporter.py` / `bcf3_exporter.py` + `review_projection.bcf_hitl_overlay` |
+| Severity | **MEDIUM** (closed engineering) |
+| Effect | Accepted/waived findings export TopicStatus Closed, ModifiedAuthor = expert, Comment* with Date/Author/text. Rejected findings still omitted. CreationAuthor stays machine. |
+| Honesty | Structural T1 only. CDE import T2 **NOT_VERIFIED**. Lab-reviewer is not an independent expert. |
+| Status | Closed 2026-09-17. |
+
+### VIEWER-DELETE-01 — `flatMesh.delete is not a function` — CLOSED
+
+| Field | Value |
+|-------|-------|
+| ID | `VIEWER-DELETE-01` |
+| Adapter | `frontend/src/lib/web-ifc-release.ts` |
+| Severity | **MEDIUM** (closed engineering) |
+| Effect | Viewer skips `delete()` when web-ifc handles omit it. Does not claim WASM memory is always released. |
+| Honesty | Browser review shell only. Not a model-viewer product claim. |
+| Status | Closed 2026-09-17. |
+
+### IFC-TRUNC-01 — truncated STEP header accepted as IFC — CLOSED
+
+| Field | Value |
+|-------|-------|
+| ID | `IFC-TRUNC-01` |
+| Adapter | `core/security/upload_content.py` |
+| Severity | **LOW** (closed engineering) |
+| Effect | `.ifc` uploads require `FILE_SCHEMA` in the sniff window. Header-only sniff still detects STEP; completeness is validate-time. |
+| Honesty | Not a schema validator. Truncation after FILE_SCHEMA can still upload. |
+| Status | Closed 2026-09-17. |
 
 - Cad / OCR multimodal / MEP unconfigured adapters are real fail-closed or degrade paths (not `@sota-stub`).
 - `UnconfiguredSystemClash` / `UnconfiguredMepSystemGraphProvider` are honesty fail-closed (MEP-CLASH-001), not stubs.

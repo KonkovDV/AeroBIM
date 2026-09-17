@@ -30,7 +30,13 @@ COPY --from=builder /build/src/ src/
 # with a visible degrade flag (verdict-neutral enrichment only). Mount
 # /samples/benchmarks/loin-rule-metadata.json to enable it in containers.
 
-RUN mkdir -p var/reports && chown -R aerobim:aerobim /app
+# /data/reports must exist in the image so a first-mount named volume copies
+# aerobim ownership. An empty root-owned volume otherwise 500s at boot
+# (FilesystemAuditStore mkdir). Recreate an already-root volume with
+# `docker compose down -v` after this image, or chown 999:999.
+RUN mkdir -p var/reports /data/reports /data/reports/reports \
+        /data/reports/drawing-assets \
+    && chown -R aerobim:aerobim /app /data
 
 USER aerobim
 

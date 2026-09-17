@@ -8,7 +8,9 @@ from pathlib import Path
 
 from aerobim.core.config.settings import Settings
 from aerobim.core.security.upload_content import (
+    INCOMPLETE_IFC_REASON,
     NATIVE_LIRA_CLOSED_REASON,
+    UPLOAD_MINIMAL_IFC_HEADER,
     UploadContentError,
     reject_autodesk_zip_bytes,
     sniff_content,
@@ -44,10 +46,18 @@ class UploadContentSniffTests(unittest.TestCase):
                 filename="malware.dxf",
                 payload=b"\x7fELF" + b"\x00" * 64,
             )
-        ifc = validate_upload_content(filename="model.ifc", payload=b"ISO-10303-21;\n")
+        ifc = validate_upload_content(filename="model.ifc", payload=UPLOAD_MINIMAL_IFC_HEADER)
         self.assertEqual(ifc.kind, "ifc")
         pdf = validate_upload_content(filename="a.pdf", payload=b"%PDF-1.4\n%")
         self.assertEqual(pdf.kind, "pdf")
+
+    def test_truncated_ifc_without_file_schema_rejected(self) -> None:
+        with self.assertRaises(UploadContentError) as ctx:
+            validate_upload_content(
+                filename="model.ifc",
+                payload=b"ISO-10303-21; NOT COMPLETE",
+            )
+        self.assertEqual(str(ctx.exception), INCOMPLETE_IFC_REASON)
 
     def test_octet_stream_declared_type_does_not_block_pdf(self) -> None:
         pdf = validate_upload_content(
@@ -174,7 +184,7 @@ class UploadApiSecurityTests(unittest.TestCase):
         except ModuleNotFoundError as exc:
             raise unittest.SkipTest("FastAPI/httpx not installed") from exc
 
-        payload = b"ISO-10303-21;\nENDSEC;\n"
+        payload = UPLOAD_MINIMAL_IFC_HEADER
         with tempfile.TemporaryDirectory() as tmp:
             settings = Settings(
                 application_name="aerobim-test",

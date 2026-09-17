@@ -57,6 +57,8 @@ services:
       redis:
         condition: service_healthy
     volumes:
+      # Same first-mount ownership as docker-compose.yml. Recreate a leftover
+      # root-owned volume (`down -v`) after rebuilding this image.
       - reports-data:/data/reports
       - ./samples:/data/samples:ro
     healthcheck:

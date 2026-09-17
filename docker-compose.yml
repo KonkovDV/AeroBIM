@@ -23,9 +23,14 @@ services:
       # Optional. Prefer exporting the var; never commit secrets.
       # WARNING: do not put the token in VITE_* (it is bundled into browser assets).
       AEROBIM_API_BEARER_TOKEN: ${AEROBIM_API_BEARER_TOKEN:-}
+      # Lab HITL only (development). Must differ from the API bearer. Not OIDC.
+      AEROBIM_DEV_REVIEWER_TOKEN: ${AEROBIM_DEV_REVIEWER_TOKEN:-}
       # Explicit opt-in only (default false). Set AEROBIM_ALLOW_ANONYMOUS_DEV=true for local demos.
       AEROBIM_ALLOW_ANONYMOUS_DEV: ${AEROBIM_ALLOW_ANONYMOUS_DEV:-false}
     volumes:
+      # First boot: Docker copies /data/reports from the image (aerobim:aerobim).
+      # A leftover root-owned volume from an older image needs
+      # `docker compose down -v` or `chown -R 999:999` on the volume.
       - reports-data:/data/reports
       - ./samples:/data/samples:ro
     healthcheck:

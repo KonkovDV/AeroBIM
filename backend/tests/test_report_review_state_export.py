@@ -188,6 +188,63 @@ class ReviewStateExportTests(unittest.TestCase):
         markup = [name for name in names if name.endswith("/markup.bcf")]
         self.assertEqual(markup, [])
 
+    def test_bcf_export_accepted_hitl_sets_closed_and_comment(self) -> None:
+        from xml.etree import ElementTree as ET
+
+        issue = ensure_finding_provenance(
+            ValidationIssue(
+                rule_id="FIRE-1",
+                severity=Severity.ERROR,
+                message="mismatch",
+                category=FindingCategory.IFC_VALIDATION,
+                element_guid="guid-wall",
+                remark=GeneratedRemark(title="m", body="T0"),
+                origin="deterministic",
+            )
+        )
+        report = ValidationReport(
+            report_id=uuid4().hex,
+            request_id="bcf-acc",
+            ifc_path=Path("m.ifc"),
+            created_at=datetime.now(tz=UTC).isoformat(),
+            requirements=(),
+            issues=(issue,),
+            summary=ValidationSummary(0, 1, 1, 0, False),
+        )
+        events = (
+            ReviewEvent(
+                event_id="e-acc",
+                report_id=report.report_id,
+                event_type="accepted",
+                created_at="2026-09-17T08:00:00+00:00",
+                issue_rule_id=issue.rule_id,
+                finding_id=issue.finding_id,
+                resulting_state="accepted",
+                actor="lab-reviewer-dev",
+                note="подтверждаю",
+            ),
+        )
+        archive = export_bcf(report, review_events=events)
+        with zipfile.ZipFile(io.BytesIO(archive)) as zf:
+            markup_name = next(name for name in zf.namelist() if name.endswith("/markup.bcf"))
+            root = ET.fromstring(zf.read(markup_name))
+        topic = next(el for el in root.iter() if el.tag == "Topic" or el.tag.endswith("}Topic"))
+        self.assertEqual(topic.get("TopicStatus"), "Closed")
+        modified = next(
+            el for el in topic if el.tag == "ModifiedAuthor" or el.tag.endswith("}ModifiedAuthor")
+        )
+        self.assertEqual(modified.text, "lab-reviewer-dev")
+        comments = [el for el in root if el.tag == "Comment" or el.tag.endswith("}Comment")]
+        self.assertEqual(len(comments), 1)
+        author = next(
+            el for el in comments[0] if el.tag == "Author" or el.tag.endswith("}Author")
+        )
+        body = next(
+            el for el in comments[0] if el.tag == "Comment" or el.tag.endswith("}Comment")
+        )
+        self.assertEqual(author.text, "lab-reviewer-dev")
+        self.assertIn("подтверждаю", body.text or "")
+
     def test_review_state_does_not_change_summary_passed(self) -> None:
         issues = [
             _issue_dict(review={"state": "rejected"}),

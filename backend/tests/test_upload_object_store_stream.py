@@ -13,13 +13,14 @@ from pathlib import Path
 from unittest.mock import patch
 
 from aerobim.core.config.settings import Settings
+from aerobim.core.security.upload_content import UPLOAD_MINIMAL_IFC_HEADER
 from aerobim.core.security.upload_quota import FilesystemUploadQuotaStore
 from aerobim.domain.object_acl import LAB_ANONYMOUS_TENANT_ID
 from aerobim.infrastructure.di.bootstrap import bootstrap_container
 from aerobim.presentation.http.api import create_http_app
 from aerobim.presentation.http.errors import public_upload_object_store_failed_detail
 
-_IFC = b"ISO-10303-21;\n"
+_IFC = UPLOAD_MINIMAL_IFC_HEADER
 _UPLOADS_PY = (
     Path(__file__).resolve().parents[1]
     / "src"
