@@ -1,6 +1,6 @@
 # Презентация
 
-**В git:** [`demo_day_slides.md`](demo_day_slides.md) (канон речи: 11 экранов и A0–A33) и [`AeroBIM_demo_day.pdf`](AeroBIM_demo_day.pdf) (поле формы, 48 стр., экспорт 17.09.2026). Экспорт PDF проходит kitchen-scan.
+**В git:** [`demo_day_slides.md`](demo_day_slides.md) (канон речи: 11 экранов и A0–A33), [`AeroBIM_demo_day_09.pptx`](AeroBIM_demo_day_09.pptx) (PowerPoint, 43 слайда, выгрузка 18.09.2026) и [`AeroBIM_demo_day.pdf`](AeroBIM_demo_day.pdf) (поле формы, 48 стр., экспорт 17.09.2026). PPTX и PDF проходят kitchen-scan.
 
 Канон показа в git — markdown, вычитанный по кадру PDF. Overlay **17.09.2026** (репетиция контура, вердикт PARTIAL) вписан в слайд-копию явно и **не** подменяет пин CI `8f0a462d`. Телефон капитана остаётся только на кадре PDF и в форме оператора.
 

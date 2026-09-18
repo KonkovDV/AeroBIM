@@ -86,7 +86,9 @@ MAX_TRACKED_BYTES = 50 * 1024 * 1024
 MAX_SCAN_BYTES = 2 * 1024 * 1024
 _MAX_EXTRACT_MEMBER = 8 * 1024 * 1024
 _MAX_EXTRACT_TOTAL = 32 * 1024 * 1024
-_DOCUMENT_EXTRACT_SUFFIXES = frozenset({".docx", ".xlsx", ".xlsm", ".odt", ".ods", ".zip"})
+_DOCUMENT_EXTRACT_SUFFIXES = frozenset(
+    {".docx", ".xlsx", ".xlsm", ".odt", ".ods", ".pptx", ".zip"}
+)
 _SELF_REL = Path(__file__).resolve().relative_to(_REPO).as_posix().replace("\\", "/")
 
 
