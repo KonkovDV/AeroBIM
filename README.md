@@ -19,7 +19,7 @@ Findings come out with provenance to a sheet and a GUID: HTML, JSON, a PDF cover
 
 From 2 April 2026 Moscow requires an AGR CIM in IFC (Moscow Government decree № 17-ПП of 16 January 2026; joint DIT/DGP order № ДГП-Р-1/26/64-16-6/26). From 18 August 2026 joint DGP/DIT order № ДГП-Р-56/26/64-16-473/26 updates 3D models placed in Moscow information systems. Those are **city filing rules**, not an appointing-party-signed acceptance profile and not a product accuracy claim. City AGR IFC mapping is published for Revit; AeroBIM does not ingest native RVT.
 
-Moscow TechLab programme: automated verification of design and working documentation. Programme status is not a measured result on the appointing party's own pack. Pack index: [`submission/README.md`](submission/README.md).
+Moscow TechLab programme: automated verification of design and working documentation. Programme status is not a measured result on the appointing party's own pack. Pack index: [`submission/README.md`](submission/README.md). Demo-day form field: [`AeroBIM_demo_day_09.pptx`](submission/03-presentation/AeroBIM_demo_day_09.pptx) (43 slides, 18.09.2026). Speech canon: [`demo_day_slides.md`](submission/03-presentation/demo_day_slides.md). There is no PDF deck in git.
 
 > We are in *refinement* on the customer contour. One command shows a fail-closed finding on a fixture. Effectiveness validation and deployment have not started. Checkpoint `GO` is the regulatory-measurement MVP. `customer_go` stays false until an independent labeled pack, two raters, a signed appointing-party profile, and CDE proof.
 
@@ -434,7 +434,7 @@ frontend/     Browser review shell (IFC 3D + drawing overlay)
 samples/      IFC, IDS, drawing and specification fixtures; benchmark packs
 docs/         Documentation and evidence artifacts
 audit/        Claims lock, blocker register, citable honesty fixtures
-submission/   Checkpoint pack index for the TechLab jury
+submission/   Checkpoint pack for the TechLab jury (PowerPoint 43 slides; no PDF deck)
 ```
 
 Code volume and the pass counts recorded by CI are generated, never typed by hand:
@@ -452,6 +452,7 @@ This repository publishes the reviewable set: code, requirements, claim boundari
 |---|---|
 | Start here | [Jury map](docs/TIER0_INDEX.md) · [Technical justification](docs/docs.md) |
 | Checkpoint pack | [Submission pack](submission/README.md) |
+| Demo-day presentation | [PowerPoint, 43 slides](submission/03-presentation/AeroBIM_demo_day_09.pptx) · [speech canon](submission/03-presentation/demo_day_slides.md) |
 | KT#3 speech | [Jury FAQ](docs/demo/KT3_JURY_FAQ_2026_08_25.md) |
 | Blockers | [Critical blockers](audit/reports/CRITICAL_BLOCKERS.md) |
 | What is claimed | [Claim boundary](docs/pilot-claim-boundary-2026.md) |
