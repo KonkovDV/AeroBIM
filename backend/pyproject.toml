@@ -71,7 +71,7 @@ dev = [
   "hypothesis>=6.100,<7.0",
   "httpx>=0.27",
   "ruff>=0.7,<1.0",
-  "mypy>=1.12,<2.0",
+  "mypy>=1.12,<3.0",
   "jsonschema>=4.23,<5.0",
 ]
 raster = [
