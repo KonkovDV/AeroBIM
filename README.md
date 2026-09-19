@@ -55,7 +55,7 @@ A skipped mandatory engine cannot hide inside a green report.
 | **Waits on residual volumes** | Dual human raters + pack-specific conclusions (RT-001b) · appointing-party-signed profile (RT-002c) · system-aware clash (speech **RT-003c**) · customer federated IFC (`c_customer_federated_ifc`) · BCF import into their CDE |
 | **Not claimed** | Product accuracy >90% · customer SLA ≤30 min · native DWG · native RVT/NWD · MEP delivered · CDE-ready BCF · production-ready |
 
-## Show
+## Try it
 
 Python 3.12 and a venv in `backend/.venv`:
 
