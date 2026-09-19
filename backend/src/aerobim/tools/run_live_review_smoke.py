@@ -24,15 +24,32 @@ from aerobim.tools.seed_smoke_report import (
 
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_BACKEND_PORTS = (8080, 8081)
-DEFAULT_FRONTEND_PORTS = (5173, 3000, 4173)
+# Vite ports only. Never 3000: that is Next.js and v0 preview binds it by mistake.
+DEFAULT_FRONTEND_PORTS = (5173, 5174, 4173)
+FIXED_BACKEND_PORT = 8080
+FIXED_FRONTEND_PORT = 5173
+NEXTJS_DEFAULT_PORT = 3000
 LOOPBACK_HOSTS = {"127.0.0.1", "localhost"}
 
 
+def _path_from_env(name: str) -> Path | None:
+    raw = (os.environ.get(name) or "").strip()
+    if not raw:
+        return None
+    return Path(raw).expanduser().resolve()
+
+
 def backend_dir() -> Path:
+    override = _path_from_env("AEROBIM_BACKEND_DIR")
+    if override is not None:
+        return override
     return repo_root() / "backend"
 
 
 def frontend_dir() -> Path:
+    override = _path_from_env("AEROBIM_FRONTEND_DIR")
+    if override is not None:
+        return override
     return repo_root() / "frontend"
 
 
@@ -52,19 +69,46 @@ def backend_python_executable() -> Path:
     for candidate in candidates:
         if candidate.exists():
             return candidate
-    raise FileNotFoundError("AeroBIM backend virtualenv python executable was not found")
+    raise FileNotFoundError(
+        f"backend/.venv python not found under {backend_dir()}. "
+        "Windows: Scripts/python.exe; Linux: bin/python. Set AEROBIM_BACKEND_DIR "
+        "if the API is not a sibling of this frontend (do not leave it only in /tmp)."
+    )
+
+
+def reject_nextjs_frontend_port(port: int) -> None:
+    if port == NEXTJS_DEFAULT_PORT:
+        raise ValueError(
+            f"Port {NEXTJS_DEFAULT_PORT} is Next.js. AeroBIM Vite is "
+            f"{FIXED_FRONTEND_PORT}; API is {FIXED_BACKEND_PORT}."
+        )
+
+
+def port_is_busy(host: str, port: int) -> bool:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
+        probe.settimeout(0.25)
+        return probe.connect_ex((host, port)) == 0
+
+
+def ensure_port_free(host: str, port: int, *, role: str) -> None:
+    if port_is_busy(host, port):
+        raise RuntimeError(
+            f"{role} needs {host}:{port}, already in use. Vite={FIXED_FRONTEND_PORT}, "
+            f"API={FIXED_BACKEND_PORT}, not Next.js {NEXTJS_DEFAULT_PORT}. Stop the leftover process."
+        )
 
 
 def choose_available_port(host: str, preferred_ports: tuple[int, ...]) -> int:
     for port in preferred_ports:
+        if port != NEXTJS_DEFAULT_PORT and not port_is_busy(host, port):
+            return port
+    for _ in range(8):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
-            probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            if probe.connect_ex((host, port)) != 0:
-                return port
-
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
-        probe.bind((host, 0))
-        return int(probe.getsockname()[1])
+            probe.bind((host, 0))
+            port = int(probe.getsockname()[1])
+        if port != NEXTJS_DEFAULT_PORT:
+            return port
+    raise RuntimeError(f"Could not allocate a Vite listen port on {host}")
 
 
 def build_backend_env(
@@ -342,6 +386,7 @@ def run_live_review_smoke(
     target_output_dir = (output_dir or default_output_dir()).resolve()
     selected_backend_port = backend_port or choose_available_port(host, DEFAULT_BACKEND_PORTS)
     selected_frontend_port = frontend_port or choose_available_port(host, DEFAULT_FRONTEND_PORTS)
+    reject_nextjs_frontend_port(selected_frontend_port)
 
     backend_base_url = f"http://{host}:{selected_backend_port}"
     frontend_base_url = f"http://{host}:{selected_frontend_port}"

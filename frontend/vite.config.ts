@@ -52,6 +52,8 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
+    // Vite SPA. Do not add next.config.* or app/ — preview would then boot Next.js.
+    appType: "spa",
     plugins: [react(), aerobimHtmlSecurity()],
     define: defineEnv,
     build: {
@@ -93,6 +95,7 @@ export default defineConfig(({ mode }) => {
     server: {
       host: env.AEROBIM_VITE_HOST || "127.0.0.1",
       port: 5173,
+      strictPort: true,
       watch: {
         // Smoke and exports write under frontend/artifacts; a page reload
         // mid-demo is worse than a stale artifact on disk.
@@ -131,6 +134,7 @@ export default defineConfig(({ mode }) => {
     preview: {
       host: env.AEROBIM_VITE_HOST || "127.0.0.1",
       port: 4173,
+      strictPort: true,
       headers: { ...SHELL_SECURITY_HEADERS },
     },
   };

@@ -27,7 +27,7 @@ Filter presets are **browser storage** or **JSON file exchange**. Legacy `team` 
 
 ## Stack
 
-Fact, not a roadmap: React 19, TypeScript, Vite 7, Three.js, web-ifc (lazy chunk), vitest 4 + Testing Library. Playwright is only `smoke:browser` and `smoke:decision`. TanStack / Storybook / Tailwind are not in this tree.
+Fact, not a roadmap: React 19, TypeScript, **Vite 7** SPA (not Next.js), Three.js, web-ifc (lazy chunk), vitest 4 + Testing Library. Playwright is only `smoke:browser` and `smoke:decision`. TanStack / Storybook / Tailwind are not in this tree.
 
 Visible copy goes through `src/lib/i18n/ru.ts`. CDN fonts are not loaded.
 
@@ -35,15 +35,17 @@ Publishable frontend test counts are only in [`docs/evidence/runtime-baseline-la
 
 ## Run
 
-API default: `http://127.0.0.1:8080`. One command starts **API + Vite** (`npm ci` if Vite is missing):
+API default: `http://127.0.0.1:8080`. Vite is pinned to `http://127.0.0.1:5173` (`strictPort`; never Next.js `3000`). One command starts **API + Vite** (`npm ci` if Vite is missing):
 
 ```bash
 python scripts/run_review_shell.py
 ```
 
-Windows PowerShell from the repo root: `.\start.bat` (the `.\` is required). Do not type `start` (Start-Process) or `start.bat` without the prefix. Explorer: double-click `start.bat`. CMD: `start.bat`.
+Linux/macOS from the repo root: `./start.sh`. Windows PowerShell: `.\start.bat` (the `.\` is required). Do not type `start` (Start-Process) or `start.bat` without the prefix. Explorer: double-click `start.bat`. CMD: `start.bat`. If 8080 or 5173 is held by a leftover process, stop it and retry.
 
 Same stand from `backend/` (venv active): `python -m aerobim.tools.run_review_stand`. From this directory: `npm start`. Ctrl+C stops both processes. Dedicated storage; click «Загрузить демонстрационный комплект». Not the jury CLI.
+
+The API tree is `<clone>/backend`, not a `/tmp`-only copy of this UI. If the frontend was copied elsewhere, set `AEROBIM_BACKEND_DIR` to that `backend` directory and `AEROBIM_FRONTEND_DIR` to this tree. The combined launcher runs `backend/.venv/Scripts/python.exe -m aerobim.main` on Windows and `backend/.venv/bin/python -m aerobim.main` on Linux.
 
 Vite only (smokes, already-running API):
 
@@ -60,7 +62,7 @@ Override the API:
 VITE_AEROBIM_API_BASE_URL=http://127.0.0.1:8080
 ```
 
-`npm run dev` needs the API already up (`python -m aerobim.main` from `backend/`). Combined live smoke from `backend/`:
+If 5173 is busy, stop the leftover Vite process. Combined live smoke from `backend/` may use 5174 or 4173; it never binds Next.js port 3000:
 
 ```bash
 python -m aerobim.tools.run_live_review_smoke
@@ -78,7 +80,7 @@ The script checks live export links, overlay presence, preset JSON-file exchange
 - `artifacts/browser-smoke/review-shell-clash.png`
 - `artifacts/browser-smoke/review-shell-smoke.trace.zip`
 
-If Vite moved off `5173`: `npm run smoke:browser -- --base-url http://127.0.0.1:3001`.
+If the combined smoke moved Vite to `5174`: `npm run smoke:browser -- --base-url http://127.0.0.1:5174`.
 
 Decision half of the same rehearsal — remark card to `accepted`, the
 draft-vs-confirmed JSON pair, loopback-only traffic, 1366×768 / 1280×800 and the

@@ -16,14 +16,17 @@ from pathlib import Path
 
 from aerobim.domain.checkpoint import CHECKPOINT, CUSTOMER_GO
 from aerobim.tools.run_live_review_smoke import (
+    FIXED_BACKEND_PORT,
+    FIXED_FRONTEND_PORT,
     backend_dir,
     backend_python_executable,
     build_backend_env,
     build_frontend_env,
-    choose_available_port,
     ensure_frontend_dependencies,
+    ensure_port_free,
     frontend_dir,
     npm_command,
+    reject_nextjs_frontend_port,
     terminate_process,
     wait_for_http_ok,
 )
@@ -37,8 +40,6 @@ CLAIM_BOUNDARY = (
 )
 
 DEFAULT_HOST = "127.0.0.1"
-DEFAULT_BACKEND_PORTS = (8080, 8081)
-DEFAULT_FRONTEND_PORTS = (5173, 3000)
 
 
 def default_storage_dir() -> Path:
@@ -72,8 +73,11 @@ def run_review_stand(
 ) -> None:
     target_storage = (storage_dir or default_storage_dir()).resolve()
     target_storage.mkdir(parents=True, exist_ok=True)
-    selected_backend = backend_port or choose_available_port(host, DEFAULT_BACKEND_PORTS)
-    selected_frontend = frontend_port or choose_available_port(host, DEFAULT_FRONTEND_PORTS)
+    selected_backend = backend_port if backend_port is not None else FIXED_BACKEND_PORT
+    selected_frontend = frontend_port if frontend_port is not None else FIXED_FRONTEND_PORT
+    reject_nextjs_frontend_port(selected_frontend)
+    ensure_port_free(host, selected_backend, role="backend API")
+    ensure_port_free(host, selected_frontend, role="Vite review shell")
     backend_url = f"http://{host}:{selected_backend}"
     frontend_url = f"http://{host}:{selected_frontend}"
 

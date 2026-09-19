@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -40,5 +40,24 @@ describe("review shell html security", () => {
   it("allows Vite's injected style tag in DEV_CSP only", () => {
     expect(viteConfig).toMatch(/style-src 'self' 'unsafe-inline'/);
     expect(html).not.toMatch(/style-src 'self' 'unsafe-inline'/);
+  });
+
+  it("is a Vite SPA and does not ship Next.js", () => {
+    const pkg = JSON.parse(readFileSync(join(FRONTEND_ROOT, "package.json"), "utf8")) as {
+      scripts: Record<string, string>;
+      dependencies?: Record<string, string>;
+      devDependencies?: Record<string, string>;
+    };
+    const lock = readFileSync(join(FRONTEND_ROOT, "package-lock.json"), "utf8");
+    expect(pkg.scripts.dev).toBe("vite");
+    expect(pkg.scripts.dev).not.toContain("next");
+    expect(pkg.dependencies?.next).toBeUndefined();
+    expect(pkg.devDependencies?.next).toBeUndefined();
+    expect(lock).not.toContain("node_modules/next/");
+    expect(viteConfig).toContain('appType: "spa"');
+    expect(viteConfig).toContain("strictPort: true");
+    expect(existsSync(join(FRONTEND_ROOT, "next.config.mjs"))).toBe(false);
+    expect(existsSync(join(FRONTEND_ROOT, "next.config.js"))).toBe(false);
+    expect(existsSync(join(FRONTEND_ROOT, "app"))).toBe(false);
   });
 });

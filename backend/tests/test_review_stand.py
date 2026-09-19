@@ -155,6 +155,23 @@ class ReviewShellLauncherTests(unittest.TestCase):
         self.assertIn(".\\start.bat", text)
         self.assertNotIn("run_kt3_jury", text)
 
+    def test_root_start_sh_and_vite_identity(self) -> None:
+        sh = (repo_root() / "start.sh").read_text(encoding="utf-8")
+        self.assertIn("aerobim.tools.run_review_stand", sh)
+        self.assertIn("backend/.venv/bin/python", sh)
+        self.assertNotIn("next.config", sh)
+        from aerobim.tools.run_review_stand import run_review_stand
+
+        with self.assertRaises(ValueError):
+            run_review_stand(frontend_port=3000)
+        wrapper = (repo_root() / "frontend" / "scripts" / "start-review-shell.mjs").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("AEROBIM_BACKEND_DIR", wrapper)
+        self.assertNotIn("next dev", wrapper)
+        for rel in ("next.config.mjs", "frontend/app/page.tsx"):
+            self.assertFalse((repo_root() / rel).exists(), msg=rel)
+
     def test_readme_power_shell_recipe_requires_dot_slash(self) -> None:
         for name in ("README.md", "README.ru.md"):
             text = (repo_root() / name).read_text(encoding="utf-8")

@@ -11,6 +11,7 @@ chcp 65001 >nul
 set PYTHONUNBUFFERED=1
 set PYTHONIOENCODING=utf-8
 echo AeroBIM review shell. PowerShell: .\start.bat  (not "start")
+echo Vite 127.0.0.1:5173  API 127.0.0.1:8080  (not Next.js)
 
 if not exist "backend\.venv\Scripts\python.exe" (
   echo backend\.venv not found. From AeroBIM\backend:

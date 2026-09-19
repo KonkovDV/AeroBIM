@@ -5,6 +5,7 @@
 # Explorer: double-click start.bat. CMD: start.bat
 # .bat is not blocked by ExecutionPolicy; prefer .\start.bat if this file is blocked.
 $ErrorActionPreference = "Stop"
+Write-Host "AeroBIM review shell. Vite 127.0.0.1:5173  API 127.0.0.1:8080  (not Next.js)"
 Set-Location -LiteralPath $PSScriptRoot
 $python = Join-Path $PSScriptRoot "backend\.venv\Scripts\python.exe"
 if (-not (Test-Path -LiteralPath $python)) {

@@ -1,23 +1,29 @@
 from __future__ import annotations
 
 import io
+import os
 import socket
 import sys
 import unittest
 import zipfile
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from unittest.mock import Mock, patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from aerobim.tools.run_live_review_smoke import (
+    DEFAULT_FRONTEND_PORTS,
+    backend_dir,
     build_backend_env,
     build_frontend_env,
     choose_available_port,
     extract_json_payload,
+    frontend_dir,
     open_http_url,
+    reject_nextjs_frontend_port,
 )
-from aerobim.tools.seed_smoke_report import SMOKE_TENANT_ID
+from aerobim.tools.seed_smoke_report import SMOKE_TENANT_ID, repo_root
 
 
 class LiveReviewSmokeHelperTests(unittest.TestCase):
@@ -40,19 +46,38 @@ class LiveReviewSmokeHelperTests(unittest.TestCase):
 
         self.assertNotEqual(selected, busy_port)
 
+    def test_frontend_port_fallbacks_are_vite_not_nextjs(self) -> None:
+        self.assertEqual(DEFAULT_FRONTEND_PORTS, (5173, 5174, 4173))
+        with self.assertRaises(ValueError):
+            reject_nextjs_frontend_port(3000)
+        tmp = Path(self.enterContext(TemporaryDirectory()))
+        with patch.dict(
+            os.environ,
+            {
+                "AEROBIM_BACKEND_DIR": str(tmp / "api"),
+                "AEROBIM_FRONTEND_DIR": str(tmp / "ui"),
+            },
+        ):
+            (tmp / "api").mkdir()
+            (tmp / "ui").mkdir()
+            self.assertEqual(backend_dir(), (tmp / "api").resolve())
+            self.assertEqual(frontend_dir(), (tmp / "ui").resolve())
+        with patch.dict(os.environ, {"AEROBIM_BACKEND_DIR": "", "AEROBIM_FRONTEND_DIR": ""}):
+            self.assertEqual(backend_dir(), repo_root() / "backend")
+
     def test_build_backend_env_sets_storage_port_debug_and_cors(self) -> None:
         env = build_backend_env(
             base_env={"PATH": "example"},
             storage_dir=Path("c:/tmp/live-smoke"),
             port=8081,
-            frontend_origin="http://127.0.0.1:3000",
+            frontend_origin="http://127.0.0.1:5173",
         )
 
         self.assertEqual(env["PATH"], "example")
         self.assertEqual(env["AEROBIM_STORAGE_DIR"], str(Path("c:/tmp/live-smoke")))
         self.assertEqual(env["AEROBIM_PORT"], "8081")
         self.assertEqual(env["AEROBIM_DEBUG"], "true")
-        self.assertEqual(env["AEROBIM_CORS_ORIGINS"], "http://127.0.0.1:3000")
+        self.assertEqual(env["AEROBIM_CORS_ORIGINS"], "http://127.0.0.1:5173")
         self.assertEqual(env["AEROBIM_HOST"], "127.0.0.1")
         self.assertEqual(env["AEROBIM_SIGNOFF_PROFILE"], "development")
 
@@ -61,7 +86,7 @@ class LiveReviewSmokeHelperTests(unittest.TestCase):
             base_env={"AEROBIM_API_BEARER_TOKEN": "inherited-token"},
             storage_dir=Path("c:/tmp/live-smoke"),
             port=8081,
-            frontend_origin="http://127.0.0.1:3000",
+            frontend_origin="http://127.0.0.1:5173",
         )
 
         self.assertEqual(env["AEROBIM_ENV"], "development")
@@ -77,7 +102,7 @@ class LiveReviewSmokeHelperTests(unittest.TestCase):
             base_env={"AEROBIM_SIGNOFF_PROFILE": "customer_pilot"},
             storage_dir=Path("c:/tmp/live-smoke"),
             port=8081,
-            frontend_origin="http://127.0.0.1:3000",
+            frontend_origin="http://127.0.0.1:5173",
         )
         self.assertEqual(env["AEROBIM_SIGNOFF_PROFILE"], "development")
         self.assertEqual(env["AEROBIM_ENV"], "development")
@@ -97,7 +122,7 @@ class LiveReviewSmokeHelperTests(unittest.TestCase):
             },
             storage_dir=Path("c:/tmp/live-smoke"),
             port=8081,
-            frontend_origin="http://127.0.0.1:3000",
+            frontend_origin="http://127.0.0.1:5173",
         )
         self.assertEqual(env["PATH"], "example")
         self.assertNotIn("AEROBIM_REDIS_URL", env)

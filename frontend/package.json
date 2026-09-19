@@ -2,6 +2,7 @@
   "name": "aerobim-frontend",
   "private": true,
   "version": "0.1.0",
+  "description": "AeroBIM review shell: Vite + React SPA. Not Next.js.",
   "type": "module",
   "scripts": {
     "dev": "vite",
