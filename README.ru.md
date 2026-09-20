@@ -5,7 +5,7 @@
 
 # AeroBIM
 
-[English version](README.md)
+[English version](README.en.md)
 
 [![CI](https://github.com/KonkovDV/AeroBIM/actions/workflows/ci.yml/badge.svg)](https://github.com/KonkovDV/AeroBIM/actions/workflows/ci.yml)
 [![Checkpoint](https://img.shields.io/badge/checkpoint-GO-brightgreen.svg)](docs/pilot-claim-boundary-2026.md)
@@ -221,7 +221,7 @@ presentation/    FastAPI
 
 Артефакты за портом `ObjectStore` (локальный диск или S3 — один путь в коде). При `AEROBIM_DB_URL` сводки отчётов индексируются в Postgres; до промышленной эксплуатации схему лучше переносить миграцией вне приложения.
 
-Локальный клон работает на значениях по умолчанию. Полная таблица `AEROBIM_*` — в [английском README](README.md), раздел Configuration. CI проверяет её в обе стороны.
+Локальный клон работает на значениях по умолчанию. Полная таблица `AEROBIM_*` — в [корневом README](README.md), раздел Configuration. CI проверяет её в обе стороны.
 
 ## Документация
 

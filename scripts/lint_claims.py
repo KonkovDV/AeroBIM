@@ -34,6 +34,7 @@ _ALLOW_FILE_REGISTRY = _REPO / "audit" / "claims_allow_file_registry.json"
 _SCAN_ROOTS = (
     _REPO / "README.md",
     _REPO / "README.ru.md",
+    _REPO / "README.en.md",
     _REPO / "frontend" / "src",
     _REPO / "docs" / "docs.md",
     _REPO / "docs" / "partners",
@@ -726,7 +727,7 @@ def _is_citation_audit_trail(rel: str) -> bool:
 
 def lint_citation_twins(*, roots: list[Path] | None = None) -> list[str]:
     """Reject fabricated DOI twins outside bibliography errata / audit trail."""
-    scan_roots = roots if roots is not None else [_REPO / "README.md", _REPO / "README.ru.md", _REPO / "docs"]
+    scan_roots = roots if roots is not None else [_REPO / "README.md", _REPO / "README.ru.md", _REPO / "README.en.md", _REPO / "docs"]
     files: list[Path] = []
     for root in scan_roots:
         if root.is_file():

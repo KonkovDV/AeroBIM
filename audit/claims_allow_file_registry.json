@@ -4,6 +4,7 @@
   "paths": [
     "README.md",
     "README.ru.md",
+    "README.en.md",
     "docs/DATASETS.md",
     "docs/architecture/ADR-001-verdict-ownership-2026.md",
     "docs/architecture/ADR-002-open-core-commercial-boundary-2026.md",

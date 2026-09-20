@@ -234,15 +234,16 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
             self.assertNotIn("finding на fixture", text, msg=path.name)
             self.assertNotIn("live CLI с fail-closed", text, msg=path.name)
             self.assertNotIn("signed scope и CDE", text, msg=path.name)
-        ru = (self._repo() / "README.ru.md").read_text(encoding="utf-8")
+        ru = (self._repo() / "README.md").read_text(encoding="utf-8")
         self.assertIn("находку с доказательствами на учебном комплекте", ru)
         self.assertNotIn("finding на fixture", ru)
         self.assertNotIn("fail-closed доказатель", ru)
 
     def test_seven_jury_surfaces_carry_verbatim_formula(self) -> None:
         repo = self._repo()
-        en_readme = repo / "README.md"
+        en_readme = repo / "README.en.md"
         surfaces = (
+            repo / "README.md",
             repo / "README.ru.md",
             repo / "docs" / "docs.md",
             repo / "docs" / "TIER0_INDEX.md",

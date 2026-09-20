@@ -21,6 +21,7 @@ def _iter_markdown(root: Path) -> list[Path]:
     for pattern in (
         "README.md",
         "README.ru.md",
+        "README.en.md",
         "CODE_OF_CONDUCT.md",
         "CONTRIBUTING.md",
         "SECURITY.md",

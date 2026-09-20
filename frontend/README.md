@@ -1,6 +1,6 @@
 # Frontend review shell
 
-[Product README (EN)](../README.md) · [продукт (RU)](../README.ru.md)
+[продукт (RU)](../README.md) · [Product README (EN)](../README.en.md)
 
 The browser workplace is a **review shell over persisted reports**. It is not a CDE, not a model authoring tool, and not a replacement for the expert. The UI never writes `summary.passed` ([ADR-001](../docs/architecture/ADR-001-verdict-ownership-2026.md)). Checkpoint **`GO`**; `customer_go` false.
 
