@@ -31,7 +31,7 @@
 |---|---|---|
 | СОД (10D, Pilot-BIM, Sarex) | Наличие, маршрут, версии | Не сверяет содержание файлов между собой |
 | Проверка модели (Tangl, Solibri) | Модель, атрибуты, коллизии в среде автора | Не сверяет модель с ведомостью, запиской и расчётом |
-| **Шлюз комплекта (AeroBIM)** | Непротиворечивость между файлами на публичных IDS | Не заменяет две полки выше |
+| **Шлюз комплекта (AeroBIM)** | Непротиворечивость между файлами; профиль приёмки — IDS | Не заменяет две полки выше |
 
 Это не коннектор Tangl и не СОД. Репозиторий работает на **шве между файлами**.
 
@@ -91,7 +91,7 @@
 
 ## Try it
 
-Python 3.12 и venv в `backend/.venv`:
+Python 3.12 и venv в `backend/.venv`.
 
 ```bash
 git clone https://github.com/KonkovDV/AeroBIM.git
@@ -102,13 +102,10 @@ source .venv/bin/activate           # Windows PowerShell: .\.venv\Scripts\Activa
 pip install -e ".[dev,raster]"
 ```
 
-Показ для жюри — живой CLI, не снимок HTML. `summary.passed=false` ожидаем: в учебном комплекте посажены дефекты. Это не точность продукта.
+Показ для жюри — живой CLI из `backend/`, не снимок HTML. `summary.passed=false` ожидаем: в учебном комплекте посажены дефекты. Это не точность продукта.
 
 ```bash
 python -m aerobim.tools.run_kt3_jury
-# artifacts/kt3-jury/latest.json
-# artifacts/kt3-without-customer/latest.json
-
 python -m aerobim.tools.run_demo_ifc_acceptance_gate
 python -m aerobim.tools.run_demo_vertical_slice
 
@@ -116,14 +113,13 @@ pytest tests -q
 python -m aerobim.main   # http://127.0.0.1:8080/health
 ```
 
-Оболочка ревью — не замена CLI жюри. FastAPI `http://127.0.0.1:8080`, Vite/React `http://127.0.0.1:5173` (не Next.js). UI не пишет `summary.passed`. Нативные RVT/NWD/DWG отвергаются до загрузки.
+Оболочка ревью — не замена CLI жюри. Запуск **из корня клона**. FastAPI `http://127.0.0.1:8080`, Vite/React `http://127.0.0.1:5173`. UI не пишет `summary.passed`. Нативные RVT/NWD/DWG отвергаются до загрузки.
 
 - Linux/macOS: `./start.sh`
-- Windows PowerShell: `.\start.bat` (префикс `.\` обязателен; `start` — это Start-Process и запросит FilePath)
+- Windows PowerShell: `.\start.bat` (префикс `.\` обязателен; `start` без префикса — это Start-Process и запросит FilePath)
 - из `backend/`: `python -m aerobim.tools.run_review_stand`
-- скрипт: `python scripts/run_review_shell.py`
 
-Если 8080 или 5173 заняты — остановить процесс и повторить. В development один клик репетиции: `POST /v1/demo/seed-fixture` (в OpenAPI нет; git-фикстуры). Подробности: [`frontend/README.md`](frontend/README.md).
+Если 8080 или 5173 заняты — остановить процесс и повторить. Подробности: [`frontend/README.md`](frontend/README.md).
 
 Опциональные наборы `.[clash]`, `.[docling]`, `.[enterprise]`, `.[pdf-agpl]` для команд выше не нужны. `GET /v1/auth/bff` по умолчанию 501.
 
@@ -137,7 +133,7 @@ flowchart LR
 ```
 
 1. **Модель.** Свойства и величины — IfcOpenShell. IFC2x3 (схема buildingSMART; публикации ISO нет), IFC4 ADD2 (ISO 16739-1:2018) и IFC4x3 (ISO 16739-1:2024) идут через одно ядро. ISO/PAS 16739:2005 — это IFC2x Platform, не IFC2x3. Расхождение имён наборов свойств между релизами — `ValidationIssue`, не молчаливый пропуск. Правила: [`docs/ifc-compatibility-matrix.md`](docs/ifc-compatibility-matrix.md).
-2. **Правила.** IDS 1.0 — IfcTester. Наборы Мособлгосэкспертизы и СПб ГАУ ЦГЭ (ЦИМ ОКС ред. 3.1.0 + ЦИМ РИИ ред. 1.1.0) лежат в `samples/`. Профиль ЦГЭ ([`samples/profiles/spb-cge/`](samples/profiles/spb-cge/manifest.json)) — опубликованный набор (OFFICIAL_PUBLISHED), не подписанный профиль приёмки. CI на `ubuntu-latest` гоняет `python -m aerobim.tools.validate_spb_cge_profile --no-write --verify-committed-evidence`. Незагруженный запрошенный набор роняет проверку.
+2. **Правила.** IDS 1.0 — IfcTester. Наборы Мособлгосэкспертизы и СПб ГАУ ЦГЭ (ЦИМ ОКС ред. 3.1.0 + ЦИМ РИИ ред. 1.1.0) лежат в `samples/`. Профиль ЦГЭ ([`samples/profiles/spb-cge/`](samples/profiles/spb-cge/manifest.json)) — опубликованный набор (OFFICIAL_PUBLISHED), не подписанный профиль приёмки. CI проверяет его командой `python -m aerobim.tools.validate_spb_cge_profile --no-write --verify-committed-evidence`. Незагруженный запрошенный набор роняет проверку.
 3. **Документы.** Модель сверяется с пометками на чертеже, спецификациями и расчётными текстами (ε-полоса, русские и европейские группированные числа). Источники сравниваются, ничего не пересчитывается. Независимая корректность расчётов не реализована.
 4. **Отчёт.** У находки есть `finding_id`, `source_id` и `evidence_refs` — без них она не сохраняется. HTML людям, JSON машинам, BCF 2.1 / 3.0 для обмена замечаниями. Оболочка ревью (web-ifc + Three.js) показывает модель и доказательство на листе.
 
@@ -149,7 +145,7 @@ flowchart LR
 
 | ID | Подмена измерения (без заказчика канала) | Остаток (не подменяется) |
 |---|---|---|
-| **RT-001** | `a_content_pairing` **CLOSED** (**RT-001a**) — типовые замечания экспертизы РФ (эксперимент Б) + публичные IDS + учебный комплект / инъекция. `b_protocol_rehearsal` **CLOSED** — два независимых симулированных прохода на том же учебном комплекте, живые κ/α/AC1 | `b_criterion_dual_rater` **OPEN** (**RT-001b**) (двое людей + заключение на *тот же* том). `c_customer_corpus` **OPEN**. Открытые бенчмарки — другой контур. Симуляция — не двое людей. Не точность продукта |
+| **RT-001** | `a_content_pairing` **CLOSED** (**RT-001a**) — типовые замечания экспертизы РФ + публичные IDS + учебный комплект / инъекция. `b_protocol_rehearsal` **CLOSED** — два независимых симулированных прохода на том же учебном комплекте, κ/α/AC1 на симуляции | `b_criterion_dual_rater` **OPEN** (**RT-001b**) (двое людей + заключение на *тот же* том). `c_customer_corpus` **OPEN**. Открытые бенчмарки — другой контур. Симуляция — не двое людей. Не точность продукта |
 | **RT-002** | `a_regulatory` **CLOSED** (**RT-002a**) — публичные IDS (Мособлгосэкспертиза, СПб ГАУ ЦГЭ, городской АГР) как линейка измерения. `b_eir_carrier` **CLOSED** (**RT-002b**) — EIR v4.0 и BIM-стандарт v4.0 на канальном комплекте как **текст** (пин без имён файлов). Публичный IDS экспертизы — не EIR назначающей стороны | `c_corporate_signed` **OPEN** (**RT-002c**; `b_corporate` остаётся OPEN) — подпись заказчика канала / `customer_approved` IDS. Текст EIR — не подписанный профиль. Город-издатель — не подпись заказчика канала. Не писать недифференцированно «RT-002 CLOSED» |
 | **RT-003** | `a_federated_geometric_rehearsal` **CLOSED** (**RT-003a**) — посаженный IfcClash (стены; труба против стены). `b_navis_federation_carrier` **CLOSED** — три NWD-федерации. `b_ifc_system_graph_rehearsal` **CLOSED** (**RT-003b**) — граф `IfcSystem` на HVAC-фикстуре (две системы, `IfcRelAssignsToGroup`); не труба против стены | `b_mep_system_clash` **OPEN** (**RT-003c**, `NOT_VERIFIED`) — 0 duct/pipe/cable в IFC заказчика; EIR называет LOD ОВ/ВК/ИТП/ЭОМ/СС, моделей нет. `c_customer_federated_ifc` **OPEN** — выгрузка NWD→IFC не поставлена. MEP delivered не заявляется |
 
@@ -157,7 +153,7 @@ flowchart LR
 
 Экспорт BCF ZIP — структурный T1 ([`audit/evidence/bcf-structural-handoff-2026-07-25.json`](audit/evidence/bcf-structural-handoff-2026-07-25.json)). Импорт в независимую СОД — **NOT_VERIFIED**. Чтение DWG и нативных RVT/NWD отсутствует: отказ, не молчание (вход — IFC). Независимая корректность расчётов не реализована.
 
-ГОСТ Р 21.101-2026 (приказ Росстандарта № 129-ст от 12 февраля 2026; **в силе с 1 апреля 2026**, взамен 21.101-2020; GUID как идентификатор электронного документа ПД/РД) — правило **идентификации документа**. AeroBIM с первого дня ведёт находки к устойчивому идентификатору. Это совпадение механизма, а не заявление о полном соответствии стандарту. Дата введения стандарта (1 апреля) — не дата обязательной подачи ЦИМ АГР в Москве (2 апреля).
+ГОСТ Р 21.101-2026 (приказ Росстандарта № 129-ст от 12 февраля 2026; **в силе с 1 апреля 2026**, взамен 21.101-2020; GUID как идентификатор электронного документа ПД/РД) — правило **идентификации документа**. AeroBIM ведёт находки к устойчивому идентификатору. Это совпадение механизма, а не заявление о полном соответствии стандарту. Дата введения стандарта (1 апреля) — не дата обязательной подачи ЦИМ АГР в Москве (2 апреля).
 
 Реестр: [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md). Речь: [`docs/demo/KT2_JURY_FAQ_2026_08_12.md`](docs/demo/KT2_JURY_FAQ_2026_08_12.md) · [`docs/demo/KT3_JURY_FAQ_2026_08_25.md`](docs/demo/KT3_JURY_FAQ_2026_08_25.md).
 
@@ -184,7 +180,7 @@ flowchart LR
 <details>
 <summary>Локально: <code>python -m aerobim.main</code></summary>
 
-`GET /health` без аутентификации. `/v1/*` требует `AEROBIM_API_BEARER_TOKEN`, если не задано `AEROBIM_ALLOW_ANONYMOUS_DEV=true` (только development). Мутирующие маршруты делят один `require_bearer_auth`.
+`GET /health` без аутентификации. `/v1/*` требует `AEROBIM_API_BEARER_TOKEN`, если не задано `AEROBIM_ALLOW_ANONYMOUS_DEV=true` (только development).
 
 | Метод | Путь | Назначение |
 |---|---|---|
@@ -194,7 +190,7 @@ flowchart LR
 | `POST` | `/v1/uploads` | Приём файлов |
 | `POST` | `/v1/validate/ifc` | IFC против требований и IDS |
 | `POST` | `/v1/analyze/project-package` | Полный анализ комплекта |
-| `POST` | `/v1/analyze/project-package/submit` | Крупный комплект в **in-process** `BackgroundTasks` (не durable worker). `Idempotency-Key`; тот же ключ и другой payload → 409; лимит на арендатора → 429; отмена через `request_cancel`; вне development записи в Redis; после сбоя `QUEUED` снимает `reclaim_stale_queued` |
+| `POST` | `/v1/analyze/project-package/submit` | Крупный комплект в фоне процесса (не durable worker) |
 | `GET` | `/v1/analyze/project-package/jobs/{job_id}` | Статус задания |
 | `POST` | `/v1/analyze/project-package/jobs/{job_id}/cancel` | Отмена |
 | `GET` | `/v1/reports` | Список отчётов |
@@ -207,7 +203,7 @@ flowchart LR
 | `GET` | `/v1/reports/{id}/review-kpi` | Сводка разбора (не дни цикла в СОД) |
 | `POST` | `/v1/demo/seed-fixture` | Только development; git-фикстура; в OpenAPI нет |
 
-Анализ комплекта может принять отчёт OpenRebar (`reinforcement_report_path`) с дайджестом SHA-256: сверка источников, не пересчёт. `python -m aerobim.tools.openrebar_provenance_digest`. OpenCDE `POST .../export/bcf-api/push` — экспериментальная отправка, не доказательство импорта в СОД заказчика.
+Анализ комплекта может принять отчёт OpenRebar с дайджестом SHA-256: сверка источников, не пересчёт. OpenCDE `POST .../export/bcf-api/push` — экспериментальная отправка, не доказательство импорта в СОД заказчика.
 
 </details>
 
@@ -219,15 +215,15 @@ flowchart LR
 core/            DI-контейнер, токены, конфигурация
 domain/          Неизменяемые модели, порты-Protocol, контракт логирования
 application/     Сведение требований, поиск противоречий
-infrastructure/  IfcOpenShell, IfcTester, Docling, IfcClash, BCF, хранилище
+infrastructure/  IfcOpenShell, IfcTester, BCF, хранилище; IfcClash и Docling — опциональные наборы
 presentation/    FastAPI
 ```
 
 **48 Protocol ports** связаны с **76 adapter modules** через **63 DI tokens** в `bootstrap_container()`. Инвентарь пересобирается в [`docs/evidence/runtime-baseline-latest.json`](docs/evidence/runtime-baseline-latest.json) и сверяется в CI против обоих README.
 
-Артефакты за портом `ObjectStore` (локальный диск или S3 — один путь в коде). При `AEROBIM_DB_URL` сводки отчётов индексируются в Postgres; до промышленной эксплуатации схему лучше переносить миграцией вне приложения.
+Артефакты за портом `ObjectStore` (локальный диск или S3 — один путь в коде). При `AEROBIM_DB_URL` сводки отчётов индексируются в Postgres; схему лучше переносить миграцией вне приложения.
 
-Локальный клон работает на значениях по умолчанию. Полная таблица `AEROBIM_*` — ниже. CI проверяет её в обе стороны. Английская копия — в [README.en.md](README.en.md).
+Локальный клон работает на значениях по умолчанию. Таблица ниже на английском: CI сверяет её с `settings.py` в обе стороны. Та же таблица — в [README.en.md](README.en.md).
 
 ## Configuration
 
@@ -352,7 +348,7 @@ A local clone runs on defaults. CI checks the table against `settings.py` **both
 
 ## Цитирование
 
-[`CITATION.cff`](CITATION.cff) или [`docs/CITATION.bib`](docs/CITATION.bib). Цитируйте тег или SHA, не `latest`. Принципы FAIR для исследовательского ПО ([Chue Hong et al., 2022](https://doi.org/10.15497/RDA00068); [Barker et al., *Sci Data*](https://doi.org/10.1038/s41597-022-01710-x)) — цель документации, не сертифицированная оценка.
+[`CITATION.cff`](CITATION.cff) или [`docs/CITATION.bib`](docs/CITATION.bib). Цитируйте тег или SHA, не `latest`.
 
 <!-- AEROBIM_DOCUMENTED_ENV:BEGIN -->
 <!-- machine-checked parity list (export_runtime_baseline --check-readme)
@@ -474,7 +470,7 @@ tests_passed: backend=3300, frontend=400; commit 4742d56d9574; see docs/evidence
 
 ## Стек
 
-Python 3.12+, FastAPI, Uvicorn. IFC — IfcOpenShell, IfcTester, IfcClash. Оболочка ревью — Vite, React, web-ifc, Three.js. PDF — pypdfium2, pdfminer.six, reportlab; PyMuPDF, RapidOCR и Docling опциональны.
+Python 3.12+, FastAPI, Uvicorn. IFC — IfcOpenShell, IfcTester; IfcClash опционален. Оболочка ревью — Vite, React, web-ifc, Three.js. PDF — pypdfium2, pdfminer.six, reportlab; PyMuPDF, RapidOCR и Docling опциональны.
 
 ## Лицензия
 

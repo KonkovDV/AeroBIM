@@ -31,7 +31,7 @@ Three shelves sit at different points in the process. Integration with them is n
 |---|---|---|
 | CDE (10D, Pilot-BIM, Sarex) | Presence, route, versions | Does not cross-check file contents |
 | Model checker (Tangl, Solibri) | Model, attributes, clashes in the authoring environment | Does not compare the model with the schedule, note and calculation |
-| **Pack gateway (AeroBIM)** | Cross-file consistency on public IDS | Does not replace the two shelves above |
+| **Pack gateway (AeroBIM)** | Cross-file consistency; acceptance profile is IDS | Does not replace the two shelves above |
 
 This is not a Tangl connector and not a CDE. The repository operates on the **seam between files**.
 
@@ -91,7 +91,7 @@ Missing data is not “ok”: an unfinished mandatory check cannot yield a posit
 
 ## Try it
 
-Python 3.12 and a venv in `backend/.venv`:
+Python 3.12 and a venv in `backend/.venv`.
 
 ```bash
 git clone https://github.com/KonkovDV/AeroBIM.git
@@ -102,13 +102,10 @@ source .venv/bin/activate           # Windows PowerShell: .\.venv\Scripts\Activa
 pip install -e ".[dev,raster]"
 ```
 
-The jury show is the live CLI, not an HTML snapshot. `summary.passed=false` is expected: the fixture pack contains planted defects. Those numbers are not product accuracy.
+The jury show is the live CLI from `backend/`, not an HTML snapshot. `summary.passed=false` is expected: the fixture pack contains planted defects. Those numbers are not product accuracy.
 
 ```bash
 python -m aerobim.tools.run_kt3_jury
-# artifacts/kt3-jury/latest.json
-# artifacts/kt3-without-customer/latest.json
-
 python -m aerobim.tools.run_demo_ifc_acceptance_gate
 python -m aerobim.tools.run_demo_vertical_slice
 
@@ -116,14 +113,13 @@ pytest tests -q
 python -m aerobim.main   # http://127.0.0.1:8080/health
 ```
 
-The review shell is not a substitute for the jury CLI. FastAPI at `http://127.0.0.1:8080`, Vite/React at `http://127.0.0.1:5173` (not Next.js). The UI never writes `summary.passed`. Native RVT/NWD/DWG are rejected before upload.
+The review shell is not a substitute for the jury CLI. Start it **from the clone root**. FastAPI at `http://127.0.0.1:8080`, Vite/React at `http://127.0.0.1:5173`. The UI never writes `summary.passed`. Native RVT/NWD/DWG are rejected before upload.
 
 - Linux/macOS: `./start.sh`
-- Windows PowerShell: `.\start.bat` (the leading `.\` is required; `start` is Start-Process and will ask for FilePath)
+- Windows PowerShell: `.\start.bat` (the leading `.\` is required; bare `start` is Start-Process and will ask for FilePath)
 - from `backend/`: `python -m aerobim.tools.run_review_stand`
-- script: `python scripts/run_review_shell.py`
 
-If 8080 or 5173 is already bound, stop that process and retry. In development, one rehearsal click: `POST /v1/demo/seed-fixture` (unpublished in OpenAPI; git fixtures). Details: [`frontend/README.md`](frontend/README.md).
+If 8080 or 5173 is already bound, stop that process and retry. Details: [`frontend/README.md`](frontend/README.md).
 
 Optional extras `.[clash]`, `.[docling]`, `.[enterprise]`, `.[pdf-agpl]` are not needed for the commands above. Default `GET /v1/auth/bff` is 501.
 
@@ -137,7 +133,7 @@ flowchart LR
 ```
 
 1. **The model.** Properties and quantities are validated with IfcOpenShell. IFC2x3 (buildingSMART schema; no ISO publication), IFC4 ADD2 (ISO 16739-1:2018) and IFC4x3 (ISO 16739-1:2024) go through one kernel. ISO/PAS 16739:2005 is the IFC2x Platform, not IFC2x3. Where property-set names diverge between releases, the difference is a `ValidationIssue`, not a silent skip. Per-feature rules: [`docs/ifc-compatibility-matrix.md`](docs/ifc-compatibility-matrix.md).
-2. **The rules.** IDS 1.0 is validated with IfcTester. Official rule sets from Moscow Region State Expertise and SPb GAU CGE (CIM OKS ed. 3.1.0 + CIM RII ed. 1.1.0) ship in `samples/`; the CGE profile ([`samples/profiles/spb-cge/`](samples/profiles/spb-cge/manifest.json)) is a published rule set (OFFICIAL_PUBLISHED), not a customer-signed acceptance profile. CI on `ubuntu-latest` runs `python -m aerobim.tools.validate_spb_cge_profile --no-write --verify-committed-evidence`. A requested rule set that cannot load fails the check.
+2. **The rules.** IDS 1.0 is validated with IfcTester. Official rule sets from Moscow Region State Expertise and SPb GAU CGE (CIM OKS ed. 3.1.0 + CIM RII ed. 1.1.0) ship in `samples/`; the CGE profile ([`samples/profiles/spb-cge/`](samples/profiles/spb-cge/manifest.json)) is a published rule set (OFFICIAL_PUBLISHED), not a customer-signed acceptance profile. CI checks it with `python -m aerobim.tools.validate_spb_cge_profile --no-write --verify-committed-evidence`. A requested rule set that cannot load fails the check.
 3. **The other documents.** The model is compared with drawing notes, specifications and calculation texts, with a configured ε-band and Russian/European grouped decimals. Sources are compared; nothing is recomputed. Independent correctness of calculations is not implemented.
 4. **The report.** Each finding carries `finding_id`, `source_id` and `evidence_refs` (persistence refuses a finding without them). People get HTML; machines get JSON; issue exchange gets a structural BCF 2.1 / 3.0 ZIP. The browser review shell (web-ifc + Three.js) shows the IFC in 3D and the evidence on the sheet.
 
@@ -149,7 +145,7 @@ Product Checkpoint is the **regulatory-measurement MVP**. `customer_go` stays **
 
 | ID | Measurement substitute (no customer pack) | Residual (not substitutable) |
 |---|---|---|
-| **RT-001** | `a_content_pairing` **CLOSED** (**RT-001a**) — RF expertise typical-error catalogs (Experiment B) + public examination IDS + fixture / injection gold. `b_protocol_rehearsal` **CLOSED** — two simulated independent passes on the same fixture pack, live κ/α/AC1 | `b_criterion_dual_rater` **OPEN** (**RT-001b**) (two humans + conclusions on the *same* pack). `c_customer_corpus` **OPEN**. Open benches are a different contour. Simulation is not two people. Not product accuracy |
+| **RT-001** | `a_content_pairing` **CLOSED** (**RT-001a**) — RF expertise typical-error catalogs + public examination IDS + fixture / injection gold. `b_protocol_rehearsal` **CLOSED** — two simulated independent passes on the same fixture pack, κ/α/AC1 on the simulation | `b_criterion_dual_rater` **OPEN** (**RT-001b**) (two humans + conclusions on the *same* pack). `c_customer_corpus` **OPEN**. Open benches are a different contour. Simulation is not two people. Not product accuracy |
 | **RT-002** | `a_regulatory` **CLOSED** (**RT-002a**) — public IDS (Moscow Region State Expertise, SPb GAU CGE, city AGR) as the measurement ruler. `b_eir_carrier` **CLOSED** (**RT-002b**) — EIR v4.0 workbook + BIM-standard v4.0 present as **text** on the channel pack (git-safe pin; no filenames). Public examination IDS is not the appointing-party EIR | `c_corporate_signed` **OPEN** (**RT-002c**; `b_corporate` stays OPEN) — the appointing party signature / `customer_approved` IDS. Text EIR is not a signed profile. City-as-publisher is not a customer signature. Never write undifferentiated “RT-002 CLOSED” |
 | **RT-003** | `a_federated_geometric_rehearsal` **CLOSED** (**RT-003a**) — planted IfcClash (crossing walls; pipe vs wall). `b_navis_federation_carrier` **CLOSED** — three NWD federations on the channel pack. `b_ifc_system_graph_rehearsal` **CLOSED** (**RT-003b**) — HVAC fixture `IfcSystem` graph (two systems, `IfcRelAssignsToGroup`); not pipe vs wall | `b_mep_system_clash` **OPEN** (**RT-003c**, `NOT_VERIFIED`) — 0 duct/pipe/cable on customer IFC; EIR names OV/VK/ITP/EOM/SS LOD, models absent. `c_customer_federated_ifc` **OPEN** — NWD→IFC export not delivered. MEP delivered is not claimed |
 
@@ -157,7 +153,7 @@ Machine SSOT: [`docs/evidence/rt-blocker-volumes-2026-09.md`](docs/evidence/rt-b
 
 BCF ZIP export is structural T1 ([`audit/evidence/bcf-structural-handoff-2026-07-25.json`](audit/evidence/bcf-structural-handoff-2026-07-25.json)). Import into an independent CDE is **NOT_VERIFIED**. Native DWG and native RVT/NWD are missing (fail-closed; IFC-first ingest). Independent calculation correctness is not implemented — sources are compared, not recomputed.
 
-GOST R 21.101-2026 (Rosstandart order № 129-ст of 12 February 2026; **in force 1 April 2026**, replacing 21.101-2020; GUID as an identifier of an electronic design document) is a **document-identity** rule. AeroBIM has addressed findings to stable identifiers from day one. That is a coincidence of mechanism, not a claim of full conformity with the standard. The standard’s in-force date (1 April) is not the Moscow AGR IFC filing date (2 April).
+GOST R 21.101-2026 (Rosstandart order № 129-ст of 12 February 2026; **in force 1 April 2026**, replacing 21.101-2020; GUID as an identifier of an electronic design document) is a **document-identity** rule. AeroBIM addresses findings to a stable identifier. That is a coincidence of mechanism, not a claim of full conformity with the standard. The standard’s in-force date (1 April) is not the Moscow AGR IFC filing date (2 April).
 
 Register: [`audit/reports/CRITICAL_BLOCKERS.md`](audit/reports/CRITICAL_BLOCKERS.md). Speech: [`docs/demo/KT2_JURY_FAQ_2026_08_12.md`](docs/demo/KT2_JURY_FAQ_2026_08_12.md) · [`docs/demo/KT3_JURY_FAQ_2026_08_25.md`](docs/demo/KT3_JURY_FAQ_2026_08_25.md).
 
@@ -184,7 +180,7 @@ Optional or missing: geometry clash `.[clash]` (engine rehearsal, not MEP system
 <details>
 <summary>Local <code>python -m aerobim.main</code></summary>
 
-`GET /health` is unauthenticated. `/v1/*` requires `AEROBIM_API_BEARER_TOKEN` unless `AEROBIM_ALLOW_ANONYMOUS_DEV=true` (development only). Mutating routes share one `require_bearer_auth` callable.
+`GET /health` is unauthenticated. `/v1/*` requires `AEROBIM_API_BEARER_TOKEN` unless `AEROBIM_ALLOW_ANONYMOUS_DEV=true` (development only).
 
 | Method | Path | Purpose |
 |---|---|---|
@@ -194,7 +190,7 @@ Optional or missing: geometry clash `.[clash]` (engine rehearsal, not MEP system
 | `POST` | `/v1/uploads` | Multipart ingest |
 | `POST` | `/v1/validate/ifc` | Validate IFC against requirements and IDS |
 | `POST` | `/v1/analyze/project-package` | Full package analysis |
-| `POST` | `/v1/analyze/project-package/submit` | Queue a larger package as an **in-process** FastAPI `BackgroundTasks` job (not a durable worker). `Idempotency-Key`; same key + different payload → 409; per-tenant concurrency → 429; cancel via `request_cancel`; Redis stores job records outside development; a process crash can leave `QUEUED` until `reclaim_stale_queued` |
+| `POST` | `/v1/analyze/project-package/submit` | Queue a larger package in-process (not a durable worker) |
 | `GET` | `/v1/analyze/project-package/jobs/{job_id}` | Poll a background job |
 | `POST` | `/v1/analyze/project-package/jobs/{job_id}/cancel` | Cancel |
 | `GET` | `/v1/reports` | List persisted reports |
@@ -207,7 +203,7 @@ Optional or missing: geometry clash `.[clash]` (engine rehearsal, not MEP system
 | `GET` | `/v1/reports/{id}/review-kpi` | Aggregate triage metrics (not cycle-days in a CDE) |
 | `POST` | `/v1/demo/seed-fixture` | Development-only git fixture; omitted from the published OpenAPI |
 
-Package analysis optionally accepts an OpenRebar reinforcement report (`reinforcement_report_path`) with a SHA-256 provenance digest. This compares declared sources; it does not recompute anything. Generate the digest with `python -m aerobim.tools.openrebar_provenance_digest`. OpenCDE `POST .../export/bcf-api/push` is an experimental hub push, not proof of import into the customer CDE.
+Package analysis optionally accepts an OpenRebar reinforcement report with a SHA-256 provenance digest. This compares declared sources; it does not recompute anything. OpenCDE `POST .../export/bcf-api/push` is an experimental hub push, not proof of import into the customer CDE.
 
 </details>
 
@@ -219,13 +215,13 @@ Five layers, dependencies pointing inward only:
 core/            DI container, tokens, configuration
 domain/          Immutable models, Protocol ports, logging contract
 application/     Requirement fusion, contradiction detection
-infrastructure/  IfcOpenShell, IfcTester, Docling, IfcClash, BCF, storage
+infrastructure/  IfcOpenShell, IfcTester, BCF, storage; IfcClash and Docling are optional extras
 presentation/    FastAPI
 ```
 
 **48 domain Protocol ports** wire to **76 infrastructure adapter modules** through **63 DI tokens** in `bootstrap_container()`. These counts are regenerated into [`docs/evidence/runtime-baseline-latest.json`](docs/evidence/runtime-baseline-latest.json) and verified in CI against both READMEs.
 
-Artifacts sit behind an `ObjectStore` port, so local storage and S3-compatible buckets are the same code path. Report summaries are additionally indexed in Postgres when `AEROBIM_DB_URL` is set; that path is acceptable for a pilot but expects schema migration out of band before production use.
+Artifacts sit behind an `ObjectStore` port, so local storage and S3-compatible buckets are the same code path. Report summaries are additionally indexed in Postgres when `AEROBIM_DB_URL` is set; migrate the schema out of band rather than relying on bootstrap `CREATE`/`ALTER`.
 
 ## Configuration
 
@@ -468,11 +464,11 @@ tests_passed: backend=3300, frontend=400; commit 4742d56d9574; see docs/evidence
 
 ## Cite
 
-[`CITATION.cff`](CITATION.cff) or [`docs/CITATION.bib`](docs/CITATION.bib). Cite the Git tag or commit SHA, not a floating `latest`. The FAIR Principles for Research Software ([Chue Hong et al., 2022](https://doi.org/10.15497/RDA00068); [Barker et al., *Sci Data*](https://doi.org/10.1038/s41597-022-01710-x)) are the documentation target, not a certified assessment.
+[`CITATION.cff`](CITATION.cff) or [`docs/CITATION.bib`](docs/CITATION.bib). Cite the Git tag or commit SHA, not a floating `latest`.
 
 ## Stack
 
-Python 3.12+, FastAPI, Uvicorn. IFC — IfcOpenShell, IfcTester, IfcClash. Review shell — Vite, React, web-ifc, Three.js. PDF — pypdfium2, pdfminer.six, reportlab; PyMuPDF, RapidOCR and Docling optional.
+Python 3.12+, FastAPI, Uvicorn. IFC — IfcOpenShell, IfcTester; IfcClash optional. Review shell — Vite, React, web-ifc, Three.js. PDF — pypdfium2, pdfminer.six, reportlab; PyMuPDF, RapidOCR and Docling optional.
 
 ## License
 
