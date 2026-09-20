@@ -741,14 +741,16 @@ class SubmissionPackHonestyTests(unittest.TestCase):
         self.assertTrue(slides.is_file(), msg=str(slides))
         tracked = _git_ls_files("submission/03-presentation")
         self.assertIn("demo_day_slides.md", tracked)
-        self.assertIn("AeroBIM_demo_day_09.pptx", tracked)
+        self.assertIn("AeroBIM.pptx", tracked)
+        self.assertIn("AeroBIM.pdf", tracked)
+        self.assertNotIn("AeroBIM_demo_day_09.pptx", tracked)
         self.assertNotIn("AeroBIM_demo_day.pdf", tracked)
         self.assertNotIn("submission/03-presentation/slides.md", tracked)
         self.assertNotIn("aerobim_kt2.pptx", tracked)
         self.assertNotIn("aerobim_kt2.pdf", tracked)
 
     def test_submission_surfaces_are_consistent_about_deck_and_video(self) -> None:
-        deck = "AeroBIM_demo_day_09.pptx"
+        deck = "AeroBIM.pptx"
         surfaces = (
             self._submission() / "README.md",
             self._submission() / "03-presentation" / "README.md",

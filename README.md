@@ -40,7 +40,7 @@
 | | |
 |---|---|
 | **Показ** | `python -m aerobim.tools.run_kt3_jury` — живой CLI на учебном комплекте из git. Файлов заказчика в репозитории нет |
-| **Дека** | [`AeroBIM_demo_day_09.pptx`](submission/03-presentation/AeroBIM_demo_day_09.pptx) (43 слайда, 18.09.2026) · [канон речи](submission/03-presentation/demo_day_slides.md). PDF деки в git нет |
+| **Дека** | [`AeroBIM.pptx`](submission/03-presentation/AeroBIM.pptx) (43 слайда) · [`AeroBIM.pdf`](submission/03-presentation/AeroBIM.pdf) · [канон речи](submission/03-presentation/demo_day_slides.md) |
 | **Пакет формы** | [`submission/README.md`](submission/README.md) — пять полей |
 | **Карта** | [для жюри](docs/TIER0_INDEX.md) · [граница заявлений](docs/pilot-claim-boundary-2026.md) · [блокеры](audit/reports/CRITICAL_BLOCKERS.md) · [глоссарий](docs/partners/GLOSSARY_JURY_RU_2026_08.md) |
 | **Речь** | [карточка показа](docs/demo/KT3_JURY_FAQ_2026_08_25.md) · [формула стадии](docs/demo/KT2_JURY_FAQ_2026_08_12.md) |
@@ -335,7 +335,7 @@ A local clone runs on defaults. CI checks the table against `settings.py` **both
 |---|---|
 | Начать здесь | [карта для жюри](docs/TIER0_INDEX.md) · [техническое обоснование](docs/docs.md) · [глоссарий](docs/partners/GLOSSARY_JURY_RU_2026_08.md) |
 | Пакет подачи | [индекс для жюри](submission/README.md) |
-| Презентация демо-дня | [PowerPoint, 43 слайда](submission/03-presentation/AeroBIM_demo_day_09.pptx) · [канон речи](submission/03-presentation/demo_day_slides.md) |
+| Презентация демо-дня | [PowerPoint, 43 слайда](submission/03-presentation/AeroBIM.pptx) · [PDF](submission/03-presentation/AeroBIM.pdf) · [канон речи](submission/03-presentation/demo_day_slides.md) |
 | Карточка речи | [показ](docs/demo/KT3_JURY_FAQ_2026_08_25.md) · [формула стадии](docs/demo/KT2_JURY_FAQ_2026_08_12.md) |
 | Блокеры | [критические блокеры](audit/reports/CRITICAL_BLOCKERS.md) |
 | Что заявляется | [границы заявлений](docs/pilot-claim-boundary-2026.md) |
@@ -456,7 +456,7 @@ frontend/     Оболочка ревью (Vite + React; IFC 3D и оверле�
 samples/      Учебные комплекты IFC, IDS, чертежей и спецификаций
 docs/         Документация и доказательства
 audit/        Claims lock, реестр блокеров
-submission/   Пакет для жюри Техлаба (PowerPoint 43 слайда; PDF деки нет)
+submission/   Пакет для жюри Техлаба (PowerPoint и PDF, 43 слайда)
 ```
 
 Счётчики CI генерируются, а не пишутся руками:

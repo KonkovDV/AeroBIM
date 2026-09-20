@@ -212,7 +212,7 @@ def verify_kt2_handoff(*, handoff_dir: Path, repo: Path) -> dict[str, Any]:
     )
     slides = repo / "submission" / "03-presentation" / "demo_day_slides.md"
     _check("kt2_presentation_slides", slides.is_file(), str(slides), rows)
-    deck_rel = "submission/03-presentation/AeroBIM_demo_day_09.pptx"
+    deck_rel = "submission/03-presentation/AeroBIM.pptx"
     tracked = subprocess.run(
         ["git", "ls-files", "--", deck_rel],
         cwd=repo,

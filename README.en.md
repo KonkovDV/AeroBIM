@@ -40,7 +40,7 @@ Moscow TechLab programme, commission № 7: automated verification of design and
 | | |
 |---|---|
 | **Show** | `python -m aerobim.tools.run_kt3_jury` — live CLI on the git fixture pack. Customer files are not in the repository |
-| **Deck** | [`AeroBIM_demo_day_09.pptx`](submission/03-presentation/AeroBIM_demo_day_09.pptx) (43 slides, 18.09.2026) · [speech canon](submission/03-presentation/demo_day_slides.md). There is no PDF deck in git |
+| **Deck** | [`AeroBIM.pptx`](submission/03-presentation/AeroBIM.pptx) (43 slides) · [`AeroBIM.pdf`](submission/03-presentation/AeroBIM.pdf) · [speech canon](submission/03-presentation/demo_day_slides.md) |
 | **Form pack** | [`submission/README.md`](submission/README.md) — five fields |
 | **Map** | [jury map](docs/TIER0_INDEX.md) · [claim boundary](docs/pilot-claim-boundary-2026.md) · [blockers](audit/reports/CRITICAL_BLOCKERS.md) · [glossary](docs/partners/GLOSSARY_JURY_RU_2026_08.md) |
 | **Speech** | [show card](docs/demo/KT3_JURY_FAQ_2026_08_25.md) · [stage formula](docs/demo/KT2_JURY_FAQ_2026_08_12.md) |
@@ -435,7 +435,7 @@ frontend/     Review shell (Vite + React; IFC 3D + drawing overlay)
 samples/      IFC, IDS, drawing and specification fixtures
 docs/         Documentation and evidence
 audit/        Claims lock, blocker register
-submission/   TechLab jury pack (PowerPoint 43 slides; no PDF deck)
+submission/   TechLab jury pack (PowerPoint and PDF, 43 slides)
 ```
 
 CI pass counts are generated, not typed by hand:
@@ -451,7 +451,7 @@ tests_passed: backend=3300, frontend=400; commit 4742d56d9574; see docs/evidence
 |---|---|
 | Start here | [Jury map](docs/TIER0_INDEX.md) · [Technical justification](docs/docs.md) · [glossary](docs/partners/GLOSSARY_JURY_RU_2026_08.md) |
 | Checkpoint pack | [Submission pack](submission/README.md) |
-| Demo-day presentation | [PowerPoint, 43 slides](submission/03-presentation/AeroBIM_demo_day_09.pptx) · [speech canon](submission/03-presentation/demo_day_slides.md) |
+| Demo-day presentation | [PowerPoint, 43 slides](submission/03-presentation/AeroBIM.pptx) · [PDF](submission/03-presentation/AeroBIM.pdf) · [speech canon](submission/03-presentation/demo_day_slides.md) |
 | Speech card | [show](docs/demo/KT3_JURY_FAQ_2026_08_25.md) · [stage formula](docs/demo/KT2_JURY_FAQ_2026_08_12.md) |
 | Blockers | [Critical blockers](audit/reports/CRITICAL_BLOCKERS.md) |
 | What is claimed | [Claim boundary](docs/pilot-claim-boundary-2026.md) |
