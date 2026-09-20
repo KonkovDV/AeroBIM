@@ -22,11 +22,9 @@ import { pickLandingIssueIndex } from "../lib/issue-triage";
 import { classifyRequestFailure, type RequestFailureKind } from "../lib/request-failure";
 import type { ValidationIssue, ValidationReport } from "../lib/types";
 import { UI_COPY } from "../lib/ui-copy";
-
 export type RemarkSaveState = "idle" | "saving" | "saved" | "failed";
 export type HitlRequestState = "idle" | "saving" | "failed";
 export type HitlDecisionState = "idle" | "saving" | "accepted" | "rejected" | "failed";
-
 /**
  * Ключ идемпотентности для событий HITL.
  *
@@ -40,12 +38,11 @@ function newHitlIdempotencyKey(): string {
   }
   return `hitl-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 }
-
 function effectiveRemarkText(
   issue: ValidationIssue,
   events: readonly ReviewEventRow[],
 ): string {
-  let latest = baseEffectiveRemarkText(issue, events);
+  let latest = baseEffectiveRemarkText(issue, events) || issue.message || "";
   for (const event of events) {
     if (!eventMatchesIssue(event, issue)) {
       continue;
@@ -59,9 +56,7 @@ function effectiveRemarkText(
   }
   return latest;
 }
-
 export type PendingFindingSelect = { index: number; issue: ValidationIssue };
-
 export type SelectedReportState = {
   selectedReport: ValidationReport | null;
   reportLoading: boolean;
@@ -92,7 +87,6 @@ export type SelectedReportState = {
   discardRemarkDraft: () => void;
   isDirty: boolean;
 };
-
 function resetEditor(
   setSelectedReport: Dispatch<SetStateAction<ValidationReport | null>>,
   setReviewEvents: Dispatch<SetStateAction<ReviewEventRow[]>>,
@@ -114,7 +108,6 @@ function resetEditor(
   setPendingSelect(null);
   setConflictMessage(null);
 }
-
 /** Выбранный отчёт: загрузка, выбор замечания/клэша, черновик HITL-замечания и решения. */
 export function useSelectedReport(
   selectedReportId: string | null,
@@ -140,7 +133,6 @@ export function useSelectedReport(
   const hitlOpRef = useRef<{ fingerprint: string; key: string } | null>(null);
   const hitlBusyRef = useRef(false);
   const historyPendingRef = useRef(false);
-
   selectedReportRef.current = selectedReport;
   selectedIssueIndexRef.current = selectedIssueIndex;
   remarkDraftRef.current = remarkDraft;
@@ -148,7 +140,6 @@ export function useSelectedReport(
   useEffect(() => {
     reviewEventsRef.current = reviewEvents;
   }, [reviewEvents]);
-
   useEffect(() => {
     if (selectedReportId === null) {
       resetEditor(
@@ -167,7 +158,6 @@ export function useSelectedReport(
       setHistoryPending(false);
       return;
     }
-
     const controller = new AbortController();
     let cancelled = false;
     historyPendingRef.current = true;
@@ -249,13 +239,11 @@ export function useSelectedReport(
           setReportLoading(false);
         }
       });
-
     return () => {
       cancelled = true;
       controller.abort();
     };
   }, [selectedReportId, reloadEpoch]);
-
   const applySelect = useCallback((index: number, issue: ValidationIssue) => {
     selectedIssueIndexRef.current = index;
     setSelectedIssueIndex(index);
@@ -268,7 +256,6 @@ export function useSelectedReport(
     setPendingSelect(null);
     setConflictMessage(null);
   }, []);
-
   const selectIssue = useCallback(
     (index: number, issue: ValidationIssue, options?: { force?: boolean }) => {
       const current = selectedReportRef.current?.issues[selectedIssueIndexRef.current];
@@ -282,7 +269,6 @@ export function useSelectedReport(
     },
     [applySelect],
   );
-
   const rememberEvent = useCallback((event: Record<string, unknown>, reportId: string) => {
     if (selectedReportRef.current?.report_id !== reportId) {
       return;
@@ -298,7 +284,6 @@ export function useSelectedReport(
       current.some((item) => item.event_id === row.event_id) ? current : [...current, row],
     );
   }, []);
-
   const keyForFingerprint = (fingerprint: string): string => {
     if (hitlOpRef.current?.fingerprint === fingerprint) {
       return hitlOpRef.current.key;
@@ -307,7 +292,6 @@ export function useSelectedReport(
     hitlOpRef.current = { fingerprint, key };
     return key;
   };
-
   const postHitlEvent = useCallback(
     async (issue: ValidationIssue, eventType: ReviewEventType, note: string, reportId: string) => {
       let previous = latestHitlState(reviewEventsRef.current, issue);
@@ -355,7 +339,6 @@ export function useSelectedReport(
     },
     [rememberEvent],
   );
-
   const stillOnFinding = (reportId: string, issue: ValidationIssue): boolean => {
     if (selectedReportRef.current?.report_id !== reportId) {
       return false;
@@ -363,7 +346,6 @@ export function useSelectedReport(
     const current = selectedReportRef.current?.issues[selectedIssueIndexRef.current];
     return (current?.finding_id ?? current?.rule_id) === (issue.finding_id ?? issue.rule_id);
   };
-
   const reloadEventsKeepDraft = useCallback(async (reportId: string) => {
     try {
       const payload = await fetchReviewEvents(reportId);
@@ -379,7 +361,6 @@ export function useSelectedReport(
       setReviewEventsError(error instanceof Error ? error.message : UI_COPY.historyFailed);
     }
   }, []);
-
   const saveRemarkEdit = useCallback(
     async (issue: ValidationIssue | null): Promise<boolean> => {
       const report = selectedReportRef.current;
@@ -422,7 +403,6 @@ export function useSelectedReport(
     },
     [postHitlEvent, reloadEventsKeepDraft, reportLoading],
   );
-
   const decideRemark = useCallback(
     async (eventType: "accepted" | "rejected", issue: ValidationIssue | null) => {
       const report = selectedReportRef.current;
@@ -466,7 +446,6 @@ export function useSelectedReport(
     },
     [postHitlEvent, reloadEventsKeepDraft, reportLoading],
   );
-
   const openRemark = useCallback(
     async (issue: ValidationIssue | null) => {
       const report = selectedReportRef.current;
@@ -502,14 +481,12 @@ export function useSelectedReport(
     },
     [postHitlEvent, reloadEventsKeepDraft, reportLoading],
   );
-
   const changeDraft = useCallback((value: string) => {
     remarkDraftRef.current = value;
     setRemarkDraft(value);
     setRemarkSaveState("idle");
     setHitlRequestState("idle");
   }, []);
-
   const discardRemarkDraft = useCallback(() => {
     const current = selectedReportRef.current?.issues[selectedIssueIndexRef.current];
     const restoredDraft = current ? effectiveRemarkText(current, reviewEventsRef.current) : "";
@@ -520,7 +497,6 @@ export function useSelectedReport(
     setConflictMessage(null);
     setPendingSelect(null);
   }, []);
-
   const confirmPendingSelect = useCallback(
     async (mode: "save" | "discard") => {
       const pending = pendingSelect;
@@ -540,11 +516,9 @@ export function useSelectedReport(
     },
     [applySelect, discardRemarkDraft, pendingSelect, saveRemarkEdit],
   );
-
   const dismissPendingSelect = useCallback(() => {
     setPendingSelect(null);
   }, []);
-
   useEffect(() => {
     const selectedIssue = selectedReport?.issues[selectedIssueIndex];
     const original = selectedIssue ? effectiveRemarkText(selectedIssue, reviewEvents) : "";
@@ -559,7 +533,6 @@ export function useSelectedReport(
     window.addEventListener("beforeunload", onBeforeUnload);
     return () => window.removeEventListener("beforeunload", onBeforeUnload);
   }, [remarkDraft, reviewEvents, selectedIssueIndex, selectedReport]);
-
   const selectedIssue = selectedReport?.issues[selectedIssueIndex];
   const originalRemark = selectedIssue ? effectiveRemarkText(selectedIssue, reviewEvents) : "";
   const isDirty = remarkDraft !== originalRemark;
@@ -574,7 +547,6 @@ export function useSelectedReport(
           : persistedHitlState === "rejected"
             ? "rejected"
             : "idle";
-
   return {
     selectedReport,
     reportLoading,
