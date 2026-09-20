@@ -19,7 +19,7 @@
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-Зелёный бейдж — Checkpoint `GO`: регуляторно-измерительный MVP, код и учебные комплекты работают. Красный — нет подписи назначающей стороны (`customer_go` false). Его не читать как «продукт не запускается».
+Зелёный бейдж — Checkpoint `GO`: регуляторно-измерительный MVP, код и учебные комплекты работают. Красный — нет подписи назначающей стороны (`customer_go` false), а не то, что продукт не запускается.
 
 **AeroBIM** — прототип шлюза проверки согласованности комплекта ПД/РД: модель, лист, ведомость, ТЗ и расчёт сверяются между собой. Каждый файл может открываться чисто. Дефект живёт в шве и обычно всплывает на площадке.
 
@@ -46,12 +46,12 @@
 | | |
 |---|---|
 | **Показ** | `python -m aerobim.tools.run_kt3_jury` — живой CLI на учебном комплекте из git. Файлов заказчика в репозитории нет |
-| **Дека** | [`AeroBIM.pptx`](submission/03-presentation/AeroBIM.pptx) (43 слайда) · [`AeroBIM.pdf`](submission/03-presentation/AeroBIM.pdf) · [канон речи](submission/03-presentation/demo_day_slides.md) |
+| **Слайды** | [`AeroBIM.pptx`](submission/03-presentation/AeroBIM.pptx) (43 слайда) · [`AeroBIM.pdf`](submission/03-presentation/AeroBIM.pdf) · [текст слайдов](submission/03-presentation/demo_day_slides.md) |
 | **Пакет формы** | [`submission/README.md`](submission/README.md) — пять полей |
 | **Карта** | [для жюри](docs/TIER0_INDEX.md) · [граница заявлений](docs/pilot-claim-boundary-2026.md) · [блокеры](audit/reports/CRITICAL_BLOCKERS.md) · [глоссарий](docs/partners/GLOSSARY_JURY_RU_2026_08.md) |
 | **Речь** | [карточка показа](docs/demo/KT3_JURY_FAQ_2026_08_25.md) · [формула стадии](docs/demo/KT2_JURY_FAQ_2026_08_12.md) |
 
-**Запрос.** Оплачиваемый пилот на одном корпусе, восемь недель от соглашения. Письмом: комплект одной ревизии с IFC, эксперт-валидатор, режим данных и лист целевых KPI. Цель пилота — минус один круг согласования; дельта ревизий видна в СОД заказчика. Окупаемость не считаем: измеренного эффекта нет. Не просим CAPEX и не называем рынок BIM своей выручкой.
+**Запрос.** Оплачиваемый пилот на одном корпусе, восемь недель от соглашения. Письмом: комплект одной ревизии с IFC, эксперт-валидатор, режим данных и лист целевых KPI. Цель пилота — минус один круг согласования и дельта ревизий в СОД заказчика. Окупаемость не считаем: измеренного эффекта нет. Не просим CAPEX и не называем рынок BIM своей выручкой.
 
 С 2 апреля 2026 года ЦИМ АГР в IFC обязателен к подаче в Москве (постановление Правительства Москвы № 17-ПП от 16 января 2026; совместное распоряжение ДИТ и ДГП № ДГП-Р-1/26/64-16-6/26). С 18 августа 2026 совместное распоряжение ДГП/ДИТ № ДГП-Р-56/26/64-16-473/26 уточняет требования к трёхмерным моделям в информационных системах Москвы. Это **городские правила подачи**, не подписанный профиль приёмки заказчика канала и не заявление о точности продукта. Городской мэппинг АГР IFC опубликован под Revit; AeroBIM нативный RVT не принимает.
 
@@ -141,12 +141,12 @@ flowchart LR
 
 ## Checkpoint: `GO` (`regulatory_measurement_mvp`)
 
-Продуктовый Checkpoint — **регуляторно-измерительный MVP**. `customer_go` остаётся **false**. Код и учебные комплекты работают. **Подмены измерения** закрывают то, чего нет от заказчика канала. Недифференцированные `closes_rt001/002/003` остаются false. Красный бейдж подписи заказчика не читать как продукт `NO_GO`.
+Продуктовый Checkpoint — **регуляторно-измерительный MVP**. `customer_go` остаётся **false**. Код и учебные комплекты работают. **Подмены измерения** закрывают то, чего нет от заказчика канала. Недифференцированные `closes_rt001/002/003` остаются false. Красный бейдж подписи заказчика — это не продукт `NO_GO`.
 
 | ID | Подмена измерения (без заказчика канала) | Остаток (не подменяется) |
 |---|---|---|
 | **RT-001** | `a_content_pairing` **CLOSED** (**RT-001a**) — типовые замечания экспертизы РФ + публичные IDS + учебный комплект / инъекция. `b_protocol_rehearsal` **CLOSED** — два независимых симулированных прохода на том же учебном комплекте, κ/α/AC1 на симуляции | `b_criterion_dual_rater` **OPEN** (**RT-001b**) (двое людей + заключение на *тот же* том). `c_customer_corpus` **OPEN**. Открытые бенчмарки — другой контур. Симуляция — не двое людей. Не точность продукта |
-| **RT-002** | `a_regulatory` **CLOSED** (**RT-002a**) — публичные IDS (Мособлгосэкспертиза, СПб ГАУ ЦГЭ, городской АГР) как линейка измерения. `b_eir_carrier` **CLOSED** (**RT-002b**) — EIR v4.0 и BIM-стандарт v4.0 на канальном комплекте как **текст** (пин без имён файлов). Публичный IDS экспертизы — не EIR назначающей стороны | `c_corporate_signed` **OPEN** (**RT-002c**; `b_corporate` остаётся OPEN) — подпись заказчика канала / `customer_approved` IDS. Текст EIR — не подписанный профиль. Город-издатель — не подпись заказчика канала. Не писать недифференцированно «RT-002 CLOSED» |
+| **RT-002** | `a_regulatory` **CLOSED** (**RT-002a**) — публичные IDS (Мособлгосэкспертиза, СПб ГАУ ЦГЭ, городской АГР) как линейка измерения. `b_eir_carrier` **CLOSED** (**RT-002b**) — EIR v4.0 и BIM-стандарт v4.0 на канальном комплекте как **текст** (пин без имён файлов). Публичный IDS экспертизы — не EIR назначающей стороны | `c_corporate_signed` **OPEN** (**RT-002c**; `b_corporate` остаётся OPEN) — подпись заказчика канала / `customer_approved` IDS. Текст EIR — не подписанный профиль. Город-издатель — не подпись заказчика канала |
 | **RT-003** | `a_federated_geometric_rehearsal` **CLOSED** (**RT-003a**) — посаженный IfcClash (стены; труба против стены). `b_navis_federation_carrier` **CLOSED** — три NWD-федерации. `b_ifc_system_graph_rehearsal` **CLOSED** (**RT-003b**) — граф `IfcSystem` на HVAC-фикстуре (две системы, `IfcRelAssignsToGroup`); не труба против стены | `b_mep_system_clash` **OPEN** (**RT-003c**, `NOT_VERIFIED`) — 0 duct/pipe/cable в IFC заказчика; EIR называет LOD ОВ/ВК/ИТП/ЭОМ/СС, моделей нет. `c_customer_federated_ifc` **OPEN** — выгрузка NWD→IFC не поставлена. MEP delivered не заявляется |
 
 Машинный источник: [`docs/evidence/rt-blocker-volumes-2026-09.md`](docs/evidence/rt-blocker-volumes-2026-09.md) · `python -m aerobim.tools.export_rt_blocker_volumes`.
@@ -167,7 +167,7 @@ flowchart LR
 - ε-полоса (SI); извлечение требований из текста по шаблонам — ни одна модель ничего не подписывает
 - Честность доступности проверок; ACL к артефактам на профилях `customer_pilot` / `production` (в development выключено); HTML/JSON; PDF — черновик покрытия; BCF 2.1 / 3.0
 - PDF: pypdfium2 + pdfminer, по умолчанию `AEROBIM_PDF_BACKEND=pdfium`
-- Просмотр IFC в браузере и оверлей 2D; Docker `closed-contour --smoke`
+- Просмотр IFC в браузере и оверлей 2D
 - Паки нормативных правил (учебный пак ≠ подписанный профиль) и опциональный инвентарь комплектности
 - Протокол измерения качества (Уилсон, планировщик выборки; ориентир 0.60) — протокол, не оценка продукта
 
@@ -190,7 +190,7 @@ flowchart LR
 | `POST` | `/v1/uploads` | Приём файлов |
 | `POST` | `/v1/validate/ifc` | IFC против требований и IDS |
 | `POST` | `/v1/analyze/project-package` | Полный анализ комплекта |
-| `POST` | `/v1/analyze/project-package/submit` | Крупный комплект в фоне процесса (не durable worker) |
+| `POST` | `/v1/analyze/project-package/submit` | Крупный комплект в фоне того же процесса |
 | `GET` | `/v1/analyze/project-package/jobs/{job_id}` | Статус задания |
 | `POST` | `/v1/analyze/project-package/jobs/{job_id}/cancel` | Отмена |
 | `GET` | `/v1/reports` | Список отчётов |
@@ -201,7 +201,6 @@ flowchart LR
 | `POST` | `/v1/reports/{id}/review-events` | HITL; `summary.passed` не меняет |
 | `GET` | `/v1/reports/{id}/review-events` | История HITL |
 | `GET` | `/v1/reports/{id}/review-kpi` | Сводка разбора (не дни цикла в СОД) |
-| `POST` | `/v1/demo/seed-fixture` | Только development; git-фикстура; в OpenAPI нет |
 
 Анализ комплекта может принять отчёт OpenRebar с дайджестом SHA-256: сверка источников, не пересчёт. OpenCDE `POST .../export/bcf-api/push` — экспериментальная отправка, не доказательство импорта в СОД заказчика.
 
@@ -219,11 +218,11 @@ infrastructure/  IfcOpenShell, IfcTester, BCF, хранилище; IfcClash и D
 presentation/    FastAPI
 ```
 
-**48 Protocol ports** связаны с **76 adapter modules** через **63 DI tokens** в `bootstrap_container()`. Инвентарь пересобирается в [`docs/evidence/runtime-baseline-latest.json`](docs/evidence/runtime-baseline-latest.json) и сверяется в CI против обоих README.
+**48 Protocol ports** связаны с **76 adapter modules** через **63 DI tokens** в `bootstrap_container()`. Счётчики: [`docs/evidence/runtime-baseline-latest.json`](docs/evidence/runtime-baseline-latest.json).
 
 Артефакты за портом `ObjectStore` (локальный диск или S3 — один путь в коде). При `AEROBIM_DB_URL` сводки отчётов индексируются в Postgres; схему лучше переносить миграцией вне приложения.
 
-Локальный клон работает на значениях по умолчанию. Полная таблица `AEROBIM_*` — в [корневом README](README.md), раздел Configuration. CI проверяет её в обе стороны.
+Локальный клон работает на значениях по умолчанию. Полная таблица `AEROBIM_*` — в [корневом README](README.md), раздел Configuration.
 
 ## Документация
 
@@ -231,7 +230,7 @@ presentation/    FastAPI
 |---|---|
 | Начать здесь | [карта для жюри](docs/TIER0_INDEX.md) · [техническое обоснование](docs/docs.md) · [глоссарий](docs/partners/GLOSSARY_JURY_RU_2026_08.md) |
 | Пакет подачи | [индекс для жюри](submission/README.md) |
-| Презентация демо-дня | [PowerPoint, 43 слайда](submission/03-presentation/AeroBIM.pptx) · [PDF](submission/03-presentation/AeroBIM.pdf) · [канон речи](submission/03-presentation/demo_day_slides.md) |
+| Презентация демо-дня | [PowerPoint, 43 слайда](submission/03-presentation/AeroBIM.pptx) · [PDF](submission/03-presentation/AeroBIM.pdf) · [текст слайдов](submission/03-presentation/demo_day_slides.md) |
 | Карточка речи | [показ](docs/demo/KT3_JURY_FAQ_2026_08_25.md) · [формула стадии](docs/demo/KT2_JURY_FAQ_2026_08_12.md) |
 | Блокеры | [критические блокеры](audit/reports/CRITICAL_BLOCKERS.md) |
 | Что заявляется | [границы заявлений](docs/pilot-claim-boundary-2026.md) |
