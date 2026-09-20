@@ -12,7 +12,6 @@ from pathlib import Path
 from uuid import uuid4
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-
 from aerobim.core.config.settings import Settings
 from aerobim.core.di.tokens import Tokens
 from aerobim.domain.finding_provenance import ensure_finding_provenance
@@ -26,7 +25,14 @@ from aerobim.domain.models import (
     ValidationSummary,
 )
 from aerobim.domain.review_event_append import ReviewEventAppendSpec
-from aerobim.domain.review_projection import attach_review_projection, project_issue_review
+from aerobim.domain.review_projection import (
+    FINAL_REMARK_NOTE_PREFIX,
+    attach_review_projection,
+    bcf_hitl_overlay,
+    decode_final_remark_note,
+    encode_final_remark_note,
+    project_issue_review,
+)
 from aerobim.infrastructure.di.bootstrap import bootstrap_container
 from aerobim.presentation.http.api import create_http_app
 from aerobim.presentation.http.report_html import render_report_html
@@ -86,9 +92,18 @@ class ReviewProjectionUnitTests(unittest.TestCase):
         summary = {"passed": False, "issue_count": 2}
         self.assertFalse(summary["passed"])
 
-    def test_decision_note_is_effective_final_text(self) -> None:
+    def test_final_remark_envelope_preserves_exact_non_empty_suffix(self) -> None:
+        exact = "  final text\nsecond line  "
+        encoded = encode_final_remark_note(exact)
+        self.assertEqual(encoded, f"{FINAL_REMARK_NOTE_PREFIX}{exact}")
+        self.assertEqual(decode_final_remark_note(encoded), exact)
+        self.assertIsNone(decode_final_remark_note(FINAL_REMARK_NOTE_PREFIX))
+        self.assertIsNone(decode_final_remark_note("legacy decision note"))
+
+    def test_enveloped_decision_note_is_effective_final_text(self) -> None:
         for event_type in ("accepted", "rejected"):
             with self.subTest(event_type=event_type):
+                exact = f"  final {event_type}\nline 2  "
                 decision = ReviewEvent(
                     event_id=f"e-{event_type}",
                     report_id="r" * 32,
@@ -96,7 +111,7 @@ class ReviewProjectionUnitTests(unittest.TestCase):
                     created_at="2026-09-07T00:02:00+00:00",
                     issue_rule_id="FIRE-1",
                     finding_id="fid-a",
-                    note=f"final {event_type}",
+                    note=encode_final_remark_note(exact),
                     resulting_state=event_type,
                     actor="expert-1",
                 )
@@ -104,10 +119,37 @@ class ReviewProjectionUnitTests(unittest.TestCase):
                     finding_id="fid-a",
                     rule_id="FIRE-1",
                     machine_text="T0",
-                    events=(_events(finding_id="fid-a", note="prior edit")[0], decision),
+                    events=(*_events(finding_id="fid-a", note="prior edit"), decision),
                 )
-                self.assertEqual(overlay["effective_text"], f"final {event_type}")
+                self.assertEqual(overlay["effective_text"], exact)
                 self.assertEqual(overlay["state"], event_type)
+
+    def test_plain_decision_note_is_legacy_comment_and_keeps_previous_text(self) -> None:
+        for event_type in ("accepted", "rejected"):
+            for prior_events, expected in (
+                (_events(finding_id="fid-a", note="prior edit"), "prior edit"),
+                ((_events(finding_id="fid-a", note="unused")[0],), "T0"),
+            ):
+                with self.subTest(event_type=event_type, expected=expected):
+                    decision = ReviewEvent(
+                        event_id=f"e-{event_type}",
+                        report_id="r" * 32,
+                        event_type=event_type,
+                        created_at="2026-09-07T00:02:00+00:00",
+                        issue_rule_id="FIRE-1",
+                        finding_id="fid-a",
+                        note="legacy decision comment",
+                        resulting_state=event_type,
+                        actor="expert-1",
+                    )
+                    overlay = project_issue_review(
+                        finding_id="fid-a",
+                        rule_id="FIRE-1",
+                        machine_text="T0",
+                        events=(*prior_events, decision),
+                    )
+                    self.assertEqual(overlay["effective_text"], expected)
+                    self.assertEqual(overlay["state"], event_type)
 
     def test_legacy_empty_decision_note_keeps_previous_text(self) -> None:
         for prior_events, expected in (
@@ -134,6 +176,33 @@ class ReviewProjectionUnitTests(unittest.TestCase):
                 )
                 self.assertEqual(overlay["effective_text"], expected)
                 self.assertEqual(overlay["state"], "accepted")
+
+    def test_bcf_comment_decodes_enveloped_decision_text(self) -> None:
+        issue = ensure_finding_provenance(
+            ValidationIssue(
+                rule_id="FIRE-1",
+                severity=Severity.ERROR,
+                message="mismatch",
+                category=FindingCategory.IFC_VALIDATION,
+                remark=GeneratedRemark(title="Machine", body="T0"),
+                origin="deterministic",
+            )
+        )
+        exact = "  exact final\ntext  "
+        decision = ReviewEvent(
+            event_id="e-accepted",
+            report_id="r" * 32,
+            event_type="accepted",
+            created_at="2026-09-07T00:02:00+00:00",
+            issue_rule_id=issue.rule_id,
+            finding_id=issue.finding_id,
+            note=encode_final_remark_note(exact),
+            resulting_state="accepted",
+            actor="expert-1",
+        )
+        overlay = bcf_hitl_overlay(issue, (decision,))
+        self.assertEqual(overlay.comments[0].text.split("\nfinding_id=", 1)[0], exact)
+        self.assertNotIn(FINAL_REMARK_NOTE_PREFIX, overlay.comments[0].text)
 
     def test_html_and_pdf_show_effective_text(self) -> None:
         overlay = project_issue_review(
@@ -169,7 +238,6 @@ class ReviewProjectionUnitTests(unittest.TestCase):
         self.assertIn("machine=T0", html)
         pdf = render_report_pdf_bytes("r" * 32, data)
         from test_report_pdf_coverage import extract_pdf_text
-
         text = extract_pdf_text(pdf)
         self.assertIn("T1", text)
         self.assertIn("T0", text)
@@ -181,7 +249,6 @@ class ReviewProjectionHttpTests(unittest.TestCase):
             from fastapi.testclient import TestClient
         except ModuleNotFoundError as exc:
             raise unittest.SkipTest("FastAPI/httpx not installed") from exc
-
         with tempfile.TemporaryDirectory() as tmp:
             settings = Settings(
                 application_name="review-proj",
@@ -253,13 +320,11 @@ class ReviewProjectionHttpTests(unittest.TestCase):
             self.assertFalse(body["summary"]["passed"])
             self.assertEqual(body["issues"][0]["remark"]["body"], "T0")
             self.assertEqual(body["issues"][0]["review"]["effective_text"], "T1")
-
             exported = client.get(f"/v1/reports/{report_id}/export/json", headers=headers)
             self.assertEqual(exported.status_code, 200, exported.text)
             payload = exported.json()
             self.assertFalse(payload["summary"]["passed"])
             self.assertEqual(payload["issues"][0]["review"]["effective_text"], "T1")
-
             html = client.get(f"/v1/reports/{report_id}/export/html", headers=headers)
             self.assertEqual(html.status_code, 200, html.text)
             self.assertIn("effective=T1", html.text)
@@ -268,9 +333,7 @@ class ReviewProjectionHttpTests(unittest.TestCase):
             pdf = client.get(f"/v1/reports/{report_id}/export/pdf", headers=headers)
             self.assertEqual(pdf.status_code, 200, pdf.text)
             from test_report_pdf_coverage import extract_pdf_text
-
             self.assertIn("T1", extract_pdf_text(pdf.content))
-
             bcf = client.get(f"/v1/reports/{report_id}/export/bcf", headers=headers)
             self.assertEqual(bcf.status_code, 200, bcf.text)
             with zipfile.ZipFile(io.BytesIO(bcf.content), "r") as archive:

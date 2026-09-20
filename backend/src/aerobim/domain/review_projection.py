@@ -12,6 +12,8 @@ from typing import Any, Literal
 
 from aerobim.domain.models import ReviewEvent, ValidationIssue
 
+FINAL_REMARK_NOTE_PREFIX = "aerobim:final-remark:v1\n"
+
 _EVENT_TO_STATE: dict[str, str] = {
     "drawing_region_escalated": "escalated",
     "escalated": "escalated",
@@ -26,7 +28,20 @@ _EVENT_TO_STATE: dict[str, str] = {
 }
 _NORM_PACK_EVENT_TYPES = frozenset({"norm_rule_proposed", "norm_rule_edited"})
 _EDIT_EVENT_TYPES = frozenset({"edited_remark", "edited"})
-_EFFECTIVE_TEXT_EVENT_TYPES = _EDIT_EVENT_TYPES | frozenset({"accepted", "rejected"})
+_DECISION_EVENT_TYPES = frozenset({"accepted", "rejected"})
+
+
+def encode_final_remark_note(text: str) -> str:
+    """Wrap exact final expert text in the versioned decision-note envelope."""
+    return f"{FINAL_REMARK_NOTE_PREFIX}{text}"
+
+
+def decode_final_remark_note(note: str | None) -> str | None:
+    """Return the non-empty exact suffix only for the v1 final-remark envelope."""
+    if not isinstance(note, str) or not note.startswith(FINAL_REMARK_NOTE_PREFIX):
+        return None
+    suffix = note[len(FINAL_REMARK_NOTE_PREFIX) :]
+    return suffix if suffix else None
 
 
 def event_belongs_to_finding(
@@ -36,7 +51,6 @@ def event_belongs_to_finding(
     rule_id: str | None,
 ) -> bool:
     """Match by finding_id when the issue has one; otherwise by rule_id."""
-
     if event.event_type in _NORM_PACK_EVENT_TYPES:
         return False
     fid = (finding_id or "").strip() or None
@@ -56,7 +70,6 @@ def project_issue_review(
     events: Sequence[ReviewEvent],
 ) -> dict[str, Any]:
     """Build the public review overlay for one finding. Never writes a verdict."""
-
     state: str | None = None
     actor: str | None = None
     event_id: str | None = None
@@ -69,8 +82,12 @@ def project_issue_review(
             state = mapped
             actor = event.actor
             event_id = event.event_id
-        if event.event_type in _EFFECTIVE_TEXT_EVENT_TYPES and (event.note or "").strip():
+        if event.event_type in _EDIT_EVENT_TYPES and (event.note or "").strip():
             effective = event.note
+        elif event.event_type in _DECISION_EVENT_TYPES:
+            final_text = decode_final_remark_note(event.note)
+            if final_text is not None:
+                effective = final_text
     return {
         "effective_text": effective,
         "state": state,
@@ -95,7 +112,6 @@ def attach_review_projection(
     events: Sequence[ReviewEvent],
 ) -> list[Any]:
     """Copy issue dicts and attach ``review`` without mutating machine remark."""
-
     projected: list[Any] = []
     for issue in issues:
         if not isinstance(issue, dict):
@@ -117,7 +133,6 @@ def effective_text_for_issue(
     events: Sequence[ReviewEvent] | None,
 ) -> str:
     """BCF Description: expert edit when present, else machine remark/message."""
-
     machine = issue.remark.body if issue.remark is not None else (issue.message or "")
     if not events:
         return machine
@@ -150,7 +165,6 @@ def partition_from_state(state: str | None) -> ReviewPartition:
 
 def review_partition_of(issue: Any) -> ReviewPartition:
     """Partition one serialized issue (or ValidationIssue) by expert state."""
-
     if isinstance(issue, Mapping):
         review = issue.get("review")
         state = str(review.get("state") or "") if isinstance(review, Mapping) else ""
@@ -180,7 +194,6 @@ def issue_is_rejected(
     events: Sequence[ReviewEvent] | None,
 ) -> bool:
     """True when the latest review event for this finding is a rejection."""
-
     if not events:
         return False
     overlay = project_issue_review(
@@ -211,7 +224,6 @@ _MACHINE_BCF_AUTHOR = "aerobim-backend"
 @dataclass(frozen=True)
 class BcfHitlComment:
     """One HITL event as a BCF Comment (Date/Author/Comment). Not a verdict."""
-
     event_id: str
     date: str
     author: str
@@ -238,7 +250,6 @@ def bcf_hitl_overlay(
     events: Sequence[ReviewEvent] | None,
 ) -> BcfHitlOverlay:
     """Map HITL events onto BCF TopicStatus, ModifiedAuthor, and comments."""
-
     if not events:
         return BcfHitlOverlay(
             topic_status="Open",
@@ -252,7 +263,12 @@ def bcf_hitl_overlay(
             continue
         if event.event_type not in _HITL_BCF_COMMENT_TYPES:
             continue
-        note = (event.note or "").strip()
+        final_text = (
+            decode_final_remark_note(event.note)
+            if event.event_type in _DECISION_EVENT_TYPES
+            else None
+        )
+        note = final_text if final_text is not None else (event.note or "").strip()
         text = note if note else f"event_type={event.event_type}"
         fid = (issue.finding_id or "").strip()
         if fid and f"finding_id={fid}" not in text:
@@ -288,9 +304,12 @@ def bcf_hitl_overlay(
 __all__ = [
     "BcfHitlComment",
     "BcfHitlOverlay",
+    "FINAL_REMARK_NOTE_PREFIX",
     "attach_review_projection",
     "bcf_hitl_overlay",
+    "decode_final_remark_note",
     "effective_text_for_issue",
+    "encode_final_remark_note",
     "event_belongs_to_finding",
     "issue_is_rejected",
     "partition_from_state",
