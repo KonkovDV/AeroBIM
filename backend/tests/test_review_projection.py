@@ -12,7 +12,6 @@ from pathlib import Path
 from uuid import uuid4
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-
 from aerobim.core.config.settings import Settings
 from aerobim.core.di.tokens import Tokens
 from aerobim.domain.finding_provenance import ensure_finding_provenance
@@ -31,7 +30,6 @@ from aerobim.infrastructure.di.bootstrap import bootstrap_container
 from aerobim.presentation.http.api import create_http_app
 from aerobim.presentation.http.report_html import render_report_html
 from aerobim.presentation.http.report_pdf import render_report_pdf_bytes
-
 
 def _events(*, finding_id: str, note: str) -> tuple[ReviewEvent, ReviewEvent]:
     report_id = "r" * 32
@@ -59,7 +57,6 @@ def _events(*, finding_id: str, note: str) -> tuple[ReviewEvent, ReviewEvent]:
         ),
     )
 
-
 class ReviewProjectionUnitTests(unittest.TestCase):
     def test_overlay_keeps_machine_text_and_does_not_touch_passed(self) -> None:
         events = _events(finding_id="fid-a", note="T1")
@@ -85,6 +82,55 @@ class ReviewProjectionUnitTests(unittest.TestCase):
         self.assertEqual(projected[1]["review"]["effective_text"], "other-T0")
         summary = {"passed": False, "issue_count": 2}
         self.assertFalse(summary["passed"])
+
+    def test_decision_note_is_effective_final_text(self) -> None:
+        for event_type in ("accepted", "rejected"):
+            with self.subTest(event_type=event_type):
+                decision = ReviewEvent(
+                    event_id=f"e-{event_type}",
+                    report_id="r" * 32,
+                    event_type=event_type,
+                    created_at="2026-09-07T00:02:00+00:00",
+                    issue_rule_id="FIRE-1",
+                    finding_id="fid-a",
+                    note=f"final {event_type}",
+                    resulting_state=event_type,
+                    actor="expert-1",
+                )
+                overlay = project_issue_review(
+                    finding_id="fid-a",
+                    rule_id="FIRE-1",
+                    machine_text="T0",
+                    events=(_events(finding_id="fid-a", note="prior edit")[0], decision),
+                )
+                self.assertEqual(overlay["effective_text"], f"final {event_type}")
+                self.assertEqual(overlay["state"], event_type)
+
+    def test_legacy_empty_decision_note_keeps_previous_text(self) -> None:
+        for prior_events, expected in (
+            (_events(finding_id="fid-a", note="prior edit"), "prior edit"),
+            ((_events(finding_id="fid-a", note="unused")[0],), "T0"),
+        ):
+            with self.subTest(expected=expected):
+                decision = ReviewEvent(
+                    event_id="e-accepted",
+                    report_id="r" * 32,
+                    event_type="accepted",
+                    created_at="2026-09-07T00:02:00+00:00",
+                    issue_rule_id="FIRE-1",
+                    finding_id="fid-a",
+                    note="",
+                    resulting_state="accepted",
+                    actor="expert-1",
+                )
+                overlay = project_issue_review(
+                    finding_id="fid-a",
+                    rule_id="FIRE-1",
+                    machine_text="T0",
+                    events=(*prior_events, decision),
+                )
+                self.assertEqual(overlay["effective_text"], expected)
+                self.assertEqual(overlay["state"], "accepted")
 
     def test_html_and_pdf_show_effective_text(self) -> None:
         overlay = project_issue_review(
@@ -120,7 +166,6 @@ class ReviewProjectionUnitTests(unittest.TestCase):
         self.assertIn("machine=T0", html)
         pdf = render_report_pdf_bytes("r" * 32, data)
         from test_report_pdf_coverage import extract_pdf_text
-
         text = extract_pdf_text(pdf)
         self.assertIn("T1", text)
         self.assertIn("T0", text)
@@ -132,7 +177,6 @@ class ReviewProjectionHttpTests(unittest.TestCase):
             from fastapi.testclient import TestClient
         except ModuleNotFoundError as exc:
             raise unittest.SkipTest("FastAPI/httpx not installed") from exc
-
         with tempfile.TemporaryDirectory() as tmp:
             settings = Settings(
                 application_name="review-proj",
@@ -204,13 +248,11 @@ class ReviewProjectionHttpTests(unittest.TestCase):
             self.assertFalse(body["summary"]["passed"])
             self.assertEqual(body["issues"][0]["remark"]["body"], "T0")
             self.assertEqual(body["issues"][0]["review"]["effective_text"], "T1")
-
             exported = client.get(f"/v1/reports/{report_id}/export/json", headers=headers)
             self.assertEqual(exported.status_code, 200, exported.text)
             payload = exported.json()
             self.assertFalse(payload["summary"]["passed"])
             self.assertEqual(payload["issues"][0]["review"]["effective_text"], "T1")
-
             html = client.get(f"/v1/reports/{report_id}/export/html", headers=headers)
             self.assertEqual(html.status_code, 200, html.text)
             self.assertIn("effective=T1", html.text)
@@ -219,9 +261,7 @@ class ReviewProjectionHttpTests(unittest.TestCase):
             pdf = client.get(f"/v1/reports/{report_id}/export/pdf", headers=headers)
             self.assertEqual(pdf.status_code, 200, pdf.text)
             from test_report_pdf_coverage import extract_pdf_text
-
             self.assertIn("T1", extract_pdf_text(pdf.content))
-
             bcf = client.get(f"/v1/reports/{report_id}/export/bcf", headers=headers)
             self.assertEqual(bcf.status_code, 200, bcf.text)
             with zipfile.ZipFile(io.BytesIO(bcf.content), "r") as archive:
@@ -229,7 +269,6 @@ class ReviewProjectionHttpTests(unittest.TestCase):
                 xml = archive.read(markup).decode("utf-8")
             self.assertIn("T1", xml)
             self.assertIn("machine_text=T0", xml)
-
 
 if __name__ == "__main__":
     unittest.main()
