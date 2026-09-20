@@ -12,6 +12,7 @@ from pathlib import Path
 from uuid import uuid4
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+
 from aerobim.core.config.settings import Settings
 from aerobim.core.di.tokens import Tokens
 from aerobim.domain.finding_provenance import ensure_finding_provenance
@@ -238,6 +239,7 @@ class ReviewProjectionUnitTests(unittest.TestCase):
         self.assertIn("machine=T0", html)
         pdf = render_report_pdf_bytes("r" * 32, data)
         from test_report_pdf_coverage import extract_pdf_text
+
         text = extract_pdf_text(pdf)
         self.assertIn("T1", text)
         self.assertIn("T0", text)
@@ -249,6 +251,7 @@ class ReviewProjectionHttpTests(unittest.TestCase):
             from fastapi.testclient import TestClient
         except ModuleNotFoundError as exc:
             raise unittest.SkipTest("FastAPI/httpx not installed") from exc
+
         with tempfile.TemporaryDirectory() as tmp:
             settings = Settings(
                 application_name="review-proj",
@@ -320,11 +323,13 @@ class ReviewProjectionHttpTests(unittest.TestCase):
             self.assertFalse(body["summary"]["passed"])
             self.assertEqual(body["issues"][0]["remark"]["body"], "T0")
             self.assertEqual(body["issues"][0]["review"]["effective_text"], "T1")
+
             exported = client.get(f"/v1/reports/{report_id}/export/json", headers=headers)
             self.assertEqual(exported.status_code, 200, exported.text)
             payload = exported.json()
             self.assertFalse(payload["summary"]["passed"])
             self.assertEqual(payload["issues"][0]["review"]["effective_text"], "T1")
+
             html = client.get(f"/v1/reports/{report_id}/export/html", headers=headers)
             self.assertEqual(html.status_code, 200, html.text)
             self.assertIn("effective=T1", html.text)
@@ -333,7 +338,9 @@ class ReviewProjectionHttpTests(unittest.TestCase):
             pdf = client.get(f"/v1/reports/{report_id}/export/pdf", headers=headers)
             self.assertEqual(pdf.status_code, 200, pdf.text)
             from test_report_pdf_coverage import extract_pdf_text
+
             self.assertIn("T1", extract_pdf_text(pdf.content))
+
             bcf = client.get(f"/v1/reports/{report_id}/export/bcf", headers=headers)
             self.assertEqual(bcf.status_code, 200, bcf.text)
             with zipfile.ZipFile(io.BytesIO(bcf.content), "r") as archive:

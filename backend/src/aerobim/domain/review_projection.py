@@ -51,6 +51,7 @@ def event_belongs_to_finding(
     rule_id: str | None,
 ) -> bool:
     """Match by finding_id when the issue has one; otherwise by rule_id."""
+
     if event.event_type in _NORM_PACK_EVENT_TYPES:
         return False
     fid = (finding_id or "").strip() or None
@@ -70,6 +71,7 @@ def project_issue_review(
     events: Sequence[ReviewEvent],
 ) -> dict[str, Any]:
     """Build the public review overlay for one finding. Never writes a verdict."""
+
     state: str | None = None
     actor: str | None = None
     event_id: str | None = None
@@ -112,6 +114,7 @@ def attach_review_projection(
     events: Sequence[ReviewEvent],
 ) -> list[Any]:
     """Copy issue dicts and attach ``review`` without mutating machine remark."""
+
     projected: list[Any] = []
     for issue in issues:
         if not isinstance(issue, dict):
@@ -133,6 +136,7 @@ def effective_text_for_issue(
     events: Sequence[ReviewEvent] | None,
 ) -> str:
     """BCF Description: expert edit when present, else machine remark/message."""
+
     machine = issue.remark.body if issue.remark is not None else (issue.message or "")
     if not events:
         return machine
@@ -165,6 +169,7 @@ def partition_from_state(state: str | None) -> ReviewPartition:
 
 def review_partition_of(issue: Any) -> ReviewPartition:
     """Partition one serialized issue (or ValidationIssue) by expert state."""
+
     if isinstance(issue, Mapping):
         review = issue.get("review")
         state = str(review.get("state") or "") if isinstance(review, Mapping) else ""
@@ -194,6 +199,7 @@ def issue_is_rejected(
     events: Sequence[ReviewEvent] | None,
 ) -> bool:
     """True when the latest review event for this finding is a rejection."""
+
     if not events:
         return False
     overlay = project_issue_review(
@@ -224,6 +230,7 @@ _MACHINE_BCF_AUTHOR = "aerobim-backend"
 @dataclass(frozen=True)
 class BcfHitlComment:
     """One HITL event as a BCF Comment (Date/Author/Comment). Not a verdict."""
+
     event_id: str
     date: str
     author: str
@@ -250,6 +257,7 @@ def bcf_hitl_overlay(
     events: Sequence[ReviewEvent] | None,
 ) -> BcfHitlOverlay:
     """Map HITL events onto BCF TopicStatus, ModifiedAuthor, and comments."""
+
     if not events:
         return BcfHitlOverlay(
             topic_status="Open",

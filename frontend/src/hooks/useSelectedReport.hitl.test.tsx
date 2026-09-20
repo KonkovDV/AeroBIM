@@ -2,7 +2,9 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useSelectedReport } from "./useSelectedReport";
 import type { ValidationIssue } from "../lib/types";
+
 const FINAL_REMARK_NOTE_PREFIX = "aerobim:final-remark:v1\n";
+
 const api = vi.hoisted(() => ({
   fetchReport: vi.fn(),
   fetchReviewEvents: vi.fn(),
@@ -16,6 +18,7 @@ const api = vi.hoisted(() => ({
   },
 }));
 vi.mock("../lib/api", () => ({ ...api, ApiHttpError: api.ApiHttpError }));
+
 const issue: ValidationIssue = {
   finding_id: "first",
   rule_id: "first",
@@ -34,6 +37,7 @@ const issue: ValidationIssue = {
   problem_zone: null,
   remark: { title: "first", body: "machine" },
 };
+
 beforeEach(() => {
   vi.resetAllMocks();
   api.fetchReport.mockResolvedValue({ report_id: "report", issues: [issue] });
@@ -41,6 +45,7 @@ beforeEach(() => {
     events: [{ event_id: "opened", event_type: "opened", finding_id: "first", sequence_number: 1, resulting_state: "opened" }],
   });
 });
+
 describe("D01 atomic decision", () => {
   it.each(["accepted", "rejected"] as const)(
     "persists and decodes the exact final draft in one %s event without an edited_remark append",
@@ -77,6 +82,7 @@ describe("D01 atomic decision", () => {
       expect(hook.result.current.isDirty).toBe(false);
     },
   );
+
   it("requires final text for acceptance", async () => {
     const hook = renderHook(() => useSelectedReport("report"));
     await waitFor(() => expect(hook.result.current.historyPending).toBe(false));
@@ -88,6 +94,7 @@ describe("D01 atomic decision", () => {
     expect(hook.result.current.hitlRequestState).toBe("failed");
   });
 });
+
 describe("D02 persisted indicator", () => {
   it("restores accepted exact final text from an enveloped history note", async () => {
     const exact = "  expert rewrite\nline 2  ";
@@ -109,6 +116,7 @@ describe("D02 persisted indicator", () => {
     expect(hook.result.current.remarkDraft).toBe("typed after reload");
     expect(hook.result.current.hitlRequestState).toBe("idle");
   });
+
   it("treats a plain accepted note as a legacy comment and keeps the prior edit", async () => {
     api.fetchReviewEvents.mockResolvedValue({
       events: [
@@ -124,6 +132,7 @@ describe("D02 persisted indicator", () => {
     expect(hook.result.current.isDirty).toBe(false);
   });
 });
+
 describe("D04 discard draft", () => {
   it("restores the last saved remark without posting", async () => {
     const hook = renderHook(() => useSelectedReport("report"));
@@ -136,6 +145,7 @@ describe("D04 discard draft", () => {
     expect(api.postReviewEvent).not.toHaveBeenCalled();
   });
 });
+
 describe("D03 conflict keeps draft", () => {
   it("reloads history on a decision 409 and keeps the typed draft", async () => {
     api.postReviewEvent.mockRejectedValue(new api.ApiHttpError(409, "conflict"));
@@ -165,6 +175,7 @@ describe("D03 conflict keeps draft", () => {
     expect(hook.result.current.reviewEvents.some((row) => row.event_id === "other")).toBe(true);
   });
 });
+
 describe("idle finding auto-open", () => {
   it("posts opened then one enveloped accepted decision with no edited_remark", async () => {
     const calls: Array<{ event_type: string; note?: string }> = [];
