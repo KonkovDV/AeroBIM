@@ -4,14 +4,15 @@ PR #87 implements an explicitly **at-least-once** Redis reliable queue with atom
 
 Production Redis uses AOF with `appendfsync always`. This is an explicit local-disk durability boundary, not high availability or consensus storage.
 
-Local verification on the PR head before publication:
+Verification:
 
 - Ruff check: passed
 - Ruff format check: passed
 - strict mypy: passed
-- backend pytest: 3334 passed, 27 skipped, 176 subtests passed
+- backend pytest: passed
 - Markdown links: passed
 - docs metadata integrity: passed
+- CI-generated runtime baseline adopted from run `35658840115`
 
 Primary research basis:
 
