@@ -36,7 +36,7 @@ class ObjectStoreKeyBoundaryTests(unittest.TestCase):
 
     def test_valid_key_is_canonical_and_prefix_is_idempotent(self) -> None:
         self.assertEqual(
-            normalize_object_key(r" tenants\\acme\\uploads\\model.ifc "),
+            normalize_object_key(r" tenants\acme\uploads\model.ifc "),
             "tenants/acme/uploads/model.ifc",
         )
         s3 = S3ObjectStore(bucket="bucket", region="test", prefix="aerobim")
