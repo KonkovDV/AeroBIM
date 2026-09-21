@@ -1,5 +1,5 @@
 # ruff: noqa: E501
-"""Demo-day auditor pack — blocks A–F for TechLab 29–30.09.2026.
+"""Demo-day auditor pack — blocks A–F for TechLab 21.09.2026.
 
 Pins already in git. Does not close RT-001/002/003.
 Does not put census fingerprints on licensed slide lines.
@@ -1199,7 +1199,7 @@ def render_auditor_document() -> str:
 ---
 title: "Аудиторский пакет демо-дня — блоки A–F (14.09.2026)"
 date: "2026-09-14"
-last_updated: "2026-09-15"
+last_updated: "2026-09-21"
 status: active
 version: "1.1.1"
 closes_rt001: false
@@ -1214,7 +1214,7 @@ claim_boundary: >
   a jury exhibit. Checkpoint GO; customer_go false.
 ---
 
-# Аудиторский пакет A–F — демо-день 29–30.09.2026
+# Аудиторский пакет A–F — демо-день 21.09.2026
 
 Машина: `python -c "from aerobim.domain.demo_day_auditor_pack import demo_day_auditor_snapshot, render_fact_table"`.
 

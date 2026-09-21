@@ -1,4 +1,4 @@
-"""Demo-day 29–30.09.2026 speech lock — Red Team, five seats, licensed numbers.
+"""Demo-day 21.09.2026 speech lock — Red Team, five seats, licensed numbers.
 
 Pins evidence already in git. Does not close RT-001/002/003.
 Does not name sitting members. Checkpoint GO; customer_go false.
@@ -19,14 +19,14 @@ from aerobim.domain.unpack_census import PUBLIC_UNPACK_CENSUS
 
 CLAIM_LEVEL: Final = "coverage_map_only"
 CLAIM_BOUNDARY: Final = (
-    "Licensed demo-day speech for 2026-09-29/30. Carrier audit is not pack "
+    "Licensed demo-day speech for 2026-09-21. Carrier audit is not pack "
     "processed. Open-bench clash is not customer MEP. AECV macro_extended is "
     "not F1 and not product accuracy. GOST R 58048 self-assess is TRL 4, not 5. "
     "Checkpoint GO (regulatory_measurement_mvp; customer_go false)."
 )
 
 EVENT: Final = "techlab_moscow_demo_day"
-EVENT_DATES: Final = ("2026-09-29", "2026-09-30")
+EVENT_DATES: Final = ("2026-09-21",)
 TASK_APPENDIX_4: Final = 6
 COMMISSION_NUMBER: Final = 7
 DECK_FILE: Final = "AeroBIM_demo_day_2026-09-13"

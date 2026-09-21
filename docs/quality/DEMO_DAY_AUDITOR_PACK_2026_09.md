@@ -2,7 +2,7 @@
 ---
 title: "Аудиторский пакет демо-дня — блоки A–F (14.09.2026)"
 date: "2026-09-14"
-last_updated: "2026-09-15"
+last_updated: "2026-09-21"
 status: active
 version: "1.1.1"
 closes_rt001: false
@@ -17,7 +17,7 @@ claim_boundary: >
   a jury exhibit. Checkpoint GO; customer_go false.
 ---
 
-# Аудиторский пакет A–F — демо-день 29–30.09.2026
+# Аудиторский пакет A–F — демо-день 21.09.2026
 
 Машина: `python -c "from aerobim.domain.demo_day_auditor_pack import demo_day_auditor_snapshot, render_fact_table"`.
 

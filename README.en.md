@@ -41,7 +41,7 @@ It operates on the **seam between files**.
 
 ## For the jury
 
-Moscow TechLab programme, commission № 7: automated verification of design and working documentation. Demo-day: 29–30 September 2026. Self-assessed TRL 4 under GOST R 58048.
+Moscow TechLab programme, commission № 7: automated verification of design and working documentation. Demo-day: 21 September 2026. Self-assessed TRL 4 under GOST R 58048.
 
 > We are in *refinement* on the customer contour. One command shows a fail-closed finding on a fixture. Effectiveness validation and deployment have not started. Checkpoint `GO` is the regulatory-measurement MVP. `customer_go` stays false until an independent labeled pack, two raters, a signed appointing-party profile, and CDE proof.
 

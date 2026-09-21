@@ -13,7 +13,7 @@ claim_boundary: >
   remains unverified. No measurement is created here. Checkpoint GO; customer_go false.
 ---
 
-# Триаж деки демо-дня 29–30.09 — Red Team, 15.09.2026 (вечер)
+# Триаж деки демо-дня 21.09.2026 — Red Team, 15.09.2026 (вечер)
 
 **Объект.** Экспорт деки 15.09.2026, 17:14 UTC: девять экранов основной части и приложения A0–A20 (с A1+ и A8+), всего 32 страницы.
 

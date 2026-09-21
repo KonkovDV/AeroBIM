@@ -1,8 +1,8 @@
 <!-- claims-lint: allow-file reason="Demo-day speech lock; TRL 5 / CDE / SSO / 90% as non-claims; Checkpoint GO; customer_go false" -->
 ---
-title: "Демо-день 29–30.09.2026 — замок речи"
+title: "Демо-день 21.09.2026 — замок речи"
 date: "2026-09-15"
-last_updated: "2026-09-15"
+last_updated: "2026-09-21"
 status: active
 version: "1.3.0"
 closes_rt001: false
