@@ -336,9 +336,8 @@ class InMemoryAnalyzeProjectPackageJobStore:
 
     def _requeue_abandoned_unlocked(self, job_id: str) -> AnalyzeProjectPackageJob | None:
         job = self._jobs.get(job_id)
-        if not abandoned_without_report(job, max_retries=self._max_retries):
+        if job is None or not abandoned_without_report(job, max_retries=self._max_retries):
             return None
-        assert job is not None
         updated = replace(
             job,
             status=JobStatus.QUEUED,
