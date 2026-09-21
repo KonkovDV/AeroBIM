@@ -7,6 +7,8 @@
   <a href="submission/03-presentation/AeroBIM.pptx"><img src="https://img.shields.io/badge/PowerPoint-.pptx-D24726?style=for-the-badge&logo=microsoftpowerpoint&logoColor=white" alt="PowerPoint"></a>
   &nbsp;
   <a href="submission/03-presentation/AeroBIM.pdf"><img src="https://img.shields.io/badge/PDF-.pdf-B30B00?style=for-the-badge&logo=adobeacrobatreader&logoColor=white" alt="PDF"></a>
+  &nbsp;&nbsp;
+  <a href="submission/03-presentation/demo_day_slides.md"><b>Текст слайдов</b></a>
 </p>
 
 # AeroBIM

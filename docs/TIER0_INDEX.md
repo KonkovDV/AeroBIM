@@ -41,7 +41,7 @@ claim_boundary: "Jury pack only. Checkpoint GO; customer_go false until RT-001/0
 | [Строка корпуса](demo/KT2_CORPUS_SSOT_2026_08.md) | Замороженные открытые прокси |
 | [Поля обмена 10D](demo/KT2_10D_INTAKE_CONTRACT_2026_08.md) | Предложение; не коннектор 10D |
 | [Карточка речи КТ#3](demo/KT3_JURY_FAQ_2026_08_25.md) | 30 с + 8–12 мин; стоп-лист |
-| [Текст слайдов](../submission/03-presentation/demo_day_slides.md) | Канон речи в git; 11 экранов и A0–A33; A20 в PPTX нет |
+| [Текст слайдов](../submission/03-presentation/demo_day_slides.md) | Канон речи в git; 43 слайда; A20 в PPTX нет; кадры 41–43: шапка A27/A28/A29, содержание A29/A31/A33 |
 | [PPTX демо-дня](../submission/03-presentation/AeroBIM.pptx) | Поле формы; 43 слайда; PDF — [`AeroBIM.pdf`](../submission/03-presentation/AeroBIM.pdf) |
 | [Сценарий оператора КТ#3](demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md) | Живой CLI из git |
 | [Трекер КТ#3 (6 задач)](demo/KT3_TRACKER_SIX_TASKS_2026_08.md) | Live CLI; не KPI демо в git |
