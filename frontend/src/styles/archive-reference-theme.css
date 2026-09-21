@@ -318,6 +318,176 @@ body {
   background: #0b1426;
 }
 
+.evidence-deck {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: #020617;
+}
+
+.evidence-deck-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 4px 8px;
+  background: rgba(15, 23, 42, .8);
+  border-bottom: 1px solid var(--archive-line);
+}
+
+.evidence-deck-tabs {
+  display: flex;
+  flex: 1 1 auto;
+  gap: 4px;
+  align-items: center;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.evidence-deck-tabs button {
+  min-block-size: 32px;
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.evidence-deck-tabs button:hover {
+  background: #1e293b;
+  color: #e2e8f0;
+}
+
+.evidence-deck-tabs button[aria-selected="true"] {
+  background: #075985;
+  border-color: #0284c7;
+  color: #fff;
+}
+
+.evidence-deck-expand {
+  margin-inline-start: auto;
+  flex: 0 0 auto;
+  min-block-size: 32px;
+  padding: 6px 10px;
+  border: 1px solid #33425c;
+  border-radius: 6px;
+  background: #111c30;
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.evidence-deck-expand[aria-pressed="true"] {
+  border-color: #0284c7;
+  color: #e0f2fe;
+}
+
+.expert-workplace.is-center-expanded .workspace-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.expert-workplace.is-center-expanded .workspace-grid > :not(.side-stack) {
+  display: none;
+}
+
+.findings-count {
+  align-self: center;
+  padding: 2px 8px;
+  border: 1px solid #9f1239;
+  border-radius: 999px;
+  background: #3b1020;
+  color: #fecdd3;
+  font-family: ui-monospace, "Cascadia Code", monospace;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.expert-workplace > .machine-human-split {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 12px 0;
+}
+
+.machine-human-split > :is(.machine-gateway, .expert-hitl) {
+  min-height: 0;
+  flex: 1 1 280px;
+  display: grid;
+  gap: 2px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #0c1527;
+}
+
+.machine-human-split .panel-kicker {
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.machine-human-split .compact-copy,
+.machine-human-split strong {
+  margin: 0;
+}
+
+.issue-card > p {
+  margin: 0;
+  color: #e8eef8;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.issue-card-row > strong {
+  padding: 1px 6px;
+  border: 1px solid #0369a1;
+  border-radius: 4px;
+  background: #082f49;
+  color: #7dd3fc;
+  font-family: ui-monospace, "Cascadia Code", monospace;
+  font-size: 11px;
+}
+
+.remark-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.remark-action {
+  min-block-size: 32px;
+  padding: 6px 10px;
+  border: 1px solid #33425c;
+  border-radius: 6px;
+  background: #111c30;
+  color: #e5edf8;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.remark-action-confirm {
+  background: #075985;
+  border-color: #0284c7;
+  color: #fff;
+}
+
+.remark-action-reject {
+  background: #3b1020;
+  border-color: #e11d48;
+  color: #fecdd3;
+}
+
+.remark-action:disabled {
+  opacity: .55;
+}
+
+.evidence-deck-panel {
+  min-width: 0;
+}
+
 .grid-resizer {
   width: 5px;
   background: #081121;
@@ -350,10 +520,8 @@ body {
 }
 
 .issue-panel,
-.viewer-panel,
-.expert-hitl,
-.machine-gateway {
-  min-height: 610px;
+.viewer-panel {
+  min-height: 28rem;
 }
 
 .panel-header,
@@ -703,6 +871,14 @@ textarea::placeholder {
 }
 
 @media print {
+  .evidence-deck-bar { display: none; }
+  .evidence-deck-panel[hidden] { display: block !important; }
+  .expert-workplace.is-center-expanded .workspace-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1fr);
+  }
+  .expert-workplace.is-center-expanded .workspace-grid > :not(.side-stack) {
+    display: block;
+  }
   :root {
     --vl-canvas: #fff;
     --vl-sunken: #fff;

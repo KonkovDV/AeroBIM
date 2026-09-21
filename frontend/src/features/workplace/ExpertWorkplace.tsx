@@ -1,4 +1,4 @@
-import { startTransition, type ReactNode } from "react";
+import { startTransition, useState, type ReactNode } from "react";
 import type { ParsedRequirement, ReportSummaryEntry, ValidationIssue, ValidationReport } from "../../lib/types";
 import type { ReviewEventRow } from "../../lib/api";
 import type { FindingGroupBy, IndexedIssue } from "../../lib/issue-triage";
@@ -14,6 +14,7 @@ import FindingListPanel from "../findings/FindingListPanel";
 import RemarkCardPanel from "../findings/RemarkCardPanel";
 import ExportActionsBar from "../export/ExportActionsBar";
 import MachineGatewayStrip, { type HitlDecisionState } from "./MachineGatewayStrip";
+import EvidenceDeck from "./EvidenceDeck";
 import ResizableWorkplace from "./ResizableWorkplace";
 
 export type ExpertWorkplaceProps = {
@@ -108,9 +109,13 @@ export default function ExpertWorkplace({
   unsavedRemark = false,
 }: ExpertWorkplaceProps) {
   const showExportExtras = workspaceView === "export";
+  const [centerExpanded, setCenterExpanded] = useState(false);
 
   return (
-    <div className="expert-workplace" data-testid="expert-workplace">
+    <div
+      className={`expert-workplace${centerExpanded ? " is-center-expanded" : ""}`}
+      data-testid="expert-workplace"
+    >
       {selectedReport ? (
         <>
           <div className="expert-pack-bar">
@@ -156,6 +161,11 @@ export default function ExpertWorkplace({
                 <p className="panel-kicker">{UI_COPY.findingsKicker}</p>
                 <h2>{UI_COPY.findingsTitle}</h2>
               </div>
+              {selectedReport ? (
+                <span className="findings-count" role="status">
+                  {UI_COPY.findingsCount(filteredIssues.length, selectedReport.issues.length)}
+                </span>
+              ) : null}
             </div>
             {reportLoading ? (
               <div className="panel-empty">{UI_COPY.loadingReport}</div>
@@ -206,54 +216,62 @@ export default function ExpertWorkplace({
         }
         center={
           <div className="side-stack" data-testid="expert-spatial-pane">
-            {spatialViewer}
-            <DrawingEvidencePanel
-              report={selectedReport}
-              activeIssue={activeIssue}
-              issues={filteredIssues}
-              onSelectIssue={onSelectIssue}
+            <EvidenceDeck
+              model={spatialViewer}
+              expanded={centerExpanded}
+              onToggleExpanded={() => setCenterExpanded((value) => !value)}
+              drawing={
+                <DrawingEvidencePanel
+                  report={selectedReport}
+                  activeIssue={activeIssue}
+                  issues={filteredIssues}
+                  onSelectIssue={onSelectIssue}
+                />
+              }
+              clash={
+                <section className="panel">
+                  <div className="panel-header">
+                    <div>
+                      <p className="panel-kicker">{UI_COPY.clashKicker}</p>
+                      <h2>{UI_COPY.clashTitle}</h2>
+                    </div>
+                  </div>
+                  {selectedReport === null ? (
+                    <p className="compact-copy">{UI_COPY.selectReportClash}</p>
+                  ) : selectedReport.clash_results.length === 0 ? (
+                    <p className="compact-copy">{UI_COPY.noClash}</p>
+                  ) : (
+                    <div className="collection-stack">
+                      {selectedReport.clash_results.map((clash, index) => (
+                        <button
+                          key={`${clash.element_a_guid}-${clash.element_b_guid}-${index}`}
+                          type="button"
+                          className={`collection-card collection-card-button ${index === selectedClashIndex ? "active" : ""}`}
+                          onClick={() => {
+                            startTransition(() => {
+                              onSelectClash(index === selectedClashIndex ? null : index);
+                            });
+                          }}
+                        >
+                          <div className="collection-card-row">
+                            <strong>{clash.clash_type}</strong>
+                            <span className="selection-badge">
+                              {index === selectedClashIndex ? UI_COPY.viewerFocusOn : UI_COPY.focusClash}
+                            </span>
+                          </div>
+                          <p>{clash.description}</p>
+                          <div className="collection-meta">
+                            <span>{clash.element_a_guid}</span>
+                            <span>{clash.element_b_guid}</span>
+                            <span>{UI_COPY.clashDistance(clash.distance.toFixed(3))}</span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </section>
+              }
             />
-            <section className="panel">
-              <div className="panel-header">
-                <div>
-                  <p className="panel-kicker">{UI_COPY.clashKicker}</p>
-                  <h2>{UI_COPY.clashTitle}</h2>
-                </div>
-              </div>
-              {selectedReport === null ? (
-                <p className="compact-copy">{UI_COPY.selectReportClash}</p>
-              ) : selectedReport.clash_results.length === 0 ? (
-                <p className="compact-copy">{UI_COPY.noClash}</p>
-              ) : (
-                <div className="collection-stack">
-                  {selectedReport.clash_results.map((clash, index) => (
-                    <button
-                      key={`${clash.element_a_guid}-${clash.element_b_guid}-${index}`}
-                      type="button"
-                      className={`collection-card collection-card-button ${index === selectedClashIndex ? "active" : ""}`}
-                      onClick={() => {
-                        startTransition(() => {
-                          onSelectClash(index === selectedClashIndex ? null : index);
-                        });
-                      }}
-                    >
-                      <div className="collection-card-row">
-                        <strong>{clash.clash_type}</strong>
-                        <span className="selection-badge">
-                          {index === selectedClashIndex ? UI_COPY.viewerFocusOn : UI_COPY.focusClash}
-                        </span>
-                      </div>
-                      <p>{clash.description}</p>
-                      <div className="collection-meta">
-                        <span>{clash.element_a_guid}</span>
-                        <span>{clash.element_b_guid}</span>
-                        <span>{UI_COPY.clashDistance(clash.distance.toFixed(3))}</span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </section>
           </div>
         }
         right={
