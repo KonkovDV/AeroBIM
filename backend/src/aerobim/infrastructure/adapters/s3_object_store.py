@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, cast
 
+from aerobim.core.security.object_key import normalize_object_key
 from aerobim.core.security.object_limits import (
     DEFAULT_MAX_GET_BYTES,
     ObjectTooLargeError,
@@ -50,7 +51,8 @@ class S3ObjectStore:
         self._endpoint_url = endpoint_url
         self._access_key_id = access_key_id
         self._secret_access_key = secret_access_key
-        self._prefix = prefix.strip("/")
+        raw_prefix = prefix.strip("/")
+        self._prefix = normalize_object_key(raw_prefix) if raw_prefix else ""
         self._allow_http_endpoint = allow_http_endpoint
         self._max_get_bytes = max_get_bytes
 
@@ -193,7 +195,7 @@ class S3ObjectStore:
         )
 
     def _qualify_key(self, key: str) -> str:
-        normalised = key.strip().replace("\\", "/").lstrip("/")
+        normalised = normalize_object_key(key)
         if not self._prefix:
             return normalised
         if normalised == self._prefix or normalised.startswith(f"{self._prefix}/"):
