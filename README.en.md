@@ -2,7 +2,7 @@
 <p align="center">
   <img src="AeroBIM.png" alt="AeroBIM" width="420">
   <br><br>
-  <b>Presentation · 43 slides</b>
+  <b>Presentation · 7 slides</b>
   <br><br>
   <a href="submission/03-presentation/AeroBIM.pptx"><img src="https://img.shields.io/badge/PowerPoint-.pptx-D24726?style=for-the-badge&logo=microsoftpowerpoint&logoColor=white" alt="PowerPoint"></a>
   &nbsp;
@@ -48,7 +48,7 @@ Moscow TechLab programme, commission № 7: automated verification of design and
 | | |
 |---|---|
 | **Show** | `python -m aerobim.tools.run_kt3_jury` — live CLI on the git fixture pack |
-| **Slides** | [`AeroBIM.pptx`](submission/03-presentation/AeroBIM.pptx) (43 slides) · [`AeroBIM.pdf`](submission/03-presentation/AeroBIM.pdf) · [slide text](submission/03-presentation/demo_day_slides.md) |
+| **Slides** | [`AeroBIM.pptx`](submission/03-presentation/AeroBIM.pptx) (7 slides) · [`AeroBIM.pdf`](submission/03-presentation/AeroBIM.pdf) · [slide text](submission/03-presentation/demo_day_slides.md) |
 | **Form pack** | [`submission/README.md`](submission/README.md) — five fields |
 | **Map** | [jury map](docs/TIER0_INDEX.md) · [claim boundary](docs/pilot-claim-boundary-2026.md) · [glossary](docs/partners/GLOSSARY_JURY_RU_2026_08.md) |
 | **Card** | [show](docs/demo/KT3_JURY_FAQ_2026_08_25.md) · [stage formula](docs/demo/KT2_JURY_FAQ_2026_08_12.md) |
@@ -450,7 +450,7 @@ frontend/     Review shell (Vite + React; IFC 3D + drawing overlay)
 samples/      IFC, IDS, drawing and specification fixtures
 docs/         Documentation and evidence
 audit/        Blocker register
-submission/   TechLab jury pack (PowerPoint and PDF, 43 slides)
+submission/   TechLab jury pack (PowerPoint and PDF, 7 slides)
 ```
 
 CI pass counts:
@@ -469,7 +469,7 @@ tests_passed: backend=3300, frontend=400; commit 4742d56d9574; see docs/evidence
 |---|---|
 | Start here | [Jury map](docs/TIER0_INDEX.md) · [Technical justification](docs/docs.md) · [glossary](docs/partners/GLOSSARY_JURY_RU_2026_08.md) |
 | Checkpoint pack | [Submission pack](submission/README.md) |
-| Demo-day presentation | [PowerPoint, 43 slides](submission/03-presentation/AeroBIM.pptx) · [PDF](submission/03-presentation/AeroBIM.pdf) · [slide text](submission/03-presentation/demo_day_slides.md) |
+| Demo-day presentation | [PowerPoint, 7 slides](submission/03-presentation/AeroBIM.pptx) · [PDF](submission/03-presentation/AeroBIM.pdf) · [slide text](submission/03-presentation/demo_day_slides.md) |
 | Show card | [show](docs/demo/KT3_JURY_FAQ_2026_08_25.md) · [stage formula](docs/demo/KT2_JURY_FAQ_2026_08_12.md) |
 | Residual RT | [register](audit/reports/CRITICAL_BLOCKERS.md) |
 | Claim boundary | [document](docs/pilot-claim-boundary-2026.md) |

@@ -9,9 +9,9 @@
 | [`KT2_TASK07_COMPARISON_2026_08.md`](../../docs/demo/KT2_TASK07_COMPARISON_2026_08.md) | Сравнение решений; цифры конкурентов — их заявления |
 | [`INTERPRETATION_USE_LEDGER_2026_08.md`](../../docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md) | Что текущие цифры вправе значить |
 | [`QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](../../docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) | Методика до данных заказчика |
-| [`AeroBIM.pptx`](../03-presentation/AeroBIM.pptx) | Поле формы; PowerPoint демо-дня (43 слайда) |
+| [`AeroBIM.pptx`](../03-presentation/AeroBIM.pptx) | Поле формы; PowerPoint демо-дня (7 слайдов) |
 | [`AeroBIM.pdf`](../03-presentation/AeroBIM.pdf) | Та же дека, PDF |
-| [`demo_day_slides.md`](../03-presentation/demo_day_slides.md) | Канон речи в git; A21–A26 аналоги и SOTA; A25 CORENET X по DC26-08 |
+| [`demo_day_slides.md`](../03-presentation/demo_day_slides.md) | Текстовая копия слайдов показа |
 
 ## Пины (учебные и синтетические)
 
