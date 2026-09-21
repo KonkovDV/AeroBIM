@@ -50,11 +50,11 @@ The show is seven slides: [`AeroBIM.pptx`](submission/03-presentation/AeroBIM.pp
 | Slide | On the deck | In the repo |
 |---|---|---|
 | 1 | Pack gateway, commission № 7 | This README |
-| 2 | Two engineers, roles | Slides 2 and 7 · [prototype](submission/04-prototype/README.md) |
+| 2 | Two engineers, roles | [slide 2](submission/03-presentation/demo_day_slides.md) |
 | 3 | Pack seam; fixture numbers; pilot hypothesis | [0.86 F1](docs/evidence/runtime-baseline-latest.json) · [10/10 synthetic](docs/evidence/DEFECT_INJECTION_RECALL_SEAM_CLEAN_2026_09.md) · [1/8 other set](docs/evidence/DEFECT_INJECTION_RECALL_RUN_2026_09.md) |
 | 4 | Teaching node 30/40 mm → BCF | Illustration on the slide. Live CLI finds planted git-fixture defects, not that node: [prototype](submission/04-prototype/README.md) |
 | 5 | Deterministic core; AI does not write the outcome | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) · [ingest boundary](docs/tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md) |
-| 6 | Eight weeks; pilot GO ≠ Checkpoint `GO` | [claim boundary](docs/pilot-claim-boundary-2026.md) · [pilot scenario](docs/partners/CUSTOMER_PILOT_AND_INTEGRATION_SCENARIO_2026_09.md) |
+| 6 | Eight weeks; pilot GO ≠ Checkpoint `GO` | [claim boundary](docs/pilot-claim-boundary-2026.md) · [slide 6](submission/03-presentation/demo_day_slides.md) |
 | 7 | Mail and GitHub | PPTX slide 7; phone only there |
 
 | | |
@@ -147,7 +147,7 @@ flowchart LR
 <summary>Model, rules, documents, report</summary>
 
 1. **The model.** Properties and quantities are validated with IfcOpenShell. IFC2x3 (buildingSMART schema; no ISO publication), IFC4 ADD2 (ISO 16739-1:2018) and IFC4x3 (ISO 16739-1:2024) go through one kernel. ISO/PAS 16739:2005 is the IFC2x Platform, not IFC2x3. Where property-set names diverge between releases, the difference is a `ValidationIssue`, not a silent skip. Per-feature rules: [`docs/ifc-compatibility-matrix.md`](docs/ifc-compatibility-matrix.md).
-2. **The rules.** IDS 1.0 is validated with IfcTester. Official rule sets from Moscow Region State Expertise and SPb GAU CGE (CIM OKS ed. 3.1.0 + CIM RII ed. 1.1.0) ship in `samples/`; the CGE profile ([`samples/profiles/spb-cge/`](samples/profiles/spb-cge/manifest.json)) is a published rule set, not a customer-signed acceptance profile. CI checks the committed profile. A requested rule set that cannot load fails the check.
+2. **The rules.** IDS 1.0 is validated with IfcTester. Official rule sets from Moscow Region State Expertise and SPb GAU CGE (CIM OKS ed. 3.1.0 + CIM RII ed. 1.1.0) ship in `samples/`; the CGE profile ([`samples/profiles/spb-cge/`](samples/profiles/spb-cge/)) is a published rule set, not a customer-signed acceptance profile. CI checks the committed profile. A requested rule set that cannot load fails the check.
 3. **The other documents.** The model is compared with drawing notes, specifications and calculation texts, with a configured ε-band and Russian/European grouped decimals. Sources are compared; the calculation is not recomputed.
 4. **The report.** Each finding carries `finding_id`, `source_id` and `evidence_refs` (persistence refuses a finding without them). People get HTML; machines get JSON; issue exchange gets a structural BCF 2.1 / 3.0 ZIP. The browser review shell (web-ifc + Three.js) shows the IFC in 3D and the evidence on the sheet.
 
@@ -478,7 +478,7 @@ tests_passed: backend=3300, frontend=400; commit 4742d56d9574; see docs/evidence
 | Topic | Document |
 |---|---|
 | Start here | [Jury map](docs/TIER0_INDEX.md) · [Technical justification](docs/docs.md) · [glossary](docs/partners/GLOSSARY_JURY_RU_2026_08.md) |
-| Checkpoint pack | [Submission pack](submission/README.md) |
+| Form pack | [Submission pack](submission/README.md) |
 | Demo-day presentation | [PowerPoint, 7 slides](submission/03-presentation/AeroBIM.pptx) · [PDF](submission/03-presentation/AeroBIM.pdf) · [slide text](submission/03-presentation/demo_day_slides.md) |
 | Show card | [show](docs/demo/KT3_JURY_FAQ_2026_08_25.md) · [stage formula](docs/demo/KT2_JURY_FAQ_2026_08_12.md) |
 | Residual RT | [register](audit/reports/CRITICAL_BLOCKERS.md) |

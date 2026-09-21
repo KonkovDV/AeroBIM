@@ -50,11 +50,11 @@
 | Кадр | На слайде | Куда в репозитории |
 |---|---|---|
 | 1 | Шлюз ПД/РД, комиссия № 7 | Этот README |
-| 2 | Два инженера, роли | Кадры 2 и 7 · [прототип](submission/04-prototype/README.md) |
+| 2 | Два инженера, роли | [кадр 2](submission/03-presentation/demo_day_slides.md) |
 | 3 | Шов комплекта; цифры на фикстуре; гипотеза пилота | [0,86 F1](docs/evidence/runtime-baseline-latest.json) · [10/10 синтетика](docs/evidence/DEFECT_INJECTION_RECALL_SEAM_CLEAN_2026_09.md) · [1/8 другой набор](docs/evidence/DEFECT_INJECTION_RECALL_RUN_2026_09.md) |
 | 4 | Учебный узел 30/40 мм → BCF | Схема на слайде. Живой прогон — посаженные дефекты git, не этот узел: [прототип](submission/04-prototype/README.md) |
 | 5 | Детерминированное ядро; ИИ не пишет итог | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) · [граница ingest](docs/tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md) |
-| 6 | Восемь недель; GO пилота ≠ Checkpoint `GO` | [граница заявлений](docs/pilot-claim-boundary-2026.md) · [сценарий пилота](docs/partners/CUSTOMER_PILOT_AND_INTEGRATION_SCENARIO_2026_09.md) |
+| 6 | Восемь недель; GO пилота ≠ Checkpoint `GO` | [граница заявлений](docs/pilot-claim-boundary-2026.md) · [кадр 6](submission/03-presentation/demo_day_slides.md) |
 | 7 | Почта и GitHub | Кадр 7 PPTX; телефон только там |
 
 | | |
@@ -147,7 +147,7 @@ flowchart LR
 <summary>Модель, правила, документы, отчёт</summary>
 
 1. **Модель.** Свойства и величины — IfcOpenShell. IFC2x3 (схема buildingSMART; публикации ISO нет), IFC4 ADD2 (ISO 16739-1:2018) и IFC4x3 (ISO 16739-1:2024) идут через одно ядро. ISO/PAS 16739:2005 — это IFC2x Platform, не IFC2x3. Расхождение имён наборов свойств между релизами — `ValidationIssue`, не молчаливый пропуск. Правила: [`docs/ifc-compatibility-matrix.md`](docs/ifc-compatibility-matrix.md).
-2. **Правила.** IDS 1.0 — IfcTester. Наборы Мособлгосэкспертизы и СПб ГАУ ЦГЭ (ЦИМ ОКС ред. 3.1.0 + ЦИМ РИИ ред. 1.1.0) лежат в `samples/`. Профиль ЦГЭ ([`samples/profiles/spb-cge/`](samples/profiles/spb-cge/manifest.json)) — опубликованный набор, не подписанный профиль приёмки. CI сверяет профиль в git. Незагруженный запрошенный набор роняет проверку.
+2. **Правила.** IDS 1.0 — IfcTester. Наборы Мособлгосэкспертизы и СПб ГАУ ЦГЭ (ЦИМ ОКС ред. 3.1.0 + ЦИМ РИИ ред. 1.1.0) лежат в `samples/`. Профиль ЦГЭ ([`samples/profiles/spb-cge/`](samples/profiles/spb-cge/)) — опубликованный набор, не подписанный профиль приёмки. CI сверяет профиль в git. Незагруженный запрошенный набор роняет проверку.
 3. **Документы.** Модель сверяется с пометками на чертеже, спецификациями и расчётными текстами (ε-полоса, русские и европейские группированные числа). Источники сравниваются, расчёт не пересчитывается.
 4. **Отчёт.** У находки есть `finding_id`, `source_id` и `evidence_refs` — без них она не сохраняется. HTML людям, JSON машинам, BCF 2.1 / 3.0 для обмена замечаниями. Оболочка ревью (web-ifc + Three.js) показывает модель и доказательство на листе.
 
