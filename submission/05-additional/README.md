@@ -28,6 +28,9 @@
 |---|---|
 | [`AeroBIM.pptx`](../03-presentation/AeroBIM.pptx) | Поле формы; PowerPoint демо-дня (7 слайдов) |
 | [`AeroBIM.pdf`](../03-presentation/AeroBIM.pdf) | Та же дека, PDF |
-| [`demo_day_slides.md`](../03-presentation/demo_day_slides.md) | Текстовая копия слайдов показа |
+| [`demo_day_slides.md`](../03-presentation/demo_day_slides.md) | Текстовая копия семи слайдов показа |
+| [`AeroBIM-full.pptx`](../03-presentation/AeroBIM-full.pptx) | Полная версия, 43 слайда |
+| [`AeroBIM-full.pdf`](../03-presentation/AeroBIM-full.pdf) | Та же полная версия, PDF |
+| [`AeroBIM-full.md`](../03-presentation/AeroBIM-full.md) | Текстовая копия 43 слайдов |
 | [`DATA_STATEMENT_2026_08.md`](../../docs/evidence/DATA_STATEMENT_2026_08.md) | Какие данные есть и каких нет |
 | [`INTERPRETATION_USE_LEDGER_2026_08.md`](../../docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md) | Что текущие цифры вправе значить |

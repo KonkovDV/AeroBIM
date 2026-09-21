@@ -8,6 +8,7 @@
 | [`AeroBIM.pdf`](AeroBIM.pdf) | Та же дека, PDF |
 | [`AeroBIM-full.pptx`](AeroBIM-full.pptx) | Полная версия, 43 слайда |
 | [`AeroBIM-full.pdf`](AeroBIM-full.pdf) | Та же полная версия, PDF |
+| [`AeroBIM-full.md`](AeroBIM-full.md) | Текстовая копия 43 слайдов |
 | [`demo_day_slides.md`](demo_day_slides.md) | Текстовая копия семи слайдов показа |
 | этот README | Индекс папки |
 
