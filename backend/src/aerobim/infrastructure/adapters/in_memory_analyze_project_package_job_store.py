@@ -11,7 +11,7 @@ from aerobim.domain.analyze_job_idempotency import (
     JobConcurrencyLimitError,
     job_from_stored_mapping,
 )
-from aerobim.domain.job_transitions import can_transition
+from aerobim.domain.job_transitions import abandoned_without_report, can_transition
 from aerobim.domain.models import AnalyzeProjectPackageJob, JobStatus
 
 _DEFAULT_LEASE_SECONDS = 120
@@ -320,6 +320,39 @@ class InMemoryAnalyzeProjectPackageJobStore:
         with self._lock:
             now = _parse_iso(now_iso) or _now()
             return self._reclaim_stale_unlocked(now)
+
+    def requeue_failed_without_report(self, job_id: str) -> AnalyzeProjectPackageJob | None:
+        with self._lock:
+            return self._requeue_abandoned_unlocked(job_id)
+
+    def requeue_abandoned_failures(self) -> list[AnalyzeProjectPackageJob]:
+        with self._lock:
+            requeued: list[AnalyzeProjectPackageJob] = []
+            for job_id in list(self._jobs):
+                updated = self._requeue_abandoned_unlocked(job_id)
+                if updated is not None:
+                    requeued.append(updated)
+            return requeued
+
+    def _requeue_abandoned_unlocked(self, job_id: str) -> AnalyzeProjectPackageJob | None:
+        job = self._jobs.get(job_id)
+        if not abandoned_without_report(job, max_retries=self._max_retries):
+            return None
+        assert job is not None
+        updated = replace(
+            job,
+            status=JobStatus.QUEUED,
+            started_at=None,
+            completed_at=None,
+            error_message=None,
+            heartbeat_at=None,
+            lease_expires_at=None,
+            lease_owner=None,
+            stage_progress="requeued",
+        )
+        self._jobs[job_id] = updated
+        self._persist_snapshot()
+        return updated
 
     def reclaim_stale_queued(
         self, ttl_seconds: int | None = None, *, now_iso: str | None = None
