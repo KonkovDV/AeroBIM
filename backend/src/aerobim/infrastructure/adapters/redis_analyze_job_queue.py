@@ -1,7 +1,7 @@
 """Durable Redis queue for package-analysis requests.
 
-The API is a producer only.  A worker uses BRPOPLPUSH so a dequeued request
-remains in the processing list until the job reaches a terminal state.  Payloads
+The API is a producer only. A worker uses BRPOPLPUSH so a dequeued request
+remains in the processing list until the job reaches a terminal state. Payloads
 are JSON (never pickle) and retained across worker OOM/restart until ACK.
 """
 
@@ -13,7 +13,12 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
-from aerobim.domain.models import DrawingSource, RequirementSource, SourceKind, ValidationRequest
+from aerobim.domain.models import (
+    DrawingSource,
+    RequirementSource,
+    SourceKind,
+    ValidationRequest,
+)
 
 
 class RedisAnalyzeJobQueue:
@@ -37,7 +42,12 @@ class RedisAnalyzeJobQueue:
 
     @classmethod
     def encode_request(cls, request: ValidationRequest) -> str:
-        return json.dumps(asdict(request), default=cls._default, ensure_ascii=False, separators=(",", ":"))
+        return json.dumps(
+            asdict(request),
+            default=cls._default,
+            ensure_ascii=False,
+            separators=(",", ":"),
+        )
 
     @staticmethod
     def _path(value: object) -> Path | None:
@@ -48,13 +58,17 @@ class RedisAnalyzeJobQueue:
         item: dict[str, Any] = json.loads(raw)
         requirement = dict(item.pop("requirement_source"))
         requirement["path"] = cls._path(requirement.get("path"))
-        requirement["source_kind"] = SourceKind(requirement.get("source_kind", SourceKind.STRUCTURED_TEXT))
+        requirement["source_kind"] = SourceKind(
+            requirement.get("source_kind", SourceKind.STRUCTURED_TEXT)
+        )
         for name in ("technical_spec_source", "calculation_source"):
             source = item.get(name)
             if source is not None:
                 source = dict(source)
                 source["path"] = cls._path(source.get("path"))
-                source["source_kind"] = SourceKind(source.get("source_kind", SourceKind.STRUCTURED_TEXT))
+                source["source_kind"] = SourceKind(
+                    source.get("source_kind", SourceKind.STRUCTURED_TEXT)
+                )
                 item[name] = RequirementSource(**source)
         drawings = []
         for source in item.get("drawing_sources") or ():
@@ -63,11 +77,18 @@ class RedisAnalyzeJobQueue:
             drawings.append(DrawingSource(**source))
         item["drawing_sources"] = tuple(drawings)
         for name in (
-            "ifc_path", "ids_path", "reinforcement_report_path", "pd_section_path",
-            "rd_section_path", "signature_envelope_path", "package_inventory_path",
+            "ifc_path",
+            "ids_path",
+            "reinforcement_report_path",
+            "pd_section_path",
+            "rd_section_path",
+            "signature_envelope_path",
+            "package_inventory_path",
         ):
             item[name] = cls._path(item.get(name))
-        item["norm_rule_pack_paths"] = tuple(Path(str(value)) for value in item.get("norm_rule_pack_paths") or ())
+        item["norm_rule_pack_paths"] = tuple(
+            Path(str(value)) for value in item.get("norm_rule_pack_paths") or ()
+        )
         item["required_signer_roles"] = tuple(item.get("required_signer_roles") or ())
         item["requirement_source"] = RequirementSource(**requirement)
         return ValidationRequest(**item)
@@ -86,7 +107,11 @@ class RedisAnalyzeJobQueue:
         return bool(self._redis.eval(script, 2, key, self._ready, job_id, payload))
 
     def reserve(self, timeout_seconds: int = 5) -> tuple[str, ValidationRequest] | None:
-        job_id = self._redis.brpoplpush(self._ready, self._processing, timeout=max(timeout_seconds, 1))
+        job_id = self._redis.brpoplpush(
+            self._ready,
+            self._processing,
+            timeout=max(timeout_seconds, 1),
+        )
         if job_id is None:
             return None
         raw = self._redis.get(f"{self._payload_prefix}{job_id}")
