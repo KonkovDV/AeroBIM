@@ -2,16 +2,6 @@
 
 > Мы на стадии доработки контура заказчика. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение у назначающей стороны ещё не начались. Checkpoint `GO` — регуляторно-измерительный MVP. `customer_go` остаётся false, пока нет независимого размеченного корпуса, двух разметчиков, подписанного профиля назначающей стороны и подтверждения импорта в СОД.
 
-| Материал | Роль |
-|---|---|
-| [`DATA_STATEMENT_2026_08.md`](../../docs/evidence/DATA_STATEMENT_2026_08.md) | Какие данные есть и каких нет |
-| [`ids-fail-closed-2026-08.md`](../../docs/evidence/ids-fail-closed-2026-08.md) | Пропуск обязательной проверки IDS роняет комплект |
-| [`INTERPRETATION_USE_LEDGER_2026_08.md`](../../docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md) | Что текущие цифры вправе значить |
-| [`QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](../../docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) | Методика до данных заказчика |
-| [`AeroBIM.pptx`](../03-presentation/AeroBIM.pptx) | Поле формы; PowerPoint демо-дня (7 слайдов) |
-| [`AeroBIM.pdf`](../03-presentation/AeroBIM.pdf) | Та же дека, PDF |
-| [`demo_day_slides.md`](../03-presentation/demo_day_slides.md) | Текстовая копия слайдов показа |
-
 ## Цифры кадра 3
 
 | Число на слайде | Где в git | Чем не является |
@@ -31,3 +21,13 @@
 | [`offline-bundle-trial-latest.json`](../../docs/evidence/offline-bundle-trial-latest.json) | Пробный Docker-контур | Данные заказчика |
 
 Открытые наборы — регрессия движка, не разметка инженеров заказчика.
+
+## Показ
+
+| Материал | Роль |
+|---|---|
+| [`AeroBIM.pptx`](../03-presentation/AeroBIM.pptx) | Поле формы; PowerPoint демо-дня (7 слайдов) |
+| [`AeroBIM.pdf`](../03-presentation/AeroBIM.pdf) | Та же дека, PDF |
+| [`demo_day_slides.md`](../03-presentation/demo_day_slides.md) | Текстовая копия слайдов показа |
+| [`DATA_STATEMENT_2026_08.md`](../../docs/evidence/DATA_STATEMENT_2026_08.md) | Какие данные есть и каких нет |
+| [`INTERPRETATION_USE_LEDGER_2026_08.md`](../../docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md) | Что текущие цифры вправе значить |

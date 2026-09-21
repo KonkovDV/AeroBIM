@@ -62,9 +62,11 @@ The show is seven slides: [`AeroBIM.pptx`](submission/03-presentation/AeroBIM.pp
 | **Form pack** | [`submission/README.md`](submission/README.md) — five fields |
 | **Claim boundary** | [document](docs/pilot-claim-boundary-2026.md) |
 
-**Ask.** A paid programme pilot, 2 million ₽, one building, eight weeks from the agreement. By letter: one-revision pack with IFC, an expert validator, data mode and a target-KPI sheet. The aim is minus one pack-review cycle and a revision delta in the appointing party’s CDE.
+### Ask
 
-From 2 April 2026 Moscow requires an AGR CIM in IFC (Moscow Government decree № 17-ПП of 16 January 2026; joint DIT/DGP order № ДГП-Р-1/26/64-16-6/26). From 18 August 2026 joint DGP/DIT order № ДГП-Р-56/26/64-16-473/26 updates 3D models placed in Moscow information systems. Those are **city filing rules**. AeroBIM ingest is IFC.
+A paid programme pilot, 2 million ₽, one building, eight weeks from the agreement. By letter: one-revision pack with IFC, an expert validator, data mode and a target-KPI sheet. The aim is minus one pack-review cycle and a revision delta in the appointing party’s CDE.
+
+From 2 April 2026 Moscow requires an AGR CIM in IFC (Moscow Government decree № 17-ПП of 16 January 2026; joint DIT/DGP order № ДГП-Р-1/26/64-16-6/26). From 18 August 2026 joint DGP/DIT order № ДГП-Р-56/26/64-16-473/26 updates 3D-model parameters in Moscow information systems — that is not AeroBIM ingest. Those are **city filing rules**. AeroBIM ingest is IFC.
 
 ## Five seats
 
@@ -72,9 +74,9 @@ Two seats are the programme operator; three are the partner by agreement.
 
 | Seat | Role | Where to look |
 |---|---|---|
-| **Piloting** (operator) | Measurement route: trial programme, method, operator-form act. Ready to measure on an agreed subject | [prototype](submission/04-prototype/README.md) |
-| **Demand** (operator) | No contour rollout: web and file exchange. Pay on confirmed findings is the pilot subject | Ask below · [slide 6](submission/03-presentation/demo_day_slides.md) |
-| **Appointing technical customer** (partner) | Minus one pack-review cycle. Revision delta: findings → fixed / ignored / new. HITL | [claim boundary](docs/pilot-claim-boundary-2026.md) |
+| **Piloting** (operator) | Live run on the fixture pack. Trial programme, method and act are the pilot subject | [prototype](submission/04-prototype/README.md) |
+| **Demand** (operator) | No contour rollout: web and file exchange. Pay on confirmed findings is the pilot subject | [Ask](#ask) · [slide 6](submission/03-presentation/demo_day_slides.md) |
+| **Appointing technical customer** (partner) | Minus one pack-review cycle. Revision delta: findings → fixed / ignored / new. HITL | [slide 6](submission/03-presentation/demo_day_slides.md) |
 | **Project office** (partner) | The remark leaves as a BCF file. The expert sets the outcome | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) |
 | **Information modelling** (partner) | Document seam. Ingest is IFC | [ingest boundary](docs/tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md) |
 
@@ -148,7 +150,7 @@ flowchart LR
 1. **The model.** Properties and quantities are validated with IfcOpenShell. IFC2x3 (buildingSMART schema; no ISO publication), IFC4 ADD2 (ISO 16739-1:2018) and IFC4x3 (ISO 16739-1:2024) go through one kernel. ISO/PAS 16739:2005 is the IFC2x Platform, not IFC2x3. Where property-set names diverge between releases, the difference is a `ValidationIssue`, not a silent skip. Per-feature rules: [`docs/ifc-compatibility-matrix.md`](docs/ifc-compatibility-matrix.md).
 2. **The rules.** IDS 1.0 is validated with IfcTester. Official rule sets from Moscow Region State Expertise and SPb GAU CGE (CIM OKS ed. 3.1.0 + CIM RII ed. 1.1.0) ship in `samples/`; the CGE profile ([`samples/profiles/spb-cge/`](samples/profiles/spb-cge/)) is a published rule set, not a customer-signed acceptance profile. CI checks the committed profile. A requested rule set that cannot load fails the check.
 3. **The other documents.** The model is compared with drawing notes, specifications and calculation texts, with a configured ε-band and Russian/European grouped decimals. Sources are compared; the calculation is not recomputed.
-4. **The report.** Each finding carries `finding_id`, `source_id` and `evidence_refs` (persistence refuses a finding without them). People get HTML; machines get JSON; issue exchange gets a structural BCF 2.1 / 3.0 ZIP. The browser review shell (web-ifc + Three.js) shows the IFC in 3D and the evidence on the sheet.
+4. **The report.** Each finding carries `finding_id`, `source_id` and `evidence_refs` (persistence refuses a finding without them). People get HTML; machines get JSON; issue exchange gets a structural BCF 2.1 / 3.0 ZIP. The browser review shell (web-ifc + Three.js) shows the IFC in 3D. Drawing overlay is a fixture CLI, not the expert UI.
 
 `summary.passed` is assembled from deterministic errors and the capability table ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)). Advisory LLM/VLM text, if enabled, drafts remark wording only and never writes that flag; under customer sign-off profiles outbound advisory calls are forbidden. Every optional engine reports `ok`, `skipped` or `failed`; any `FAILED` forces `summary.passed=false`. The same boundary is served on `GET /v1/system/capabilities`. That flag is a Shared-gate under configured rules.
 
@@ -453,7 +455,7 @@ AEROBIM_VLM_ENABLED
 
 ```text
 backend/      FastAPI: core → domain → application → infrastructure → presentation
-frontend/     Review shell (Vite + React; IFC 3D + drawing overlay)
+frontend/     Review shell (Vite + React; IFC 3D viewer)
 samples/      IFC, IDS, drawing and specification fixtures
 docs/         Documentation and evidence
 audit/        Blocker register

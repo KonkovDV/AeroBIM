@@ -15,7 +15,7 @@ Eight information-architecture screens (`src/lib/tz-ui-screens.ts`). Every row i
 | Projects | Persisted report index; selecting a pack opens the expert three-pane |
 | Upload | `POST /v1/uploads` dropzone, progress, cancel; RVT / NWD / DWG rejected before POST |
 | Run | Analyze job with **polling** of `jobs/{job_id}` (SSE is not shipped); TZ 30:00 is a goal, not a measured SLA |
-| Expert | Findings, sheet overlay + 3D, remark on one screen (`data-testid="rehearsal-one-click"`) |
+| Expert | Findings + 3D + remark on one screen (`data-testid="rehearsal-one-click"`). Sheet-error highlight is P1-smoke / pilot, not this pane |
 | Remark | HITL edit → `POST .../review-events`; ITZ/STO/SP clause; storey/axis from the IFC index or an explicit “not in index” |
 | Export | HTML, JSON, BCF 2.1/3.0; **PDF = coverage draft** (`GET .../export/pdf`). There is no XLSX endpoint |
 | Diff | HTTP finding delta between two reports; `no_longer_reported` does not mean resolved |
