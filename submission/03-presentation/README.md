@@ -6,12 +6,12 @@
 |---|---|
 | [`AeroBIM.pptx`](AeroBIM.pptx) | Поле формы: PowerPoint, 43 слайда |
 | [`AeroBIM.pdf`](AeroBIM.pdf) | Та же дека, PDF |
-| [`demo_day_slides.md`](demo_day_slides.md) | Канон речи в git |
+| [`demo_day_slides.md`](demo_day_slides.md) | Текстовая копия слайдов |
 | этот README | Индекс папки |
 
-PPTX и PDF проходят kitchen-scan. Репетиция контура **17.09.2026** (вердикт PARTIAL) — заметки речи в markdown, **не** штамп на кадрах этой деки и **не** подмена пина CI в [`runtime-baseline-latest.json`](../../docs/evidence/runtime-baseline-latest.json). Телефон капитана остаётся только на кадре PPTX и в форме оператора.
+PPTX и PDF — одна дека, 43 слайда. Пин CI: [`runtime-baseline-latest.json`](../../docs/evidence/runtime-baseline-latest.json). Телефон капитана только на кадре PPTX.
 
-Открыть жюри: PowerPoint или PDF. Речь держать по markdown.
+Для жюри: PowerPoint или PDF. Текстовая копия — [`demo_day_slides.md`](demo_day_slides.md).
 
 Ролик не записываем и не прилагаем. Показ — живая команда `python -m aerobim.tools.run_kt3_jury`.
 
@@ -38,7 +38,7 @@ PPTX и PDF проходят kitchen-scan. Репетиция контура **1
 | 19–22 | A6–A8+ · матрица ТЗ, карта материалов, класс покупателя |
 | 23–26 | A9–A12 · право, мировая практика, геометрия, тираж |
 | 27–33 | A13–A19 · доверие к цифре, срок, рабочее место, ИИ, риски, свои силы |
-| 34–40 | A21–A26 · аналоги, цены, CORENET X, выводы (A20 в этой деке нет) |
+| 34–40 | A21–A26 · аналоги, цены, CORENET X, выводы (нумерация пропускает A20) |
 | 41 | шапка A27 · содержание A29 экономика без часов эксперта |
 | 42 | шапка A28 · содержание A31 право и формы |
 | 43 | шапка A29 · содержание A33 расчёт стоимости задержки |
