@@ -563,7 +563,7 @@ FACT_ROWS: Final[tuple[dict[str, str | bool], ...]] = (
     _row(
         "C-05",
         "Architecture inventory",
-        "48 protocols / 75 adapters / 63 DI tokens",
+        "48 protocols / 76 adapters / 63 DI tokens",
         "docs/evidence/runtime-baseline-latest.json architecture_inventory",
         "VERIFIED_INTERNAL",
         False,
