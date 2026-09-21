@@ -209,6 +209,9 @@ class ReviewShellLauncherTests(unittest.TestCase):
             )
             self.assertIn("Node 20+", text, msg=name)
             self.assertIn("requirements-lock.txt", text, msg=name)
+            self.assertIn("requirements-win-lock.txt", text, msg=name)
+            self.assertIn("uv pip install -e", text, msg=name)
+            self.assertIn(".devcontainer/", text, msg=name)
             self.assertIn("customer_pilot", text, msg=name)
 
     def test_prototype_hop_uses_venv_python_exe_from_clone_root(self) -> None:

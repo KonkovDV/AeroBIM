@@ -157,6 +157,27 @@ If 8080 or 5173 is already bound, stop that process and retry. Details: [`fronte
 
 Optional extras `.[clash]`, `.[docling]`, `.[enterprise]`, `.[pdf-agpl]` are not needed for the commands above.
 
+If `py -3.12` is missing, install CPython 3.12 from python.org — not the Microsoft Store stub. Do not type bare `py`: the launcher may pick 3.13. Diagnostics: `python -m aerobim.tools.check_local_launch`. Clone into a short Latin path (`C:\AeroBIM`), not a user profile with non-ASCII characters.
+
+<details>
+<summary>uv, hashed Windows lock, Dev Container, closed contour</summary>
+
+**uv** is faster when it is already on PATH. The attested first clone without uv remains `python.exe -m pip` above.
+
+```powershell
+cd AeroBIM\backend
+uv venv --python 3.12
+uv pip install -e ".[dev,raster]"
+.\.venv\Scripts\python.exe -m aerobim.tools.run_kt3_jury
+```
+
+Hashed Windows deps (online, not air-gap): [`backend/requirements-win-lock.txt`](backend/requirements-win-lock.txt), then `.\.venv\Scripts\python.exe -m pip install -e . --no-deps`. Do not install the Linux [`requirements-lock.txt`](backend/requirements-lock.txt) on Windows (`uvloop`). This is not a wheelhouse.
+
+Closed contour without pip is the Docker image: [`docs/offline-deployment-2026.md`](docs/offline-deployment-2026.md). `install_offline.ps1` loads the tar, not a lock.
+
+Dev Container / Codespaces is a contributor environment, not the jury CLI: [`.devcontainer/`](.devcontainer/). Python 3.12, Node 22, `.[dev,raster]`. Do not set `customer_pilot`.
+</details>
+
 ## What a run does
 
 ```mermaid

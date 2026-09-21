@@ -157,6 +157,27 @@ python -m aerobim.main   # http://127.0.0.1:8080/health
 
 Опциональные наборы `.[clash]`, `.[docling]`, `.[enterprise]`, `.[pdf-agpl]` для команд выше не нужны.
 
+Если `py -3.12` нет — CPython 3.12 с python.org, не Microsoft Store. Не пишите голый `py`: лаунчер может взять 3.13. Диагностика: `python -m aerobim.tools.check_local_launch`. Клон лучше в короткий латинский путь (`C:\AeroBIM`), не в каталог пользователя с кириллицей.
+
+<details>
+<summary>uv, hashed Windows lock, Dev Container, закрытый контур</summary>
+
+**uv** — быстрее, если уже на PATH. Канон первого клона без uv остаётся `python.exe -m pip` выше.
+
+```powershell
+cd AeroBIM\backend
+uv venv --python 3.12
+uv pip install -e ".[dev,raster]"
+.\.venv\Scripts\python.exe -m aerobim.tools.run_kt3_jury
+```
+
+Hashed Windows-зависимости (онлайн, не air-gap): [`backend/requirements-win-lock.txt`](backend/requirements-win-lock.txt), затем `.\.venv\Scripts\python.exe -m pip install -e . --no-deps`. Linux [`requirements-lock.txt`](backend/requirements-lock.txt) на Windows не ставить (`uvloop`). Это не wheelhouse.
+
+Закрытый контур без pip — Docker-образ: [`docs/offline-deployment-2026.md`](docs/offline-deployment-2026.md). `install_offline.ps1` грузит tar, не lock.
+
+Dev Container / Codespaces — вклад разработчика, не CLI показа: [`.devcontainer/`](.devcontainer/). Python 3.12, Node 22, `.[dev,raster]`. Не `customer_pilot`.
+</details>
+
 ## Как устроен прогон
 
 ```mermaid

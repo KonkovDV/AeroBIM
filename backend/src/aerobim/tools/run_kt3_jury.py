@@ -60,7 +60,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--gate-json", type=Path, default=None)
     parser.add_argument("--generated-at", default=None)
     parser.add_argument("--write-docs-evidence", action="store_true")
+    parser.add_argument(
+        "--skip-preflight",
+        action="store_true",
+        help="Skip clone/laptop checks (tests / reruns).",
+    )
     args = parser.parse_args(argv)
+    if not args.skip_preflight:
+        from aerobim.tools.check_local_launch import emit_preflight
+
+        if emit_preflight(stream=sys.stderr) == 2:
+            return 2
     root = repo_root()
     stamp = args.generated_at or datetime.now(tz=UTC).isoformat()
 

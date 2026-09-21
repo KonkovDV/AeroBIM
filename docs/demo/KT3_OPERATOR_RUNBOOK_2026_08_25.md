@@ -19,13 +19,17 @@ claim_boundary: >
 
 На защите жюри — только этот трек: живой CLI из git. Файлов заказчика в репозитории нет. Семь кадров: [`../../submission/03-presentation/AeroBIM.pptx`](../../submission/03-presentation/AeroBIM.pptx) · [текст](../../submission/03-presentation/demo_day_slides.md).
 
-Предпочтительная одна команда:
+Предпочтительная одна команда (Windows PowerShell, без `Activate.ps1`):
 
-```text
+```powershell
 cd backend
-pip install -e ".[dev,raster]"
-python -m aerobim.tools.run_kt3_jury
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -e ".[dev,raster]"
+.\.venv\Scripts\python.exe -m aerobim.tools.check_local_launch
+.\.venv\Scripts\python.exe -m aerobim.tools.run_kt3_jury
 ```
+
+Linux/macOS: `python3.12 -m venv .venv`, `source .venv/bin/activate`, `pip install -e ".[dev,raster]"`, затем `python -m aerobim.tools.run_kt3_jury`.
 
 Эквивалент двумя командами (если жюри просит «покажите gate отдельно»):
 

@@ -64,4 +64,5 @@ Deterministic analyze path without external LLM/OCR extras may run with skipped/
 ## Forbidden claims
 
 «Работает в любом закрытом контуре без Docker» — запрещено (bare-metal OUT_OF_SCOPE).  
-«GitVerse mirror готов» / «полный CycloneDX SBOM» — запрещено без отдельного evidence.
+«GitVerse mirror готов» / «полный CycloneDX SBOM» — запрещено без отдельного evidence.  
+`requirements-win-lock.txt` — hashed **online** Windows install (no `uvloop`). Это не air-gap и не wheelhouse. Air-gap на Windows: `powershell -File .\install_offline.ps1` из каталога бандла при наличии Docker.

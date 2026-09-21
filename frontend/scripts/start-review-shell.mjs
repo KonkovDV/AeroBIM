@@ -31,7 +31,7 @@ if (python === null) {
       "AeroBIM API lives in <clone>/backend " +
       "(Windows: .venv\\Scripts\\python.exe; Linux: .venv/bin/python), " +
       "not a frontend-only tree. Set AEROBIM_BACKEND_DIR if the backend is elsewhere. " +
-      'From that directory: py -3.12 -m venv .venv && pip install -e ".[dev,raster]"\n',
+      'From that directory: py -3.12 -m venv .venv && .venv\\Scripts\\python.exe -m pip install -e ".[dev,raster]"\n',
   );
   process.exit(1);
 }

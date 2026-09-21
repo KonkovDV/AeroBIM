@@ -18,6 +18,7 @@ permissions:
 # Regenerate locks (Linux/CI target — ifcopenshell needs manylinux_2_31):
 #   uv pip compile --python 3.12 --python-platform x86_64-manylinux_2_31 --generate-hashes --extra=raster -o requirements-lock.txt pyproject.toml
 #   uv pip compile --python 3.12 --python-platform x86_64-manylinux_2_31 --generate-hashes --extra=dev --extra=raster --extra=pdf-agpl -o requirements-dev-lock.txt pyproject.toml
+#   uv pip compile --python 3.12 --python-platform x86_64-pc-windows-msvc --generate-hashes --extra=dev --extra=raster -o requirements-win-lock.txt pyproject.toml
 
 jobs:
   lint:
@@ -64,7 +65,7 @@ jobs:
                       out.add(namever)
               return out
 
-          def check(lock_name: str, extras: list[str]) -> None:
+          def check(lock_name: str, extras: list[str], platform: str) -> None:
               before = Path(lock_name).read_text(encoding="utf-8")
               out = Path(f"{lock_name}.check.txt")
               # Seed the check output with the committed lock so uv PRESERVES
@@ -76,7 +77,7 @@ jobs:
               cmd = [
                   sys.executable, "-m", "uv", "pip", "compile",
                   "--python", "3.12",
-                  "--python-platform", "x86_64-manylinux_2_31",
+                  "--python-platform", platform,
                   "--generate-hashes",
                   *extras,
                   "-o", str(out),
@@ -89,14 +90,15 @@ jobs:
                   only_after = sorted(pins(after) - pins(before))
                   raise SystemExit(
                       f"{lock_name} is stale; regenerate via "
-                      "uv pip compile --python-platform x86_64-manylinux_2_31 "
+                      f"uv pip compile --python-platform {platform} "
                       f"--generate-hashes ...; only_before={only_before}; "
                       f"only_after={only_after}"
                   )
               print(f"{lock_name} pin set OK")
 
-          check("requirements-lock.txt", ["--extra=raster"])
-          check("requirements-dev-lock.txt", ["--extra=dev", "--extra=raster", "--extra=pdf-agpl"])
+          check("requirements-lock.txt", ["--extra=raster"], "x86_64-manylinux_2_31")
+          check("requirements-dev-lock.txt", ["--extra=dev", "--extra=raster", "--extra=pdf-agpl"], "x86_64-manylinux_2_31")
+          check("requirements-win-lock.txt", ["--extra=dev", "--extra=raster"], "x86_64-pc-windows-msvc")
           PY
       - name: Runtime lock must not install optional AGPL PyMuPDF
         run: |
@@ -112,6 +114,23 @@ jobs:
                       "keep it behind optional extra pdf-agpl / requirements-dev-lock.txt"
                   )
           print("runtime lock excludes pymupdf OK")
+          PY
+      - name: Windows lock must omit uvloop and PyMuPDF
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          lock = Path("requirements-win-lock.txt").read_text(encoding="utf-8").lower()
+          for needle, label in (("uvloop==", "uvloop"), ("pymupdf==", "pymupdf")):
+              if needle in lock:
+                  raise SystemExit(
+                      f"{label} must not appear in requirements-win-lock.txt; "
+                      "Windows hashed lock is .[dev,raster] on x86_64-pc-windows-msvc, "
+                      "not the Linux/CI lock and not pdf-agpl"
+                  )
+          if "ifcopenshell==" not in lock:
+              raise SystemExit("requirements-win-lock.txt missing ifcopenshell")
+          print("windows lock excludes uvloop and pymupdf OK")
           PY
       - name: Claims Lock linter (WP-R10)
         run: python ../scripts/lint_claims.py
