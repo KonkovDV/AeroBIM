@@ -91,7 +91,7 @@ def build_payload(*, generated_at: str | None = None) -> dict[str, object]:
                 "durable_workers_claimed": True,
                 "delivery": "at_least_once",
                 "payload_format": "json",
-                "reservation": "redis_brpoplpush_ready_to_processing",
+                "reservation": "redis_blmove_right_left_ready_to_processing",
                 "ack": "terminal_state_only",
                 "honesty": (
                     "Production HTTP is producer-only; aerobim.worker is the executor. "

@@ -9,6 +9,7 @@ import time
 from aerobim.core.di.tokens import Tokens
 from aerobim.domain.models import JobStatus
 from aerobim.infrastructure.adapters.redis_analyze_job_queue import (
+    AnalyzeQueuePayloadError,
     RedisAnalyzeJobQueue,
 )
 from aerobim.infrastructure.di.bootstrap import bootstrap_container
@@ -38,9 +39,7 @@ def main() -> None:
 
     signal.signal(signal.SIGTERM, stop)
     signal.signal(signal.SIGINT, stop)
-    recover_every = max(
-        int(os.getenv("AEROBIM_WORKER_RECOVERY_SECONDS", "15")), 1
-    )
+    recover_every = max(int(os.getenv("AEROBIM_WORKER_RECOVERY_SECONDS", "15")), 1)
     last_recovery = 0.0
     logger.info("dedicated analyze worker started")
     while not stopping:
@@ -55,7 +54,14 @@ def main() -> None:
                 elif job.status is JobStatus.QUEUED:
                     queue.retry(job_id)
             last_recovery = now
-        reserved = queue.reserve(timeout_seconds=2)
+        try:
+            reserved = queue.reserve(timeout_seconds=2)
+        except AnalyzeQueuePayloadError as exc:
+            failed = store.mark_failed(exc.job_id, "durable_queue_payload_invalid")
+            if failed is None or failed.status in _TERMINAL:
+                queue.ack(exc.job_id)
+            logger.error("analyze queue payload rejected", job_id=exc.job_id, detail=str(exc))
+            continue
         if reserved is None:
             continue
         job_id, request = reserved

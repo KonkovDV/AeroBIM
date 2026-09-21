@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import threading
+from dataclasses import replace
 from datetime import UTC, datetime
 from uuid import uuid4
 
@@ -175,6 +176,12 @@ class AnalyzeProjectPackageJobRunner:
         if callable(discard):
             discard(report_id)
 
+    def _report_store(self) -> AuditReportStore | None:
+        if self._audit_report_store is not None:
+            return self._audit_report_store
+        candidate = getattr(self._analyze_use_case, "_audit_report_store", None)
+        return candidate if candidate is not None else None
+
     def run(self, job_id: str, request: ValidationRequest) -> None:
         owner = uuid4().hex
         claimed = self._job_store.mark_running(job_id, owner=owner)
@@ -188,6 +195,26 @@ class AnalyzeProjectPackageJobRunner:
             return
         if claimed.cancel_requested:
             self._job_store.mark_cancelled(job_id, "Cancelled before execution")
+            return
+        report_store = self._report_store()
+        get_report = getattr(report_store, "get", None)
+        existing_report = get_report(job_id) if callable(get_report) else None
+        if existing_report is not None:
+            if existing_report.request_id != request.request_id:
+                self._job_store.mark_failed(job_id, "durable_report_identity_conflict", owner=owner)
+                self._logger.error(
+                    "analyze_project_package durable report identity conflict",
+                    job_id=job_id,
+                    request_id=request.request_id,
+                )
+                return
+            self._job_store.mark_succeeded(job_id, existing_report.report_id, owner=owner)
+            self._logger.info(
+                "analyze_project_package async job adopted committed report",
+                job_id=job_id,
+                request_id=request.request_id,
+                report_id=existing_report.report_id,
+            )
             return
         self._logger.info(
             "analyze_project_package async job started",
@@ -220,7 +247,11 @@ class AnalyzeProjectPackageJobRunner:
                     request_id=request.request_id,
                 )
                 return
-            report = self._analyze_use_case.execute(request)
+            try:
+                execution_request = replace(request, report_id_override=job_id)
+            except TypeError:
+                execution_request = request
+            report = self._analyze_use_case.execute(execution_request)
             if keeper.lost():
                 self._discard_report(report.report_id)
                 self._logger.error(

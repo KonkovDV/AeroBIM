@@ -10,7 +10,9 @@ analysis is disabled in production compose.
 ## Controls
 
 - Durable Redis payload plus ready/processing lists; no Python pickle.
-- `BRPOPLPUSH` reservation, terminal ACK, lease heartbeat and fencing token.
+- `BLMOVE RIGHT LEFT` reservation, terminal ACK, lease heartbeat and fencing token.
+- Async report identity is the durable job id; recovery adopts an already committed report after the report/job commit crash gap.
+- Missing/corrupt payloads become observable failures and exhausted leases become `DEAD_LETTER`.
 - On restart, stale RUNNING jobs are failed/requeued and the unacked payload is retried.
 - Worker container: non-root image, read-only rootfs, tmpfs, all Linux capabilities
   dropped, `no-new-privileges`, PID limit, 2 CPU limit and 3 GiB memory limit.
@@ -52,3 +54,17 @@ acknowledgement, redelivery), at-least-once execution with idempotent/fenced com
 lease heartbeats, fail-closed terminal states, and container least privilege. A stronger
 next step is a per-job child sandbox (fresh cgroup/namespace/seccomp profile) so one
 malformed IFC cannot retain allocator state in a long-lived worker.
+
+
+## SOTA evidence and decision
+
+The queue is explicitly **at-least-once**. End-to-end safety comes from idempotent effects and fencing, not a claim that a broker executes arbitrary external effects physically once.
+
+- ExoFlow (OSDI '23) requires durable checkpoints or idempotent external outputs for exactly-once-consistent results: <https://www.usenix.org/system/files/osdi23-zhuang.pdf>.
+- Redis reliable lists use atomic move plus ACK; `BLMOVE` replaces deprecated `BRPOPLPUSH`: <https://redis.io/docs/latest/commands/lmove/>.
+- Redis Streams (`XACK`, PEL, `XAUTOCLAIM`) is the migration target before horizontal multi-worker scale: <https://redis.io/docs/latest/commands/xautoclaim>.
+- Production uses AOF `appendfsync always`; this is a local durability boundary, not HA consensus: <https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/>.
+- NIST SP 800-190 supports least privilege, read-only roots, bounded networking and workload separation: <https://doi.org/10.6028/NIST.SP.800-190>.
+- VEE '20 describes the isolation/performance trade-off among containers, gVisor and Firecracker; untrusted multi-tenant IFC should ultimately move to a fresh per-job gVisor/Kata/Firecracker-style boundary: <https://doi.org/10.1145/3381052.3381315>.
+
+Proven here: atomic publish/repair, atomic reservation, terminal ACK, poison-payload attribution, bounded retries/dead-letter, CAS lease fencing, and deterministic report identity across the report/job commit gap. Not proven: Redis host/disk HA, host-kernel escape resistance, formal linearizability of every external adapter, or fair unreviewed multi-worker scale-out.

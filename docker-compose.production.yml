@@ -1,6 +1,7 @@
 # Shared/LAN stack. The API only publishes jobs; the isolated worker is the sole
 # package-analysis/IfcOpenShell executor. Never scale the worker without first
 # reviewing throughput, report-store safety and per-tenant fairness.
+# Static bearer auth here is not production OIDC BFF; production SSO remains NOT_IMPLEMENTED.
 services:
   backend:
     build: {context: ./backend, dockerfile: Dockerfile}
@@ -73,7 +74,7 @@ services:
 
   redis:
     image: redis:7.4-alpine
-    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${AEROBIM_REDIS_PASSWORD:?}"]
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "always", "--requirepass", "${AEROBIM_REDIS_PASSWORD:?}"]
     healthcheck:
       test: ["CMD", "redis-cli", "-a", "${AEROBIM_REDIS_PASSWORD:?}", "ping"]
       interval: 10s

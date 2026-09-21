@@ -106,6 +106,7 @@ class RedisAnalyzeProjectPackageJobStore:
         self._prefix = key_prefix
         self._queued_ttl_seconds = queued_ttl_seconds
         self._lease_seconds = 120
+        self._max_retries = 3
 
     def _key(self, job_id: str) -> str:
         return f"{self._prefix}{job_id}"
@@ -365,14 +366,20 @@ class RedisAnalyzeProjectPackageJobStore:
             expires = _lease_expiry(job, lease_seconds=self._lease_seconds)
             if expires is None or expires >= now:
                 continue
+            retries = job.retry_count + 1
+            exhausted = retries > int(getattr(self, "_max_retries", 3))
             updated = self._update(
                 job.job_id,
-                status=JobStatus.FAILED,
+                status=JobStatus.DEAD_LETTER if exhausted else JobStatus.FAILED,
                 completed_at=_now_iso(),
-                error_message="Lease expired; job marked failed for recovery/resubmit",
-                retry_count=job.retry_count + 1,
+                error_message=(
+                    "Lease expired; retry budget exhausted"
+                    if exhausted
+                    else "Lease expired; job marked failed for recovery/resubmit"
+                ),
+                retry_count=retries,
                 lease_expires_at=None,
-                stage_progress="lease_expired",
+                stage_progress="dead_letter" if exhausted else "lease_expired",
                 lease_owner=None,
                 require_status=JobStatus.RUNNING,
                 require_lease_expired_before=now,

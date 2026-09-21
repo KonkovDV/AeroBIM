@@ -590,6 +590,8 @@ class ValidationRequest:
     """Optional package inventory JSON for WP-05 completeness assessment."""
     require_package_completeness: bool = False
     """Soft opt-in: when True (or inventory path set), run package completeness."""
+    report_id_override: str | None = None
+    """Internal durable-execution key; async workers bind report identity to job identity."""
 
 
 @dataclass(frozen=True)

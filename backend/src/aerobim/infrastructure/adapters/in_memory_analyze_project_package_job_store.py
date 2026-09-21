@@ -400,14 +400,21 @@ class InMemoryAnalyzeProjectPackageJobStore:
                 expires = started + timedelta(seconds=self._lease_seconds)
             if expires >= now:
                 continue
+            retries = job.retry_count + 1
+            exhausted = retries > self._max_retries
             updated = self._update_unlocked(
                 job_id,
-                status=JobStatus.FAILED,
+                status=JobStatus.DEAD_LETTER if exhausted else JobStatus.FAILED,
                 completed_at=now.isoformat(),
-                error_message="Lease expired; job marked failed for recovery/resubmit",
-                retry_count=job.retry_count + 1,
+                error_message=(
+                    "Lease expired; retry budget exhausted"
+                    if exhausted
+                    else "Lease expired; job marked failed for recovery/resubmit"
+                ),
+                retry_count=retries,
                 lease_expires_at=None,
-                stage_progress="lease_expired",
+                lease_owner=None,
+                stage_progress="dead_letter" if exhausted else "lease_expired",
             )
             if updated is not None:
                 reclaimed.append(updated)

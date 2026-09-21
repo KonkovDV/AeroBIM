@@ -80,29 +80,17 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
                 )
             )
         except FileNotFoundError as exc:
-            logger.warning(
-                "validate_ifc file not found", request_id=request_id, detail=str(exc)
-            )
+            logger.warning("validate_ifc file not found", request_id=request_id, detail=str(exc))
             raise HTTPException(status_code=404, detail="file not found") from exc
         except IfcAnalyzeCapError as exc:
-            raise HTTPException(
-                status_code=413, detail=public_ifc_analyze_cap_body()
-            ) from exc
+            raise HTTPException(status_code=413, detail=public_ifc_analyze_cap_body()) from exc
         except IfcDiskBackendError as exc:
-            raise HTTPException(
-                status_code=503, detail=public_ifc_disk_backend_detail()
-            ) from exc
+            raise HTTPException(status_code=503, detail=public_ifc_disk_backend_detail()) from exc
         except ValueError as exc:
-            logger.warning(
-                "validate_ifc bad request", request_id=request_id, detail=str(exc)
-            )
-            raise HTTPException(
-                status_code=400, detail=public_bad_request_detail()
-            ) from exc
+            logger.warning("validate_ifc bad request", request_id=request_id, detail=str(exc))
+            raise HTTPException(status_code=400, detail=public_bad_request_detail()) from exc
         except RuntimeError as exc:
-            logger.error(
-                "validate_ifc runtime error", request_id=request_id, detail=str(exc)
-            )
+            logger.error("validate_ifc runtime error", request_id=request_id, detail=str(exc))
             raise HTTPException(
                 status_code=503, detail=public_service_unavailable_detail()
             ) from exc
@@ -121,33 +109,23 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
     ) -> dict[str, object]:
         if ctx.settings.disable_sync_package_analyze:
-            raise HTTPException(
-                status_code=409, detail=public_sync_analyze_disabled_detail()
-            )
+            raise HTTPException(status_code=409, detail=public_sync_analyze_disabled_detail())
         try:
             request = ctx.build_project_package_request(
                 payload,
-                tenant_id=ctx.resolve_bound_tenant(
-                    principal, payload_tenant_id=payload.tenant_id
-                ),
+                tenant_id=ctx.resolve_bound_tenant(principal, payload_tenant_id=payload.tenant_id),
                 principal=principal,
             )
             report = ctx.analyze_use_case.execute(request)
         except FileNotFoundError as exc:
             raise HTTPException(status_code=404, detail="file not found") from exc
         except IfcAnalyzeCapError as exc:
-            raise HTTPException(
-                status_code=413, detail=public_ifc_analyze_cap_body()
-            ) from exc
+            raise HTTPException(status_code=413, detail=public_ifc_analyze_cap_body()) from exc
         except IfcDiskBackendError as exc:
-            raise HTTPException(
-                status_code=503, detail=public_ifc_disk_backend_detail()
-            ) from exc
+            raise HTTPException(status_code=503, detail=public_ifc_disk_backend_detail()) from exc
         except ValueError as exc:
             logger.warning("analyze_project_package bad request", detail=str(exc))
-            raise HTTPException(
-                status_code=400, detail=public_bad_request_detail()
-            ) from exc
+            raise HTTPException(status_code=400, detail=public_bad_request_detail()) from exc
         except StageTimeoutExceeded as exc:
             logger.error("analyze_project_package stage timeout", detail=str(exc))
             raise HTTPException(
@@ -174,9 +152,7 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
             raise HTTPException(status_code=404, detail="file not found") from exc
         except ValueError as exc:
             logger.warning("reinforcement_digest bad request", detail=str(exc))
-            raise HTTPException(
-                status_code=400, detail=public_bad_request_detail()
-            ) from exc
+            raise HTTPException(status_code=400, detail=public_bad_request_detail()) from exc
         metadata_payload = report_payload.get("metadata")
         metadata = metadata_payload if isinstance(metadata_payload, dict) else {}
         storage_rel = payload.reinforcement_report_path.replace("\\", "/")
@@ -188,12 +164,8 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
             "project_code": metadata.get("projectCode"),
             "slab_id": metadata.get("slabId"),
             "claim_labels": {
-                "calculation_match": (
-                    "сверка результатов (provenance/numeric match) — PARTIAL"
-                ),
-                "calculation_correctness": (
-                    "независимая проверка корректности — НЕ РЕАЛИЗОВАНО"
-                ),
+                "calculation_match": ("сверка результатов (provenance/numeric match) — PARTIAL"),
+                "calculation_correctness": ("независимая проверка корректности — НЕ РЕАЛИЗОВАНО"),
             },
         }
 
@@ -201,25 +173,19 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
     def submit_analyze_project_package(
         payload: Annotated[AnalyzeProjectPackageRequest, Body()],
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
-        idempotency_key: Annotated[
-            str | None, Header(alias="Idempotency-Key")
-        ] = None,
+        idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None,
     ) -> dict[str, object]:
         try:
             request = ctx.build_project_package_request(
                 payload,
-                tenant_id=ctx.resolve_bound_tenant(
-                    principal, payload_tenant_id=payload.tenant_id
-                ),
+                tenant_id=ctx.resolve_bound_tenant(principal, payload_tenant_id=payload.tenant_id),
                 principal=principal,
             )
         except FileNotFoundError as exc:
             raise HTTPException(status_code=404, detail="file not found") from exc
         except ValueError as exc:
             logger.warning("submit_analyze_project_package bad request", detail=str(exc))
-            raise HTTPException(
-                status_code=400, detail=public_bad_request_detail()
-            ) from exc
+            raise HTTPException(status_code=400, detail=public_bad_request_detail()) from exc
         idem = _normalize_idempotency_key(idempotency_key)
         if idem is not None and len(idem) > 128:
             raise HTTPException(
@@ -235,23 +201,17 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
         submit_job_use_case = ctx.container.resolve(
             Tokens.SUBMIT_ANALYZE_PROJECT_PACKAGE_JOB_USE_CASE
         )
-        job_store = ctx.container.resolve(
-            Tokens.ANALYZE_PROJECT_PACKAGE_JOB_STORE
-        )
+        job_store = ctx.container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_JOB_STORE)
         existing_id: str | None = None
         if idem is not None:
-            prior = job_store.get_by_idempotency_key(
-                idem, tenant_id=request.tenant_id
-            )
+            prior = job_store.get_by_idempotency_key(idem, tenant_id=request.tenant_id)
             if prior is not None:
                 existing_id = prior.job_id
         try:
             job = submit_job_use_case.execute(
                 request,
                 idempotency_key=idem,
-                max_concurrent_per_tenant=(
-                    ctx.settings.max_concurrent_analyze_jobs_per_tenant
-                ),
+                max_concurrent_per_tenant=(ctx.settings.max_concurrent_analyze_jobs_per_tenant),
             )
         except JobConcurrencyLimitError as exc:
             raise HTTPException(
@@ -267,9 +227,7 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
         if job.status.value == "queued" and job.job_id != existing_id:
             if ctx.settings.redis_url:
                 try:
-                    RedisAnalyzeJobQueue(ctx.settings.redis_url).enqueue(
-                        job.job_id, request
-                    )
+                    RedisAnalyzeJobQueue(ctx.settings.redis_url).enqueue(job.job_id, request)
                 except Exception as exc:
                     job_store.mark_failed(job.job_id, "durable_queue_publish_failed")
                     logger.error(
@@ -284,9 +242,9 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
             elif ctx.settings.environment == "test":
                 # Test-only compatibility path. Deployed profiles require Redis and
                 # never execute analysis from the HTTP process.
-                ctx.container.resolve(
-                    Tokens.ANALYZE_PROJECT_PACKAGE_JOB_RUNNER
-                ).run(job.job_id, request)
+                ctx.container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_JOB_RUNNER).run(
+                    job.job_id, request
+                )
                 job = job_store.get(job.job_id) or job
             else:
                 job_store.mark_failed(job.job_id, "durable_queue_unavailable")
@@ -301,9 +259,7 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
         job_id: str,
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
     ) -> dict[str, object]:
-        return ctx.serialize_analyze_project_package_job(
-            ctx.load_authorized_job(job_id, principal)
-        )
+        return ctx.serialize_analyze_project_package_job(ctx.load_authorized_job(job_id, principal))
 
     @router.post("/v1/analyze/project-package/jobs/{job_id}/cancel")
     def cancel_analyze_project_package_job(
@@ -311,9 +267,7 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
     ) -> dict[str, object]:
         ctx.load_authorized_job(job_id, principal)
-        job_store = ctx.container.resolve(
-            Tokens.ANALYZE_PROJECT_PACKAGE_JOB_STORE
-        )
+        job_store = ctx.container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_JOB_STORE)
         job = job_store.request_cancel(job_id)
         if job is None:
             raise HTTPException(status_code=404, detail=public_not_found_detail())

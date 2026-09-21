@@ -271,7 +271,7 @@ Checkpoint — **регуляторно-измерительный MVP**. `custo
 
 ## Архитектура
 
-**48 Protocol ports** связаны с **76 adapter modules** через **63 DI tokens** в `bootstrap_container()`. Счётчики: [`docs/evidence/runtime-baseline-latest.json`](docs/evidence/runtime-baseline-latest.json).
+**48 Protocol ports** связаны с **77 adapter modules** через **63 DI tokens** в `bootstrap_container()`. Счётчики: [`docs/evidence/runtime-baseline-latest.json`](docs/evidence/runtime-baseline-latest.json).
 
 <details>
 <summary>Слои и хранение</summary>

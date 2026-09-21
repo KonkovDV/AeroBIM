@@ -1,6 +1,6 @@
 """Durable Redis queue for package-analysis requests.
 
-The API is a producer only. A worker uses BRPOPLPUSH so a dequeued request
+The API is a producer only. A worker uses BLMOVE RIGHT LEFT so a dequeued request
 remains in the processing list until the job reaches a terminal state. Payloads
 are JSON (never pickle) and retained across worker OOM/restart until ACK.
 """
@@ -19,6 +19,14 @@ from aerobim.domain.models import (
     SourceKind,
     ValidationRequest,
 )
+
+
+class AnalyzeQueuePayloadError(RuntimeError):
+    """A reserved queue entry has no usable durable request payload."""
+
+    def __init__(self, job_id: str, reason: str) -> None:
+        super().__init__(f"invalid queued analyze payload for {job_id}: {reason}")
+        self.job_id = job_id
 
 
 class RedisAnalyzeJobQueue:
@@ -94,7 +102,12 @@ class RedisAnalyzeJobQueue:
         return ValidationRequest(**item)
 
     def enqueue(self, job_id: str, request: ValidationRequest) -> bool:
-        """Persist payload then publish exactly once; safe for idempotent HTTP replay."""
+        """Persist and publish atomically, repairing an interrupted idempotent replay.
+
+        The script publishes a new delivery, recognizes an identical live delivery,
+        or republishes an identical orphan payload. A different payload under the
+        same job id fails closed instead of executing the wrong request.
+        """
         key = f"{self._payload_prefix}{job_id}"
         payload = self.encode_request(request)
         script = """
@@ -102,23 +115,40 @@ class RedisAnalyzeJobQueue:
           redis.call('LPUSH', KEYS[2], ARGV[1])
           return 1
         end
-        return 0
+        if redis.call('GET', KEYS[1]) ~= ARGV[2] then
+          return redis.error_reply('analyze_payload_conflict')
+        end
+        if redis.call('LPOS', KEYS[2], ARGV[1]) or redis.call('LPOS', KEYS[3], ARGV[1]) then
+          return 0
+        end
+        redis.call('LPUSH', KEYS[2], ARGV[1])
+        return 2
         """
-        return bool(self._redis.eval(script, 2, key, self._ready, job_id, payload))
+        return bool(
+            self._redis.eval(script, 3, key, self._ready, self._processing, job_id, payload)
+        )
 
     def reserve(self, timeout_seconds: int = 5) -> tuple[str, ValidationRequest] | None:
-        job_id = self._redis.brpoplpush(
+        # BRPOPLPUSH is deprecated since Redis 6.2; BLMOVE RIGHT LEFT is equivalent.
+        job_id = self._redis.execute_command(
+            "BLMOVE",
             self._ready,
             self._processing,
-            timeout=max(timeout_seconds, 1),
+            "RIGHT",
+            "LEFT",
+            max(timeout_seconds, 1),
         )
         if job_id is None:
             return None
+        job_id = str(job_id)
         raw = self._redis.get(f"{self._payload_prefix}{job_id}")
         if raw is None:
-            self.ack(str(job_id))
-            raise RuntimeError(f"queued analyze payload missing for {job_id}")
-        return str(job_id), self.decode_request(str(raw))
+            raise AnalyzeQueuePayloadError(job_id, "missing")
+        try:
+            request = self.decode_request(str(raw))
+        except (KeyError, TypeError, ValueError) as exc:
+            raise AnalyzeQueuePayloadError(job_id, "malformed JSON request") from exc
+        return job_id, request
 
     def ack(self, job_id: str) -> None:
         with self._redis.pipeline() as pipe:

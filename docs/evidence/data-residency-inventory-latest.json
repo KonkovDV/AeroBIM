@@ -65,7 +65,7 @@
     "durable_workers_claimed": true,
     "delivery": "at_least_once",
     "payload_format": "json",
-    "reservation": "redis_brpoplpush_ready_to_processing",
+    "reservation": "redis_blmove_right_left_ready_to_processing",
     "ack": "terminal_state_only",
     "honesty": "Production HTTP is producer-only; aerobim.worker is the executor. Redis retains the JSON payload until terminal ACK. Job-store CAS, lease ownership and fencing reject duplicate claims or commits. Container limits are an isolation boundary, not a formally verified fresh per-job sandbox. Exact OOMKilled attribution remains with the runtime.",
     "code_refs": [

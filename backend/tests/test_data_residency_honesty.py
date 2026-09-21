@@ -26,13 +26,13 @@ class DataResidencyHonestyTests(unittest.TestCase):
             encoding="utf-8"
         )
         worker = (root / "worker.py").read_text(encoding="utf-8")
-        queue = (
-            root / "infrastructure" / "adapters" / "redis_analyze_job_queue.py"
-        ).read_text(encoding="utf-8")
+        queue = (root / "infrastructure" / "adapters" / "redis_analyze_job_queue.py").read_text(
+            encoding="utf-8"
+        )
         self.assertNotIn("BackgroundTasks", analyze)
         self.assertIn("RedisAnalyzeJobQueue", analyze)
         self.assertIn("queue.reserve", worker)
-        self.assertIn("brpoplpush", queue)
+        self.assertIn('"BLMOVE"', queue)
 
 
 class SubstitutionTokenCountTests(unittest.TestCase):
