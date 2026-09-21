@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from aerobim.core.security.object_key import normalize_object_key
 from aerobim.core.security.object_limits import (
     DEFAULT_GET_CHUNK_BYTES,
     DEFAULT_MAX_GET_BYTES,
@@ -110,11 +111,7 @@ class LocalObjectStore:
         return target
 
     def _normalise_key(self, key: str) -> str:
-        normalised = key.strip().replace("\\", "/").lstrip("/")
-        # Windows NTFS: ':' introduces Alternate Data Streams / drive syntax.
-        if ":" in normalised:
-            raise ValueError(f"Object key must not contain ':': {key!r}")
-        return normalised
+        return normalize_object_key(key)
 
 
 __all__ = ["ObjectTooLargeError", "LocalObjectStore"]
