@@ -53,7 +53,7 @@ Moscow TechLab programme, commission № 7: automated verification of design and
 
 > We are in *refinement* on the customer contour. One command shows a fail-closed finding on a fixture. Effectiveness validation and deployment have not started. Checkpoint `GO` is the regulatory-measurement MVP. `customer_go` stays false until an independent labeled pack, two raters, a signed appointing-party profile, and CDE proof.
 
-The show is seven slides: [`AeroBIM.pptx`](submission/03-presentation/AeroBIM.pptx) · [`AeroBIM.pdf`](submission/03-presentation/AeroBIM.pdf) · [slide text](submission/03-presentation/demo_day_slides.md). The 43-slide file is an appendix above the buttons, not the show. Live command from `backend/`: `python -m aerobim.tools.run_kt3_jury`.
+The show is seven slides: [`AeroBIM.pptx`](submission/03-presentation/AeroBIM.pptx) · [`AeroBIM.pdf`](submission/03-presentation/AeroBIM.pdf) · [slide text](submission/03-presentation/demo_day_slides.md). The 43-slide file is an appendix above the buttons, not the show. Live command: `run-jury.bat` or `./run-jury.sh` from the clone root, or `python -m aerobim.tools.run_kt3_jury` from `backend/`.
 
 | Slide | On the deck | In the repo |
 |---|---|---|
@@ -159,7 +159,7 @@ If 8080 or 5173 is already bound, stop leftover Docker (`aerobim-backend`) or th
 
 Optional extras `.[clash]`, `.[docling]`, `.[enterprise]`, `.[pdf-agpl]` are not needed for the commands above.
 
-If `py -3.12` is missing, install CPython 3.12 from python.org — not the Microsoft Store stub. Do not type bare `py`: the launcher may pick 3.13. Diagnostics: `.\check-launch.bat` from the clone root (not `python -m aerobim.tools.check_local_launch` without the venv). Clone into a short Latin path (`C:\AeroBIM`), not a user profile with non-ASCII characters.
+If `py -3.12` is missing, install CPython 3.12 from python.org — not the Microsoft Store stub. Do not type bare `py`: the launcher may pick 3.13. Use `git clone`, not the GitHub ZIP. If IfcOpenShell fails to import on Windows, install the Microsoft VC++ 2015-2022 x64 redistributable. Diagnostics: `.\check-launch.bat` from the clone root (not `python -m aerobim.tools.check_local_launch` without the venv). Doctor warnings do not stop the jury CLI; a fatal (exit 2) does. Clone into a short Latin path (`C:\AeroBIM`), not a user profile with non-ASCII characters.
 
 <details>
 <summary>uv, hashed Windows lock, Dev Container, closed contour</summary>
@@ -234,7 +234,7 @@ GOST R 21.101-2026 (Rosstandart order № 129-ст of 12 February 2026; **in for
 - Norm rule packs (a fixture pack is not a customer-signed profile) and an opt-in completeness inventory
 - Quality measurement protocol (Wilson intervals, sample-size planner)
 
-Optional: geometry clash `.[clash]`; OCR `.[raster]`; PyMuPDF `pdf-agpl`; advisory LLM/VLM drafts (never write `summary.passed`); OpenCDE BCF push; DXF via ezdxf.
+Optional: geometry clash `.[clash]`; OCR `.[raster]`; PyMuPDF `pdf-agpl`; advisory LLM/VLM drafts (never write `summary.passed`); OpenCDE BCF push (experimental; not CDE import proof); DXF via ezdxf.
 
 </details>
 
@@ -286,7 +286,7 @@ infrastructure/  IfcOpenShell, IfcTester, BCF, storage; IfcClash and Docling are
 presentation/    FastAPI
 ```
 
-Artifacts sit behind an `ObjectStore` port, so local storage and S3-compatible buckets are the same code path. Report summaries are indexed in Postgres when `AEROBIM_DB_URL` is set.
+Artifacts sit behind an `ObjectStore` port: a local disk or an S3-compatible bucket. That is one port and two adapters. Report summaries are indexed in Postgres when `AEROBIM_DB_URL` is set.
 
 </details>
 

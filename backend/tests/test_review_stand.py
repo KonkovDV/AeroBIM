@@ -183,6 +183,15 @@ class ReviewShellLauncherTests(unittest.TestCase):
             self.assertIn("run-jury.bat", text, msg=name)
             self.assertIn(".\\check-launch.bat", text, msg=name)
             self.assertIn("./run-jury.sh", text, msg=name)
+            self.assertIn("VC++ 2015-2022", text, msg=name)
+            self.assertNotIn("один путь в коде", text, msg=name)
+            self.assertNotIn("same code path", text, msg=name)
+        ru = (repo_root() / "README.md").read_text(encoding="utf-8")
+        en = (repo_root() / "README.en.md").read_text(encoding="utf-8")
+        self.assertIn("один порт и два адаптера", ru)
+        self.assertIn("one port and two adapters", en)
+        self.assertIn("не импорт в СОД", ru)
+        self.assertIn("not CDE import proof", en)
 
     def test_root_start_bat_calls_the_review_stand(self) -> None:
         text = (repo_root() / "start.bat").read_text(encoding="utf-8")
