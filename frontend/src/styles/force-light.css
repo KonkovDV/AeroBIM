@@ -1,5 +1,6 @@
-/* Jury/demo lock: OS dark theme must not mix design-system dark tokens with
-   legacy light --bg/--text. Not a brand book. color-scheme stays light. */
+/* Stable browser-controls lock.
+   The operations-console palette is dark, but native controls keep the light
+   color-scheme contract so OS dark mode cannot inject a third, mixed palette. */
 :root {
   color-scheme: light;
 }
@@ -7,76 +8,69 @@
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: light;
-    --bg: #fff4e8;
-    --bg-strong: #ffd9b0;
-    --panel: #ffffff;
-    --text: #1a120c;
-    --muted: #6b5344;
-    --ink: #14110f;
-    --ds-canvas: var(--ds-n-25);
-    --ds-surface: var(--ds-n-0);
-    --ds-surface-sunken: var(--ds-n-50);
-    --ds-text: var(--ds-n-900);
-    --ds-text-muted: var(--ds-n-500);
-    --ds-border: var(--ds-n-100);
-    --ds-border-strong: var(--ds-n-200);
-    --ds-border-control: #8493ab;
-    --ds-accent: var(--ds-brand-600);
-    --ds-accent-hover: var(--ds-brand-700);
-    --ds-accent-text: var(--ds-brand-700);
-    --ds-accent-tint: var(--ds-brand-50);
-    --ds-text-on-brand: var(--ds-n-0);
-    --vl-canvas: var(--vl-n25);
-    --vl-sunken: var(--vl-n50);
-    --vl-surface: var(--vl-n0);
-    --vl-raised: var(--vl-n0);
-    --vl-text: var(--vl-n900);
-    --vl-text-secondary: var(--vl-n600);
-    --vl-text-muted: var(--vl-n500);
-    --vl-line: var(--vl-n100);
-    --vl-line-strong: var(--vl-n200);
-    --vl-line-control: #7c8aa0;
-    --vl-accent: var(--vl-blue600);
-    --vl-accent-hover: var(--vl-blue700);
-    --vl-accent-soft: var(--vl-blue50);
-    --vl-accent-line: var(--vl-blue200);
-    --vl-selected: var(--vl-blue50);
+    --bg: #020617;
+    --bg-strong: #081121;
+    --panel: #0f172a;
+    --text: #e8eef8;
+    --muted: #8f9db2;
+    --ink: #f8fafc;
+    --ds-canvas: #020617;
+    --ds-surface: #0f172a;
+    --ds-surface-sunken: #081121;
+    --ds-text: #e8eef8;
+    --ds-text-muted: #8f9db2;
+    --ds-border: #223049;
+    --ds-border-strong: #33425c;
+    --ds-border-control: #53647f;
+    --ds-accent: #0284c7;
+    --ds-accent-hover: #0ea5e9;
+    --ds-accent-text: #7dd3fc;
+    --ds-accent-tint: #082f49;
+    --ds-text-on-brand: #ffffff;
+    --vl-canvas: #020617;
+    --vl-sunken: #081121;
+    --vl-surface: #0f172a;
+    --vl-raised: #111c30;
+    --vl-text: #e8eef8;
+    --vl-text-secondary: #b6c2d4;
+    --vl-text-muted: #8f9db2;
+    --vl-line: #223049;
+    --vl-line-strong: #33425c;
+    --vl-line-control: #53647f;
+    --vl-accent: #0284c7;
+    --vl-accent-hover: #0ea5e9;
+    --vl-accent-soft: #082f49;
+    --vl-accent-line: #0369a1;
+    --vl-selected: #102b46;
   }
 
-  /* Component rules in earlier files still use this media query with hardcoded
-     dark hex. Reassert the light recipe so a dark OS cannot mix palettes. */
   ::selection {
-    background: var(--vl-blue200);
-    color: var(--vl-n900);
+    background: #075985;
+    color: #f8fafc;
   }
 
   .nav-badge {
-    background: var(--vl-accent);
-    color: #ffffff;
+    background: #0ea5e9;
+    color: #00131f;
   }
 
   .toolbar-button.toolbar-button-primary,
   .toolbar-button.toolbar-button-primary:hover {
-    background: var(--vl-accent);
-    border-color: var(--vl-accent);
+    background: #0284c7;
+    border-color: #0ea5e9;
     color: #ffffff;
   }
 
-  .toolbar-button.toolbar-button-primary:hover {
-    background: var(--vl-accent-hover);
-    border-color: var(--vl-accent-hover);
-  }
-
   .pack-cycle-step-current {
-    background: var(--vl-accent);
-    border-color: var(--vl-accent);
+    background: #0369a1;
+    border-color: #0ea5e9;
     color: #ffffff;
   }
 
   .keyboard-help-dialog.dirty-leave-dialog {
-    --leave-primary: #1b55c7;
-    --leave-on-primary: #fff;
-    --leave-danger: #b42318;
-    --leave-error-bg: #fff4f2;
+    --leave-primary: #0284c7;
+    --leave-on-primary: #ffffff;
+    --leave-danger: #fb4565;
+    --leave-error-bg: #3b1020;
   }
 }
