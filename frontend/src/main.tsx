@@ -8,6 +8,7 @@ import "./styles/visual-language.css";
 import "./styles/review-ergonomics.css";
 import "./styles/product-header.css";
 import "./styles/product-workplace.css";
+import "./styles/archive-reference-theme.css";
 import "./styles/force-light.css";
 
 const container = document.getElementById("root");

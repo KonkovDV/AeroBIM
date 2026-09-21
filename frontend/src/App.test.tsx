@@ -320,7 +320,9 @@ describe("App", () => {
   it("loads the first report and focuses the viewer on the active issue guid", async () => {
     render(<App />);
 
+    fireEvent.click(screen.getByRole("tab", { name: UI_COPY.evidenceTabDrawing }));
     expect(await screen.findByRole("img", { name: /Превью чертежа a-102/i })).toBeTruthy();
+    fireEvent.click(screen.getByRole("tab", { name: UI_COPY.evidenceTabModel }));
     expect(screen.getByTestId("role-honesty-banner").textContent).toBe(UI_COPY.roleBanner);
     expect(screen.getByTestId("training-rules-banner").textContent).toBe(UI_COPY.trainingRulesBanner);
     expect(screen.getAllByText(UI_COPY.outcomeBlocked).length).toBeGreaterThan(0);
@@ -701,6 +703,7 @@ describe("App", () => {
       fireEvent.load(image);
     };
 
+    fireEvent.click(screen.getByRole("tab", { name: UI_COPY.evidenceTabDrawing }));
     const firstImage = await screen.findByRole("img", { name: /Превью чертежа a-102/i });
     armDrawing(firstImage);
 
@@ -728,16 +731,20 @@ describe("App", () => {
       expect(container.querySelector(".drawing-evidence-rect")).toBeTruthy();
     });
 
+    fireEvent.click(screen.getByRole("tab", { name: UI_COPY.evidenceTabModel }));
     const viewerAfterIssueSwitch = await screen.findByTestId("viewer-stub");
     const activeIssueBlockAfterSwitch = screen.getByTestId("provenance-active-issue");
     expect(within(viewerAfterIssueSwitch).getByText(UI_COPY.spatialNone)).toBeTruthy();
     expect(within(activeIssueBlockAfterSwitch).getByText("SLAB-02")).toBeTruthy();
+    fireEvent.click(screen.getByRole("tab", { name: UI_COPY.evidenceTabDrawing }));
     await waitFor(() => {
       armDrawing(secondImage);
       expect(container.querySelector(".drawing-evidence-rect")).toBeTruthy();
     });
 
+    fireEvent.click(screen.getByRole("tab", { name: UI_COPY.evidenceTabClash }));
     fireEvent.click(screen.getByRole("button", { name: /Hard clash between pipe and beam/i }));
+    fireEvent.click(screen.getByRole("tab", { name: UI_COPY.evidenceTabModel }));
 
     const viewerAfterClashSwitch = await screen.findByTestId("viewer-stub");
     expect(within(viewerAfterClashSwitch).getByText(/пара клэша/)).toBeTruthy();
@@ -747,11 +754,13 @@ describe("App", () => {
   it("switches the 2d evidence panel when another issue is selected", async () => {
     render(<App />);
 
+    fireEvent.click(screen.getByRole("tab", { name: UI_COPY.evidenceTabDrawing }));
     await screen.findByRole("img", { name: /Превью чертежа a-102/i });
     fireEvent.click(screen.getByRole("option", { name: /DRAW-SECOND/i }));
 
     expect(await screen.findByRole("img", { name: /Превью чертежа a-101/i })).toBeTruthy();
     expect(screen.getAllByText("DRAW-SECOND").length).toBeGreaterThan(0);
+    fireEvent.click(screen.getByRole("tab", { name: UI_COPY.evidenceTabModel }));
     const viewer = await screen.findByTestId("viewer-stub");
     expect(await within(viewer).findByText(UI_COPY.spatialNone)).toBeTruthy();
   });
@@ -759,8 +768,11 @@ describe("App", () => {
   it("switches the viewer focus to a clash pair when a clash card is selected", async () => {
     render(<App />);
 
+    fireEvent.click(screen.getByRole("tab", { name: UI_COPY.evidenceTabDrawing }));
     await screen.findByRole("img", { name: /Превью чертежа a-102/i });
+    fireEvent.click(screen.getByRole("tab", { name: UI_COPY.evidenceTabClash }));
     fireEvent.click(screen.getByRole("button", { name: /Hard clash between pipe and beam/i }));
+    fireEvent.click(screen.getByRole("tab", { name: UI_COPY.evidenceTabModel }));
 
     const viewer = await screen.findByTestId("viewer-stub");
     expect(await within(viewer).findByText(/пара клэша/)).toBeTruthy();

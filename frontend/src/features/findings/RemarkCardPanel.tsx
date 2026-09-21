@@ -195,12 +195,13 @@ export default function RemarkCardPanel({
               />
               <div className="remark-actions">
                 {canOpenFinding(persisted) ? (
-                  <button type="button" onClick={onOpen} disabled={openLocked || !onOpen}>
+                  <button type="button" className="remark-action remark-action-open" onClick={onOpen} disabled={openLocked || !onOpen}>
                     {persisted === "rejected" ? UI_COPY.reopenFinding : UI_COPY.takeInWork}
                   </button>
                 ) : null}
                 <button
                   type="button"
+                  className="remark-action remark-action-save"
                   onClick={onSave}
                   disabled={editorLocked}
                   title={UI_COPY.remarkSaveHotkey}
@@ -209,6 +210,7 @@ export default function RemarkCardPanel({
                 </button>
                 <button
                   type="button"
+                  className="remark-action remark-action-confirm"
                   onClick={onAccept}
                   disabled={acceptLocked}
                   title={UI_COPY.confirmSavesDraft}
@@ -217,6 +219,7 @@ export default function RemarkCardPanel({
                 </button>
                 <button
                   type="button"
+                  className="remark-action remark-action-reject"
                   onClick={onReject}
                   disabled={acceptLocked}
                 >
