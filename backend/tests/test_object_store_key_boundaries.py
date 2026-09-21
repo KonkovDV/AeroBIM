@@ -58,9 +58,10 @@ class ObjectStoreKeyBoundaryTests(unittest.TestCase):
 
     def test_total_key_limit_is_measured_in_utf8_bytes(self) -> None:
         component = "a" * 255
-        self.assertEqual(normalize_object_key("/".join([component] * 4)), "/".join([component] * 4))
+        key_at_limit = "/".join([component] * 4)
+        self.assertEqual(normalize_object_key(key_at_limit), key_at_limit)
         with self.assertRaisesRegex(ValueError, "key exceeds.*UTF-8 byte"):
-            normalize_object_key("/".join([component] * 4) + "/b")
+            normalize_object_key(key_at_limit + "/b")
 
     def test_unpaired_surrogate_is_rejected_as_non_utf8(self) -> None:
         with self.assertRaisesRegex(ValueError, "valid UTF-8"):
