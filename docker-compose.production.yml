@@ -1,90 +1,93 @@
-# Shared / LAN stack with required secrets — not production OIDC BFF / SSO (POST-05).
-# Usage:
-#   set AEROBIM_API_BEARER_TOKEN=<long-random>
-#   set AEROBIM_REDIS_PASSWORD=<url-safe-secret>
-#   docker compose -f docker-compose.production.yml up --build
-#
-# Never commit real tokens. Prefer OIDC in real deployments (AEROBIM_OIDC_*).
-# Phase 3 BFF lab flags (AEROBIM_OIDC_BFF_*) must stay unset here.
-# AEROBIM_REDIS_PASSWORD is compose-only (interpolated into AEROBIM_REDIS_URL).
-#
-# 14.09 independent trial (organizer letter): AEROBIM_ENV=production already
-# disables POST /v1/demo/seed-fixture. ./samples is the git vertical slice,
-# not the three channel packs — mount agreed control data outside git.
-# Review shell is frontend/ `npm run build` behind a reverse proxy that
-# injects Authorization; never put the bearer in VITE_*. Bind stays
-# 127.0.0.1 — LAN exposure needs an explicit HTTPS proxy (RT A04).
-
+# Shared/LAN stack. The API only publishes jobs; the isolated worker is the sole
+# package-analysis/IfcOpenShell executor. Worker has no default/external network.
 services:
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    build: {context: ./backend, dockerfile: Dockerfile}
     read_only: true
-    tmpfs:
-      - /tmp
-    cap_drop:
-      - ALL
-    security_opt:
-      - no-new-privileges:true
-    pids_limit: 256
-    deploy:
-      resources:
-        limits:
-          cpus: "2.0"
-          memory: 4G
-        reservations:
-          memory: 512M
-    ports:
-      # Bind loopback only — LAN exposure requires an explicit reverse proxy (RT A04).
-      - "127.0.0.1:8080:8080"
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 128
+    ports: ["127.0.0.1:8080:8080"]
     environment:
       AEROBIM_ENV: production
       AEROBIM_SIGNOFF_PROFILE: ${AEROBIM_SIGNOFF_PROFILE:-production}
       AEROBIM_HOST: "0.0.0.0"
       AEROBIM_PORT: "8080"
       AEROBIM_DEBUG: "false"
+      AEROBIM_DISABLE_SYNC_PACKAGE_ANALYZE: "true"
       AEROBIM_STORAGE_DIR: /data/reports
       AEROBIM_CORS_ORIGINS: ${AEROBIM_CORS_ORIGINS:-}
-      # Compose fails fast if the variable is missing — no default token.
-      AEROBIM_API_BEARER_TOKEN: ${AEROBIM_API_BEARER_TOKEN:?Set AEROBIM_API_BEARER_TOKEN to a long random secret}
-      # Bound tenant for the service bearer. Required for production ACL paths.
-      # This token is a machine principal — never an expert HITL signer.
-      AEROBIM_API_TENANT_ID: ${AEROBIM_API_TENANT_ID:?Set AEROBIM_API_TENANT_ID to the service tenant}
+      AEROBIM_API_BEARER_TOKEN: ${AEROBIM_API_BEARER_TOKEN:?Set AEROBIM_API_BEARER_TOKEN}
+      AEROBIM_API_TENANT_ID: ${AEROBIM_API_TENANT_ID:?Set AEROBIM_API_TENANT_ID}
       AEROBIM_ALLOW_ANONYMOUS_DEV: "false"
       AEROBIM_REDIS_URL: redis://:${AEROBIM_REDIS_PASSWORD:?Set AEROBIM_REDIS_PASSWORD}@redis:6379/0
     depends_on:
-      redis:
-        condition: service_healthy
+      redis: {condition: service_healthy}
     volumes:
-      # Same first-mount ownership as docker-compose.yml. Recreate a leftover
-      # root-owned volume (`down -v`) after rebuilding this image.
       - reports-data:/data/reports
       - ./samples:/data/samples:ro
+    networks: [control]
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/ready')"]
       interval: 15s
       timeout: 5s
       retries: 3
-      start_period: 20s
+
+  analyze-worker:
+    build: {context: ./backend, dockerfile: Dockerfile}
+    entrypoint: ["python", "-m", "aerobim.worker"]
+    restart: unless-stopped
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:size=512m,mode=1770
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 128
+    stop_grace_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 3G
+        reservations:
+          memory: 512M
+    environment:
+      AEROBIM_ENV: production
+      AEROBIM_SIGNOFF_PROFILE: ${AEROBIM_SIGNOFF_PROFILE:-production}
+      AEROBIM_STORAGE_DIR: /data/reports
+      AEROBIM_API_BEARER_TOKEN: ${AEROBIM_API_BEARER_TOKEN:?Set AEROBIM_API_BEARER_TOKEN}
+      AEROBIM_API_TENANT_ID: ${AEROBIM_API_TENANT_ID:?Set AEROBIM_API_TENANT_ID}
+      AEROBIM_ALLOW_ANONYMOUS_DEV: "false"
+      AEROBIM_REDIS_URL: redis://:${AEROBIM_REDIS_PASSWORD:?Set AEROBIM_REDIS_PASSWORD}@redis:6379/0
+      AEROBIM_CUSTOMER_PACK_LLM_EGRESS: deny
+      AEROBIM_LLM_ALLOWED_HOSTS: deny
+      MALLOC_ARENA_MAX: "2"
+      OMP_NUM_THREADS: "2"
+      OPENBLAS_NUM_THREADS: "2"
+    depends_on:
+      redis: {condition: service_healthy}
+    volumes:
+      - reports-data:/data/reports
+      - ./samples:/data/samples:ro
+    # 'control' is internal=true: Redis remains reachable, internet/host egress is denied.
+    networks: [control]
 
   redis:
     image: redis:7.4-alpine
-    command:
-      [
-        "redis-server",
-        "--appendonly",
-        "yes",
-        "--requirepass",
-        "${AEROBIM_REDIS_PASSWORD:?}",
-      ]
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${AEROBIM_REDIS_PASSWORD:?}"]
     healthcheck:
       test: ["CMD", "redis-cli", "-a", "${AEROBIM_REDIS_PASSWORD:?}", "ping"]
       interval: 10s
       timeout: 3s
       retries: 5
-    volumes:
-      - redis-data:/data
+    volumes: ["redis-data:/data"]
+    networks: [control]
+
+networks:
+  control:
+    internal: true
 
 volumes:
   reports-data:
