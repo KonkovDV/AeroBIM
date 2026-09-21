@@ -1,17 +1,19 @@
 # Презентация
 
-В этой папке четыре файла:
+Показ демо-дня — семь слайдов. Полная версия — 43 слайда, не замена показа.
 
 | Файл | Роль |
 |---|---|
 | [`AeroBIM.pptx`](AeroBIM.pptx) | Поле формы: PowerPoint, 7 слайдов |
 | [`AeroBIM.pdf`](AeroBIM.pdf) | Та же дека, PDF |
-| [`demo_day_slides.md`](demo_day_slides.md) | Текстовая копия слайдов |
+| [`AeroBIM-full.pptx`](AeroBIM-full.pptx) | Полная версия, 43 слайда |
+| [`AeroBIM-full.pdf`](AeroBIM-full.pdf) | Та же полная версия, PDF |
+| [`demo_day_slides.md`](demo_day_slides.md) | Текстовая копия семи слайдов показа |
 | этот README | Индекс папки |
 
-PPTX и PDF — одна дека, 7 слайдов. Пин CI: [`runtime-baseline-latest.json`](../../docs/evidence/runtime-baseline-latest.json). Телефон капитана только на кадре PPTX.
+Пин CI: [`runtime-baseline-latest.json`](../../docs/evidence/runtime-baseline-latest.json). Телефон капитана только на кадрах PPTX.
 
-Для жюри: PowerPoint или PDF. Текстовая копия — [`demo_day_slides.md`](demo_day_slides.md).
+Для жюри показа: семь слайдов — [`AeroBIM.pptx`](AeroBIM.pptx) или [`AeroBIM.pdf`](AeroBIM.pdf). Текстовая копия — [`demo_day_slides.md`](demo_day_slides.md). Полная версия — приложение, не кадр показа.
 
 Ролик не записываем и не прилагаем. Показ — живая команда `python -m aerobim.tools.run_kt3_jury`.
 

@@ -9,6 +9,12 @@
   <a href="submission/03-presentation/AeroBIM.pdf"><img src="https://img.shields.io/badge/PDF-.pdf-B30B00?style=for-the-badge&logo=adobeacrobatreader&logoColor=white" alt="PDF"></a>
   <br><br>
   <a href="submission/03-presentation/demo_day_slides.md"><b>Текст слайдов</b></a>
+  <br><br>
+  <b>Полная версия · 43 слайда</b>
+  <br><br>
+  <a href="submission/03-presentation/AeroBIM-full.pptx"><img src="https://img.shields.io/badge/PowerPoint-full-D24726?style=for-the-badge&logo=microsoftpowerpoint&logoColor=white" alt="PowerPoint full"></a>
+  &nbsp;
+  <a href="submission/03-presentation/AeroBIM-full.pdf"><img src="https://img.shields.io/badge/PDF-full-B30B00?style=for-the-badge&logo=adobeacrobatreader&logoColor=white" alt="PDF full"></a>
 </p>
 
 # AeroBIM
