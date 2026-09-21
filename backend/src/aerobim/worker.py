@@ -8,10 +8,17 @@ import time
 
 from aerobim.core.di.tokens import Tokens
 from aerobim.domain.models import JobStatus
-from aerobim.infrastructure.adapters.redis_analyze_job_queue import RedisAnalyzeJobQueue
+from aerobim.infrastructure.adapters.redis_analyze_job_queue import (
+    RedisAnalyzeJobQueue,
+)
 from aerobim.infrastructure.di.bootstrap import bootstrap_container
 
-_TERMINAL = {JobStatus.SUCCEEDED, JobStatus.FAILED, JobStatus.CANCELLED, JobStatus.DEAD_LETTER}
+_TERMINAL = {
+    JobStatus.SUCCEEDED,
+    JobStatus.FAILED,
+    JobStatus.CANCELLED,
+    JobStatus.DEAD_LETTER,
+}
 
 
 def main() -> None:
@@ -31,7 +38,9 @@ def main() -> None:
 
     signal.signal(signal.SIGTERM, stop)
     signal.signal(signal.SIGINT, stop)
-    recover_every = max(int(os.getenv("AEROBIM_WORKER_RECOVERY_SECONDS", "15")), 1)
+    recover_every = max(
+        int(os.getenv("AEROBIM_WORKER_RECOVERY_SECONDS", "15")), 1
+    )
     last_recovery = 0.0
     logger.info("dedicated analyze worker started")
     while not stopping:
