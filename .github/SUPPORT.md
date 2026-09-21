@@ -21,11 +21,11 @@ AeroBIM supports public engineering discussion for:
 
 Read:
 
-1. README.md
-2. CONTRIBUTING.md
-3. CODE_OF_CONDUCT.md
-4. SECURITY.md
-5. docs/TIER0_INDEX.md · docs/pilot-claim-boundary-2026.md
+1. [README.md](../README.md)
+2. [CONTRIBUTING.md](CONTRIBUTING.md)
+3. [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
+4. [SECURITY.md](SECURITY.md)
+5. [docs/TIER0_INDEX.md](../docs/TIER0_INDEX.md) · [docs/pilot-claim-boundary-2026.md](../docs/pilot-claim-boundary-2026.md)
 
 ## Public Channels
 

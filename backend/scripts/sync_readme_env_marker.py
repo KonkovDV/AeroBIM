@@ -36,7 +36,7 @@ def _sync(path: Path) -> None:
 
 
 def main() -> None:
-    for name in ("README.md", "README.ru.md"):
+    for name in ("README.md", "README.en.md"):
         _sync(_REPO / name)
     print("README env markers synced with settings.py")
 

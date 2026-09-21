@@ -24,7 +24,6 @@ _ALLOW_RELATIVE = frozenset(
 
 _SURFACE_FILES = (
     "README.md",
-    "README.ru.md",
     "docs/docs.md",
     "docs/partners/TECHLAB_TASK_07_READINESS_2026.md",
     "docs/partners/TECHLAB_APPLICATION_2026.md",

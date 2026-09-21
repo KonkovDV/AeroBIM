@@ -173,7 +173,7 @@ class ReviewShellLauncherTests(unittest.TestCase):
             self.assertFalse((repo_root() / rel).exists(), msg=rel)
 
     def test_readme_power_shell_recipe_requires_dot_slash(self) -> None:
-        for name in ("README.md", "README.ru.md"):
+        for name in ("README.md", "README.en.md"):
             text = (repo_root() / name).read_text(encoding="utf-8")
             self.assertIn(".\\start.bat", text, msg=name)
             self.assertIn("Start-Process", text, msg=name)

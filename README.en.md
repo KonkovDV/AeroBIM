@@ -133,6 +133,9 @@ flowchart LR
   report --> reviewer["Reviewer decides"]
 ```
 
+<details>
+<summary>Model, rules, documents, report</summary>
+
 1. **The model.** Properties and quantities are validated with IfcOpenShell. IFC2x3 (buildingSMART schema; no ISO publication), IFC4 ADD2 (ISO 16739-1:2018) and IFC4x3 (ISO 16739-1:2024) go through one kernel. ISO/PAS 16739:2005 is the IFC2x Platform, not IFC2x3. Where property-set names diverge between releases, the difference is a `ValidationIssue`, not a silent skip. Per-feature rules: [`docs/ifc-compatibility-matrix.md`](docs/ifc-compatibility-matrix.md).
 2. **The rules.** IDS 1.0 is validated with IfcTester. Official rule sets from Moscow Region State Expertise and SPb GAU CGE (CIM OKS ed. 3.1.0 + CIM RII ed. 1.1.0) ship in `samples/`; the CGE profile ([`samples/profiles/spb-cge/`](samples/profiles/spb-cge/manifest.json)) is a published rule set, not a customer-signed acceptance profile. CI checks the committed profile. A requested rule set that cannot load fails the check.
 3. **The other documents.** The model is compared with drawing notes, specifications and calculation texts, with a configured ε-band and Russian/European grouped decimals. Sources are compared; the calculation is not recomputed.
@@ -140,9 +143,14 @@ flowchart LR
 
 `summary.passed` is assembled from deterministic errors and the capability table ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)). Advisory LLM/VLM text, if enabled, drafts remark wording only and never writes that flag; under customer sign-off profiles outbound advisory calls are forbidden. Every optional engine reports `ok`, `skipped` or `failed`; any `FAILED` forces `summary.passed=false`. The same boundary is served on `GET /v1/system/capabilities`. That flag is a Shared-gate under configured rules. Architecture: [`docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md).
 
+</details>
+
 ## Checkpoint: `GO` (`regulatory_measurement_mvp`)
 
 Checkpoint is the **regulatory-measurement MVP**. `customer_go` stays **false**. Code and fixtures work. Public rule sets and fixture packs stand in until the appointing-party pack is in. Undifferentiated `closes_rt001/002/003` stay false.
+
+<details>
+<summary>RT-001 · RT-002 · RT-003 — closed on the clone / pilot subject</summary>
 
 | ID | Now | Pilot |
 |---|---|---|
@@ -155,6 +163,8 @@ Source: [`docs/evidence/rt-blocker-volumes-2026-09.md`](docs/evidence/rt-blocker
 BCF ZIP export is structural ([`audit/evidence/bcf-structural-handoff-2026-07-25.json`](audit/evidence/bcf-structural-handoff-2026-07-25.json)). Import into an independent CDE is **NOT_VERIFIED**. Ingest is IFC.
 
 GOST R 21.101-2026 (Rosstandart order № 129-ст of 12 February 2026; **in force 1 April 2026**, replacing 21.101-2020), clause 8.2.4: GUID is the identifier of an electronic design document in the pack. AeroBIM addresses findings to a GUID. The standard’s in-force date (1 April) is not the Moscow AGR IFC filing date (2 April).
+
+</details>
 
 ## Clone capabilities
 
@@ -207,6 +217,11 @@ Package analysis optionally accepts an OpenRebar reinforcement report with a SHA
 
 ## Architecture
 
+**48 domain Protocol ports** wire to **76 infrastructure adapter modules** through **63 DI tokens** in `bootstrap_container()`. Counts: [`docs/evidence/runtime-baseline-latest.json`](docs/evidence/runtime-baseline-latest.json).
+
+<details>
+<summary>Layers and storage</summary>
+
 Five layers, dependencies pointing inward only:
 
 ```
@@ -217,9 +232,9 @@ infrastructure/  IfcOpenShell, IfcTester, BCF, storage; IfcClash and Docling are
 presentation/    FastAPI
 ```
 
-**48 domain Protocol ports** wire to **76 infrastructure adapter modules** through **63 DI tokens** in `bootstrap_container()`. Counts: [`docs/evidence/runtime-baseline-latest.json`](docs/evidence/runtime-baseline-latest.json).
-
 Artifacts sit behind an `ObjectStore` port, so local storage and S3-compatible buckets are the same code path. Report summaries are indexed in Postgres when `AEROBIM_DB_URL` is set.
+
+</details>
 
 ## Configuration
 
@@ -447,6 +462,9 @@ tests_passed: backend=3300, frontend=400; commit 4742d56d9574; see docs/evidence
 
 ## Documentation
 
+<details>
+<summary>Map, pack, claim boundary</summary>
+
 | Topic | Document |
 |---|---|
 | Start here | [Jury map](docs/TIER0_INDEX.md) · [Technical justification](docs/docs.md) · [glossary](docs/partners/GLOSSARY_JURY_RU_2026_08.md) |
@@ -459,6 +477,8 @@ tests_passed: backend=3300, frontend=400; commit 4742d56d9574; see docs/evidence
 | Architecture | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) · [ADR-005 data handling](docs/architecture/ADR-005-customer-data-handling-2026.md) |
 | Review shell | [Frontend](frontend/README.md) |
 | Licensing | [License policy](docs/license-policy-2026.md) |
+
+</details>
 
 ## Cite
 

@@ -26,7 +26,7 @@ class PilotThreatModelInventoryTests(unittest.TestCase):
             REPO_ROOT / "backend" / "tests" / "test_rtatom_remediation_2026_07_20.py",
             REPO_ROOT / "backend" / "tests" / "test_rtatom_wave_a3_2026_07_20.py",
             REPO_ROOT / "docs" / "security" / "PILOT_THREAT_MODEL_2026_07.md",
-            REPO_ROOT / "SECURITY.md",
+            REPO_ROOT / ".github" / "SECURITY.md",
         ]
         for path in required:
             self.assertTrue(path.is_file(), path)

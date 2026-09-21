@@ -27,7 +27,7 @@ Public GitHub carries the **TechLab jury pack** only. Operator runbooks and NDA 
 | the appointing party alignment | [`../techlab-alignment-2026.md`](../techlab-alignment-2026.md) | R1–R15 |
 | Architecture SSOT | [`../architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](../architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) | Hybrid target |
 | Reproducibility | [`../REPRODUCIBILITY-2026.md`](../REPRODUCIBILITY-2026.md) | FAIR |
-| Security | [`../../SECURITY.md`](../../SECURITY.md) | Reporting |
+| Security | [`../../.github/SECURITY.md`](../../.github/SECURITY.md) | Reporting |
 | Appendix manifest | [`../../samples/tz-appendix/MANIFEST.json`](../../samples/tz-appendix/MANIFEST.json) | Data appendices |
 | Partners readiness | [`../partners/TECHLAB_TASK_07_READINESS_2026.md`](../partners/TECHLAB_TASK_07_READINESS_2026.md) | Form copy |
 

@@ -99,7 +99,7 @@ class Rt001DualRaterSimulationTests(unittest.TestCase):
         self.assertEqual(volumes["RT-001"]["b_criterion_dual_rater"], "OPEN")
         self.assertEqual(volumes["RT-001"]["independent_human_raters"], 0)
         self.assertFalse(volumes["closes_rt001"])
-        for name in ("README.md", "README.ru.md"):
+        for name in ("README.md", "README.en.md"):
             text = (REPO_ROOT / name).read_text(encoding="utf-8")
             self.assertIn("b_protocol_rehearsal", text)
             self.assertIn("RT-001b", text)

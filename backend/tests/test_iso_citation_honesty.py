@@ -27,7 +27,7 @@ _FALSE_MIB_ALIGNMENT = re.compile(
 
 _SURFACES = (
     "README.md",
-    "README.ru.md",
+    "README.en.md",
     "docs/ifc-compatibility-matrix.md",
     "docs/techlab-alignment-2026.md",
     "backend/src/aerobim/domain/quantity.py",

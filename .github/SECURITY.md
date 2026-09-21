@@ -79,7 +79,7 @@ When reporting, include:
 
 ## Deployment Hardening (Wave 0–2 + RT-POST 2026-07-19 + RTATOM A1/A2/A3 2026-07-20)
 
-Pilot threat-model note: [`docs/security/PILOT_THREAT_MODEL_2026_07.md`](docs/security/PILOT_THREAT_MODEL_2026_07.md)
+Pilot threat-model note: [`docs/security/PILOT_THREAT_MODEL_2026_07.md`](../docs/security/PILOT_THREAT_MODEL_2026_07.md)
 (closed RTATOM controls + residual POST-05 BFF — **not** SSO production-ready).
 
 - Non-`development`/`test` environments **require** `AEROBIM_API_BEARER_TOKEN` and/or OIDC (`AEROBIM_OIDC_ISSUER` + audience + JWKS) at startup and on every authenticated `/v1/*` call (503/401 fail-closed). Public exception: `GET /v1/auth/bff` returns 501 honesty JSON for FE discovery.

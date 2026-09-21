@@ -397,7 +397,7 @@ class RemainderAuditFindingTests(unittest.TestCase):
 
     def test_rt_f15_known_bugs_records_license_inventory(self) -> None:
         root = Path(__file__).resolve().parents[2]
-        known = (root / "KNOWN_BUGS.md").read_text(encoding="utf-8")
+        known = (root / "docs" / "KNOWN_BUGS.md").read_text(encoding="utf-8")
         self.assertIn("F-15", known)
         self.assertIn("dependency_license_inventory.json", known)
         self.assertIn("HD19-S3-02", known)

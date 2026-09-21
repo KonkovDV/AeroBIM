@@ -1358,7 +1358,7 @@ def _check_documented_env_sets(repo: Path, *, compare_artifact: bool = True) -> 
                     )
 
     marker_sets: dict[str, set[str]] = {}
-    for name in ("README.md", "README.ru.md"):
+    for name in ("README.md", "README.en.md"):
         path = repo / name
         if not path.exists():
             errors.append(f"Missing {name}")
@@ -1379,22 +1379,22 @@ def _check_documented_env_sets(repo: Path, *, compare_artifact: bool = True) -> 
                 f"{sorted(missing_in_marker)}"
             )
 
-    if "README.md" in marker_sets and "README.ru.md" in marker_sets:
-        if marker_sets["README.md"] != marker_sets["README.ru.md"]:
+    if "README.md" in marker_sets and "README.en.md" in marker_sets:
+        if marker_sets["README.md"] != marker_sets["README.en.md"]:
             errors.append(
                 _symdiff_message(
                     "README.md_marker",
-                    "README.ru.md_marker",
+                    "README.en.md_marker",
                     marker_sets["README.md"],
-                    marker_sets["README.ru.md"],
+                    marker_sets["README.en.md"],
                 )
             )
 
     # Full-file unique names must also match (catches prose drift beyond the marker block).
-    en_all = set(_all_aerobim_names_in_file(repo / "README.md")) - _ENV_MARKER_NOISE
-    ru_all = set(_all_aerobim_names_in_file(repo / "README.ru.md")) - _ENV_MARKER_NOISE
-    if en_all and ru_all and en_all != ru_all:
-        errors.append(_symdiff_message("README.md_all", "README.ru.md_all", en_all, ru_all))
+    landing_all = set(_all_aerobim_names_in_file(repo / "README.md")) - _ENV_MARKER_NOISE
+    en_all = set(_all_aerobim_names_in_file(repo / "README.en.md")) - _ENV_MARKER_NOISE
+    if landing_all and en_all and landing_all != en_all:
+        errors.append(_symdiff_message("README.md_all", "README.en.md_all", landing_all, en_all))
 
     return errors
 
@@ -1497,7 +1497,7 @@ def _check_readme_numeric_claims(repo: Path, live: dict[str, object]) -> list[st
         (r"12\s+infrastructure\s+adapters", "stale 12 adapters claim"),
         (r"13\s+DI\s+tokens", "stale 13 DI tokens claim"),
     )
-    for readme_name in ("README.md", "README.ru.md"):
+    for readme_name in ("README.md", "README.en.md"):
         path = repo / readme_name
         if not path.exists():
             continue
@@ -1603,7 +1603,7 @@ def _check_architecture_inventory(repo: Path, *, compare_artifact: bool = True) 
             f"{live['di_tokens']} DI tokens",
         ),
     }
-    for readme_name in ("README.md", "README.ru.md"):
+    for readme_name in ("README.md", "README.en.md"):
         path = repo / readme_name
         if not path.exists():
             errors.append(f"Missing {readme_name}")
@@ -1629,7 +1629,7 @@ def _check_readme_markers(repo: Path, *, compare_artifact: bool = True) -> list[
                 expected_snippet = stored["readme_snippet"].strip()
         except json.JSONDecodeError:
             errors.append("Invalid runtime-baseline-latest.json while checking README snippets")
-    for name in ("README.md", "README.ru.md"):
+    for name in ("README.md", "README.en.md"):
         path = repo / name
         if not path.exists():
             errors.append(f"Missing {name}")
@@ -1761,7 +1761,7 @@ def main(argv: list[str] | None = None) -> int:
         "--check-readme",
         action="store_true",
         help=(
-            "Fail if README.md / README.ru.md lack AEROBIM_RUNTIME_BASELINE markers, "
+            "Fail if README.md / README.en.md lack AEROBIM_RUNTIME_BASELINE markers, "
             "documented-env name *sets* disagree (symmetric difference, not counts), "
             "live architecture_inventory (ports/adapters/tokens) missing from README/artifact, "
             "jury markdown embeds the JSON pin integers, "

@@ -3,7 +3,6 @@
   "note": "N-29: allow-file headers only amnesty paths listed here. New docs need registry entry or per-line allow.",
   "paths": [
     "README.md",
-    "README.ru.md",
     "README.en.md",
     "docs/DATASETS.md",
     "docs/architecture/ADR-001-verdict-ownership-2026.md",

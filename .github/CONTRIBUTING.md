@@ -6,12 +6,12 @@ AeroBIM is an open-source platform for cross-modal BIM validation. Contributions
 
 ## Read First
 
-1. README.md
-2. CODE_OF_CONDUCT.md
-3. docs/TIER0_INDEX.md · docs/README.md
-4. docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md
-5. docs/pilot-claim-boundary-2026.md
-6. SECURITY.md · audit/reports/CLAIMS_LOCK_2026_07_17.md
+1. [README.md](../README.md)
+2. [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
+3. [docs/TIER0_INDEX.md](../docs/TIER0_INDEX.md) · [docs/README.md](../docs/README.md)
+4. [docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md](../docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md)
+5. [docs/pilot-claim-boundary-2026.md](../docs/pilot-claim-boundary-2026.md)
+6. [SECURITY.md](SECURITY.md) · [audit/reports/CLAIMS_LOCK_2026_07_17.md](../audit/reports/CLAIMS_LOCK_2026_07_17.md)
 
 ## Contribution Principles
 
@@ -20,7 +20,7 @@ AeroBIM is an open-source platform for cross-modal BIM validation. Contributions
 - Preserve deterministic behavior in validation flows where deterministic mode already exists.
 - Treat auditability as a feature: new behavior should be explainable in report artifacts.
 - Keep diffs focused and reviewable.
-- Do not claim customer accuracy, CDE-ready BCF, MEP system clash, or calculation *correctness* without evidence cited in [`audit/reports/CLAIMS_LOCK_2026_07_17.md`](audit/reports/CLAIMS_LOCK_2026_07_17.md).
+- Do not claim customer accuracy, CDE-ready BCF, MEP system clash, or calculation *correctness* without evidence cited in [`audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md).
 
 ## Maintenance
 

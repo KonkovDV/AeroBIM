@@ -20,7 +20,6 @@ _MONITORED = (
     _REPO / "docs" / "pilot-claim-boundary-2026.md",
     _REPO / "docs" / "docs.md",
     _REPO / "README.md",
-    _REPO / "README.ru.md",
     _REPO / "docs" / "TIER0_INDEX.md",
 )
 

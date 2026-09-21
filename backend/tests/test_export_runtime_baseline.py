@@ -673,7 +673,7 @@ class DocumentedEnvSetTests(unittest.TestCase):
                 "\n## Project Structure\n"
             )
             (repo / "README.md").write_text(readme, encoding="utf-8")
-            (repo / "README.ru.md").write_text(readme, encoding="utf-8")
+            (repo / "README.en.md").write_text(readme, encoding="utf-8")
             errors = _check_documented_env_sets(repo)
             self.assertEqual(errors, [])
 
@@ -728,7 +728,7 @@ class CodeEnvInventoryTests(unittest.TestCase):
                 "\n## Other\n"
             )
             (repo / "README.md").write_text(en, encoding="utf-8")
-            (repo / "README.ru.md").write_text(ru, encoding="utf-8")
+            (repo / "README.en.md").write_text(ru, encoding="utf-8")
             errors = _check_documented_env_sets(repo)
             self.assertTrue(errors, "equal cardinality with different names must fail")
             blob = " ".join(errors)
@@ -816,7 +816,7 @@ class BaselineDriftAndReadmeAttackTests(unittest.TestCase):
                 "<!-- AEROBIM_DOCUMENTED_ENV:END -->\n"
             )
             (repo / "README.md").write_text(readme, encoding="utf-8")
-            (repo / "README.ru.md").write_text(readme, encoding="utf-8")
+            (repo / "README.en.md").write_text(readme, encoding="utf-8")
             # Avoid env/inventory side checks by stubbing helpers if needed — markers only.
             with (
                 patch(
@@ -865,7 +865,7 @@ class BaselineDriftAndReadmeAttackTests(unittest.TestCase):
                 "<!-- AEROBIM_RUNTIME_BASELINE:END -->\n"
             )
             (repo / "README.md").write_text(readme, encoding="utf-8")
-            (repo / "README.ru.md").write_text(readme, encoding="utf-8")
+            (repo / "README.en.md").write_text(readme, encoding="utf-8")
             with (
                 patch(
                     "aerobim.tools.export_runtime_baseline._check_documented_env_sets",

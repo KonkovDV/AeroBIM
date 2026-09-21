@@ -20,13 +20,8 @@ def _iter_markdown(root: Path) -> list[Path]:
     files: list[Path] = []
     for pattern in (
         "README.md",
-        "README.ru.md",
         "README.en.md",
-        "CODE_OF_CONDUCT.md",
-        "CONTRIBUTING.md",
-        "SECURITY.md",
-        "SUPPORT.md",
-        "MAINTAINERS.md",
+        ".github/*.md",
         "docs/**/*.md",
         "audit/reports/*.md",
         "submission/**/*.md",

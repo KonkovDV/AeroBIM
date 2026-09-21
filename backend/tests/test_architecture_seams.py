@@ -102,7 +102,7 @@ class ArchitectureSeamTests(unittest.TestCase):
 
     def test_sota_stub_ids_assist_is_tracked_in_known_bugs(self) -> None:
         root = Path(__file__).resolve().parents[2]
-        known = (root / "KNOWN_BUGS.md").read_text(encoding="utf-8")
+        known = (root / "docs" / "KNOWN_BUGS.md").read_text(encoding="utf-8")
         self.assertIn("STUB-IDS-ASSIST-001", known)
         adapter_src = (
             root
@@ -120,7 +120,7 @@ class ArchitectureSeamTests(unittest.TestCase):
         """Presign GET is HeadObject-capped; no src callers of ``.presign_get(``."""
 
         root = Path(__file__).resolve().parents[2]
-        known = (root / "KNOWN_BUGS.md").read_text(encoding="utf-8")
+        known = (root / "docs" / "KNOWN_BUGS.md").read_text(encoding="utf-8")
         self.assertIn("HD19-S3-01", known)
         s3_src = (
             root

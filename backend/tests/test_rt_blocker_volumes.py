@@ -87,7 +87,7 @@ class RtBlockerVolumeTests(unittest.TestCase):
             require_honest_rt_blocker_volumes(dirty)
 
     def test_readme_table_uses_volume_split(self) -> None:
-        for name in ("README.md", "README.ru.md"):
+        for name in ("README.md", "README.en.md"):
             text = (REPO_ROOT / name).read_text(encoding="utf-8")
             self.assertIn("RT-001a", text)
             self.assertIn("RT-001b", text)

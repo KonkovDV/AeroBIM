@@ -133,6 +133,9 @@ flowchart LR
   report --> reviewer["Решает эксперт"]
 ```
 
+<details>
+<summary>Модель, правила, документы, отчёт</summary>
+
 1. **Модель.** Свойства и величины — IfcOpenShell. IFC2x3 (схема buildingSMART; публикации ISO нет), IFC4 ADD2 (ISO 16739-1:2018) и IFC4x3 (ISO 16739-1:2024) идут через одно ядро. ISO/PAS 16739:2005 — это IFC2x Platform, не IFC2x3. Расхождение имён наборов свойств между релизами — `ValidationIssue`, не молчаливый пропуск. Правила: [`docs/ifc-compatibility-matrix.md`](docs/ifc-compatibility-matrix.md).
 2. **Правила.** IDS 1.0 — IfcTester. Наборы Мособлгосэкспертизы и СПб ГАУ ЦГЭ (ЦИМ ОКС ред. 3.1.0 + ЦИМ РИИ ред. 1.1.0) лежат в `samples/`. Профиль ЦГЭ ([`samples/profiles/spb-cge/`](samples/profiles/spb-cge/manifest.json)) — опубликованный набор, не подписанный профиль приёмки. CI сверяет профиль в git. Незагруженный запрошенный набор роняет проверку.
 3. **Документы.** Модель сверяется с пометками на чертеже, спецификациями и расчётными текстами (ε-полоса, русские и европейские группированные числа). Источники сравниваются, расчёт не пересчитывается.
@@ -140,9 +143,14 @@ flowchart LR
 
 `summary.passed` собирается из детерминированных ошибок и таблицы доступности проверок ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)). Советующий текст языковой модели, если включён, только черновит формулировку замечания и никогда не пишет этот флаг; на профилях заказчика внешние вызовы запрещены. Каждая опциональная проверка отчитывается `ok` / `skipped` / `failed`; любое `FAILED` ставит `summary.passed=false`. Та же граница — `GET /v1/system/capabilities`. Это технический статус Shared-gate. Архитектура: [`docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md`](docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md).
 
+</details>
+
 ## Checkpoint: `GO` (`regulatory_measurement_mvp`)
 
 Checkpoint — **регуляторно-измерительный MVP**. `customer_go` остаётся **false**. Код и учебные комплекты работают. Публичные наборы правил и учебные комплекты стоят там, где пакета назначающей стороны ещё нет. Недифференцированные `closes_rt001/002/003` остаются false.
+
+<details>
+<summary>RT-001 · RT-002 · RT-003 — закрыто на клоне / предмет пилота</summary>
 
 | ID | Сейчас | Пилот |
 |---|---|---|
@@ -155,6 +163,8 @@ Checkpoint — **регуляторно-измерительный MVP**. `custo
 Экспорт BCF ZIP — структурный ([`audit/evidence/bcf-structural-handoff-2026-07-25.json`](audit/evidence/bcf-structural-handoff-2026-07-25.json)). Импорт в независимую СОД — **NOT_VERIFIED**. Вход — IFC.
 
 ГОСТ Р 21.101-2026 (приказ Росстандарта № 129-ст от 12 февраля 2026; **в силе с 1 апреля 2026**, взамен 21.101-2020), п. 8.2.4: GUID — идентификатор электронного документа в пакете ПД/РД. AeroBIM адресует находки к GUID. Дата введения стандарта (1 апреля) — не дата обязательной подачи ЦИМ АГР в Москве (2 апреля).
+
+</details>
 
 ## Возможности клона
 
@@ -207,6 +217,11 @@ Checkpoint — **регуляторно-измерительный MVP**. `custo
 
 ## Архитектура
 
+**48 Protocol ports** связаны с **76 adapter modules** через **63 DI tokens** в `bootstrap_container()`. Счётчики: [`docs/evidence/runtime-baseline-latest.json`](docs/evidence/runtime-baseline-latest.json).
+
+<details>
+<summary>Слои и хранение</summary>
+
 Пять слоёв, зависимости только внутрь:
 
 ```
@@ -217,9 +232,9 @@ infrastructure/  IfcOpenShell, IfcTester, BCF, хранилище; IfcClash и D
 presentation/    FastAPI
 ```
 
-**48 Protocol ports** связаны с **76 adapter modules** через **63 DI tokens** в `bootstrap_container()`. Счётчики: [`docs/evidence/runtime-baseline-latest.json`](docs/evidence/runtime-baseline-latest.json).
-
 Артефакты за портом `ObjectStore` (локальный диск или S3 — один путь в коде). При `AEROBIM_DB_URL` сводки отчётов индексируются в Postgres.
+
+</details>
 
 Локальный клон работает на значениях по умолчанию. Таблица ниже на английском: CI сверяет её с `settings.py` в обе стороны. Та же таблица — в [README.en.md](README.en.md).
 
@@ -329,6 +344,9 @@ presentation/    FastAPI
 
 ## Документация
 
+<details>
+<summary>Карта, пакет, граница заявлений</summary>
+
 | Тема | Документ |
 |---|---|
 | Начать здесь | [карта для жюри](docs/TIER0_INDEX.md) · [техническое обоснование](docs/docs.md) · [глоссарий](docs/partners/GLOSSARY_JURY_RU_2026_08.md) |
@@ -341,6 +359,8 @@ presentation/    FastAPI
 | Архитектура | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) · [ADR-005 данные](docs/architecture/ADR-005-customer-data-handling-2026.md) |
 | Оболочка ревью | [фронтенд](frontend/README.md) |
 | Лицензии | [политика лицензий](docs/license-policy-2026.md) |
+
+</details>
 
 ## Цитирование
 

@@ -96,7 +96,7 @@ jobs:
           new = str(minted.get("readme_snippet") or "")
           if not new:
               raise SystemExit("minted baseline has no readme_snippet; refusing to touch READMEs")
-          for name in ("README.md", "README.ru.md"):
+          for name in ("README.md", "README.en.md"):
               readme = pathlib.Path(name)
               text = readme.read_text(encoding="utf-8")
               if new in text:
@@ -127,7 +127,7 @@ jobs:
       - name: Commit and push the refreshed pin
         run: |
           set -euo pipefail
-          TRACKED=(docs/evidence/runtime-baseline-latest.json README.md README.ru.md)
+          TRACKED=(docs/evidence/runtime-baseline-latest.json README.md README.en.md)
           if git diff --quiet -- "${TRACKED[@]}"; then
             echo "pin already current; nothing to commit"
             exit 0

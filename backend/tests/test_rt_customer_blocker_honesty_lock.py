@@ -244,7 +244,6 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
         en_readme = repo / "README.en.md"
         surfaces = (
             repo / "README.md",
-            repo / "README.ru.md",
             repo / "docs" / "docs.md",
             repo / "docs" / "TIER0_INDEX.md",
             repo / "docs" / "demo" / "KT2_JURY_FAQ_2026_08_12.md",
@@ -263,7 +262,7 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
 
     def test_readme_checkpoint_heading_is_go_not_product_no_go(self) -> None:
         repo = self._repo()
-        for name in ("README.md", "README.ru.md"):
+        for name in ("README.md", "README.en.md"):
             text = (repo / name).read_text(encoding="utf-8")
             self.assertIn("## Checkpoint: `GO`", text, msg=name)
             self.assertNotIn("## Checkpoint: `NO_GO`", text, msg=name)
@@ -382,7 +381,7 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
             self._repo() / "docs" / "quality" / "INTERPRETATION_USE_LEDGER_2026_08.md",
             self._repo() / "backend" / "src" / "aerobim" / "domain" / "interpretation_use.py",
             self._repo() / "docs" / "TIER0_INDEX.md",
-            self._repo() / "README.ru.md",
+            self._repo() / "README.md",
             self._repo() / "submission" / "README.md",
             self._repo() / "docs" / "tz" / "TRI_SOURCE_REQUIREMENTS_MATRIX_2026.md",
         )
@@ -408,7 +407,7 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
         surfaces = (
             repo / "docs" / "TIER0_INDEX.md",
             repo / "README.md",
-            repo / "README.ru.md",
+            repo / "README.en.md",
         )
         for path in surfaces:
             text = path.read_text(encoding="utf-8")
@@ -769,11 +768,11 @@ class SubmissionPackHonestyTests(unittest.TestCase):
         root = self._submission().parent
         for name in (
             "LICENSE",
-            "SECURITY.md",
-            "CONTRIBUTING.md",
-            "CODE_OF_CONDUCT.md",
-            "SUPPORT.md",
-            "MAINTAINERS.md",
+            ".github/SECURITY.md",
+            ".github/CONTRIBUTING.md",
+            ".github/CODE_OF_CONDUCT.md",
+            ".github/SUPPORT.md",
+            ".github/MAINTAINERS.md",
             "CITATION.cff",
             ".github/CODEOWNERS",
             ".github/PULL_REQUEST_TEMPLATE.md",
