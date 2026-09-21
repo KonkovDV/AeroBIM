@@ -1,4 +1,10 @@
-import { useId, useState, type KeyboardEvent, type ReactNode } from "react";
+import {
+  useId,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type ReactNode,
+} from "react";
 import { UI_COPY } from "../../lib/ui-copy";
 
 type EvidenceTab = "model" | "drawing" | "clash";
@@ -19,7 +25,8 @@ export type EvidenceDeckProps = {
 
 /**
  * Center inspector from the reference console: one evidence surface at a time.
- * The panels stay the application's own viewer, drawing overlay and clash list.
+ * All three production surfaces stay mounted so viewer and drawing state survive
+ * tab changes; the inactive panels use native `hidden` semantics.
  */
 export default function EvidenceDeck({
   model,
@@ -30,10 +37,18 @@ export default function EvidenceDeck({
 }: EvidenceDeckProps) {
   const [tab, setTab] = useState<EvidenceTab>("model");
   const base = useId().replace(/:/g, "");
+  const tabRefs = useRef<Partial<Record<EvidenceTab, HTMLButtonElement | null>>>({});
   const panels: Record<EvidenceTab, ReactNode> = { model, drawing, clash };
 
+  function selectTab(next: EvidenceTab, moveFocus = false): void {
+    setTab(next);
+    if (moveFocus) {
+      requestAnimationFrame(() => tabRefs.current[next]?.focus());
+    }
+  }
+
   function onTabKey(event: KeyboardEvent<HTMLDivElement>): void {
-    if (event.altKey || event.ctrlKey || event.metaKey) return;
+    if (event.altKey || event.ctrlKey || event.metaKey || event.nativeEvent.isComposing) return;
     const index = TABS.findIndex((item) => item.id === tab);
     const next =
       event.key === "ArrowRight" ? TABS[(index + 1) % TABS.length]
@@ -44,36 +59,36 @@ export default function EvidenceDeck({
     if (!next) return;
     event.preventDefault();
     event.stopPropagation();
-    setTab(next.id);
-    document.getElementById(`${base}-tab-${next.id}`)?.focus();
+    selectTab(next.id, true);
   }
 
   return (
     <div className="evidence-deck" data-testid="evidence-deck">
       <div className="evidence-deck-bar">
-      <div
-        className="evidence-deck-tabs"
-        role="tablist"
-        aria-label={UI_COPY.evidenceDeckAria}
-        aria-orientation="horizontal"
-        onKeyDown={onTabKey}
-      >
-        {TABS.map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            role="tab"
-            id={`${base}-tab-${item.id}`}
-            aria-selected={tab === item.id}
-            aria-controls={`${base}-panel-${item.id}`}
-            tabIndex={tab === item.id ? 0 : -1}
-            className={tab === item.id ? "active" : ""}
-            onClick={() => setTab(item.id)}
-          >
-            {item.label}
-          </button>
-        ))}
-      </div>
+        <div
+          className="evidence-deck-tabs"
+          role="tablist"
+          aria-label={UI_COPY.evidenceDeckAria}
+          aria-orientation="horizontal"
+          onKeyDown={onTabKey}
+        >
+          {TABS.map((item) => (
+            <button
+              key={item.id}
+              ref={(node) => { tabRefs.current[item.id] = node; }}
+              type="button"
+              role="tab"
+              id={`${base}-tab-${item.id}`}
+              aria-selected={tab === item.id}
+              aria-controls={`${base}-panel-${item.id}`}
+              tabIndex={tab === item.id ? 0 : -1}
+              className={tab === item.id ? "active" : ""}
+              onClick={() => selectTab(item.id)}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
         {onToggleExpanded ? (
           <button
             type="button"

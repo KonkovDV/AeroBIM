@@ -1,0 +1,114 @@
+/* SOTA 2026 interaction and rendering hardening. The archive remains dense
+   on precision pointers while touch, zoom, forced-colour and reduced-motion
+   users receive an equally complete workspace. */
+html {
+  scrollbar-gutter: stable;
+  scroll-padding-block-start: 6rem;
+}
+
+body {
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+:is(button, summary, select, input, textarea, [role="button"], [role="tab"], [role="separator"]) {
+  touch-action: manipulation;
+}
+
+:is(.report-list, .issue-list, .collection-stack, .provenance-stack, .evidence-deck-tabs) {
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+:is(.report-card-meta, .issue-card-meta, .collection-meta, .findings-count, .run-status-cell) {
+  font-variant-numeric: tabular-nums;
+}
+
+.evidence-deck {
+  container-name: evidence-deck;
+  container-type: inline-size;
+}
+
+.evidence-deck-panel {
+  scroll-margin-block-start: 6rem;
+}
+
+@container evidence-deck (max-width: 34rem) {
+  .evidence-deck-bar {
+    align-items: stretch;
+    flex-wrap: wrap;
+  }
+
+  .evidence-deck-tabs {
+    flex-basis: 100%;
+  }
+
+  .evidence-deck-tabs button {
+    flex: 1 0 auto;
+  }
+
+  .evidence-deck-expand {
+    inline-size: 100%;
+  }
+}
+
+@media (pointer: coarse) {
+  :is(
+    .evidence-deck-tabs button,
+    .evidence-deck-expand,
+    .remark-action,
+    .product-nav .toolbar-button,
+    .workspace-nav button,
+    .product-header .product-role select
+  ) {
+    min-block-size: 48px;
+  }
+
+  .grid-resizer {
+    min-inline-size: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --vl-line: #63728b;
+    --vl-line-strong: #91a0b7;
+    --vl-line-control: #a8b6c9;
+    --vl-text-muted: #b6c2d4;
+  }
+
+  :is(.panel, .issue-card, .report-card, .collection-card, button, input, select, textarea) {
+    border-width: 2px;
+  }
+}
+
+@media (forced-colors: active) {
+  :is(.evidence-deck-tabs button[aria-selected="true"], .findings-count, .status-pill, .severity-pill) {
+    border: 2px solid Highlight;
+    forced-color-adjust: none;
+  }
+
+  .evidence-deck-expand[aria-pressed="true"] {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  .grid-resizer::before {
+    background: ButtonText;
+  }
+}
