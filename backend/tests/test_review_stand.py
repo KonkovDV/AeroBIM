@@ -153,6 +153,37 @@ class ReviewShellLauncherTests(unittest.TestCase):
         self.assertEqual(command[1:3], ["-m", "aerobim.tools.run_review_stand"])
         self.assertEqual(command[-1], "--help")
 
+    def test_root_run_jury_bat_is_the_windows_first_clone(self) -> None:
+        text = (repo_root() / "run-jury.bat").read_text(encoding="utf-8")
+        self.assertIn("py -3.12 -m venv .venv", text)
+        self.assertIn('pip install -e ".[dev,raster]"', text)
+        self.assertIn("-m aerobim.tools.check_local_launch", text)
+        self.assertIn("-m aerobim.tools.run_kt3_jury", text)
+        self.assertNotIn("run_review_stand", text)
+        self.assertIn("customer_go false", text)
+        self.assertIn("is not CPython 3.12", text)
+        self.assertIn("Trying python if it is CPython 3.12", text)
+        check = (repo_root() / "check-launch.bat").read_text(encoding="utf-8")
+        self.assertIn("backend\\.venv\\Scripts\\python.exe", check)
+        self.assertIn("check_local_launch", check)
+        self.assertIn("run-jury.bat", check)
+        self.assertIn("pause", check)
+        self.assertNotIn("run_review_stand", check)
+        sh = (repo_root() / "run-jury.sh").read_text(encoding="utf-8")
+        self.assertIn("python3.12 -m venv .venv", sh)
+        self.assertIn("is not CPython 3.12", sh)
+        self.assertIn('pip install -e ".[dev,raster]"', sh)
+        attrs = (repo_root() / ".gitattributes").read_text(encoding="utf-8")
+        self.assertIn("*.bat text eol=crlf", attrs)
+        self.assertIn("*.sh text eol=lf", attrs)
+
+    def test_readme_points_diagnostics_at_check_launch_bat(self) -> None:
+        for name in ("README.md", "README.en.md"):
+            text = (repo_root() / name).read_text(encoding="utf-8")
+            self.assertIn("run-jury.bat", text, msg=name)
+            self.assertIn(".\\check-launch.bat", text, msg=name)
+            self.assertIn("./run-jury.sh", text, msg=name)
+
     def test_root_start_bat_calls_the_review_stand(self) -> None:
         text = (repo_root() / "start.bat").read_text(encoding="utf-8")
         self.assertIn("-m aerobim.tools.run_review_stand", text)
@@ -160,6 +191,7 @@ class ReviewShellLauncherTests(unittest.TestCase):
         self.assertIn(".\\start.bat", text)
         self.assertIn("python.exe -m pip install", text)
         self.assertIn("Node 20+", text)
+        self.assertIn("run-jury.bat", text)
         self.assertNotIn("run_kt3_jury", text)
 
     def test_root_start_ps1_calls_the_review_stand(self) -> None:
@@ -169,12 +201,14 @@ class ReviewShellLauncherTests(unittest.TestCase):
         self.assertIn(".\\start.bat", text)
         self.assertIn("python.exe -m pip install", text)
         self.assertIn("Node 20+", text)
+        self.assertIn("run-jury.bat", text)
         self.assertNotIn("run_kt3_jury", text)
 
     def test_root_start_sh_and_vite_identity(self) -> None:
         sh = (repo_root() / "start.sh").read_text(encoding="utf-8")
         self.assertIn("aerobim.tools.run_review_stand", sh)
         self.assertIn("backend/.venv/bin/python", sh)
+        self.assertIn("run-jury.sh", sh)
         self.assertNotIn("next.config", sh)
         from aerobim.tools.run_review_stand import run_review_stand
 
@@ -219,6 +253,7 @@ class ReviewShellLauncherTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn(r".\.venv\Scripts\python.exe -m pip", text)
+        self.assertIn("run-jury.bat", text)
         self.assertIn(r".\start.bat", text)
         self.assertIn("не из `frontend/`", text)
         self.assertNotIn("cd frontend", text)
@@ -226,6 +261,7 @@ class ReviewShellLauncherTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn(r".\.venv\Scripts\python.exe -m pip", repository)
+        self.assertIn("run-jury.bat", repository)
 
 
 if __name__ == "__main__":

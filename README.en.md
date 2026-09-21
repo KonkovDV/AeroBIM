@@ -123,6 +123,8 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m aerobim.tools.run_kt3_jury
 ```
 
+Or double-click `run-jury.bat` at the **clone root** (quotes around the extra are inside the file; Node is not required). Do not run `python -m aerobim...` with the system interpreter — the package will be missing. Diagnostics: `.\check-launch.bat`.
+
 `summary.passed=false` on the fixture pack is the expected fail. Do not set `AEROBIM_SIGNOFF_PROFILE=customer_pilot` on a first clone. `requirements-lock.txt` is the Linux/CI lock — do not install it on Windows.
 
 **Linux / macOS**
@@ -136,7 +138,7 @@ source .venv/bin/activate
 pip install -e ".[dev,raster]"
 ```
 
-The live CLI is in `backend/`. The fixture pack contains planted defects; the command finds them (`summary.passed=false`).
+The live CLI is in `backend/`. The fixture pack contains planted defects; the command finds them (`summary.passed=false`). Or from the clone root: `./run-jury.sh`.
 
 ```bash
 python -m aerobim.tools.run_kt3_jury
@@ -153,11 +155,11 @@ Start the review shell **from the clone root** (not from `frontend/`). FastAPI a
 - Windows PowerShell: `.\start.bat` (the leading `.\` is required; bare `start` is Start-Process and will ask for FilePath)
 - from `backend/`: `python -m aerobim.tools.run_review_stand`
 
-If 8080 or 5173 is already bound, stop that process and retry. Details: [`frontend/README.md`](frontend/README.md). Closed contour without pip: Docker image, not a bare wheelhouse — [`docs/offline-deployment-2026.md`](docs/offline-deployment-2026.md).
+If 8080 or 5173 is already bound, stop leftover Docker (`aerobim-backend`) or the previous `.\start.bat` and retry. Details: [`frontend/README.md`](frontend/README.md). Closed contour without pip: Docker image, not a bare wheelhouse — [`docs/offline-deployment-2026.md`](docs/offline-deployment-2026.md). pip TLS errors are a site proxy issue, not a wheelhouse recipe.
 
 Optional extras `.[clash]`, `.[docling]`, `.[enterprise]`, `.[pdf-agpl]` are not needed for the commands above.
 
-If `py -3.12` is missing, install CPython 3.12 from python.org — not the Microsoft Store stub. Do not type bare `py`: the launcher may pick 3.13. Diagnostics: `python -m aerobim.tools.check_local_launch`. Clone into a short Latin path (`C:\AeroBIM`), not a user profile with non-ASCII characters.
+If `py -3.12` is missing, install CPython 3.12 from python.org — not the Microsoft Store stub. Do not type bare `py`: the launcher may pick 3.13. Diagnostics: `.\check-launch.bat` from the clone root (not `python -m aerobim.tools.check_local_launch` without the venv). Clone into a short Latin path (`C:\AeroBIM`), not a user profile with non-ASCII characters.
 
 <details>
 <summary>uv, hashed Windows lock, Dev Container, closed contour</summary>

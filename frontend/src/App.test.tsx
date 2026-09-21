@@ -695,11 +695,14 @@ describe("App", () => {
 
   it("covers the review-shell smoke path across export, provenance, 2d overlay, and clash focus", async () => {
     const { container } = render(<App />);
+    const armDrawing = (image: HTMLElement) => {
+      Object.defineProperty(image, "naturalWidth", { configurable: true, value: 640 });
+      Object.defineProperty(image, "naturalHeight", { configurable: true, value: 400 });
+      fireEvent.load(image);
+    };
 
     const firstImage = await screen.findByRole("img", { name: /Превью чертежа a-102/i });
-    Object.defineProperty(firstImage, "naturalWidth", { configurable: true, value: 640 });
-    Object.defineProperty(firstImage, "naturalHeight", { configurable: true, value: 400 });
-    fireEvent.load(firstImage);
+    armDrawing(firstImage);
 
     expect(screen.getByRole("button", { name: "HTML" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "JSON" })).toBeTruthy();
@@ -710,6 +713,8 @@ describe("App", () => {
     const activeIssueBlock = screen.getByTestId("provenance-active-issue");
     expect(within(drawingEvidencePanel).getAllByText("A-102 · стр. 2").length).toBeGreaterThanOrEqual(2);
     await waitFor(() => {
+      // Preview arrival clears image metrics. Re-arm until the rect stays.
+      armDrawing(firstImage);
       expect(container.querySelector(".drawing-evidence-rect")).toBeTruthy();
     });
     expect(within(activeIssueBlock).getByText("WALL-01")).toBeTruthy();
@@ -718,15 +723,19 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("option", { name: /DRAW-SECOND/i }));
     const secondImage = await screen.findByRole("img", { name: /Превью чертежа a-101/i });
-    Object.defineProperty(secondImage, "naturalWidth", { configurable: true, value: 640 });
-    Object.defineProperty(secondImage, "naturalHeight", { configurable: true, value: 400 });
-    fireEvent.load(secondImage);
+    await waitFor(() => {
+      armDrawing(secondImage);
+      expect(container.querySelector(".drawing-evidence-rect")).toBeTruthy();
+    });
 
     const viewerAfterIssueSwitch = await screen.findByTestId("viewer-stub");
     const activeIssueBlockAfterSwitch = screen.getByTestId("provenance-active-issue");
     expect(within(viewerAfterIssueSwitch).getByText(UI_COPY.spatialNone)).toBeTruthy();
     expect(within(activeIssueBlockAfterSwitch).getByText("SLAB-02")).toBeTruthy();
-    expect(container.querySelector(".drawing-evidence-rect")).toBeTruthy();
+    await waitFor(() => {
+      armDrawing(secondImage);
+      expect(container.querySelector(".drawing-evidence-rect")).toBeTruthy();
+    });
 
     fireEvent.click(screen.getByRole("button", { name: /Hard clash between pipe and beam/i }));
 

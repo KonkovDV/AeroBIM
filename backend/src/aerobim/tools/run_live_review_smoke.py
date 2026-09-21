@@ -95,7 +95,8 @@ def ensure_port_free(host: str, port: int, *, role: str) -> None:
     if port_is_busy(host, port):
         raise RuntimeError(
             f"{role} needs {host}:{port}, already in use. Vite={FIXED_FRONTEND_PORT}, "
-            f"API={FIXED_BACKEND_PORT}, not Next.js {NEXTJS_DEFAULT_PORT}. Stop the leftover process."
+            f"API={FIXED_BACKEND_PORT}, not Next.js {NEXTJS_DEFAULT_PORT}. "
+            "Stop leftover Docker (aerobim-backend) or the previous start.bat."
         )
 
 

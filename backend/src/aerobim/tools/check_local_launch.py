@@ -11,6 +11,7 @@ import argparse
 import importlib.util
 import json
 import os
+import platform
 import shutil
 import socket
 import subprocess
@@ -183,6 +184,15 @@ def check_windows_hygiene(
         return []
     checks: list[Check] = []
     repo_text = str(repo)
+    if " " in repo_text:
+        checks.append(
+            Check(
+                "repo_path_spaces",
+                False,
+                "warn",
+                "Clone path contains spaces. Quote every command. Prefer C:\\AeroBIM.",
+            )
+        )
     if any(ord(char) > 127 for char in repo_text):
         checks.append(
             Check(
@@ -303,6 +313,84 @@ def check_uvloop_on_windows(*, is_windows: bool, uvloop_present: bool) -> list[C
     ]
 
 
+def check_git_tree(root: Path, *, git_present: bool | None = None) -> Check:
+    present = (root / ".git").is_dir() if git_present is None else git_present
+    if not present:
+        return Check(
+            "git_clone",
+            False,
+            "warn",
+            "No .git directory. GitHub ZIP is not the attested clone. "
+            "git clone https://github.com/KonkovDV/AeroBIM.git",
+        )
+    return Check("git_clone", True, "info", "git clone present")
+
+
+def check_venv_interpreter(*, in_venv: bool) -> Check:
+    if not in_venv:
+        return Check(
+            "venv",
+            False,
+            "warn",
+            "This interpreter is not a venv. Use backend\\.venv\\Scripts\\python.exe "
+            "or double-click run-jury.bat / .\\check-launch.bat from the clone root.",
+        )
+    return Check("venv", True, "info", "running inside a venv")
+
+
+def check_windows_arch(*, is_windows: bool, machine: str) -> list[Check]:
+    if not is_windows:
+        return []
+    normalized = machine.lower().replace("-", "")
+    if normalized in {"amd64", "x86_64", "x64"}:
+        return [Check("windows_arch", True, "info", f"arch={machine}")]
+    return [
+        Check(
+            "windows_arch",
+            False,
+            "warn",
+            f"CPU is {machine}. requirements-win-lock.txt is x86_64. "
+            "Prefer the pip extra recipe on x64 CPython; ARM64 wheels are unattested.",
+        )
+    ]
+
+
+def check_ifcopenshell_import(*, import_ok: bool | None = None, error: str = "") -> Check:
+    if import_ok is None:
+        try:
+            importlib.import_module("ifcopenshell")
+            import_ok = True
+            error = ""
+        except Exception as exc:
+            import_ok = False
+            error = f"{type(exc).__name__}: {exc}"
+    if not import_ok:
+        return Check(
+            "ifcopenshell_import",
+            False,
+            "fatal",
+            "IfcOpenShell failed to import"
+            + (f" ({error})" if error else "")
+            + ". On Windows install the Microsoft VC++ 2015-2022 x64 redistributable, "
+            "then retry .\\run-jury.bat.",
+        )
+    return Check("ifcopenshell_import", True, "info", "IfcOpenShell imports")
+
+
+def check_loopback_for_jury(ports_busy: Mapping[int, bool]) -> list[Check]:
+    if ports_busy.get(8080):
+        return [
+            Check(
+                "port_8080",
+                False,
+                "warn",
+                "127.0.0.1:8080 is in use (often leftover Docker). "
+                "Jury CLI does not need it. .\\start.bat will fail until it is free.",
+            )
+        ]
+    return []
+
+
 def collect_checks(
     *,
     env: Mapping[str, str],
@@ -317,12 +405,21 @@ def collect_checks(
     node_version: str | None = None,
     ports_busy: Mapping[int, bool] | None = None,
     uvloop_present: bool | None = None,
+    git_present: bool | None = None,
+    in_venv: bool = True,
+    machine: str = "AMD64",
+    ifcopenshell_ok: bool | None = True,
+    ifcopenshell_error: str = "",
 ) -> list[Check]:
     checks: list[Check] = []
     checks.extend(check_python(version_info=version_info, executable=executable))
     checks.extend(check_signoff(env))
     checks.extend(check_jury_imports())
+    checks.append(check_ifcopenshell_import(import_ok=ifcopenshell_ok, error=ifcopenshell_error))
     checks.append(check_fixture(root))
+    checks.append(check_git_tree(root, git_present=git_present))
+    checks.append(check_venv_interpreter(in_venv=in_venv))
+    checks.extend(check_windows_arch(is_windows=is_windows, machine=machine))
     checks.extend(
         check_windows_hygiene(
             repo=root,
@@ -337,14 +434,17 @@ def collect_checks(
             uvloop_present=_module_present("uvloop") if uvloop_present is None else uvloop_present,
         )
     )
+    busy = ports_busy or {}
     if review_shell:
         checks.extend(
             check_review_shell(
                 npm_path=npm_path,
                 node_version=node_version,
-                ports_busy=ports_busy or {},
+                ports_busy=busy,
             )
         )
+    else:
+        checks.extend(check_loopback_for_jury(busy))
     return checks
 
 
@@ -376,12 +476,11 @@ def _py_launcher_list() -> str | None:
 
 
 def _long_paths_enabled() -> bool | None:
-    if os.name != "nt":
+    # sys.platform, not os.name: mypy on Linux treats the win32 branch as unreachable.
+    if sys.platform != "win32":
         return None
-    try:
-        import winreg
-    except ImportError:
-        return None
+    import winreg
+
     try:
         with winreg.OpenKey(
             winreg.HKEY_LOCAL_MACHINE,
@@ -421,6 +520,7 @@ def _ports_busy(ports: tuple[int, ...] = (8080, 5173)) -> dict[int, bool]:
 
 
 def live_checks(*, review_shell: bool = False) -> list[Check]:
+    ports = (8080, 5173) if review_shell else (8080,)
     return collect_checks(
         env=os.environ,
         version_info=sys.version_info[:2],
@@ -432,7 +532,11 @@ def live_checks(*, review_shell: bool = False) -> list[Check]:
         long_paths_enabled=_long_paths_enabled(),
         npm_path=shutil.which("npm.cmd") or shutil.which("npm"),
         node_version=_node_version() if review_shell else None,
-        ports_busy=_ports_busy() if review_shell else None,
+        ports_busy=_ports_busy(ports),
+        git_present=None,
+        in_venv=sys.prefix != sys.base_prefix,
+        machine=platform.machine(),
+        ifcopenshell_ok=None,
     )
 
 

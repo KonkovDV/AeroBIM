@@ -6,7 +6,7 @@
 
 ## Запуск
 
-Нужны Git и Python 3.12 (`py -3.12 --version`). Node для этой команды не нужен. Канон с Linux: [Try it](../../README.md#try-it).
+Либо из корня клона: `run-jury.bat` (кавычки extras внутри файла). Node для этой команды не нужен. Канон с Linux: [Try it](../../README.md#try-it).
 
 ```powershell
 cd backend
@@ -15,7 +15,7 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m aerobim.tools.run_kt3_jury
 ```
 
-Linux/macOS: `python3.12 -m venv .venv`, `source .venv/bin/activate`, затем `pip install -e ".[dev,raster]"` и `python -m aerobim.tools.run_kt3_jury`.
+Linux/macOS: `./run-jury.sh` или `python3.12 -m venv .venv`, `source .venv/bin/activate`, затем `pip install -e ".[dev,raster]"` и `python -m aerobim.tools.run_kt3_jury`.
 
 `summary.passed=false` на учебной фикстуре — штатный сценарий: в комплекте заложены дефекты. Не задавайте `AEROBIM_SIGNOFF_PROFILE=customer_pilot` на первом клоне.
 

@@ -123,6 +123,8 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m aerobim.tools.run_kt3_jury
 ```
 
+Либо из **корня клона** двойной щелчок `run-jury.bat` (кавычки extras уже внутри файла; Node не нужен). Не `python -m aerobim...` системным Python — не найдёт пакет. Диагностика: `.\check-launch.bat`.
+
 `summary.passed=false` на учебном комплекте — ожидаемый отказ. Не задавайте `AEROBIM_SIGNOFF_PROFILE=customer_pilot` на первом клоне. `requirements-lock.txt` — lock Linux/CI, на Windows его не ставить.
 
 **Linux / macOS**
@@ -136,7 +138,7 @@ source .venv/bin/activate
 pip install -e ".[dev,raster]"
 ```
 
-Показ — живой CLI из `backend/`. В учебном комплекте посажены дефекты, команда их находит (`summary.passed=false`).
+Показ — живой CLI из `backend/`. В учебном комплекте посажены дефекты, команда их находит (`summary.passed=false`). Либо из корня клона: `./run-jury.sh`.
 
 ```bash
 python -m aerobim.tools.run_kt3_jury
@@ -153,11 +155,11 @@ python -m aerobim.main   # http://127.0.0.1:8080/health
 - Windows PowerShell: `.\start.bat` (префикс `.\` обязателен; `start` без префикса — это Start-Process и запросит FilePath)
 - из `backend/`: `python -m aerobim.tools.run_review_stand`
 
-Если 8080 или 5173 заняты — остановить процесс и повторить. Подробности: [`frontend/README.md`](frontend/README.md). Закрытый контур без pip: Docker-образ, не голый wheelhouse — [`docs/offline-deployment-2026.md`](docs/offline-deployment-2026.md).
+Если 8080 или 5173 заняты — остановить leftover Docker (`aerobim-backend`) или предыдущий `.\start.bat` и повторить. Подробности: [`frontend/README.md`](frontend/README.md). Закрытый контур без pip: Docker-образ, не голый wheelhouse — [`docs/offline-deployment-2026.md`](docs/offline-deployment-2026.md). Ошибки TLS у pip — прокси контура, не рецепт wheelhouse.
 
 Опциональные наборы `.[clash]`, `.[docling]`, `.[enterprise]`, `.[pdf-agpl]` для команд выше не нужны.
 
-Если `py -3.12` нет — CPython 3.12 с python.org, не Microsoft Store. Не пишите голый `py`: лаунчер может взять 3.13. Диагностика: `python -m aerobim.tools.check_local_launch`. Клон лучше в короткий латинский путь (`C:\AeroBIM`), не в каталог пользователя с кириллицей.
+Если `py -3.12` нет — CPython 3.12 с python.org, не Microsoft Store. Не пишите голый `py`: лаунчер может взять 3.13. Диагностика: `.\check-launch.bat` из корня клона (не `python -m aerobim.tools.check_local_launch` без venv). Клон лучше в короткий латинский путь (`C:\AeroBIM`), не в каталог пользователя с кириллицей.
 
 <details>
 <summary>uv, hashed Windows lock, Dev Container, закрытый контур</summary>

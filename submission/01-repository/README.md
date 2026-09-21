@@ -17,7 +17,7 @@
 
 ## Сборка и запуск
 
-Канон: [Try it](../../README.md#try-it). Windows PowerShell (без активации venv):
+Канон: [Try it](../../README.md#try-it). С корня клона: `run-jury.bat` / `./run-jury.sh`. Windows PowerShell (без активации venv):
 
 ```powershell
 cd backend
