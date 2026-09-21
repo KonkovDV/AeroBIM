@@ -28,6 +28,8 @@
 
 **В git.** [README](../../README.md) · [`AeroBIM.pptx`](AeroBIM.pptx) · [`AeroBIM.pdf`](AeroBIM.pdf).
 
+<a id="kadr-2"></a>
+
 ## 2. Команда
 
 Ядро — два инженера с разделённой ответственностью.
@@ -94,6 +96,8 @@
 **В пилоте проверяем:** подписанный профиль, комплект одной ревизии, корпоративный вход, импорт BCF, независимая разметка.
 
 **В git.** [ADR-001](../../docs/architecture/ADR-001-verdict-ownership-2026.md) · [граница ingest](../../docs/tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md) · [возможности](../../README.md).
+
+<a id="kadr-6"></a>
 
 ## 6. Восемь недель · измерение, не обещание
 

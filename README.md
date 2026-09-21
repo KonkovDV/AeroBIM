@@ -53,16 +53,16 @@
 
 > Мы на стадии доработки контура заказчика. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение у назначающей стороны ещё не начались. Checkpoint `GO` — регуляторно-измерительный MVP. `customer_go` остаётся false, пока нет независимого размеченного корпуса, двух разметчиков, подписанного профиля назначающей стороны и подтверждения импорта в СОД.
 
-Показ — семь кадров: [`AeroBIM.pptx`](submission/03-presentation/AeroBIM.pptx) · [`AeroBIM.pdf`](submission/03-presentation/AeroBIM.pdf) · [текст](submission/03-presentation/demo_day_slides.md). Живая команда из `backend/`: `python -m aerobim.tools.run_kt3_jury`.
+Показ — семь кадров: [`AeroBIM.pptx`](submission/03-presentation/AeroBIM.pptx) · [`AeroBIM.pdf`](submission/03-presentation/AeroBIM.pdf) · [текст](submission/03-presentation/demo_day_slides.md). Полная версия на 43 слайда — приложение над кнопками, не кадр показа. Живая команда из `backend/`: `python -m aerobim.tools.run_kt3_jury`.
 
 | Кадр | На слайде | Куда в репозитории |
 |---|---|---|
 | 1 | Шлюз ПД/РД, комиссия № 7 | Этот README |
-| 2 | Два инженера, роли | [кадр 2](submission/03-presentation/demo_day_slides.md) |
+| 2 | Два инженера, роли | [кадр 2](submission/03-presentation/demo_day_slides.md#kadr-2) |
 | 3 | Шов комплекта; цифры на фикстуре; гипотеза пилота | [0,86 / 10/10 / 1/8](submission/05-additional/README.md) |
 | 4 | Учебный узел 30/40 мм → BCF | Схема на слайде. Живой прогон — посаженные дефекты git, не этот узел: [прототип](submission/04-prototype/README.md) |
 | 5 | Детерминированное ядро; ИИ не пишет итог | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) · [граница ingest](docs/tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md) |
-| 6 | Восемь недель; GO пилота ≠ Checkpoint `GO` | [граница заявлений](docs/pilot-claim-boundary-2026.md) · [кадр 6](submission/03-presentation/demo_day_slides.md) |
+| 6 | Восемь недель; GO пилота ≠ Checkpoint `GO` | [граница заявлений](docs/pilot-claim-boundary-2026.md) · [кадр 6](submission/03-presentation/demo_day_slides.md#kadr-6) |
 | 7 | Почта и GitHub | Кадр 7 PPTX; телефон только там |
 
 | | |
@@ -83,9 +83,9 @@
 | Кресло | Роль | Куда смотреть |
 |---|---|---|
 | **Пилотирование** (оператор) | Живой прогон на учебном комплекте. Программа испытаний, методика и акт — предмет пилота | [прототип](submission/04-prototype/README.md) |
-| **Спрос** (оператор) | Вход без внедрения: веб и файловый обмен. Оплата по подтверждённым находкам — предмет пилота | [Запрос](#запрос) · [кадр 6](submission/03-presentation/demo_day_slides.md) |
-| **Техзаказчик** (партнёр) | Минус один круг согласования комплекта. Дельта ревизий: находки → устранено / проигнорировано / новое. HITL | [кадр 6](submission/03-presentation/demo_day_slides.md) |
-| **Проектный офис** (партнёр) | Замечание уезжает файлом BCF. Итог ставит эксперт | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) |
+| **Спрос** (оператор) | Вход без внедрения: веб и файловый обмен. Оплата по подтверждённым находкам — план речи, не позиция запроса | [Запрос](#запрос) · [кадр 6](submission/03-presentation/demo_day_slides.md#kadr-6) |
+| **Техзаказчик** (партнёр) | Минус один круг согласования комплекта. Дельта ревизий: находки → устранено / проигнорировано / новое. HITL | [кадр 6](submission/03-presentation/demo_day_slides.md#kadr-6) |
+| **Проектный офис** (партнёр) | Замечание уезжает файлом BCF (структурный архив; импорт в СОД — пилот). Итог ставит эксперт | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) |
 | **Информационное моделирование** (партнёр) | Шов документов. Вход — IFC | [граница ingest](docs/tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md) |
 
 На учебном комплекте — протокол. После согласованной ревизии — детерминированный отчёт.
@@ -368,6 +368,7 @@ presentation/    FastAPI
 |---|---|
 | Пакет подачи | [индекс](submission/README.md) |
 | Презентация демо-дня | [PowerPoint, 7 слайдов](submission/03-presentation/AeroBIM.pptx) · [PDF](submission/03-presentation/AeroBIM.pdf) · [текст слайдов](submission/03-presentation/demo_day_slides.md) |
+| Полная версия | [PowerPoint, 43 слайда](submission/03-presentation/AeroBIM-full.pptx) · [PDF](submission/03-presentation/AeroBIM-full.pdf) · [текст](submission/03-presentation/AeroBIM-full.md) |
 | Прототип | [команда запуска](submission/04-prototype/README.md) |
 | Цифры кадра 3 | [что измерено, чем не является](submission/05-additional/README.md) |
 | Граница заявлений | [документ](docs/pilot-claim-boundary-2026.md) |
@@ -490,7 +491,7 @@ frontend/     Оболочка ревью (Vite + React; просмотр IFC 3D
 samples/      Учебные комплекты IFC, IDS, чертежей и спецификаций
 docs/         Документация и доказательства
 audit/        Реестр блокеров
-submission/   Пакет для жюри Техлаба (PowerPoint и PDF, 7 слайдов)
+submission/   Пакет для жюри Техлаба (показ — 7 слайдов; полная версия — 43)
 ```
 
 Счётчики CI:

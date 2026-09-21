@@ -53,16 +53,16 @@ Moscow TechLab programme, commission № 7: automated verification of design and
 
 > We are in *refinement* on the customer contour. One command shows a fail-closed finding on a fixture. Effectiveness validation and deployment have not started. Checkpoint `GO` is the regulatory-measurement MVP. `customer_go` stays false until an independent labeled pack, two raters, a signed appointing-party profile, and CDE proof.
 
-The show is seven slides: [`AeroBIM.pptx`](submission/03-presentation/AeroBIM.pptx) · [`AeroBIM.pdf`](submission/03-presentation/AeroBIM.pdf) · [slide text](submission/03-presentation/demo_day_slides.md). Live command from `backend/`: `python -m aerobim.tools.run_kt3_jury`.
+The show is seven slides: [`AeroBIM.pptx`](submission/03-presentation/AeroBIM.pptx) · [`AeroBIM.pdf`](submission/03-presentation/AeroBIM.pdf) · [slide text](submission/03-presentation/demo_day_slides.md). The 43-slide file is an appendix above the buttons, not the show. Live command from `backend/`: `python -m aerobim.tools.run_kt3_jury`.
 
 | Slide | On the deck | In the repo |
 |---|---|---|
 | 1 | Pack gateway, commission № 7 | This README |
-| 2 | Two engineers, roles | [slide 2](submission/03-presentation/demo_day_slides.md) |
+| 2 | Two engineers, roles | [slide 2](submission/03-presentation/demo_day_slides.md#kadr-2) |
 | 3 | Pack seam; fixture numbers; pilot hypothesis | [0.86 / 10/10 / 1/8](submission/05-additional/README.md) |
 | 4 | Teaching node 30/40 mm → BCF | Illustration on the slide. Live CLI finds planted git-fixture defects, not that node: [prototype](submission/04-prototype/README.md) |
 | 5 | Deterministic core; AI does not write the outcome | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) · [ingest boundary](docs/tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md) |
-| 6 | Eight weeks; pilot GO ≠ Checkpoint `GO` | [claim boundary](docs/pilot-claim-boundary-2026.md) · [slide 6](submission/03-presentation/demo_day_slides.md) |
+| 6 | Eight weeks; pilot GO ≠ Checkpoint `GO` | [claim boundary](docs/pilot-claim-boundary-2026.md) · [slide 6](submission/03-presentation/demo_day_slides.md#kadr-6) |
 | 7 | Mail and GitHub | PPTX slide 7; phone only there |
 
 | | |
@@ -83,9 +83,9 @@ Two seats are the programme operator; three are the partner by agreement.
 | Seat | Role | Where to look |
 |---|---|---|
 | **Piloting** (operator) | Live run on the fixture pack. Trial programme, method and act are the pilot subject | [prototype](submission/04-prototype/README.md) |
-| **Demand** (operator) | No contour rollout: web and file exchange. Pay on confirmed findings is the pilot subject | [Ask](#ask) · [slide 6](submission/03-presentation/demo_day_slides.md) |
-| **Appointing technical customer** (partner) | Minus one pack-review cycle. Revision delta: findings → fixed / ignored / new. HITL | [slide 6](submission/03-presentation/demo_day_slides.md) |
-| **Project office** (partner) | The remark leaves as a BCF file. The expert sets the outcome | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) |
+| **Demand** (operator) | No contour rollout: web and file exchange. Pay-on-findings is a speech plan, not the written Ask | [Ask](#ask) · [slide 6](submission/03-presentation/demo_day_slides.md#kadr-6) |
+| **Appointing technical customer** (partner) | Minus one pack-review cycle. Revision delta: findings → fixed / ignored / new. HITL | [slide 6](submission/03-presentation/demo_day_slides.md#kadr-6) |
+| **Project office** (partner) | The remark leaves as a BCF file (structural ZIP; CDE import is the pilot). The expert sets the outcome | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) |
 | **Information modelling** (partner) | Document seam. Ingest is IFC | [ingest boundary](docs/tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md) |
 
 Protocol on the fixture pack. A deterministic report after an agreed revision.
@@ -467,7 +467,7 @@ frontend/     Review shell (Vite + React; IFC 3D viewer)
 samples/      IFC, IDS, drawing and specification fixtures
 docs/         Documentation and evidence
 audit/        Blocker register
-submission/   TechLab jury pack (PowerPoint and PDF, 7 slides)
+submission/   TechLab jury pack (show — 7 slides; full deck — 43)
 ```
 
 CI pass counts:
@@ -486,6 +486,7 @@ tests_passed: backend=3300, frontend=400; commit 4742d56d9574; see docs/evidence
 |---|---|
 | Form pack | [index](submission/README.md) |
 | Demo-day presentation | [PowerPoint, 7 slides](submission/03-presentation/AeroBIM.pptx) · [PDF](submission/03-presentation/AeroBIM.pdf) · [slide text](submission/03-presentation/demo_day_slides.md) |
+| Full deck | [PowerPoint, 43 slides](submission/03-presentation/AeroBIM-full.pptx) · [PDF](submission/03-presentation/AeroBIM-full.pdf) · [text](submission/03-presentation/AeroBIM-full.md) |
 | Prototype | [run command](submission/04-prototype/README.md) |
 | Slide 3 numbers | [what was measured, what it is not](submission/05-additional/README.md) |
 | Claim boundary | [document](docs/pilot-claim-boundary-2026.md) |
