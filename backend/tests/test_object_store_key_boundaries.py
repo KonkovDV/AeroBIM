@@ -9,7 +9,17 @@ from aerobim.infrastructure.adapters.s3_object_store import S3ObjectStore
 
 class ObjectStoreKeyBoundaryTests(unittest.TestCase):
     def test_normalizer_rejects_cross_platform_ambiguous_keys(self) -> None:
-        for key in ("../outside", "tenant/../../outside", "/absolute", "C:/outside", "tenant\\..\\outside", "tenant/file.txt:secret", "tenant/NUL.txt", "tenant//file"):
+        keys = (
+            "../outside",
+            "tenant/../../outside",
+            "/absolute",
+            "C:/outside",
+            "tenant\\..\\outside",
+            "tenant/file.txt:secret",
+            "tenant/NUL.txt",
+            "tenant//file",
+        )
+        for key in keys:
             with self.subTest(key=key):
                 with self.assertRaises(ValueError):
                     normalize_object_key(key)
@@ -30,8 +40,14 @@ class ObjectStoreKeyBoundaryTests(unittest.TestCase):
             "tenants/acme/uploads/model.ifc",
         )
         s3 = S3ObjectStore(bucket="bucket", region="test", prefix="aerobim")
-        self.assertEqual(s3._qualify_key("aerobim/tenants/acme/model.ifc"), "aerobim/tenants/acme/model.ifc")
-        self.assertEqual(s3._qualify_key("tenants/acme/model.ifc"), "aerobim/tenants/acme/model.ifc")
+        self.assertEqual(
+            s3._qualify_key("aerobim/tenants/acme/model.ifc"),
+            "aerobim/tenants/acme/model.ifc",
+        )
+        self.assertEqual(
+            s3._qualify_key("tenants/acme/model.ifc"),
+            "aerobim/tenants/acme/model.ifc",
+        )
 
 
 if __name__ == "__main__":
