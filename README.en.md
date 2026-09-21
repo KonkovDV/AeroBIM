@@ -45,13 +45,23 @@ Moscow TechLab programme, commission № 7: automated verification of design and
 
 > We are in *refinement* on the customer contour. One command shows a fail-closed finding on a fixture. Effectiveness validation and deployment have not started. Checkpoint `GO` is the regulatory-measurement MVP. `customer_go` stays false until an independent labeled pack, two raters, a signed appointing-party profile, and CDE proof.
 
+The show is seven slides: [`AeroBIM.pptx`](submission/03-presentation/AeroBIM.pptx) · [`AeroBIM.pdf`](submission/03-presentation/AeroBIM.pdf) · [slide text](submission/03-presentation/demo_day_slides.md). Live command from `backend/`: `python -m aerobim.tools.run_kt3_jury`.
+
+| Slide | On the deck | In the repo |
+|---|---|---|
+| 1 | Pack gateway, commission № 7 | This README |
+| 2 | Two engineers, roles | Slides 2 and 7 · [prototype](submission/04-prototype/README.md) |
+| 3 | Pack seam; fixture numbers; pilot hypothesis | [0.86 F1](docs/evidence/runtime-baseline-latest.json) · [10/10 synthetic](docs/evidence/DEFECT_INJECTION_RECALL_SEAM_CLEAN_2026_09.md) · [1/8 other set](docs/evidence/DEFECT_INJECTION_RECALL_RUN_2026_09.md) |
+| 4 | Teaching node 30/40 mm → BCF | Illustration on the slide. Live CLI finds planted git-fixture defects, not that node: [prototype](submission/04-prototype/README.md) |
+| 5 | Deterministic core; AI does not write the outcome | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) · [ingest boundary](docs/tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md) |
+| 6 | Eight weeks; pilot GO ≠ Checkpoint `GO` | [claim boundary](docs/pilot-claim-boundary-2026.md) · [pilot scenario](docs/partners/CUSTOMER_PILOT_AND_INTEGRATION_SCENARIO_2026_09.md) |
+| 7 | Mail and GitHub | PPTX slide 7; phone only there |
+
 | | |
 |---|---|
-| **Show** | `python -m aerobim.tools.run_kt3_jury` — live CLI on the git fixture pack |
-| **Slides** | [`AeroBIM.pptx`](submission/03-presentation/AeroBIM.pptx) (7 slides) · [`AeroBIM.pdf`](submission/03-presentation/AeroBIM.pdf) · [slide text](submission/03-presentation/demo_day_slides.md) |
 | **Form pack** | [`submission/README.md`](submission/README.md) — five fields |
-| **Map** | [jury map](docs/TIER0_INDEX.md) · [claim boundary](docs/pilot-claim-boundary-2026.md) · [glossary](docs/partners/GLOSSARY_JURY_RU_2026_08.md) |
-| **Card** | [show](docs/demo/KT3_JURY_FAQ_2026_08_25.md) · [stage formula](docs/demo/KT2_JURY_FAQ_2026_08_12.md) |
+| **Map** | [jury map](docs/TIER0_INDEX.md) · [glossary](docs/partners/GLOSSARY_JURY_RU_2026_08.md) |
+| **Show card** | [KT#3](docs/demo/KT3_JURY_FAQ_2026_08_25.md) · [operator](docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md) |
 
 **Ask.** A paid pilot on one building, eight weeks from the agreement. By letter: one-revision pack with IFC, an expert validator, data mode and a target-KPI sheet. The aim is minus one pack-review cycle and a revision delta in the appointing party’s CDE.
 

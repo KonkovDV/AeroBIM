@@ -13,6 +13,15 @@
 | [`AeroBIM.pdf`](../03-presentation/AeroBIM.pdf) | Та же дека, PDF |
 | [`demo_day_slides.md`](../03-presentation/demo_day_slides.md) | Текстовая копия слайдов показа |
 
+## Цифры кадра 3
+
+| Число на слайде | Где в git | Чем не является |
+|---|---|---|
+| macro F1 0,86 | [`runtime-baseline-latest.json`](../../docs/evidence/runtime-baseline-latest.json) | точность продукта |
+| 10 из 10 | [`DEFECT_INJECTION_RECALL_SEAM_CLEAN_2026_09.md`](../../docs/evidence/DEFECT_INJECTION_RECALL_SEAM_CLEAN_2026_09.md) | полнота на комплекте заказчика |
+| 1 из 8 | [`DEFECT_INJECTION_RECALL_RUN_2026_09.md`](../../docs/evidence/DEFECT_INJECTION_RECALL_RUN_2026_09.md) | тот же знаменатель, что 10/10 |
+| IDS fail-closed | [`ids-fail-closed-2026-08.md`](../../docs/evidence/ids-fail-closed-2026-08.md) | SLA заказчика |
+
 ## Пины (учебные и синтетические)
 
 | Пин | Чем является | Чем не является |

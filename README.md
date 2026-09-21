@@ -41,17 +41,27 @@
 
 ## Для жюри
 
-Программа Техлаба Москва, комиссия № 7, задача по автоматизированной верификации проектной и рабочей документации (заказчик канала в публичном дереве не называется). Демо-день: 21.09.2026. Самооценка УГТ 4 по ГОСТ Р 58048.
+Программа Техлаба Москва, комиссия № 7 по автоматизированной верификации проектной и рабочей документации (заказчик канала в публичном дереве не называется). Демо-день: 21.09.2026. Самооценка УГТ 4 по ГОСТ Р 58048.
 
 > Мы на стадии доработки контура заказчика. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение у назначающей стороны ещё не начались. Checkpoint `GO` — регуляторно-измерительный MVP. `customer_go` остаётся false, пока нет независимого размеченного корпуса, двух разметчиков, подписанного профиля назначающей стороны и подтверждения импорта в СОД.
 
+Показ — семь кадров: [`AeroBIM.pptx`](submission/03-presentation/AeroBIM.pptx) · [`AeroBIM.pdf`](submission/03-presentation/AeroBIM.pdf) · [текст](submission/03-presentation/demo_day_slides.md). Живая команда из `backend/`: `python -m aerobim.tools.run_kt3_jury`.
+
+| Кадр | На слайде | Куда в репозитории |
+|---|---|---|
+| 1 | Шлюз ПД/РД, комиссия № 7 | Этот README |
+| 2 | Два инженера, роли | Кадры 2 и 7 · [прототип](submission/04-prototype/README.md) |
+| 3 | Шов комплекта; цифры на фикстуре; гипотеза пилота | [0,86 F1](docs/evidence/runtime-baseline-latest.json) · [10/10 синтетика](docs/evidence/DEFECT_INJECTION_RECALL_SEAM_CLEAN_2026_09.md) · [1/8 другой набор](docs/evidence/DEFECT_INJECTION_RECALL_RUN_2026_09.md) |
+| 4 | Учебный узел 30/40 мм → BCF | Схема на слайде. Живой прогон — посаженные дефекты git, не этот узел: [прототип](submission/04-prototype/README.md) |
+| 5 | Детерминированное ядро; ИИ не пишет итог | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) · [граница ingest](docs/tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md) |
+| 6 | Восемь недель; GO пилота ≠ Checkpoint `GO` | [граница заявлений](docs/pilot-claim-boundary-2026.md) · [сценарий пилота](docs/partners/CUSTOMER_PILOT_AND_INTEGRATION_SCENARIO_2026_09.md) |
+| 7 | Почта и GitHub | Кадр 7 PPTX; телефон только там |
+
 | | |
 |---|---|
-| **Показ** | `python -m aerobim.tools.run_kt3_jury` — живой CLI на учебном комплекте из git |
-| **Слайды** | [`AeroBIM.pptx`](submission/03-presentation/AeroBIM.pptx) (7 слайдов) · [`AeroBIM.pdf`](submission/03-presentation/AeroBIM.pdf) · [текст слайдов](submission/03-presentation/demo_day_slides.md) |
 | **Пакет формы** | [`submission/README.md`](submission/README.md) — пять полей |
-| **Карта** | [для жюри](docs/TIER0_INDEX.md) · [граница заявлений](docs/pilot-claim-boundary-2026.md) · [глоссарий](docs/partners/GLOSSARY_JURY_RU_2026_08.md) |
-| **Карточка** | [показ](docs/demo/KT3_JURY_FAQ_2026_08_25.md) · [формула стадии](docs/demo/KT2_JURY_FAQ_2026_08_12.md) |
+| **Карта** | [для жюри](docs/TIER0_INDEX.md) · [глоссарий](docs/partners/GLOSSARY_JURY_RU_2026_08.md) |
+| **Карточка показа** | [КТ#3](docs/demo/KT3_JURY_FAQ_2026_08_25.md) · [оператор](docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md) |
 
 **Запрос.** Оплачиваемый пилот на одном корпусе, восемь недель от соглашения. Письмом: комплект одной ревизии с IFC, эксперт-валидатор, режим данных и лист целевых KPI. Цель — минус один круг согласования и дельта ревизий в СОД заказчика.
 

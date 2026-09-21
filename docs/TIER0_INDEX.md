@@ -13,6 +13,22 @@ claim_boundary: "Jury pack only. Checkpoint GO; customer_go false until RT-001/0
 
 **Формула стадии (дословно; источник — [карточка речи](demo/KT2_JURY_FAQ_2026_08_12.md)):** Мы на стадии доработки контура заказчика. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение у назначающей стороны ещё не начались. Checkpoint `GO` — регуляторно-измерительный MVP. `customer_go` остаётся false, пока нет независимого размеченного корпуса, двух разметчиков, подписанного профиля назначающей стороны и подтверждения импорта в СОД.
 
+## Показ · 7 слайдов
+
+Демо-день 21.09.2026. Дека: [`AeroBIM.pptx`](../submission/03-presentation/AeroBIM.pptx) · [`AeroBIM.pdf`](../submission/03-presentation/AeroBIM.pdf) · [текст](../submission/03-presentation/demo_day_slides.md). Живая команда: `python -m aerobim.tools.run_kt3_jury` из `backend/` после `pip install -e ".[dev,raster]"`.
+
+| Кадр | На слайде | Куда в git |
+|---|---|---|
+| 1 | Шлюз ПД/РД, комиссия № 7 | [README](../README.md) |
+| 2 | Два инженера | [прототип](../submission/04-prototype/README.md) |
+| 3 | Цифры на фикстуре; гипотеза пилота | [0,86 F1](evidence/runtime-baseline-latest.json) · [10/10](evidence/DEFECT_INJECTION_RECALL_SEAM_CLEAN_2026_09.md) · [1/8](evidence/DEFECT_INJECTION_RECALL_RUN_2026_09.md) |
+| 4 | Учебный узел 30/40 мм | Схема кадра. CLI находит посаженные дефекты git, не этот узел: [прототип](../submission/04-prototype/README.md) |
+| 5 | Детерминированное ядро | [ADR-001](architecture/ADR-001-verdict-ownership-2026.md) |
+| 6 | Восемь недель; GO пилота ≠ Checkpoint `GO` | [граница заявлений](pilot-claim-boundary-2026.md) |
+| 7 | Почта, GitHub | Кадр 7 PPTX; телефон только там |
+
+Пять полей формы: [пакет подачи](../submission/README.md). Ролик 2–3 мин **не записываем и не прилагаем.**
+
 **Локальный прогон 17.09.2026 (sanitized, не pin CI):** цепочка upload → analyze → lab-reviewer HITL persist после рестарта backend → ZIP BCF structurally valid. Вердикт **PARTIAL**. Lab-reviewer ≠ независимый эксперт. Unsigned IDS ≠ подписанный профиль. Импорт в СОД **NOT_VERIFIED**. Хеши и имена комплекта заказчика в git не кладём.
 
 **Объект КТ#3.** Речь и сценарий: [карточка КТ#3](demo/KT3_JURY_FAQ_2026_08_25.md) · [оператор](demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md) · [трекер, 6 задач](demo/KT3_TRACKER_SIX_TASKS_2026_08.md). Показ жюри = `python -m aerobim.tools.run_kt3_jury` (живой CLI из git). Оболочка ревью (`frontend/`) — отдельная команда на этом же клоне, не замена CLI. В репозитории нет файлов заказчика. Замечание: суть + пункт нормы (не выдуман) + этаж/ось из `IfcSpatialIndex`, если GUID попал в индекс; иначе явно «нет в индексе», не из OCR. Модель 1,5 ГБ — RocksDB, не SPF RAM; WASM 256 МиБ. Unsigned OOS: [`../samples/oos/`](../samples/oos/) — в `DATASET_MANIFEST.json`, не закрывает RT.
@@ -24,6 +40,9 @@ claim_boundary: "Jury pack only. Checkpoint GO; customer_go false until RT-001/0
 **Kane IUA.** На учебном комплекте можно показать содержание проверки, IDS с отказом при пропуске и открытый бенч **27/1026**. Нельзя выводить из заморозки `f9389bf`: точность на комплекте заказчика, ТЗ >90%, SLA заказчика, MEP delivered, импорт в СОД, **customer_go**. Checkpoint `GO` — регуляторно-измерительный MVP, не вывод Kane из IUA freeze. Что цифры вправе значить: [Interpretation/Use](quality/INTERPRETATION_USE_LEDGER_2026_08.md).
 
 **Six desks.** Техлаб и МИК — основная аудитория этой карты. Intake-form 5/5 полей ≠ `customer_go`.
+
+<details>
+<summary>Полный индекс документов</summary>
 
 | Документ | Зачем |
 |---|---|
@@ -84,4 +103,6 @@ claim_boundary: "Jury pack only. Checkpoint GO; customer_go false until RT-001/0
 | [Пороги заказчика](quality/CUSTOMER_THRESHOLD_VS_ACTUAL_2026_08.md) | Целевое vs фактическое; 256 МиБ; cap не поднимаем |
 | [Обложка 0,60](partners/PARTNER_PROTOCOL_SIGNREADY_COVER_2026_08.md) | Письмо «готово подписать»; не 90% |
 
-Пять полей формы: [пакет подачи](../submission/README.md). Канон речи в git: [`demo_day_slides.md`](../submission/03-presentation/demo_day_slides.md). Поле формы: [`AeroBIM.pptx`](../submission/03-presentation/AeroBIM.pptx). Ролик 2–3 мин **не записываем и не прилагаем.** Показ — `run_demo_ifc_acceptance_gate`. Демо-день — `run_kt3_jury`.
+</details>
+
+Пять полей формы: [пакет подачи](../submission/README.md). Канон речи в git: [`demo_day_slides.md`](../submission/03-presentation/demo_day_slides.md). Поле формы: [`AeroBIM.pptx`](../submission/03-presentation/AeroBIM.pptx). Ролик 2–3 мин **не записываем и не прилагаем.** Показ — `run_kt3_jury`. Шлюз приёмки отдельно: `run_demo_ifc_acceptance_gate`.

@@ -17,7 +17,7 @@ claim_boundary: >
 Карточка речи: [`KT3_JURY_FAQ_2026_08_25.md`](KT3_JURY_FAQ_2026_08_25.md).  
 ТЗ v2: [`../tz/TZ_TECHLAB_TASK_07_V2_2026.md`](../tz/TZ_TECHLAB_TASK_07_V2_2026.md).
 
-На защите жюри — только этот трек: живой CLI из git. Файлов заказчика в репозитории нет.
+На защите жюри — только этот трек: живой CLI из git. Файлов заказчика в репозитории нет. Семь кадров: [`../../submission/03-presentation/AeroBIM.pptx`](../../submission/03-presentation/AeroBIM.pptx) · [текст](../../submission/03-presentation/demo_day_slides.md).
 
 Предпочтительная одна команда:
 

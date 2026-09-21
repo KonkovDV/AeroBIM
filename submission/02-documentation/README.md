@@ -9,9 +9,10 @@
 | [`docs/docs.md`](../../docs/docs.md) | Техническое обоснование |
 | [`TZ_COMPLIANCE_MATRIX_2026.md`](../../docs/tz/TZ_COMPLIANCE_MATRIX_2026.md) | Построчная матрица ТЗ |
 | [`TZ_REQUIREMENTS_COVERAGE_2026_08.md`](../TZ_REQUIREMENTS_COVERAGE_2026_08.md) | Карта этой подачи |
-| [`pilot-claim-boundary-2026.md`](../../docs/pilot-claim-boundary-2026.md) | Что проверено, что запланировано |
+| [`pilot-claim-boundary-2026.md`](../../docs/pilot-claim-boundary-2026.md) | Что проверено, что запланировано · кадр 6 |
 | [`QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](../../docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) | Как будем мерить, когда появятся данные заказчика |
 | [`regulatory-baseline-2026.md`](../../docs/regulatory-baseline-2026.md) | Срез норм; полного соответствия ГОСТ не заявляем |
+| [`ADR-001-verdict-ownership-2026.md`](../../docs/architecture/ADR-001-verdict-ownership-2026.md) | Кто пишет `summary.passed` · кадр 5 |
 
 Методика опубликована **до** данных заказчика, чтобы цифры нельзя было подогнать после факта.
 

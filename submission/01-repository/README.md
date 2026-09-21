@@ -29,3 +29,5 @@ python -m aerobim.tools.run_kt3_jury
 Технический статус `summary.passed` ставят только детерминированные движки ([ADR-001](../../docs/architecture/ADR-001-verdict-ownership-2026.md)). Интеграцию с Tangl / 10D не заявляем.
 
 Цифры тестов CI — [`docs/evidence/runtime-baseline-latest.json`](../../docs/evidence/runtime-baseline-latest.json). Локальный pytest этот файл не заменяет.
+
+Показ демо-дня — семь слайдов: [`AeroBIM.pptx`](../03-presentation/AeroBIM.pptx). Живая команда выше.
