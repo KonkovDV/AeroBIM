@@ -200,7 +200,7 @@ class S3ObjectStore:
             return normalised
         if normalised == self._prefix or normalised.startswith(f"{self._prefix}/"):
             return normalised
-        return f"{self._prefix}/{normalised}"
+        return normalize_object_key(f"{self._prefix}/{normalised}")
 
 
 __all__ = ["ObjectTooLargeError", "S3ObjectStore"]

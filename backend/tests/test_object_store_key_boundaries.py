@@ -63,6 +63,15 @@ class ObjectStoreKeyBoundaryTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "key exceeds.*UTF-8 byte"):
             normalize_object_key(key_at_limit + "/b")
 
+    def test_s3_limit_includes_prefix_and_delimiter(self) -> None:
+        prefix = "p" * 255
+        s3 = S3ObjectStore(bucket="bucket", region="test", prefix=prefix)
+        component = "a" * 255
+        key_without_prefix = "/".join([component] * 4)
+        self.assertLessEqual(len(key_without_prefix.encode("utf-8")), 1024)
+        with self.assertRaisesRegex(ValueError, "key exceeds.*UTF-8 byte"):
+            s3._qualify_key(key_without_prefix)
+
     def test_unpaired_surrogate_is_rejected_as_non_utf8(self) -> None:
         with self.assertRaisesRegex(ValueError, "valid UTF-8"):
             normalize_object_key("tenant/\ud800/file.ifc")
