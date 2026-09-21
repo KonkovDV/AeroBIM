@@ -49,6 +49,23 @@ class ObjectStoreKeyBoundaryTests(unittest.TestCase):
             "aerobim/tenants/acme/model.ifc",
         )
 
+    def test_component_limit_is_measured_in_utf8_bytes(self) -> None:
+        self.assertEqual(normalize_object_key("a" * 255), "a" * 255)
+        with self.assertRaisesRegex(ValueError, "component.*UTF-8 byte"):
+            normalize_object_key("é" * 128)
+        with self.assertRaisesRegex(ValueError, "component.*UTF-8 byte"):
+            normalize_object_key("😀" * 64)
+
+    def test_total_key_limit_is_measured_in_utf8_bytes(self) -> None:
+        component = "a" * 255
+        self.assertEqual(normalize_object_key("/".join([component] * 4)), "/".join([component] * 4))
+        with self.assertRaisesRegex(ValueError, "key exceeds.*UTF-8 byte"):
+            normalize_object_key("/".join([component] * 4) + "/b")
+
+    def test_unpaired_surrogate_is_rejected_as_non_utf8(self) -> None:
+        with self.assertRaisesRegex(ValueError, "valid UTF-8"):
+            normalize_object_key("tenant/\ud800/file.ifc")
+
 
 if __name__ == "__main__":
     unittest.main()

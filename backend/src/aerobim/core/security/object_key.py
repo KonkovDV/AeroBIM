@@ -17,7 +17,8 @@ _RESERVED_NAMES = frozenset(
     | {f"COM{i}" for i in range(1, 10)}
     | {f"LPT{i}" for i in range(1, 10)}
 )
-_MAX_COMPONENT_LENGTH = 255
+_MAX_COMPONENT_BYTES = 255
+_MAX_KEY_BYTES = 1024
 
 
 def normalize_object_key(key: str) -> str:
@@ -26,6 +27,8 @@ def normalize_object_key(key: str) -> str:
     This is deliberately stricter than an S3 key (S3 accepts almost anything):
     AeroBIM keys are also used by the local backend and are often tenant-scoped.
     Rejecting ambiguous keys is safer than relying on a backend's interpretation.
+    Length limits are measured after canonicalization in UTF-8 bytes, matching
+    storage protocol and filesystem boundaries rather than Python characters.
     """
 
     if not isinstance(key, str):
@@ -35,13 +38,19 @@ def normalize_object_key(key: str) -> str:
         raise ValueError("Object key must be a non-empty relative key")
     if any(ord(ch) < 32 or ord(ch) == 127 for ch in normalized):
         raise ValueError("Object key must not contain control characters")
+    try:
+        encoded_key = normalized.encode("utf-8")
+    except UnicodeEncodeError as exc:
+        raise ValueError("Object key must be valid UTF-8") from exc
+    if len(encoded_key) > _MAX_KEY_BYTES:
+        raise ValueError("Object key exceeds maximum UTF-8 byte length")
 
     parts = normalized.split("/")
     if any(part in {"", ".", ".."} for part in parts):
         raise ValueError("Object key must not contain empty or traversal components")
     for part in parts:
-        if len(part) > _MAX_COMPONENT_LENGTH:
-            raise ValueError("Object key component exceeds maximum length")
+        if len(part.encode("utf-8")) > _MAX_COMPONENT_BYTES:
+            raise ValueError("Object key component exceeds maximum UTF-8 byte length")
         if ":" in part:
             raise ValueError("Object key must not contain colons or NTFS data streams")
         if part[-1] in ". ":
