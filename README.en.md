@@ -41,7 +41,7 @@ It operates on the **seam between files**.
 
 ## For the jury
 
-Moscow TechLab programme, commission № 7: automated verification of design and working documentation. Demo-day: 21 September 2026. Self-assessed TRL 4 under GOST R 58048.
+Moscow TechLab programme, commission № 7: automated verification of design and working documentation (the appointing party is unnamed in the public tree). Demo-day: 21 September 2026. Self-assessed TRL 4 under GOST R 58048.
 
 > We are in *refinement* on the customer contour. One command shows a fail-closed finding on a fixture. Effectiveness validation and deployment have not started. Checkpoint `GO` is the regulatory-measurement MVP. `customer_go` stays false until an independent labeled pack, two raters, a signed appointing-party profile, and CDE proof.
 
@@ -51,7 +51,7 @@ The show is seven slides: [`AeroBIM.pptx`](submission/03-presentation/AeroBIM.pp
 |---|---|---|
 | 1 | Pack gateway, commission № 7 | This README |
 | 2 | Two engineers, roles | [slide 2](submission/03-presentation/demo_day_slides.md) |
-| 3 | Pack seam; fixture numbers; pilot hypothesis | [0.86 F1](docs/evidence/runtime-baseline-latest.json) · [10/10 synthetic](docs/evidence/DEFECT_INJECTION_RECALL_SEAM_CLEAN_2026_09.md) · [1/8 other set](docs/evidence/DEFECT_INJECTION_RECALL_RUN_2026_09.md) |
+| 3 | Pack seam; fixture numbers; pilot hypothesis | [0.86 / 10/10 / 1/8](submission/05-additional/README.md) |
 | 4 | Teaching node 30/40 mm → BCF | Illustration on the slide. Live CLI finds planted git-fixture defects, not that node: [prototype](submission/04-prototype/README.md) |
 | 5 | Deterministic core; AI does not write the outcome | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) · [ingest boundary](docs/tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md) |
 | 6 | Eight weeks; pilot GO ≠ Checkpoint `GO` | [claim boundary](docs/pilot-claim-boundary-2026.md) · [slide 6](submission/03-presentation/demo_day_slides.md) |
@@ -62,7 +62,7 @@ The show is seven slides: [`AeroBIM.pptx`](submission/03-presentation/AeroBIM.pp
 | **Form pack** | [`submission/README.md`](submission/README.md) — five fields |
 | **Claim boundary** | [document](docs/pilot-claim-boundary-2026.md) |
 
-**Ask.** A paid pilot on one building, eight weeks from the agreement. By letter: one-revision pack with IFC, an expert validator, data mode and a target-KPI sheet. The aim is minus one pack-review cycle and a revision delta in the appointing party’s CDE.
+**Ask.** A paid programme pilot, 2 million ₽, one building, eight weeks from the agreement. By letter: one-revision pack with IFC, an expert validator, data mode and a target-KPI sheet. The aim is minus one pack-review cycle and a revision delta in the appointing party’s CDE.
 
 From 2 April 2026 Moscow requires an AGR CIM in IFC (Moscow Government decree № 17-ПП of 16 January 2026; joint DIT/DGP order № ДГП-Р-1/26/64-16-6/26). From 18 August 2026 joint DGP/DIT order № ДГП-Р-56/26/64-16-473/26 updates 3D models placed in Moscow information systems. Those are **city filing rules**. AeroBIM ingest is IFC.
 
@@ -70,13 +70,13 @@ From 2 April 2026 Moscow requires an AGR CIM in IFC (Moscow Government decree �
 
 Two seats are the programme operator; three are the partner by agreement.
 
-| Seat | Role |
-|---|---|
-| **Piloting** (operator) | Measurement route: trial programme, method, operator-form act. Ready to measure on an agreed subject |
-| **Demand** (operator) | No contour rollout: web and file exchange. Pay on confirmed findings is the pilot subject |
-| **Appointing technical customer** (partner) | Minus one pack-review cycle. Revision delta: findings → fixed / ignored / new. HITL |
-| **Project office** (partner) | The remark leaves as a BCF file. The expert sets the outcome ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)) |
-| **Information modelling** (partner) | Document seam. Ingest is IFC |
+| Seat | Role | Where to look |
+|---|---|---|
+| **Piloting** (operator) | Measurement route: trial programme, method, operator-form act. Ready to measure on an agreed subject | [prototype](submission/04-prototype/README.md) |
+| **Demand** (operator) | No contour rollout: web and file exchange. Pay on confirmed findings is the pilot subject | Ask below · [slide 6](submission/03-presentation/demo_day_slides.md) |
+| **Appointing technical customer** (partner) | Minus one pack-review cycle. Revision delta: findings → fixed / ignored / new. HITL | [claim boundary](docs/pilot-claim-boundary-2026.md) |
+| **Project office** (partner) | The remark leaves as a BCF file. The expert sets the outcome | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) |
+| **Information modelling** (partner) | Document seam. Ingest is IFC | [ingest boundary](docs/tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md) |
 
 Protocol on the fixture pack. A deterministic report after an agreed revision.
 
@@ -86,7 +86,7 @@ Protocol on the fixture pack. A deterministic report after an agreed revision.
 |---|---|
 | Ingest | IFC 2x3 / 4 / 4x3, IDS 1.0, PDF vector/raster, specification text |
 | Cross-check | Deterministic IFC + IDS + cross-document compare (configured ε-band) |
-| Workplace | 2D overlay, 3D review shell (Vite), RU/EN remark templates, expert HITL |
+| Workplace | 3D review shell (Vite), RU/EN templates, HITL. Sheet-error highlight is a pilot item, not the expert UI |
 | Report | HTML + JSON + PDF + structural BCF 2.1 / 3.0 ZIP |
 | Verdict | `summary.passed` is a Shared-gate. LLM/VLM never write it ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)) |
 
@@ -96,7 +96,7 @@ An unfinished mandatory check cannot yield a positive pack result.
 
 | | |
 |---|---|
-| **Runs on this clone** | Fixture packs, fail-closed IDS, CLI, CI, overlay, structural BCF, review shell (findings → remark → sheet/3D → BCF) |
+| **Runs on this clone** | Fixture packs, fail-closed IDS, CLI, CI, structural BCF, review shell. Sheet-error highlight is a pilot item |
 | **Pilot subject** | Dual human raters + pack-specific conclusions (RT-001b) · appointing-party-signed profile (RT-002c) · system-aware clash (**RT-003c**) · customer federated IFC (`c_customer_federated_ifc`) · BCF import into the appointing party’s CDE |
 
 ## Try it
@@ -183,7 +183,7 @@ GOST R 21.101-2026 (Rosstandart order № 129-ст of 12 February 2026; **in for
 - Configured ε-band (SI-normalised); deterministic requirement extraction from narrative text; advisory LLM does not sign anything off
 - Every check reports `ok` / `skipped` / `failed`; tenant/object ACL on artifacts under `customer_pilot` / `production` (off by default in development); HTML/JSON; PDF; structural BCF 2.1 / 3.0 ZIP
 - PDF via pypdfium2 + pdfminer; default `AEROBIM_PDF_BACKEND=pdfium`
-- Browser IFC viewer and 2D overlay
+- Browser IFC viewer. Drawing overlay is a fixture CLI, not the expert workplace
 - Norm rule packs (a fixture pack is not a customer-signed profile) and an opt-in completeness inventory
 - Quality measurement protocol (Wilson intervals, sample-size planner)
 
@@ -470,13 +470,14 @@ tests_passed: backend=3300, frontend=400; commit 4742d56d9574; see docs/evidence
 ## Documentation
 
 <details>
-<summary>Map, pack, claim boundary</summary>
+<summary>Pack, show, claim boundary</summary>
 
 | Topic | Document |
 |---|---|
 | Form pack | [index](submission/README.md) |
 | Demo-day presentation | [PowerPoint, 7 slides](submission/03-presentation/AeroBIM.pptx) · [PDF](submission/03-presentation/AeroBIM.pdf) · [slide text](submission/03-presentation/demo_day_slides.md) |
 | Prototype | [run command](submission/04-prototype/README.md) |
+| Slide 3 numbers | [what was measured, what it is not](submission/05-additional/README.md) |
 | Claim boundary | [document](docs/pilot-claim-boundary-2026.md) |
 | TRL | [TRL 4 self-assessment](docs/quality/TRL_GOST_R_58048_SELF_ASSESS_2026.md) |
 | Architecture | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) |
