@@ -24,6 +24,9 @@ class CheckLocalLaunchTests(unittest.TestCase):
             "executable": r"C:\Python312\python.exe",
             "root": repo_root(),
             "is_windows": True,
+            # Linux CI has uvloop installed. Windows-simulated cases must not
+            # inherit that as a fatal unless the test sets uvloop_present=True.
+            "uvloop_present": False,
         }
         payload.update(overrides)
         return collect_checks(**payload)  # type: ignore[arg-type]

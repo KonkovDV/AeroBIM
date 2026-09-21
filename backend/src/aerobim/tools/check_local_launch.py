@@ -476,12 +476,11 @@ def _py_launcher_list() -> str | None:
 
 
 def _long_paths_enabled() -> bool | None:
-    if os.name != "nt":
+    # sys.platform, not os.name: mypy on Linux treats the win32 branch as unreachable.
+    if sys.platform != "win32":
         return None
-    try:
-        import winreg
-    except ImportError:
-        return None
+    import winreg
+
     try:
         with winreg.OpenKey(
             winreg.HKEY_LOCAL_MACHINE,
