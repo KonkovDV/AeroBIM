@@ -109,6 +109,33 @@ class CheckLocalLaunchTests(unittest.TestCase):
         text = (Path(repo_root()) / "frontend" / ".npmrc").read_text(encoding="utf-8")
         self.assertIn("engine-strict=true", text)
 
+    def test_arm64_windows_is_warn(self) -> None:
+        checks = self._base(machine="ARM64")
+        item = next(row for row in checks if row.id == "windows_arch")
+        self.assertFalse(item.ok)
+        self.assertEqual(item.level, "warn")
+
+    def test_port_8080_warns_without_review_shell(self) -> None:
+        checks = self._base(ports_busy={8080: True})
+        item = next(row for row in checks if row.id == "port_8080")
+        self.assertFalse(item.ok)
+        self.assertEqual(item.level, "warn")
+        self.assertIn("Docker", item.message)
+
+    def test_system_interpreter_warns_not_venv(self) -> None:
+        checks = self._base(in_venv=False)
+        item = next(row for row in checks if row.id == "venv")
+        self.assertFalse(item.ok)
+        self.assertIn("run-jury.bat", item.message)
+
+    def test_ifcopenshell_import_failure_is_fatal(self) -> None:
+        checks = self._base(ifcopenshell_ok=False, ifcopenshell_error="DLL load failed")
+        item = next(row for row in checks if row.id == "ifcopenshell_import")
+        self.assertFalse(item.ok)
+        self.assertEqual(item.level, "fatal")
+        self.assertIn("VC++", item.message)
+        self.assertIn("DLL load failed", item.message)
+
 
 if __name__ == "__main__":
     unittest.main()

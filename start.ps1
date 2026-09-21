@@ -9,7 +9,7 @@ Write-Host "AeroBIM review shell. Vite 127.0.0.1:5173  API 127.0.0.1:8080  (not 
 Set-Location -LiteralPath $PSScriptRoot
 $python = Join-Path $PSScriptRoot "backend\.venv\Scripts\python.exe"
 if (-not (Test-Path -LiteralPath $python)) {
-    Write-Host "backend\.venv not found. From AeroBIM\backend:"
+    Write-Host "backend\.venv not found. Double-click run-jury.bat first, or from AeroBIM\backend:"
     Write-Host "  py -3.12 -m venv .venv"
     Write-Host "  .venv\Scripts\python.exe -m pip install -e `".[dev,raster]`""
     Write-Host "Review shell needs Node 20+. Jury CLI does not. customer_go false."

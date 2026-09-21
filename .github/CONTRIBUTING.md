@@ -28,7 +28,7 @@ Public GitHub may show a single contributor on origin. Dual-rater labeling (RT-0
 
 ## Local Setup
 
-Canonical clone recipe: [README Try it](../README.md#try-it). If PowerShell blocks `Activate.ps1`, skip activation:
+Canonical clone recipe: [README Try it](../README.md#try-it). Windows Explorer: `run-jury.bat` at the clone root. If PowerShell blocks `Activate.ps1`, skip activation:
 
 ```powershell
 cd backend

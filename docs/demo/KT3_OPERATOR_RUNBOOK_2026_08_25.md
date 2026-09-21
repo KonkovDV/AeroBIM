@@ -19,7 +19,7 @@ claim_boundary: >
 
 На защите жюри — только этот трек: живой CLI из git. Файлов заказчика в репозитории нет. Семь кадров: [`../../submission/03-presentation/AeroBIM.pptx`](../../submission/03-presentation/AeroBIM.pptx) · [текст](../../submission/03-presentation/demo_day_slides.md).
 
-Предпочтительная одна команда (Windows PowerShell, без `Activate.ps1`):
+Либо из корня клона двойной щелчок `run-jury.bat`. Предпочтительная команда (Windows PowerShell, без `Activate.ps1`):
 
 ```powershell
 cd backend

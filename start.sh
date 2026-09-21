@@ -12,7 +12,7 @@ fi
 if [[ -x "$python_win" ]]; then
   exec "$python_win" -m aerobim.tools.run_review_stand "$@"
 fi
-echo "backend/.venv not found. From AeroBIM/backend:"
+echo "backend/.venv not found. Run ./run-jury.sh first, or from AeroBIM/backend:"
 echo "  python3.12 -m venv .venv"
 echo "  python -m pip install -e \".[dev,raster]\""
 echo "Review shell needs Node 20+. Jury CLI does not. customer_go false."
