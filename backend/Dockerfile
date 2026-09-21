@@ -3,9 +3,14 @@ FROM python:3.12-slim@sha256:57cd7c3a7a273101a6485ba99423ee568157882804b1124b4dd
 WORKDIR /build
 COPY pyproject.toml requirements-lock.txt ./
 COPY src/ src/
-RUN pip install --no-cache-dir --require-hashes --prefix=/install -r requirements-lock.txt \
-    && pip install --no-cache-dir --prefix=/install --no-deps . \
-    && pip install --no-cache-dir --prefix=/install 'redis==5.2.1'
+RUN printf '%s\n' \
+      'redis==5.2.1 \' \
+      '  --hash=sha256:16f2e22dff21d5125e8481515e386711a34cbec50f0e44413dd7d9c060a54e0f \' \
+      '  --hash=sha256:ee7e1056b9aea0f04c6c2ed59452947f34c4940ee025f5dd83e6a6418b6989e4' \
+      > /tmp/redis-requirement.txt \
+    && pip install --no-cache-dir --require-hashes --prefix=/install -r requirements-lock.txt \
+    && pip install --no-cache-dir --require-hashes --prefix=/install -r /tmp/redis-requirement.txt \
+    && pip install --no-cache-dir --prefix=/install --no-deps .
 
 # ---------- production ----------
 FROM python:3.12-slim@sha256:57cd7c3a7a273101a6485ba99423ee568157882804b1124b4dd04266317710de

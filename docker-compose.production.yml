@@ -1,5 +1,6 @@
 # Shared/LAN stack. The API only publishes jobs; the isolated worker is the sole
-# package-analysis/IfcOpenShell executor. Worker has no default/external network.
+# package-analysis/IfcOpenShell executor. Never scale the worker without first
+# reviewing throughput, report-store safety and per-tenant fairness.
 services:
   backend:
     build: {context: ./backend, dockerfile: Dockerfile}
@@ -27,7 +28,7 @@ services:
     volumes:
       - reports-data:/data/reports
       - ./samples:/data/samples:ro
-    networks: [control]
+    networks: [control, edge]
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/ready')"]
       interval: 15s
@@ -45,14 +46,10 @@ services:
     cap_drop: [ALL]
     security_opt: ["no-new-privileges:true"]
     pids_limit: 128
+    cpus: "2.0"
+    mem_limit: 3g
+    mem_reservation: 512m
     stop_grace_period: 30s
-    deploy:
-      resources:
-        limits:
-          cpus: "2.0"
-          memory: 3G
-        reservations:
-          memory: 512M
     environment:
       AEROBIM_ENV: production
       AEROBIM_SIGNOFF_PROFILE: ${AEROBIM_SIGNOFF_PROFILE:-production}
@@ -71,7 +68,7 @@ services:
     volumes:
       - reports-data:/data/reports
       - ./samples:/data/samples:ro
-    # 'control' is internal=true: Redis remains reachable, internet/host egress is denied.
+    # Only the internal control plane: Redis is reachable, host/internet egress is denied.
     networks: [control]
 
   redis:
@@ -88,6 +85,7 @@ services:
 networks:
   control:
     internal: true
+  edge: {}
 
 volumes:
   reports-data:
