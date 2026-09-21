@@ -53,7 +53,7 @@
 
 > Мы на стадии доработки контура заказчика. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение у назначающей стороны ещё не начались. Checkpoint `GO` — регуляторно-измерительный MVP. `customer_go` остаётся false, пока нет независимого размеченного корпуса, двух разметчиков, подписанного профиля назначающей стороны и подтверждения импорта в СОД.
 
-Показ — семь кадров: [`AeroBIM.pptx`](submission/03-presentation/AeroBIM.pptx) · [`AeroBIM.pdf`](submission/03-presentation/AeroBIM.pdf) · [текст](submission/03-presentation/demo_day_slides.md). Полная версия на 43 слайда — приложение над кнопками, не кадр показа. Живая команда из `backend/`: `python -m aerobim.tools.run_kt3_jury`.
+Показ — семь кадров: [`AeroBIM.pptx`](submission/03-presentation/AeroBIM.pptx) · [`AeroBIM.pdf`](submission/03-presentation/AeroBIM.pdf) · [текст](submission/03-presentation/demo_day_slides.md). Полная версия на 43 слайда — приложение над кнопками, не кадр показа. Живая команда: с корня клона `run-jury.bat` или `./run-jury.sh`, либо из `backend/` `python -m aerobim.tools.run_kt3_jury`.
 
 | Кадр | На слайде | Куда в репозитории |
 |---|---|---|
@@ -159,7 +159,7 @@ python -m aerobim.main   # http://127.0.0.1:8080/health
 
 Опциональные наборы `.[clash]`, `.[docling]`, `.[enterprise]`, `.[pdf-agpl]` для команд выше не нужны.
 
-Если `py -3.12` нет — CPython 3.12 с python.org, не Microsoft Store. Не пишите голый `py`: лаунчер может взять 3.13. Диагностика: `.\check-launch.bat` из корня клона (не `python -m aerobim.tools.check_local_launch` без venv). Клон лучше в короткий латинский путь (`C:\AeroBIM`), не в каталог пользователя с кириллицей.
+Если `py -3.12` нет — CPython 3.12 с python.org, не Microsoft Store. Не пишите голый `py`: лаунчер может взять 3.13. Берите `git clone`, не ZIP с GitHub. Если IfcOpenShell не импортируется на Windows — Microsoft VC++ 2015-2022 x64. Диагностика: `.\check-launch.bat` из корня клона (не `python -m aerobim.tools.check_local_launch` без venv). Предупреждения doctor не останавливают jury CLI; fatal (exit 2) останавливает. Клон лучше в короткий латинский путь (`C:\AeroBIM`), не в каталог пользователя с кириллицей.
 
 <details>
 <summary>uv, hashed Windows lock, Dev Container, закрытый контур</summary>
@@ -234,7 +234,7 @@ Checkpoint — **регуляторно-измерительный MVP**. `custo
 - Паки нормативных правил (учебный пак ≠ подписанный профиль) и опциональный инвентарь комплектности
 - Протокол измерения качества (интервалы Уилсона, планировщик выборки)
 
-Опционально: геометрические коллизии `.[clash]`; OCR `.[raster]`; PyMuPDF `pdf-agpl`; черновики LLM/VLM (не пишут `summary.passed`); OpenCDE BCF push; DXF через ezdxf.
+Опционально: геометрические коллизии `.[clash]`; OCR `.[raster]`; PyMuPDF `pdf-agpl`; черновики LLM/VLM (не пишут `summary.passed`); OpenCDE BCF push (эксперимент, не импорт в СОД); DXF через ezdxf.
 
 </details>
 
@@ -286,7 +286,7 @@ infrastructure/  IfcOpenShell, IfcTester, BCF, хранилище; IfcClash и D
 presentation/    FastAPI
 ```
 
-Артефакты за портом `ObjectStore` (локальный диск или S3 — один путь в коде). При `AEROBIM_DB_URL` сводки отчётов индексируются в Postgres.
+Артефакты за портом `ObjectStore`: локальный диск или бакет, совместимый с S3. Это один порт и два адаптера. При `AEROBIM_DB_URL` сводки отчётов индексируются в Postgres.
 
 </details>
 
