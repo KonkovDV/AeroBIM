@@ -1,0 +1,24 @@
+name: Capture CI diagnostics
+on:
+  push:
+    branches: [audit/analyze-job-recovery]
+    paths: [.github/workflows/capture-ci-diagnostics.yml]
+permissions:
+  actions: read
+  contents: write
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Capture failed job and remove bootstrap
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run view 35659646141 --repo KonkovDV/AeroBIM --job 106531583447 --log-failed > docs/evidence/pr87-failed-job.tmp.txt
+          git rm .github/workflows/capture-ci-diagnostics.yml
+          git add docs/evidence/pr87-failed-job.tmp.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'chore: capture PR 87 failed job diagnostics'
+          git push
