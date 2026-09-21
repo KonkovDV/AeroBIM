@@ -22,7 +22,7 @@ Checkpoint `GO` — регуляторно-измерительный MVP. `cust
 
 Построчная карта ТЗ: [`TZ_REQUIREMENTS_COVERAGE_2026_08.md`](TZ_REQUIREMENTS_COVERAGE_2026_08.md). Цифры тестов CI — [`docs/evidence/runtime-baseline-latest.json`](../docs/evidence/runtime-baseline-latest.json).
 
-Показ: `python -m aerobim.tools.run_kt3_jury` на учебном комплекте из git. Файлов заказчика в репозитории нет.
+Показ: из `backend/` после установки — `python -m aerobim.tools.run_kt3_jury` на учебном комплекте из git. Файлов заказчика в репозитории нет.
 
 ## Семь кадров показа
 

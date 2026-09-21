@@ -28,10 +28,20 @@ Public GitHub may show a single contributor on origin. Dual-rater labeling (RT-0
 
 ## Local Setup
 
+Canonical clone recipe: [README Try it](../README.md#try-it). If PowerShell blocks `Activate.ps1`, skip activation:
+
+```powershell
+cd backend
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -e ".[dev,raster]"
+```
+
+Linux/macOS:
+
 ```bash
 cd backend
-python3.12 -m venv .venv   # Windows: py -3.12 -m venv .venv
-source .venv/bin/activate  # Windows PowerShell: .\.venv\Scripts\Activate.ps1
+python3.12 -m venv .venv
+source .venv/bin/activate
 pip install -e ".[dev,raster]"
 ```
 

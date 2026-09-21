@@ -119,6 +119,7 @@ class ReviewShellLauncherTests(unittest.TestCase):
         self.assertFalse(frontend_vite_installed(tmp))
         with (
             patch("aerobim.tools.run_live_review_smoke.frontend_dir", return_value=tmp),
+            patch("aerobim.tools.run_live_review_smoke.shutil.which", return_value="npm"),
             patch("aerobim.tools.run_live_review_smoke.run_foreground_command") as npm_ci,
         ):
             ensure_frontend_dependencies()
@@ -127,6 +128,17 @@ class ReviewShellLauncherTests(unittest.TestCase):
             self.assertEqual(command[1], "ci")
             self.assertEqual(npm_ci.call_args.kwargs["cwd"], tmp)
             self.assertEqual(npm_ci.call_args.kwargs["label"], "npm ci")
+
+    def test_ensure_explains_missing_npm(self) -> None:
+        tmp = Path(self.enterContext(TemporaryDirectory()))
+        with (
+            patch("aerobim.tools.run_live_review_smoke.frontend_dir", return_value=tmp),
+            patch("aerobim.tools.run_live_review_smoke.shutil.which", return_value=None),
+        ):
+            with self.assertRaises(RuntimeError) as raised:
+                ensure_frontend_dependencies()
+        self.assertIn("Node.js / npm not found", str(raised.exception))
+        self.assertIn("run_kt3_jury", str(raised.exception))
 
     def test_wrapper_stays_in_foreground_via_subprocess(self) -> None:
         module = _load_review_shell_wrapper()
@@ -146,6 +158,8 @@ class ReviewShellLauncherTests(unittest.TestCase):
         self.assertIn("-m aerobim.tools.run_review_stand", text)
         self.assertIn("backend\\.venv\\Scripts\\python.exe", text)
         self.assertIn(".\\start.bat", text)
+        self.assertIn("python.exe -m pip install", text)
+        self.assertIn("Node 20+", text)
         self.assertNotIn("run_kt3_jury", text)
 
     def test_root_start_ps1_calls_the_review_stand(self) -> None:
@@ -153,6 +167,8 @@ class ReviewShellLauncherTests(unittest.TestCase):
         self.assertIn("aerobim.tools.run_review_stand", text)
         self.assertIn("backend\\.venv\\Scripts\\python.exe", text)
         self.assertIn(".\\start.bat", text)
+        self.assertIn("python.exe -m pip install", text)
+        self.assertIn("Node 20+", text)
         self.assertNotIn("run_kt3_jury", text)
 
     def test_root_start_sh_and_vite_identity(self) -> None:
@@ -177,6 +193,36 @@ class ReviewShellLauncherTests(unittest.TestCase):
             text = (repo_root() / name).read_text(encoding="utf-8")
             self.assertIn(".\\start.bat", text, msg=name)
             self.assertIn("Start-Process", text, msg=name)
+
+    def test_readme_windows_clone_calls_venv_python_exe(self) -> None:
+        for name in ("README.md", "README.en.md"):
+            text = (repo_root() / name).read_text(encoding="utf-8")
+            self.assertIn(
+                r".\.venv\Scripts\python.exe -m pip install -e",
+                text,
+                msg=name,
+            )
+            self.assertIn(
+                r".\.venv\Scripts\python.exe -m aerobim.tools.run_kt3_jury",
+                text,
+                msg=name,
+            )
+            self.assertIn("Node 20+", text, msg=name)
+            self.assertIn("requirements-lock.txt", text, msg=name)
+            self.assertIn("customer_pilot", text, msg=name)
+
+    def test_prototype_hop_uses_venv_python_exe_from_clone_root(self) -> None:
+        text = (repo_root() / "submission" / "04-prototype" / "README.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(r".\.venv\Scripts\python.exe -m pip", text)
+        self.assertIn(r".\start.bat", text)
+        self.assertIn("не из `frontend/`", text)
+        self.assertNotIn("cd frontend", text)
+        repository = (repo_root() / "submission" / "01-repository" / "README.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(r".\.venv\Scripts\python.exe -m pip", repository)
 
 
 if __name__ == "__main__":

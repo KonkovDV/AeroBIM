@@ -111,14 +111,28 @@ An unfinished mandatory check cannot yield a positive pack result.
 
 ## Try it
 
-Python 3.12 and a venv in `backend/.venv`.
+Python 3.12 and a venv in `backend/.venv`. The live jury CLI does **not** need Node. The review shell needs Node 20+ and npm. Keep the quotes around `".[dev,raster]"` in PowerShell.
+
+**Windows (PowerShell).** If ExecutionPolicy blocks `Activate.ps1`, skip activation and call `python.exe` directly.
+
+```powershell
+git clone https://github.com/KonkovDV/AeroBIM.git
+cd AeroBIM\backend
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -e ".[dev,raster]"
+.\.venv\Scripts\python.exe -m aerobim.tools.run_kt3_jury
+```
+
+`summary.passed=false` on the fixture pack is the expected fail. Do not set `AEROBIM_SIGNOFF_PROFILE=customer_pilot` on a first clone. `requirements-lock.txt` is the Linux/CI lock — do not install it on Windows.
+
+**Linux / macOS**
 
 ```bash
 git clone https://github.com/KonkovDV/AeroBIM.git
 cd AeroBIM/backend
 
-python3.12 -m venv .venv            # Windows: py -3.12 -m venv .venv
-source .venv/bin/activate           # Windows PowerShell: .\.venv\Scripts\Activate.ps1
+python3.12 -m venv .venv
+source .venv/bin/activate
 pip install -e ".[dev,raster]"
 ```
 
@@ -133,13 +147,13 @@ pytest tests -q
 python -m aerobim.main   # http://127.0.0.1:8080/health
 ```
 
-Start the review shell **from the clone root**. FastAPI at `http://127.0.0.1:8080`, Vite/React at `http://127.0.0.1:5173`. The UI never writes `summary.passed`.
+Start the review shell **from the clone root** (not from `frontend/`). FastAPI at `http://127.0.0.1:8080`, Vite/React at `http://127.0.0.1:5173`. The UI never writes `summary.passed`. You need `backend/.venv` already created and Node 20+.
 
 - Linux/macOS: `./start.sh`
 - Windows PowerShell: `.\start.bat` (the leading `.\` is required; bare `start` is Start-Process and will ask for FilePath)
 - from `backend/`: `python -m aerobim.tools.run_review_stand`
 
-If 8080 or 5173 is already bound, stop that process and retry. Details: [`frontend/README.md`](frontend/README.md).
+If 8080 or 5173 is already bound, stop that process and retry. Details: [`frontend/README.md`](frontend/README.md). Closed contour without pip: Docker image, not a bare wheelhouse — [`docs/offline-deployment-2026.md`](docs/offline-deployment-2026.md).
 
 Optional extras `.[clash]`, `.[docling]`, `.[enterprise]`, `.[pdf-agpl]` are not needed for the commands above.
 

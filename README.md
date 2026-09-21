@@ -111,14 +111,28 @@
 
 ## Try it
 
-Python 3.12 и venv в `backend/.venv`.
+Python 3.12 и venv в `backend/.venv`. Живой CLI показа **не** требует Node. Оболочка ревью — Node 20+ и npm. Кавычки у `".[dev,raster]"` в PowerShell обязательны.
+
+**Windows (PowerShell).** Если `Activate.ps1` режет ExecutionPolicy, venv не активируйте — зовите `python.exe` напрямую.
+
+```powershell
+git clone https://github.com/KonkovDV/AeroBIM.git
+cd AeroBIM\backend
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -e ".[dev,raster]"
+.\.venv\Scripts\python.exe -m aerobim.tools.run_kt3_jury
+```
+
+`summary.passed=false` на учебном комплекте — ожидаемый отказ. Не задавайте `AEROBIM_SIGNOFF_PROFILE=customer_pilot` на первом клоне. `requirements-lock.txt` — lock Linux/CI, на Windows его не ставить.
+
+**Linux / macOS**
 
 ```bash
 git clone https://github.com/KonkovDV/AeroBIM.git
 cd AeroBIM/backend
 
-python3.12 -m venv .venv            # Windows: py -3.12 -m venv .venv
-source .venv/bin/activate           # Windows PowerShell: .\.venv\Scripts\Activate.ps1
+python3.12 -m venv .venv
+source .venv/bin/activate
 pip install -e ".[dev,raster]"
 ```
 
@@ -133,13 +147,13 @@ pytest tests -q
 python -m aerobim.main   # http://127.0.0.1:8080/health
 ```
 
-Оболочка ревью — из **корня клона**. FastAPI `http://127.0.0.1:8080`, Vite/React `http://127.0.0.1:5173`. UI не пишет `summary.passed`.
+Оболочка ревью — из **корня клона** (не из `frontend/`). FastAPI `http://127.0.0.1:8080`, Vite/React `http://127.0.0.1:5173`. UI не пишет `summary.passed`. Нужны уже созданный `backend/.venv` и Node 20+.
 
 - Linux/macOS: `./start.sh`
 - Windows PowerShell: `.\start.bat` (префикс `.\` обязателен; `start` без префикса — это Start-Process и запросит FilePath)
 - из `backend/`: `python -m aerobim.tools.run_review_stand`
 
-Если 8080 или 5173 заняты — остановить процесс и повторить. Подробности: [`frontend/README.md`](frontend/README.md).
+Если 8080 или 5173 заняты — остановить процесс и повторить. Подробности: [`frontend/README.md`](frontend/README.md). Закрытый контур без pip: Docker-образ, не голый wheelhouse — [`docs/offline-deployment-2026.md`](docs/offline-deployment-2026.md).
 
 Опциональные наборы `.[clash]`, `.[docling]`, `.[enterprise]`, `.[pdf-agpl]` для команд выше не нужны.
 

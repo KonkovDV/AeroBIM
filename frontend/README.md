@@ -35,7 +35,7 @@ Publishable frontend test counts are only in [`docs/evidence/runtime-baseline-la
 
 ## Run
 
-API default: `http://127.0.0.1:8080`. Vite is pinned to `http://127.0.0.1:5173` (`strictPort`; never Next.js `3000`). One command starts **API + Vite** (`npm ci` if Vite is missing):
+API default: `http://127.0.0.1:8080`. Vite is pinned to `http://127.0.0.1:5173` (`strictPort`; never Next.js `3000`). One command starts **API + Vite** (`npm ci` if Vite is missing). Node 20+ is required for this shell; the jury CLI is not.
 
 ```bash
 python scripts/run_review_shell.py

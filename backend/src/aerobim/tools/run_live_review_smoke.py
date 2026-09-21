@@ -4,6 +4,7 @@ import argparse
 import json
 import os
 import secrets
+import shutil
 import socket
 import subprocess
 import sys
@@ -272,6 +273,14 @@ def ensure_frontend_dependencies(*, env: Mapping[str, str] | None = None) -> Non
     root = frontend_dir()
     if frontend_vite_installed(root):
         return
+    npm = npm_command()
+    if shutil.which(npm) is None:
+        raise RuntimeError(
+            "Node.js / npm not found on PATH. The jury CLI "
+            "(python -m aerobim.tools.run_kt3_jury) does not need Node. "
+            "The review shell needs Node 20+ (Windows: npm.cmd). "
+            "Install an LTS Node, then retry .\\start.bat from the clone root."
+        )
     sys.stdout.write("npm ci (frontend dependencies missing)\n")
     sys.stdout.flush()
     run_foreground_command(

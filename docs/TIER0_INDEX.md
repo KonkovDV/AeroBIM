@@ -15,7 +15,7 @@ claim_boundary: "Jury pack only. Checkpoint GO; customer_go false until RT-001/0
 
 ## Показ · 7 слайдов
 
-Демо-день 21.09.2026. Дека: [`AeroBIM.pptx`](../submission/03-presentation/AeroBIM.pptx) · [`AeroBIM.pdf`](../submission/03-presentation/AeroBIM.pdf) · [текст](../submission/03-presentation/demo_day_slides.md). Живая команда: `python -m aerobim.tools.run_kt3_jury` из `backend/` после `pip install -e ".[dev,raster]"`.
+Демо-день 21.09.2026. Дека: [`AeroBIM.pptx`](../submission/03-presentation/AeroBIM.pptx) · [`AeroBIM.pdf`](../submission/03-presentation/AeroBIM.pdf) · [текст](../submission/03-presentation/demo_day_slides.md). Живая команда — [Try it](../README.md#try-it): `python -m aerobim.tools.run_kt3_jury` из `backend/` после установки `".[dev,raster]"`.
 
 | Кадр | На слайде | Куда в git |
 |---|---|---|

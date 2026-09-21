@@ -16,8 +16,8 @@ echo Vite 127.0.0.1:5173  API 127.0.0.1:8080  (not Next.js)
 if not exist "backend\.venv\Scripts\python.exe" (
   echo backend\.venv not found. From AeroBIM\backend:
   echo   py -3.12 -m venv .venv
-  echo   pip install -e ".[dev,raster]"
-  echo Not the jury CLI. customer_go false.
+  echo   .venv\Scripts\python.exe -m pip install -e ".[dev,raster]"
+  echo Review shell needs Node 20+. Jury CLI does not. customer_go false.
   pause
   exit /b 1
 )

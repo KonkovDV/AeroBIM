@@ -45,7 +45,7 @@ def backend_venv_python(repo: Path = _REPO) -> Path:
         "backend/.venv not found. AeroBIM API lives in <clone>/backend "
         "(Windows: .venv\\Scripts\\python.exe; Linux: .venv/bin/python), "
         "not a frontend-only tree. Set AEROBIM_BACKEND_DIR if needed. "
-        'From AeroBIM/backend: py -3.12 -m venv .venv && pip install -e ".[dev,raster]"'
+        'From AeroBIM/backend: python3.12 -m venv .venv && python -m pip install -e ".[dev,raster]"'
     )
 
 

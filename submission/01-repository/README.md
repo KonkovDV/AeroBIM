@@ -17,14 +17,18 @@
 
 ## Сборка и запуск
 
-```bash
-git clone https://github.com/KonkovDV/AeroBIM
-cd AeroBIM/backend
-pip install -e ".[dev,raster]"
-python -m aerobim.tools.run_kt3_jury
+Канон: [Try it](../../README.md#try-it). Windows PowerShell (без активации venv):
+
+```powershell
+cd backend
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -e ".[dev,raster]"
+.\.venv\Scripts\python.exe -m aerobim.tools.run_kt3_jury
 ```
 
-Та же установка, учебный шлюз приёмки: `python -m aerobim.tools.run_demo_ifc_acceptance_gate`. Extra `pdf-agpl` в default не входит.
+Linux/macOS: `python3.12 -m venv .venv`, `source .venv/bin/activate`, `pip install -e ".[dev,raster]"`, затем та же команда `run_kt3_jury`. Extra `pdf-agpl` в default не входит. `requirements-lock.txt` на Windows не ставить.
+
+Та же установка, учебный шлюз приёмки: `python -m aerobim.tools.run_demo_ifc_acceptance_gate`.
 
 Технический статус `summary.passed` ставят только детерминированные движки ([ADR-001](../../docs/architecture/ADR-001-verdict-ownership-2026.md)). Интеграцию с Tangl / 10D не заявляем.
 

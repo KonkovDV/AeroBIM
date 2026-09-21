@@ -6,13 +6,18 @@
 
 ## Запуск
 
-```bash
+Нужны Git и Python 3.12 (`py -3.12 --version`). Node для этой команды не нужен. Канон с Linux: [Try it](../../README.md#try-it).
+
+```powershell
 cd backend
-pip install -e ".[dev,raster]"
-python -m aerobim.tools.run_kt3_jury
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -e ".[dev,raster]"
+.\.venv\Scripts\python.exe -m aerobim.tools.run_kt3_jury
 ```
 
-На учебной фикстуре отказ комплекта — штатный сценарий: в комплекте заложены дефекты.
+Linux/macOS: `python3.12 -m venv .venv`, `source .venv/bin/activate`, затем `pip install -e ".[dev,raster]"` и `python -m aerobim.tools.run_kt3_jury`.
+
+`summary.passed=false` на учебной фикстуре — штатный сценарий: в комплекте заложены дефекты. Не задавайте `AEROBIM_SIGNOFF_PROFILE=customer_pilot` на первом клоне.
 
 Кадр 4 презентации — учебная схема 30/40 мм. Живая команда находит посаженные дефекты учебного комплекта git, не этот узел. Подсветка области листа — пилот, не рабочее место эксперта.
 
@@ -21,7 +26,7 @@ python -m aerobim.tools.run_kt3_jury
 
 Отчёты пишутся в локальный `artifacts/` и в git не входят: JSON, HTML, `findings.bcfzip`.
 
-Оболочка ревью: `python scripts/run_review_shell.py` (`frontend/`). Это не замена живой команды. Экспорт XLSX нет. Вход по внешнему IdP сегодня отвечает 501.
+Оболочка ревью — из **корня клона**, не из `frontend/`: `.\start.bat` (PowerShell, префикс `.\`) или `python scripts/run_review_shell.py`. Нужны Node 20+, npm и уже созданный `backend/.venv`. Это не замена живой команды. Экспорт XLSX нет. Вход по внешнему IdP сегодня отвечает 501.
 
 ## Что видно в находке
 
