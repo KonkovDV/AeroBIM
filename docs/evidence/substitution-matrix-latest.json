@@ -9,11 +9,11 @@
   "customer_go": false,
   "market_go": false,
   "deployment_go": false,
-  "generated_at": "2026-09-15T16:10:39.560084+00:00",
+  "generated_at": "2026-09-22T16:18:39.670067+00:00",
   "closes_rt001": false,
   "architecture_inventory": {
     "public_domain_protocols": 48,
-    "adapter_modules": 75,
+    "adapter_modules": 77,
     "di_tokens": 63
   },
   "di_tokens_expected": 63,
