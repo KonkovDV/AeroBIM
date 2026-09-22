@@ -1,7 +1,7 @@
 {
   "schema_version": "1.3.0",
   "artifact_type": "aerobim_weekly_eng_status",
-  "generated_at": "2026-09-15T12:47:30.232802+00:00",
+  "generated_at": "2026-09-22T13:04:22.118901+00:00",
   "claim_boundary": "Engineering weekly status only. No invented commercial funnel. Checkpoint GO (regulatory_measurement_mvp; customer_go false) until RF PD+expertise corpus, the appointing party acceptance profile, and measured federated MEP. Fixture != customer accuracy.",
   "checkpoint": "GO",
   "rt_open": [
@@ -20,17 +20,17 @@
     "print_as": "commercial block empty — no outreach-log.md"
   },
   "runtime_baseline": {
-    "commit_sha": "139896709507447e14d48f9a95026a7c1c33d374",
+    "commit_sha": "ea44f2613a5783f2669334d038a741dded8185c7",
     "schema_version": "1.4.0",
     "metrics": {
-      "backend_src_loc": 102652,
-      "backend_test_loc": 66667,
-      "backend_test_functions": 3195,
+      "backend_src_loc": 107782,
+      "backend_test_loc": 70405,
+      "backend_test_functions": 3353,
       "extraction_macro_f1": 0.8600000000000001
     },
     "architecture_inventory": {
       "public_domain_protocols": 48,
-      "adapter_modules": 75,
+      "adapter_modules": 77,
       "di_tokens": 63
     },
     "quality_gates": {
