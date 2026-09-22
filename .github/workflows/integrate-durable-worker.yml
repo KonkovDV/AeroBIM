@@ -64,69 +64,20 @@ jobs:
                   raise SystemExit(f"expected text missing in {path}: {old}")
               p.write_text(text.replace(old, new), encoding="utf-8")
 
-          replace(
-              "README.md",
-              "Required outside development/test for the job record store and shared rate limits. `submit` still executes in the API process; Redis is not a separate worker",
-              "Required outside development/test for job records, the reliable ready/processing queue, and shared rate limits. `submit` publishes to Redis; dedicated `aerobim.worker` executes with at-least-once delivery",
-          )
-          replace(
-              "README.en.md",
-              "Required outside development/test for the job record store and shared rate limits. `submit` still executes in the API process; Redis is not a separate worker",
-              "Required outside development/test for job records, the reliable ready/processing queue, and shared rate limits. `submit` publishes to Redis; the dedicated `aerobim.worker` executes with at-least-once delivery",
-          )
-          replace(
-              ".github/SECURITY.md",
-              "IfcOpenShell runs in the API process (IFC-ISO-01, 1.5 GB disk band). Pdfium uses a process isolate + POSIX rlimit / Windows Job Object (PROC-01 closed; Job-create failure falls back to timeout).",
-              "Production async IfcOpenShell runs in the dedicated worker container (IFC-ISO-01, 1.5 GB disk band); the synchronous API path remains available outside production compose. Pdfium uses a process isolate + POSIX rlimit / Windows Job Object (PROC-01 closed; Job-create failure falls back to timeout).",
-          )
-          replace(
-              "docs/KNOWN_BUGS.md",
-              "| IFC-ISO-01 | IfcOpenShell opens in the API process (1.5 GB disk band). Pdfium crop and pdfminer drawing extract run in a child process with wall-clock kill. Windows Job Object is CPU/memory, not a network jail. | Crash/OOM ≠ silent `summary.passed=true`. Not MEP delivered. |",
-              "| IFC-ISO-01 | Production async IfcOpenShell runs in a dedicated long-lived worker container (1.5 GB disk band); the synchronous API path is disabled by production compose. Pdfium crop and pdfminer drawing extract run in a child process with wall-clock kill. | Worker limits are not a fresh per-job sandbox. Crash/OOM ≠ silent `summary.passed=true`. Not MEP delivered. |",
-          )
-          replace(
-              "backend/src/aerobim/application/use_cases/analyze_job_recovery.py",
-              "This does not move IFC parsing out of the API process and does not prove a\ncustomer pack, an external CDE import, or production OIDC. It only requeues\njobs that failed because the runner disappeared before a report id was stored.\n",
-              "This helper is transport-agnostic; production invokes equivalent recovery from the\ndedicated worker. It does not prove a customer pack, external CDE import, or\nproduction OIDC. It only requeues jobs abandoned before a report id was stored.\n",
-          )
-          replace(
-              "backend/src/aerobim/application/use_cases/analyze_project_package_jobs.py",
-              "        # Opportunistic reclaim before concurrency accounting / create.\n        # JOB-01: QUEUED rows whose runner never started (API process died) fail closed.\n",
-              "        # Opportunistic reclaim before concurrency accounting / create.\n        # QUEUED rows whose delivery never reached a worker fail closed after the TTL.\n",
-          )
-          replace(
-              "backend/src/aerobim/infrastructure/adapters/redis_analyze_job_queue.py",
-              "    def decode_request(cls, raw: str) -> ValidationRequest:\n        item: dict[str, Any] = json.loads(raw)\n        requirement = dict(item.pop(\"requirement_source\"))\n",
-              "    def decode_request(cls, raw: str) -> ValidationRequest:\n        decoded: object = json.loads(raw)\n        if not isinstance(decoded, dict):\n            raise ValueError(\"analyze request payload must be a JSON object\")\n        item: dict[str, Any] = dict(decoded)\n        requirement_raw = item.pop(\"requirement_source\")\n        if not isinstance(requirement_raw, dict):\n            raise ValueError(\"requirement_source must be a JSON object\")\n        requirement = dict(requirement_raw)\n",
-          )
-          replace(
-              "backend/src/aerobim/infrastructure/adapters/redis_analyze_job_queue.py",
-              "        except (KeyError, TypeError, ValueError) as exc:\n            raise AnalyzeQueuePayloadError(job_id, \"malformed JSON request\") from exc\n",
-              "        except (AttributeError, KeyError, TypeError, ValueError) as exc:\n            raise AnalyzeQueuePayloadError(job_id, \"malformed JSON request\") from exc\n",
-          )
+          replace("README.md", "Required outside development/test for the job record store and shared rate limits. `submit` still executes in the API process; Redis is not a separate worker", "Required outside development/test for job records, the reliable ready/processing queue, and shared rate limits. `submit` publishes to Redis; dedicated `aerobim.worker` executes with at-least-once delivery")
+          replace("README.en.md", "Required outside development/test for the job record store and shared rate limits. `submit` still executes in the API process; Redis is not a separate worker", "Required outside development/test for job records, the reliable ready/processing queue, and shared rate limits. `submit` publishes to Redis; the dedicated `aerobim.worker` executes with at-least-once delivery")
+          replace(".github/SECURITY.md", "IfcOpenShell runs in the API process (IFC-ISO-01, 1.5 GB disk band). Pdfium uses a process isolate + POSIX rlimit / Windows Job Object (PROC-01 closed; Job-create failure falls back to timeout).", "Production async IfcOpenShell runs in the dedicated worker container (IFC-ISO-01, 1.5 GB disk band); the synchronous API path remains available outside production compose. Pdfium uses a process isolate + POSIX rlimit / Windows Job Object (PROC-01 closed; Job-create failure falls back to timeout).")
+          replace("docs/KNOWN_BUGS.md", "| IFC-ISO-01 | IfcOpenShell opens in the API process (1.5 GB disk band). Pdfium crop and pdfminer drawing extract run in a child process with wall-clock kill. Windows Job Object is CPU/memory, not a network jail. | Crash/OOM ≠ silent `summary.passed=true`. Not MEP delivered. |", "| IFC-ISO-01 | Production async IfcOpenShell runs in a dedicated long-lived worker container (1.5 GB disk band); the synchronous API path is disabled by production compose. Pdfium crop and pdfminer drawing extract run in a child process with wall-clock kill. | Worker limits are not a fresh per-job sandbox. Crash/OOM ≠ silent `summary.passed=true`. Not MEP delivered. |")
+          replace("backend/src/aerobim/application/use_cases/analyze_job_recovery.py", "This does not move IFC parsing out of the API process and does not prove a\ncustomer pack, an external CDE import, or production OIDC. It only requeues\njobs that failed because the runner disappeared before a report id was stored.\n", "This helper is transport-agnostic; production invokes equivalent recovery from the\ndedicated worker. It does not prove a customer pack, external CDE import, or\nproduction OIDC. It only requeues jobs abandoned before a report id was stored.\n")
+          replace("backend/src/aerobim/application/use_cases/analyze_project_package_jobs.py", "        # Opportunistic reclaim before concurrency accounting / create.\n        # JOB-01: QUEUED rows whose runner never started (API process died) fail closed.\n", "        # Opportunistic reclaim before concurrency accounting / create.\n        # QUEUED rows whose delivery never reached a worker fail closed after the TTL.\n")
+          replace("backend/src/aerobim/infrastructure/adapters/redis_analyze_job_queue.py", "    def decode_request(cls, raw: str) -> ValidationRequest:\n        item: dict[str, Any] = json.loads(raw)\n        requirement = dict(item.pop(\"requirement_source\"))\n", "    def decode_request(cls, raw: str) -> ValidationRequest:\n        decoded: object = json.loads(raw)\n        if not isinstance(decoded, dict):\n            raise ValueError(\"analyze request payload must be a JSON object\")\n        item: dict[str, Any] = dict(decoded)\n        requirement_raw = item.pop(\"requirement_source\")\n        if not isinstance(requirement_raw, dict):\n            raise ValueError(\"requirement_source must be a JSON object\")\n        requirement = dict(requirement_raw)\n")
+          replace("backend/src/aerobim/infrastructure/adapters/redis_analyze_job_queue.py", "        except (KeyError, TypeError, ValueError) as exc:\n            raise AnalyzeQueuePayloadError(job_id, \"malformed JSON request\") from exc\n", "        except (AttributeError, KeyError, TypeError, ValueError) as exc:\n            raise AnalyzeQueuePayloadError(job_id, \"malformed JSON request\") from exc\n")
           queue_test = Path("backend/tests/test_redis_analyze_job_queue.py")
-          queue_test.write_text(
-              queue_test.read_text(encoding="utf-8")
-              + "\n\n@pytest.mark.parametrize(\"payload\", [\"null\", \"[]\", '\"string\"', '{\"requirement_source\": []}'])\n"
-                "def test_reserve_rejects_non_object_or_malformed_request(payload: str) -> None:\n"
-                "    fake = _FakeRedis(reserved=\"job-malformed\", payload=payload)\n"
-                "    with pytest.raises(AnalyzeQueuePayloadError) as caught:\n"
-                "        _queue(fake).reserve()\n"
-                "    assert caught.value.job_id == \"job-malformed\"\n",
-              encoding="utf-8",
-          )
-          replace(
-              "backend/tests/test_task_numbering_unverified.py",
-              "        self.assertIn(\"автоматизированной верификации проектной и рабочей документации\", readme)\n        self.assertIn(\"заказчик канала\", readme)\n",
-              "        self.assertIn(\"автоматическая проверка проектной и рабочей документации\", readme)\n",
-          )
-          replace(
-              "backend/tests/test_task_numbering_unverified.py",
-              "        self.assertIn(\n            \"автоматизированной верификации проектной и рабочей документации\", application\n        )\n        self.assertNotIn",
-              "        self.assertIn(\n            \"автоматизированной верификации проектной и рабочей документации\", application\n        )\n        self.assertIn(\"заказчика канала\", application)\n        self.assertNotIn",
-          )
+          queue_test.write_text(queue_test.read_text(encoding="utf-8") + "\n\n@pytest.mark.parametrize(\"payload\", [\"null\", \"[]\", '\"string\"', '{\"requirement_source\": []}'])\ndef test_reserve_rejects_non_object_or_malformed_request(payload: str) -> None:\n    fake = _FakeRedis(reserved=\"job-malformed\", payload=payload)\n    with pytest.raises(AnalyzeQueuePayloadError) as caught:\n        _queue(fake).reserve()\n    assert caught.value.job_id == \"job-malformed\"\n", encoding="utf-8")
+          replace("backend/tests/test_task_numbering_unverified.py", "        self.assertIn(\"автоматизированной верификации проектной и рабочей документации\", readme)\n        self.assertIn(\"заказчик канала\", readme)\n", "        self.assertIn(\"автоматическая проверка проектной и рабочей документации\", readme)\n")
+          replace("backend/tests/test_task_numbering_unverified.py", "        self.assertIn(\n            \"автоматизированной верификации проектной и рабочей документации\", application\n        )\n        self.assertNotIn", "        self.assertIn(\n            \"автоматизированной верификации проектной и рабочей документации\", application\n        )\n        self.assertIn(\"заказчика канала\", application)\n        self.assertNotIn")
           PY
-      - uses: actions/setup-python@a8470cfc521f5c749e0c663f53a6d5ecf6b4a931 # v6.1.0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
           cache: pip
