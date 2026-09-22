@@ -33,7 +33,7 @@ The green badge is Checkpoint `GO`: the regulatory-measurement MVP; code and fix
 
 **AeroBIM** checks a design/working pack against itself: model, sheet, schedule, brief and calculation. Each file can open cleanly on its own. The defect lives in the seam and usually surfaces on site.
 
-A finding carries a clause, a storey or grid, and a GUID. The pack’s final status is set by an expert. Output is HTML, JSON, PDF, and a BCF file.
+A finding carries a clause, a storey or grid, and a GUID. An expert records the decision on a finding. The `summary.passed` flag is set by the deterministic gate: a person does not write it, and a language model does not write it. Output is HTML, JSON, PDF, and a BCF file.
 
 Three shelves in the process.
 
@@ -96,7 +96,7 @@ Protocol on the fixture pack. A deterministic report after an agreed revision.
 |---|---|
 | Ingest | IFC 2x3 / 4 / 4x3, IDS 1.0, PDF vector/raster, specification text |
 | Cross-check | Deterministic IFC + IDS + cross-document compare (configured ε-band) |
-| Workplace | 3D review shell (Vite), RU/EN templates, HITL. Sheet-error highlight is a pilot item, not the expert UI |
+| Workplace | Review shell (Vite): IFC model, saved sheet preview and zone from the report, RU/EN templates, HITL. Not a drawing editor and not a customer sheet |
 | Report | HTML + JSON + PDF + structural BCF 2.1 / 3.0 ZIP |
 | Verdict | `summary.passed` is a Shared-gate. LLM/VLM never write it ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)) |
 
@@ -106,7 +106,7 @@ An unfinished mandatory check cannot yield a positive pack result.
 
 | | |
 |---|---|
-| **Runs on this clone** | Fixture packs, fail-closed IDS, CLI, CI, structural BCF, review shell. Sheet-error highlight is a pilot item |
+| **Runs on this clone** | Fixture packs, fail-closed IDS, CLI, CI, structural BCF, review shell with the sheet preview stored on the report. Customer-sheet review is a pilot subject |
 | **Pilot subject** | Dual human raters + pack-specific conclusions (RT-001b) · appointing-party-signed profile (RT-002c) · system-aware clash (**RT-003c**) · customer federated IFC (`c_customer_federated_ifc`) · BCF import into the appointing party’s CDE |
 
 ## Try it
@@ -195,7 +195,7 @@ flowchart LR
 1. **The model.** Properties and quantities are validated with IfcOpenShell. IFC2x3 (buildingSMART schema; no ISO publication), IFC4 ADD2 (ISO 16739-1:2018) and IFC4x3 (ISO 16739-1:2024) go through one kernel. ISO/PAS 16739:2005 is the IFC2x Platform, not IFC2x3. Where property-set names diverge between releases, the difference is a `ValidationIssue`, not a silent skip. Per-feature rules: [`docs/ifc-compatibility-matrix.md`](docs/ifc-compatibility-matrix.md).
 2. **The rules.** IDS 1.0 is validated with IfcTester. Official rule sets from Moscow Region State Expertise and SPb GAU CGE (CIM OKS ed. 3.1.0 + CIM RII ed. 1.1.0) ship in `samples/`; the CGE profile ([`samples/profiles/spb-cge/`](samples/profiles/spb-cge/)) is a published rule set, not a customer-signed acceptance profile. CI checks the committed profile. A requested rule set that cannot load fails the check.
 3. **The other documents.** The model is compared with drawing notes, specifications and calculation texts, with a configured ε-band and Russian/European grouped decimals. Sources are compared; the calculation is not recomputed.
-4. **The report.** Each finding carries `finding_id`, `source_id` and `evidence_refs` (persistence refuses a finding without them). People get HTML; machines get JSON; issue exchange gets a structural BCF 2.1 / 3.0 ZIP. The browser review shell (web-ifc + Three.js) shows the IFC in 3D. Drawing overlay is a fixture CLI, not the expert UI.
+4. **The report.** Each finding carries `finding_id`, `source_id` and `evidence_refs` (persistence refuses a finding without them). People get HTML; machines get JSON; issue exchange gets a structural BCF 2.1 / 3.0 ZIP. The browser review shell (web-ifc + Three.js) shows the IFC and the saved sheet preview with the zone from the report. It is not a drawing editor. The fixture overlay CLI remains a separate run.
 
 `summary.passed` is assembled from deterministic errors and the capability table ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)). Advisory LLM/VLM text, if enabled, drafts remark wording only and never writes that flag; under customer sign-off profiles outbound advisory calls are forbidden. Every optional engine reports `ok`, `skipped` or `failed`; any `FAILED` forces `summary.passed=false`. The same boundary is served on `GET /v1/system/capabilities`. That flag is a Shared-gate under configured rules.
 
@@ -230,7 +230,7 @@ GOST R 21.101-2026 (Rosstandart order № 129-ст of 12 February 2026; **in for
 - Configured ε-band (SI-normalised); deterministic requirement extraction from narrative text; advisory LLM does not sign anything off
 - Every check reports `ok` / `skipped` / `failed`; tenant/object ACL on artifacts under `customer_pilot` / `production` (off by default in development); HTML/JSON; PDF; structural BCF 2.1 / 3.0 ZIP
 - PDF via pypdfium2 + pdfminer; default `AEROBIM_PDF_BACKEND=pdfium`
-- Browser IFC viewer. Drawing overlay is a fixture CLI, not the expert workplace
+- Browser IFC viewer and the sheet preview with the zone stored on the report. Not a drawing editor and not a customer-sheet check
 - Norm rule packs (a fixture pack is not a customer-signed profile) and an opt-in completeness inventory
 - Quality measurement protocol (Wilson intervals, sample-size planner)
 
@@ -253,7 +253,7 @@ Optional: geometry clash `.[clash]`; OCR `.[raster]`; PyMuPDF `pdf-agpl`; adviso
 | `POST` | `/v1/uploads` | Multipart ingest |
 | `POST` | `/v1/validate/ifc` | Validate IFC against requirements and IDS |
 | `POST` | `/v1/analyze/project-package` | Full package analysis |
-| `POST` | `/v1/analyze/project-package/submit` | Queue a larger package in the same process |
+| `POST` | `/v1/analyze/project-package/submit` | Larger package: job record plus execution in the same API process (`BackgroundTasks`), not a separate worker |
 | `GET` | `/v1/analyze/project-package/jobs/{job_id}` | Poll a background job |
 | `POST` | `/v1/analyze/project-package/jobs/{job_id}/cancel` | Cancel |
 | `GET` | `/v1/reports` | List persisted reports |
@@ -391,7 +391,7 @@ A local clone runs on defaults. CI checks the table against `settings.py` both w
 | `AEROBIM_OIDC_BFF_TOKEN_URL` | *(unset)* | Lab-only token endpoint; required for Phase 3; SSRF-gated at boot |
 | `AEROBIM_OIDC_BFF_CLIENT_SECRET` | *(unset)* | Confidential BFF client secret (lab); never a production SSO claim |
 | `AEROBIM_OIDC_BFF_COOKIE_SECRET` | *(unset)* | HMAC secret for the lab session cookie; unset keeps Phase 3 off |
-| `AEROBIM_REDIS_URL` | *(unset in dev)* | Required outside development/test for durable jobs and shared rate limits |
+| `AEROBIM_REDIS_URL` | *(unset in dev)* | Required outside development/test for the job record store and shared rate limits. `submit` still executes in the API process; Redis is not a separate worker |
 | `AEROBIM_VLM_ENABLED` | `false` | Opt-in advisory VLM drawing read; never sets `summary.passed` |
 
 </details>

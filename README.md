@@ -33,7 +33,7 @@
 
 **AeroBIM** сверяет комплект ПД/РД сам с собой: модель, лист, ведомость, ТЗ и расчёт. Каждый файл может открываться чисто. Дефект живёт в шве и обычно всплывает на площадке.
 
-Находка несёт пункт нормы, этаж или ось, GUID. Итоговый статус комплекта ставит эксперт. На выходе HTML, JSON, PDF и файл BCF.
+Находка несёт пункт нормы, этаж или ось, GUID. Решение по замечанию записывает эксперт. Флаг `summary.passed` ставит детерминированный шлюз: его не пишет человек и не пишет языковая модель. На выходе HTML, JSON, PDF и файл BCF.
 
 Три полки в процессе.
 
@@ -96,7 +96,7 @@
 |---|---|
 | Вход | IFC 2x3 / 4 / 4x3, IDS 1.0, PDF вектор/растр, текст спецификации |
 | Сверка | Детерминированные IFC + IDS + междокументное сравнение (настраиваемая ε-полоса) |
-| Рабочее место | Оболочка ревью 3D (Vite), шаблоны RU/EN, HITL. Подсветка ошибки на листе — пилот, не UI эксперта |
+| Рабочее место | Оболочка ревью (Vite): модель IFC, сохранённое превью листа и зона из отчёта, шаблоны RU/EN, HITL. Это не редактор чертежа и не лист заказчика |
 | Отчёт | HTML + JSON + PDF + структурный архив BCF 2.1 / 3.0 |
 | Вердикт | `summary.passed` — Shared-gate. Языковая модель его не пишет ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)) |
 
@@ -106,7 +106,7 @@
 
 | | |
 |---|---|
-| **Работает на этом клоне** | Учебные комплекты, IDS с отказом при пропуске, CLI, CI, структурный BCF, оболочка ревью. Подсветка ошибки на листе — пилот |
+| **Работает на этом клоне** | Учебные комплекты, IDS с отказом при пропуске, CLI, CI, структурный BCF, оболочка ревью с превью листа из отчёта. Проверка листа заказчика — предмет пилота |
 | **Предмет пилота** | Два разметчика-человека + заключение на тот же том (RT-001b) · подписанный профиль назначающей стороны (RT-002c) · system-aware clash (**RT-003c**) · федеративный IFC заказчика (`c_customer_federated_ifc`) · импорт BCF в СОД заказчика |
 
 ## Try it
@@ -195,7 +195,7 @@ flowchart LR
 1. **Модель.** Свойства и величины — IfcOpenShell. IFC2x3 (схема buildingSMART; публикации ISO нет), IFC4 ADD2 (ISO 16739-1:2018) и IFC4x3 (ISO 16739-1:2024) идут через одно ядро. ISO/PAS 16739:2005 — это IFC2x Platform, не IFC2x3. Расхождение имён наборов свойств между релизами — `ValidationIssue`, не молчаливый пропуск. Правила: [`docs/ifc-compatibility-matrix.md`](docs/ifc-compatibility-matrix.md).
 2. **Правила.** IDS 1.0 — IfcTester. Наборы Мособлгосэкспертизы и СПб ГАУ ЦГЭ (ЦИМ ОКС ред. 3.1.0 + ЦИМ РИИ ред. 1.1.0) лежат в `samples/`. Профиль ЦГЭ ([`samples/profiles/spb-cge/`](samples/profiles/spb-cge/)) — опубликованный набор, не подписанный профиль приёмки. CI сверяет профиль в git. Незагруженный запрошенный набор роняет проверку.
 3. **Документы.** Модель сверяется с пометками на чертеже, спецификациями и расчётными текстами (ε-полоса, русские и европейские группированные числа). Источники сравниваются, расчёт не пересчитывается.
-4. **Отчёт.** У находки есть `finding_id`, `source_id` и `evidence_refs` — без них она не сохраняется. HTML людям, JSON машинам, BCF 2.1 / 3.0 для обмена замечаниями. Оболочка ревью (web-ifc + Three.js) показывает модель. Наложение доказательства на лист — учебный CLI, не UI эксперта.
+4. **Отчёт.** У находки есть `finding_id`, `source_id` и `evidence_refs` — без них она не сохраняется. HTML людям, JSON машинам, BCF 2.1 / 3.0 для обмена замечаниями. Оболочка ревью (web-ifc + Three.js) показывает модель и сохранённое превью листа с зоной из отчёта. Это не редактор чертежа. Учебный CLI наложения остаётся отдельным прогоном фикстуры.
 
 `summary.passed` собирается из детерминированных ошибок и таблицы доступности проверок ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)). Советующий текст языковой модели, если включён, только черновит формулировку замечания и никогда не пишет этот флаг; на профилях заказчика внешние вызовы запрещены. Каждая опциональная проверка отчитывается `ok` / `skipped` / `failed`; любое `FAILED` ставит `summary.passed=false`. Та же граница — `GET /v1/system/capabilities`. Это технический статус Shared-gate.
 
@@ -230,7 +230,7 @@ Checkpoint — **регуляторно-измерительный MVP**. `custo
 - ε-полоса (SI); извлечение требований из текста по шаблонам; языковая модель не подписывает итог
 - Каждая проверка отчитывается `ok` / `skipped` / `failed`; ACL к артефактам на профилях `customer_pilot` / `production` (в development выключено); HTML/JSON; PDF; BCF 2.1 / 3.0
 - PDF: pypdfium2 + pdfminer, по умолчанию `AEROBIM_PDF_BACKEND=pdfium`
-- Просмотр IFC в браузере. Наложение на чертёж — учебный CLI, не рабочее место эксперта
+- Просмотр IFC в браузере и превью листа с зоной из сохранённого отчёта. Это не редактор чертежа и не проверка листа заказчика
 - Паки нормативных правил (учебный пак ≠ подписанный профиль) и опциональный инвентарь комплектности
 - Протокол измерения качества (интервалы Уилсона, планировщик выборки)
 
@@ -253,7 +253,7 @@ Checkpoint — **регуляторно-измерительный MVP**. `custo
 | `POST` | `/v1/uploads` | Приём файлов |
 | `POST` | `/v1/validate/ifc` | IFC против требований и IDS |
 | `POST` | `/v1/analyze/project-package` | Полный анализ комплекта |
-| `POST` | `/v1/analyze/project-package/submit` | Крупный комплект в фоне того же процесса |
+| `POST` | `/v1/analyze/project-package/submit` | Крупный комплект: запись задания и исполнение в том же процессе API (`BackgroundTasks`), не отдельный worker |
 | `GET` | `/v1/analyze/project-package/jobs/{job_id}` | Статус задания |
 | `POST` | `/v1/analyze/project-package/jobs/{job_id}/cancel` | Отмена |
 | `GET` | `/v1/reports` | Список отчётов |
@@ -391,7 +391,7 @@ presentation/    FastAPI
 | `AEROBIM_OIDC_BFF_TOKEN_URL` | *(unset)* | Lab-only token endpoint; required for Phase 3; SSRF-gated at boot |
 | `AEROBIM_OIDC_BFF_CLIENT_SECRET` | *(unset)* | Confidential BFF client secret (lab); never a production SSO claim |
 | `AEROBIM_OIDC_BFF_COOKIE_SECRET` | *(unset)* | HMAC secret for the lab session cookie; unset keeps Phase 3 off |
-| `AEROBIM_REDIS_URL` | *(unset in dev)* | Required outside development/test for durable jobs and shared rate limits |
+| `AEROBIM_REDIS_URL` | *(unset in dev)* | Required outside development/test for the job record store and shared rate limits. `submit` still executes in the API process; Redis is not a separate worker |
 | `AEROBIM_VLM_ENABLED` | `false` | Opt-in advisory VLM drawing read; never sets `summary.passed` |
 
 </details>
