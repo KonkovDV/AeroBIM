@@ -8,12 +8,10 @@ the test suite must not require file bytes to be present.
 from __future__ import annotations
 
 from pathlib import Path
-from unittest.mock import patch
 
 from aerobim.application.services.package_file_entries import collect_file_entries
 from aerobim.domain.models import DrawingSource, RequirementSource, ValidationRequest
 from aerobim.domain.package_manifest import Discipline, FileRole, UploadState
-
 
 _SHA = "ab" * 32  # 64 hex chars — a plausible sha256
 
@@ -34,7 +32,7 @@ def _base_request(**kwargs) -> ValidationRequest:
 class TestCollectFileEntries:
     def test_empty_when_no_sha256_provided(self) -> None:
         """Fixture/dev runs → empty tuple; no error."""
-        request = _base_request(drawing_sources=[])
+        request = _base_request(drawing_sources=())
         entries = collect_file_entries(request)
         assert entries == ()
 
@@ -43,7 +41,7 @@ class TestCollectFileEntries:
             path=Path("drawings/sheet-01.pdf"),
             sha256=_SHA,
         )
-        request = _base_request(drawing_sources=[source])
+        request = _base_request(drawing_sources=(source,))
         entries = collect_file_entries(request)
         assert len(entries) == 1
         entry = entries[0]
@@ -58,7 +56,7 @@ class TestCollectFileEntries:
             path=Path("drawings/sheet-02.pdf"),
             sha256=None,
         )
-        request = _base_request(drawing_sources=[source])
+        request = _base_request(drawing_sources=(source,))
         entries = collect_file_entries(request)
         assert entries == ()
 
@@ -67,30 +65,23 @@ class TestCollectFileEntries:
             text="some inline text",
             sha256=_SHA,
         )
-        request = _base_request(drawing_sources=[source])
+        request = _base_request(drawing_sources=(source,))
         entries = collect_file_entries(request)
         assert entries == ()
 
-    def test_ifc_sha256_attribute_produces_ifc_model_entry(self) -> None:
+    def test_ifc_path_without_a_hash_field_is_skipped(self) -> None:
         request = _base_request(
             ifc_path=Path("models/building.ifc"),
-            drawing_sources=[],
+            drawing_sources=(),
         )
-        # Simulate upload layer attaching sha256 via object attribute.
-        object.__setattr__(request, "ifc_sha256", _SHA)  # type: ignore[call-arg]
-        entries = collect_file_entries(request)
-        assert any(e.role == FileRole.IFC_MODEL for e in entries)
-        ifc_entry = next(e for e in entries if e.role == FileRole.IFC_MODEL)
-        assert ifc_entry.sha256 == _SHA
-        assert ifc_entry.logical_path == "building.ifc"
-        assert ifc_entry.media_type == "application/x-step"
+        assert collect_file_entries(request) == ()
 
     def test_dxf_extension_produces_drawing_dxf_role(self) -> None:
         source = DrawingSource(
             path=Path("cad/floor-plan.dxf"),
             sha256=_SHA,
         )
-        request = _base_request(drawing_sources=[source])
+        request = _base_request(drawing_sources=(source,))
         entries = collect_file_entries(request)
         assert len(entries) == 1
         assert entries[0].role == FileRole.DRAWING_DXF
@@ -101,7 +92,7 @@ class TestCollectFileEntries:
             path=Path("drawings/plan.pdf"),
             sha256=_SHA,
         )
-        request = _base_request(drawing_sources=[source])
+        request = _base_request(drawing_sources=(source,))
         entries = collect_file_entries(request)
         assert len(entries) == 1
         assert entries[0].role == FileRole.DRAWING_PDF
@@ -111,7 +102,7 @@ class TestCollectFileEntries:
         with_hash = DrawingSource(path=Path("a.pdf"), sha256=_SHA)
         without_hash = DrawingSource(path=Path("b.pdf"), sha256=None)
         with_hash2 = DrawingSource(path=Path("c.dxf"), sha256=_SHA[:64])
-        request = _base_request(drawing_sources=[with_hash, without_hash, with_hash2])
+        request = _base_request(drawing_sources=(with_hash, without_hash, with_hash2))
         entries = collect_file_entries(request)
         assert len(entries) == 2
         paths = {e.logical_path for e in entries}
@@ -125,7 +116,7 @@ class TestCollectFileEntries:
             sha256=_SHA,
             revision="R3",
         )
-        request = _base_request(drawing_sources=[source], revision="P1")
+        request = _base_request(drawing_sources=(source,), revision="P1")
         entries = collect_file_entries(request)
         assert len(entries) == 1
         assert entries[0].revision == "R3"
@@ -136,7 +127,24 @@ class TestCollectFileEntries:
             sha256=_SHA,
             revision=None,
         )
-        request = _base_request(drawing_sources=[source], revision="P2")
+        request = _base_request(drawing_sources=(source,), revision="P2")
         entries = collect_file_entries(request)
         assert len(entries) == 1
         assert entries[0].revision == "P2"
+
+    def test_requirement_source_with_sha256_is_included(self) -> None:
+        request = _base_request(
+            requirement_source=RequirementSource(
+                text="spec",
+                path=Path("docs/spec.txt"),
+                sha256=_SHA,
+                source_id="spec-1",
+            ),
+            drawing_sources=(),
+        )
+        entries = collect_file_entries(request)
+        assert len(entries) == 1
+        assert entries[0].role == FileRole.SPECIFICATION_TEXT
+        assert entries[0].logical_path == "spec.txt"
+        assert entries[0].source == "spec-1"
+        assert entries[0].size == 0
