@@ -19,26 +19,28 @@ Revision diff categories:
 
 Reduces: auditability risk, evaluation gap.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from enum import Enum
-from typing import Optional
+from datetime import UTC, datetime
+from enum import StrEnum
+from typing import Any
 
 
-class FindingStatus(str, Enum):
+class FindingStatus(StrEnum):
     """Lifecycle status of a finding."""
-    NEW = "NEW"                   # First detected in this revision
-    PERSISTED = "PERSISTED"       # Present in previous revision(s) unchanged
-    RESOLVED = "RESOLVED"         # Fixed in current revision
-    REGRESSED = "REGRESSED"       # Was RESOLVED, reappears
-    REOPENED = "REOPENED"         # Human action: re-opened after RESOLVED
-    SUPERSEDED = "SUPERSEDED"     # Rule version changed; replaced by new evaluation
-    NOT_VERIFIED = "NOT_VERIFIED" # Insufficient evidence; unknown ≠ pass
+
+    NEW = "NEW"  # First detected in this revision
+    PERSISTED = "PERSISTED"  # Present in previous revision(s) unchanged
+    RESOLVED = "RESOLVED"  # Fixed in current revision
+    REGRESSED = "REGRESSED"  # Was RESOLVED, reappears
+    REOPENED = "REOPENED"  # Human action: re-opened after RESOLVED
+    SUPERSEDED = "SUPERSEDED"  # Rule version changed; replaced by new evaluation
+    NOT_VERIFIED = "NOT_VERIFIED"  # Insufficient evidence; unknown ≠ pass
 
 
-class ReviewAction(str, Enum):
+class ReviewAction(StrEnum):
     ACCEPT = "accept"
     REJECT = "reject"
     FALSE_POSITIVE = "false_positive"
@@ -52,8 +54,9 @@ class ReviewAction(str, Enum):
     APPROVE_REMARK = "approve_remark"
 
 
-class ChangeCategory(str, Enum):
+class ChangeCategory(StrEnum):
     """How an element changed between revisions."""
+
     UNCHANGED = "unchanged"
     ADDED = "added"
     REMOVED = "removed"
@@ -71,14 +74,15 @@ class RemarkVersion:
     Immutable remark snapshot. Human-edited text is never overwritten.
     AI may generate; human approves.
     """
+
     remark_version_id: str
-    generated_remark: str           # Template/AI-generated draft
-    reviewer_edited_remark: Optional[str] = None  # Human edit (never auto-overwritten)
-    approved_remark: Optional[str] = None          # Final, locked text
-    approved_by: Optional[str] = None
-    approved_at: Optional[datetime] = None
-    language: str = "ru"            # "ru" or "en"
-    generated_at: datetime = field(default_factory=lambda: datetime.now(tz=timezone.utc))
+    generated_remark: str  # Template/AI-generated draft
+    reviewer_edited_remark: str | None = None  # Human edit (never auto-overwritten)
+    approved_remark: str | None = None  # Final, locked text
+    approved_by: str | None = None
+    approved_at: datetime | None = None
+    language: str = "ru"  # "ru" or "en"
+    generated_at: datetime = field(default_factory=lambda: datetime.now(tz=UTC))
 
     @property
     def final_text(self) -> str:
@@ -93,16 +97,17 @@ class RemarkVersion:
 @dataclass
 class ReviewEvent:
     """Audit trail entry for reviewer actions."""
+
     event_id: str
     finding_id: str
     action: ReviewAction
-    actor: str          # User ID
-    timestamp: datetime = field(default_factory=lambda: datetime.now(tz=timezone.utc))
-    note: Optional[str] = None
-    assigned_to: Optional[str] = None
-    remark_version_id: Optional[str] = None
+    actor: str  # User ID
+    timestamp: datetime = field(default_factory=lambda: datetime.now(tz=UTC))
+    note: str | None = None
+    assigned_to: str | None = None
+    remark_version_id: str | None = None
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "event_id": self.event_id,
             "finding_id": self.finding_id,
@@ -118,13 +123,14 @@ class ReviewEvent:
 @dataclass
 class ElementRevisionDiff:
     """Change record for one IFC element between two revisions."""
+
     ifc_guid: str
     change_category: ChangeCategory
     previous_revision_id: str
     current_revision_id: str
     changed_properties: list[str] = field(default_factory=list)
     is_rule_impacting: bool = False
-    notes: Optional[str] = None
+    notes: str | None = None
 
 
 @dataclass
@@ -144,6 +150,7 @@ class Finding:
       REGRESSED when RESOLVED finding fingerprint reappears.
       SUPERSEDED when rule version changes; a new finding replaces.
     """
+
     finding_id: str
     rule_id: str
     rule_version: str
@@ -156,7 +163,7 @@ class Finding:
     status: FindingStatus = FindingStatus.NEW
 
     # Severity from rule (deterministic; AI cannot change)
-    severity: str = "error"     # "error" | "warning" | "info"
+    severity: str = "error"  # "error" | "warning" | "info"
     discipline: str = "UNKNOWN"
 
     # Evidence
@@ -167,47 +174,48 @@ class Finding:
     remark_versions: list[RemarkVersion] = field(default_factory=list)
 
     # Cross-revision linkage
-    previous_finding_id: Optional[str] = None  # For PERSISTED / REGRESSED
-    superseded_by: Optional[str] = None         # For SUPERSEDED
-    bcf_topic_id: Optional[str] = None          # BCF 3.0 topic ID
+    previous_finding_id: str | None = None  # For PERSISTED / REGRESSED
+    superseded_by: str | None = None  # For SUPERSEDED
+    bcf_topic_id: str | None = None  # BCF 3.0 topic ID
 
     # Review
-    reviewer_id: Optional[str] = None
-    assigned_to: Optional[str] = None
+    reviewer_id: str | None = None
+    assigned_to: str | None = None
     review_events: list[ReviewEvent] = field(default_factory=list)
 
-    created_at: datetime = field(default_factory=lambda: datetime.now(tz=timezone.utc))
-    updated_at: datetime = field(default_factory=lambda: datetime.now(tz=timezone.utc))
+    created_at: datetime = field(default_factory=lambda: datetime.now(tz=UTC))
+    updated_at: datetime = field(default_factory=lambda: datetime.now(tz=UTC))
 
     # Determinism gate: AI cannot flip this
-    _deterministic_verdict: Optional[bool] = field(default=None, repr=False)
+    _deterministic_verdict: bool | None = field(default=None, repr=False)
 
     @property
     def fingerprint(self) -> str:
         """Stable identity for cross-revision comparison."""
         import hashlib
-        return hashlib.sha256(
-            f"{self.rule_id}:{self.rule_version}:" +
-            "|".join(sorted(self.evidence_refs))
-        ).encode().hexdigest()[:16]
+
+        payload = (
+            f"{self.rule_id}:{self.rule_version}:" + "|".join(sorted(self.evidence_refs))
+        ).encode()
+        return hashlib.sha256(payload).hexdigest()[:16]
 
     def transition_to(self, new_status: FindingStatus, actor: str = "system") -> None:
         """Advance lifecycle state."""
         self.status = new_status
-        self.updated_at = datetime.now(tz=timezone.utc)
+        self.updated_at = datetime.now(tz=UTC)
 
     def add_remark_version(self, remark: RemarkVersion) -> None:
         """Append remark; never overwrites human-edited text."""
         self.remark_versions.append(remark)
-        self.updated_at = datetime.now(tz=timezone.utc)
+        self.updated_at = datetime.now(tz=UTC)
 
     @property
-    def current_remark(self) -> Optional[RemarkVersion]:
+    def current_remark(self) -> RemarkVersion | None:
         return self.remark_versions[-1] if self.remark_versions else None
 
     def record_review(self, event: ReviewEvent) -> None:
         self.review_events.append(event)
-        self.updated_at = datetime.now(tz=timezone.utc)
+        self.updated_at = datetime.now(tz=UTC)
         if event.assigned_to:
             self.assigned_to = event.assigned_to
         if event.action == ReviewAction.REOPEN:
@@ -215,7 +223,7 @@ class Finding:
         elif event.action == ReviewAction.CLOSE:
             self.transition_to(FindingStatus.RESOLVED, event.actor)
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "finding_id": self.finding_id,
             "rule_id": self.rule_id,

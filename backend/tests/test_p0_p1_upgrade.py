@@ -17,25 +17,36 @@ Determinism invariant:
   DeterministicVerdict(AI_ON) == DeterministicVerdict(AI_OFF)
   Tests enforce this by checking AI_ADVISORY cannot flip deterministic result.
 """
+
 from __future__ import annotations
 
 import hashlib
-import pytest
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
+import pytest
 
 # ===========================================================================
 # P0-A: Package Manifest
 # ===========================================================================
 
+
 class TestPackageManifest:
     from aerobim.domain.package_manifest import (
-        PackageFileEntry, FileRole, Discipline, UploadState,
-        build_package_manifest, PackageManifest,
+        Discipline,
+        FileRole,
+        PackageFileEntry,
+        PackageManifest,
+        UploadState,
+        build_package_manifest,
     )
 
-    def _make_entry(self, path: str = "model.ifc", sha: str = "a" * 64) -> "PackageFileEntry":
-        from aerobim.domain.package_manifest import PackageFileEntry, FileRole, Discipline, UploadState
+    def _make_entry(self, path: str = "model.ifc", sha: str = "a" * 64) -> PackageFileEntry:
+        from aerobim.domain.package_manifest import (
+            Discipline,
+            FileRole,
+            PackageFileEntry,
+        )
+
         return PackageFileEntry(
             logical_path=path,
             sha256=sha,
@@ -50,6 +61,7 @@ class TestPackageManifest:
     def test_deterministic_id_same_inputs(self):
         """Same inputs must produce same package_id (idempotency)."""
         from aerobim.domain.package_manifest import build_package_manifest
+
         entry = self._make_entry()
         m1 = build_package_manifest("T1", "P1", "R2", [entry])
         m2 = build_package_manifest("T1", "P1", "R2", [entry])
@@ -58,6 +70,7 @@ class TestPackageManifest:
     def test_deterministic_id_different_tenant(self):
         """Different tenant must produce different package_id."""
         from aerobim.domain.package_manifest import build_package_manifest
+
         entry = self._make_entry()
         m1 = build_package_manifest("T1", "P1", "R2", [entry])
         m2 = build_package_manifest("T2", "P1", "R2", [entry])
@@ -65,19 +78,22 @@ class TestPackageManifest:
 
     def test_manifest_integrity_valid(self):
         from aerobim.domain.package_manifest import build_package_manifest
+
         entry = self._make_entry()
         manifest = build_package_manifest("T1", "P1", "R2", [entry])
         assert manifest.verify_integrity()
 
     def test_manifest_integrity_tampered(self):
         from aerobim.domain.package_manifest import build_package_manifest
+
         entry = self._make_entry()
         manifest = build_package_manifest("T1", "P1", "R2", [entry])
         manifest.files[0].__dict__["sha256"] = "b" * 64  # tamper
         assert not manifest.verify_integrity()
 
     def test_tombstone_preserves_identity(self):
-        from aerobim.domain.package_manifest import build_package_manifest, UploadState
+        from aerobim.domain.package_manifest import UploadState, build_package_manifest
+
         entry = self._make_entry()
         manifest = build_package_manifest("T1", "P1", "R2", [entry])
         pkg_id = manifest.package_id
@@ -88,6 +104,7 @@ class TestPackageManifest:
 
     def test_file_entries_serialise(self):
         from aerobim.domain.package_manifest import build_package_manifest
+
         entry = self._make_entry()
         manifest = build_package_manifest("T1", "P1", "R2", [entry])
         d = manifest.to_dict()
@@ -100,19 +117,23 @@ class TestPackageManifest:
 # P0-C: Job State Machine
 # ===========================================================================
 
+
 class TestJobStateMachine:
     def _make_job(self):
-        from aerobim.domain.job_state import new_job, make_idempotency_key
+        from aerobim.domain.job_state import make_idempotency_key, new_job
+
         key = make_idempotency_key("pkg1", "pack-hash", "1.0.0", "cfg-hash")
         return new_job("T1", "P1", "pkg1", key)
 
     def test_initial_state_is_queued(self):
         from aerobim.domain.job_state import JobStatus
+
         job = self._make_job()
         assert job.status == JobStatus.QUEUED
 
     def test_valid_transition_queued_to_running(self):
         from aerobim.domain.job_state import JobStatus
+
         job = self._make_job()
         job.transition(JobStatus.RUNNING)
         assert job.status == JobStatus.RUNNING
@@ -120,12 +141,14 @@ class TestJobStateMachine:
 
     def test_invalid_transition_raises(self):
         from aerobim.domain.job_state import JobStatus
+
         job = self._make_job()
         with pytest.raises(ValueError, match="Illegal job transition"):
             job.transition(JobStatus.SUCCEEDED)  # QUEUED → SUCCEEDED not allowed
 
     def test_full_success_path(self):
         from aerobim.domain.job_state import JobStatus
+
         job = self._make_job()
         job.transition(JobStatus.RUNNING)
         job.mark_succeeded("report-001")
@@ -136,27 +159,32 @@ class TestJobStateMachine:
     def test_heartbeat_prevents_stale(self):
         job = self._make_job()
         from aerobim.domain.job_state import JobStatus
+
         job.transition(JobStatus.RUNNING)
         job.heartbeat()
         assert not job.is_stale()
 
     def test_stale_detection_no_heartbeat(self):
-        from aerobim.domain.job_state import JobStatus
         from datetime import timedelta
+
+        from aerobim.domain.job_state import JobStatus
+
         job = self._make_job()
         job.transition(JobStatus.RUNNING)
         # Simulate old heartbeat
-        job.last_heartbeat_at = datetime.now(tz=timezone.utc) - timedelta(seconds=300)
+        job.last_heartbeat_at = datetime.now(tz=UTC) - timedelta(seconds=300)
         assert job.is_stale()
 
     def test_idempotency_key_deterministic(self):
         from aerobim.domain.job_state import make_idempotency_key
+
         k1 = make_idempotency_key("pkg1", "hash", "1.0", "cfg")
         k2 = make_idempotency_key("pkg1", "hash", "1.0", "cfg")
         assert k1 == k2
 
     def test_cancel_flow(self):
         from aerobim.domain.job_state import JobStatus
+
         job = self._make_job()
         job.transition(JobStatus.RUNNING)
         job.request_cancel()
@@ -165,10 +193,11 @@ class TestJobStateMachine:
         assert job.status == JobStatus.CANCELLED
 
     def test_progress_pct(self):
-        from aerobim.domain.job_state import JobStatus, StageStatus
+        from aerobim.domain.job_state import JobStatus
+
         job = self._make_job()
         job.transition(JobStatus.RUNNING)
-        s1 = job.start_stage("parse", 100)
+        job.start_stage("parse", 100)
         job.start_stage("check", 50)
         job.finish_stage("parse", success=True)
         pct = job.progress_pct
@@ -179,12 +208,18 @@ class TestJobStateMachine:
 # P0-G: Evidence Provenance
 # ===========================================================================
 
+
 class TestEvidenceProvenance:
     def _make_evidence(self, method=None):
-        from aerobim.domain.evidence_provenance import (
-            EvidenceRecord, EvidenceLocator, EvidenceLocatorType, ExtractionMethod
-        )
         import uuid
+
+        from aerobim.domain.evidence_provenance import (
+            EvidenceLocator,
+            EvidenceLocatorType,
+            EvidenceRecord,
+            ExtractionMethod,
+        )
+
         locator = EvidenceLocator(
             locator_type=EvidenceLocatorType.IFC_PROPERTY,
             ifc_guid="3BUqr1E_rExgXG4aCTXQa1",
@@ -216,11 +251,13 @@ class TestEvidenceProvenance:
 
     def test_ai_advisory_flag(self):
         from aerobim.domain.evidence_provenance import ExtractionMethod
+
         ev = self._make_evidence(method=ExtractionMethod.AI_ADVISORY)
         assert ev.is_ai_advisory
 
     def test_deterministic_not_advisory(self):
         from aerobim.domain.evidence_provenance import ExtractionMethod
+
         ev = self._make_evidence(method=ExtractionMethod.DETERMINISTIC_PARSER)
         assert not ev.is_ai_advisory
 
@@ -236,12 +273,18 @@ class TestEvidenceProvenance:
 # P1-A: Regulation Model
 # ===========================================================================
 
+
 class TestRegulationModel:
     def _make_rule(self, approved: bool = False):
         from aerobim.domain.regulation_model import (
-            ComplianceRule, NormRef, RuleInterpretation, ReviewStatus,
-            RuleSeverity, ExecutionMode
+            ComplianceRule,
+            ExecutionMode,
+            NormRef,
+            ReviewStatus,
+            RuleInterpretation,
+            RuleSeverity,
         )
+
         interp = RuleInterpretation(
             interpretation_id="INT-001",
             clause_text="П.8.3.1...",
@@ -277,11 +320,11 @@ class TestRegulationModel:
 
     def test_unapproved_rule_not_production(self):
         rule = self._make_rule(approved=False)
-        assert not rule.is_production_ready()
+        assert not rule.reviews_approved()
 
     def test_approved_rule_is_production(self):
         rule = self._make_rule(approved=True)
-        assert rule.is_production_ready()
+        assert rule.reviews_approved()
 
     def test_rule_hash_stable(self):
         rule = self._make_rule()
@@ -289,6 +332,7 @@ class TestRegulationModel:
 
     def test_norm_pack_finalise_seals_hash(self):
         from aerobim.domain.regulation_model import NormPack
+
         pack = NormPack(
             pack_id="RU-AR-2025",
             version="1.0.0",
@@ -309,9 +353,11 @@ class TestRegulationModel:
 # P1-E: Finding Lifecycle
 # ===========================================================================
 
+
 class TestFindingLifecycle:
     def _make_finding(self, finding_id: str = "f-001"):
         from aerobim.domain.finding_lifecycle import Finding
+
         return Finding(
             finding_id=finding_id,
             rule_id="AR-COVER-001",
@@ -331,6 +377,7 @@ class TestFindingLifecycle:
 
     def test_fingerprint_differs_for_different_evidence(self):
         from aerobim.domain.finding_lifecycle import Finding
+
         f1 = self._make_finding("f-001")
         f2 = Finding(
             finding_id="f-002",
@@ -347,20 +394,32 @@ class TestFindingLifecycle:
         assert f1.fingerprint != f2.fingerprint
 
     def test_lifecycle_classify_new(self):
-        from aerobim.domain.finding_lifecycle import classify_finding_against_previous, FindingStatus
+        from aerobim.domain.finding_lifecycle import (
+            FindingStatus,
+            classify_finding_against_previous,
+        )
+
         f = self._make_finding()
         status = classify_finding_against_previous(f, {})
         assert status == FindingStatus.NEW
 
     def test_lifecycle_classify_persisted(self):
-        from aerobim.domain.finding_lifecycle import classify_finding_against_previous, FindingStatus
+        from aerobim.domain.finding_lifecycle import (
+            FindingStatus,
+            classify_finding_against_previous,
+        )
+
         f = self._make_finding()
         prev = {f.fingerprint: f}
         status = classify_finding_against_previous(f, prev)
         assert status == FindingStatus.PERSISTED
 
     def test_lifecycle_classify_regressed(self):
-        from aerobim.domain.finding_lifecycle import classify_finding_against_previous, FindingStatus
+        from aerobim.domain.finding_lifecycle import (
+            FindingStatus,
+            classify_finding_against_previous,
+        )
+
         f = self._make_finding()
         prev_resolved = self._make_finding("f-001")
         prev_resolved.transition_to(FindingStatus.RESOLVED)
@@ -368,8 +427,10 @@ class TestFindingLifecycle:
         assert status == FindingStatus.REGRESSED
 
     def test_remark_human_text_not_overwritten(self):
-        from aerobim.domain.finding_lifecycle import Finding, RemarkVersion
         import uuid
+
+        from aerobim.domain.finding_lifecycle import RemarkVersion
+
         f = self._make_finding()
         remark = RemarkVersion(
             remark_version_id=str(uuid.uuid4()),
@@ -385,28 +446,36 @@ class TestFindingLifecycle:
 # P1-G: Evaluation Benchmark
 # ===========================================================================
 
+
 class TestEvaluationBenchmark:
     def _make_manifest(self):
         from aerobim.tools.evaluate_benchmark import (
-            BenchmarkDatasetManifest, BenchmarkCase, CorpusType, PredictionLabel
+            BenchmarkCase,
+            BenchmarkDatasetManifest,
+            CorpusType,
+            PredictionLabel,
         )
+
         cases = []
-        for i, gold in enumerate([PredictionLabel.FAIL, PredictionLabel.FAIL,
-                                   PredictionLabel.PASS, PredictionLabel.PASS]):
+        for i, gold in enumerate(
+            [PredictionLabel.FAIL, PredictionLabel.FAIL, PredictionLabel.PASS, PredictionLabel.PASS]
+        ):
             input_hash = hashlib.sha256(f"input-{i}".encode()).hexdigest()
             case_hash = BenchmarkCase.compute_case_hash(
                 input_hash, gold.value, "AR-COVER-001", CorpusType.SYNTHETIC.value
             )
-            cases.append(BenchmarkCase(
-                case_id=f"case-{i}",
-                case_hash=case_hash,
-                rule_id="AR-COVER-001",
-                corpus_type=CorpusType.SYNTHETIC,
-                input_hash=input_hash,
-                gold_label=gold,
-                gold_source="annotator",
-                description=f"Case {i}",
-            ))
+            cases.append(
+                BenchmarkCase(
+                    case_id=f"case-{i}",
+                    case_hash=case_hash,
+                    rule_id="AR-COVER-001",
+                    corpus_type=CorpusType.SYNTHETIC,
+                    input_hash=input_hash,
+                    gold_label=gold,
+                    gold_source="annotator",
+                    description=f"Case {i}",
+                )
+            )
         manifest = BenchmarkDatasetManifest(
             manifest_id="M1",
             version="1.0.0",
@@ -425,16 +494,24 @@ class TestEvaluationBenchmark:
     def test_fn_is_visible(self):
         """FN must be explicitly counted; never hidden in aggregate."""
         from aerobim.tools.evaluate_benchmark import (
-            CasePrediction, PredictionLabel, evaluate_predictions
+            CasePrediction,
+            PredictionLabel,
+            evaluate_predictions,
         )
+
         manifest = self._make_manifest()
         # Predict PASS for all (all FAILs become FN)
         predictions = [
             CasePrediction(
-                case_id=c.case_id, rule_id=c.rule_id,
-                prediction=PredictionLabel.PASS, confidence=0.9,
-                engine_version="2.1.0", norm_pack_hash="x" * 64,
-                run_id="run-001", is_ai_advisory=False, evidence_count=1,
+                case_id=c.case_id,
+                rule_id=c.rule_id,
+                prediction=PredictionLabel.PASS,
+                confidence=0.9,
+                engine_version="2.1.0",
+                norm_pack_hash="x" * 64,
+                run_id="run-001",
+                is_ai_advisory=False,
+                evidence_count=1,
             )
             for c in manifest.cases
         ]
@@ -445,15 +522,23 @@ class TestEvaluationBenchmark:
 
     def test_abstention_counted(self):
         from aerobim.tools.evaluate_benchmark import (
-            CasePrediction, PredictionLabel, evaluate_predictions
+            CasePrediction,
+            PredictionLabel,
+            evaluate_predictions,
         )
+
         manifest = self._make_manifest()
         predictions = [
             CasePrediction(
-                case_id=c.case_id, rule_id=c.rule_id,
-                prediction=PredictionLabel.NOT_VERIFIED, confidence=None,
-                engine_version="2.1.0", norm_pack_hash="x" * 64,
-                run_id="run-002", is_ai_advisory=False, evidence_count=0,
+                case_id=c.case_id,
+                rule_id=c.rule_id,
+                prediction=PredictionLabel.NOT_VERIFIED,
+                confidence=None,
+                engine_version="2.1.0",
+                norm_pack_hash="x" * 64,
+                run_id="run-002",
+                is_ai_advisory=False,
+                evidence_count=0,
             )
             for c in manifest.cases
         ]
@@ -465,32 +550,43 @@ class TestEvaluationBenchmark:
 # P1-H: Annotation Protocol
 # ===========================================================================
 
+
 class TestAnnotationProtocol:
     def _make_pair(self, label_a, label_b):
-        from aerobim.domain.annotation_protocol import (
-            Annotation, AnnotationLabel, AnnotationPair
-        )
         import uuid
+
+        from aerobim.domain.annotation_protocol import Annotation, AnnotationPair
+
         a = Annotation(
-            annotation_id=str(uuid.uuid4()), case_id="C1",
-            annotator_id="A", label=label_a, confidence=0.9,
-            reasoning="reason", evidence_refs=[],
+            annotation_id=str(uuid.uuid4()),
+            case_id="C1",
+            annotator_id="A",
+            label=label_a,
+            confidence=0.9,
+            reasoning="reason",
+            evidence_refs=[],
         )
         b = Annotation(
-            annotation_id=str(uuid.uuid4()), case_id="C1",
-            annotator_id="B", label=label_b, confidence=0.8,
-            reasoning="reason", evidence_refs=[],
+            annotation_id=str(uuid.uuid4()),
+            case_id="C1",
+            annotator_id="B",
+            label=label_b,
+            confidence=0.8,
+            reasoning="reason",
+            evidence_refs=[],
         )
         return AnnotationPair(case_id="C1", annotation_a=a, annotation_b=b)
 
     def test_agreement_detected(self):
         from aerobim.domain.annotation_protocol import AnnotationLabel
+
         pair = self._make_pair(AnnotationLabel.FAIL, AnnotationLabel.FAIL)
         assert pair.is_agreement
         assert pair.gold_label == AnnotationLabel.FAIL
 
     def test_disagreement_detected(self):
         from aerobim.domain.annotation_protocol import AnnotationLabel
+
         pair = self._make_pair(AnnotationLabel.FAIL, AnnotationLabel.PASS)
         assert not pair.is_agreement
         assert pair.needs_adjudication
@@ -498,6 +594,7 @@ class TestAnnotationProtocol:
 
     def test_kappa_perfect_agreement(self):
         from aerobim.domain.annotation_protocol import AnnotationLabel, compute_cohen_kappa
+
         pairs = [
             self._make_pair(AnnotationLabel.FAIL, AnnotationLabel.FAIL),
             self._make_pair(AnnotationLabel.PASS, AnnotationLabel.PASS),
@@ -508,6 +605,7 @@ class TestAnnotationProtocol:
 
     def test_batch_metrics(self):
         from aerobim.domain.annotation_protocol import AnnotationLabel, compute_batch_metrics
+
         pairs = [
             self._make_pair(AnnotationLabel.FAIL, AnnotationLabel.FAIL),
             self._make_pair(AnnotationLabel.PASS, AnnotationLabel.FAIL),  # Disagree
@@ -522,12 +620,16 @@ class TestAnnotationProtocol:
 # P1-L: CDE Roundtrip
 # ===========================================================================
 
+
 class TestCDERoundtrip:
     def test_roundtrip_identity(self):
         from aerobim.domain.cde_roundtrip import (
-            LocalCDESimulator, make_bcf_topic_from_finding,
-            RoundtripResult, BCFPriority,
+            BCFPriority,
+            LocalCDESimulator,
+            RoundtripResult,
+            make_bcf_topic_from_finding,
         )
+
         sim = LocalCDESimulator()
         topic = make_bcf_topic_from_finding(
             finding_id="f-001",
@@ -546,14 +648,21 @@ class TestCDERoundtrip:
 
     def test_status_update(self):
         from aerobim.domain.cde_roundtrip import (
-            LocalCDESimulator, make_bcf_topic_from_finding,
-            BCFTopicStatus, BCFPriority,
+            BCFTopicStatus,
+            LocalCDESimulator,
+            make_bcf_topic_from_finding,
         )
+
         sim = LocalCDESimulator()
         topic = make_bcf_topic_from_finding(
-            finding_id="f-002", rule_id="AR-001", norm_pack_hash="h" * 64,
-            revision_id="Rev-P3", title="Test", description="Desc",
-            ifc_guids=[], author="system",
+            finding_id="f-002",
+            rule_id="AR-001",
+            norm_pack_hash="h" * 64,
+            revision_id="Rev-P3",
+            title="Test",
+            description="Desc",
+            ifc_guids=[],
+            author="system",
         )
         sim.push_topic(topic)
         ok = sim.update_status(topic.topic_id, BCFTopicStatus.RESOLVED, "reviewer")
@@ -566,15 +675,18 @@ class TestCDERoundtrip:
 # P1-N: MEP Layers
 # ===========================================================================
 
+
 class TestMEPLayers:
     def test_layer_1_engineering_done(self):
-        from aerobim.domain.mep_layers import get_layer, CapabilityStatus
+        from aerobim.domain.mep_layers import CapabilityStatus, get_layer
+
         layer = get_layer(1)
         assert layer is not None
         assert layer.engineering_status == CapabilityStatus.ENGINEERING_DONE
 
     def test_layers_3_to_5_not_verified(self):
-        from aerobim.domain.mep_layers import get_layer, CapabilityStatus
+        from aerobim.domain.mep_layers import CapabilityStatus, get_layer
+
         for n in (3, 4, 5):
             layer = get_layer(n)
             assert layer.engineering_status == CapabilityStatus.NOT_VERIFIED, (
@@ -584,12 +696,14 @@ class TestMEPLayers:
 
     def test_max_verified_layer(self):
         from aerobim.domain.mep_layers import max_verified_layer
+
         # Layer 1 is DONE, layer 2 is PARTIAL, 3-5 NOT_VERIFIED
         assert max_verified_layer() >= 1
         assert max_verified_layer() < 3  # System semantics not verified
 
     def test_capability_matrix_exportable(self):
         from aerobim.domain.mep_layers import mep_capability_matrix
+
         matrix = mep_capability_matrix()
         assert len(matrix) == 5
         assert all("engineering_status" in m for m in matrix)
@@ -599,9 +713,11 @@ class TestMEPLayers:
 # P1-R: AI Provenance
 # ===========================================================================
 
+
 class TestAIProvenance:
     def test_allowlist_rejects_unknown_tool(self):
         from aerobim.domain.ai_provenance import AIToolCall
+
         call = AIToolCall(
             tool_name="drop_table",  # Not in allowlist
             tool_version="1.0",
@@ -615,6 +731,7 @@ class TestAIProvenance:
 
     def test_allowlist_accepts_valid_tool(self):
         from aerobim.domain.ai_provenance import AIToolCall
+
         call = AIToolCall(
             tool_name="get_finding",
             tool_version="1.0",
@@ -627,6 +744,7 @@ class TestAIProvenance:
 
     def test_provenance_id_deterministic(self):
         from aerobim.domain.ai_provenance import AIProvenanceRecord
+
         pid = AIProvenanceRecord.compute_provenance_id(
             ["hash1", "hash2"], "output-hash", "gpt-4o-1.0", "template-v2"
         )
@@ -636,7 +754,8 @@ class TestAIProvenance:
         assert pid == pid2
 
     def test_ai_advisory_always_true(self):
-        from aerobim.domain.ai_provenance import AIProvenanceRecord, AIOutputType, AIRiskLevel
+        from aerobim.domain.ai_provenance import AIOutputType, AIProvenanceRecord, AIRiskLevel
+
         record = AIProvenanceRecord(
             provenance_id="pid-001",
             output_type=AIOutputType.REMARK_DRAFT,
@@ -676,6 +795,7 @@ class TestAIProvenance:
 # Determinism Invariant: DeterministicVerdict(AI_ON) == DeterministicVerdict(AI_OFF)
 # ===========================================================================
 
+
 class TestDeterminismInvariant:
     """AI must not change deterministic verdict, evidence, or norm result."""
 
@@ -685,35 +805,56 @@ class TestDeterminismInvariant:
         The verdict must match whether AI is on or off.
         This test checks the structural invariant in EvidenceRecord.
         """
-        from aerobim.domain.evidence_provenance import (
-            EvidenceRecord, EvidenceLocator, EvidenceLocatorType, ExtractionMethod
-        )
         import uuid
+
+        from aerobim.domain.evidence_provenance import (
+            EvidenceLocator,
+            EvidenceLocatorType,
+            EvidenceRecord,
+            ExtractionMethod,
+        )
+
         locator = EvidenceLocator(locator_type=EvidenceLocatorType.IFC_PROPERTY)
 
         # Deterministic evidence — contributes to verdict
         det_ev = EvidenceRecord(
-            evidence_id=str(uuid.uuid4()), finding_id="f-001",
-            package_id="pkg-001", file_logical_path="model.ifc",
-            source_hash="a" * 64, locator=locator,
-            actual_value=10, expected_value=25,
+            evidence_id=str(uuid.uuid4()),
+            finding_id="f-001",
+            package_id="pkg-001",
+            file_logical_path="model.ifc",
+            source_hash="a" * 64,
+            locator=locator,
+            actual_value=10,
+            expected_value=25,
             extraction_method=ExtractionMethod.DETERMINISTIC_PARSER,
-            rule_id="AR-001", rule_version="1.0",
-            norm_pack_id="RU-AR", norm_pack_version="1.0", norm_pack_hash="b" * 64,
-            engine_version="2.1.0", configuration_hash="c" * 64,
+            rule_id="AR-001",
+            rule_version="1.0",
+            norm_pack_id="RU-AR",
+            norm_pack_version="1.0",
+            norm_pack_hash="b" * 64,
+            engine_version="2.1.0",
+            configuration_hash="c" * 64,
         )
         assert not det_ev.is_ai_advisory
 
         # AI advisory evidence — MUST be marked
         ai_ev = EvidenceRecord(
-            evidence_id=str(uuid.uuid4()), finding_id="f-001",
-            package_id="pkg-001", file_logical_path="model.ifc",
-            source_hash="a" * 64, locator=locator,
-            actual_value="candidate", expected_value="target",
+            evidence_id=str(uuid.uuid4()),
+            finding_id="f-001",
+            package_id="pkg-001",
+            file_logical_path="model.ifc",
+            source_hash="a" * 64,
+            locator=locator,
+            actual_value="candidate",
+            expected_value="target",
             extraction_method=ExtractionMethod.AI_ADVISORY,
-            rule_id="AR-001", rule_version="1.0",
-            norm_pack_id="RU-AR", norm_pack_version="1.0", norm_pack_hash="b" * 64,
-            engine_version="2.1.0", configuration_hash="c" * 64,
+            rule_id="AR-001",
+            rule_version="1.0",
+            norm_pack_id="RU-AR",
+            norm_pack_version="1.0",
+            norm_pack_hash="b" * 64,
+            engine_version="2.1.0",
+            configuration_hash="c" * 64,
         )
         assert ai_ev.is_ai_advisory  # AI output always marked
         # Deterministic verdict is based on det_ev only

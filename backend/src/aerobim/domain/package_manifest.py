@@ -1,27 +1,21 @@
+"""Deterministic package identity contract. Not called by upload or analyze.
+
+``package_id`` is sha256 of tenant, project, revision, and sorted file hashes.
 """
-P0-A: Robust Package Intake — Package Manifest.
 
-Deterministic package identity: package_id = sha256(tenant_id + project_id +
-revision_id + sorted_file_hashes). Never random. Idempotent on same inputs.
-
-Each file carries: logical_path, sha256, size, media_type, role, discipline,
-revision, source — required for evidence chain and auditability.
-
-Not a rewrite: extends existing upload/storage layer.
-Reduces: evaluation gap, auditability risk, customer deployment risk.
-"""
 from __future__ import annotations
 
 import hashlib
 import json
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from enum import Enum
-from typing import Optional
+from datetime import UTC, datetime
+from enum import StrEnum
+from typing import Any
 
 
-class FileRole(str, Enum):
+class FileRole(StrEnum):
     """Role of a file within a package."""
+
     IFC_MODEL = "ifc_model"
     IDS_SPECIFICATION = "ids_specification"
     DRAWING_PDF = "drawing_pdf"
@@ -35,26 +29,28 @@ class FileRole(str, Enum):
     UNKNOWN = "unknown"
 
 
-class Discipline(str, Enum):
+class Discipline(StrEnum):
     """BIM discipline / section."""
-    AR = "AR"   # Architecture
-    KR = "KR"   # Structural
-    OV = "OV"   # HVAC
-    VK = "VK"   # Plumbing
-    EOM = "EOM" # Electrical
-    SS = "SS"   # Low-voltage / IT
-    ITP = "ITP" # Heat point
-    GP = "GP"   # General plan
+
+    AR = "AR"  # Architecture
+    KR = "KR"  # Structural
+    OV = "OV"  # HVAC
+    VK = "VK"  # Plumbing
+    EOM = "EOM"  # Electrical
+    SS = "SS"  # Low-voltage / IT
+    ITP = "ITP"  # Heat point
+    GP = "GP"  # General plan
     MULTI = "MULTI"
     UNKNOWN = "UNKNOWN"
 
 
-class UploadState(str, Enum):
+class UploadState(StrEnum):
     """Upload lifecycle state."""
-    PENDING = "pending"       # Awaiting all chunks
-    COMPLETE = "complete"     # All bytes received, hash verified
-    QUARANTINED = "quarantined" # Failed security check
-    TOMBSTONED = "tombstoned" # Deleted, identity preserved
+
+    PENDING = "pending"  # Awaiting all chunks
+    COMPLETE = "complete"  # All bytes received, hash verified
+    QUARANTINED = "quarantined"  # Failed security check
+    TOMBSTONED = "tombstoned"  # Deleted, identity preserved
 
 
 @dataclass(frozen=True)
@@ -65,17 +61,18 @@ class PackageFileEntry:
     All fields required for evidence chain. sha256 is verified on ingest;
     tampering with any field invalidates manifest_sha256.
     """
-    logical_path: str          # Canonical relative path within package
-    sha256: str                # Hex SHA-256 of raw bytes
-    size: int                  # Bytes
-    media_type: str            # IANA media type (verified, not trusted from extension)
+
+    logical_path: str  # Canonical relative path within package
+    sha256: str  # Hex SHA-256 of raw bytes
+    size: int  # Bytes
+    media_type: str  # IANA media type (verified, not trusted from extension)
     role: FileRole
     discipline: Discipline
-    revision: Optional[str]    # e.g. "P3", "R2" from filename/metadata
-    source: Optional[str]      # upstream system reference (CDE path, upload_id)
+    revision: str | None  # e.g. "P3", "R2" from filename/metadata
+    source: str | None  # upstream system reference (CDE path, upload_id)
     upload_state: UploadState = UploadState.COMPLETE
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "logical_path": self.logical_path,
             "sha256": self.sha256,
@@ -100,15 +97,16 @@ class PackageManifest:
     Security: tenant_id and project_id are embedded and verified
     before any artifact access (authenticate → authorize → fetch).
     """
-    package_id: str            # Deterministic: sha256 of (tenant+project+revision+files)
+
+    package_id: str  # Deterministic: sha256 of (tenant+project+revision+files)
     project_id: str
     tenant_id: str
-    revision_id: str           # Logical revision label (e.g. "Stage-P3-R2")
+    revision_id: str  # Logical revision label (e.g. "Stage-P3-R2")
     created_at: datetime
     files: list[PackageFileEntry] = field(default_factory=list)
     manifest_sha256: str = ""  # Computed over serialised files[]; set after finalise()
     upload_state: UploadState = UploadState.PENDING
-    tombstone_reason: Optional[str] = None
+    tombstone_reason: str | None = None
 
     # --- identity -------------------------------------------------------
 
@@ -134,7 +132,7 @@ class PackageManifest:
         payload = "\n".join(parts).encode()
         return hashlib.sha256(payload).hexdigest()[:40]
 
-    def finalise(self) -> "PackageManifest":
+    def finalise(self) -> PackageManifest:
         """
         Compute manifest_sha256 over all file entries.
         Call after all files are added; manifest becomes immutable.
@@ -164,7 +162,7 @@ class PackageManifest:
         self.tombstone_reason = reason
         # Files retain sha256 for dedup detection; physical bytes deleted separately
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "package_id": self.package_id,
             "project_id": self.project_id,
@@ -188,15 +186,13 @@ def build_package_manifest(
     Factory: builds and finalises a manifest from file entries.
     Deterministic: calling twice with the same inputs yields the same package_id.
     """
-    package_id = PackageManifest.compute_package_id(
-        tenant_id, project_id, revision_id, files
-    )
+    package_id = PackageManifest.compute_package_id(tenant_id, project_id, revision_id, files)
     manifest = PackageManifest(
         package_id=package_id,
         project_id=project_id,
         tenant_id=tenant_id,
         revision_id=revision_id,
-        created_at=datetime.now(tz=timezone.utc),
+        created_at=datetime.now(tz=UTC),
         files=list(files),
     )
     return manifest.finalise()

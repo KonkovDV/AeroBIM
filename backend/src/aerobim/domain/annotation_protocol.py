@@ -9,44 +9,47 @@ Protocol document is SSOT (see docs/evaluation/annotation-protocol.md).
 
 Reduces: evaluation gap, audit risk.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from enum import Enum
-from typing import Optional
+from datetime import UTC, datetime
+from enum import StrEnum
+from typing import Any
 
 
-class AnnotationLabel(str, Enum):
+class AnnotationLabel(StrEnum):
     """Compliance verdict label from a human annotator."""
-    PASS = "PASS"
+
+    PASS = "PASS"  # noqa: S105
     FAIL = "FAIL"
     NOT_APPLICABLE = "NOT_APPLICABLE"
     NOT_VERIFIABLE = "NOT_VERIFIABLE"  # Insufficient info in provided materials
-    AMBIGUOUS = "AMBIGUOUS"            # Annotator uncertain; flags for adjudicator
+    AMBIGUOUS = "AMBIGUOUS"  # Annotator uncertain; flags for adjudicator
 
 
-class AdjudicationOutcome(str, Enum):
+class AdjudicationOutcome(StrEnum):
     AGREED_WITH_A = "agreed_with_a"
     AGREED_WITH_B = "agreed_with_b"
-    NEW_GOLD = "new_gold"           # Adjudicator reached independent conclusion
-    UNRESOLVABLE = "unresolvable"   # Flagged for protocol committee
+    NEW_GOLD = "new_gold"  # Adjudicator reached independent conclusion
+    UNRESOLVABLE = "unresolvable"  # Flagged for protocol committee
 
 
 @dataclass
 class Annotation:
     """Single annotator's label for one evaluation case."""
-    annotation_id: str
-    case_id: str              # Evaluation case identifier
-    annotator_id: str         # Anonymised or named reviewer ID
-    label: AnnotationLabel
-    confidence: float         # 0-1; required
-    reasoning: str            # Brief justification (stored, never deleted)
-    evidence_refs: list[str]  # Which materials were examined
-    timestamp: datetime = field(default_factory=lambda: datetime.now(tz=timezone.utc))
-    session_id: Optional[str] = None  # Annotation session for reproducibility
 
-    def to_dict(self) -> dict:
+    annotation_id: str
+    case_id: str  # Evaluation case identifier
+    annotator_id: str  # Anonymised or named reviewer ID
+    label: AnnotationLabel
+    confidence: float  # 0-1; required
+    reasoning: str  # Brief justification (stored, never deleted)
+    evidence_refs: list[str]  # Which materials were examined
+    timestamp: datetime = field(default_factory=lambda: datetime.now(tz=UTC))
+    session_id: str | None = None  # Annotation session for reproducibility
+
+    def to_dict(self) -> dict[str, Any]:
         return {
             "annotation_id": self.annotation_id,
             "case_id": self.case_id,
@@ -63,6 +66,7 @@ class Annotation:
 @dataclass
 class Adjudication:
     """Resolution of a disagreement between two annotators."""
+
     adjudication_id: str
     case_id: str
     annotation_a_id: str
@@ -71,9 +75,9 @@ class Adjudication:
     outcome: AdjudicationOutcome
     gold_label: AnnotationLabel
     reasoning: str
-    timestamp: datetime = field(default_factory=lambda: datetime.now(tz=timezone.utc))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(tz=UTC))
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "adjudication_id": self.adjudication_id,
             "case_id": self.case_id,
@@ -93,17 +97,18 @@ class AnnotationPair:
     Paired annotations for one case from two independent annotators.
     Disagreement is always preserved — never silently merged.
     """
+
     case_id: str
     annotation_a: Annotation
     annotation_b: Annotation
-    adjudication: Optional[Adjudication] = None
+    adjudication: Adjudication | None = None
 
     @property
     def is_agreement(self) -> bool:
         return self.annotation_a.label == self.annotation_b.label
 
     @property
-    def gold_label(self) -> Optional[AnnotationLabel]:
+    def gold_label(self) -> AnnotationLabel | None:
         if self.adjudication:
             return self.adjudication.gold_label
         if self.is_agreement:
@@ -115,7 +120,7 @@ class AnnotationPair:
         return not self.is_agreement and self.adjudication is None
 
 
-def compute_cohen_kappa(pairs: list[AnnotationPair]) -> Optional[float]:
+def compute_cohen_kappa(pairs: list[AnnotationPair]) -> float | None:
     """
     Cohen's kappa for inter-annotator agreement.
     Returns None if fewer than 2 pairs or all same label (kappa undefined).
@@ -128,7 +133,7 @@ def compute_cohen_kappa(pairs: list[AnnotationPair]) -> Optional[float]:
         return None
 
     labels = list(AnnotationLabel)
-    label_to_idx = {l: i for i, l in enumerate(labels)}
+    label_to_idx = {label: index for index, label in enumerate(labels)}
     n = len(pairs)
     n_labels = len(labels)
 
@@ -155,20 +160,21 @@ def compute_cohen_kappa(pairs: list[AnnotationPair]) -> Optional[float]:
 @dataclass
 class AnnotationBatchMetrics:
     """Summary metrics for a batch of annotation pairs."""
+
     batch_id: str
-    corpus_type: str          # PUBLIC / SYNTHETIC / CUSTOMER
+    corpus_type: str  # PUBLIC / SYNTHETIC / CUSTOMER
     n_cases: int
     n_agreements: int
     n_disagreements: int
     n_adjudicated: int
     n_unresolvable: int
     agreement_rate: float
-    cohen_kappa: Optional[float]
+    cohen_kappa: float | None
     adjudication_rate: float
     disagreement_categories: dict[str, int] = field(default_factory=dict)
-    computed_at: datetime = field(default_factory=lambda: datetime.now(tz=timezone.utc))
+    computed_at: datetime = field(default_factory=lambda: datetime.now(tz=UTC))
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "batch_id": self.batch_id,
             "corpus_type": self.corpus_type,
@@ -185,13 +191,16 @@ class AnnotationBatchMetrics:
         }
 
 
-def compute_batch_metrics(batch_id: str, corpus_type: str, pairs: list[AnnotationPair]) -> AnnotationBatchMetrics:
+def compute_batch_metrics(
+    batch_id: str, corpus_type: str, pairs: list[AnnotationPair]
+) -> AnnotationBatchMetrics:
     n = len(pairs)
     agreements = [p for p in pairs if p.is_agreement]
     disagreements = [p for p in pairs if not p.is_agreement]
     adjudicated = [p for p in disagreements if p.adjudication is not None]
     unresolvable = [
-        p for p in adjudicated
+        p
+        for p in adjudicated
         if p.adjudication and p.adjudication.outcome == AdjudicationOutcome.UNRESOLVABLE
     ]
 

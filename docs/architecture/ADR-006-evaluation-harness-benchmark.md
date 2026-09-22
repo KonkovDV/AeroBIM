@@ -3,7 +3,7 @@
 **Status:** Accepted  
 **Date:** 2026-09-22  
 **Deciders:** AeroBIM Principal Engineering  
-**Related:** ADR-001 (verdict ownership), ADR-005 (regulation model)
+**Related:** ADR-001 (verdict ownership), ADR-007 (regulation model, not on the analyze path)
 
 ---
 

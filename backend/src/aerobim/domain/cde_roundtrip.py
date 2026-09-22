@@ -18,18 +18,19 @@ Do not invent proprietary replacement for BCF 3.0.
 
 Reduces: interoperability risk, auditability risk.
 """
+
 from __future__ import annotations
 
 import hashlib
 import json
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from enum import Enum
-from typing import Optional
+from datetime import UTC, datetime
+from enum import StrEnum
+from typing import Any
 
 
-class BCFTopicStatus(str, Enum):
+class BCFTopicStatus(StrEnum):
     OPEN = "Open"
     IN_PROGRESS = "In Progress"
     RESOLVED = "Resolved"
@@ -37,7 +38,7 @@ class BCFTopicStatus(str, Enum):
     REOPENED = "ReOpened"
 
 
-class BCFTopicType(str, Enum):
+class BCFTopicType(StrEnum):
     ISSUE = "Issue"
     REQUEST = "Request"
     FAULT = "Fault"
@@ -45,7 +46,7 @@ class BCFTopicType(str, Enum):
     UNKNOWN = "Unknown"
 
 
-class BCFPriority(str, Enum):
+class BCFPriority(StrEnum):
     CRITICAL = "Critical"
     MAJOR = "Major"
     NORMAL = "Normal"
@@ -55,11 +56,12 @@ class BCFPriority(str, Enum):
 @dataclass
 class BCFComponent:
     """IFC element reference in BCF viewpoint."""
+
     ifc_guid: str
     originating_system: str = "AeroBIM"
-    authoring_tool_id: Optional[str] = None
+    authoring_tool_id: str | None = None
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "ifc_guid": self.ifc_guid,
             "originating_system": self.originating_system,
@@ -70,19 +72,21 @@ class BCFComponent:
 @dataclass
 class BCFViewpoint:
     """BCF 3.0 viewpoint with components."""
-    viewpoint_id: str
-    snapshot: Optional[str] = None   # base64 PNG or None
-    components: list[BCFComponent] = field(default_factory=list)
-    camera_x: Optional[float] = None
-    camera_y: Optional[float] = None
-    camera_z: Optional[float] = None
 
-    def to_dict(self) -> dict:
+    viewpoint_id: str
+    snapshot: str | None = None  # base64 PNG or None
+    components: list[BCFComponent] = field(default_factory=list)
+    camera_x: float | None = None
+    camera_y: float | None = None
+    camera_z: float | None = None
+
+    def to_dict(self) -> dict[str, Any]:
         return {
             "viewpoint_id": self.viewpoint_id,
             "components": [c.to_dict() for c in self.components],
             "camera": {"x": self.camera_x, "y": self.camera_y, "z": self.camera_z}
-            if self.camera_x is not None else None,
+            if self.camera_x is not None
+            else None,
         }
 
 
@@ -94,25 +98,26 @@ class BCFTopic:
     Stably linked to: finding_id + ifc_guid + revision + evidence.
     topic_id is stable and used for roundtrip identity verification.
     """
-    topic_id: str              # UUID; stable across roundtrip
+
+    topic_id: str  # UUID; stable across roundtrip
     title: str
     description: str
     status: BCFTopicStatus
     topic_type: BCFTopicType
     priority: BCFPriority
     author: str
-    creation_date: str         # ISO datetime
+    creation_date: str  # ISO datetime
     modified_date: str
-    assigned_to: Optional[str] = None
+    assigned_to: str | None = None
     labels: list[str] = field(default_factory=list)
     components: list[BCFComponent] = field(default_factory=list)
     viewpoints: list[BCFViewpoint] = field(default_factory=list)
     # AeroBIM-specific linkage (in BCF extended attributes / links)
-    aerobim_finding_id: Optional[str] = None
-    aerobim_evidence_ref: Optional[str] = None
-    aerobim_revision_id: Optional[str] = None
-    aerobim_rule_id: Optional[str] = None
-    aerobim_norm_pack_hash: Optional[str] = None
+    aerobim_finding_id: str | None = None
+    aerobim_evidence_ref: str | None = None
+    aerobim_revision_id: str | None = None
+    aerobim_rule_id: str | None = None
+    aerobim_norm_pack_hash: str | None = None
 
     @property
     def content_hash(self) -> str:
@@ -131,7 +136,7 @@ class BCFTopic:
         ).encode()
         return hashlib.sha256(payload).hexdigest()[:24]
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "topic_id": self.topic_id,
             "title": self.title,
@@ -155,11 +160,11 @@ class BCFTopic:
         }
 
 
-class RoundtripResult(str, Enum):
-    OK = "OK"                     # Push + pull = identical
-    HASH_MISMATCH = "HASH_MISMATCH" # Content changed in transit
-    TOPIC_MISSING = "TOPIC_MISSING" # Pull returned nothing
-    FINDING_UNMATCHED = "FINDING_UNMATCHED" # finding_id not matched
+class RoundtripResult(StrEnum):
+    OK = "OK"  # Push + pull = identical
+    HASH_MISMATCH = "HASH_MISMATCH"  # Content changed in transit
+    TOPIC_MISSING = "TOPIC_MISSING"  # Pull returned nothing
+    FINDING_UNMATCHED = "FINDING_UNMATCHED"  # finding_id not matched
     ERROR = "ERROR"
 
 
@@ -170,17 +175,18 @@ class RoundtripRecord:
     Engineering status is determined by this record passing.
     Customer status remains NOT_VERIFIED until real CDE environment.
     """
+
     record_id: str
     topic_id: str
     finding_id: str
     push_content_hash: str
-    pull_content_hash: Optional[str]
+    pull_content_hash: str | None
     result: RoundtripResult
-    tested_at: datetime = field(default_factory=lambda: datetime.now(tz=timezone.utc))
+    tested_at: datetime = field(default_factory=lambda: datetime.now(tz=UTC))
     cde_endpoint: str = "local_simulator"  # Never fake as real CDE
     notes: str = ""
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "record_id": self.record_id,
             "topic_id": self.topic_id,
@@ -208,35 +214,30 @@ class LocalCDESimulator:
 
     def __init__(self) -> None:
         self._topics: dict[str, BCFTopic] = {}
-        self._status_updates: dict[str, list[dict]] = {}
+        self._status_updates: dict[str, list[dict[str, Any]]] = {}
 
     def push_topic(self, topic: BCFTopic) -> str:
         """Simulate CDE receiving a BCF topic. Returns topic_id."""
         self._topics[topic.topic_id] = topic
         return topic.topic_id
 
-    def get_topic(self, topic_id: str) -> Optional[BCFTopic]:
+    def get_topic(self, topic_id: str) -> BCFTopic | None:
         """Simulate CDE returning a topic."""
         return self._topics.get(topic_id)
 
-    def update_status(
-        self, topic_id: str, new_status: BCFTopicStatus, actor: str
-    ) -> bool:
+    def update_status(self, topic_id: str, new_status: BCFTopicStatus, actor: str) -> bool:
         """Simulate CDE updating topic status."""
         topic = self._topics.get(topic_id)
         if topic is None:
             return False
         topic.status = new_status
-        topic.modified_date = datetime.now(tz=timezone.utc).isoformat()
+        topic.modified_date = datetime.now(tz=UTC).isoformat()
         self._status_updates.setdefault(topic_id, []).append(
-            {"status": new_status.value, "actor": actor,
-             "timestamp": topic.modified_date}
+            {"status": new_status.value, "actor": actor, "timestamp": topic.modified_date}
         )
         return True
 
-    def verify_roundtrip(
-        self, topic: BCFTopic
-    ) -> RoundtripRecord:
+    def verify_roundtrip(self, topic: BCFTopic) -> RoundtripRecord:
         """
         Push + pull + compare content_hash.
         PASS only when push_hash == pull_hash.
@@ -293,11 +294,11 @@ def make_bcf_topic_from_finding(
     description: str,
     ifc_guids: list[str],
     author: str,
-    evidence_ref: Optional[str] = None,
+    evidence_ref: str | None = None,
     priority: BCFPriority = BCFPriority.MAJOR,
 ) -> BCFTopic:
     """Factory: create BCF 3.0 topic from AeroBIM finding."""
-    now = datetime.now(tz=timezone.utc).isoformat()
+    now = datetime.now(tz=UTC).isoformat()
     return BCFTopic(
         topic_id=str(uuid.uuid4()),
         title=title,

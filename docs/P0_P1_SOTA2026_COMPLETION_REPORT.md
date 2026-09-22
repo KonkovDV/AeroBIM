@@ -3,15 +3,15 @@
 **Branch:** `feat/p0-p1-sota2026-upgrade`  
 **Date:** 2026-09-22  
 **Author:** AeroBIM Principal Engineering  
-**Engine baseline:** `ea44f2613a57` · backend 3334 tests · frontend 403 tests
+**Engine baseline:** see `docs/evidence/runtime-baseline-latest.json` (`attested_by=ci`). Do not copy the integers here.
 
 ---
 
 ## 1. Executive Summary
 
-This upgrade closes the most critical P0 and P1 engineering gaps identified
-in the SOTA 2026 audit. AeroBIM now has a provably more mature domain layer
-for compliance checking:
+This change adds domain contracts and unit tests. It does not close the P0
+and P1 gaps on the path that builds a report. `Analyze`, the Redis worker,
+and `EvidenceAssembler` do not call these modules.
 
 - **Deterministic package identity** (sha256-based, idempotent, tamper-detectable)
 - **Durable job state machine** (QUEUED→EXPIRED cycle, heartbeat, stale recovery)
@@ -35,13 +35,13 @@ for compliance checking:
 
 ## 2. Before / After
 
-| Dimension | Before | After |
+| Dimension | Live path today | New contract, not called by Analyze |
 |---|---|---|
 | Package identity | Random UUID per upload | `sha256(tenant+project+revision+file_hashes)` |
 | Manifest integrity | None | `manifest_sha256` over all file entries |
-| Job state | Implicit (Redis TTL) | Formal QUEUED→EXPIRED state machine |
-| Job dedup | None | `idempotency_key = sha256(package+norm+engine+config)` |
-| Heartbeat | None | 120s timeout → EXPIRED → stale recovery |
+| Job state | Redis worker, lease, and `job_transitions` | Separate `JobStatus` enum in `job_state.py` |
+| Job dedup | Same key and fingerprint on the live store | `idempotency_key` helper, not used by the worker |
+| Heartbeat | Lease heartbeat on the Redis job store | 120s helper on the unused contract |
 | Evidence provenance | `finding_id + evidence_refs` | + `rule_version, norm_pack_hash, engine_version, config_hash, extraction_method` |
 | Norm rule provenance | `norm_ref` string | Full `NormRef + RuleInterpretation` with 4 review statuses |
 | Rule production gate | None | All 4 review statuses must be APPROVED |
@@ -85,7 +85,7 @@ backend/tests/
   test_p0_p1_upgrade.py   # Tests for all new modules
 
 docs/architecture/
-  ADR-005-regulatory-information-model.md
+  ADR-007-regulatory-information-model.md
   ADR-006-evaluation-harness-benchmark.md
 ```
 
@@ -147,7 +147,7 @@ required; `AI_ADVISORY` method automatically sets `is_ai_advisory=True`.
 - `NormPack.finalise()` seals `pack_hash` over all rule hashes
 - `ExecutionProvenance` record for each run: pack_hash + rule_hash + input_hash +
   engine_version + configuration_hash + result_hash
-- ADR-005 documents the decision
+- ADR-007 documents the decision. ADR-005 stays the customer-data policy.
 
 ### P1-B: Versioned Norm Packs
 - `NormPack.finalise()` → immutable `pack_hash`
@@ -387,7 +387,7 @@ It will remain false until all external gates are satisfied by real evidence.
 | Claims lock 07-17 | `audit/reports/CLAIMS_LOCK_2026_07_17.md` | Claim boundaries |
 | Claims lock 07-31 | `audit/reports/CLAIMS_LOCK_2026_07_31.md` | Claim boundaries |
 | ADR-001 | `docs/architecture/ADR-001-*.md` | Verdict ownership |
-| ADR-005 | `docs/architecture/ADR-005-regulatory-information-model.md` | This PR |
+| ADR-007 | `docs/architecture/ADR-007-regulatory-information-model.md` | This PR |
 | ADR-006 | `docs/architecture/ADR-006-evaluation-harness-benchmark.md` | This PR |
 | P0/P1 tests | `backend/tests/test_p0_p1_upgrade.py` | All new modules |
 
@@ -436,5 +436,7 @@ It will remain false until all external gates are satisfied by real evidence.
 14. ✅ Can an engineer reproduce execution by hash/version? → `ExecutionProvenance`
 15. ✅ Can the full chain from norm to issue be explained? → Full provenance graph in domain
 
-**All 15 questions answered YES at the domain layer.**  
-Application layer wiring required to enforce these properties at runtime.
+The new types can answer these questions in unit tests. The report a person
+opens is still assembled by `EvidenceAssembler`. These fifteen answers are
+not properties of that report yet. `customer_go` stays false. RT-001, RT-002,
+and RT-003 stay open. A local BCF roundtrip is not an import into a customer CDE.

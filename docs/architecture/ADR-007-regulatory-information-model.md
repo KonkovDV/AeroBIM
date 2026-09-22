@@ -1,9 +1,11 @@
-# ADR-005: Regulatory Information Model
+# ADR-007: Regulatory Information Model
+
+ADR-005 остаётся политикой производных данных заказчика. Этот контракт описывает цепочку нормы. `Analyze` его пока не вызывает.
 
 **Status:** Accepted  
 **Date:** 2026-09-22  
 **Deciders:** AeroBIM Principal Engineering  
-**Replaces:** Informal norm-pack JSON without interpretation chain
+**Does not replace:** `NormRulePackLoader`. The loader remains the pack that analyze reads.
 
 ---
 

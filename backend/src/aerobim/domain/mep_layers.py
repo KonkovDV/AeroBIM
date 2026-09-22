@@ -14,24 +14,26 @@ Layer 5: Rule-based system compliance → NOT_VERIFIED
 
 Reduces: auditability risk, false claim risk.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from enum import Enum
-from typing import Optional
+from enum import StrEnum
+from typing import Any
 
 
-class CapabilityStatus(str, Enum):
+class CapabilityStatus(StrEnum):
     """
     Engineering vs Customer validation status.
     NOT_VERIFIED ≠ failing. It means: insufficient evidence to claim.
     unknown != pass.
     """
-    ENGINEERING_DONE = "ENGINEERING_DONE"           # Implemented, tested on fixtures
-    PARTIAL = "PARTIAL"                             # Partially implemented
-    NOT_VERIFIED = "NOT_VERIFIED"                   # No validated evidence yet
-    CUSTOMER_VERIFIED = "CUSTOMER_VERIFIED"         # External customer sign-off
-    DEPRECATED = "DEPRECATED"                       # Removed or superseded
+
+    ENGINEERING_DONE = "ENGINEERING_DONE"  # Implemented, tested on fixtures
+    PARTIAL = "PARTIAL"  # Partially implemented
+    NOT_VERIFIED = "NOT_VERIFIED"  # No validated evidence yet
+    CUSTOMER_VERIFIED = "CUSTOMER_VERIFIED"  # External customer sign-off
+    DEPRECATED = "DEPRECATED"  # Removed or superseded
 
 
 @dataclass
@@ -40,17 +42,18 @@ class MEPLayer:
     Single MEP verification layer with explicit capability status.
     Customer status is ALWAYS separate from engineering status.
     """
-    layer_number: int         # 1-5
+
+    layer_number: int  # 1-5
     name: str
     description: str
     engineering_status: CapabilityStatus
     customer_status: CapabilityStatus
-    required_inputs: list[str]       # What IFC entities / data are needed
-    known_limitations: list[str]     # Explicit limitations (not hidden)
+    required_inputs: list[str]  # What IFC entities / data are needed
+    known_limitations: list[str]  # Explicit limitations (not hidden)
     evidence_artifacts: list[str] = field(default_factory=list)  # Test reports etc.
-    notes: Optional[str] = None
+    notes: str | None = None
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "layer_number": self.layer_number,
             "name": self.name,
@@ -131,7 +134,7 @@ MEP_LAYERS: list[MEPLayer] = [
             "bSDD RU-domain coverage is limited",
         ],
         notes="NOT_VERIFIED is the honest status. Do not claim system-aware MEP until "
-              "validated on real federated IFC with real system assignments.",
+        "validated on real federated IFC with real system assignments.",
     ),
     MEPLayer(
         layer_number=4,
@@ -176,16 +179,19 @@ MEP_LAYERS: list[MEPLayer] = [
             "No customer corpus for system compliance",
         ],
         notes="This is the most complex layer. It requires all lower layers plus "
-              "reliable calculation extraction. Honest status: NOT_VERIFIED.",
+        "reliable calculation extraction. Honest status: NOT_VERIFIED.",
     ),
 ]
 
 
-def get_layer(layer_number: int) -> Optional[MEPLayer]:
-    return next((l for l in MEP_LAYERS if l.layer_number == layer_number), None)
+def get_layer(layer_number: int) -> MEPLayer | None:
+    return next(
+        (layer for layer in MEP_LAYERS if layer.layer_number == layer_number),
+        None,
+    )
 
 
-def mep_capability_matrix() -> list[dict]:
+def mep_capability_matrix() -> list[dict[str, Any]]:
     """Export current MEP capability status as structured dict."""
     return [layer.to_dict() for layer in MEP_LAYERS]
 

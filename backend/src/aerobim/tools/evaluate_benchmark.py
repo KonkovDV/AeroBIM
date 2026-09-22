@@ -19,28 +19,28 @@ Corpus split (P1-I): PUBLIC / SYNTHETIC / CUSTOMER — never merged.
 
 customer_go=false until external customer sign-off. fixture success != production claim.
 """
+
 from __future__ import annotations
 
 import hashlib
 import json
-import math
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from enum import Enum
-from typing import Optional
+from datetime import UTC, datetime
+from enum import StrEnum
+from typing import Any
 
 
-class CorpusType(str, Enum):
-    PUBLIC = "PUBLIC"       # External public BIM/ACC datasets
-    SYNTHETIC = "SYNTHETIC" # AeroBIM-generated synthetic cases
-    CUSTOMER = "CUSTOMER"   # Real customer data (not in Git)
+class CorpusType(StrEnum):
+    PUBLIC = "PUBLIC"  # External public BIM/ACC datasets
+    SYNTHETIC = "SYNTHETIC"  # AeroBIM-generated synthetic cases
+    CUSTOMER = "CUSTOMER"  # Real customer data (not in Git)
 
 
-class PredictionLabel(str, Enum):
+class PredictionLabel(StrEnum):
     PASS = "PASS"
     FAIL = "FAIL"
     NOT_VERIFIED = "NOT_VERIFIED"  # System chose not to decide; unknown != pass
-    ERROR = "ERROR"                # System error during check
+    ERROR = "ERROR"  # System error during check
 
 
 @dataclass
@@ -52,16 +52,17 @@ class BenchmarkCase:
     Immutable after inclusion in a manifest.
     Same case_hash in multiple manifest versions = same case.
     """
+
     case_id: str
-    case_hash: str          # Computed; tampering invalidates manifest
+    case_hash: str  # Computed; tampering invalidates manifest
     rule_id: str
     corpus_type: CorpusType
-    input_hash: str         # sha256 of input file(s)
+    input_hash: str  # sha256 of input file(s)
     gold_label: PredictionLabel  # Ground truth from annotation/adjudication
-    gold_source: str        # "annotator", "adjudicator", "expert"
+    gold_source: str  # "annotator", "adjudicator", "expert"
     description: str
     tags: list[str] = field(default_factory=list)
-    is_held_out: bool = False   # True = never seen during development
+    is_held_out: bool = False  # True = never seen during development
 
     @staticmethod
     def compute_case_hash(
@@ -75,8 +76,10 @@ class BenchmarkCase:
 
     def validate_hash(self) -> bool:
         expected = self.compute_case_hash(
-            self.input_hash, self.gold_label.value,
-            self.rule_id, self.corpus_type.value,
+            self.input_hash,
+            self.gold_label.value,
+            self.rule_id,
+            self.corpus_type.value,
         )
         return self.case_hash == expected
 
@@ -87,20 +90,25 @@ class BenchmarkDatasetManifest:
     Immutable test manifest. Changes require new version.
     manifest_hash seals all case hashes — leakage detectable.
     """
+
     manifest_id: str
     version: str
     corpus_type: CorpusType
-    created_at: str             # ISO date
+    created_at: str  # ISO date
     created_by: str
     cases: list[BenchmarkCase]
-    manifest_hash: str = ""     # Sealed on finalise()
-    change_reason: str = ""     # Required when creating new version
+    manifest_hash: str = ""  # Sealed on finalise()
+    change_reason: str = ""  # Required when creating new version
 
-    def finalise(self) -> "BenchmarkDatasetManifest":
+    def finalise(self) -> BenchmarkDatasetManifest:
         case_hashes = sorted(c.case_hash for c in self.cases)
         payload = json.dumps(
-            {"manifest_id": self.manifest_id, "version": self.version,
-             "corpus_type": self.corpus_type.value, "case_hashes": case_hashes},
+            {
+                "manifest_id": self.manifest_id,
+                "version": self.version,
+                "corpus_type": self.corpus_type.value,
+                "case_hashes": case_hashes,
+            },
             sort_keys=True,
         ).encode()
         self.manifest_hash = hashlib.sha256(payload).hexdigest()
@@ -115,8 +123,12 @@ class BenchmarkDatasetManifest:
         # Re-check manifest hash
         case_hashes = sorted(c.case_hash for c in self.cases)
         payload = json.dumps(
-            {"manifest_id": self.manifest_id, "version": self.version,
-             "corpus_type": self.corpus_type.value, "case_hashes": case_hashes},
+            {
+                "manifest_id": self.manifest_id,
+                "version": self.version,
+                "corpus_type": self.corpus_type.value,
+                "case_hashes": case_hashes,
+            },
             sort_keys=True,
         ).encode()
         computed = hashlib.sha256(payload).hexdigest()
@@ -128,13 +140,14 @@ class BenchmarkDatasetManifest:
 @dataclass
 class CasePrediction:
     """System's prediction for a single benchmark case."""
+
     case_id: str
     rule_id: str
     prediction: PredictionLabel
-    confidence: Optional[float]   # 0-1; None if system didn't produce confidence
+    confidence: float | None  # 0-1; None if system didn't produce confidence
     engine_version: str
     norm_pack_hash: str
-    run_id: str                   # Unique benchmark run ID
+    run_id: str  # Unique benchmark run ID
     is_ai_advisory: bool
     evidence_count: int
 
@@ -145,6 +158,7 @@ class RuleMetrics:
     Per-rule precision/recall/F1/FP/FN.
     FN is always reported separately — never hidden in aggregate.
     """
+
     rule_id: str
     corpus_type: CorpusType
     n_total: int
@@ -152,29 +166,29 @@ class RuleMetrics:
     fp: int
     tn: int
     fn: int
-    n_abstained: int        # NOT_VERIFIED predictions
-    n_errors: int           # ERROR predictions
+    n_abstained: int  # NOT_VERIFIED predictions
+    n_errors: int  # ERROR predictions
 
     @property
-    def precision(self) -> Optional[float]:
+    def precision(self) -> float | None:
         denom = self.tp + self.fp
         return self.tp / denom if denom else None
 
     @property
-    def recall(self) -> Optional[float]:
+    def recall(self) -> float | None:
         """Also called True Positive Rate. FN exposed explicitly."""
         denom = self.tp + self.fn
         return self.tp / denom if denom else None
 
     @property
-    def f1(self) -> Optional[float]:
+    def f1(self) -> float | None:
         p, r = self.precision, self.recall
         if p is None or r is None or (p + r) == 0:
             return None
         return 2 * p * r / (p + r)
 
     @property
-    def false_negative_rate(self) -> Optional[float]:
+    def false_negative_rate(self) -> float | None:
         """FNR = FN / (FN + TP). Critical for compliance: must not be hidden."""
         denom = self.fn + self.tp
         return self.fn / denom if denom else None
@@ -187,13 +201,15 @@ class RuleMetrics:
     def not_verified_rate(self) -> float:
         return self.abstention_rate
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "rule_id": self.rule_id,
             "corpus_type": self.corpus_type.value,
             "n_total": self.n_total,
-            "tp": self.tp, "fp": self.fp,
-            "tn": self.tn, "fn": self.fn,
+            "tp": self.tp,
+            "fp": self.fp,
+            "tn": self.tn,
+            "fn": self.fn,
             "n_abstained": self.n_abstained,
             "n_errors": self.n_errors,
             "precision": self.precision,
@@ -210,6 +226,7 @@ class BenchmarkRunResult:
     Full benchmark run results.
     Always broken down by corpus_type. Never merge PUBLIC+SYNTHETIC+CUSTOMER.
     """
+
     run_id: str
     manifest_id: str
     manifest_version: str
@@ -223,13 +240,13 @@ class BenchmarkRunResult:
     n_errors: int
 
     # Aggregate (macro avg over rules; never used to hide FN)
-    macro_precision: Optional[float] = None
-    macro_recall: Optional[float] = None
-    macro_f1: Optional[float] = None
-    micro_precision: Optional[float] = None
-    micro_recall: Optional[float] = None
-    micro_f1: Optional[float] = None
-    macro_fn_rate: Optional[float] = None  # Average FNR across rules
+    macro_precision: float | None = None
+    macro_recall: float | None = None
+    macro_f1: float | None = None
+    micro_precision: float | None = None
+    micro_recall: float | None = None
+    micro_f1: float | None = None
+    macro_fn_rate: float | None = None  # Average FNR across rules
 
     def compute_aggregates(self) -> None:
         """Compute macro and micro aggregates from per-rule metrics."""
@@ -254,7 +271,7 @@ class BenchmarkRunResult:
             if p + r:
                 self.micro_f1 = 2 * p * r / (p + r)
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "run_id": self.run_id,
             "manifest_id": self.manifest_id,
@@ -298,11 +315,10 @@ def evaluate_predictions(
             "Refusing to evaluate against tampered manifest."
         )
 
-    case_map = {c.case_id: c for c in manifest.cases}
     pred_map = {p.case_id: p for p in predictions}
 
     # Per-rule accumulation
-    rule_counters: dict[str, dict] = {}
+    rule_counters: dict[str, dict[str, int]] = {}
     total_abstained = 0
     total_errors = 0
 
@@ -316,8 +332,15 @@ def evaluate_predictions(
 
         rule_id = case.rule_id
         if rule_id not in rule_counters:
-            rule_counters[rule_id] = {"tp": 0, "fp": 0, "tn": 0, "fn": 0,
-                                      "abstained": 0, "errors": 0, "total": 0}
+            rule_counters[rule_id] = {
+                "tp": 0,
+                "fp": 0,
+                "tn": 0,
+                "fn": 0,
+                "abstained": 0,
+                "errors": 0,
+                "total": 0,
+            }
         c = rule_counters[rule_id]
         c["total"] += 1
 
@@ -344,8 +367,10 @@ def evaluate_predictions(
             rule_id=rule_id,
             corpus_type=manifest.corpus_type,
             n_total=c["total"],
-            tp=c["tp"], fp=c["fp"],
-            tn=c["tn"], fn=c["fn"],
+            tp=c["tp"],
+            fp=c["fp"],
+            tn=c["tn"],
+            fn=c["fn"],
             n_abstained=c["abstained"],
             n_errors=c["errors"],
         )
@@ -360,7 +385,7 @@ def evaluate_predictions(
         corpus_type=manifest.corpus_type,
         engine_version=engine_version,
         norm_pack_hash=norm_pack_hash,
-        run_at=datetime.now(tz=timezone.utc),
+        run_at=datetime.now(tz=UTC),
         per_rule=per_rule,
         n_total=len(manifest.cases),
         n_abstained=total_abstained,

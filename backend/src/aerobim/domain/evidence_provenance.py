@@ -15,56 +15,59 @@ Each EvidenceRecord stores:
 
 Reduces: auditability risk, customer deployment risk.
 """
+
 from __future__ import annotations
 
 import hashlib
 import json
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from enum import Enum
-from typing import Any, Optional
+from datetime import UTC, datetime
+from enum import StrEnum
+from typing import Any
 
 
-class ExtractionMethod(str, Enum):
+class ExtractionMethod(StrEnum):
     """How a value was extracted. AI outputs must be marked AI_ADVISORY."""
-    DETERMINISTIC_PARSER = "deterministic_parser"   # IFC property reader
-    DETERMINISTIC_GEOMETRY = "deterministic_geometry" # Geometric computation
-    IDS_VALIDATOR = "ids_validator"                  # ifctester / buildingSMART
-    AI_ADVISORY = "ai_advisory"                      # LLM/NLP; never deterministic verdict
-    OCR_EXTRACTED = "ocr_extracted"                  # PDF/raster; advisory
-    MANUAL_ANNOTATED = "manual_annotated"            # Human-entered
-    CROSS_DOC_MATCH = "cross_doc_match"              # IFC ↔ drawing consistency
+
+    DETERMINISTIC_PARSER = "deterministic_parser"  # IFC property reader
+    DETERMINISTIC_GEOMETRY = "deterministic_geometry"  # Geometric computation
+    IDS_VALIDATOR = "ids_validator"  # ifctester / buildingSMART
+    AI_ADVISORY = "ai_advisory"  # LLM/NLP; never deterministic verdict
+    OCR_EXTRACTED = "ocr_extracted"  # PDF/raster; advisory
+    MANUAL_ANNOTATED = "manual_annotated"  # Human-entered
+    CROSS_DOC_MATCH = "cross_doc_match"  # IFC ↔ drawing consistency
 
 
-class EvidenceLocatorType(str, Enum):
-    IFC_PROPERTY = "ifc_property"       # PropSet.PropName on GUID
-    IFC_ELEMENT = "ifc_element"         # Element by GUID
+class EvidenceLocatorType(StrEnum):
+    IFC_PROPERTY = "ifc_property"  # PropSet.PropName on GUID
+    IFC_ELEMENT = "ifc_element"  # Element by GUID
     IFC_RELATIONSHIP = "ifc_relationship"
-    DOCUMENT_PAGE = "document_page"     # Page N, region coords
-    DOCUMENT_TABLE = "document_table"   # Sheet/row/col
-    GEOMETRIC_REGION = "geometric_region" # XYZ bounding box
-    CROSS_DOC_PAIR = "cross_doc_pair"   # (ifc_guid, doc_page) pair
+    DOCUMENT_PAGE = "document_page"  # Page N, region coords
+    DOCUMENT_TABLE = "document_table"  # Sheet/row/col
+    GEOMETRIC_REGION = "geometric_region"  # XYZ bounding box
+    CROSS_DOC_PAIR = "cross_doc_pair"  # (ifc_guid, doc_page) pair
 
 
 @dataclass
 class EvidenceLocator:
     """Precise machine-addressable location of the evidence source."""
-    locator_type: EvidenceLocatorType
-    ifc_guid: Optional[str] = None
-    ifc_entity_type: Optional[str] = None
-    ifc_property_set: Optional[str] = None
-    ifc_property_name: Optional[str] = None
-    document_page: Optional[int] = None
-    document_sheet: Optional[str] = None
-    region_x1: Optional[float] = None
-    region_y1: Optional[float] = None
-    region_x2: Optional[float] = None
-    region_y2: Optional[float] = None
-    table_row: Optional[int] = None
-    table_col: Optional[int] = None
-    custom: Optional[dict] = None
 
-    def to_dict(self) -> dict:
+    locator_type: EvidenceLocatorType
+    ifc_guid: str | None = None
+    ifc_entity_type: str | None = None
+    ifc_property_set: str | None = None
+    ifc_property_name: str | None = None
+    document_page: int | None = None
+    document_sheet: str | None = None
+    region_x1: float | None = None
+    region_y1: float | None = None
+    region_x2: float | None = None
+    region_y2: float | None = None
+    table_row: int | None = None
+    table_col: int | None = None
+    custom: dict[str, Any] | None = None
+
+    def to_dict(self) -> dict[str, Any]:
         return {
             "locator_type": self.locator_type.value,
             "ifc_guid": self.ifc_guid,
@@ -74,7 +77,8 @@ class EvidenceLocator:
             "document_page": self.document_page,
             "document_sheet": self.document_sheet,
             "region": [self.region_x1, self.region_y1, self.region_x2, self.region_y2]
-            if any(v is not None for v in [self.region_x1, self.region_y1]) else None,
+            if any(v is not None for v in [self.region_x1, self.region_y1])
+            else None,
             "table_row": self.table_row,
             "table_col": self.table_col,
             "custom": self.custom,
@@ -93,26 +97,27 @@ class EvidenceRecord:
     extraction_method MUST be AI_ADVISORY if any AI step contributed.
     AI_ADVISORY evidence cannot set deterministic verdict.
     """
+
     evidence_id: str
-    finding_id: str            # Parent finding
+    finding_id: str  # Parent finding
     package_id: str
-    file_logical_path: str     # Which file
-    source_hash: str           # sha256 of source file bytes (from manifest)
+    file_logical_path: str  # Which file
+    source_hash: str  # sha256 of source file bytes (from manifest)
     locator: EvidenceLocator
-    actual_value: Any          # What was found
-    expected_value: Any        # What was required by rule
+    actual_value: Any  # What was found
+    expected_value: Any  # What was required by rule
     extraction_method: ExtractionMethod
     rule_id: str
-    rule_version: str          # stable_version of ComplianceRule
+    rule_version: str  # stable_version of ComplianceRule
     norm_pack_id: str
     norm_pack_version: str
     norm_pack_hash: str
-    engine_version: str        # AeroBIM semver
+    engine_version: str  # AeroBIM semver
     configuration_hash: str
-    timestamp: datetime = field(default_factory=lambda: datetime.now(tz=timezone.utc))
-    confidence: Optional[float] = None  # 0-1; required for AI_ADVISORY
+    timestamp: datetime = field(default_factory=lambda: datetime.now(tz=UTC))
+    confidence: float | None = None  # 0-1; required for AI_ADVISORY
     is_ai_advisory: bool = False
-    supplementary: Optional[dict] = None  # Free-form extra context
+    supplementary: dict[str, Any] | None = None  # Free-form extra context
 
     def __post_init__(self) -> None:
         if self.extraction_method == ExtractionMethod.AI_ADVISORY:
@@ -139,7 +144,7 @@ class EvidenceRecord:
         ).encode()
         return hashlib.sha256(payload).hexdigest()[:24]
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "evidence_id": self.evidence_id,
             "finding_id": self.finding_id,
@@ -173,6 +178,7 @@ class FindingProvenance:
 
     Principle: unknown != pass. Missing evidence → NOT_VERIFIED.
     """
+
     finding_id: str
     rule_id: str
     rule_version: str
@@ -185,9 +191,9 @@ class FindingProvenance:
     project_id: str
     engine_version: str
     configuration_hash: str
-    evidence_refs: list[str]   # evidence_id list; must not be empty for FAIL/PASS
-    is_ai_advisory: bool       # True if any evidence is AI_ADVISORY
-    created_at: datetime = field(default_factory=lambda: datetime.now(tz=timezone.utc))
+    evidence_refs: list[str]  # evidence_id list; must not be empty for FAIL/PASS
+    is_ai_advisory: bool  # True if any evidence is AI_ADVISORY
+    created_at: datetime = field(default_factory=lambda: datetime.now(tz=UTC))
 
     @property
     def is_reproducible(self) -> bool:
@@ -200,7 +206,7 @@ class FindingProvenance:
             and self.evidence_refs
         )
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "finding_id": self.finding_id,
             "rule_id": self.rule_id,
