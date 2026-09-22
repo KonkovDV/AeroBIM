@@ -47,9 +47,9 @@ jobs:
           resolve_submit_conflict("README.md")
           resolve_submit_conflict("README.en.md")
           PY
+          git add README.md README.en.md
           unresolved="$(git diff --name-only --diff-filter=U)"
           test -z "$unresolved" || { echo "unexpected conflicts: $unresolved"; exit 1; }
-          git add README.md README.en.md
       - name: Harden malformed payload handling and synchronize current-main wording
         shell: bash
         run: |
