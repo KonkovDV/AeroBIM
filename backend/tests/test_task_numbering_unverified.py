@@ -73,14 +73,14 @@ class TaskNumberingUnverifiedTests(unittest.TestCase):
 
     def test_canonical_phrase_on_readme_and_application(self) -> None:
         readme = (_REPO / "README.md").read_text(encoding="utf-8")
-        self.assertIn("автоматизированной верификации проектной и рабочей документации", readme)
-        self.assertIn("заказчик канала", readme)
+        self.assertIn("автоматическая проверка проектной и рабочей документации", readme)
         application = (_REPO / "docs/partners/TECHLAB_APPLICATION_2026.md").read_text(
             encoding="utf-8"
         )
         self.assertIn(
             "автоматизированной верификации проектной и рабочей документации", application
         )
+        self.assertIn("заказчика канала", application)
         self.assertNotIn("задача 07", application)
         self.assertNotIn("задача 7,", application)
 

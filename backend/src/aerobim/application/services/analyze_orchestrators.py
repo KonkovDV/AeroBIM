@@ -1005,7 +1005,7 @@ class EvidenceAssembler:
         authoritative = not (soft_profile and passed)
 
         report = ValidationReport(
-            report_id=uuid4().hex,
+            report_id=request.report_id_override or uuid4().hex,
             request_id=request.request_id,
             ifc_path=request.ifc_path,
             created_at=datetime.now(tz=UTC).isoformat(),

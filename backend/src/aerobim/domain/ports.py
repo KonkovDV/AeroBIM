@@ -271,6 +271,16 @@ class AnalyzeProjectPackageJobStore(Protocol):
         self, ttl_seconds: int | None = None, *, now_iso: str | None = None
     ) -> list[AnalyzeProjectPackageJob]: ...
 
+    def requeue_failed_without_report(self, job_id: str) -> AnalyzeProjectPackageJob | None:
+        """Return an abandoned failed job that never published a report to QUEUED.
+
+        Only lease-expiry and process-restart failures are eligible.
+        Succeeded jobs stay succeeded. Business failures and exhausted retries stay failed.
+        """
+        ...
+
+    def requeue_abandoned_failures(self) -> list[AnalyzeProjectPackageJob]: ...
+
 
 class ExternalEvidenceVerifier(Protocol):
     """Port for third-party calculation / reinforcement evidence verification."""

@@ -3,7 +3,7 @@
 from typing import Annotated
 from uuid import uuid4
 
-from fastapi import APIRouter, BackgroundTasks, Body, Depends, Header, HTTPException
+from fastapi import APIRouter, Body, Depends, Header, HTTPException
 
 from aerobim.core.di.tokens import Tokens
 from aerobim.domain.ifc_size_policy import IfcAnalyzeCapError, IfcDiskBackendError
@@ -12,6 +12,9 @@ from aerobim.domain.object_acl import AuthPrincipal
 from aerobim.domain.stage_timeout import StageTimeoutExceeded
 from aerobim.infrastructure.adapters.openrebar_evidence_verifier import (
     build_openrebar_provenance_digest,
+)
+from aerobim.infrastructure.adapters.redis_analyze_job_queue import (
+    RedisAnalyzeJobQueue,
 )
 from aerobim.presentation.http.context import ApiContext
 from aerobim.presentation.http.errors import (
@@ -52,7 +55,6 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
         try:
             ifc_resolved = ctx.resolve_safe_path(payload.ifc_path, principal=principal)
             ctx.enforce_ifc_size(ifc_resolved)
-
             report = ctx.validate_use_case.execute(
                 ValidationRequest(
                     request_id=request_id,
@@ -81,10 +83,8 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
             logger.warning("validate_ifc file not found", request_id=request_id, detail=str(exc))
             raise HTTPException(status_code=404, detail="file not found") from exc
         except IfcAnalyzeCapError as exc:
-            logger.warning("validate_ifc analyze cap", request_id=request_id)
             raise HTTPException(status_code=413, detail=public_ifc_analyze_cap_body()) from exc
         except IfcDiskBackendError as exc:
-            logger.error("validate_ifc disk backend", request_id=request_id)
             raise HTTPException(status_code=503, detail=public_ifc_disk_backend_detail()) from exc
         except ValueError as exc:
             logger.warning("validate_ifc bad request", request_id=request_id, detail=str(exc))
@@ -94,7 +94,6 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
             raise HTTPException(
                 status_code=503, detail=public_service_unavailable_detail()
             ) from exc
-
         logger.info(
             "validate_ifc completed",
             request_id=request_id,
@@ -110,17 +109,11 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
     ) -> dict[str, object]:
         if ctx.settings.disable_sync_package_analyze:
-            raise HTTPException(
-                status_code=409,
-                detail=public_sync_analyze_disabled_detail(),
-            )
+            raise HTTPException(status_code=409, detail=public_sync_analyze_disabled_detail())
         try:
             request = ctx.build_project_package_request(
                 payload,
-                tenant_id=ctx.resolve_bound_tenant(
-                    principal,
-                    payload_tenant_id=payload.tenant_id,
-                ),
+                tenant_id=ctx.resolve_bound_tenant(principal, payload_tenant_id=payload.tenant_id),
                 principal=principal,
             )
             report = ctx.analyze_use_case.execute(request)
@@ -136,15 +129,13 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
         except StageTimeoutExceeded as exc:
             logger.error("analyze_project_package stage timeout", detail=str(exc))
             raise HTTPException(
-                status_code=504,
-                detail=public_service_unavailable_detail(),
+                status_code=504, detail=public_service_unavailable_detail()
             ) from exc
         except RuntimeError as exc:
             logger.error("analyze_project_package runtime error", detail=str(exc))
             raise HTTPException(
                 status_code=503, detail=public_service_unavailable_detail()
             ) from exc
-
         return ctx.serialize_public_report(report)
 
     @router.post("/v1/analyze/project-package/reinforcement-digest")
@@ -164,7 +155,6 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
             raise HTTPException(status_code=400, detail=public_bad_request_detail()) from exc
         metadata_payload = report_payload.get("metadata")
         metadata = metadata_payload if isinstance(metadata_payload, dict) else {}
-        # Storage-relative path only — never absolute host paths in API responses.
         storage_rel = payload.reinforcement_report_path.replace("\\", "/")
         return {
             "reinforcement_report_path": storage_rel,
@@ -174,25 +164,21 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
             "project_code": metadata.get("projectCode"),
             "slab_id": metadata.get("slabId"),
             "claim_labels": {
-                "calculation_match": "сверка результатов (provenance/numeric match) — PARTIAL",
-                "calculation_correctness": "независимая проверка корректности — НЕ РЕАЛИЗОВАНО",
+                "calculation_match": ("сверка результатов (provenance/numeric match) — PARTIAL"),
+                "calculation_correctness": ("независимая проверка корректности — НЕ РЕАЛИЗОВАНО"),
             },
         }
 
     @router.post("/v1/analyze/project-package/submit", status_code=202)
     def submit_analyze_project_package(
         payload: Annotated[AnalyzeProjectPackageRequest, Body()],
-        background_tasks: BackgroundTasks,
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
         idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None,
     ) -> dict[str, object]:
         try:
             request = ctx.build_project_package_request(
                 payload,
-                tenant_id=ctx.resolve_bound_tenant(
-                    principal,
-                    payload_tenant_id=payload.tenant_id,
-                ),
+                tenant_id=ctx.resolve_bound_tenant(principal, payload_tenant_id=payload.tenant_id),
                 principal=principal,
             )
         except FileNotFoundError as exc:
@@ -202,7 +188,10 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
             raise HTTPException(status_code=400, detail=public_bad_request_detail()) from exc
         idem = _normalize_idempotency_key(idempotency_key)
         if idem is not None and len(idem) > 128:
-            raise HTTPException(status_code=400, detail="Idempotency-Key must be ≤128 characters")
+            raise HTTPException(
+                status_code=400,
+                detail="Idempotency-Key must be ≤128 characters",
+            )
 
         from aerobim.domain.analyze_job_idempotency import (
             IdempotencyPayloadConflictError,
@@ -212,10 +201,9 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
         submit_job_use_case = ctx.container.resolve(
             Tokens.SUBMIT_ANALYZE_PROJECT_PACKAGE_JOB_USE_CASE
         )
-        job_runner = ctx.container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_JOB_RUNNER)
+        job_store = ctx.container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_JOB_STORE)
         existing_id: str | None = None
         if idem is not None:
-            job_store = ctx.container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_JOB_STORE)
             prior = job_store.get_by_idempotency_key(idem, tenant_id=request.tenant_id)
             if prior is not None:
                 existing_id = prior.job_id
@@ -223,7 +211,7 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
             job = submit_job_use_case.execute(
                 request,
                 idempotency_key=idem,
-                max_concurrent_per_tenant=ctx.settings.max_concurrent_analyze_jobs_per_tenant,
+                max_concurrent_per_tenant=(ctx.settings.max_concurrent_analyze_jobs_per_tenant),
             )
         except JobConcurrencyLimitError as exc:
             raise HTTPException(
@@ -235,10 +223,35 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
                 status_code=409,
                 detail=public_idempotency_payload_conflict_detail(),
             ) from exc
+
         if job.status.value == "queued" and job.job_id != existing_id:
-            # JOB-01: FastAPI BackgroundTasks in this API process — not a durable
-            # worker queue. Replay of a still-queued job must not spawn a second runner.
-            background_tasks.add_task(job_runner.run, job.job_id, request)
+            if ctx.settings.redis_url:
+                try:
+                    RedisAnalyzeJobQueue(ctx.settings.redis_url).enqueue(job.job_id, request)
+                except Exception as exc:
+                    job_store.mark_failed(job.job_id, "durable_queue_publish_failed")
+                    logger.error(
+                        "analyze queue publish failed",
+                        job_id=job.job_id,
+                        detail=str(exc),
+                    )
+                    raise HTTPException(
+                        status_code=503,
+                        detail=public_service_unavailable_detail(),
+                    ) from exc
+            elif ctx.settings.environment == "test":
+                # Test-only compatibility path. Deployed profiles require Redis and
+                # never execute analysis from the HTTP process.
+                ctx.container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_JOB_RUNNER).run(
+                    job.job_id, request
+                )
+                job = job_store.get(job.job_id) or job
+            else:
+                job_store.mark_failed(job.job_id, "durable_queue_unavailable")
+                raise HTTPException(
+                    status_code=503,
+                    detail=public_service_unavailable_detail(),
+                )
         return ctx.serialize_analyze_project_package_job(job)
 
     @router.get("/v1/analyze/project-package/jobs/{job_id}")
@@ -246,8 +259,7 @@ def build_analyze_router(ctx: ApiContext) -> APIRouter:
         job_id: str,
         principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
     ) -> dict[str, object]:
-        job = ctx.load_authorized_job(job_id, principal)
-        return ctx.serialize_analyze_project_package_job(job)
+        return ctx.serialize_analyze_project_package_job(ctx.load_authorized_job(job_id, principal))
 
     @router.post("/v1/analyze/project-package/jobs/{job_id}/cancel")
     def cancel_analyze_project_package_job(

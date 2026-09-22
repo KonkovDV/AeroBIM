@@ -1,4 +1,4 @@
-"""Inventory of where pack bytes live. JOB-01 workers are not claimed durable.
+"""Inventory of where package bytes and durable analyze jobs live.
 
 Not a 152-FZ legal opinion. Checkpoint GO; customer_go false.
 Not registered in the operator catalog (cap ≤40).
@@ -23,12 +23,12 @@ def repo_root() -> Path:
 def build_payload(*, generated_at: str | None = None) -> dict[str, object]:
     ceiling = ifc_cache_ram_ceiling_payload()
     payload: dict[str, object] = {
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "artifact_type": "aerobim_data_residency_inventory",
         "claim_level": "code_inventory",
         "claim_boundary": (
-            "Surfaces from Settings env and JOB-01 comments in code. "
-            "Not a 152-FZ audit. Durable workers are not claimed. "
+            "Surfaces from Settings env and the JOB-01 worker implementation. "
+            "Not a 152-FZ audit or a formally verified per-job sandbox. "
             "Checkpoint GO (regulatory_measurement_mvp; customer_go false)."
         ),
     }
@@ -70,32 +70,42 @@ def build_payload(*, generated_at: str | None = None) -> dict[str, object]:
                 },
                 {
                     "id": "ifc_ram_lru",
-                    "kind": "process_memory",
+                    "kind": "worker_process_memory",
                     "config": "max_cached_models × max_ifc_bytes",
                     "max_cached_models": ceiling["max_cached_models"],
                     "max_bytes_per_cached_model": ceiling["max_bytes_per_model"],
                     "durable": False,
                 },
                 {
-                    "id": "redis_optional",
-                    "kind": "optional_cache_and_job_store",
+                    "id": "redis_control_plane",
+                    "kind": "durable_job_store_and_reliable_queue",
                     "path_env": "AEROBIM_REDIS_URL",
                     "default": None,
-                    "durable": False,
+                    "durable": True,
                     "required_outside_dev": True,
                 },
             ],
             "job_queue": {
                 "id": "JOB-01",
-                "status": "in_process_background_tasks",
-                "durable_workers_claimed": False,
+                "status": "dedicated_durable_worker",
+                "durable_workers_claimed": True,
+                "delivery": "at_least_once",
+                "payload_format": "json",
+                "reservation": "redis_blmove_right_left_ready_to_processing",
+                "ack": "terminal_state_only",
                 "honesty": (
-                    "FastAPI BackgroundTasks in this API process. "
-                    "In-memory job store (optional snapshot JSON) in development/test; "
-                    "Redis job store required outside those environments. "
-                    "That is a store, not a durable worker fleet."
+                    "Production HTTP is producer-only; aerobim.worker is the executor. "
+                    "Redis retains the JSON payload until terminal ACK. Job-store CAS, "
+                    "lease ownership and fencing reject duplicate claims or commits. "
+                    "Container limits are an isolation boundary, not a formally verified "
+                    "fresh per-job sandbox. Exact OOMKilled attribution remains with the runtime."
                 ),
-                "code_ref": "backend/src/aerobim/presentation/http/routes/analyze.py",
+                "code_refs": [
+                    "backend/src/aerobim/presentation/http/routes/analyze.py",
+                    "backend/src/aerobim/infrastructure/adapters/redis_analyze_job_queue.py",
+                    "backend/src/aerobim/worker.py",
+                    "docker-compose.production.yml",
+                ],
             },
             "checkpoint": CHECKPOINT,
         }

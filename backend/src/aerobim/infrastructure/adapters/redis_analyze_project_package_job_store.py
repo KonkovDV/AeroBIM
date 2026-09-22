@@ -15,7 +15,7 @@ from aerobim.domain.analyze_job_idempotency import (
     JobConcurrencyLimitError,
     job_from_stored_mapping,
 )
-from aerobim.domain.job_transitions import can_transition
+from aerobim.domain.job_transitions import abandoned_without_report, can_transition
 from aerobim.domain.models import AnalyzeProjectPackageJob, JobStatus
 
 _DEFAULT_QUEUED_TTL_SECONDS = 600
@@ -106,6 +106,7 @@ class RedisAnalyzeProjectPackageJobStore:
         self._prefix = key_prefix
         self._queued_ttl_seconds = queued_ttl_seconds
         self._lease_seconds = 120
+        self._max_retries = 3
 
     def _key(self, job_id: str) -> str:
         return f"{self._prefix}{job_id}"
@@ -365,14 +366,20 @@ class RedisAnalyzeProjectPackageJobStore:
             expires = _lease_expiry(job, lease_seconds=self._lease_seconds)
             if expires is None or expires >= now:
                 continue
+            retries = job.retry_count + 1
+            exhausted = retries > int(getattr(self, "_max_retries", 3))
             updated = self._update(
                 job.job_id,
-                status=JobStatus.FAILED,
+                status=JobStatus.DEAD_LETTER if exhausted else JobStatus.FAILED,
                 completed_at=_now_iso(),
-                error_message="Lease expired; job marked failed for recovery/resubmit",
-                retry_count=job.retry_count + 1,
+                error_message=(
+                    "Lease expired; retry budget exhausted"
+                    if exhausted
+                    else "Lease expired; job marked failed for recovery/resubmit"
+                ),
+                retry_count=retries,
                 lease_expires_at=None,
-                stage_progress="lease_expired",
+                stage_progress="dead_letter" if exhausted else "lease_expired",
                 lease_owner=None,
                 require_status=JobStatus.RUNNING,
                 require_lease_expired_before=now,
@@ -380,6 +387,38 @@ class RedisAnalyzeProjectPackageJobStore:
             if updated is not None:
                 reclaimed.append(updated)
         return reclaimed
+
+    def requeue_failed_without_report(self, job_id: str) -> AnalyzeProjectPackageJob | None:
+        current = self.get(job_id)
+        if not abandoned_without_report(current, max_retries=3):
+            return None
+        return self._update(
+            job_id,
+            status=JobStatus.QUEUED,
+            started_at=None,
+            completed_at=None,
+            error_message=None,
+            heartbeat_at=None,
+            lease_expires_at=None,
+            lease_owner=None,
+            stage_progress="requeued",
+            require_status=JobStatus.FAILED,
+        )
+
+    def requeue_abandoned_failures(self) -> list[AnalyzeProjectPackageJob]:
+        requeued: list[AnalyzeProjectPackageJob] = []
+        for key in self._redis.scan_iter(match=f"{self._prefix}*"):
+            key_str = str(key)
+            if ":idem:" in key_str or ":active:" in key_str:
+                continue
+            raw = self._redis.get(key)
+            if raw is None:
+                continue
+            job = self._deserialize(str(raw))
+            updated = self.requeue_failed_without_report(job.job_id)
+            if updated is not None:
+                requeued.append(updated)
+        return requeued
 
     def reclaim_stale_queued(
         self, ttl_seconds: int | None = None, *, now_iso: str | None = None

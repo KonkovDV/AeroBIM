@@ -1,4 +1,4 @@
-"""JOB-01 honesty and substitution-matrix token count."""
+"""JOB-01 evidence and substitution-matrix token count."""
 
 from __future__ import annotations
 
@@ -10,24 +10,29 @@ from aerobim.tools.export_substitution_matrix import token_names
 
 
 class DataResidencyHonestyTests(unittest.TestCase):
-    def test_job_01_does_not_claim_durable_workers(self) -> None:
+    def test_job_01_reports_dedicated_durable_worker_without_overclaim(self) -> None:
         payload = residency_payload(generated_at="2026-09-15T00:00:00+00:00")
         job = payload["job_queue"]
         assert isinstance(job, dict)
-        self.assertFalse(job["durable_workers_claimed"])
-        self.assertIn("BackgroundTasks", str(job["honesty"]))
+        self.assertTrue(job["durable_workers_claimed"])
+        self.assertEqual(job["status"], "dedicated_durable_worker")
+        self.assertEqual(job["delivery"], "at_least_once")
+        self.assertIn("producer-only", str(job["honesty"]))
+        self.assertIn("not a formally verified", str(job["honesty"]))
         self.assertFalse(payload["customer_go"])
-        analyze = (
-            Path(__file__).resolve().parents[1]
-            / "src"
-            / "aerobim"
-            / "presentation"
-            / "http"
-            / "routes"
-            / "analyze.py"
-        ).read_text(encoding="utf-8")
-        self.assertIn("JOB-01", analyze)
-        self.assertIn("not a durable", analyze.lower())
+
+        root = Path(__file__).resolve().parents[1] / "src" / "aerobim"
+        analyze = (root / "presentation" / "http" / "routes" / "analyze.py").read_text(
+            encoding="utf-8"
+        )
+        worker = (root / "worker.py").read_text(encoding="utf-8")
+        queue = (root / "infrastructure" / "adapters" / "redis_analyze_job_queue.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("BackgroundTasks", analyze)
+        self.assertIn("RedisAnalyzeJobQueue", analyze)
+        self.assertIn("queue.reserve", worker)
+        self.assertIn('"BLMOVE"', queue)
 
 
 class SubstitutionTokenCountTests(unittest.TestCase):

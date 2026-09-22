@@ -65,9 +65,9 @@
 
 | ID | Kind | Honesty |
 |----|------|---------|
-| JOB-01 | Analyze **runner** is in-process FastAPI `BackgroundTasks`. Redis stores job **records**, not execution. Same key + same payload fingerprint returns the live/succeeded job; same key + different fingerprint → HTTP 409. | Not a Shared-gate writer. Do not claim durable workers. Fingerprint is path/id identity, not file-bytes. |
+| JOB-01 | Production HTTP is producer-only; dedicated `aerobim.worker` reserves Redis JSON deliveries with `BLMOVE`, retains them until terminal ACK, and recovers expired leases. | Delivery is at-least-once, not physically exactly-once. Redis remains a single-node failure domain and the long-lived container is not a fresh per-job sandbox. |
 | XML-POSTPARSE-01 | Element/depth/text caps run after defusedxml builds a tree. Byte cap (16 MiB) applies **before** parse. | Availability inside the cap, not XXE. |
-| IFC-ISO-01 | IfcOpenShell opens in the API process (1.5 GB disk band). Pdfium crop and pdfminer drawing extract run in a child process with wall-clock kill. Windows Job Object is CPU/memory, not a network jail. | Crash/OOM ≠ silent `summary.passed=true`. Not MEP delivered. |
+| IFC-ISO-01 | Production async IfcOpenShell runs in a dedicated long-lived worker container (1.5 GB disk band); the synchronous API path is disabled by production compose. Pdfium crop and pdfminer drawing extract run in a child process with wall-clock kill. | Worker limits are not a fresh per-job sandbox. Crash/OOM ≠ silent `summary.passed=true`. Not MEP delivered. |
 | UPLOAD-OS-01 | Upload object-store path uses `put_file` + `asyncio.to_thread`. RSS of this branch was not measured. | Not an OOM-closed claim. IFC caps unchanged. |
 | CUST-REHEARSE-20260917 | Local customer-pack rehearsal 2026-09-17: upload → analyze → lab-reviewer HITL persist → structurally valid BCF. Verdict **PARTIAL**. | Not independent expert. Unsigned IDS ≠ signed profile. CDE import **NOT_VERIFIED**. Not a publishable accuracy pin. No customer hashes in git. |
 

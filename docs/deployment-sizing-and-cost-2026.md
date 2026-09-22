@@ -4,7 +4,7 @@ title: "Deployment sizing and cost 2026"
 status: active
 version: "1.0.0"
 date: "2026-09-15"
-last_updated: "2026-09-15"
+last_updated: "2026-09-22"
 claim_boundary: >
   Engineering ranges from Settings and the IFC LRU ceiling. Not a commercial
   quote, not customer SLA, not a 152-FZ opinion. Checkpoint GO; customer_go false.
@@ -22,8 +22,8 @@ Not a price list. Not a VM SKU. Product Checkpoint **GO** (`regulatory_measureme
 | Process-local IFC LRU | 8 models × 256 MiB ≈ 2 GiB RAM ceiling | `ifc_file_open` / `export_ifc_cache_ram_ceiling` |
 | Ingest envelope | 256 MiB default; customer-stated 1.5 GiB model / 500 MiB office under pilot when applied | `max_model_bytes` / `max_office_bytes` |
 | Object store | `AEROBIM_STORAGE_DIR` (default `var/reports`) | Filesystem or S3 extra |
-| Job runner | FastAPI `BackgroundTasks` in the API process | JOB-01; durable workers **not claimed** |
-| IFC process isolate | Not claimed this pass | Honesty: in-process IfcOpenShell; child-process isolate is P1.7 residual |
+| Job runner | Dedicated `aerobim.worker`; Redis JSON payload + `BLMOVE` ready→processing | JOB-01; at-least-once delivery with terminal ACK, lease fencing and bounded recovery |
+| IFC process isolate | Separate long-lived worker container with cgroup/namespace hardening | Not a fresh per-job sandbox; gVisor/Kata/Firecracker remains a multi-tenant residual |
 
 Measured RSS delta for a federated pack is **null** until measured. Do not treat the 2 GiB LRU ceiling as a VM quote.
 

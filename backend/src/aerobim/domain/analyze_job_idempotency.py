@@ -2,7 +2,7 @@
 
 Same ``Idempotency-Key`` with a different request identity is a conflict (409),
 not a silent replay. Fingerprint is path/id identity, not file-bytes and not
-an SLA. JOB-01 runner remains in-process BackgroundTasks.
+an SLA. Production JOB-01 execution is handled by the dedicated durable worker.
 """
 
 from __future__ import annotations
