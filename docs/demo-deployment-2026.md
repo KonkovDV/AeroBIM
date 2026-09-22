@@ -31,7 +31,7 @@ deploy\demo\setup-demo.bat
 |---|---|---|---|
 | **A — CLI жюри** | Python 3.12 | Терминал: находки, BCF | `setup-demo.sh cli` |
 | **B — UI оболочка** | Python 3.12 + Node 20+ | Браузер: 3D, лист, HITL | `setup-demo.sh ui` |
-| **C — Docker API** | Docker ≥ 24 | API + samples | `setup-demo.sh docker` |
+| **C — Docker API** | Docker ≥ 24 | API на 127.0.0.1 | `setup-demo.sh docker` |
 | **C+ — Docker+UI** | Docker + Node 20+ | Браузер полный стек | `setup-demo.sh docker-full` |
 | **D — Air-gap** | Docker + бандл | API offline | `setup-demo.sh airgap` |
 
@@ -148,7 +148,7 @@ docker compose -f docker-compose.demo.yml down -v
 ```bash
 ./deploy/demo/setup-demo.sh docker-full
 # или вручную:
-cd frontend && npm install && VITE_API_BASE_URL=http://127.0.0.1:8080 npm run dev
+cd frontend && npm ci && VITE_API_BASE_URL=http://127.0.0.1:8080 npm run dev
 ```
 
 ### Windows
@@ -170,27 +170,9 @@ rem PowerShell:
 
 ---
 
-## Режим C-LAN: демо по сети для нескольких участников
+## Сеть показа
 
-Измените в `docker-compose.demo.yml` или через `.env.demo.local`:
-
-```bash
-# Создайте .env.demo.local (he в git):
-cat > .env.demo.local << 'EOF'
-AEROBIM_HOST=0.0.0.0
-AEROBIM_CORS_ORIGINS=http://192.168.1.100:5173,http://192.168.1.100:8080
-AEROBIM_ALLOW_ANONYMOUS_DEV=true
-AEROBIM_SIGNOFF_PROFILE=customer_pilot_demo
-EOF
-
-# Измените ports в docker-compose.demo.yml:
-# ports:
-#   - "0.0.0.0:8080:8080"   # <-- вместо 127.0.0.1:8080:8080
-
-docker compose -f docker-compose.demo.yml up --build -d
-```
-
-Убедитесь, что firewall открывает порт 8080.
+Анонимный API этого стека слушает только `127.0.0.1`. В локальную сеть его не публикуем. Оболочка открывается на порту 5173. Порт 3000 этому показу не принадлежит.
 
 ---
 
@@ -224,6 +206,7 @@ powershell -ExecutionPolicy Bypass -File bundle\install_offline.ps1
 ```
 
 ### Ограничения air-gap
+- `install_offline.sh` / `install_offline.ps1` ставят закрытый контур образа. Профиль `customer_pilot_demo` они не включают. Честный SKIPPED коллизий и MEP относится к режимам A–C.
 - Без Docker air-gap не работает (bare-metal wheelhouse OUT_OF_SCOPE)
 - LLM/VLM оффлайн — недоступны (запрещено по умолчанию)
 - Redis недоступен в single-container air-gap (опциональная очередь не включается)
@@ -253,8 +236,6 @@ Windows: `deploy\demo\reset-demo.bat [venv|docker|all]`
 
 ```bash
 ./deploy/demo/validate-demo.sh
-# LAN:
-./deploy/demo/validate-demo.sh http://192.168.1.100:8080
 ```
 
 Windows: `deploy\demo\validate-demo.bat`
@@ -271,8 +252,8 @@ Windows: `deploy\demo\validate-demo.bat`
 | `AEROBIM_ENV` | `development` | Не менять на `production` для демо |
 | `AEROBIM_ALLOW_ANONYMOUS_DEV` | `true` | Только `development`. Для защищённого демо убрать + `AEROBIM_API_BEARER_TOKEN` |
 | `AEROBIM_REMARK_LOCALE` | `ru` | `en` — замечания на английском |
-| `AEROBIM_CORS_ORIGINS` | `http://localhost:5173,...` | Добавь IP для LAN |
-| `AEROBIM_HOST` | `127.0.0.1` | `0.0.0.0` — для LAN |
+| `AEROBIM_CORS_ORIGINS` | `http://127.0.0.1:5173` | Только Vite. Порт 3000 не используем |
+| `AEROBIM_HOST` | `127.0.0.1` | Анонимный API остаётся на петле |
 | `AEROBIM_PDF_BACKEND` | `pdfium` | Не менять для демо |
 | `AEROBIM_LLM_ADVISORY_ENABLED` | `false` | Запрещено на `customer_pilot*` |
 | `AEROBIM_STORAGE_DIR` | `var/reports` | Для Docker — `/data/reports` (volume) |
@@ -287,8 +268,8 @@ Windows: `deploy\demo\validate-demo.bat`
 cp .env.demo .env.demo.local
 # Отредактируйте .env.demo.local:
 # AEROBIM_SIGNOFF_PROFILE=customer_pilot_demo  # или moscow_agr_2026
-# AEROBIM_HOST=0.0.0.0                         # для LAN
-# AEROBIM_CORS_ORIGINS=http://192.168.1.100:5173
+# AEROBIM_HOST=127.0.0.1
+# AEROBIM_CORS_ORIGINS=http://127.0.0.1:5173
 ```
 
 `.env.demo.local` — в `.gitignore`, не коммитить.
@@ -299,8 +280,8 @@ cp .env.demo .env.demo.local
 
 | Сценарий | Сказать заказчику |
 |---|---|
-| `summary.passed=false` на учебном комплекте | Цень — программа нашла посаженные дефекты |
-| SKIPPED в capabilities | Честный out-of-scope: clash/MEP не подделывает |
+| `summary.passed=false` на учебном комплекте | Так и задумано: программа нашла посаженные дефекты |
+| SKIPPED в capabilities | Коллизии и MEP вне области показа. Результат не подменяется |
 | FAILED блокирует `summary.passed` | Детерминированное ядро, LLM не пишет флаг |
 | `customer_go = false` | Пилот не завершён |
 | Логи BCF | `GET /v1/reports/{id}/export/bcf` / `?version=3` |

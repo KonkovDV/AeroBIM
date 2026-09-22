@@ -153,7 +153,10 @@ goto :health_loop
 :: Режим D: Air-gap
 :: -----------------------------------------------------------------------
 :mode_airgap
-echo [Mode D] Air-gap Docker install.
+echo [Mode D] Offline image track. This is not customer_pilot_demo.
+echo install_offline.ps1 starts the closed-contour image.
+echo It does not set AEROBIM_SIGNOFF_PROFILE=customer_pilot_demo.
+echo Clash/MEP honesty of the demo profile applies to cli, ui, and docker only.
 
 docker info >nul 2>&1 || (
   echo FAIL: Docker not running.

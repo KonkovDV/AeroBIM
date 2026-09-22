@@ -129,7 +129,7 @@ if [[ "$MODE" == "docker" ]]; then
       ok "API ready: http://127.0.0.1:8080"
       ok "Health:    http://127.0.0.1:8080/health"
       ok "Caps:      http://127.0.0.1:8080/v1/system/capabilities"
-      info "Samples mounted read-only at /data/samples inside the container."
+      info "API is on 127.0.0.1 only. The anonymous demo API is not published to the LAN."
       info "To stop: docker compose -f docker-compose.demo.yml down"
       info "To reset reports: docker compose -f docker-compose.demo.yml down -v"
       exit 0
@@ -151,18 +151,27 @@ if [[ "$MODE" == "docker-full" ]]; then
   # Сначала запускаем backend через Docker
   "$0" docker
 
-  # Затем frontend
-  info "Installing frontend dependencies..."
-  cd frontend
-  npm install --prefer-offline
+  cleanup() {
+    info "Stopping Vite and the demo container..."
+    if [[ -n "${VITE_PID:-}" ]] && kill -0 "$VITE_PID" 2>/dev/null; then
+      kill "$VITE_PID" 2>/dev/null || true
+      wait "$VITE_PID" 2>/dev/null || true
+    fi
+    docker compose -f "$REPO_ROOT/docker-compose.demo.yml" down
+  }
+  trap cleanup INT TERM EXIT
+
+  info "Installing frontend dependencies from the lockfile..."
+  cd "$REPO_ROOT/frontend"
+  [[ -f package-lock.json ]] || die "frontend/package-lock.json is missing."
+  npm ci
   info "Starting Vite frontend... UI → http://127.0.0.1:5173"
   VITE_API_BASE_URL=http://127.0.0.1:8080 npm run dev &
   VITE_PID=$!
-  echo "$VITE_PID" > /tmp/aerobim-demo-vite.pid
-  ok "Frontend started (PID $VITE_PID). Press Ctrl+C to stop."
+  ok "Frontend started (PID $VITE_PID). Ctrl+C stops Vite and the demo container."
   ok "UI  → http://127.0.0.1:5173"
   ok "API → http://127.0.0.1:8080"
-  wait
+  wait "$VITE_PID"
   exit 0
 fi
 
@@ -170,7 +179,9 @@ fi
 # Режим D: Air-gap (offline bundle)
 # -----------------------------------------------------------------------
 if [[ "$MODE" == "airgap" ]]; then
-  info "Mode D: Air-gap Docker install from offline bundle"
+  info "Mode D: offline image track. This is not customer_pilot_demo."
+  warn "install_offline.sh starts the closed-contour image. It does not set AEROBIM_SIGNOFF_PROFILE=customer_pilot_demo."
+  warn "Clash/MEP honesty of the demo profile applies to modes cli, ui, and docker only."
   BUNDLE_DIR="$REPO_ROOT/artifacts/offline-bundle"
   [[ -d "$BUNDLE_DIR" ]] || die "Bundle not found at $BUNDLE_DIR. Run first (online): cd backend && python -m aerobim.tools.offline_bundle build"
   command -v docker &>/dev/null || die "docker not found."

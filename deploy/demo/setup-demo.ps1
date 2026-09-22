@@ -138,18 +138,30 @@ if ($Mode -eq 'docker-full') {
   # Запуск Docker backend
   & "$PSCommandPath" -Mode docker
 
-  # Запуск Vite
-  Info "Installing frontend dependencies..."
-  Push-Location (Join-Path $RepoRoot 'frontend')
-  npm install --prefer-offline
-  $env:VITE_API_BASE_URL = 'http://127.0.0.1:8080'
-  Info "Starting Vite frontend... UI => http://127.0.0.1:5173"
-  $viteJob = Start-Job -ScriptBlock { npm run dev }
-  Ok "Frontend started (Job $($viteJob.Id))."
-  Ok "UI  => http://127.0.0.1:5173"
-  Ok "API => http://127.0.0.1:8080"
-  Pop-Location
-  Wait-Job $viteJob
+  $frontend = Join-Path $RepoRoot 'frontend'
+  $lock = Join-Path $frontend 'package-lock.json'
+  if (-not (Test-Path $lock)) { Die "frontend/package-lock.json is missing." }
+  $compose = Join-Path $RepoRoot 'docker-compose.demo.yml'
+  Info "Installing frontend dependencies from the lockfile..."
+  Push-Location $frontend
+  try {
+    npm ci
+    if ($LASTEXITCODE -ne 0) { Die "npm ci failed." }
+    $env:VITE_API_BASE_URL = 'http://127.0.0.1:8080'
+    Info "Starting Vite frontend... UI => http://127.0.0.1:5173"
+    $vite = Start-Process -FilePath 'npm' -ArgumentList 'run','dev' -PassThru -NoNewWindow
+    Ok "Frontend started (PID $($vite.Id)). Ctrl+C stops Vite and the demo container."
+    Ok "UI  => http://127.0.0.1:5173"
+    Ok "API => http://127.0.0.1:8080"
+    Wait-Process -Id $vite.Id
+  } finally {
+    Info "Stopping Vite and the demo container..."
+    if ($vite -and -not $vite.HasExited) {
+      Stop-Process -Id $vite.Id -Force -ErrorAction SilentlyContinue
+    }
+    docker compose -f $compose down
+    Pop-Location
+  }
   exit 0
 }
 
@@ -157,7 +169,9 @@ if ($Mode -eq 'docker-full') {
 # Режим D: Air-gap
 # ---------------------------------------------------------------------------
 if ($Mode -eq 'airgap') {
-  Info "Mode D: Air-gap Docker install from offline bundle"
+  Info "Mode D: offline image track. This is not customer_pilot_demo."
+  Warn "install_offline.ps1 starts the closed-contour image. It does not set AEROBIM_SIGNOFF_PROFILE=customer_pilot_demo."
+  Warn "Clash/MEP honesty of the demo profile applies to modes cli, ui, and docker only."
   $bundle = Join-Path $RepoRoot 'artifacts\offline-bundle'
   if (-not (Test-Path $bundle)) {
     Die "Bundle not found at $bundle. Run first (online): cd backend; python -m aerobim.tools.offline_bundle build"

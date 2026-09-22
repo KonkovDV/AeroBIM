@@ -102,7 +102,7 @@ python -m aerobim.tools.offline_bundle verify
 # Windows: .\deploy\demo\setup-demo.ps1 -Mode airgap
 ```
 
-Подробно: [`docs/offline-deployment-2026.md`](../../docs/offline-deployment-2026.md)
+Это закрытый контур образа, не профиль `customer_pilot_demo`. Подробно: [`docs/offline-deployment-2026.md`](../../docs/offline-deployment-2026.md)
 
 ---
 
@@ -126,7 +126,7 @@ deploy\demo\reset-demo.bat docker
 
 ```bash
 ./deploy/demo/validate-demo.sh
-# LAN: ./deploy/demo/validate-demo.sh http://192.168.1.100:8080
+# Слушает только 127.0.0.1. Анонимный API в локальную сеть не публикуем.
 ```
 
 ```bat
@@ -142,8 +142,8 @@ deploy\demo\validate-demo.bat
 | `AEROBIM_SIGNOFF_PROFILE` | `customer_pilot_demo` | `moscow_agr_2026` — для акцента на АГР |
 | `AEROBIM_ALLOW_ANONYMOUS_DEV` | `true` | отключить + задать `AEROBIM_API_BEARER_TOKEN` |
 | `AEROBIM_REMARK_LOCALE` | `ru` | `en` — для замечаний на английском |
-| `AEROBIM_CORS_ORIGINS` | `http://localhost:5173,...` | Добавь IP, если демо по LAN |
-| `AEROBIM_HOST` | `127.0.0.1` | `0.0.0.0` — если демо по LAN |
+| `AEROBIM_CORS_ORIGINS` | `http://127.0.0.1:5173` | Только Vite. Порт 3000 этому показу не принадлежит |
+| `AEROBIM_HOST` | `127.0.0.1` | Анонимный API остаётся на петле |
 
 Копируйте `.env.demo` → `.env.demo.local` и правьте переменные. Файл `.env.demo.local` в `.gitignore`.
 
@@ -152,11 +152,11 @@ deploy\demo\validate-demo.bat
 ## Честность показа в демо
 
 - `summary.passed=false` на учебном комплекте — **ожидаемо** (посажены дефекты)
-- SKIPPED в capabilities — честный out-of-scope (не подделъвает)
-- `customer_go = false` — пилот ещё не завершён
+- SKIPPED в capabilities — честный выход за область показа. Результат не подменяется
+- `customer_go = false` — подписи заказчика нет
 - LLM не пишет `summary.passed` никогда
 
 ---
 
-Подробное руководство со всеми сценариями, troubleshooting и LAN-конфигурацией:
+Подробное руководство со всеми сценариями и разбором сбоев:
 [`docs/demo-deployment-2026.md`](../../docs/demo-deployment-2026.md)

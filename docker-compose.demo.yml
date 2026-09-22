@@ -48,8 +48,8 @@ services:
       AEROBIM_ALLOW_ANONYMOUS_DEV: "true"
       AEROBIM_API_BEARER_TOKEN: ${AEROBIM_API_BEARER_TOKEN:-}
 
-      # ── CORS: localhost:5173 (Vite) и localhost:3000 (резерв) ───────────────
-      AEROBIM_CORS_ORIGINS: ${AEROBIM_CORS_ORIGINS:-http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173}
+      # Оболочка — Vite на 5173. Порт 3000 этому показу не принадлежит.
+      AEROBIM_CORS_ORIGINS: ${AEROBIM_CORS_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173}
       AEROBIM_CORS_ALLOW_CREDENTIALS: "false"
 
       # ── Хранение отчётов (внутри контейнера / volume) ──────────────────────
@@ -74,8 +74,6 @@ services:
     volumes:
       # Отчёты: именованный volume (persist между перезапусками демо)
       - demo-reports:/data/reports
-      # Учебные комплекты (read-only)
-      - ./samples:/data/samples:ro
     healthcheck:
       test:
         - CMD
