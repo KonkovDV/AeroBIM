@@ -6,7 +6,7 @@
 
 ## Запуск
 
-Либо из корня клона: `run-jury.bat` (кавычки extras внутри файла). Node для этой команды не нужен. Канон с Linux: [Try it](../../README.md#try-it).
+С корня клона: `run-jury.bat`. Кавычки extras уже внутри файла. Для этой команды Node не нужен. Тот же рецепт: [Try it](../../README.md#try-it).
 
 ```powershell
 cd backend
@@ -15,31 +15,32 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m aerobim.tools.run_kt3_jury
 ```
 
-Linux/macOS: `./run-jury.sh` или `python3.12 -m venv .venv`, `source .venv/bin/activate`, затем `pip install -e ".[dev,raster]"` и `python -m aerobim.tools.run_kt3_jury`.
+Linux и macOS: `./run-jury.sh`. Либо `python3.12 -m venv .venv`, `source .venv/bin/activate`, затем `pip install -e ".[dev,raster]"` и `python -m aerobim.tools.run_kt3_jury`.
 
-`summary.passed=false` на учебной фикстуре — штатный сценарий: в комплекте заложены дефекты. Не задавайте `AEROBIM_SIGNOFF_PROFILE=customer_pilot` на первом клоне.
+На учебном комплекте `summary.passed=false`. В нём заложены дефекты, отказ ожидаемый. На первом клоне не ставьте `AEROBIM_SIGNOFF_PROFILE=customer_pilot`.
 
-Кадр 4 презентации — учебная схема 30/40 мм. Живая команда находит посаженные дефекты учебного комплекта git, не этот узел. Подсветка области листа — пилот, не рабочее место эксперта.
+Кадр 4 — схема узла 30/40 мм. Живая команда ищет посаженные дефекты учебного комплекта в git. Этот узел она не ищет. Подсветки области листа на рабочем месте эксперта нет. Это предмет пилота.
 
-Шлюз приёмки (тот же клон): `python -m aerobim.tools.run_demo_ifc_acceptance_gate`.  
-Наложение на чертёж (P1-smoke на фикстуре, не ядро вердикта и не рабочее место эксперта): `python -m aerobim.tools.run_demo_vertical_slice`. В UI эксперта подсветки ошибки на листе нет.
+Шлюз приёмки на том же клоне: `python -m aerobim.tools.run_demo_ifc_acceptance_gate`.
+
+Наложение пометки на лист — отдельная команда, метка P1, только фикстура: `python -m aerobim.tools.run_demo_vertical_slice`. Флаг комплекта она не ставит. На экране эксперта подсветки ошибки на листе нет.
 
 Отчёты пишутся в локальный `artifacts/` и в git не входят: JSON, HTML, `findings.bcfzip`.
 
-Оболочка ревью — из **корня клона**, не из `frontend/`: `.\start.bat` (PowerShell, префикс `.\`) или `python scripts/run_review_shell.py`. Нужны Node 20+, npm и уже созданный `backend/.venv`. Это не замена живой команды. Экспорт XLSX нет. Вход по внешнему IdP сегодня отвечает 501.
+Оболочка ревью — из **корня клона**, не из `frontend/`: `.\start.bat` (в PowerShell нужен префикс `.\`) или `python scripts/run_review_shell.py`. Нужны Node 20+, npm и уже созданный `backend/.venv`. Оболочка живую команду не заменяет. Файла Excel на выходе нет. Вход через внешний IdP отвечает 501.
 
 ## Что видно в находке
 
-IFC + IDS → GUID элемента, идентификатор правила, expected/observed, доказательства. `summary.passed` пишет только детерминированный контур ([ADR-001](../../docs/architecture/ADR-001-verdict-ownership-2026.md)). Пропуск обязательной проверки роняет комплект.
+Из IFC и IDS карточка берёт GUID элемента, идентификатор правила, ожидание и факт, доказательства. `summary.passed` пишет только программа ([ADR-001](../../docs/architecture/ADR-001-verdict-ownership-2026.md)). Если обязательная проверка не дошла до конца, комплект не проходит.
 
 | Вопрос | Ответ |
 |---|---|
-| Почему `summary.passed=false`? | В учебном комплекте заложены дефекты. Это ожидаемый отказ. |
+| Почему `summary.passed=false`? | В учебном комплекте заложены дефекты. Отказ ожидаемый. |
 | Это точность на комплекте заказчика? | Нет. Комплекта заказчика в дереве нет. |
 | Доказывает ли BCF ZIP импорт в СОД? | Нет. Это структурный архив. Импорт в СОД не подтверждён. |
 
 ## Границы
 
-Чтение DWG и нативных RVT/NWD без конвертации не реализовано. Системные коллизии MEP не подтверждены. Независимого расчётного решателя нет: сверяем переданные результаты с источниками.
+DWG, RVT и NWD без конвертации мы не читаем. Системные коллизии MEP не подтверждены. Своего расчётного решателя нет: сверяем то, что передали, с источниками.
 
 Учебные данные: [`samples/`](../../samples/). Граница заявлений: [`pilot-claim-boundary-2026.md`](../../docs/pilot-claim-boundary-2026.md).
