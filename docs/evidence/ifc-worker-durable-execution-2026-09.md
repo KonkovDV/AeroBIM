@@ -2,6 +2,8 @@
 
 PR #87 implements an explicitly **at-least-once** Redis reliable queue with atomic publish/repair, `BLMOVE RIGHT LEFT` reservation, retained payload until terminal ACK, CAS/lease fencing, bounded retries and dead-letter exhaustion. Async reports use the durable job id, allowing recovery to adopt a report committed before a job-state commit rather than publish a duplicate.
 
+The tested implementation was integrated onto current `main` at commit `75bee57b332f4f5afad4b5113cf2f08887629b45`, preserving the later jury README corrections. Integration workflow run `35692360870` completed successfully and removed its temporary bootstrap workflow from the final tree.
+
 Production Redis uses AOF with `appendfsync always`. This is an explicit local-disk durability boundary, not high availability or consensus storage.
 
 Verification:
@@ -9,7 +11,9 @@ Verification:
 - Ruff check: passed
 - Ruff format check: passed
 - strict mypy: passed
-- backend pytest: passed
+- backend pytest: passed (`3330 passed`, `29 skipped`, `176 subtests passed` on the integrated current-main tree)
+- production Compose configuration: parsed successfully on GitHub Actions
+- malformed/non-object reserved payload regression cases: passed
 - Markdown links: passed
 - docs metadata integrity: passed
 - CI-generated runtime baseline adopted from run `35658840115`
