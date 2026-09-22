@@ -1,51 +1,51 @@
 <!-- claims-lint: allow-file reason="ADR-001 verdict ownership; Iversen/Fuchs contrast as non-claim; NO_GO" -->
 ---
-title: "ADR-001 — Contour ownership of summary.passed"
+title: "ADR-001 — кто пишет summary.passed"
 status: accepted
 date: 2026-07-18
-last_updated: "2026-09-02"
+last_updated: "2026-09-22"
 ---
 
-# ADR-001: Contour ownership of `summary.passed`
+# ADR-001: кто пишет `summary.passed`
 
-## Context
+## Откуда путаница
 
-Docs historically stated that only the **DETERMINISTIC_VALIDATION** contour may set `summary.passed`.  
-Runtime writes the boolean in **EVIDENCE_REPORTING** (`EvidenceAssembler`) after applying `signoff_policy` / `capability_policy` to deterministic error counts + capability matrix.
+В старых текстах флаг приписывали только контуру **DETERMINISTIC_VALIDATION**. В коде булево пишет контур **EVIDENCE_REPORTING**, класс `EvidenceAssembler`. Он берёт число ошибок движка и таблицу проверок и прогоняет их через `signoff_policy` и `capability_policy`.
 
-Jury-facing language must not say “no automatic verdict” without this distinction — there **is** an automatic technical status.
+Автоматический технический статус есть. Фраза «автоматического вердикта нет» эту запись прячет.
 
-## Decision
+## Решение
 
-1. **Semantic owner of the verdict** = deterministic validation outputs (engine ERROR count + blocking capabilities under the active sign-off profile).
-2. **Physical writer** = EvidenceAssembler (reporting contour) — pure function of deterministic inputs + policy. Package-level `summary.outcome` uses this precedence (violation > missing data > uncertainty > compliance), matching Mushkani et al., [arXiv:2607.29058](https://arxiv.org/abs/2607.29058):
-   1. confirmed finding failures / hard clashes → `FAILED`
-   2. intake blocked or required capability not OK → `BLOCKED`
-   3. HITL / missing source / low confidence → `REVIEW_REQUIRED`
-   4. warnings only → `PASS_WITH_WARNINGS`
-   5. else `PASS`  
-   `REVIEW_REQUIRED` never rewrites a violation into a pass. Incomplete evidence never becomes `PASS`. `summary.passed` is true only for `PASS` and `PASS_WITH_WARNINGS`.
-3. Advisory / AI / OCR never supplies inputs that alone can flip `passed` (`DeterminismGate` + advisory ON/OFF tests).
-4. **ISO 19650 framing:** `summary.passed` is a **Shared-gate** technical pass under configured rules — **not** authorization to move Shared → Published and **not** contractual fitness for construction.
-5. Human-in-the-loop confirms/rejects **findings** for handoff; HITL review events do not redefine the Shared-gate boolean by themselves.
-6. Public wording: “deterministic Shared-gate applied at evidence assembly” — not “AI contour sets pass” and not “no automatic status”.
+1. **Смысл флага** принадлежит выходам детерминированной проверки: число ERROR и те обязательные проверки, которые активный профиль приёмки считает блокирующими.
+2. **Пишет флаг** `EvidenceAssembler`. Это функция от тех входов и от политики. Итог комплекта `summary.outcome` выбирается в таком порядке (нарушение, затем нехватка данных, затем неопределённость, затем соответствие). Тот же порядок у Mushkani et al., [arXiv:2607.29058](https://arxiv.org/abs/2607.29058):
+   1. подтверждённые нарушения или жёсткие коллизии → `FAILED`
+   2. приём заблокирован или обязательная проверка не `OK` → `BLOCKED`
+   3. решение эксперта, нет источника или низкая уверенность → `REVIEW_REQUIRED`
+   4. только предупреждения → `PASS_WITH_WARNINGS`
+   5. иначе `PASS`
 
-## Product split vs 2026 ACC literature
+   `REVIEW_REQUIRED` не превращает нарушение в проход. Неполный комплект доказательств не становится `PASS`. `summary.passed` истинно только для `PASS` и `PASS_WITH_WARNINGS`.
+3. Советующий контур, языковая модель и OCR не подают вход, которого одного хватило бы, чтобы перевернуть `passed`. Это держат `DeterminismGate` и прогоны «модель включена / модель выключена».
+4. В терминах ISO 19650 `summary.passed` — **Shared-gate**: прохождение настроенных правил. Разрешения перевести Shared в Published отсюда не следует. Годности документации к строительству тоже.
+5. Эксперт принимает или отклоняет **замечание**, чтобы его передать дальше. Событие HITL само по себе булево Shared-gate не переписывает.
+6. Публичная формула, её цитируют соседние документы: “deterministic Shared-gate applied at evidence assembly”. Автоматический технический статус есть. Контур ИИ этот флаг не ставит.
 
-Iversen & Huang (AuC 182, 2026) put the LLM on the check route: interpret a clause, select a tool, execute, report. Fuchs, Hellin & Borrmann (EC3, 2026) generate reusable checking functions from IDS-validated requirements and run them. Those papers close **encoding a clause into an executable check**. They do not close **who is allowed to say pass**.
+## Статьи 2026 года
 
-AeroBIM’s product choice for the appointing party / expertise is the opposite of that route:
+Iversen & Huang (AuC 182, 2026) ставят модель на маршрут проверки: прочитать пункт, выбрать инструмент, выполнить, отчитаться. Fuchs, Hellin и Borrmann (EC3, 2026) из требований, уже проверенных IDS, собирают повторно запускаемые функции и гоняют их. Эти работы закрывают перевод пункта нормы в исполняемую проверку. Вопрос, кто имеет право сказать pass, они оставляют открытым.
 
-1. **Drafts yes.** The model may compose a remark, an IDS fragment, or a candidate function.
-2. **Shared-gate no.** `call_tool` and `change_verdict` are forbidden provider actions. Generated checkers do not enter sign-off until a human-approved hashed pack with `approval_ref`.
-3. **Hybrid, not “more accurate”.** Do not say «мы лучше Iversen». Their F1 stays theirs. Jury line: they close digitising a norm with a model; we close who may emit `summary.passed`.
+Для назначающей стороны и экспертизы мы идём другим маршрутом.
 
-Runtime pins: `FORBIDDEN_LLM_ACTIONS`, `LLM_SELECTS_CHECK_ON_VERDICT_PATH=False`, `LLM_GENERATED_FUNCTION_WRITES_SUMMARY_PASSED=False`, `DeterminismGate`, `IdsAssistDraftPort` unwired from Analyze.
+1. **Черновик можно.** Модель собирает текст замечания, фрагмент IDS или кандидата функции.
+2. **На Shared-gate нельзя.** `call_tool` и `change_verdict` поставщику запрещены. Сгенерированная проверка входит в приёмку только с пакетом, который человек утвердил: хеш и `approval_ref`.
+3. **Это гибрид.** Фразу «мы лучше Iversen» не говорим. Их F1 остаётся их цифрой. На комиссии так: они закрывают оцифровку нормы моделью, мы закрываем, кто имеет право выставить `summary.passed`.
 
-## Consequences
+В коде это закреплено: `FORBIDDEN_LLM_ACTIONS`, `LLM_SELECTS_CHECK_ON_VERDICT_PATH=False`, `LLM_GENERATED_FUNCTION_WRITES_SUMMARY_PASSED=False`, `DeterminismGate`. `IdsAssistDraftPort` к Analyze не подключён.
 
-- Keep writing `passed` in EvidenceAssembler.
-- Pilot/production sign-off profiles fail-closed on required clash / MEP / unit_scale / calc-qty SKIPPED.
-- Jury memo (`docs/docs.md`) and Claims Lock must stay aligned with this ADR.
-- Do not move AI outputs into signoff inputs.
-- Do not wire generated IDS/functions onto the verdict path without journal + pack hash.
+## Что из этого следует
+
+- `passed` по-прежнему пишет `EvidenceAssembler`.
+- На профилях пилота и production пропущенная обязательная проверка (коллизии, MEP, `unit_scale`, количество из расчёта) роняет комплект.
+- Карточка для жюри ([`docs/docs.md`](../docs.md)) и Claims Lock остаются в ладу с этим решением.
+- Выходы модели во входы приёмки не кладём.
+- Сгенерированные IDS и функции на маршрут вердикта не вешаем, пока нет журнала и хеша пакета.

@@ -85,7 +85,7 @@ Two seats are the programme operator; three are the partner by agreement.
 | **Piloting** (operator) | Live run on the fixture pack. Trial programme, method and act are the pilot subject | [prototype](submission/04-prototype/README.md) |
 | **Demand** (operator) | No contour rollout: web and file exchange. Pay-on-findings is a speech plan, not the written Ask | [Ask](#ask) · [slide 6](submission/03-presentation/demo_day_slides.md#kadr-6) |
 | **Appointing technical customer** (partner) | Minus one pack-review cycle. Revision delta: findings → fixed / ignored / new. HITL | [slide 6](submission/03-presentation/demo_day_slides.md#kadr-6) |
-| **Project office** (partner) | The remark leaves as a BCF file (structural ZIP; CDE import is the pilot). The expert sets the outcome | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) |
+| **Project office** (partner) | The remark leaves as a BCF file. We assemble the archive. CDE import is not shown yet. The expert decides the remark and does not rewrite the pack flag | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) |
 | **Information modelling** (partner) | Document seam. Ingest is IFC | [ingest boundary](docs/tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md) |
 
 Protocol on the fixture pack. A deterministic report after an agreed revision.
