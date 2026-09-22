@@ -17,8 +17,8 @@ claim_boundary: >
 # Recall на инъекциях — прогон E2 (синтетика, не партнёр)
 
 - Источник: `wall_fire_rating_rei60_seam_clean`.
-- Seed: **20260915** · коммит: `de79c4c63e04a21f70ec9f9bdfbb817b9a013bab`
-- Манифест sha256: `28256ecaf6e0f5ea7abea76ee024151862ab792d7748f34c8b34f8ecb633fdb4`
+- Seed: **20260915** · коммит: `4cf35e91adfb307491045e96e89b03b275c5b956`
+- Манифест sha256: `8793de98dec2c457614fedf3aecc9b905c21012c83432eab9b4f861f65e357b7`
 - Детерминизм (source ≡ CONTROL): **pass**
 
 ## Отклонение от плана 2026-08-30

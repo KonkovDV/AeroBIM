@@ -1,14 +1,14 @@
 {
   "artifact_type": "customer_package_sla",
   "schema_version": "1.4.0",
-  "generated_at": "2026-09-15T16:34:31.146404+00:00",
+  "generated_at": "2026-09-22T16:41:58.847917+00:00",
   "customer_reference": "https://i.moscow/techlab",
   "sla_target_minutes": 30.0,
   "sla_pass": true,
   "sla_gate_metric": "p95_minutes_observed",
-  "max_minutes_observed": 0.0746,
-  "avg_minutes_observed": 0.0746,
-  "p95_minutes_observed": 0.0746,
+  "max_minutes_observed": 0.0593,
+  "avg_minutes_observed": 0.0593,
+  "p95_minutes_observed": 0.0593,
   "stage_budgets": {
     "ingestion_minutes": 5.0,
     "deterministic_validation_minutes": 18.0,
@@ -100,9 +100,9 @@
   },
   "mandatory_capabilities_complete": false,
   "cold_run": {
-    "max_minutes": 0.0746,
-    "avg_minutes": 0.0746,
-    "p95_minutes": 0.0746,
+    "max_minutes": 0.0593,
+    "avg_minutes": 0.0593,
+    "p95_minutes": 0.0593,
     "benchmark": {
       "iterations": 1,
       "warmup_iterations": 0,
@@ -110,8 +110,8 @@
         {
           "iteration": 1,
           "request_id": "benchmark-project-package-sla-representative-scale-run-001",
-          "elapsed_ms": 4474.477,
-          "report_id": "af41986bbf8f4f398d11983ff2dfb640",
+          "elapsed_ms": 3559.493,
+          "report_id": "512134bfc45a4ccf82941834da9cc2e0",
           "issue_count": 7,
           "requirement_count": 5,
           "project_name": "SLA representative-scale fixture",
@@ -119,12 +119,12 @@
         }
       ],
       "summary": {
-        "min_ms": 4474.477,
-        "max_ms": 4474.477,
-        "avg_ms": 4474.477,
-        "p50_ms": 4474.477,
-        "p95_ms": 4474.477,
-        "reports_per_second": 0.223,
+        "min_ms": 3559.493,
+        "max_ms": 3559.493,
+        "avg_ms": 3559.493,
+        "p50_ms": 3559.493,
+        "p95_ms": 3559.493,
+        "reports_per_second": 0.281,
         "sample_n": 1,
         "p95_equals_max": true,
         "spike_ratio_max_over_p50": 1.0,
@@ -132,7 +132,7 @@
       },
       "artifact_type": "benchmark_project_package",
       "schema_version": "1.2.0",
-      "generated_at": "2026-09-15T16:34:30.801154+00:00",
+      "generated_at": "2026-09-22T16:41:58.602444+00:00",
       "claim_level": "fixture_only",
       "customer_accuracy_not_established": true,
       "accuracy_measured": false,
@@ -156,7 +156,7 @@
       "ifc_bytes": 799,
       "ifc_entity_count": 9,
       "ifc_schema_from_header": "IFC4",
-      "peak_traced_memory_bytes": 21280645,
+      "peak_traced_memory_bytes": 21323931,
       "dependencies": {
         "ifcopenshell": "0.8.5",
         "ifctester": "0.8.5",
@@ -168,7 +168,7 @@
         "machine": "AMD64",
         "system": "Windows"
       },
-      "storage_dir": "backend/var/reports"
+      "storage_dir": "var/reports"
     }
   },
   "warm_run": {
@@ -188,8 +188,8 @@
       {
         "iteration": 1,
         "request_id": "benchmark-project-package-sla-representative-scale-run-001",
-        "elapsed_ms": 4474.477,
-        "report_id": "af41986bbf8f4f398d11983ff2dfb640",
+        "elapsed_ms": 3559.493,
+        "report_id": "512134bfc45a4ccf82941834da9cc2e0",
         "issue_count": 7,
         "requirement_count": 5,
         "project_name": "SLA representative-scale fixture",
@@ -197,12 +197,12 @@
       }
     ],
     "summary": {
-      "min_ms": 4474.477,
-      "max_ms": 4474.477,
-      "avg_ms": 4474.477,
-      "p50_ms": 4474.477,
-      "p95_ms": 4474.477,
-      "reports_per_second": 0.223,
+      "min_ms": 3559.493,
+      "max_ms": 3559.493,
+      "avg_ms": 3559.493,
+      "p50_ms": 3559.493,
+      "p95_ms": 3559.493,
+      "reports_per_second": 0.281,
       "sample_n": 1,
       "p95_equals_max": true,
       "spike_ratio_max_over_p50": 1.0,
@@ -210,7 +210,7 @@
     },
     "artifact_type": "benchmark_project_package",
     "schema_version": "1.2.0",
-    "generated_at": "2026-09-15T16:34:30.801154+00:00",
+    "generated_at": "2026-09-22T16:41:58.602444+00:00",
     "claim_level": "fixture_only",
     "customer_accuracy_not_established": true,
     "accuracy_measured": false,
@@ -234,7 +234,7 @@
     "ifc_bytes": 799,
     "ifc_entity_count": 9,
     "ifc_schema_from_header": "IFC4",
-    "peak_traced_memory_bytes": 21280645,
+    "peak_traced_memory_bytes": 21323931,
     "dependencies": {
       "ifcopenshell": "0.8.5",
       "ifctester": "0.8.5",
@@ -246,7 +246,7 @@
       "machine": "AMD64",
       "system": "Windows"
     },
-    "storage_dir": "backend/var/reports"
+    "storage_dir": "var/reports"
   },
   "checkpoint": "GO",
   "go_kind": "regulatory_measurement_mvp",
