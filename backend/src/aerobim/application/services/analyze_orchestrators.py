@@ -27,6 +27,7 @@ from aerobim.application.services.drawing_ifc_consistency import (
     DrawingIfcConsistencyService,
     merge_quantity_capability,
 )
+from aerobim.application.services.evidence_provenance_enricher import build_evidence_records
 from aerobim.application.services.package_outcome import compute_package_outcome
 from aerobim.domain.advisory_remark_compose import finding_payload_from_issue
 from aerobim.domain.annotation_ifc_matching import AnnotationIfcLink, match_annotations_to_regions
@@ -927,6 +928,17 @@ class EvidenceAssembler:
                 f"llm advisory skipped ({reason}); advisory drafts only; never sets "
                 "summary.passed; ai_generated requires expert confirmation",
             )
+
+        # P0-G: generate EvidenceRecord + FindingProvenance for every stamped issue.
+        # verdict_impact = none; purely an instrumentation/auditability layer.
+        _ev_records, _ev_provenances, _ev_summary = build_evidence_records(
+            issues_with_remarks,
+            request,
+            signoff_profile=getattr(self._host, "_signoff_profile", "development"),
+            priority_profile=getattr(self._host, "_priority_profile", "default"),
+        )
+        overlay_traces.append(_ev_summary)
+
         severity_counts = Counter(issue.severity for issue in issues_with_remarks)
         error_count = severity_counts[Severity.ERROR]
         warning_count = severity_counts[Severity.WARNING]
