@@ -1,4 +1,9 @@
-"""Deterministic package identity contract. Not called by upload or analyze.
+"""Deterministic package identity contract.
+
+Analyze calls ``build_package_manifest`` only when file hashes are already
+on the request. An empty file list is not a package id. Upload does not
+call this module.
+
 
 ``package_id`` is sha256 of tenant, project, revision, and sorted file hashes.
 """

@@ -29,6 +29,10 @@ from aerobim.application.services.drawing_ifc_consistency import (
 )
 from aerobim.application.services.evidence_provenance_enricher import build_evidence_records
 from aerobim.application.services.package_file_entries import collect_file_entries
+from aerobim.application.services.package_manifest_builder import (
+    build_manifest_when_entries_present,
+    manifest_trace_fields,
+)
 from aerobim.application.services.package_outcome import compute_package_outcome
 from aerobim.domain.advisory_remark_compose import finding_payload_from_issue
 from aerobim.domain.annotation_ifc_matching import AnnotationIfcLink, match_annotations_to_regions
@@ -64,7 +68,7 @@ from aerobim.domain.models import (
     compute_issue_priority,
 )
 from aerobim.domain.norm_assist import IdsCompileDraft
-from aerobim.domain.package_manifest import PackageFileEntry
+from aerobim.domain.package_manifest import PackageFileEntry, PackageManifest
 from aerobim.domain.package_outcome import summary_passed_from_outcome
 from aerobim.domain.ports import IfcSpatialIndexProvider
 from aerobim.domain.system_capabilities import enforce_honesty_capabilities
@@ -94,6 +98,7 @@ class IngestionBundle:
     # Empty for fixture/dev runs; build_evidence_records falls back to
     # sha256(request_id) in that case.
     file_entries: tuple[PackageFileEntry, ...] = ()
+    manifest: PackageManifest | None = None
 
 
 @dataclass(frozen=True)
@@ -200,6 +205,7 @@ class IngestionOrchestrator:
         # upload layer. Empty on fixture/dev runs; package_id falls back to
         # sha256(request_id) in build_evidence_records.
         file_entries = collect_file_entries(request)
+        manifest = build_manifest_when_entries_present(request, file_entries)
         return IngestionBundle(
             request=request,
             requirements=requirements,
@@ -217,6 +223,7 @@ class IngestionOrchestrator:
             extraction_integrity=extraction_integrity,
             raster_issues=tuple(drawing_ingest.issues),
             file_entries=file_entries,
+            manifest=manifest,
         )
 
 
@@ -950,6 +957,7 @@ class EvidenceAssembler:
             priority_profile=getattr(self._host, "_priority_profile", "default"),
             file_entries=ingested.file_entries,
         )
+        _ev_summary.update(manifest_trace_fields(ingested.manifest))
         overlay_traces.append(_ev_summary)
 
         severity_counts = Counter(issue.severity for issue in issues_with_remarks)
