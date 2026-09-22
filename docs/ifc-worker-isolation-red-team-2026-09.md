@@ -47,6 +47,13 @@ analysis is disabled in production compose.
 - This closes the in-API async executor gap only. It does not establish customer SLA,
   production readiness, a customer accuracy claim, CDE proof, or `customer_go=true`.
 
+## Documentation consistency
+
+The public RU/EN README, security policy, architecture TZ, pilot claim boundary,
+deployment sizing, known-bugs register and evidence index use this same dedicated-worker
+boundary. Runtime-generated data-residency evidence remains the machine-readable source
+of truth; stale in-process `BackgroundTasks` claims are not retained as current behavior.
+
 ## SOTA rationale
 
 The design applies standard reliable-queue semantics (durable payload, reservation,
@@ -54,7 +61,6 @@ acknowledgement, redelivery), at-least-once execution with idempotent/fenced com
 lease heartbeats, fail-closed terminal states, and container least privilege. A stronger
 next step is a per-job child sandbox (fresh cgroup/namespace/seccomp profile) so one
 malformed IFC cannot retain allocator state in a long-lived worker.
-
 
 ## SOTA evidence and decision
 
