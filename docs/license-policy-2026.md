@@ -1,76 +1,71 @@
 ---
-title: "License policy 2026"
+title: "Лицензии AeroBIM, 2026"
 status: active
-version: "1.1.0"
+version: "1.2.0"
 date: "2026-08-14"
+last_updated: "2026-09-22"
 claim_boundary: "Инженерная политика, не юридическое заключение. LIC-001 требует юриста."
 ---
 
-# License policy (AeroBIM)
+# Лицензии
 
-SSOT данных: [`audit/dependency_license_inventory.json`](../audit/dependency_license_inventory.json).
-CI-гейты: `backend/tests/test_dependency_license_gate.py` (классификация обязательна;
-unknown блокирует) и `backend/tests/test_license_isolation_guard.py`
-(copyleft-движки не выходят за infrastructure/tools).
+Это инженерный учёт, не заключение юриста. Пока юрист не посмотрел распространение и сетевой сервис, LIC-001 остаётся открытым для права, даже если ядро PDF мы уже переложили.
 
-## Правила
+В зале говорим так: **MIT — наш код**. Чужие компоненты остаются под своими лицензиями. Список — [`audit/dependency_license_inventory.json`](../audit/dependency_license_inventory.json). Продукт целиком под MIT не называем.
 
-1. **MIT — только для собственного кода AeroBIM.** Любая публичная формулировка
-   лицензии обязана содержать disclosure сторонних компонентов (Claims Lock v3).
-2. Каждая shipped-зависимость (core + optional extras + frontend runtime) имеет
-   запись в inventory: версия, метаданные лицензии, SPDX-оценка, risk_class,
-   `legal_review_required`.
-3. Risk-классы: `permissive` (MIT/BSD/Apache/PSF) — свободно;
-   `weak_copyleft` (LGPL/MPL) — не модифицировать, disclosure, юр. проверка
-   рекомендована; `strong_copyleft_or_commercial` (AGPL/GPL/dual-commercial) —
-   **release-blocking** до юридического решения; `unknown` — блокирует всегда.
-4. Copyleft-движки импортируются **только** из `infrastructure/adapters` и
-   `tools` — domain/application/presentation/core остаются чистыми (guard-тест).
-   Это фиксирует поверхность миграции.
-5. Новая зависимость без классификации в inventory = красный CI.
+Так принято вести учёт: у каждого компонента своя лицензия (поля SPDX в реестре). Репозиторий с бейджем MIT чужой код не перелицензирует. Слабый copyleft (LGPL, MPL) держим немодифицированным и называем в уведомлении. Сильный (AGPL, GPL) в образ и в ядро не кладём. Это рамка сборки. Она не заменяет договор и не снимает `legal_review_required` там, где реестр его ставит.
 
-## Две полосы (14.08.2026)
+Проверки: `backend/tests/test_dependency_license_gate.py` (нет записи или класс `unknown` — CI красный) и `backend/tests/test_license_isolation_guard.py` (copyleft-движки не выходят из `infrastructure/adapters` и `tools`).
 
-Показ **заказчику канала** может использовать copyleft **входные файлы** локально.
-Публичный продукт, Docker, GitHub и **остальные** заказчики — без токсичных лицензий.
+## Что лежит в сборке
+
+| Компонент | Лицензия в реестре | Где живёт |
+|---|---|---|
+| Код AeroBIM | MIT | Этот репозиторий |
+| IfcOpenShell, IfcTester 0.8.5 | LGPL-3.0-or-later | Ядро разбора IFC и IDS. Импорт только из адаптеров и `tools`. Не модифицируем. Юридическая проверка рекомендована |
+| web-ifc 0.0.77 | MPL-2.0 | Оболочка в браузере. Copyleft на файл: библиотеку не правим, в уведомлении называем |
+| pypdfium2 5.12.1 | Apache-2.0 OR BSD-3-Clause | Боевой PDF: отрисовка и кадр. Плюс лицензии PDFium внутри колеса |
+| pdfminer.six | MIT | Текст со слоя PDF |
+| Pillow | MIT-CMU | Картинки для кадра PDF |
+| ReportLab | BSD-3-Clause | PDF отчёта. Шрифт Liberation Sans — OFL, лежит у нас. Это не PyMuPDF |
+| ezdxf | MIT, объявление автора, локально не сверяли (`verified: false`) | Необязательный DXF, extra `cad`. Чтение DWG из этого не следует |
+| PyMuPDF 1.28.0 | AGPL-3.0-only OR коммерческая Artifex | Только extra `pdf-agpl`. В `requirements-lock.txt` и в образе Docker его нет |
+
+Новая зависимость без строки в реестре красит CI. Классы риска в реестре: `permissive`, `weak_copyleft`, `strong_copyleft_or_commercial` (блокер выпуска, пока нет решения юриста), `unknown` (блокер всегда).
+
+## Две полосы
+
+Показ заказчику канала может читать copyleft-файлы локально. Публичный продукт, Docker, GitHub и остальные заказчики идут без GPL и без AGPL в поставке.
 
 | Полоса | Где | Можно | Нельзя |
 |---|---|---|---|
-| **public_mit** (default, CI, Docker, другие заказчики) | git + `requirements-lock.txt` | MIT-код; LGPL IfcOpenShell за infrastructure/tools; optional `pdf-agpl` **не** в runtime lock | Вендорить GPLv3 IFC; линковать LibreDWG; тащить AGPL в Docker |
-| **customer_demo_local** | gitignored `.local/` на машине демо | Читать GPLv3 IFC-Bench (`4351`, `ettenheim_gis`, `hitos`, `samuel_macalister_sample_house`) | Коммитить эти файлы; включать флаг в CI; закрывать RT-001 |
-
-Включение:
+| **public_mit** (по умолчанию, CI, Docker, другие заказчики) | git и `requirements-lock.txt` | Наш MIT-код. LGPL IfcOpenShell за адаптерами и `tools`. Extra `pdf-agpl` в runtime lock не входит | Класть GPLv3 IFC в дерево. Линковать LibreDWG. Тащить AGPL в Docker |
+| **customer_demo_local** | Каталог `.local/`, он в gitignore, только машина показа | Читать GPLv3 IFC-Bench (`4351`, `ettenheim_gis`, `hitos`, `samuel_macalister_sample_house`) | Коммитить эти файлы. Включать флаг в CI. Закрывать этим RT-001 |
 
 ```bash
 python -m aerobim.tools.fetch_ifc_bench_v2 --from-dir <checkout> --include-gplv3 --demo-copyleft
 python -m aerobim.tools.run_federated_mep_inventory --demo-copyleft
 ```
 
-Вторая команда **не** пишет GPL-строки в `docs/evidence/`. LibreDWG **не** линкуется: для показа заказчику канала заказчик даёт IFC/PDF/A; CAD capability на `.dwg` остаётся FAILED.
+Вторая команда не пишет GPL-строки в `docs/evidence/`. LibreDWG не линкуем: GPL-3 не входит в MIT-ядро. На показе заказчик канала отдаёт IFC и PDF/A. Возможность `.dwg` остаётся FAILED.
 
-Это не юридическое заключение. Product Checkpoint **GO** (`regulatory_measurement_mvp`); `customer_go` **false**.
+Checkpoint **GO** (`regulatory_measurement_mvp`). `customer_go` **false**.
 
-## LIC-001 (PyMuPDF) — дерево решений
+## LIC-001, PyMuPDF
 
-VERIFIED 2026-07-31 lock SSOT historically `pymupdf==1.28.0` (dual AGPL/Artifex).
-**Owner decision 2026-07-31: Option B** — production core PDF path uses
-`pypdfium2` + `pdfminer.six` (+ Pillow). ReportLab (BSD-3-Clause) renders the
-export PDF with a vendored OFL font; it is not PyMuPDF. PyMuPDF remains only as optional
-`pdf-agpl` (dev/tools), absent from `requirements-lock.txt` / Docker runtime.
+На 31.07.2026 в замке стоял `pymupdf==1.28.0`, двойная лицензия AGPL-3.0 или коммерческая Artifex. В тот же день владелец выбрал **вариант B**. Боевой PDF — `pypdfium2` и `pdfminer.six` (и Pillow). ReportLab рисует выгрузку. PyMuPDF остался необязательным extra для инструментов разработки.
 
-| Опция | Стоимость | Эффект | Статус |
+| Вариант | Цена | Что даёт | Статус |
 |---|---|---|---|
-| A. Коммерческая лицензия Artifex | деньги, договор | снимает блокер, код не трогаем | не выбрана |
-| B. Миграция (pypdfium2 / pdfminer.six) | инженерия | core PDF без AGPL | **SELECTED / DONE (eng)** |
-| C. Изоляция в optional extra | средняя | core AGPL-free с degrade | superseded by B (extra retained as `pdf-agpl`) |
-| D. AGPL-комплаенс всего продукта | открыть всё под AGPL | конфликт с MIT-позиционированием | отвергается |
+| A. Договор Artifex | деньги и контракт | Блокер снимается, код не трогаем | не выбран |
+| B. Уход на pypdfium2 и pdfminer.six | инженерия | Ядро PDF без AGPL | **выбран, инженерия сделана** |
+| C. Вынести в необязательный extra | средняя | Ядро без AGPL, функция деградирует | перекрыт вариантом B. Extra `pdf-agpl` оставлен |
+| D. Весь продукт под AGPL | открыть всё | Спорит с позицией MIT на наш код | отвергнут |
 
-LIC-001 в CRITICAL_BLOCKERS: **ENGINEERING_CLEARED_FOR_CORE_PDF** — residual:
-optional AGPL extra must not be reintroduced into runtime lock without owner
-decision; disclosure still required for all third-party components.
+В реестре блокеров LIC-001 стоит **ENGINEERING_CLEARED_FOR_CORE_PDF**. Хвост: extra AGPL нельзя вернуть в runtime lock без решения владельца. Сторонние компоненты по-прежнему называют в уведомлении.
 
-## Не заявляем (Claims Lock)
+## Чего не говорим
 
-«AeroBIM целиком под MIT»; «нет лицензионных рисков»; «AGPL не применим» (без
-юр. заключения). Разрешено: «MIT для собственного кода; сторонние компоненты —
-под своими лицензиями (см. inventory)».
+«AeroBIM целиком под MIT». «Лицензионных рисков нет». «AGPL неприменим» без заключения юриста.
+
+Можно: «MIT для нашего кода. Сторонние компоненты под своими лицензиями. Список в реестре».

@@ -1,178 +1,189 @@
 ---
-title: "AeroBIM Pilot Claim Boundary 2026"
+title: "Граница заявлений пилота AeroBIM, 2026"
 status: active
-version: "1.13.17"
+version: "1.13.18"
 last_updated: "2026-09-22"
 tags: [aerobim, pilot, claims, evidence]
 ---
 
-# AeroBIM Pilot Claim Boundary
+# Граница заявлений пилота
 
-This document separates **verified repository evidence** from **roadmap intent** for pilot and accelerator communications.
+Этот лист отделяет то, что уже видно в репозитории, от того, что остаётся планом. Комиссии можно говорить первое. Второе — только как цель пилота, с оговоркой.
 
 **Формула стадии (дословно):** Мы на стадии доработки контура заказчика. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение у назначающей стороны ещё не начались. Checkpoint `GO` — регуляторно-измерительный MVP. `customer_go` остаётся false, пока нет независимого размеченного корпуса, двух разметчиков, подписанного профиля назначающей стороны и подтверждения импорта в СОД.
 
-**Checkpoint:** **`GO`** (`regulatory_measurement_mvp`). `customer_go` **false**. Undifferentiated RT-001 / RT-002 / RT-003 stay **OPEN**. Measurement substitutes (2026-09-04): **RT-001** `a_content_pairing` CLOSED; **RT-001** `b_protocol_rehearsal` CLOSED (simulated dual pass, not humans); **RT-002a** CLOSED; **RT-002b** `b_eir_carrier` CLOSED (EIR v4 + BIM-standard v4 as text on the channel pack); **RT-003a** planted geometric CLOSED; **RT-003b** HVAC `IfcSystem` graph CLOSED; **RT-003** NWD federation carrier CLOSED. Residuals: **RT-001b** dual human raters, **RT-001c** customer corpus, **RT-002c** the appointing party signature, **RT-003c** `mep_system_clash` NOT_VERIFIED. Form 5/5 ≠ `customer_go`. Volumes: [`evidence/rt-blocker-volumes-2026-09.md`](evidence/rt-blocker-volumes-2026-09.md) · dual-rater: [`evidence/rt001-dual-rater-simulation-2026-09.md`](evidence/rt001-dual-rater-simulation-2026-09.md). Дословная формула речи: [`demo/KT2_JURY_FAQ_2026_08_12.md`](demo/KT2_JURY_FAQ_2026_08_12.md) · КТ#3: [`demo/KT3_JURY_FAQ_2026_08_25.md`](demo/KT3_JURY_FAQ_2026_08_25.md). Blockers: [`../audit/reports/CRITICAL_BLOCKERS.md`](../audit/reports/CRITICAL_BLOCKERS.md).
+**Checkpoint:** **`GO`** (`regulatory_measurement_mvp`). `customer_go` **false**. Общие RT-001, RT-002 и RT-003 остаются **OPEN**. Что уже закрыто как замер на своих материалах (04.09.2026): **RT-001** `a_content_pairing` CLOSED; **RT-001** `b_protocol_rehearsal` CLOSED (два симулированных прохода, это не двое людей); **RT-002a** CLOSED; **RT-002b** `b_eir_carrier` CLOSED (EIR v4 и BIM-стандарт v4 как текст на комплекте канала); **RT-003a** посаженная геометрия CLOSED; **RT-003b** граф HVAC `IfcSystem` CLOSED; носитель NWD-федерации **RT-003** CLOSED. Ещё открыто: **RT-001b** двое людей-разметчиков, **RT-001c** корпус заказчика, **RT-002c** подпись назначающей стороны, **RT-003c** `mep_system_clash` NOT_VERIFIED. Пять полей формы не равны `customer_go`. Объёмы: [`evidence/rt-blocker-volumes-2026-09.md`](evidence/rt-blocker-volumes-2026-09.md) · двойная разметка: [`evidence/rt001-dual-rater-simulation-2026-09.md`](evidence/rt001-dual-rater-simulation-2026-09.md). Дословная формула речи: [`demo/KT2_JURY_FAQ_2026_08_12.md`](demo/KT2_JURY_FAQ_2026_08_12.md) · КТ#3: [`demo/KT3_JURY_FAQ_2026_08_25.md`](demo/KT3_JURY_FAQ_2026_08_25.md). Блокеры: [`../audit/reports/CRITICAL_BLOCKERS.md`](../audit/reports/CRITICAL_BLOCKERS.md).
 
-**Stakeholder distribution:** share [`docs.md`](docs.md) (jury memo) + [`partners/TECHLAB_TASK_07_READINESS_2026.md`](partners/TECHLAB_TASK_07_READINESS_2026.md) at kickoff; map: [`TIER0_INDEX.md`](TIER0_INDEX.md).  
+На старте пилота отдаём [`docs.md`](docs.md) и [`partners/TECHLAB_TASK_07_READINESS_2026.md`](partners/TECHLAB_TASK_07_READINESS_2026.md). Карта: [`TIER0_INDEX.md`](TIER0_INDEX.md).  
 **Индекс ТЗ:** [`tz/README.md`](tz/README.md).  
-**Запрещённые формулировки:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · датированная заморозка [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md).
+**Запрещённые формулировки:** [`../audit/reports/CLAIMS_LOCK_2026_07_17.md`](../audit/reports/CLAIMS_LOCK_2026_07_17.md) · заморозка от 31.07 [`../audit/reports/CLAIMS_LOCK_2026_07_31.md`](../audit/reports/CLAIMS_LOCK_2026_07_31.md).
 
-## TZ MVP scope (honest framing)
+## Как это принято проверять
 
-| Scope | In MVP sign-off | Outside sign-off |
-|-------|-----------------|------------------|
-| Deterministic IFC/IDS/cross-doc/clash + OCR baseline + template remarks + HITL | Yes (fixture-verified; customer pack TBD) | — |
-| Multipart upload + remarks UI edit (P0) | Target for TZ demo | — |
-| CV layout models, LLM remarks/IDS, DWG entity CAD | — | Advisory / Phase 2+ |
-| “AI reads drawings like a human” / unsupervised VLM drawing literacy | — | **Out of pilot acceptance** |
-| Clash / inconsistency **>90%** accuracy | — | Only after labeled corpus + ≥2 adjudicators + κ/α |
+Так устроены соседние практики. Мы на них опираемся и не подменяем их своим флагом.
 
-## Verified (may be claimed with evidence)
+- **ISO 19650.** `summary.passed` — Shared-gate: прохождение настроенных правил. Разрешения перевести комплект из Shared в Published отсюда не следует. Годности к строительству тоже. Пишет флаг программа, см. [ADR-001](architecture/ADR-001-verdict-ownership-2026.md).
+- **buildingSMART.** IDS 1.0 — машиночитаемый профиль требований. Сервис валидации IFC проверяет схему файла. Шов между моделью, листом, ведомостью и расчётом он не закрывает.
+- **BCF 2.1 / 3.0.** Это файл обмена замечанием. Что среда общих данных приняла файл в реестр — отдельное доказательство. У нас оно **NOT_VERIFIED**.
+- **Замер качества.** На комплекте заказчика нужны двое независимых людей на одной выборке и согласие между ними. Учебный комплект и симуляция разметчиков этого не заменяют. На малой выборке смотрят нижнюю границу интервала Уилсона, а не дробь «10 из 10».
 
-| Claim | Evidence source |
+## Что входит в измерительный макет
+
+| Область | В приёмке макета | За приёмкой |
+|---|---|---|
+| Детерминированные IFC, IDS, сверка документов, коллизии, базовый OCR, шаблон замечания, решение эксперта | Да, на учебной фикстуре. Комплект заказчика ещё не размечен | — |
+| Загрузка частями и правка замечания в оболочке | Цель показа по ТЗ | — |
+| Модели вёрстки CV, черновики LLM для замечаний и IDS, разбор сущностей DWG | — | Совет. Фаза 2 и дальше |
+| «ИИ читает чертёж как человек» и самостоятельный разбор листа моделью | — | **Вне приёмки пилота** |
+| Полнота коллизий и противоречий **>90%** | — | Только после размеченного корпуса, двух судей и согласия κ/α. Сейчас не заявляется |
+
+## Что уже можно сказать, со ссылкой
+
+| Утверждение | Откуда видно |
 |---|---|
-| Deterministic IFC + IDS + cross-document validation | `pytest` suite, benchmark packs |
-| Multi-**source** project-package analysis (IFC+PDF+drawings+IDS) | `POST /v1/analyze/project-package`, benchmark manifests |
-| Vision endpoint accepts images | Grant smoke HTTP 200; **open-bench** AECV counting on Yandex Qwen measured (macro exact-match 0.4325, `open_bench_only`) — **not** product / RT-001 accuracy |
-| Fail-closed required clash / raster zero-yield / provenance persist | P0 tests; Claims Lock |
-| Object ACL on report artifacts | API principal + `tenant_id` |
-| BCF 2.1/3.0 ZIP export — **structural T1** | `audit/evidence/bcf-structural-handoff-2026-07-25.json`. HITL accepted/waived → TopicStatus Closed + Comment* (CreationAuthor stays machine). CDE T2 **NOT_VERIFIED** |
-| Browser review shell (3D + 2D evidence; eight IA screens, all `partial`) | CI pin in `docs/evidence/runtime-baseline-latest.json` (`attested_by=ci`); do **not** copy `tests_passed` integers here. Live smoke: `run_live_review_smoke`. One-click rehearsal: development `POST /v1/demo/seed-fixture` (unpublished in OpenAPI; git walls+IDS, not a customer pack) |
-| OpenRebar provenance digest (**сверка**, not correctness) | Digest endpoint + `claim_labels` |
-| ISO 19650-lite context fields on reports | Optional request/report fields (Shared-gate metadata, not CDE) |
-| Extraction quality metrics (RU **fixtures**) | `evaluate_extraction`; fixture macro_f1 ≠ product accuracy |
-| Package SLA on **fixture** pack (schema 1.2, `fixture_only`) | `audit/evidence/sla-fixture-honesty-2026-07-17.json` |
-| System honesty surface | `GET /v1/system/capabilities` |
-| Explicit report capabilities | `capabilities.{clash,ids,unit_scale,ifc_schema,norm_rule_packs,section_pairing,dwg_dxf,mep_system_clash,…}` ∈ ok/skipped/failed/not_verified; **FAILED blocks `summary.passed`** |
-| Shared-gate `summary.passed` ownership | ADR-001: deterministic inputs + EvidenceAssembler writer; AI/OCR cannot flip; ≠ Shared→Published |
-| Production / pilot sign-off fail-closed | Non-dev defaults `production` profile; soft clash env flags ignored under pilot/production |
-| Cross-tenant ACL | Deny → **404**; object enumeration avoided |
-| Outbound SSRF guard | JWKS / bSI / OpenCDE URL validation |
-| Infra failure honesty (RT-C) | Unexpected exceptions in quantity / load / MEP probe → capability **FAILED** + traceback log (not soft WARNING/NOT_VERIFIED) |
-| Mixed CAD package honesty (RT-D) | Unparsed `.dwg` in package with successful `.dxf` → `capabilities.dwg_dxf=FAILED` (DXF success must not mask DWG) |
-| Advisory isolation (RT-E / RT-017) | Same non-empty package: advisory ON vs OFF → identical deterministic findings + identical `summary.passed`; only advisory remarks/warnings may differ |
-| HITL §12 visual distinction | Advisory candidate vs confirmed finding, low-confidence cue, `review_required` outcome — visually distinct + vitest; text XSS prevented by React (no `dangerouslySetInnerHTML`); preview MIME allowlist (`api.ts`) |
-| Fail-closed Shared-gate (2026-07-28) | Verdict single-source (`summary_passed_from_outcome`); advisory OFF==ON re-confirmed; OIDC validator build fail-closed without `assert` |
-| Remark storey / axis from IFC index | `IfcSpatialIndex` containment (`IfcBuildingStorey`) and `IfcGridAxis.AxisTag` when the GUID hits; missing is explicit in the template; **not** OCR / LLM text |
-| Non-dev auth fail-closed (RT-F) | `AEROBIM_ENV != development` + empty bearer + no OIDC → Settings/bootstrap refuse start |
-| RT-001 protocol readiness (engineering) | Customer labels template + `dual_independent` method + agreement-template + runbook `--agreement-json`; **publishable still HOLD** without customer corpus |
-| RT-002 schema↔loader parity | `customer_approved`/`approved` require full `approval` object in JSON Schema (ref-only rejected) |
-| RT-003 MEP scaffold honesty | Agent `detect_system_clash` → `degraded`; gap doc matches DI wiring; product MEP still HOLD |
-| Norm rule packs fail-closed (P0.2) | Requested/configured pack load error → `capabilities.norm_rule_packs=failed` → `summary.passed=false`; packs not requested → `skipped` (does not block) |
-| PrecisionClaim publish gate (R1/R4) | Typed claim; render withheld unless `corpus_kind=customer` and ≥2 adjudicators |
-| Runtime baseline metrics (R5) | `python -m aerobim.tools.export_runtime_baseline --run-gates --require-clean-tree` — numeric `tests_passed`, `publishable: true` only on clean tree; see `docs/evidence/runtime-baseline-latest.json` |
-| Claims Lock CI linter (WP-R10) | `python scripts/lint_claims.py` + `--matrix-guard` — machine-checkable forbidden claims |
-| Internal self-audit naming (R2) | Self assessments must not be labeled external/independent |
-| Four contours | ingestion / deterministic_validation / ai_advisory / evidence_reporting — AI cannot mutate `passed`; Analyze UC coordinates contour orchestrators (RT-A) |
-| I9 IFC KG port wiring | Domain port + DI + `query_ifc_kg` + fixture `evaluate_ifc_qa` — **advisory scaffold only** |
-| JSON norm / rule-pack loader | `NormRulePackLoader` + residential AR reference template (synthetic-template only) |
-| Deterministic PD↔RD section pairing scaffold | `SectionDiffAnalyzer` on normalized section JSON (one discipline pair) |
-| Detection precision harness (exact TP/FP/FN) | `aerobim-evaluate-detection-precision` + synthetic contract fixture + protocol gate |
-| Typical-errors catalog scaffold ≥20 patterns | `samples/benchmarks/typical-errors-catalog.json` + mapping tool; 28.08: 2 acceptance checklists detected in owner pack (counts only) — **not ingested**, `customer_confirmed_patterns` stays 0, catalog not customer-accepted |
-| Schema-valid IFC pre-gate available | `BasicIfcSchemaValidator` + `capabilities.ifc_schema` |
-| IDS document audit before model check | `XmlIdsDocumentAuditor` + `AEROBIM-IDS-AUDIT` |
-| BCF API 3.0 topic push (OpenCDE) | `POST .../export/bcf-api/push` with hub Bearer token |
-| ISO 19650-lite CDE state on reports | `iso19650` block on public report JSON |
-| OIDC JWT alongside static bearer | `AEROBIM_OIDC_*` + enterprise `PyJWT` |
-| Static API bearer scope (KT#2 honesty) | Shared `AEROBIM_API_BEARER_TOKEN` is **pilot transport auth only** — may authenticate uploads/reads; **must not** create expert HITL accept/reject/sign events (`is_service_token` denied). Expert verdicts require OIDC (or equivalent) principal with reviewer/admin role under pilot/production profiles |
-| HITL reviewer-role gate profile boundary (N-49) | `enforce_hitl_reviewer_auth` / `require_hitl_reviewer_roles` are **on only** for `signoff_profile` ∈ `{customer_pilot, production}`. Development / fixture / default demo profiles do **not** require reviewer roles (static bearer still blocked). Do not demo role model under a non-pilot profile and claim the gate is live |
-| Optional bSI / local schema certificate id | `schema_validation_request_id` + `capabilities.ifc_schema.external_ref` |
-| Postgres/filesystem filtered report index | `GET /v1/reports?project=&discipline=&passed=` |
-| Revit thin-client deep-link helper | `clients/revit-plugin/scripts/export_and_open_report.py` + UI `?report=` |
-| HITL review events / KPI | `POST/GET .../review-events`, `GET .../review-kpi` |
-| LOIN information levels on issues | `loin_information_level` ∈ geometry/alphanumeric/documentation |
-| Spatial predicates separate from IDS | `FindingCategory.SPATIAL` + `SPATIAL-*` issues from clash results |
-| EN structured extraction corpus | `english-aec-ground-truth.json` (macro F1 1.0 on structured fixtures) |
-| Ablation / benchmark snapshot | `docs/evidence/benchmark-report-2026-05-21.md` |
-| TZ Response Pack (architecture/build/presentation TBD fills) | [`docs/tz/README.md`](tz/README.md) |
-| Multipart document upload | `POST /v1/uploads` → storage-relative path |
-| EN remark templates | `AEROBIM_REMARK_LOCALE=en` + `TemplateRemarkGenerator` |
-| Remarks panel HITL edit | Frontend remark editor → `POST .../review-events` (`edited_remark` / `accepted` / `rejected`) |
-| Hybrid AI routing + WP-02 advisory pre-gate (eng) | `HybridRouteGate` mandatory before Analyze advisory observations; domain-pure, verdict-neutral (OFF==ON), fail-closed; never sets `summary.passed` |
-| Detached signature envelope (WP-03) | Presence/hash/roles; `qualified_signature` ENG_PARTIAL; trust_chain always NOT_VERIFIED |
-| Norm pack v2 eligibility (WP-04) | Schema 2.0.0 RASE + `execution_mode` + expert journal; fixture ≠ customer pack (RT-002 OPEN) |
-| Package completeness inventory (WP-05) | Soft opt-in inventory checks; DWG native read not implemented; fixture-grade only |
-| Open corpora profiles (WP-06) | 3 pinned profiles; honest regression n=7; regression/timing only — not product accuracy |
-| Quality measurement protocol (WP-07) | Wilson P/R + sample-size planner; interim confirmed-finding target 0.60; never >90% |
-| IFC+IDS evidence layer | This file — scope freeze; not 10D/Tangl replacement; Checkpoint **GO** (measurement); `customer_go` **false** |
-| Core PDF via pypdfium2/pdfminer (LIC-001 Option B) | Production PDF path; PyMuPDF optional `pdf-agpl` only — not a court opinion |
-| Annotation claimed-GUID → `ifc_guid` (P2-04) | Presence confirm via spatial index only; wall-guid demo evidence pin |
-| MEP edge provenance + AABB broadphase (eng) | `edge_kinds` + optional AABB; always `geometry_verified=False`; capability stays `NOT_VERIFIED` |
-| Docker offline image-track | `offline_bundle` smoke; bare-metal **DEFERRED** |
+| Детерминированные IFC, IDS и сверка документов | Набор `pytest`, учебные пакеты |
+| Разбор комплекта из нескольких источников (IFC, PDF, чертежи, IDS) | `POST /v1/analyze/project-package`, манифесты бенчей |
+| Точка зрения принимает изображения | Дымовой HTTP 200. Открытый бенч AECV на Yandex Qwen: macro exact-match 0.4325, метка `open_bench_only`. Это не точность продукта и не RT-001 |
+| Обязательная коллизия, пустой растр и пропажа происхождения роняют комплект | Тесты P0, замок заявлений |
+| Доступ к артефактам отчёта по объекту | Принципал API и `tenant_id` |
+| Выгрузка BCF 2.1/3.0 — структурный уровень T1 | `audit/evidence/bcf-structural-handoff-2026-07-25.json`. Принятое или снятое замечание эксперта ставит TopicStatus Closed и комментарий. CreationAuthor остаётся машиной. Импорт в СОД, уровень T2, **NOT_VERIFIED** |
+| Оболочка ревью в браузере (3D и 2D, восемь экранов, все `partial`) | Пин CI в `docs/evidence/runtime-baseline-latest.json` (`attested_by=ci`). Числа тестов сюда не копируем. Живой дым: `run_live_review_smoke`. Репетиция в один клик: development `POST /v1/demo/seed-fixture` (в OpenAPI не опубликован; стены и IDS из git, не комплект заказчика) |
+| Дайджест происхождения OpenRebar | Сверка источников, не вердикт о правильности расчёта. Эндпоинт и `claim_labels` |
+| Поля контекста ISO 19650-lite на отчёте | Необязательные поля. Это метаданные Shared-gate, не СОД |
+| Качество извлечения на русских фикстурах | `evaluate_extraction`. macro_f1 фикстуры не есть точность продукта |
+| Срок на учебной упаковке (схема 1.2, `fixture_only`) | `audit/evidence/sla-fixture-honesty-2026-07-17.json` |
+| Поверхность честности системы | `GET /v1/system/capabilities` |
+| Явные возможности отчёта | `capabilities.{clash,ids,unit_scale,ifc_schema,norm_rule_packs,section_pairing,dwg_dxf,mep_system_clash,…}` ∈ ok / skipped / failed / not_verified. Любой **FAILED** ставит `summary.passed=false` |
+| Кто пишет `summary.passed` | ADR-001: входы детерминированные, пишет `EvidenceAssembler`. ИИ и OCR флаг не переворачивают. Shared не равен Published |
+| Профили пилота и production роняют незакрытую обязательную проверку | Вне development профиль по умолчанию `production`. Мягкие флаги коллизий на пилоте и production игнорируются |
+| Чужой арендатор не видит объект | Отказ — **404**. Перебор объектов не открываем |
+| Исходящие адреса | Проверка URL для JWKS, bSI и OpenCDE |
+| Честность сбоя инфраструктуры (RT-C) | Неожиданное исключение в количестве, загрузке или пробе MEP ставит capability **FAILED** и пишет traceback. Это не мягкое предупреждение и не NOT_VERIFIED |
+| Смешанный CAD (RT-D) | Неразобранный `.dwg` рядом с успешным `.dxf` даёт `capabilities.dwg_dxf=FAILED`. Успех DXF не маскирует DWG |
+| Изоляция совета (RT-E / RT-017) | Один и тот же непустой комплект: совет включён и выключен дают одни детерминированные находки и один `summary.passed`. Отличаться могут только черновики и предупреждения |
+| Различие на экране, §12 | Черновик совета, подтверждённая находка, низкая уверенность и исход `review_required` различимы. Текст не вставляется через `dangerouslySetInnerHTML`. Превью ограничено списком MIME (`api.ts`) |
+| Shared-gate без ложного зелёного (28.07.2026) | Вердикт из одного источника (`summary_passed_from_outcome`). OFF==ON подтверждён снова. Сборка валидатора OIDC падает закрыто, без `assert` |
+| Этаж и ось замечания | Из индекса IFC: `IfcSpatialIndex` (`IfcBuildingStorey`) и `IfcGridAxis.AxisTag`, если GUID попал в индекс. Если нет, шаблон говорит это прямо. Текст OCR и языковой модели сюда не подставляется |
+| Вход вне development (RT-F) | `AEROBIM_ENV != development`, пустой bearer и нет OIDC: процесс не стартует |
+| Готовность протокола RT-001 (инженерия) | Шаблон меток заказчика, метод `dual_independent`, шаблон согласия, команда `--agreement-json`. Публикация **HOLD**, пока нет корпуса заказчика |
+| Схема и загрузчик RT-002 | `customer_approved` и `approved` требуют полный объект `approval`. Одной ссылки мало, схема это отвергает |
+| Честность каркаса MEP, RT-003 | `detect_system_clash` уходит в `degraded`. Документ разрыва совпадает с проводкой DI. Поставка MEP остаётся **HOLD** |
+| Пакеты норм роняют комплект (P0.2) | Ошибка загрузки запрошенного пакета: `capabilities.norm_rule_packs=failed` и `summary.passed=false`. Пакет не просили — `skipped`, комплект из-за этого не падает |
+| Ворота публикации PrecisionClaim (R1/R4) | Типизированное заявление. Картинку не отдаём, пока `corpus_kind=customer` и судей не меньше двух |
+| Пин прогона (R5) | `python -m aerobim.tools.export_runtime_baseline --run-gates --require-clean-tree`. Числа `tests_passed` и `publishable: true` только на чистом дереве. Источник: `docs/evidence/runtime-baseline-latest.json` |
+| Линтер заявлений (WP-R10) | `python scripts/lint_claims.py` и `--matrix-guard` |
+| Имя самооценки (R2) | Свою оценку нельзя подписывать как внешнюю или независимую |
+| Четыре контура | ingestion, deterministic_validation, ai_advisory, evidence_reporting. ИИ не меняет `passed`. Сценарий анализа сводит оркестраторы (RT-A) |
+| Порт графа IFC, I9 | Порт, DI, `query_ifc_kg`, фикстура `evaluate_ifc_qa`. Только каркас совета |
+| Загрузчик пакета норм | `NormRulePackLoader` и учебный шаблон АР. Это синтетический шаблон |
+| Сшивка разделов ПД и РД | `SectionDiffAnalyzer` на нормализованном JSON разделов. Одна пара дисциплин |
+| Стенд точности (TP/FP/FN) | `aerobim-evaluate-detection-precision`, синтетический контракт, ворота протокола |
+| Каталог типовых ошибок, не меньше 20 образцов | `samples/benchmarks/typical-errors-catalog.json`. 28.08 в пакете владельца найдены 2 чек-листа приёмки, только счёт. В разбор не взяты. `customer_confirmed_patterns` остаётся 0. Каталог заказчик не принял |
+| Предварительная проверка схемы IFC | `BasicIfcSchemaValidator` и `capabilities.ifc_schema` |
+| Аудит документа IDS до проверки модели | `XmlIdsDocumentAuditor` и `AEROBIM-IDS-AUDIT` |
+| Отправка темы BCF API 3.0 (OpenCDE) | `POST .../export/bcf-api/push` с bearer хаба |
+| Состояние СОД ISO 19650-lite на отчёте | Блок `iso19650` в публичном JSON. Это поле, не импорт |
+| JWT OIDC рядом со статическим bearer | `AEROBIM_OIDC_*` и `PyJWT` |
+| Общий bearer API | `AEROBIM_API_BEARER_TOKEN` — только транспорт пилота. Читать и загружать можно. События эксперта (принять, отклонить, подписать) этому токену запрещены (`is_service_token`). На профилях пилота и production решение эксперта требует принципала OIDC или равноценного, с ролью рецензента или администратора |
+| Роль рецензента (N-49) | `enforce_hitl_reviewer_auth` и `require_hitl_reviewer_roles` включены только при `signoff_profile` из `{customer_pilot, production}`. Development, fixture и демо роли не требуют. Статический bearer на запись решения всё равно закрыт. На непрофильном контуре ролевую модель не показываем как живую |
+| Необязательный идентификатор сертификата схемы bSI | `schema_validation_request_id` и `capabilities.ifc_schema.external_ref` |
+| Фильтр списка отчётов | `GET /v1/reports?project=&discipline=&passed=` через Postgres или файлы |
+| Тонкий клиент Revit | `clients/revit-plugin/scripts/export_and_open_report.py` и `?report=` в оболочке |
+| События эксперта и сводка | `POST/GET .../review-events`, `GET .../review-kpi` |
+| Уровень информации LOIN на находке | `loin_information_level` ∈ geometry / alphanumeric / documentation |
+| Пространственные предикаты отдельно от IDS | `FindingCategory.SPATIAL` и находки `SPATIAL-*` из коллизий |
+| Английский корпус извлечения | `english-aec-ground-truth.json` (macro F1 1.0 на структурных фикстурах) |
+| Снимок абляции и бенча | `docs/evidence/benchmark-report-2026-05-21.md` |
+| Пакет ответов на ТЗ | [`docs/tz/README.md`](tz/README.md) |
+| Загрузка документов частями | `POST /v1/uploads`, путь относительно хранилища |
+| Английские шаблоны замечаний | `AEROBIM_REMARK_LOCALE=en` и `TemplateRemarkGenerator` |
+| Правка замечания в панели | Редактор оболочки пишет `POST .../review-events` (`edited_remark`, `accepted`, `rejected`) |
+| Маршрут совета и предварительные ворота (WP-02) | `HybridRouteGate` обязателен до наблюдений совета. Вердикт не трогает (OFF==ON). `summary.passed` не ставит |
+| Конверт отсоединённой подписи (WP-03) | Наличие, хеш, роли. `qualified_signature` — ENG_PARTIAL. Цепочка доверия всегда NOT_VERIFIED |
+| Допуск пакета норм v2 (WP-04) | Схема 2.0.0, RASE, `execution_mode`, журнал эксперта. Фикстура не есть пакет заказчика. RT-002 OPEN |
+| Опись комплектности (WP-05) | Мягкие проверки по желанию. Чтение native DWG не реализовано. Уровень фикстуры |
+| Открытые корпуса (WP-06) | 3 закреплённых профиля. Честная регрессия n=7. Это регрессия и время, не точность продукта |
+| Протокол измерения (WP-07) | Интервалы Уилсона для полноты и точности, планировщик выборки. Промежуточная цель по подтверждённым находкам 0,60. Порог свыше 90 процентов не заявляется |
+| Слой доказательств IFC и IDS | Этот файл. Заморозка области. Это не замена 10D и Tangl. Checkpoint **GO** — замер. `customer_go` **false** |
+| Основной PDF: pypdfium2 и pdfminer (LIC-001, вариант B) | Боевой путь PDF. PyMuPDF только в необязательном `pdf-agpl`. Это не заключение для суда |
+| GUID из пометки в `ifc_guid` (P2-04) | Только подтверждение присутствия через пространственный индекс. Пин учебного wall-guid |
+| Происхождение ребра MEP и AABB | `edge_kinds` и необязательный AABB. Всегда `geometry_verified=False`. Capability остаётся `NOT_VERIFIED` |
+| Офлайн-образ Docker | Дым `offline_bundle`. Голый металл **DEFERRED** |
 
-## Planned (do not claim as deployed)
+## Что ещё нельзя называть сделанным
 
-| Item | Status |
+| Пункт | Статус |
 |---|---|
-| Optional raster/PDF drawing path (OCR baseline) | `RasterDrawingAnalyzer` port — deterministic today |
-| Non-deterministic text extraction training | Not in pilot sign-off path |
-| Full OIDC multi-tenant auth | OIDC JWT validation available; full SSO/BFF still post-pilot |
-| Redis Streams / horizontal worker scale | A dedicated Redis-backed `aerobim.worker` is implemented for production with at-least-once list delivery, terminal ACK, lease fencing and dead-letter exhaustion. Redis Streams consumer ownership, HA Redis and fresh per-job sandboxing remain post-pilot scale/isolation work |
-| BCF API / OpenCDE integration | Topic push foundation live; **CDE import T2 NOT_VERIFIED**; target CDE identified 28.08 at address level (10D contour, session-gated — contents not read); closure path via public Swagger API + developer demo license on synthetic data is engineering evidence, not customer registry proof; full hub sync post-pilot |
-| Live bSI Validation Service submit in pilot | Local cert / mocked client tested; live hub needs credentials |
-| LLM IDS drafting assist | Stub only — **advisory, never in sign-off path** |
-| True computer vision for drawings | Not implemented; OCR baseline ≠ CV |
-| Native DWG as product-ready CAD | Still missing / fail-closed; DXF optional `[cad]` EntityGraph never claims `dwg_dxf=OK` |
-| Native RVT / NWD | Same class as DWG; fail-closed; IFC 2x3/4/4x3 is the ingest path ([`tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md`](tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md)). Stock Navisworks does not write IFC. ODA Sustaining ≠ BimRv ([`quality/NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md`](quality/NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md) · [`quality/FORMAT_INGEST_TRIAGE_2026_09.md`](quality/FORMAT_INGEST_TRIAGE_2026_09.md)) |
-| Fixture AABB P/R = 1.0 at n=6 as a jury exhibit | Wilson 95% lower ≈ 0.61 (`wilson_interval(6, 6)`); stop-list KT#3 item 28 |
-| Space-efficiency numeric KPI | Coverage map: not implemented; owner scope OA-14 OPEN |
-| 5–10 packs/day | Customer-stated 25.08; not a measured SLA; `benchmark-thresholds.json` `publishable_sla=false` |
-| Analyze default 1.5 GB SPF `open(.ifc)` | Ingest + RocksDB under stated the appointing party caps; `AEROBIM_MAX_IFC_BYTES` stays **256 MiB**; WASM **256 MiB** |
-| IFC streaming / disk R-tree | **Designed, not implemented**; JSON sidecar of `IfcSpatialIndex` ≠ disk R-tree |
-| Published clash/inconsistency accuracy >90% | Not measured; do not claim until adjudication |
-| Synthetic precision fixture scores as product accuracy | Harness-only (`4 TP / 2 FP / 2 FN` contract); not customer evidence |
-| Customer-approved residential norm pack | Reference template only; approval metadata required before sign-off |
-| System-aware MEP clash (routing/clearances) | Explicit gap `MEP-CLASH-001`; edge_kinds/AABB ≠ verified geometric clash; RT-003 OPEN |
-| Bare-metal offline without Docker | DEFERRED; Docker track only |
-| IfcLLM / GraphRAG multi-hop IFC QA | **Not shipped** — I9 remains advisory scaffold; stub/relational fixture ≠ product KG |
-| Production rollout / confirmed revenue | Requires customer documents outside repo |
-| Hybrid AI PUBLIC VLM egress + PrivacyGuard salt-on-egress | WP-02 advisory pre-gate landed on Analyze; PUBLIC VLM / mask-on-egress still residual (masking ≠ anonymity) |
+| Необязательный путь чертежа через OCR | Порт `RasterDrawingAnalyzer`. Сегодня путь детерминированный |
+| Обучение недетерминированного извлечения текста | В приёмку пилота не входит |
+| Полный многопользовательский OIDC | Проверка JWT есть. Полный SSO и BFF — после пилота |
+| Масштаб Redis Streams и несколько worker | Для production есть отдельный `aerobim.worker` на Redis: доставка списка at-least-once, подтверждение в терминальном состоянии, ограда аренды, исчерпание в dead-letter. Владение через Redis Streams, отказоустойчивый Redis и свежая песочница на каждое задание остаются работой после пилота |
+| BCF API и OpenCDE | Основа отправки темы жива. Импорт в СОД, T2, **NOT_VERIFIED**. Целевая СОД названа 28.08 на уровне адреса (контур 10D, сессия, содержимое не читали). Путь через публичный Swagger и демо-лицензию на синтетике — инженерия, не доказательство реестра заказчика. Полная синхронизация хаба — после пилота |
+| Живая отправка в сервис валидации bSI | Локальный сертификат и подставной клиент проверены. Живой хаб ждёт учётных данных |
+| Помощь LLM в черновике IDS | Заглушка. Совет, в маршрут приёмки не входит |
+| Настоящее компьютерное зрение по чертежам | Не реализовано. Базовый OCR не есть CV |
+| Native DWG как готовый CAD-продукт | По-прежнему нет, отказ закрытый. Необязательный DXF `[cad]` не ставит `dwg_dxf=OK`. Не реализовано |
+| Native RVT и NWD | Тот же класс, что DWG. Отказ закрытый. Вход — IFC 2x3 / 4 / 4x3 ([`tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md`](tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md)). Штатный Navisworks IFC не пишет. ODA Sustaining не включает BimRv ([`quality/NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md`](quality/NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md) · [`quality/FORMAT_INGEST_TRIAGE_2026_09.md`](quality/FORMAT_INGEST_TRIAGE_2026_09.md)) |
+| Фикстура AABB с полнотой 1,0 при n=6 как экспонат жюри | Нижняя граница Уилсона 95 % около 0,61 (`wilson_interval(6, 6)`). Пункт 28 стоп-листа КТ#3 |
+| Числовой KPI эффективности пространства | Карта покрытия: не реализовано. Область владельца OA-14 OPEN |
+| 5–10 комплектов в день | Так сказал заказчик 25.08. Это не измеренный SLA. В `benchmark-thresholds.json` стоит `publishable_sla=false` |
+| Разбор IFC по умолчанию как SPF `open` на 1,5 ГБ | Приём и RocksDB в заявленных пределах назначающей стороны. `AEROBIM_MAX_IFC_BYTES` остаётся **256 МиБ**. WASM тоже **256 МиБ** |
+| Потоковый IFC и R-дерево на диске | **Спроектировано, не сделано**. JSON-снимок `IfcSpatialIndex` не есть дисковое R-дерево |
+| Опубликованная точность коллизий и противоречий >90% | Не измерено. Не заявляется, пока нет разметки |
+| Синтетические доли точности как точность продукта | Только стенд (контракт `4 TP / 2 FP / 2 FN`). Это не доказательства заказчика |
+| Подписанный жилой пакет норм | Только эталонный шаблон. До приёмки нужны метаданные подписи |
+| Системные коллизии MEP (трассы и зазоры) | Явный разрыв `MEP-CLASH-001`. `edge_kinds` и AABB не есть проверенная геометрическая коллизия. RT-003 OPEN |
+| Офлайн на голом металле без Docker | DEFERRED. Только дорожка Docker |
+| IfcLLM и многошаговый GraphRAG | **Не поставлен**. I9 остаётся каркасом совета. Заглушка и реляционная фикстура не есть продуктовый граф |
+| Промышленный вывод и подтверждённая выручка | Нужны документы заказчика вне репозитория |
+| Публичный выход VLM и соль PrivacyGuard на выходе | Предварительные ворота WP-02 на анализе уже стоят. Публичный VLM и маска на выходе остаются хвостом. Маскирование не есть анонимность |
 
 ## Non-claims (explicit boundaries)
 
-1. AeroBIM is **decision-support** for engineering QA, not a licensed-engineer replacement.
-2. AeroBIM does **not** assert full regulatory code compliance across all document types.
-3. AeroBIM does **not** claim to outperform Solibri globally — only a bounded open pilot path.
-4. Non-deterministic text extraction is **not** used for pilot sign-off; deterministic regex path meets F1 gates in CI.
-5. Optional LLM **IDS assist** (if enabled later) is **advisory only** and must never affect `summary.passed` without human-in-the-loop.
-6. TZ wording «точность >90%» is an **evaluation target**, not a verified product claim, until precision/recall is published from a labeled customer corpus.
-7. AeroBIM does **not** claim that OCR, CV, or VLMs “read drawings like a licensed engineer” (see Claims Lock / this claim boundary).
-8. AeroBIM does **not** claim Experiment B coverage percentages (e.g. KR **≈16.7%** of n=24 open-source remarks) as product detection rate on a customer corpus — they are **coverage-map** measurements with explicit out-of-scope classes; see [`evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md`](evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md).
-9. AeroBIM does **not** claim IfcLLM / GraphRAG product capability. I9 is an **advisory scaffold** (port + allowlisted query + fixture QA); multi-hop GraphRAG is unshipped.
-10. AeroBIM does **not** claim Hybrid AI is in the verdict path, nor that masking guarantees anonymity — WP-02 wires `HybridRouteGate` as an **advisory pre-gate** only (verdict-neutral, OFF==ON; blocked → no advisory observation).
-11. AeroBIM does **not** replace 10D, Tangl, Renga, CDE, or the expert. First sell is a white-box IFC+IDS evidence layer; `customer_go` stays **false** until residual volumes close. Product Checkpoint **GO** is the regulatory-measurement MVP, not customer sign-off.
-12. The SPb GAU CGE profile (`samples/profiles/spb-cge/`) is a published rule set (OFFICIAL_PUBLISHED), not a customer-signed acceptance profile. It does **not** close RT-001 or RT-002 and is not an expertise verdict.
-13. AeroBIM does **not** SPF-open a 1.5 GB IFC and does **not** treat 1.5 GB as WASM capability, and does **not** treat «5–10 packs/day» as a published SLA.
-14. After the 25.08 questionnaire, AeroBIM does **not** say the customer sent no data. The channel is received; a hashed pack is **not** in git; RT-001 stays OPEN. HTTPS / closed-cloud storage is a **stated** target — browser OIDC BFF remains `NOT_IMPLEMENTED`.
-15. AeroBIM does **not** treat xlsx/docx declared-field **MATCH** as `calculation_correctness` or a LIRA solver. Native `.lir` is not parsed. PDF table compare stays **fragile**.
-16. AeroBIM does **not** treat the IFC streaming / disk R-tree **design** as shipped, and does **not** raise the default **SPF** analyze cap from **256 MiB** because ingest allows 1.5 GB (that path is RocksDB).
-17. AeroBIM does **not** treat HTTP upload of `.lir`/`.spr` as a silent skip or a solver path. The closed reason is explicit; ZIP members are rejected the same way as native Autodesk.
-18. AeroBIM does **not** treat a JSON dump of `IfcSpatialIndex` as a disk R-tree or a streaming parser, and does **not** wire that dump into analyze.
-19. The two numeric TZ criteria (clash recall >90%, pack-check time) are **not customer-confirmed**: the 25.08 answers document never mentions 90%, SLA, or time. AeroBIM neither claims them nor accepts them as agreed until a measurement protocol (golden remark set, corpus size, time endpoints) is answered in writing.
-20. The internal-standards and BIM-regulations list was **issued** on 25.08 (two links inside answer 1.2.1 to internal CDE project folders); the norm-pack blocker is **access to the issued material**, not missing data — the ask is to publish the two folders the same way as the dataset. Direct CDE API integration is **not** a customer requirement (п. 2.2.2: file import/export via web UI suffices); it stays an optional differentiator.
-21. Typical-node checks are **not** IFC-ready: п. 1.2.3 places the node library as PDF/DWG in the same closed 1.2.1 folders; native DWG stays unread. Cloud is allowed (п. 3.1.1); the requirement is **per-project isolation** of stored data, not on-prem deploy and not “HTTPS equals isolation”. Horizontal scale is an architecture point for later, **not** an MVP deliverable and **not** a load figure at defense (п. 3.2.2).
-22. The depersonalization + NDA ask to organizers is **the customer's own clause** (п. 3.1.2), not extra caution from the team. AeroBIM does **not** treat the delivered channel as a depersonalized NDA pack.
-23. AeroBIM is an **engineering-compare engine** with a measurement protocol, not a documentation platform and not a replacement for the customer's CDE or BIM-data stack. Version overlay of RD packs is **not** a differentiator (the customer already ships it). TR-67 is spec-volume vs drawing/BIM, **not** model-to-estimate quantities.
-24. Benefit speech uses expert-hours per pack, share of remarks caught before production issue, and re-entry count — **not** «innovation» and **not** a multiple of EBITDA. The citation linter (`lint_citation_twins`) is shown as source discipline (fabricated DOI / same-article year twins), not as product accuracy.
-25. Catalog questionnaire answers, demo video frames, and slides are **publication** (same gate as git). AeroBIM does **not** treat machine-readable information requirements or RD version overlay as differentiators, and does **not** transfer a competitor's published figure as our metric. Self-assessment against GOST R 72514-2026 (ISO/IEC 42005:2025) is **not** a certification. Mapping onto GOST R 72515-2026 (ISO/IEC 12792:2025) is **not** a conformity declaration.
-26. Attributed TechLab **selection** weights (K1=40 / prize floor 50 / arithmetic **mean**) are **not** a predicted AeroBIM score. Application roster is the K1 object; oral advisors are not. MinTsifry bill 166424 is **not** in-force law.
-27. Regulation Appendix 3 (final criteria) is **not in git**. B1–B5 in the scoring module are an owner briefing, not that appendix. Final aggregation in the order is a **sum**. Pytest and the fixture SLA pin are **not** Partner validation metrics. Empty A1–A8 hours are required until a partner baseline exists. The vitrine heading 07 is **not** Appendix 4 task №6 (commission №7); do not fight the organizer site.
-28. The criterion→git evidence map and the national AI GOST stack are **findability**, not a predicted prize-clearing total. Mapping onto GOST R ISO/IEC 42001-2024 is **not** a certified AI management system.
-29. i.moscow/pilot (city grant, legal entity, TRL-ish 6) is **not** the TechLab paid-pilot prize. The K1 role-matrix template in git has empty person cells; the scored roster is the i.moscow application.
-30. Ten named people are **not** required for K1 (LETI: 1–10; two competency classes). GOST R 58048 self-assessment is **TRL 4 (lab)**, not TRL 5 and not an independent readiness exam. System A K3 is partner-fit, **not** System B B2 metrics.
-31. Russian BIM TAM (GidMarket 10.1 bn RUB, 2022) is **not** AeroBIM SAM. A published analog −72.1% labor cut is **not** our effect. PNST 841-2023 mapping is **not** a SQuaRE certificate. Another MIK product’s «≥500M market» packaging is **not** this TechLab K4.
-32. The 16+36.6=52.6 band identity is **not** a predicted AeroBIM total. The public task-page sponsor quote is **not** the attested commission chair. SPbPU 25.1 bn RUB by 2030 is **not** our revenue. The i.moscow paste file is **not** a scored roster.
-33. Partner 1H2026 IFRS (revenue −31 %, loss 22.3 bn RUB) is **context**, not an AeroBIM saving. Stand-alone RAS +31 % revenue is **not** group IFRS. K4 does **not** ask CAPEX.
-34. Four catalog cards are **not** all applicants. Neighbor-task «46 teams» is a different Partner. Peer catalog claims (15 pilots, 600+ norms, live customer prototype) are **not** audited public fact.
-35. Publishable CI counts come only from `docs/evidence/runtime-baseline-latest.json`. Historical blocker-file figures (SHA `019962141606`) are a prior pin, not the current SSOT.
-36. Native DWG/RVT/NWD are **not implemented**. Default IFC **SPF** cap stays **256 MiB**. 1.5 GB is ingest + RocksDB analyze, not SPF RAM and not WASM. Experiment B KR headline is **≈16.7 %** (4/24); **≈8.3 %** is the Task-3 waypoint, not the current detected share.
-37. Closed Autodesk CAD and `.lir` are **not** an ingest product. KT#3 exchange is IFC + PDF/A. Stock Navisworks does not write IFC. ODA trial is measurement, not a product ([`quality/FORMAT_INGEST_TRIAGE_2026_09.md`](quality/FORMAT_INGEST_TRIAGE_2026_09.md)).
-38. Strategy Partners / AO SPG August 2026 notes are **attributed speech**, not SAM and not a digital-twin / FM product. The 8-page construction cut supports machine-readable PD/RD; the 60-page property-IT cut is adjacent. PDFs stay off git. The owner pin is not a TIER0 exhibit.
-39. The browser surface is a **review shell**, not a delivered full-cycle expert workplace. UI does **not** write `summary.passed`. Native RVT/NWD/DWG stay fail-closed. 30 minutes / 5–10 packs per day are TZ goals, not measured SLA. No live 10D/Tangl connector ([`quality/UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md`](quality/UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md)).
-40. `POST /v1/demo/seed-fixture` is **development-only** and copies git `samples/` walls+IDS, not a customer pack. Two fire-rating fixture findings are **not** product accuracy. The published OpenAPI contract does **not** list the seed. UI CSS does **not** load Google Fonts. The sitting-member KT#3 laptop track stays `run_kt3_jury`. The TZ compliance matrix Web UI row is **partial**, not done.
+1. AeroBIM помогает эксперту проверять комплект. Это не замена инженера с правом подписи. Точность продукта на комплекте заказчика не заявляется.
+2. Полного соответствия всем нормам по всем видам документов мы не заявляем.
+3. Глобального превосходства над Solibri нет. Есть ограниченный открытый путь пилота.
+4. Недетерминированное извлечение текста в приёмку пилота не входит. Детерминированный путь по шаблонам проходит ворота F1 в CI.
+5. Необязательная помощь LLM с IDS, если её включат позже, остаётся советом и не меняет `summary.passed` без человека.
+6. Формулировка ТЗ «точность >90%» — цель оценки, не проверенное свойство продукта, пока полнота и точность не опубликованы на размеченном корпусе заказчика.
+7. OCR, CV и языковые модели «не читают чертёж как инженер с допуском». См. замок заявлений и этот лист.
+8. Доли эксперимента Б (в том числе КР **≈16,7 %** от n=24 открытых замечаний) не есть доля обнаружения на корпусе заказчика. Это карта покрытия, с явными классами вне области: [`evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md`](evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md).
+9. Продукта IfcLLM и GraphRAG нет. I9 — каркас совета: порт, разрешённый запрос, фикстура. Многошаговый GraphRAG не поставлен.
+10. Гибридный ИИ не стоит на маршруте вердикта. Маскирование не гарантирует анонимность. WP-02 ставит `HybridRouteGate` только как предварительные ворота совета (вердикт не меняется, OFF==ON; блок — нет наблюдения совета).
+11. AeroBIM не заменяет 10D, Tangl, Renga, СОД и эксперта. Первая продажа — прозрачный слой доказательств IFC и IDS. `customer_go` остаётся **false**, пока не закрыты остаточные объёмы. Checkpoint **GO** — измерительный макет, не подпись заказчика.
+12. Профиль СПб ГАУ ЦГЭ (`samples/profiles/spb-cge/`) — опубликованный набор правил (OFFICIAL_PUBLISHED), не подписанный профиль приёмки. RT-001 и RT-002 он не закрывает. Это не вердикт экспертизы.
+13. Файл IFC в 1,5 ГБ мы не открываем как SPF и не считаем 1,5 ГБ возможностью WASM. «5–10 комплектов в день» не есть опубликованный SLA.
+14. После анкеты 25.08 нельзя говорить, что заказчик ничего не прислал. Канал получен. Хеш-пакета в git нет. RT-001 остаётся OPEN. HTTPS и закрытое облако — заявленная цель. Браузерный OIDC BFF остаётся `NOT_IMPLEMENTED`.
+15. Совпадение полей xlsx и docx не есть `calculation_correctness` и не есть решатель ЛИРА. Файл `.lir` мы не разбираем. Сравнение таблиц PDF остаётся хрупким.
+16. Проект потокового IFC и дискового R-дерева не поставлен. Потолок SPF по умолчанию не поднимаем с **256 МиБ** только потому, что приём допускает 1,5 ГБ. Этот путь идёт через RocksDB.
+17. Загрузка `.lir` и `.spr` по HTTP не есть тихий пропуск и не есть путь решателя. Причина отказа явная. Члены ZIP отвергаются так же, как закрытые файлы Autodesk.
+18. JSON-снимок `IfcSpatialIndex` не есть дисковое R-дерево и не есть потоковый парсер. В анализ этот снимок не подключён.
+19. Два числовых критерия ТЗ (полнота коллизий >90 % и срок проверки комплекта) заказчик письмом не подтвердил. В ответах 25.08 нет ни 90 %, ни SLA, ни времени. Мы их не заявляем и не считаем согласованными, пока письмом не зафиксирован протокол: золотой набор замечаний, размер корпуса, от какой точки до какой точки меряется время.
+20. Перечень внутренних стандартов и BIM-регламентов выдан 25.08 (две ссылки в ответе 1.2.1 на папки проекта во внутренней СОД). Узкое место пакета норм — доступ к уже выданному, а не отсутствие данных. Просьба: опубликовать эти две папки так же, как набор данных. Прямой API СОД заказчик не требовал (п. 2.2.2: достаточно импорта и экспорта файлов через веб). Это необязательное отличие, не обязательство.
+21. Проверки типовых узлов ещё не готовы к IFC. П. 1.2.3 кладёт библиотеку узлов как PDF и DWG в те же закрытые папки 1.2.1. Native DWG мы не читаем. Облако допускается (п. 3.1.1). Требование — изоляция данных проекта, не установка на своей машине и не формула «HTTPS уже есть изоляция». Горизонтальный масштаб — пункт архитектуры на потом, не поставка макета и не цифра нагрузки на защите (п. 3.2.2).
+22. Просьба об обезличивании и соглашении о конфиденциальности организаторам — пункт самого заказчика (п. 3.1.2), не лишняя осторожность команды. Полученный канал мы не считаем обезличенным пакетом под таким соглашением.
+23. AeroBIM — движок инженерного сравнения с протоколом измерения. Это не платформа документации и не замена СОД или стека BIM-данных заказчика. Наложение версий РД у заказчика уже есть, отличием это не называем. ТР-67 — объём по спецификации против чертежа и модели, не объёмы модели против сметы.
+24. О пользе говорим часами эксперта на комплект, долей замечаний, пойманных до площадки, и числом повторных заходов. Не «инновацией» и не кратностью к EBITDA. Линтер цитат (`lint_citation_twins`) показывает дисциплину источников (выдуманный DOI и близнецы года одной статьи), не точность продукта.
+25. Ответы каталога, кадры ролика и слайды — та же публикация, что git. Машиночитаемые требования и наложение версий РД отличиями не называем. Чужую опубликованную цифру своей метрикой не делаем. Самооценка по ГОСТ Р 72514-2026 (ISO/IEC 42005:2025) не есть сертификат. Соответствие ГОСТ Р 72515-2026 (ISO/IEC 12792:2025) не есть декларация соответствия.
+26. Веса отбора Техлаба, на которые мы ссылаемся (К1=40, пол приза 50, среднее арифметическое), не есть предсказанный балл AeroBIM. Объект К1 — состав заявки. Устные консультанты в него не входят. Законопроект Минцифры 166424 не есть действующий закон.
+27. Приложение 3 к регламенту (итоговые критерии) в git отсутствует. B1–B5 в модуле оценки — брифинг владельца, не это приложение. Итог в порядке считается суммой. Pytest и пин срока на фикстуре не есть метрики валидации партнёра. Пустые часы A1–A8 нужны, пока нет базовой линии партнёра. Заголовок витрины 07 не есть задача №6 приложения 4 (комиссия №7). С сайтом организатора не спорим.
+28. Карта «критерий → файл в git» и национальный стек ГОСТ по ИИ — это находимость, не предсказанная сумма приза. Соответствие ГОСТ Р ИСО/МЭК 42001-2024 не есть сертифицированная система менеджмента ИИ.
+29. i.moscow/pilot (городской грант, юрлицо, уровень около УГТ 6) не есть оплачиваемый пилот Техлаба. Шаблон ролевой матрицы К1 в git с пустыми ячейками людей. Оцениваемый состав — заявка на i.moscow.
+30. Десять поимённо названных людей для К1 не требуются (ЛЭТИ: от 1 до 10, два класса компетенций). Самооценка по ГОСТ Р 58048 — УГТ 4, лаборатория. Это не УГТ 5 и не независимая экспертиза готовности. К3 системы A — пригодность партнёру, не метрики B2 системы B.
+31. Рынок BIM в России по ГидМаркет (10,1 млрд руб., 2022) не есть доступный рынок AeroBIM. Чужое «минус 72,1 % трудозатрат» не есть наш эффект. Соответствие ПНСТ 841-2023 не есть сертификат SQuaRE. Чужое «рынок от 500 млн» в упаковке другого продукта МИК не есть К4 этого Техлаба.
+32. Полоса 16+36,6=52,6 не есть предсказанный итог AeroBIM. Цитата спонсора на публичной странице задачи не есть подтверждённый председатель комиссии. 25,1 млрд руб. СПбПУ к 2030 году не есть наша выручка. Вставка с i.moscow не есть оценённый состав.
+33. МСФО партнёра за первое полугодие 2026 (выручка минус 31 %, убыток 22,3 млрд руб.) — контекст, не экономия AeroBIM. Отдельный РСБУ с выручкой плюс 31 % не есть МСФО группы. К4 про CAPEX не спрашивает.
+34. Четыре карточки каталога не есть все заявители. «46 команд» соседней задачи — другой партнёр. Заявления сверстников в каталоге (15 пилотов, 600+ норм, живой прототип на данных заказчика) не есть проверенный публичный факт.
+35. Публикуемые числа CI берутся только из `docs/evidence/runtime-baseline-latest.json`. Исторические цифры в файле блокеров (SHA `019962141606`) — прежний пин, не текущий источник.
+36. Native DWG, RVT и NWD не реализованы. Потолок SPF по умолчанию остаётся **256 МиБ**. 1,5 ГБ — это приём и разбор через RocksDB, не память SPF и не WASM. Заголовок эксперимента Б по КР — **≈16,7 %** (4/24). **≈8,3 %** — промежуточная точка задачи 3, не текущая доля.
+37. Закрытый CAD Autodesk и `.lir` не есть продукт приёма. Обмен КТ#3 — IFC и PDF/A. Штатный Navisworks IFC не пишет. Пробный ODA — замер, не продукт ([`quality/FORMAT_INGEST_TRIAGE_2026_09.md`](quality/FORMAT_INGEST_TRIAGE_2026_09.md)).
+38. Заметки Strategy Partners и АО СПГ за август 2026 — приписанная речь, не доступный рынок и не продукт цифрового двойника или эксплуатации. Восьмистраничный срез по стройке поддерживает машиночитаемые ПД и РД. Шестидесятистраничный срез по ИТ недвижимости — соседняя тема. PDF в git не кладём. Пин владельца не есть экспонат карты жюри.
+39. Браузер — оболочка ревью, не сданный полный цикл рабочего места эксперта. Оболочка не пишет `summary.passed`. Native RVT, NWD и DWG остаются в закрытом отказе. 30 минут и 5–10 комплектов в день — цели ТЗ, не измеренный SLA. Живого коннектора к 10D и Tangl нет ([`quality/UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md`](quality/UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md)).
+40. `POST /v1/demo/seed-fixture` только для development и копирует стены и IDS из `samples/`, не комплект заказчика. Две учебные находки по огнестойкости не есть точность продукта. Опубликованный контракт OpenAPI этот посев не перечисляет. CSS оболочки не тянет шрифты Google. Ноутбук члена комиссии на КТ#3 остаётся на `run_kt3_jury`. Строка веб-оболочки в матрице ТЗ — **partial**, не «сделано».
 
 ## Reproducibility baseline
+
+Повторить замер на чистом окружении. Виртуальное окружение — `AeroBIM/backend/.venv-pilot`, не корневой `.venv` монорепозитория.
 
 ```bash
 cd backend
@@ -191,20 +202,14 @@ python -m aerobim.tools.evaluate_detection_precision \
 python -m aerobim.tools.export_runtime_baseline --run-gates --require-clean-tree --require-complete
 ```
 
-Use an **isolated** virtual environment under `AeroBIM/backend/.venv-pilot`, not the monorepo root `.venv`.
-
-## Sync surfaces
-
-Keep aligned with:
+## Что держать в ладу
 
 - [partners/TECHLAB_APPLICATION_2026.md](partners/TECHLAB_APPLICATION_2026.md)
-- [README.md](../README.md) Scientific Reporting Standard section
-- [roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md](capability-claim-matrix-2026.md)
-- roadmap/P2_02_GEOMETRY_HONESTY_PLAN_2026_08.md
+- [README.md](../README.md)
 - [capability-claim-matrix-2026.md](capability-claim-matrix-2026.md)
-- [architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md](architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md) — architecture SSOT
-- [architecture/ADR-001-verdict-ownership-2026.md](architecture/ADR-001-verdict-ownership-2026.md) — `summary.passed` ownership
-- [../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md](../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md) — Hybrid AI routing foundation (P0/P1, verdict-neutral)
-- [../samples/benchmarks/detection-precision/](../samples/benchmarks/detection-precision/) — precision harness fixtures
-- [../audit/reports/CLAIMS_LOCK_2026_07_17.md](../audit/reports/CLAIMS_LOCK_2026_07_17.md) — allowed / forbidden wording
-- [../audit/reports/CLAIMS_LOCK_2026_07_31.md](../audit/reports/CLAIMS_LOCK_2026_07_31.md) — eng freeze
+- [architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md](architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md)
+- [architecture/ADR-001-verdict-ownership-2026.md](architecture/ADR-001-verdict-ownership-2026.md) — кто пишет `summary.passed`
+- [../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md](../audit/reports/HYBRID_AI_FINAL_REPORT_2026_07_28.md)
+- [../samples/benchmarks/detection-precision/](../samples/benchmarks/detection-precision/)
+- [../audit/reports/CLAIMS_LOCK_2026_07_17.md](../audit/reports/CLAIMS_LOCK_2026_07_17.md)
+- [../audit/reports/CLAIMS_LOCK_2026_07_31.md](../audit/reports/CLAIMS_LOCK_2026_07_31.md)
