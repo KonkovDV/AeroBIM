@@ -929,8 +929,7 @@ class EvidenceAssembler:
                 "summary.passed; ai_generated requires expert confirmation",
             )
 
-        # P0-G: generate EvidenceRecord + FindingProvenance for every stamped issue.
-        # verdict_impact = none; purely an instrumentation/auditability layer.
+        # Records are not stored on the issue. The trace does not set summary.passed.
         _ev_records, _ev_provenances, _ev_summary = build_evidence_records(
             issues_with_remarks,
             request,
