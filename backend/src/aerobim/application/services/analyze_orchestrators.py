@@ -28,6 +28,7 @@ from aerobim.application.services.drawing_ifc_consistency import (
     merge_quantity_capability,
 )
 from aerobim.application.services.evidence_provenance_enricher import build_evidence_records
+from aerobim.application.services.package_file_entries import collect_file_entries
 from aerobim.application.services.package_outcome import compute_package_outcome
 from aerobim.domain.advisory_remark_compose import finding_payload_from_issue
 from aerobim.domain.annotation_ifc_matching import AnnotationIfcLink, match_annotations_to_regions
@@ -63,6 +64,7 @@ from aerobim.domain.models import (
     compute_issue_priority,
 )
 from aerobim.domain.norm_assist import IdsCompileDraft
+from aerobim.domain.package_manifest import PackageFileEntry
 from aerobim.domain.package_outcome import summary_passed_from_outcome
 from aerobim.domain.ports import IfcSpatialIndexProvider
 from aerobim.domain.system_capabilities import enforce_honesty_capabilities
@@ -88,6 +90,10 @@ class IngestionBundle:
     annotation_ifc_links: tuple[AnnotationIfcLink, ...] = ()
     extraction_integrity: CapabilityStatus | None = None
     raster_issues: tuple[ValidationIssue, ...] = ()
+    # P0-manifest: file entries where sha256 is known from the upload layer.
+    # Empty for fixture/dev runs; build_evidence_records falls back to
+    # sha256(request_id) in that case.
+    file_entries: tuple[PackageFileEntry, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -190,6 +196,10 @@ class IngestionOrchestrator:
         )
         drawing_assets = tuple(self._host._ingestion_service().collect_drawing_assets(request))
         extraction_integrity = self._host._probe_extraction_integrity(request)
+        # P0-manifest: collect file entries where sha256 is known from the
+        # upload layer. Empty on fixture/dev runs; package_id falls back to
+        # sha256(request_id) in build_evidence_records.
+        file_entries = collect_file_entries(request)
         return IngestionBundle(
             request=request,
             requirements=requirements,
@@ -206,6 +216,7 @@ class IngestionOrchestrator:
             annotation_ifc_links=annotation_ifc_links,
             extraction_integrity=extraction_integrity,
             raster_issues=tuple(drawing_ingest.issues),
+            file_entries=file_entries,
         )
 
 
@@ -930,11 +941,14 @@ class EvidenceAssembler:
             )
 
         # Records are not stored on the issue. The trace does not set summary.passed.
+        # file_entries carries real sha256 from the upload layer when available;
+        # empty on fixture/dev runs (package_id falls back to sha256(request_id)).
         _ev_records, _ev_provenances, _ev_summary = build_evidence_records(
             issues_with_remarks,
             request,
             signoff_profile=getattr(self._host, "_signoff_profile", "development"),
             priority_profile=getattr(self._host, "_priority_profile", "default"),
+            file_entries=ingested.file_entries,
         )
         overlay_traces.append(_ev_summary)
 
