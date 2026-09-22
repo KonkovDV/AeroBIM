@@ -2,7 +2,7 @@
 title: "AeroBIM TZ Architecture Requirements 2026"
 status: active
 version: "1.0.0"
-last_updated: "2026-07-10"
+last_updated: "2026-09-22"
 tags: [aerobim, tz, architecture]
 ---
 
@@ -91,7 +91,7 @@ P1 ports already live: `NormRulePackLoader`, `SectionDiffAnalyzer`, and file-bas
 |---------|---------|------------|
 | Report payloads | Filesystem under `storage_dir` | + S3/MinIO `ObjectStore` |
 | Report index | Filesystem list | Postgres filtered `list_reports` |
-| Async jobs | In-memory snapshot in development/test only | Redis **required** outside development (`AEROBIM_REDIS_URL`) for job **records**. Submit still uses in-process FastAPI `BackgroundTasks`, not a durable worker. |
+| Async jobs | Explicit inline compatibility path in test only | Redis is **required** outside development/test for job records and the reliable ready/processing queue. Production HTTP only publishes; dedicated `aerobim.worker` executes with at-least-once delivery, terminal ACK, lease fencing, recovery and dead-letter exhaustion. |
 | Review telemetry | Filesystem JSONL | same store contract |
 
 ## 8. Frontend bounded context

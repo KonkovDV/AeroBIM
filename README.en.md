@@ -253,7 +253,7 @@ Optional: geometry clash `.[clash]`; OCR `.[raster]`; PyMuPDF `pdf-agpl`; adviso
 | `POST` | `/v1/uploads` | Multipart ingest |
 | `POST` | `/v1/validate/ifc` | Validate IFC against requirements and IDS |
 | `POST` | `/v1/analyze/project-package` | Full package analysis |
-| `POST` | `/v1/analyze/project-package/submit` | Queue a larger package in the same process |
+| `POST` | `/v1/analyze/project-package/submit` | Queue a larger package in Redis for the dedicated `aerobim.worker` |
 | `GET` | `/v1/analyze/project-package/jobs/{job_id}` | Poll a background job |
 | `POST` | `/v1/analyze/project-package/jobs/{job_id}/cancel` | Cancel |
 | `GET` | `/v1/reports` | List persisted reports |

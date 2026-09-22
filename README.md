@@ -253,7 +253,7 @@ Checkpoint — **регуляторно-измерительный MVP**. `custo
 | `POST` | `/v1/uploads` | Приём файлов |
 | `POST` | `/v1/validate/ifc` | IFC против требований и IDS |
 | `POST` | `/v1/analyze/project-package` | Полный анализ комплекта |
-| `POST` | `/v1/analyze/project-package/submit` | Крупный комплект в фоне того же процесса |
+| `POST` | `/v1/analyze/project-package/submit` | Постановка крупного комплекта в Redis; выполнение отдельным `aerobim.worker` |
 | `GET` | `/v1/analyze/project-package/jobs/{job_id}` | Статус задания |
 | `POST` | `/v1/analyze/project-package/jobs/{job_id}/cancel` | Отмена |
 | `GET` | `/v1/reports` | Список отчётов |

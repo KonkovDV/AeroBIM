@@ -2,8 +2,8 @@
 ---
 title: "Citeable evidence (jury / FAIR)"
 status: active
-version: "2.5.20"
-last_updated: "2026-09-15"
+version: "2.5.21"
+last_updated: "2026-09-22"
 ---
 
 # Evidence fixtures
@@ -55,7 +55,7 @@ Only **citeable** snapshots for TechLab review and reproducibility. Working dump
 | [`DEFECT_INJECTION_RECALL_PLAN_2026_09.md`](DEFECT_INJECTION_RECALL_PLAN_2026_09.md) | План mutation-test recall; seed 20260824; не партнёр |
 | [`DEFECT_INJECTION_RECALL_RUN_2026_09.md`](DEFECT_INJECTION_RECALL_RUN_2026_09.md) · [`defect-injection-recall-run-latest.json`](defect-injection-recall-run-latest.json) · [`defect-injection-recall-run-fixture-latest.json`](defect-injection-recall-run-fixture-latest.json) · [`DEFECT_INJECTION_RECALL_SEAM_CLEAN_2026_09.md`](DEFECT_INJECTION_RECALL_SEAM_CLEAN_2026_09.md) | Live latest = seam-clean wall+IDS targeted ≥10; 03.09 house-5 0/6 is HISTORICAL_PIN (`…-ar.json` / KR blind); mini-IFC 1/8 stays fixture-latest; `synthetic_only`; customer_go false |
 | [`sla-package-scale-latest.json`](sla-package-scale-latest.json) | Fixture p95; `representative_scale` is inventory (XSD assets dominate bytes); `scale_honesty` splits analyze vs unanalyzed; not customer SLA |
-| [`data-residency-inventory-latest.json`](data-residency-inventory-latest.json) | Storage surfaces + JOB-01 in-process BackgroundTasks; durable workers not claimed |
+| [`data-residency-inventory-latest.json`](data-residency-inventory-latest.json) | Storage surfaces + JOB-01 dedicated Redis worker; at-least-once delivery, not a fresh per-job sandbox or HA claim |
 | [`substitution-matrix-latest.json`](substitution-matrix-latest.json) | 63 DI tokens classified live / in_memory / missing; not a vendor quote |
 | [`../deployment-sizing-and-cost-2026.md`](../deployment-sizing-and-cost-2026.md) | Honest RAM/FTE ranges; not a commercial quote |
 | [`tracker-baseline-2026-08-07.md`](tracker-baseline-2026-08-07.md) · [`.pdf`](tracker-baseline-2026-08-07.pdf) | К0 tracker baseline (NO_GO; open-bench + fixture + synthetic); commercial counts local-only |
