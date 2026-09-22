@@ -1,4 +1,4 @@
-﻿# Cursor indexing / Agent file discovery.
+# Indexing / agent file discovery.
 **/node_modules/
 **/__pycache__/
 **/.pytest_cache/

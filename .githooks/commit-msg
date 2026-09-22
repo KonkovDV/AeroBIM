@@ -1,5 +1,5 @@
 #!/bin/sh
-# Strip vendor IDE GitHub-identity trailers (Cursor, Notion AI).
+# Strip vendor IDE GitHub-identity trailers. Human co-author lines stay.
 # Human Co-authored-by trailers pass through (N-34).
 root=$(git rev-parse --show-toplevel)
 script="$root/scripts/strip_vendor_commit_trailers.py"
