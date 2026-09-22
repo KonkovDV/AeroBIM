@@ -677,12 +677,12 @@ class TestCDERoundtrip:
 
 
 class TestMEPLayers:
-    def test_layer_1_engineering_done(self):
+    def test_layer_1_stays_partial(self):
         from aerobim.domain.mep_layers import CapabilityStatus, get_layer
 
         layer = get_layer(1)
         assert layer is not None
-        assert layer.engineering_status == CapabilityStatus.ENGINEERING_DONE
+        assert layer.engineering_status == CapabilityStatus.PARTIAL
 
     def test_layers_3_to_5_not_verified(self):
         from aerobim.domain.mep_layers import CapabilityStatus, get_layer
@@ -697,7 +697,7 @@ class TestMEPLayers:
     def test_max_verified_layer(self):
         from aerobim.domain.mep_layers import max_verified_layer
 
-        # Layer 1 is DONE, layer 2 is PARTIAL, 3-5 NOT_VERIFIED
+        # Layers 1 and 2 are PARTIAL; 3-5 stay NOT_VERIFIED.
         assert max_verified_layer() >= 1
         assert max_verified_layer() < 3  # System semantics not verified
 

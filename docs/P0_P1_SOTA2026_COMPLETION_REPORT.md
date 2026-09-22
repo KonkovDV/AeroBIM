@@ -13,16 +13,18 @@ This change adds domain contracts and unit tests. It does not close the P0
 and P1 gaps on the path that builds a report. `Analyze`, the Redis worker,
 and `EvidenceAssembler` do not call these modules.
 
-- **Deterministic package identity** (sha256-based, idempotent, tamper-detectable)
-- **Durable job state machine** (QUEUED→EXPIRED cycle, heartbeat, stale recovery)
-- **Evidence-first architecture** (every finding traceable to source hash + rule version + norm pack hash)
-- **Regulatory Information Model** (norm→clause→interpretation→rule chain with review gates)
-- **Finding lifecycle** (NEW/PERSISTED/RESOLVED/REGRESSED/REOPENED/SUPERSEDED)
-- **Evaluation harness** (per-rule FN/FP/precision/recall, leakage protection, corpus split)
-- **Double annotation protocol** (Cohen's kappa, adjudication, raw label preservation)
-- **BCF 3.0 local roundtrip** (push + pull = same content hash)
-- **MEP 5-layer split** (honest capability status per layer; no false claims)
-- **AI provenance** (per-output record, allowlisted tool calls, NIST AI RMF aligned)
+What the new files define, and nothing more:
+
+- a package id from file hashes
+- a job-status enum the Redis worker does not use
+- provenance fields the assembler does not write
+- a norm→clause→rule chain `NormRulePackLoader` does not read
+- a finding-lifecycle classifier nothing calls on upload
+- an evaluation harness that is not the fixture `macro_f1` pin
+- an annotation-pair type; there are still no two human raters
+- a local BCF simulator; that is not a customer CDE
+- five MEP status rows; layers 3–5 stay `NOT_VERIFIED`, layer 1 stays partial
+- an AI-provenance record; it does not write `summary.passed`
 
 **What this upgrade does NOT do:**
 - No rewrite of existing architecture
@@ -183,7 +185,7 @@ required; `AI_ADVISORY` method automatically sets `is_ai_advisory=True`.
 - `content_hash = sha256(topic_id+title+description+finding_id+revision_id+ifc_guids)`
 - `LocalCDESimulator.verify_roundtrip()`: push → pull → hash equality
 - `RoundtripRecord`: OK / HASH_MISMATCH / TOPIC_MISSING / FINDING_UNMATCHED
-- **ENGINEERING: DONE** (roundtrip test passes) | **CUSTOMER: NOT_VERIFIED**
+- Local simulator test passes. Customer CDE import stays NOT_VERIFIED.
 
 ### P1-N: MEP 5-Layer Split
 - Layer 1 Geometric clash: ENGINEERING_DONE / customer NOT_VERIFIED
@@ -220,7 +222,7 @@ required; `AI_ADVISORY` method automatically sets `is_ai_advisory=True`.
 
 ## 7. Regulatory Traceability
 
-Full chain is now formally modelled and machine-readable:
+The unused `regulation_model` module can represent this chain. Analyze still reads `NormRulePackLoader`. The remark in the open report is not built from the types below.
 
 ```
 norm_pack (pack_id, version, pack_hash)
@@ -235,19 +237,19 @@ norm_pack (pack_id, version, pack_hash)
               → CDERoundtrip (resolved/closed)
 ```
 
-Answer to: *"Why did AeroBIM generate this remark?"*
-→ `FindingProvenance.provenance_id` + `EvidenceRecord.provenance_id` per evidence ref
-→ Reproducible by: same pack_hash + rule_hash + input_hash + engine_version + config_hash
+That chain does not answer *"Why did AeroBIM generate this remark?"* on the report a person opens. The assembler still writes that report.
 
 ---
 
 ## 8. Evaluation
 
 ### Framework status
-- Harness: ✅ implemented (`evaluate_benchmark.py`)
-- Manifest integrity: ✅ implemented (hash sealing + verification)
-- Per-rule FN: ✅ always reported
-- Corpus separation: ✅ enforced (no merge across PUBLIC/SYNTHETIC/CUSTOMER)
+The harness is a module and a unit test. It is not a new measurement of the product.
+
+- `evaluate_benchmark.py` can score labels you pass in
+- a manifest hash changes when a case changes
+- a false negative stays visible in that score
+- the function refuses to merge PUBLIC, SYNTHETIC, and CUSTOMER in one run
 
 ### Current metrics
 | Metric | Value | Corpus | Notes |
@@ -305,8 +307,7 @@ Answer to: *"Why did AeroBIM generate this remark?"*
 - Status update flow: OPEN → IN_PROGRESS → RESOLVED → CLOSED
 - openCDE Foundation/Documents APIs: interoperability target (not proprietary replacement)
 
-**ENGINEERING: DONE** (local roundtrip)  
-**CUSTOMER: NOT_VERIFIED** (no real customer CDE environment validated)
+The local simulator roundtrip is a unit test. A customer CDE has not been checked.
 
 ---
 
@@ -336,13 +337,15 @@ Answer to: *"Why did AeroBIM generate this remark?"*
 - `cde_import = NOT_VERIFIED` (customer environment) ✅
 - `macro_f1 = 0.86 (SYNTHETIC fixtures)` ✅ (corpus type label preserved)
 
-### Claims now provable by code
-- Deterministic package identity: `test_deterministic_id_same_inputs`
-- Job state machine: `test_valid_transition_queued_to_running`
-- FN visibility: `test_fn_is_visible`
-- AI advisory marking: `test_ai_advisory_flag`
-- BCF roundtrip: `test_roundtrip_identity`
-- MEP honest claims: `test_layers_3_to_5_not_verified`
+### Properties of the new unit tests
+These tests do not exercise `Analyze` or the worker.
+
+- Package id helper: `test_deterministic_id_same_inputs`
+- Unused job enum: `test_valid_transition_queued_to_running`
+- Harness FN row: `test_fn_is_visible`
+- Advisory flag on the unused record: `test_ai_advisory_flag`
+- Local simulator hash: `test_roundtrip_identity`
+- MEP layers 3–5: `test_layers_3_to_5_not_verified`
 
 ---
 
@@ -382,7 +385,7 @@ It will remain false until all external gates are satisfied by real evidence.
 
 | Artifact | Location | Attests |
 |---|---|---|
-| Runtime baseline | `audit/evidence/runtime-baseline-latest.json` | macro_f1=0.86 SYNTHETIC |
+| Runtime baseline | `docs/evidence/runtime-baseline-latest.json` | fixture `macro_f1`; `attested_by=ci` |
 | BCF structural handoff | `audit/evidence/bcf-structural-handoff-2026-07-25.json` | BCF export |
 | Claims lock 07-17 | `audit/reports/CLAIMS_LOCK_2026_07_17.md` | Claim boundaries |
 | Claims lock 07-31 | `audit/reports/CLAIMS_LOCK_2026_07_31.md` | Claim boundaries |
@@ -397,46 +400,44 @@ It will remain false until all external gates are satisfied by real evidence.
 
 | Capability | Engineering Status | Customer Status | Evidence | Limitation |
 |---|---|---|---|---|
-| Package intake (deterministic) | DONE | NOT_VERIFIED | test_p0_p1_upgrade::TestPackageManifest | App layer integration pending |
-| Job state machine | DONE | NOT_VERIFIED | test_p0_p1_upgrade::TestJobStateMachine | Redis integration pending |
-| Evidence provenance chain | DONE | NOT_VERIFIED | test_p0_p1_upgrade::TestEvidenceProvenance | App layer wiring pending |
-| Regulatory Information Model | DONE | NOT_VERIFIED | test_p0_p1_upgrade::TestRegulationModel | Norm pack migration pending |
-| Finding lifecycle | DONE | NOT_VERIFIED | test_p0_p1_upgrade::TestFindingLifecycle | App layer wiring pending |
-| Evaluation harness | DONE | NOT_VERIFIED | test_p0_p1_upgrade::TestEvaluationBenchmark | Real benchmark runs pending |
-| Double annotation | DONE | NOT_VERIFIED | test_p0_p1_upgrade::TestAnnotationProtocol | Annotator engagement pending |
-| BCF 3.0 local roundtrip | DONE | NOT_VERIFIED | test_p0_p1_upgrade::TestCDERoundtrip | Real CDE not validated |
-| MEP Layer 1 (geometric clash) | DONE | NOT_VERIFIED | runtime-baseline-latest.json | Customer env not validated |
+| Package id helper | contract only | NOT_VERIFIED | test_p0_p1_upgrade::TestPackageManifest | Upload still does not call it |
+| Job status enum | contract only | NOT_VERIFIED | test_p0_p1_upgrade::TestJobStateMachine | Redis worker does not call it |
+| Evidence provenance type | contract only | NOT_VERIFIED | test_p0_p1_upgrade::TestEvidenceProvenance | Assembler does not write it |
+| Regulatory information model | contract only | NOT_VERIFIED | test_p0_p1_upgrade::TestRegulationModel | Loader does not read it |
+| Finding lifecycle | contract only | NOT_VERIFIED | test_p0_p1_upgrade::TestFindingLifecycle | Not called on a new revision |
+| Evaluation harness | contract only | NOT_VERIFIED | test_p0_p1_upgrade::TestEvaluationBenchmark | Not the fixture macro_f1 pin |
+| Double annotation | contract only | NOT_VERIFIED | test_p0_p1_upgrade::TestAnnotationProtocol | No two human raters |
+| BCF local simulator | contract only | NOT_VERIFIED | test_p0_p1_upgrade::TestCDERoundtrip | Not a customer CDE import |
+| MEP Layer 1 (geometric clash) | PARTIAL | NOT_VERIFIED | live clash engine, separate from this table | MEP-CLASH-001 open |
 | MEP Layer 2 (clearance) | PARTIAL | NOT_VERIFIED | – | Fixture-only; not all disciplines |
-| MEP Layer 3 (system semantics) | NOT_VERIFIED | NOT_VERIFIED | – | No real IFC with IfcSystem |
-| MEP Layer 4 (connectivity) | NOT_VERIFIED | NOT_VERIFIED | – | IfcDistributionPort not in corpus |
-| MEP Layer 5 (rule-based system) | NOT_VERIFIED | NOT_VERIFIED | – | Blocked by Layers 3+4 |
-| AI provenance | DONE | NOT_VERIFIED | test_p0_p1_upgrade::TestAIProvenance | Hallucination metrics pending |
-| AI tool allowlist | DONE | NOT_VERIFIED | test_p0_p1_upgrade::TestAIProvenance | App layer enforcement pending |
+| MEP Layer 3 (system semantics) | NOT_VERIFIED | NOT_VERIFIED | – | No customer federated IFC with IfcSystem |
+| MEP Layer 4 (connectivity) | NOT_VERIFIED | NOT_VERIFIED | – | IfcDistributionPort not in the corpus |
+| MEP Layer 5 (rule-based system) | NOT_VERIFIED | NOT_VERIFIED | – | Blocked by layers 3 and 4 |
+| AI provenance record | contract only | NOT_VERIFIED | test_p0_p1_upgrade::TestAIProvenance | Does not write summary.passed |
+| AI tool allowlist | contract only | NOT_VERIFIED | test_p0_p1_upgrade::TestAIProvenance | Not enforced on the verdict path |
 | Production OIDC auth | NOT_VERIFIED | NOT_VERIFIED | – | Application layer implementation |
 | Customer corpus pipeline | NOT_VERIFIED | NOT_VERIFIED | – | No customer data received |
 | customer_go | false | false | – | External customer gates unmet |
 
 ---
 
-## Checklist — 15 Definition of Done Questions
+## Checklist — 15 questions, answered for the live report
 
-1. ✅ Can a user find out exactly why a finding appeared? → `FindingProvenance + EvidenceRecord`
-2. ✅ Can a finding be reproduced on the same input/hash? → `provenance_id` over stable fields
-3. ✅ Can the norm version used be determined? → `norm_pack_id + version + pack_hash`
-4. ✅ Can the rule used be determined? → `rule_id + stable_version + rule_hash`
-5. ✅ Can AI contribution be separated from deterministic result? → `is_ai_advisory` flag
-6. ✅ Can a new revision be re-checked? → `classify_finding_against_previous()`
-7. ✅ Can a finding be transferred via BCF? → `BCFTopic + LocalCDESimulator`
-8. ✅ Can a CDE roundtrip be done via reference implementation? → `verify_roundtrip()`
-9. ✅ Can FN/FP/precision/recall be computed? → `evaluate_predictions() + RuleMetrics`
-10. ✅ Can expert disagreement be shown? → `AnnotationPair + Adjudication`
-11. ✅ Can benchmark purity be proved? → `manifest_hash + case_hash + verify_integrity()`
-12. ✅ Can the absence of customer validation be stated? → `customer_go=false` in all reports
-13. ✅ Can the system say NOT_VERIFIED instead of false PASS? → `FindingStatus.NOT_VERIFIED`
-14. ✅ Can an engineer reproduce execution by hash/version? → `ExecutionProvenance`
-15. ✅ Can the full chain from norm to issue be explained? → Full provenance graph in domain
+1. Why a finding appeared — the open report still uses the assembler fields. The new provenance type is not written there.
+2. Reproduce a finding from a hash — unit test of `provenance_id` only.
+3. Which norm version — the live pack is still `NormRulePackLoader`, not this chain.
+4. Which rule version — same. The new `rule_hash` is unused on the report.
+5. Separate an AI note from the verdict — ADR-001 already keeps LLM off `summary.passed`. The new flag is not on that path.
+6. Re-check a revision — `classify_finding_against_previous()` is not called by upload.
+7. Hand a finding to BCF — the product can write a BCF file. This PR adds a local simulator.
+8. Roundtrip with a customer CDE — no. `verify_roundtrip()` checks the simulator.
+9. Per-rule precision and recall — the harness can compute them on labels you pass in. That is not a customer corpus result.
+10. Expert disagreement — the type exists. Two human raters do not.
+11. Benchmark purity — `manifest_hash` is a unit-test property.
+12. Say that customer validation is absent — `customer_go` stays false.
+13. Say NOT_VERIFIED instead of a false pass — already the live rule for incomplete evidence. The new enum is a second copy.
+14. Reproduce a run from hash and version — `ExecutionProvenance` is not stored on the job.
+15. Explain norm to issue on the report a person opens — not yet.
 
-The new types can answer these questions in unit tests. The report a person
-opens is still assembled by `EvidenceAssembler`. These fifteen answers are
-not properties of that report yet. `customer_go` stays false. RT-001, RT-002,
-and RT-003 stay open. A local BCF roundtrip is not an import into a customer CDE.
+`customer_go` stays false. RT-001, RT-002, and RT-003 stay open.
+A local BCF roundtrip is not an import into a customer CDE.

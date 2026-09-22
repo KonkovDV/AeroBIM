@@ -171,6 +171,6 @@ This matters because:
 - `backend/src/aerobim/tools/evaluate_benchmark.py`
 - `backend/src/aerobim/domain/annotation_protocol.py`
 - `backend/tests/test_p0_p1_upgrade.py::TestEvaluationBenchmark`
-- `audit/evidence/runtime-baseline-latest.json`
+- `docs/evidence/runtime-baseline-latest.json`
 - ADR-001: Verdict ownership (EvidenceAssembler; LLM does not write summary.passed)
-- ADR-005: Regulatory Information Model
+- ADR-007: Regulatory information model (not called by Analyze)

@@ -6,7 +6,7 @@ Five formal layers; each has its own CapabilityStatus.
 
 Do not claim higher layers are validated without corpus evidence.
 
-Layer 1: Geometric clash             → ENGINEERING_DONE, NOT_VERIFIED customer
+Layer 1: Geometric clash             → PARTIAL (live engine is elsewhere; MEP-CLASH-001 open)
 Layer 2: Clearance                   → PARTIAL (rule-driven, fixture only)
 Layer 3: System semantics            → NOT_VERIFIED (needs real federated IFC)
 Layer 4: Connectivity / topology     → NOT_VERIFIED
@@ -75,22 +75,19 @@ MEP_LAYERS: list[MEPLayer] = [
         layer_number=1,
         name="Geometric Clash",
         description=(
-            "Hard, soft, and clearance clash detection between physical elements. "
-            "No system semantics required. Operates on federated or single IFC."
+            "Hard clash between physical elements, without system semantics. "
+            "This row does not run the clash engine."
         ),
-        engineering_status=CapabilityStatus.ENGINEERING_DONE,
+        engineering_status=CapabilityStatus.PARTIAL,
         customer_status=CapabilityStatus.NOT_VERIFIED,
         required_inputs=[
             "IFC models (IfcElement subclasses with geometry)",
             "Federated model or single-discipline IFC",
         ],
         known_limitations=[
-            "Requires valid IFC geometry; degenerate geometry may be skipped",
-            "No system-aware filtering: clash between same-system elements reported",
+            "The live clash path is a separate engine; Analyze does not read this table",
+            "Fixture clash is partial; MEP-CLASH-001 stays open",
             "Customer environment not validated",
-        ],
-        evidence_artifacts=[
-            "audit/evidence/runtime-baseline-latest.json",
         ],
     ),
     MEPLayer(
