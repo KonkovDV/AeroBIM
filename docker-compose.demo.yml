@@ -1,0 +1,93 @@
+# AeroBIM — Demo Stack
+#
+# Purpose: one-command demo for any customer environment.
+# Режим: honest-scope customer_pilot_demo — SKIPPED stays SKIPPED, never faked.
+# Anonymous API opt-in (development only). Never use in production.
+#
+# Быстрый старт:
+#   Linux/macOS:  ./deploy/demo/setup-demo.sh docker
+#   Windows CMD:  deploy\demo\setup-demo.bat docker
+#   PowerShell:   .\deploy\demo\setup-demo.ps1 -Mode docker
+#
+# Или вручную:
+#   cp .env.demo .env.demo.local   # задайте свои значения при необходимости
+#   docker compose -f docker-compose.demo.yml up --build
+#   # Откройте http://127.0.0.1:8080/health   (API)
+#   # Откройте http://127.0.0.1:5173          (UI — запустите отдельно: ./start.sh)
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: aerobim-demo:latest
+    container_name: aerobim-demo-backend
+    restart: unless-stopped
+    ports:
+      # Loopback only — анонимный API не публиковать в сеть
+      - "127.0.0.1:8080:8080"
+    env_file:
+      # Скопируйте .env.demo → .env.demo.local и правьте. При отсутствии файла
+      # используются inline-defaults ниже (достаточно для локального демо).
+      - path: .env.demo.local
+        required: false
+    environment:
+      # ── Режим демо (честный скоп) ──────────────────────────────────────────
+      AEROBIM_ENV: development
+      AEROBIM_SIGNOFF_PROFILE: ${AEROBIM_SIGNOFF_PROFILE:-customer_pilot_demo}
+      # customer_pilot_demo: честный SKIPPED (clash/MEP вне скопа), не подделывает
+      # результаты. Альтернатива moscow_agr_2026 — для АГР ЦИМ.
+
+      # ── Сетевые параметры ──────────────────────────────────────────────────
+      AEROBIM_HOST: "0.0.0.0"
+      AEROBIM_PORT: "8080"
+      AEROBIM_DEBUG: "false"
+
+      # ── Анонимный доступ (только development) ──────────────────────────────
+      # Убрать для демо с токеном — задать AEROBIM_API_BEARER_TOKEN ниже.
+      AEROBIM_ALLOW_ANONYMOUS_DEV: "true"
+      AEROBIM_API_BEARER_TOKEN: ${AEROBIM_API_BEARER_TOKEN:-}
+
+      # ── CORS: localhost:5173 (Vite) и localhost:3000 (резерв) ───────────────
+      AEROBIM_CORS_ORIGINS: ${AEROBIM_CORS_ORIGINS:-http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173}
+      AEROBIM_CORS_ALLOW_CREDENTIALS: "false"
+
+      # ── Хранение отчётов (внутри контейнера / volume) ──────────────────────
+      AEROBIM_STORAGE_DIR: /data/reports
+
+      # ── PDF backend (разрешительная лицензия) ──────────────────────────────
+      AEROBIM_PDF_BACKEND: pdfium
+
+      # ── Локаль замечаний ───────────────────────────────────────────────────
+      AEROBIM_REMARK_LOCALE: ${AEROBIM_REMARK_LOCALE:-ru}
+
+      # ── LLM/VLM: выключены на демо (разрешительный контур) ────────────────
+      AEROBIM_LLM_ADVISORY_ENABLED: "false"
+      AEROBIM_VLM_ENABLED: "false"
+      AEROBIM_CUSTOMER_PACK_LLM_EGRESS: deny
+
+      # ── Ограничения на размер файлов (щадящие для демо) ───────────────────
+      AEROBIM_MAX_IFC_BYTES: ${AEROBIM_MAX_IFC_BYTES:-268435456}
+      AEROBIM_MAX_OFFICE_BYTES: ${AEROBIM_MAX_OFFICE_BYTES:-268435456}
+      AEROBIM_MAX_MODEL_BYTES: ${AEROBIM_MAX_MODEL_BYTES:-268435456}
+
+    volumes:
+      # Отчёты: именованный volume (persist между перезапусками демо)
+      - demo-reports:/data/reports
+      # Учебные комплекты (read-only)
+      - ./samples:/data/samples:ro
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health')"
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+volumes:
+  demo-reports:
+    name: aerobim_demo_reports
+    # Для полного сброса между демо: docker compose -f docker-compose.demo.yml down -v
