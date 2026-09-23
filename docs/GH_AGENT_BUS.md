@@ -15,6 +15,8 @@ gh api repos/KonkovDV/AeroBIM/actions/runs/ID --jq "{id,status,conclusion,head_s
 gh api repos/KonkovDV/AeroBIM/actions/runs/ID/jobs?per_page=100 > jobs.json
 python -m aerobim.tools.agent_bus check-run run.json jobs.json
 python -m aerobim.tools.agent_bus check-done N comments.json run.json jobs.json
+gh api repos/KonkovDV/AeroBIM/compare/BASE...BRANCH > compare.json
+python -m aerobim.tools.agent_bus check-steal N comments.json compare.json
 ```
 
 ## Четыре слоя
@@ -97,9 +99,12 @@ git rev-parse HEAD
   `feat/<issue>-<slug>` от `origin/main`. Draft PR — после первого push.
 - **heartbeat.** Не реже раза в 6 часов, пока нет зелёного PR.
 - **steal.** Только если между последним сигналом держателя и этим
-  комментарием прошло не меньше 6 часов, и в ветке нет коммитов после claim.
-  Часы считает `createdAt` комментария. Поле `stale_heartbeat_hours` само по
-  себе steal не выдаёт. Чужую ветку не переписывать.
+  комментарием прошло не меньше 6 часов, и compare `BASE...BRANCH`
+  даёт `ahead_by=0` и `total_commits=0`. `base_commit.sha` продолжает
+  `base_sha` claim, голова сравнения — заявленная ветка. Часы считает
+  `createdAt`. Поля `stale_heartbeat_hours` и `branch_commits_since_claim`
+  сами по себе steal не выдают. `check-thread` steal не принимает: его
+  сверяет `check-steal`. Чужую ветку не переписывать.
 - **blocked.** `reason` и номера issue. Связь:
   `gh issue edit N --add-blocked-by M`.
 - **handoff.** SHA, URL PR, что сделано, что осталось. Снять `claimed`.
