@@ -16,7 +16,7 @@
 
 - [ ] Claim comment uses `aerobim.agent_bus.v1` before this branch
 - [ ] One open PR for that issue
-- [ ] `check-thread` names one holder; `check-run` gets the Actions jobs API payload
+- [ ] `check-thread` names one holder; `check-done` matches `head_sha` and the jobs API run id
 - [ ] The diff does not write `summary.passed` or set `customer_go`
 
 ## Additional Checks

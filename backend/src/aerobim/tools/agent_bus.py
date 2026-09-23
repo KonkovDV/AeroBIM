@@ -14,6 +14,7 @@ import sys
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from pathlib import Path
 from typing import Any
 
 SCHEMA = "aerobim.agent_bus.v1"
@@ -104,7 +105,7 @@ def validate_object(raw: Mapping[str, Any]) -> BusMessage:
 
 
 def first_claim(texts: Sequence[str]) -> BusMessage | None:
-    """The earliest valid claim wins. A later claim does not replace it."""
+    """First claim in caller order. The lease and the clock are ``inspect_thread``."""
     for text in texts:
         for message in parse_messages(text):
             if message.op == "claim":
@@ -130,6 +131,12 @@ def run_failure_reason(payload: Mapping[str, Any]) -> str | None:
         by_name[str(job["name"])] = job
         if job.get("conclusion") == "success" and _explicit_zero_runner(job):
             return f"{job['name']} has no runner"
+    total = payload.get("total_count")
+    if isinstance(total, int) and not isinstance(total, bool) and total != len(jobs):
+        return "jobs list is incomplete"
+    reason = _same_run(payload, jobs)
+    if reason is not None:
+        return reason
     for name in REQUIRED_CI_JOBS:
         job = by_name.get(name)
         if job is None:
@@ -150,7 +157,13 @@ class _Comment:
     body: str
 
 
-def inspect_thread(payload: object, *, issue: int, now: datetime) -> tuple[str | None, str | None]:
+def inspect_thread(
+    payload: object,
+    *,
+    issue: int,
+    now: datetime,
+    run: Mapping[str, Any] | None = None,
+) -> tuple[str | None, str | None]:
     """Return ``(holder, reason)``.
 
     ``reason`` is set when the thread contradicts itself. A declared
@@ -178,9 +191,19 @@ def inspect_thread(payload: object, *, issue: int, now: datetime) -> tuple[str |
                     return None, reason
                 holder = message
                 seen_at = comment.at
-            elif message.op in {"handoff", "done"}:
+            elif message.op == "done":
                 if holder is None or message.agent != holder.agent:
-                    return None, f"{message.op} is not from the claim holder"
+                    return None, "done is not from the claim holder"
+                if run is None:
+                    return None, "done requires check-done"
+                reason = _done_matches_run(message, run)
+                if reason is not None:
+                    return None, reason
+                holder = None
+                seen_at = None
+            elif message.op == "handoff":
+                if holder is None or message.agent != holder.agent:
+                    return None, "handoff is not from the claim holder"
                 holder = None
                 seen_at = None
             elif holder is None or message.agent != holder.agent:
@@ -243,6 +266,50 @@ def _steps_ran(steps: object) -> bool:
     return any(isinstance(step, dict) and step.get("conclusion") == "success" for step in steps)
 
 
+def _same_run(payload: Mapping[str, Any], jobs: list[Any]) -> str | None:
+    run_id = payload.get("id")
+    head = payload.get("head_sha")
+    job_ids: set[object] = set()
+    heads: set[object] = set()
+    for job in jobs:
+        if not isinstance(job, dict):
+            continue
+        if "run_id" in job:
+            job_ids.add(job.get("run_id"))
+        if isinstance(job.get("head_sha"), str):
+            heads.add(job.get("head_sha"))
+    if isinstance(run_id, int) and not isinstance(run_id, bool) and job_ids and job_ids != {run_id}:
+        return "jobs are from another run"
+    if len(job_ids) > 1:
+        return "jobs are from another run"
+    if isinstance(head, str) and heads and heads != {head}:
+        return "jobs are from another sha"
+    return None
+
+
+def _done_matches_run(message: BusMessage, run: Mapping[str, Any]) -> str | None:
+    reason = run_failure_reason(run)
+    if reason is not None:
+        return reason
+    cited = int(str(message.fields["ci_run_id"]).rsplit("/", 1)[-1])
+    run_id = run.get("id")
+    jobs = run.get("jobs")
+    rows = jobs if isinstance(jobs, list) else []
+    job_ids = {job.get("run_id") for job in rows if isinstance(job, dict) and "run_id" in job}
+    if isinstance(run_id, int) and not isinstance(run_id, bool) and run_id != cited:
+        return "done cites a different run"
+    if job_ids and job_ids != {cited}:
+        return "done cites a different run"
+    if not isinstance(run_id, int) or isinstance(run_id, bool):
+        if not job_ids:
+            return "run payload has no id"
+    head = run.get("head_sha")
+    sha = message.fields.get("sha")
+    if not isinstance(head, str) or not isinstance(sha, str) or not head.startswith(sha):
+        return "done sha is not the run head"
+    return None
+
+
 def _comments(payload: object) -> list[_Comment]:
     rows: object = payload
     if isinstance(payload, Mapping):
@@ -286,6 +353,9 @@ def _steal_reason(
         return "steal requires a claim"
     if message.agent == holder.agent:
         return "steal requires another agent"
+    held_branch = holder.fields.get("branch")
+    if isinstance(held_branch, str) and message.fields.get("branch") != held_branch:
+        return "steal must stay on the claimed branch"
     if event_at - seen_at < timedelta(hours=STEAL_AFTER_HOURS):
         return "steal requires a heartbeat gap of at least 6 hours"
     return None
@@ -397,9 +467,35 @@ def _url(raw: Mapping[str, Any], key: str, pattern: re.Pattern[str]) -> None:
         raise BusError(f"{key} must be an AeroBIM URL")
 
 
+def _merged_run(path: str, jobs_path: str | None) -> dict[str, Any]:
+    payload = dict(_read_json(path))
+    if not jobs_path:
+        return payload
+    jobs_doc = _read_json(jobs_path)
+    jobs = jobs_doc.get("jobs")
+    if not isinstance(jobs, list):
+        raise BusError("jobs file has no jobs")
+    payload["jobs"] = jobs
+    if "total_count" in jobs_doc:
+        payload["total_count"] = jobs_doc["total_count"]
+    return payload
+
+
+def _read_text(path: str) -> str:
+    raw = Path(path).read_bytes()
+    if raw.startswith((b"\xff\xfe", b"\xfe\xff")):
+        return raw.decode("utf-16")
+    try:
+        return raw.decode("utf-8-sig")
+    except UnicodeDecodeError as exc:
+        raise BusError("file is not utf-8 text") from exc
+
+
 def _read_json(path: str) -> Mapping[str, Any]:
-    with open(path, encoding="utf-8") as handle:
-        raw = json.load(handle)
+    try:
+        raw = json.loads(_read_text(path))
+    except json.JSONDecodeError as exc:
+        raise BusError("json is not valid") from exc
     if not isinstance(raw, dict):
         raise BusError("json must be an object")
     return raw
@@ -416,40 +512,38 @@ def main(argv: Sequence[str] | None = None) -> int:
     thread = sub.add_parser("check-thread")
     thread.add_argument("issue", type=int)
     thread.add_argument("path")
+    done = sub.add_parser("check-done")
+    done.add_argument("issue", type=int)
+    done.add_argument("path")
+    done.add_argument("run")
+    done.add_argument("jobs", nargs="?")
     args = parser.parse_args(argv)
     try:
         if args.command == "check-comment":
-            with open(args.path, encoding="utf-8") as handle:
-                messages = parse_messages(handle.read())
+            messages = parse_messages(_read_text(args.path))
             if not messages:
                 raise BusError("no AGENT_BUS comment")
             print(f"{len(messages)} bus message(s)")
-        elif args.command == "check-thread":
+        elif args.command in {"check-thread", "check-done"}:
+            run_payload = _merged_run(args.run, args.jobs) if args.command == "check-done" else None
             holder, reason = inspect_thread(
                 _read_json(args.path),
                 issue=args.issue,
                 now=datetime.now().astimezone(),
+                run=run_payload,
             )
             if reason is not None:
                 raise BusError(reason)
-            print("no holder" if holder is None else holder)
+            if args.command == "check-done" and holder is None:
+                print("done attested")
+            else:
+                print("no holder" if holder is None else holder)
         else:
-            payload = _read_json(args.path)
-            if args.jobs:
-                jobs_doc = _read_json(args.jobs)
-                jobs = (
-                    jobs_doc["jobs"]
-                    if isinstance(jobs_doc, dict) and "jobs" in jobs_doc
-                    else jobs_doc
-                )
-                if not isinstance(payload, dict):
-                    raise BusError("json must be an object")
-                payload = {**payload, "jobs": jobs}
-            reason = run_failure_reason(payload)
+            reason = run_failure_reason(_merged_run(args.path, args.jobs))
             if reason is not None:
                 raise BusError(reason)
             print("run attested")
-    except (OSError, json.JSONDecodeError, BusError) as exc:
+    except (OSError, BusError) as exc:
         print(str(exc), file=sys.stderr)
         return 1
     return 0

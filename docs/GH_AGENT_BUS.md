@@ -11,9 +11,10 @@
 python -m aerobim.tools.agent_bus check-comment comment.md
 gh issue view N --json comments > comments.json
 python -m aerobim.tools.agent_bus check-thread N comments.json
-gh api repos/KonkovDV/AeroBIM/actions/runs/ID --jq "{status,conclusion}" > run.json
-gh api repos/KonkovDV/AeroBIM/actions/runs/ID/jobs > jobs.json
+gh api repos/KonkovDV/AeroBIM/actions/runs/ID --jq "{id,status,conclusion,head_sha}" > run.json
+gh api repos/KonkovDV/AeroBIM/actions/runs/ID/jobs?per_page=100 > jobs.json
 python -m aerobim.tools.agent_bus check-run run.json jobs.json
+python -m aerobim.tools.agent_bus check-done N comments.json run.json jobs.json
 ```
 
 ## Четыре слоя
@@ -103,8 +104,10 @@ git rev-parse HEAD
   `gh issue edit N --add-blocked-by M`.
 - **handoff.** SHA, URL PR, что сделано, что осталось. Снять `claimed`.
   После handoff issue снова без держателя.
-- **done.** После merge в `main`. `ci_run_id` обязателен. Done снимает
-  держателя. Issue закрывать
+- **done.** После merge в `main`. `ci_run_id` обязателен. `sha` — это
+  `head_sha` зелёного run, коммит, который собрали checks. `check-thread`
+  сам done не принимает: run сверяет `check-done`. После сверенного done
+  держателя нет. Issue закрывать
   строкой `Closes #N` только когда критерии выхода выполнены. Иначе
   `Relates to #N`.
 
