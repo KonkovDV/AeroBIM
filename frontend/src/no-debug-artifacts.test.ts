@@ -176,6 +176,14 @@ describe("review-shell demo hygiene source-scan", () => {
     expect(read("lib/lab-demo.ts")).toContain("import.meta.env.DEV");
   });
 
+  it("does not inject raw HTML into the review shell", () => {
+    const needle = "dangerously" + "SetInnerHTML";
+    const violations = production
+      .filter((file) => file.source.includes(needle))
+      .map((file) => file.path);
+    expect(violations).toEqual([]);
+  });
+
   it("keeps the service address out of the presentational shell (FE-CRUFT-01)", () => {
     expect(read("features/shell/ShellHeader.tsx")).not.toContain("apiBase");
     expect(read("App.tsx")).not.toContain("getApiBaseUrl");

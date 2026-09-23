@@ -193,6 +193,9 @@ class IfcSizePolicyTests(unittest.TestCase):
         self.assertEqual(body["message"], PUBLIC_ANALYZE_CAP_DETAIL)
         self.assertEqual(body["required_profile"], "customer_pilot")
         self.assertFalse(body["rss_measured"])
+        blob = str(body)
+        self.assertNotIn("MiB", blob)
+        self.assertNotIn("256", blob)
 
 
 if __name__ == "__main__":

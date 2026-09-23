@@ -21,6 +21,8 @@ RUN groupadd -r aerobim && useradd -r -g aerobim -s /sbin/nologin aerobim
 WORKDIR /app
 COPY --from=builder /install /usr/local
 COPY --from=builder /build/src/ src/
+# pdfium lane only. The optional AGPL extra is not installed in this image.
+RUN python -c "import importlib.util,sys; bad=[n for n in ('fitz','pymupdf') if importlib.util.find_spec(n)]; sys.exit(1 if bad else 0)"
 RUN mkdir -p var/reports /data/reports /data/reports/reports /data/reports/drawing-assets \
     && chown -R aerobim:aerobim /app /data
 USER aerobim
