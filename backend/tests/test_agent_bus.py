@@ -185,11 +185,20 @@ class AgentBusTests(unittest.TestCase):
             ("2026-09-23T08:00:00+00:00", _comment(_CLAIM)),
             ("2026-09-23T15:00:00+00:00", _comment(steal)),
         )
-        holder, reason = inspect_thread(
-            late, issue=12, now=datetime.fromisoformat("2026-09-23T15:00:00+00:00")
-        )
+        now = datetime.fromisoformat("2026-09-23T15:00:00+00:00")
+        _holder, reason = inspect_thread(late, issue=12, now=now)
+        self.assertEqual(reason, "steal requires check-steal")
+        compare = _compare()
+        holder, reason = inspect_thread(late, issue=12, now=now, compare=compare)
         self.assertIsNone(reason)
         self.assertEqual(holder, "other-session")
+        wrong = _compare()
+        wrong["html_url"] = str(wrong["html_url"]).replace("feat/12-bus", "main")
+        _holder, reason = inspect_thread(late, issue=12, now=now, compare=wrong)
+        self.assertEqual(reason, "compare head is not the claimed branch")
+        compare["ahead_by"] = 2
+        _holder, reason = inspect_thread(late, issue=12, now=now, compare=compare)
+        self.assertEqual(reason, "claimed branch has commits")
 
     def test_expired_claim_releases_the_issue(self) -> None:
         first = dict(_CLAIM)
@@ -276,3 +285,12 @@ class AgentBusTests(unittest.TestCase):
 
 def _thread(*pairs: tuple[str, str]) -> dict[str, list[dict[str, str]]]:
     return {"comments": [{"createdAt": at, "body": body} for at, body in pairs]}
+
+
+def _compare() -> dict[str, object]:
+    return {
+        "ahead_by": 0,
+        "total_commits": 0,
+        "base_commit": {"sha": _SHA},
+        "html_url": f"https://github.com/KonkovDV/AeroBIM/compare/{_SHA[:12]}...feat/12-bus",
+    }

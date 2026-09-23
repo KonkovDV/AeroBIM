@@ -16,6 +16,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
+from urllib.parse import unquote
 
 SCHEMA = "aerobim.agent_bus.v1"
 OPS = frozenset({"claim", "heartbeat", "blocked", "handoff", "steal", "done"})
@@ -163,6 +164,7 @@ def inspect_thread(
     issue: int,
     now: datetime,
     run: Mapping[str, Any] | None = None,
+    compare: Mapping[str, Any] | None = None,
 ) -> tuple[str | None, str | None]:
     """Return ``(holder, reason)``.
 
@@ -172,6 +174,7 @@ def inspect_thread(
     """
     holder: BusMessage | None = None
     seen_at: datetime | None = None
+    claim_base: str | None = None
     for comment in _comments(payload):
         for message in parse_messages(comment.body):
             if message.issue != issue:
@@ -181,12 +184,23 @@ def inspect_thread(
                     continue
                 holder = message
                 seen_at = comment.at
+                base_sha = message.fields.get("base_sha")
+                if isinstance(base_sha, str):
+                    claim_base = base_sha
             elif message.op == "heartbeat":
                 if holder is None or message.agent != holder.agent:
                     return None, "heartbeat is not from the claim holder"
                 seen_at = comment.at
             elif message.op == "steal":
                 reason = _steal_reason(holder, seen_at, comment.at, message)
+                if reason is not None:
+                    return None, reason
+                if compare is None:
+                    return None, "steal requires check-steal"
+                branch = message.fields.get("branch")
+                reason = _compare_allows_steal(
+                    claim_base, branch if isinstance(branch, str) else "", compare
+                )
                 if reason is not None:
                     return None, reason
                 holder = message
@@ -361,6 +375,39 @@ def _steal_reason(
     return None
 
 
+def _compare_allows_steal(
+    base_sha: str | None, branch: str, compare: Mapping[str, Any]
+) -> str | None:
+    """The declared commit count is not evidence. The compare API is."""
+    ahead = compare.get("ahead_by")
+    total = compare.get("total_commits")
+    commits = compare.get("commits")
+    if (
+        isinstance(ahead, bool)
+        or isinstance(total, bool)
+        or ahead != 0
+        or total != 0
+        or (isinstance(commits, list) and commits)
+    ):
+        return "claimed branch has commits"
+    base = compare.get("base_commit")
+    got = base.get("sha") if isinstance(base, dict) else None
+    if not isinstance(base_sha, str) or not isinstance(got, str) or not got.startswith(base_sha):
+        return "compare base is not the claim base"
+    html = compare.get("html_url")
+    if not isinstance(html, str) or not _compare_head_is(html, branch):
+        return "compare head is not the claimed branch"
+    return None
+
+
+def _compare_head_is(html: str, branch: str) -> bool:
+    prefix = "https://github.com/KonkovDV/AeroBIM/compare/"
+    if not html.startswith(prefix) or "..." not in html:
+        return False
+    head = unquote(html.split("...", 1)[1].split("?", 1)[0].split("#", 1)[0])
+    return head == branch
+
+
 def _parse_time(value: str) -> datetime:
     try:
         parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
@@ -517,6 +564,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     done.add_argument("path")
     done.add_argument("run")
     done.add_argument("jobs", nargs="?")
+    steal = sub.add_parser("check-steal")
+    steal.add_argument("issue", type=int)
+    steal.add_argument("path")
+    steal.add_argument("compare")
     args = parser.parse_args(argv)
     try:
         if args.command == "check-comment":
@@ -524,13 +575,15 @@ def main(argv: Sequence[str] | None = None) -> int:
             if not messages:
                 raise BusError("no AGENT_BUS comment")
             print(f"{len(messages)} bus message(s)")
-        elif args.command in {"check-thread", "check-done"}:
+        elif args.command in {"check-thread", "check-done", "check-steal"}:
             run_payload = _merged_run(args.run, args.jobs) if args.command == "check-done" else None
+            compare_payload = _read_json(args.compare) if args.command == "check-steal" else None
             holder, reason = inspect_thread(
                 _read_json(args.path),
                 issue=args.issue,
                 now=datetime.now().astimezone(),
                 run=run_payload,
+                compare=compare_payload,
             )
             if reason is not None:
                 raise BusError(reason)
