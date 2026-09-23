@@ -118,6 +118,12 @@ class AgentBusTests(unittest.TestCase):
         jobs[0] = _job("lint", steps=[])
         self.assertEqual(run_failure_reason(_run(jobs=jobs)), "lint has no steps")
 
+    def test_nested_json_stays_intact(self) -> None:
+        raw = dict(_CLAIM)
+        raw["note"] = {"left": "panel", "count": 2}
+        parsed = parse_messages(_comment(raw))
+        self.assertEqual(parsed[0].fields["note"], {"left": "panel", "count": 2})
+
     def test_heading_without_json_fails(self) -> None:
         with self.assertRaises(BusError):
             parse_messages(f"### AGENT_BUS {SCHEMA}\n")

@@ -30,7 +30,6 @@ REQUIRED_CI_JOBS = (
 STEAL_AFTER_HOURS = 6
 
 _HEADING = re.compile(r"^### AGENT_BUS\s+aerobim\.agent_bus\.v1\s*$", re.MULTILINE)
-_FENCE = re.compile(r"```json\s*(\{.*?\})\s*```", re.DOTALL)
 _SHA = re.compile(r"^[0-9a-f]{7,40}$")
 _BRANCH = re.compile(r"^[A-Za-z0-9._/-]{1,80}$")
 _RUN_URL = re.compile(r"^https://github\.com/KonkovDV/AeroBIM/actions/runs/\d+$")
@@ -49,20 +48,29 @@ class BusMessage:
     fields: Mapping[str, Any]
 
 
+def _object_after_heading(section: str) -> dict[str, Any]:
+    marker = section.find("```json")
+    if marker < 0:
+        raise BusError("AGENT_BUS heading has no json block")
+    body_at = section.find("\n", marker)
+    if body_at < 0:
+        raise BusError("AGENT_BUS heading has no json block")
+    try:
+        raw, _end = json.JSONDecoder().raw_decode(section[body_at + 1 :].lstrip())
+    except json.JSONDecodeError as exc:
+        raise BusError("AGENT_BUS json is not valid") from exc
+    if not isinstance(raw, dict):
+        raise BusError("AGENT_BUS json must be an object")
+    return raw
+
+
 def parse_messages(text: str) -> list[BusMessage]:
     """Return bus messages in file order. Other text is ignored."""
     messages: list[BusMessage] = []
-    for match in _HEADING.finditer(text):
-        fence = _FENCE.search(text, match.end())
-        if fence is None:
-            raise BusError("AGENT_BUS heading has no json block")
-        try:
-            raw = json.loads(fence.group(1))
-        except json.JSONDecodeError as exc:
-            raise BusError("AGENT_BUS json is not valid") from exc
-        if not isinstance(raw, dict):
-            raise BusError("AGENT_BUS json must be an object")
-        messages.append(validate_object(raw))
+    headings = list(_HEADING.finditer(text))
+    for index, match in enumerate(headings):
+        end = headings[index + 1].start() if index + 1 < len(headings) else len(text)
+        messages.append(validate_object(_object_after_heading(text[match.end() : end])))
     return messages
 
 
