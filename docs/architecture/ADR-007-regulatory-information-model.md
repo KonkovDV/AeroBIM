@@ -4,7 +4,6 @@ ADR-005 остаётся политикой производных данных 
 
 **Status:** Accepted  
 **Date:** 2026-09-22  
-**Deciders:** AeroBIM Principal Engineering  
 **Does not replace:** `NormRulePackLoader`. The loader remains the pack that analyze reads.
 
 ---

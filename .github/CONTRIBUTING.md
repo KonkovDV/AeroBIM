@@ -45,7 +45,7 @@ source .venv/bin/activate
 pip install -e ".[dev,raster]"
 ```
 
-Optional local hooks (human `Co-authored-by:` kept; vendor IDE identity trailers stripped):
+Optional local hooks (human `Co-authored-by:` kept; other identity trailers stripped):
 
 ```bash
 git config core.hooksPath .githooks
@@ -80,7 +80,7 @@ python -m ruff format src tests
 
 ## Git commits
 
-Keep authorship truthful. If a **human** co-author materially contributed, use an explicit `Co-authored-by:` trailer. The commit-msg hook drops vendor IDE GitHub-identity trailers. Do not strip human provenance. Assistance is disclosed in SECURITY.md.
+Keep authorship truthful. If a **human** co-author materially contributed, use an explicit `Co-authored-by:` trailer. The commit-msg hook drops other identity trailers. Do not strip human provenance.
 
 ## Pull Request Checklist
 

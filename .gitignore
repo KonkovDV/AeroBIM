@@ -38,8 +38,10 @@ artifacts/*
 !artifacts/demo/.gitkeep
 artifacts/demo/*.mp4
 
-# IDE / agent (not product source)
+# Editor metadata (not product source)
 .cursor/
+.cursorignore
+.cursorindexingignore
 agent-transcripts/
 # Multi-root editor workspace lives outside this repository.
 # Do not keep a copy in this git root (it is not AeroBIM product source).

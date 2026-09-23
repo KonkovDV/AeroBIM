@@ -2,7 +2,7 @@
 ---
 title: "Аудиторский пакет демо-дня — блоки A–F (14.09.2026)"
 date: "2026-09-14"
-last_updated: "2026-09-21"
+last_updated: "2026-09-23"
 status: active
 version: "1.1.1"
 closes_rt001: false
@@ -126,7 +126,7 @@ Checkpoint **`GO`**; `customer_go` **false**. `PrecisionClaim.publishable` **fal
 | F-05 | Инструкция офлайн-сборки | docs/offline-deployment-2026.md + INSTALL_OFFLINE.md in bundle | docs/offline-deployment-2026.md | VERIFIED_INTERNAL | да | Офлайн-сборка: Docker-бандл. Без Docker не обещаем. |
 | F-06 | Передача прав / IP приза | ADR-004 fork path; LICENSE unchanged; п.6.3 prize IP not closed | docs/architecture/ADR-004-prize-ip-mit-fork-2026.md; docs/quality/KT3_DELIVERY_BOM_2026_08.md | NOT_VERIFIED | нет | п.6.3 передачи прав не закрыт |
 | F-07 | Что показать жюри без NDA | git fixtures + run_kt3_jury; public IDS; CI pin; speech lock; not NDA tree, not .local totals, not JK names | docs/demo/KT3_OPERATOR_RUNBOOK_2026_08_25.md; docs/evidence/DATA_STATEMENT_2026_08.md; JURY_SURFACES | VERIFIED_INTERNAL | да | Жюри: учебный CLI из git. Файлов заказчика в репозитории нет. |
-| F-08 | customer_go / Checkpoint | customer_go=false; CHECKPOINT=GO (regulatory_measurement_mvp) | docs/pilot-claim-boundary-2026.md; domain/checkpoint.py; AGENTS.md | VERIFIED_INTERNAL | да | Checkpoint GO — измерительный MVP. customer_go по-прежнему false. |
+| F-08 | customer_go / Checkpoint | customer_go=false; CHECKPOINT=GO (regulatory_measurement_mvp) | docs/pilot-claim-boundary-2026.md; domain/checkpoint.py | VERIFIED_INTERNAL | да | Checkpoint GO — измерительный MVP. customer_go по-прежнему false. |
 
 ## Non-claims (explicit boundaries)
 

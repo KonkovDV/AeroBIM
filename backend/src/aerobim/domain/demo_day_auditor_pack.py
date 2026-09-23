@@ -981,7 +981,7 @@ FACT_ROWS: Final[tuple[dict[str, str | bool], ...]] = (
         "F-08",
         "customer_go / Checkpoint",
         "customer_go=false; CHECKPOINT=GO (regulatory_measurement_mvp)",
-        "docs/pilot-claim-boundary-2026.md; domain/checkpoint.py; AGENTS.md",
+        "docs/pilot-claim-boundary-2026.md; domain/checkpoint.py",
         "VERIFIED_INTERNAL",
         True,
         "Checkpoint GO — измерительный MVP. customer_go по-прежнему false.",
@@ -1199,7 +1199,7 @@ def render_auditor_document() -> str:
 ---
 title: "Аудиторский пакет демо-дня — блоки A–F (14.09.2026)"
 date: "2026-09-14"
-last_updated: "2026-09-21"
+last_updated: "2026-09-23"
 status: active
 version: "1.1.1"
 closes_rt001: false
