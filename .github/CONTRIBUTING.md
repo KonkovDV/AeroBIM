@@ -78,6 +78,10 @@ If formatting fails:
 python -m ruff format src tests
 ```
 
+## Agent bus
+
+Parallel sessions coordinate on issues, not in a second status channel. The protocol, claim comment, and CI rule are in [the agent bus](../docs/GH_AGENT_BUS.md). Check a comment or a run payload with `python -m aerobim.tools.agent_bus`.
+
 ## Git commits
 
 Keep authorship truthful. If a **human** co-author materially contributed, use an explicit `Co-authored-by:` trailer. The commit-msg hook drops other identity trailers. Do not strip human provenance.
