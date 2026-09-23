@@ -211,6 +211,68 @@ class AgentBusTests(unittest.TestCase):
         )
         self.assertEqual(foreign, "bus comment names another issue")
 
+    def test_done_must_match_the_run_head(self) -> None:
+        done = {
+            "schema": SCHEMA,
+            "op": "done",
+            "issue": 12,
+            "agent": "local-session",
+            "sha": _SHA[:12],
+            "pr_url": "https://github.com/KonkovDV/AeroBIM/pull/12",
+            "ci_run_id": "https://github.com/KonkovDV/AeroBIM/actions/runs/5",
+            "test_quality_gate": ["calls the production function"],
+        }
+        payload = _thread(
+            ("2026-09-23T08:00:00+00:00", _comment(_CLAIM)),
+            ("2026-09-23T09:00:00+00:00", _comment(done)),
+        )
+        now = datetime.fromisoformat("2026-09-23T09:00:00+00:00")
+        _holder, reason = inspect_thread(payload, issue=12, now=now)
+        self.assertEqual(reason, "done requires check-done")
+        attested, reason = inspect_thread(payload, issue=12, now=now, run=_run(id=5, head_sha=_SHA))
+        self.assertIsNone(reason)
+        self.assertIsNone(attested)
+        _holder, reason = inspect_thread(
+            payload, issue=12, now=now, run=_run(id=5, head_sha="a" * 40)
+        )
+        self.assertEqual(reason, "done sha is not the run head")
+
+    def test_jobs_from_another_run_are_rejected(self) -> None:
+        self.assertEqual(run_failure_reason(_run(total_count=99)), "jobs list is incomplete")
+        jobs = _run()["jobs"]
+        assert isinstance(jobs, list)
+        jobs[0] = {**_job("lint"), "run_id": 9}
+        self.assertEqual(run_failure_reason(_run(id=5, jobs=jobs)), "jobs are from another run")
+        from pathlib import Path
+
+        path = Path("tmp-bus-utf16.json")
+        path.write_bytes(b"\xff\xfe" + '{"status": "completed"}'.encode("utf-16-le"))
+        try:
+            from aerobim.tools.agent_bus import _read_json
+
+            self.assertEqual(_read_json(str(path))["status"], "completed")
+        finally:
+            path.unlink(missing_ok=True)
+
+    def test_steal_cannot_switch_branch(self) -> None:
+        steal = {
+            "schema": SCHEMA,
+            "op": "steal",
+            "issue": 12,
+            "agent": "other-session",
+            "branch": "feat/other",
+            "stale_heartbeat_hours": 6,
+            "branch_commits_since_claim": 0,
+        }
+        payload = _thread(
+            ("2026-09-23T08:00:00+00:00", _comment(_CLAIM)),
+            ("2026-09-23T15:00:00+00:00", _comment(steal)),
+        )
+        _holder, reason = inspect_thread(
+            payload, issue=12, now=datetime.fromisoformat("2026-09-23T15:00:00+00:00")
+        )
+        self.assertEqual(reason, "steal must stay on the claimed branch")
+
 
 def _thread(*pairs: tuple[str, str]) -> dict[str, list[dict[str, str]]]:
     return {"comments": [{"createdAt": at, "body": body} for at, body in pairs]}
