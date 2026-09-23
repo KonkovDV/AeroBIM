@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import unittest
+from datetime import datetime
 
 from aerobim.tools.agent_bus import (
     SCHEMA,
     BusError,
     first_claim,
+    inspect_thread,
     parse_messages,
     run_failure_reason,
     validate_object,
@@ -38,7 +40,7 @@ def _job(name: str, *, runner_id: int = 7, steps: list[str] | None = None) -> di
         "conclusion": "success",
         "runner_id": runner_id,
         "runner_name": "github-hosted",
-        "steps": ["checkout"] if steps is None else steps,
+        "steps": [{"name": "checkout", "conclusion": "success"}] if steps is None else steps,
     }
 
 
@@ -130,6 +132,85 @@ class AgentBusTests(unittest.TestCase):
 
     def test_main_branch_is_not_a_claim_branch(self) -> None:
         raw = dict(_CLAIM)
-        raw["branch"] = "main"
+        raw["branch"] = "refs/heads/origin/main"
         with self.assertRaises(BusError):
             validate_object(raw)
+
+    def test_hosted_runner_view_is_not_a_green_run(self) -> None:
+        self.assertIsNone(run_failure_reason(_run()))
+        jobs = _run()["jobs"]
+        assert isinstance(jobs, list)
+        jobs[0] = {
+            "name": "lint",
+            "conclusion": "success",
+            "runnerId": None,
+            "runnerName": None,
+            "steps": [{"name": "checkout", "conclusion": "success"}],
+        }
+        reason = run_failure_reason(_run(jobs=jobs))
+        self.assertIsNotNone(reason)
+        assert reason is not None
+        self.assertIn("jobs API", reason)
+        jobs[0] = _job("lint", steps=["checkout"])
+        self.assertEqual(run_failure_reason(_run(jobs=jobs)), "lint has no steps")
+
+    def test_nested_product_gate_is_rejected(self) -> None:
+        raw = dict(_CLAIM)
+        raw["note"] = {"summary.passed": False}
+        with self.assertRaises(BusError):
+            validate_object(raw)
+        raw = dict(_CLAIM)
+        raw["customer_go"] = 1
+        with self.assertRaises(BusError):
+            validate_object(raw)
+
+    def test_steal_follows_comment_time(self) -> None:
+        steal = {
+            "schema": SCHEMA,
+            "op": "steal",
+            "issue": 12,
+            "agent": "other-session",
+            "branch": "feat/12-bus",
+            "stale_heartbeat_hours": 6,
+            "branch_commits_since_claim": 0,
+        }
+        early = _thread(
+            ("2026-09-23T08:00:00+00:00", _comment(_CLAIM)),
+            ("2026-09-23T10:00:00+00:00", _comment(steal)),
+        )
+        now = datetime.fromisoformat("2026-09-23T10:00:00+00:00")
+        _holder, reason = inspect_thread(early, issue=12, now=now)
+        self.assertEqual(reason, "steal requires a heartbeat gap of at least 6 hours")
+        late = _thread(
+            ("2026-09-23T08:00:00+00:00", _comment(_CLAIM)),
+            ("2026-09-23T15:00:00+00:00", _comment(steal)),
+        )
+        holder, reason = inspect_thread(
+            late, issue=12, now=datetime.fromisoformat("2026-09-23T15:00:00+00:00")
+        )
+        self.assertIsNone(reason)
+        self.assertEqual(holder, "other-session")
+
+    def test_expired_claim_releases_the_issue(self) -> None:
+        first = dict(_CLAIM)
+        first["until"] = "2026-09-23T09:00:00+00:00"
+        second = dict(_CLAIM)
+        second["agent"] = "other-session"
+        second["until"] = "2026-09-23T18:00:00+00:00"
+        payload = _thread(
+            ("2026-09-23T08:00:00+00:00", _comment(first)),
+            ("2026-09-23T10:00:00+00:00", _comment(second)),
+        )
+        holder, reason = inspect_thread(
+            payload, issue=12, now=datetime.fromisoformat("2026-09-23T10:30:00+00:00")
+        )
+        self.assertIsNone(reason)
+        self.assertEqual(holder, "other-session")
+        _holder, foreign = inspect_thread(
+            payload, issue=99, now=datetime.fromisoformat("2026-09-23T10:30:00+00:00")
+        )
+        self.assertEqual(foreign, "bus comment names another issue")
+
+
+def _thread(*pairs: tuple[str, str]) -> dict[str, list[dict[str, str]]]:
+    return {"comments": [{"createdAt": at, "body": body} for at, body in pairs]}

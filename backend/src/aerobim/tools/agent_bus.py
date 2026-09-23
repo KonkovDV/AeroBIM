@@ -13,7 +13,7 @@ import re
 import sys
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any
 
 SCHEMA = "aerobim.agent_bus.v1"
@@ -30,6 +30,18 @@ REQUIRED_CI_JOBS = (
 STEAL_AFTER_HOURS = 6
 
 _HEADING = re.compile(r"^### AGENT_BUS\s+aerobim\.agent_bus\.v1\s*$", re.MULTILINE)
+_GATE_KEYS = frozenset(
+    {
+        "customer_go",
+        "market_go",
+        "deployment_go",
+        "closes_rt001",
+        "closes_rt002",
+        "closes_rt003",
+        "precision_claim_publishable",
+        "mep_delivered",
+    }
+)
 _SHA = re.compile(r"^[0-9a-f]{7,40}$")
 _BRANCH = re.compile(r"^[A-Za-z0-9._/-]{1,80}$")
 _RUN_URL = re.compile(r"^https://github\.com/KonkovDV/AeroBIM/actions/runs/\d+$")
@@ -80,10 +92,7 @@ def validate_object(raw: Mapping[str, Any]) -> BusMessage:
     op = raw.get("op")
     if op not in OPS:
         raise BusError("op is not a bus operation")
-    if "summary_passed" in raw:
-        raise BusError("the bus does not carry summary.passed")
-    if raw.get("customer_go") is True:
-        raise BusError("the bus does not set customer_go")
+    _reject_gates(raw)
     issue = raw.get("issue")
     agent = raw.get("agent")
     if not isinstance(issue, int) or isinstance(issue, bool) or issue < 1:
@@ -104,31 +113,192 @@ def first_claim(texts: Sequence[str]) -> BusMessage | None:
 
 
 def run_failure_reason(payload: Mapping[str, Any]) -> str | None:
-    """None when the Actions payload is a real green run."""
+    """None when the payload is a real green run.
+
+    ``runner_id`` comes from the Actions jobs API. ``gh run view --json jobs``
+    leaves ``runnerId`` null on a hosted runner, so that view is not evidence.
+    """
     if payload.get("status") != "completed" or payload.get("conclusion") != "success":
         return "run is not completed success"
     jobs = payload.get("jobs")
     if not isinstance(jobs, list):
         return "run has no jobs"
-    by_name = {
-        str(job.get("name")): job for job in jobs if isinstance(job, dict) and job.get("name")
-    }
+    by_name: dict[str, Mapping[str, Any]] = {}
+    for job in jobs:
+        if not isinstance(job, dict) or not job.get("name"):
+            continue
+        by_name[str(job["name"])] = job
+        if job.get("conclusion") == "success" and _explicit_zero_runner(job):
+            return f"{job['name']} has no runner"
     for name in REQUIRED_CI_JOBS:
         job = by_name.get(name)
-        if not isinstance(job, dict):
+        if job is None:
             return f"missing job {name}"
         if job.get("conclusion") != "success":
             return f"{name} is not success"
-        runner_id = job.get("runner_id")
-        if not isinstance(runner_id, int) or isinstance(runner_id, bool) or runner_id == 0:
-            return f"{name} has no runner"
-        runner_name = job.get("runner_name")
-        if not isinstance(runner_name, str) or not runner_name.strip():
-            return f"{name} has no runner name"
-        steps = job.get("steps")
-        if not isinstance(steps, list) or not steps:
+        reason = _runner_reason(name, job)
+        if reason is not None:
+            return reason
+        if not _steps_ran(job.get("steps")):
             return f"{name} has no steps"
     return None
+
+
+@dataclass(frozen=True)
+class _Comment:
+    at: datetime
+    body: str
+
+
+def inspect_thread(payload: object, *, issue: int, now: datetime) -> tuple[str | None, str | None]:
+    """Return ``(holder, reason)``.
+
+    ``reason`` is set when the thread contradicts itself. A declared
+    ``stale_heartbeat_hours`` is not the clock. The clock is the comment
+    timestamp. No live holder is ``(None, None)``, not an error.
+    """
+    holder: BusMessage | None = None
+    seen_at: datetime | None = None
+    for comment in _comments(payload):
+        for message in parse_messages(comment.body):
+            if message.issue != issue:
+                return None, "bus comment names another issue"
+            if message.op == "claim":
+                if holder is not None and not _lease_over(holder, seen_at, comment.at):
+                    continue
+                holder = message
+                seen_at = comment.at
+            elif message.op == "heartbeat":
+                if holder is None or message.agent != holder.agent:
+                    return None, "heartbeat is not from the claim holder"
+                seen_at = comment.at
+            elif message.op == "steal":
+                reason = _steal_reason(holder, seen_at, comment.at, message)
+                if reason is not None:
+                    return None, reason
+                holder = message
+                seen_at = comment.at
+            elif message.op in {"handoff", "done"}:
+                if holder is None or message.agent != holder.agent:
+                    return None, f"{message.op} is not from the claim holder"
+                holder = None
+                seen_at = None
+            elif holder is None or message.agent != holder.agent:
+                return None, f"{message.op} is not from the claim holder"
+    if holder is None or _lease_over(holder, seen_at, now):
+        return None, None
+    return holder.agent, None
+
+
+def _reject_gates(raw: object) -> None:
+    if isinstance(raw, Mapping):
+        for key, value in raw.items():
+            if key in {"summary_passed", "summary.passed"}:
+                raise BusError("the bus does not carry summary.passed")
+            if key in _GATE_KEYS and _truthy_gate(value):
+                raise BusError("the bus does not set a product gate")
+            if (
+                key == "cde_import"
+                and isinstance(value, str)
+                and value.strip().upper() == "VERIFIED"
+            ):
+                raise BusError("the bus does not set a product gate")
+            _reject_gates(value)
+    elif isinstance(raw, list):
+        for item in raw:
+            _reject_gates(item)
+
+
+def _truthy_gate(value: object) -> bool:
+    if value is True or value == 1:
+        return True
+    return isinstance(value, str) and value.strip().lower() == "true"
+
+
+def _explicit_zero_runner(job: Mapping[str, Any]) -> bool:
+    runner_id, _name = _runner_fields(job)
+    return isinstance(runner_id, int) and not isinstance(runner_id, bool) and runner_id == 0
+
+
+def _runner_reason(name: str, job: Mapping[str, Any]) -> str | None:
+    runner_id, runner_name = _runner_fields(job)
+    if "runner_id" not in job and job.get("runnerId") is None:
+        return f"{name} has no runner_id; pass the Actions jobs API payload"
+    if not isinstance(runner_id, int) or isinstance(runner_id, bool) or runner_id == 0:
+        return f"{name} has no runner"
+    if not isinstance(runner_name, str) or not runner_name.strip():
+        return f"{name} has no runner name"
+    return None
+
+
+def _runner_fields(job: Mapping[str, Any]) -> tuple[object, object]:
+    if "runner_id" in job or "runner_name" in job:
+        return job.get("runner_id"), job.get("runner_name")
+    return job.get("runnerId"), job.get("runnerName")
+
+
+def _steps_ran(steps: object) -> bool:
+    if not isinstance(steps, list):
+        return False
+    return any(isinstance(step, dict) and step.get("conclusion") == "success" for step in steps)
+
+
+def _comments(payload: object) -> list[_Comment]:
+    rows: object = payload
+    if isinstance(payload, Mapping):
+        rows = payload.get("comments")
+    if isinstance(payload, str) or not isinstance(rows, list):
+        raise BusError("comment payload must be a list of timestamped comments")
+    comments: list[_Comment] = []
+    for item in rows:
+        if not isinstance(item, dict):
+            raise BusError("comment must be an object")
+        body = item.get("body")
+        stamp = item.get("createdAt", item.get("created_at"))
+        if not isinstance(body, str) or not isinstance(stamp, str):
+            raise BusError("every comment needs a body and a timestamp")
+        comments.append(_Comment(_parse_time(stamp), body))
+    comments.sort(key=lambda comment: comment.at)
+    return comments
+
+
+def _lease_over(holder: BusMessage, seen_at: datetime | None, event_at: datetime | None) -> bool:
+    if event_at is None or seen_at is None:
+        return False
+    if event_at - seen_at >= timedelta(hours=STEAL_AFTER_HOURS):
+        return True
+    until_raw = holder.fields.get("until") if holder.op == "claim" else None
+    if not isinstance(until_raw, str):
+        return False
+    until = _parse_time(until_raw)
+    return event_at > until and seen_at <= until
+
+
+def _steal_reason(
+    holder: BusMessage | None,
+    seen_at: datetime | None,
+    event_at: datetime | None,
+    message: BusMessage,
+) -> str | None:
+    if event_at is None or seen_at is None:
+        return "steal requires comment timestamps"
+    if holder is None:
+        return "steal requires a claim"
+    if message.agent == holder.agent:
+        return "steal requires another agent"
+    if event_at - seen_at < timedelta(hours=STEAL_AFTER_HOURS):
+        return "steal requires a heartbeat gap of at least 6 hours"
+    return None
+
+
+def _parse_time(value: str) -> datetime:
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise BusError("timestamp must include a timezone") from exc
+    if parsed.tzinfo is None:
+        raise BusError("timestamp must include a timezone")
+    return parsed
 
 
 def _require_op(op: str, raw: Mapping[str, Any]) -> None:
@@ -189,11 +359,17 @@ def _sha(raw: Mapping[str, Any], key: str) -> None:
 
 def _branch(raw: Mapping[str, Any]) -> None:
     value = raw.get("branch")
-    if (
-        not isinstance(value, str)
-        or value in {"main", "master"}
-        or _BRANCH.fullmatch(value) is None
-    ):
+    if not isinstance(value, str) or ".." in value or _BRANCH.fullmatch(value) is None:
+        raise BusError("branch must be a feature branch")
+    bare = value
+    changed = True
+    while changed:
+        changed = False
+        for prefix in ("refs/heads/", "origin/"):
+            if bare.startswith(prefix):
+                bare = bare[len(prefix) :]
+                changed = True
+    if bare in {"main", "master"}:
         raise BusError("branch must be a feature branch")
 
 
@@ -236,16 +412,40 @@ def main(argv: Sequence[str] | None = None) -> int:
     comment.add_argument("path")
     run = sub.add_parser("check-run")
     run.add_argument("path")
+    run.add_argument("jobs", nargs="?")
+    thread = sub.add_parser("check-thread")
+    thread.add_argument("issue", type=int)
+    thread.add_argument("path")
     args = parser.parse_args(argv)
     try:
         if args.command == "check-comment":
-            text = open(args.path, encoding="utf-8").read()
-            messages = parse_messages(text)
+            with open(args.path, encoding="utf-8") as handle:
+                messages = parse_messages(handle.read())
             if not messages:
                 raise BusError("no AGENT_BUS comment")
             print(f"{len(messages)} bus message(s)")
+        elif args.command == "check-thread":
+            holder, reason = inspect_thread(
+                _read_json(args.path),
+                issue=args.issue,
+                now=datetime.now().astimezone(),
+            )
+            if reason is not None:
+                raise BusError(reason)
+            print("no holder" if holder is None else holder)
         else:
-            reason = run_failure_reason(_read_json(args.path))
+            payload = _read_json(args.path)
+            if args.jobs:
+                jobs_doc = _read_json(args.jobs)
+                jobs = (
+                    jobs_doc["jobs"]
+                    if isinstance(jobs_doc, dict) and "jobs" in jobs_doc
+                    else jobs_doc
+                )
+                if not isinstance(payload, dict):
+                    raise BusError("json must be an object")
+                payload = {**payload, "jobs": jobs}
+            reason = run_failure_reason(payload)
             if reason is not None:
                 raise BusError(reason)
             print("run attested")

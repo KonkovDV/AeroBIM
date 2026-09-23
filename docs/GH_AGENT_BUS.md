@@ -5,11 +5,15 @@
 Второй канал статуса не заводить: ни Discussions, ни Wiki, ни доска как
 единственный источник.
 
-Протокол `aerobim.agent_bus.v1`. Проверка комментария и прогона:
+Протокол `aerobim.agent_bus.v1`. Проверка формы комментария, треда и прогона:
 
 ```text
 python -m aerobim.tools.agent_bus check-comment comment.md
-python -m aerobim.tools.agent_bus check-run run.json
+gh issue view N --json comments > comments.json
+python -m aerobim.tools.agent_bus check-thread N comments.json
+gh api repos/KonkovDV/AeroBIM/actions/runs/ID --jq "{status,conclusion}" > run.json
+gh api repos/KonkovDV/AeroBIM/actions/runs/ID/jobs > jobs.json
+python -m aerobim.tools.agent_bus check-run run.json jobs.json
 ```
 
 ## Четыре слоя
@@ -91,12 +95,16 @@ git rev-parse HEAD
   и не пушить. Повторное чтение не делает запись атомарной. Ветка
   `feat/<issue>-<slug>` от `origin/main`. Draft PR — после первого push.
 - **heartbeat.** Не реже раза в 6 часов, пока нет зелёного PR.
-- **steal.** Только если heartbeat старше 6 часов и в ветке нет коммитов
-  после claim. Чужую ветку не переписывать.
+- **steal.** Только если между последним сигналом держателя и этим
+  комментарием прошло не меньше 6 часов, и в ветке нет коммитов после claim.
+  Часы считает `createdAt` комментария. Поле `stale_heartbeat_hours` само по
+  себе steal не выдаёт. Чужую ветку не переписывать.
 - **blocked.** `reason` и номера issue. Связь:
   `gh issue edit N --add-blocked-by M`.
 - **handoff.** SHA, URL PR, что сделано, что осталось. Снять `claimed`.
-- **done.** После merge в `main`. `ci_run_id` обязателен. Issue закрывать
+  После handoff issue снова без держателя.
+- **done.** После merge в `main`. `ci_run_id` обязателен. Done снимает
+  держателя. Issue закрывать
   строкой `Closes #N` только когда критерии выхода выполнены. Иначе
   `Relates to #N`.
 
@@ -106,13 +114,16 @@ git rev-parse HEAD
 
 Номер run сам по себе не прогон. Бывает `conclusion=success` при
 `runner_id=0`, пустом `runner_name` и `steps=[]`. Такой run не зелёный.
+`gh run view --json jobs` на hosted runner оставляет `runnerId` пустым даже
+у живого прогона. Это не доказательство runner. Берутся `status` и
+`conclusion` прогона и jobs API (`runner_id`, `runner_name`, `steps`).
 
 Run зелёный, только если:
 
 1. `status=completed` и `conclusion=success`.
 2. У jobs `lint`, `typecheck`, `test`, `pytest-readme-extras`, `frontend`,
    `baseline-integrity`: `conclusion=success`, `runner_id` не 0,
-   `runner_name` не пустой, `steps` не пустой.
+   `runner_name` не пустой, и хотя бы один step с `conclusion=success`.
 
 Draft снимать после этого. Локальный pytest не заменяет `ci_run_id`.
 Pin baseline пишет job `baseline-integrity`, не локальная сессия.

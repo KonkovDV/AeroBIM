@@ -22,6 +22,7 @@ Read `docs/GH_AGENT_BUS.md`, `docs/pilot-claim-boundary-2026.md`, the diff, and 
 - `Closes #N` is used while the issue's stop condition is still open. Use `Relates to #N`.
 - A new import path or function name is not present in the tree and is not added by the diff.
 - A new test mocks the verdict path, uses `pytest.skip` as the result, or asserts `True`.
-- `ci_run_id` points at a run whose required job has `runner_id` 0 or empty `steps`.
+- `ci_run_id` points at a run whose required job has `runner_id` 0, empty `steps`, or only the `gh run view --json jobs` payload (`runnerId` null).
+- A steal is justified by `stale_heartbeat_hours` instead of comment timestamps.
 
 Required jobs: `lint`, `typecheck`, `test`, `pytest-readme-extras`, `frontend`, `baseline-integrity`.
