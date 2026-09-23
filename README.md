@@ -23,7 +23,7 @@
 
 [English version](README.en.md)
 
-[![CI](https://github.com/KonkovDV/AeroBIM/actions/workflows/ci.yml/badge.svg)](https://github.com/KonkovDV/AeroBIM/actions/workflows/ci.yml)
+[![CI](https://github.com/KonkovDV/AeroBIM/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/KonkovDV/AeroBIM/actions/workflows/ci.yml?query=branch%3Amain)
 [![Checkpoint](https://img.shields.io/badge/checkpoint-GO-brightgreen.svg)](docs/pilot-claim-boundary-2026.md)
 [![Customer sign-off](https://img.shields.io/badge/customer_sign--off-NO__GO-red.svg)](docs/pilot-claim-boundary-2026.md)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/downloads/)
