@@ -197,10 +197,17 @@ class AuthBffStatus(BaseModel):
 
 
 class CustomerIntakeGateSnapshot(BaseModel):
+    """Intake snapshot on ``GET /v1/system/capabilities``.
+
+    ``customer_go`` is part of the response. The model accepts only false.
+    """
+
     status: str
     claim_level: str
     true_gates: list[str]
     checkpoint: str
+    go_kind: str
+    customer_go: Literal[False]
     source: str | None = None
 
 

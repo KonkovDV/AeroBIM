@@ -439,6 +439,7 @@
         "type": "object"
       },
       "CustomerIntakeGateSnapshot": {
+        "description": "Intake snapshot on ``GET /v1/system/capabilities``.\n\n``customer_go`` is part of the response. The model accepts only false.",
         "properties": {
           "checkpoint": {
             "title": "Checkpoint",
@@ -446,6 +447,15 @@
           },
           "claim_level": {
             "title": "Claim Level",
+            "type": "string"
+          },
+          "customer_go": {
+            "const": false,
+            "title": "Customer Go",
+            "type": "boolean"
+          },
+          "go_kind": {
+            "title": "Go Kind",
             "type": "string"
           },
           "source": {
@@ -475,7 +485,9 @@
           "status",
           "claim_level",
           "true_gates",
-          "checkpoint"
+          "checkpoint",
+          "go_kind",
+          "customer_go"
         ],
         "title": "CustomerIntakeGateSnapshot",
         "type": "object"

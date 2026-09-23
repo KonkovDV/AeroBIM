@@ -5,6 +5,7 @@ from __future__ import annotations
 import unittest
 
 from aerobim.domain.system_capabilities import build_system_capabilities_payload
+from aerobim.presentation.http.schemas import SystemCapabilitiesResponse
 
 
 class HonestySurfaceContractTests(unittest.TestCase):
@@ -56,6 +57,19 @@ class HonestySurfaceContractTests(unittest.TestCase):
                 self.assertIn(key, pii)
             else:
                 self.assertIn(key, advisory)
+
+    def test_customer_go_survives_the_capabilities_response(self) -> None:
+        payload = build_system_capabilities_payload()
+        gate = payload["customer_intake_gate"]
+        self.assertIsInstance(gate, dict)
+        self.assertFalse(gate["customer_go"])
+        self.assertEqual(gate["go_kind"], "regulatory_measurement_mvp")
+        published = SystemCapabilitiesResponse.model_validate(payload)
+        self.assertIs(published.customer_intake_gate.customer_go, False)
+        self.assertEqual(
+            published.customer_intake_gate.go_kind,
+            "regulatory_measurement_mvp",
+        )
 
     def test_pii_effectiveness_cannot_silently_become_measured(self) -> None:
         payload = build_system_capabilities_payload()
