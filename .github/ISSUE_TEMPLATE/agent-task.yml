@@ -1,0 +1,57 @@
+name: Задача шины
+description: Одна задача — один issue. Сначала docs/GH_AGENT_BUS.md.
+title: "[task]: "
+labels: ["agent-bus"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Сначала `docs/GH_AGENT_BUS.md`. Модель не пишет `summary.passed`.
+        `customer_go` остаётся false.
+  - type: dropdown
+    id: lane
+    attributes:
+      label: Полоса
+      options:
+        - engine
+        - evidence
+        - jury-surface
+        - не заявление о продукте
+    validations:
+      required: true
+  - type: dropdown
+    id: host
+    attributes:
+      label: Где выполнять
+      options:
+        - local (есть локальный clone)
+        - cloud (в git нет комплекта заказчика)
+        - человек
+    validations:
+      required: true
+  - type: textarea
+    id: requirement
+    attributes:
+      label: requirement, artifact, test, metric, stop
+      description: Пять полей.
+      value: |
+        requirement:
+        artifact:
+        test:
+        metric:
+        stop_condition:
+    validations:
+      required: true
+  - type: textarea
+    id: do_not
+    attributes:
+      label: Не делать
+      value: |
+        Не ставить customer_go. Не писать summary.passed из модели.
+        Не снимать pin baseline из локального pytest.
+        Не называть импорт BCF в СОД доказанным.
+  - type: input
+    id: blocked_by
+    attributes:
+      label: blocked-by (номера issue, если уже известны)
+      placeholder: "12, 14"

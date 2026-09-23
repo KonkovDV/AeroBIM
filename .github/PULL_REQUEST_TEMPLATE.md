@@ -12,6 +12,13 @@
 - [ ] `pytest tests -q`
 - [ ] docs updated if behavior/contracts/governance changed
 
+## Agent bus
+
+- [ ] Claim comment uses `aerobim.agent_bus.v1` before this branch
+- [ ] One open PR for that issue
+- [ ] `python -m aerobim.tools.agent_bus check-run` accepts the CI payload
+- [ ] The diff does not write `summary.passed` or set `customer_go`
+
 ## Additional Checks
 
 - [ ] No secrets or private data in diff
