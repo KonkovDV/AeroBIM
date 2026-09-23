@@ -62,7 +62,7 @@
     {
       "id": "commitMessage",
       "type": "promptString",
-      "description": "Conventional commit message (human Co-authored-by allowed; vendor IDE trailers stripped)",
+      "description": "Conventional commit message (human Co-authored-by allowed; other identity trailers stripped)",
       "default": "docs: "
     }
   ]

@@ -6,13 +6,10 @@ AeroBIM is maintained as an open-source engineering and research repository.
 
 Security support is best effort for the active default branch and latest release line. Experimental snapshots and local forks are not guaranteed to receive fixes.
 
-## AI assistance honesty
+## Authorship
 
-Coding assistants were used while building this repository. Human `Co-authored-by:`
-trailers stay. Vendor IDE/cloud GitHub-identity trailers are not kept on the default
-branch, so the contributor sidebar does not list a vendor bot as a co-author. That
-is surface hygiene, not a claim that assistants were unused. Signing-key policy
-below is unchanged.
+The default branch lists human authors. Machine-added co-author lines are not kept,
+so the contributor list stays a list of people. Signing-key policy below is unchanged.
 
 ## Commit signing trust anchor (2026-08-09)
 
