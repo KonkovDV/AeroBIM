@@ -999,9 +999,16 @@ describe("App", () => {
     render(<App />);
     const viewer = await screen.findByTestId("viewer-stub");
     expect(within(viewer).getByText("DRAW-001")).toBeTruthy();
-    fireEvent.keyDown(window, { key: "j" });
-    expect(await within(viewer).findByText(UI_COPY.spatialNone)).toBeTruthy();
-    fireEvent.keyDown(window, { key: "a" });
+    expect(await screen.findByRole("option", { name: /DRAW-SECOND/i })).toBeTruthy();
+    expect(await screen.findByRole("button", { name: UI_COPY.confirmRemark })).toBeTruthy();
+    screen.queryByLabelText(UI_COPY.editRemark)?.blur();
+    await waitFor(() => {
+      if (within(viewer).queryByText(UI_COPY.spatialNone) == null) {
+        fireEvent.keyDown(document.body, { key: "j", code: "KeyJ" });
+      }
+      expect(within(viewer).getByText(UI_COPY.spatialNone)).toBeTruthy();
+    });
+    fireEvent.keyDown(document.body, { key: "a", code: "KeyA" });
     await waitFor(() => {
       expect(postReviewEventMock).toHaveBeenCalledWith(
         expect.any(String),
