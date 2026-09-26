@@ -19,7 +19,7 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "three": "^0.185.1",
-    "web-ifc": "^0.0.77"
+    "web-ifc": "^0.0.78"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.1",
