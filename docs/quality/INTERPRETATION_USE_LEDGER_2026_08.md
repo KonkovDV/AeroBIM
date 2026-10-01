@@ -1,0 +1,304 @@
+<!-- claims-lint: allow-file reason="Kane IUA ledger; TZ 90%/SLA as blocked inferences; NO_GO" -->
+---
+title: "Interpretation/Use ledger — заказчик канала × трекер × Техлаб/МИК × отрасль"
+date: "2026-09-04"
+last_updated: "2026-09-08"
+status: active
+version: "1.2.1"
+closes_rt001: false
+closes_rt002: false
+closes_rt003: false
+claim_boundary: >-
+  Kane IUA over existing AeroBIM scores. Licensed uses stop at fixture demo, engine regression, open-bench countable subsets, gold-IDS processability, and protocol planning. Not customer precision, not TZ >90%, not customer SLA, not customer GO.
+---
+
+# Interpretation/Use ledger (КТ#2 → КТ#3)
+
+Валидность — свойство **вывода из оценки**, не свойства программы (Messick 1995; Kane 2013). Этот файл — SSOT: что текущие цифры AeroBIM имеют право значить для заказчика канала, трекера проекта, Техлаба, МИК и отраслевых стандартов, и чего они значить не имеют.
+
+- Checkpoint **GO**
+- IUA freeze (construct-validity object, not HEAD): `f9389bf`
+- closes_rt001/002/003: **false**
+- CLI: `python -m aerobim.tools.export_interpretation_use_ledger --write-docs-evidence`
+
+Продуктовая точность по-прежнему только через `PrecisionClaim.publishable` (corpus_kind=customer, ≥2 разметчика, κ/α). Этот ledger её не выдаёт.
+
+| ID | Источник | Требование | Лицензированный вывод | Запрещённый вывод | licensed_use |
+|---|---|---|---|---|---|
+| CH-01 | customer | ТР-1: ассистент эксперта, не замена ГИП | HITL + Claims Lock + ADR-001: модель не ставит summary.passed | Система заменяет экспертизу / лицензированного специалиста | `fixture_demo` |
+| CH-02 | customer | IFC + IDS / атрибуты BIM | IfcOpenShell + IfcTester на fixture и open packs; IDS 1.0 checking | Профиль приёмки заказчика канала / CIM-compliance / RT-002 CLOSED | `engine_regression` |
+| CH-03 | customer | 2D PDF + подсветка замечания | pypdfium2 overlay на fixture; finding_id / evidence_refs | CV-счёт дверей/окон; AECV-Bench как product accuracy | `fixture_demo` |
+| CH-04 | customer | Нативный DWG в ТЗ | Fail-closed intake: dwg_native=NOT_IMPLEMENTED / FAILED | DWG-ready / тихий пропуск DWG | `not_licensed` |
+| CH-05 | customer | Коллизии / MEP / «точность >90%» | Generic IfcClash на fixture; tiny-skip fail-closed; protocol TP/(TP+FP)≥0.60 | Customer clash precision; mep_system_clash=OK; TZ >90% | `protocol_planning` |
+| CH-06 | customer | SLA «до 30 минут» | measure_package_sla на согласованном fixture; StageBudget sum=30 min | Customer SLA / любой комплект заказчика | `protocol_planning` |
+| CH-07 | customer | BCF замечания в СОД | BCF 2.1 ZIP export (структурный) | CDE import VERIFIED / T2 roundtrip | `fixture_demo` |
+| CH-08 | customer | ТР-16/19: площади помещений / чертёж↔IFC | AR IFC: rooms exist as objects; area QTO not runnable; coverage_map_only | Площади квартир сверены с ТЭП; RT-001 CLOSED | `engine_regression` |
+| CH-09 | customer | ТР-8: огнестойкость стены vs ТЗ (класс II / C0) | Wall FireRating sparse and ≠ TZ II/C0; coverage_map_only | Fire check delivered; fixture REI60 = customer finding | `engine_regression` |
+| CH-10 | customer | ТЗ v1 (6 стр. бриф конкурса) vs v2 ТР vs семь сравнений vs проектное ТЗ | v1 pin is coverage of the public brief; TBD filled in v2; >90% is not a product score | Четыре бумаги заказчика канала — один документ; v1 >90% измерено; семь задач сданы этим PDF | `engine_regression` |
+| PLAN-00 | techlab | Инвентарь files/ (локальный NDA) как покрытие, не pack_hash | 27.08 public rehearsal pin plus 30.08 evening recensus after deleting covered source archives. Counts live in engineering pins, not the jury map. Live scan only under .local/. Not processed. | sha256 пакета заказчика в git; имена площадок в публичном дереве | `operational_hygiene` |
+| PLAN-01 | techlab | QTO помещений или подписанный OOS (задача 3) | Unsigned qto_space_area template; Missing QTO ≠ TEP Does-not | Площади сверены с ТЭП; unsigned OOS = skip licensed | `protocol_planning` |
+| PLAN-02 | techlab | ИОС IFC или подписанный MEP-OOS (задача 5 / RT-003) | Unsigned mep_federated template; mep_system_clash=NOT_VERIFIED | MEP delivered; unsigned OOS closes RT-003 | `protocol_planning` |
+| PLAN-03 | techlab | Стержни IFC или подписанный OOS п.7 (Solihin 4) | Unsigned rebar_class4 template; .lir not parsed | Арматура сверена с расчётом; pitch pset = class 4 | `protocol_planning` |
+| PLAN-04 | techlab | Extractor по прозе проектного ТЗ: 0 hits = extraction_gap | II/C0 and TEP prose ≠ fixture REI60 patterns; gap is mapping, not empty TZ | В проектном ТЗ нет требований к огнестойкости и площадям | `engine_regression` |
+| PLAN-05 | techlab | Два независимых разметчика + κ/α до PrecisionClaim.publishable | Protocol ready (RT-001 labeling); zero labeled customer points | Один судья / LLM-as-judge = gold; >90% без κ | `protocol_planning` |
+| TRK-01 | tracker | Задача 1: доработать продукт к КТ#3 (03–21.09); КТ#2 был 20.08 | IFC Acceptance Gate + live CLI + run_kt3_jury; Checkpoint GO (regulatory_measurement_mvp; customer_go false) | Checkpoint GO / market GO = customer GO | `fixture_demo` |
+| TRK-02 | tracker | Задача 2: таблица IFC2X3 / IFC4 / IFC4X3 | Fixture kernel n=20: findings 5/4/6, passed=false, clash=skipped | Product accuracy / customer SLA по релизам IFC | `engine_regression` |
+| TRK-03 | tracker | Задача 3: поиск и прогон открытых датасетов | IFC-Bench 27/1026 countable; PNST CLI skip-honest; Ishigaki XML processability | Open bench = RT-001; свежий 18/22; Harbor agent run; DrawingVQA в MIT tree | `open_bench` |
+| TRK-04 | tracker | Задача 4: научный консультант | Вопросы и демо-ссылка в репозитории | Выдуманные минуты консультаций | `operational_hygiene` |
+| TRK-05 | tracker | Задача 5: KPI = назначенные демо (3–5) | Живой счёт только в локальном операторском слое (не в git) | Назначенные демо как git-факт | `operational_hygiene` |
+| TRK-06 | tracker | Задача 6: монетизация при открытом коде | Варианты A/B к обсуждению; LICENSE MIT; ADR-002 accepted | Трекер согласовал Tangl/10D/SKU | `operational_hygiene` |
+| SIG-01 | tracker | Восемь задач 29.08: объём находок на канале IFC/PDF | Report phrase: объём находок на канале получен. unrestricted_eq_sample is a capped unsigned ALL+eq sample, not a defect. EI 45 vs demo REI60 is CH-09, not SP 2.13130. | Product accuracy; pack processed; customer defect list; unsigned ALL+eq as SP; raising the mismatch cap as a defect export | `operational_hygiene` |
+| SIG-02 | tracker | Восемь задач 29.08: инвентарь канала (формат / processed / priority / legal) | pack_probe + census pin; calc binaries are the majority of unpack bytes; Office token shortlist is not CC-2 MATCH. Uncompressed byte totals stay out of git. | 43 GB processed; native .lir parse; token shortlist as CC-2 MATCH; byte totals of the NDA tree in git | `operational_hygiene` |
+| JURY-01 | mik | Отборочная комиссия №7: роли на карте жюри, не ФИО и не census NDA | Seat briefs are roles; three partner seats by agreement; unpack counts stay off TIER0; tracker paths have no personal names. | Sitting-member list in git; OSINT bios as confirmed; unpack fingerprint counts on the jury map; pack processed | `operational_hygiene` |
+| FMT-01 | tracker | Восемь задач 29.08: закрытые CAD/solver как объект обмена, не как парсеры | KT#3 exchange is IFC + PDF/A. Closed Autodesk CAD and .lir stay fail-closed. Stock Navisworks does not write IFC. ODA trial is measurement, not a product. | DWG product; native RVT/NWD reader; parse .lir; OCR delivered; Sustaining 7500 USD = RVT; DrawingVQA as AeroBIM accuracy | `operational_hygiene` |
+| SPG-01 | tracker | Консалтинг СПГ август 2026: речь про данные ПД/РД, не рынок FM и не SAM | 8-page construction cut is attributed speech. 60-page FM/PM cut is adjacent. PDFs stay off git. Filename stays off TIER0. | SPG figures as AeroBIM SAM or accuracy; 49% TIM as pack ready; digital twin / FM product; HubEx percent as ours; ISUP by 21.09 | `operational_hygiene` |
+| UI-01 | tracker | ТЗ интерфейс: рабочее место полного цикла, не review shell как сдача | Shell inspects persisted reports. This pass wires upload, job poll, KPI, eight-screen IA, and a dev-only git walls+IDS seed. UI does not write summary.passed. Natives fail-closed. Jury laptop stays CLI. | Full-cycle workplace delivered; native RVT in UI; 30 min SLA measured; 10D live; XLSX export; Checkpoint GO from chrome; seed as customer pack | `operational_hygiene` |
+| TL-01 | techlab | КТ#2 (до 20.08): этап МИК «доработка» | Предварительная версия в ЛК; GitHub прототип; видео не прилагаем, показ = живой CLI | Валидация эффективности начата; внедрение начато | `fixture_demo` |
+| TL-02 | techlab | Критерии пилота 2 млн ₽ (interim ≥0.60, SLA, BCF в СОД) | Протокол измерения согласован как методика | Фактическое достижение критериев на комплекте заказчика | `protocol_planning` |
+| TL-03 | techlab | Участие в «Техлаб Москва»: физлица или команда 1–10 (FAQ i.moscow/techlab) | ИП/ООО не условие входа; приз — платный пилот 2 млн ₽ | Без юрлица нельзя участвовать / нельзя принять приз — как факт Положения | `operational_hygiene` |
+| TL-04 | techlab | Сравнение 1: ПД/РД ↔ АГО/АГР (листы, фасады, ТЭП) | Filename coindex on coverage map; overlay remains fixture-only | АГР/QTO сданы; задача 1 закрыта | `engine_regression` |
+| TL-05 | techlab | Сравнение 2: ПД ↔ каталоги / EIR LOD | Catalog and EIR workbooks as carriers; not customer_approved IDS | IDS заказчика канала утверждён из Стандарта | `protocol_planning` |
+| TL-06 | techlab | Сравнение 3: планировки ОПР/ПД/РД (оси, помещения, двери) | IfcSpace/IfcDoor presence is coverage_map_only; QTO absent is Missing | Планировки сверены по стадиям; площади проверены | `engine_regression` |
+| TL-07 | techlab | Сравнение 4: планировки ↔ ИРД / проектное ТЗ | II/C0, wall EI, door EI, fixture REI60 are different constructs | Планировки соответствуют ТЗ; огнестойкость сертифицирована | `engine_regression` |
+| TL-08 | techlab | Сравнение 5: АР/КР/ПБ/ТХ/ИОС между собой | AR+KR IFC; other disciplines PDF; IfcFlowTerminal in AR ≠ IOS model | MEP delivered; federated clash delivered | `protocol_planning` |
+| TL-09 | techlab | Сравнение 6: повторная проверка ↔ выданные замечания | After-tree thicker than before is coverage_map_only; OEP is not gold | Замечания закрыты; книга ОЭП = gold | `protocol_planning` |
+| TL-10 | techlab | Сравнение 7: армирование ↔ расчётные карты (Solihin 4) | No IfcReinforcingBar; wall pitch pset ≠ class 4; .lir not parsed | Арматура сверена с расчётом; LIRA solved | `engine_regression` |
+| MIK-01 | mik | Соглашение / акт / финотчётность Фонда (M2, M7, M8) | Контур документирован; формы не сочиняем; 449-ПП ≠ вход в Техлаб | Самодельные шаблоны Фонда; акт с fixture-цифрами; ИП как вход | `not_licensed` |
+| MIK-02 | mik | Четырёхэтапная модель: доработка → валидация → внедрение | Стадия = доработка (КТ#2) | Валидация эффективности / внедрение как текущий факт | `operational_hygiene` |
+| IND-01 | industry | buildingSMART IDS 1.0 (final standard, 1 June 2024) | IDS checking (IfcTester) + IDS audit (XmlIdsDocumentAuditor / XSD 1.0) | IDS audit = checking = the appointing party EIR; IDS 1.1 как approved standard | `engine_regression` |
+| IND-02 | industry | ISO 19650-2:2018 cl. 5.6–5.7 (review / authorize) | summary.passed = Shared-gate technical status (ADR-001) | Automated check replaces appointing-party authorization | `fixture_demo` |
+| IND-03 | industry | Solihin & Eastman 2015 rule classes | Class 1–3 inventory of in-repo rules; class 4 not claimed | SP 63 template = proof of solution | `engine_regression` |
+| IND-04 | industry | ПНСТ 909-2024 (Renga publisher pack) | Aggregated 18/22 IDS runtime_clean snapshot 05.08 after ToS GO | Свежий 18/22; customer precision; эталон заказчика канала | `open_bench` |
+| IND-05 | industry | IFC-Bench v2 / Ishigaki-IDS-Bench (open science) | Countable 27/1026; gold XML processability 166/166; observation unit stated | Paper generation F1; 514 false-pass; product accuracy | `open_bench` |
+| IND-06 | industry | AEC-Bench (Mankodiya et al. 2026, arXiv:2603.29199) | Inventory 196 tasks / 9 families; Harbor agent NOT_RUN; authors: coding agents fail visual grounding | AEC-Bench run as product drawing literacy / RT-001 CLOSED | `open_bench` |
+| IND-07 | industry | LLM-as-judge 2026 (arXiv:2606.19544; 2509.20293; 2604.15224) | VLM remains advisory candidate; TP/FP require dual human raters and κ | Model confirms findings / judges precision / stakes-framed verdict | `protocol_planning` |
+| IND-08 | industry | Clash management 2026 (Buildings 16(13):2623) + Mehrbod/Hu/Lin | Geometric overlap on fixture; mep_system_clash=NOT_VERIFIED | MEP delivered; AABB inventory as coordination-complete | `protocol_planning` |
+| IND-09 | industry | ISO 19650-6:2025 health and safety information | Not implemented; Shared-gate is 5.6-like control only (ADR-001) | ISO 19650 compliant / Part 6 delivered / 5.7 automated | `not_licensed` |
+| IND-10 | industry | buildingSMART IDS 1.1 (feedback 2026, not final) | IDS 1.0 remains the approved standard (1 June 2024) | IDS 1.1 as current standard / certified profile | `engine_regression` |
+| IND-11 | industry | EGCC 2026 (arXiv:2607.29058) constraint checking | False-pass 41-52%; authors: not for autonomous approval | EGCC % = AeroBIM on customer PD; autonomous approve | `open_bench` |
+| IND-12 | industry | DrawingVQA 2026 (arXiv:2607.15418) issued-for-construction sheets | Authors: main table professionals 94.9 vs Gemini-2.5-pro 71.7; supplementary Gemini-3-pro-preview 77.2 is not the main-table SOTA; QTO/R3 weak; not AeroBIM | DrawingVQA as AeroBIM product accuracy / TZ task 1 done | `open_bench` |
+| IND-13 | industry | Jurisdiction IFC pre-check 2026 (CORENET X, RAVA3.5.3, city AGR) | City-as-publisher pattern = RT-002a analog; not appointing-party EIR | Public permit IDS = appointing-party-signed profile / Task 07 delivered | `open_bench` |
+| IND-14 | industry | Panoptic CAD symbol spotting (FloorPlanCAD / ArchCAD-400k / VecFormer) | Luo et al. arXiv:2503.22346: semantic F1 87.8 and panoptic PQ 70.6 on ArchCAD; PQ not comparable across FloorPlanCAD papers; cv_human_level=MISSING | VecFormer/DPSS in-paper PQ or FloorPlanCAD as AeroBIM drawing literacy | `open_bench` |
+| IND-15 | industry | Clash-report relevance ML (Ailem AiC 2026; Lin & Huang 2019) | Ailem: false positives up to 60% on BIM clash reports. Lin hybrid 0.96 is their corpus. AeroBIM triage is deterministic dedup/band/rank and never drops a clash | Lin 0.96 or Ailem 60% as AeroBIM clash quality or a Navisworks killer | `protocol_planning` |
+| IND-16 | industry | SOTA 29.08: DWG layer/block/ATTRIB as almost-free symbol labels | Native DWG parser is not implemented; optional ezdxf is DXF; layer labels are not a product DWG reader | Most symbols identified from DWG layers without ML / native DWG delivered | `not_licensed` |
+| IND-17 | industry | SOTA 29.08: OmniDocBench / titleblock text-extract ~0.95 as drawing OCR | RapidOCR is optional extra on raster; PubLayNet/DocLayNet are not construction sheets; GOST stamp template is not measured here | 0.95 OCR / titleblock accuracy as AeroBIM on customer sheets | `open_bench` |
+| MIK-03 | mik | Commission weights (attributed order 17.06.2026): K1=40 of 100 | Mean of sitting members; prize floor 50 is a program rule; low-K1 + high-rest totals 45-64 so 50 is not automatic | Git HEAD predicts a prize-clearing AeroBIM total / Checkpoint GO | `protocol_planning` |
+| MIK-04 | mik | Catalog roster vs signed commission order; partner seats by agreement | Two Fund seats are staff; three partner seats are not guaranteed; sponsor quote is not the chair | Catalog page is the sitting commission / partner seats are certain | `operational_hygiene` |
+| MIK-05 | mik | Owner-briefing B1-B5 (Regulation Appendix 3 unseen); tie-break B1 only | B2 needs protocols AND confirmed partner metrics; pytest is not B2 high; NO_GO does not license a System B prize-clearing total | Pytest / fixture SLA as Partner validation / System B already ≥50 | `protocol_planning` |
+| MIK-06 | mik | Regulation 6.3: prize agreement may assign exclusive rights without extra pay | LICENSE is MIT; ADR-002 is a commercial-boundary plan, not a patent wall | IP is fenced / exclusive rights will not transfer | `operational_hygiene` |
+| TL-11 | techlab | K1 scores the filed team (up to 10), not oral advisors | FAQ already allows 1-10 with mixed scientific and engineering skill | Consultants named in chat are on the scored roster / K1 closed | `operational_hygiene` |
+| IND-18 | industry | GOST R 72514-2026 order 64-st on the official fund card | protect.gost.ru lists 64-st / 30.01.2026; introduction 01.05.2026; self-assessment remains not certification | Drop the order number / cite the self-assessment as certification | `protocol_planning` |
+| IND-19 | industry | GOST R 72515-2026 (ISO/IEC 12792:2025) transparency taxonomy | Maps onto NOT_IMPLEMENTED, advisory LLM/VLM, ADR-001; order 65-st on the fund card | GOST R 72515 certificate / trusted-model listing | `protocol_planning` |
+| IND-20 | industry | MinTsifry bill ID 166424 (planned force 01.09.2027) | Draft not in the Duma; ADR-001 matches future synthetic-content logic as a K2 argument only | In-force AI law / trusted model / AeroBIM is already compliant | `protocol_planning` |
+| MIK-07 | mik | Criterion → git evidence map as findability, not a score | Pointers for K1–K5 and B1–B5; predicted_aerobim_total stays None | Evidence map = prize-clearing total / Checkpoint GO | `protocol_planning` |
+| IND-21 | industry | GOST R 71476-2024 (ISO/IEC 22989:2022) AI concepts and terminology | Order 1550-st / 28.10.2024 / in force 01.01.2025; terms only | We standardized the industry / certified terminology | `protocol_planning` |
+| IND-22 | industry | GOST R ISO/IEC 42001-2024 AI management system | Official fund card 1549-st; HITL + ADR-001 + impact map = partial | Certified AIMS / 42001 conformity mark / trusted-model listing | `protocol_planning` |
+| IND-23 | industry | LETI public Appendix 4 table (30.04.2026): Partner task is row 6 | Paid pilot 2M; neighbouring row 7 is a different partner task | Handout 07 = Appendix 4 number / row 7 is our Partner task | `operational_hygiene` |
+| TL-12 | techlab | i.moscow/pilot city grant vs TechLab prize 2M | City pilots ask a legal entity and TRL-ish 6; 449-PP ≠ TechLab entry | City grant / 449-PP is the TechLab 2M prize or the entry ticket | `operational_hygiene` |
+| MIK-08 | mik | Prize floor 50 is reachable inside K1-low if rest is high | K1 16 + rest-high lo 36.6 = 52.6 identity; 10 people not required | Need 10 named people / K1 must leave low / git predicts ≥50 | `protocol_planning` |
+| IND-24 | industry | GOST R 58048-2017 TRL scale (order 2128-st) | Self-assess TRL 4 (lab/CI/fixture); TRL 5 needs partner environment | Independent OGT / TRL 5 / PP 2204 / city TRL 6 as this K2 score | `protocol_planning` |
+| TL-13 | techlab | K3 is partner-fit; B2 is partner validation metrics | Public mandate ticksheet; 0.60 protocol is sign-ready not signed | Empty partner metrics means K3 must be low / pytest is K3-high | `protocol_planning` |
+| MIK-09 | mik | K4 commercial path: TAM labeled, SAM empty, 2M prize is SOM | GidMarket BIM 10.1 bn RUB 2022 via TAdviser is TAM; hours A1-A8 empty | 10.1 bn is our SAM / 72% analog is our effect / other MIK 500M packaging | `protocol_planning` |
+| IND-25 | industry | PNST 841-2023 AI quality evaluation (order 61-pnst) | Maps onto 0.60 protocol + dual-rater + F1; preliminary, not GOST R | SQuaRE certificate / certified AI quality assessment | `protocol_planning` |
+| TL-14 | techlab | Seat briefs and application paste without a git roster | One paragraph per role; mean of sitting seats; 0.60 cover is sign-ready | Sitting FIO in git / predicted score from paste / protocol already signed | `operational_hygiene` |
+| MIK-10 | mik | Band identity 16+36.6=52.6 is not a predicted AeroBIM total | reachable_inside_low_k1_if_rest_high is arithmetic; prize floor stays 50 | Quote 'floor reachable' / 52.6 as the team's expected score | `protocol_planning` |
+| TL-15 | techlab | Public task-page names and sponsor quote vs signed commission | Catalog FIO are publication; sponsor quote is not attested chair | Those names sit the jury / fill K1 / chair the commission | `operational_hygiene` |
+| MIK-11 | mik | June order: both rounds are a mean; App 3 transcribed, PDF not in git | K1-K5 Appendix 2; B1-B5 match owner-supplied Appendix 3 copies; points bind to criteria not seats; working floor 50 of 100; wording ambiguous | PDF is in git / attested_by=ci / three seats own 65 / final is a sum / predicted total | `protocol_planning` |
+| MIK-12 | mik | K4 after partner 1H2026 IFRS: zero entry, not a CAPEX ask | Pay-on-result speech is not a signed SKU; IFRS loss is not our saving; 200M AI program is theirs, not AeroBIM | Invest in us / we offset the IFRS loss / RAS +31% is group IFRS | `protocol_planning` |
+| TL-16 | techlab | Four catalog cards are filtered survivors, not all applicants | Neighbor-task 46 teams is a different Partner in the same first stream; peer card claims are not audited public fact | Four cards = everyone who applied / 15 pilots and 600+ norms are verified | `operational_hygiene` |
+| IND-26 | industry | Stand-alone RAS 1H2026 revenue +31% is not group IFRS -31% | Opposite signs on the same window; mixing them drops tech-customer trust | Cite RAS growth as the group IFRS picture / one figure two signs | `protocol_planning` |
+| CH-11 | customer | ТР-17: неэффективное использование пространства (продаваемая площадь / МОП / коридоры) | IfcSpace inventory remains ADVISORY_ONLY until appointing-party thresholds are signed; scope is OA-14 | Space efficiency delivered / customer does not need the row / numeric KPI without signature | `protocol_planning` |
+| IND-27 | industry | ODA Sustaining vs BimRv/BimNv extensions (public 2026 list) | Sustaining 7500/4500 USD is the SaaS DWG floor; RVT/NWD need 6250 USD extensions each | 7500 USD = native RVT/NWD / CADSoftTools 1660 USD as 2026 floor / LibreDWG in MIT core | `protocol_planning` |
+| IND-28 | industry | Wilson 1927 / Brown–Cai–DasGupta 2001: 6/6 is not unity for a jury | wilson_interval(6,6) 95% lower ~0.61; fixture AABB P/R stays unpublished to the jury | Show 1.0 at n=6 even with a caveat / treat as TZ clash >90% | `not_licensed` |
+| CH-12 | customer | п. 1.1.4: офис 500 МБ / модели 1,5 ГБ — ingest + RocksDB; SPF/WASM 256 МиБ | AEROBIM_MAX_IFC_BYTES stays 256 MiB SPF; files up to 1.5 GB open via IfcOpenShell RocksDB; WASM stays 256 MiB; HTTP 413 over 1.5 GB | We already SPF-open 1.5 GB / raise default SPF cap because it is config / bSI 256 MB = our 256 MiB / WASM shows 1.5 GB | `protocol_planning` |
+| IND-29 | industry | IfcOpenShell SPF RAM ~8–10× disk (#7116, ~275–300 MB Riverside) | Planning multiplier 10: 256 MiB analyze → ~2.5 GiB RSS; 1.5 GB ingest → ~15 GiB | Raising the analyze cap is a one-line settings change / RSS equals file size | `not_licensed` |
+| PLAN-06 | techlab | LIRA/RD compare is four declared-value checks, not a solver | CC-2/CC-4 comparable when a readable note exists; CC-1/CC-3 sample; .lir closed | Independent recalculation / As from IFC without IfcReinforcingBar / LIRA accuracy % | `protocol_planning` |
+| TL-17 | techlab | Five former TBD TZ sections are a confirmation request, not a blank form | TZ v2 fills architecture, code/build, solution image, presentation, accompanying docs | Ask organizers to draft empty TBD from 09.07 / compare teams on unfilled bars | `operational_hygiene` |
+
+## KT#3 (03–21.09) — что должно измениться, чтобы снять NO_GO
+
+NO_GO снимается только при CLOSED RT-001 + RT-002 + RT-003, не этим файлом.
+
+| ID | Условие КТ#3 |
+|---|---|
+| CH-01 | Без изменения роли: эксперт остаётся уполномочивающим (ISO 19650-2 5.7) |
+| CH-02 | Подписанный EIR/IDS назначающей стороны + customer_pack_hash |
+| CH-03 | Размеченный 2D-корпус заказчика; VLM остаётся advisory |
+| CH-04 | ODA trial = измерение KT#3, не покупка и не product claim |
+| CH-05 | Корпус + ≥2 разметчика + κ/α; federated MEP + signed clearance (RT-003) |
+| CH-06 | Замер на customer pack с corpus_kind=customer |
+| CH-07 | Log + screenshot + hashes именованного CDE заказчика |
+| CH-08 | QTO area only after export with quantities or signed OOS |
+| CH-09 | Customer IDS for fire class, not demo REI60 |
+| CH-10 | Keep paper-objects unmixed; MIK act cites interim 0.60 |
+| PLAN-00 | Keep NDA binaries and hashes out of git |
+| PLAN-01 | QTO export or appointing-party signed OOS |
+| PLAN-02 | Federated MEP IFC or appointing-party signed OOS; RT-003 stays OPEN |
+| PLAN-03 | Bar entities in IFC or appointing-party signed OOS of task 7 |
+| PLAN-04 | Keep constructs unmixed; do not treat 0 hits as Does-not |
+| PLAN-05 | Dual named raters on a frozen remark set |
+| TRK-01 | КТ#3 — итоговое решение; победителей определяют заказчики |
+| TRK-02 | Повтор на customer packs, не на wall-fixture |
+| TRK-03 | Корпус ПД+экспертиза по-прежнему отсутствует |
+| TRK-04 | Минуты только после заметок владельца |
+| TRK-05 | Owner file; git не изобретает воронку |
+| TRK-06 | Решение коммерции — вне кода |
+| SIG-01 | Signed IDS (RT-002b) + dual raters (RT-001) before any publishable count |
+| SIG-02 | Owner pastes name-free aggregate after OA-9; hashed TSV stays .local |
+| JURY-01 | Keep FIO and NDA fingerprint counts off jury surfaces |
+| FMT-01 | Appointing-party IFC/PDF; readable calc notes; NWD federation as IFC or OOS |
+| SPG-01 | Keep the consulting pin; keep the filename off the jury map |
+| UI-01 | Jury laptop CLI; operator may seed git fixture; keep NO_GO; natives fail-closed. Demo seed stays off published OpenAPI. |
+| TL-01 | КТ#3 03–21.09 — итоговое решение |
+| TL-02 | Замеры только после intake-gates |
+| TL-03 | Оплату приза уточнять только по соглашению Партнёра и Фонда |
+| TL-04 | Sheet gold + dual raters; VLM stays advisory |
+| TL-05 | Appointing-party IDS with pack_hash (RT-002b) |
+| TL-06 | QTO export or signed OOS; RD IFC if stage compare is in scope |
+| TL-07 | Customer fire IDS, not demo REI60 |
+| TL-08 | Federated MEP IFC or written MEP-OOS (RT-003) |
+| TL-09 | Dual named raters + κ on a frozen remark set (RT-001) |
+| TL-10 | Bar entities in IFC or written OOS of task 7 |
+| MIK-01 | VERIFY_WITH_OPERATOR до получения форм |
+| MIK-02 | Следующие этапы — после решения заказчиков на КТ#3 |
+| IND-01 | Customer IDS pack remains RT-002 |
+| IND-02 | Организационный акт 5.7 остаётся за экспертом |
+| IND-03 | Class 4 только с расчётным solver, которого нет |
+| IND-04 | Полный extract + сценарии 3/18/21/22, если издатель даст IDS |
+| IND-05 | Не заменяет L3 customer corpus (Mushkani et al. project-level unit) |
+| IND-06 | Harbor only as labeled open-bench, never as the appointing party PD |
+| IND-07 | PrecisionClaim.publishable remains the only accuracy gate |
+| IND-08 | Signed clearance + federated customer IFC (RT-003) |
+| IND-09 | Do not claim Part 6; 5.7 stays human |
+| IND-10 | Stay on IDS 1.0 checking + audit split until 1.1 is final |
+| IND-11 | Four-state Meets/Missing/Uncertain; expert stays in the loop |
+| IND-12 | VLM advisory only; no sheet-level sign-off |
+| IND-13 | Keep RT-002a and RT-002b unmixed |
+| IND-14 | Keep cv_human_level=MISSING; no VecFormer/DPSS in runtime |
+| IND-15 | Keep no-ML filter; RT-003 stays OPEN |
+| IND-16 | Keep dwg_dxf MISSING on analyze |
+| IND-17 | Keep cv_human_level=MISSING; OCR does not clear drawing ERROR |
+| MIK-03 | Application roster is the K1 object; no numeric forecast from git |
+| MIK-04 | Prepare to the signed order; do not publish sitting-member lists |
+| MIK-05 | Keep confirmed_partner_validation_metrics False until RT-001 |
+| MIK-06 | Do not promise a patent fence in the application |
+| TL-11 | Owner files roles with evidence; git does not invent the roster |
+| IND-18 | Keep the card citation; do not claim a conformity mark |
+| IND-19 | Keep the taxonomy map; still not a conformity declaration |
+| IND-20 | Cite as horizon; do not speak as if the bill is in force |
+| MIK-07 | Keep the map as a pointer; do not mint a numeric forecast |
+| IND-21 | Keep terminology map; still not a conformity mark |
+| IND-22 | Keep mapping; gost_42001_certified stays False |
+| IND-23 | Speak Appendix 4 №6; do not mix with the neighbouring row |
+| TL-12 | Keep 449-PP VERIFY; do not substitute the prize instrument |
+| MIK-08 | Keep predicted_aerobim_total None; do not sit at the bottom of K1-low |
+| IND-24 | Keep trl_5_claimed False; not an independent readiness exam |
+| TL-13 | Keep k3_equals_validation_metrics False |
+| MIK-09 | Keep k4_revenue_claimed and foreign_labor_cut_as_ours False |
+| IND-25 | Keep pnst_841_certified False |
+| TL-14 | Keep partner_kpis_agreed_in_writing False; person cells stay empty |
+| MIK-10 | Keep predicted_aerobim_total None |
+| TL-15 | Keep sponsor_quote_is_commission_chair False |
+| MIK-11 | Keep regulation_appendix_3_in_git False; keep partner_nominal_criteria_weight None |
+| MIK-12 | Keep k4_asks_customer_capex and k4_offsets_partner_ifrs_loss False |
+| TL-16 | Keep catalog_four_are_all_applicants False |
+| IND-26 | Keep ras_ifrs_signs_are_the_same False |
+| CH-11 | Owner records in-scope advisory vs out-of-MVP before the 22.09 rehearsal |
+| IND-27 | Keep native Autodesk fail-closed; IFC exchange, not SDK purchase, for MVP |
+| IND-28 | Protocol n~100 + two raters before any publishable rate |
+| CH-12 | OA-16 RSS on a local over-SPF file via RocksDB; do not raise SPF default |
+| IND-29 | RocksDB is wired for over-SPF files; stream2/R-tree are not the analyze path |
+| PLAN-06 | Say the solver boundary aloud; partial method GO is not product accuracy |
+| TL-17 | Send our edition for confirmation (OA-8) |
+
+## Evidence pointers
+
+- `CH-01`: [ADR-001-verdict-ownership-2026.md](../architecture/ADR-001-verdict-ownership-2026.md)
+- `CH-02`: `python -m aerobim.tools.run_demo_ifc_acceptance_gate`
+- `CH-03`: `python -m aerobim.tools.run_demo_vertical_slice`
+- `CH-04`: [ADR-003-dwg-oda-trial-kt3-2026.md](../architecture/ADR-003-dwg-oda-trial-kt3-2026.md)
+- `CH-05`: [QUALITY_MEASUREMENT_PROTOCOL_2026_08.md](../pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md)
+- `CH-06`: `python -m aerobim.tools.measure_package_sla`
+- `CH-07`: [pilot-claim-boundary-2026.md](../pilot-claim-boundary-2026.md)
+- `CH-08`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md)
+- `CH-09`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md)
+- `CH-10`: [TZ_V1_CONTEST_BRIEF_PIN_2026_08.md](../tz/TZ_V1_CONTEST_BRIEF_PIN_2026_08.md)
+- `PLAN-00`: [owner-ai-plan-execution-2026-08.json](../evidence/owner-ai-plan-execution-2026-08.json)
+- `PLAN-01`: [qto_space_area.unsigned.json](../../samples/oos/qto_space_area.unsigned.json)
+- `PLAN-02`: [mep_federated.unsigned.json](../../samples/oos/mep_federated.unsigned.json)
+- `PLAN-03`: [rebar_class4.unsigned.json](../../samples/oos/rebar_class4.unsigned.json)
+- `PLAN-04`: [owner-ai-plan-execution-2026-08.json](../evidence/owner-ai-plan-execution-2026-08.json)
+- `PLAN-05`: [RT001_LABELING_PROTOCOL_RT026_2026_08_03.md](RT001_LABELING_PROTOCOL_RT026_2026_08_03.md)
+- `TRK-01`: [KT3_TRACKER_SIX_TASKS_2026_08.md](../demo/KT3_TRACKER_SIX_TASKS_2026_08.md)
+- `TRK-02`: [ifc-release-matrix-2026-08.md](../evidence/ifc-release-matrix-2026-08.md)
+- `TRK-03`: [KT2_CORPUS_SSOT_2026_08.md](../demo/KT2_CORPUS_SSOT_2026_08.md)
+- `TRK-04`: [KT3_JURY_FAQ_2026_08_25.md](../demo/KT3_JURY_FAQ_2026_08_25.md)
+- `TRK-05`: [KT3_TRACKER_SIX_TASKS_2026_08.md](../demo/KT3_TRACKER_SIX_TASKS_2026_08.md)
+- `TRK-06`: [ADR-002-open-core-commercial-boundary-2026.md](../architecture/ADR-002-open-core-commercial-boundary-2026.md)
+- `SIG-01`: [FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md](FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md)
+- `SIG-02`: [CHANNEL_PACK_TRIAGE_2026_08.md](CHANNEL_PACK_TRIAGE_2026_08.md)
+- `JURY-01`: [JURY_PACK_TRIAGE_2026_09.md](JURY_PACK_TRIAGE_2026_09.md)
+- `FMT-01`: [FORMAT_INGEST_TRIAGE_2026_09.md](FORMAT_INGEST_TRIAGE_2026_09.md)
+- `SPG-01`: [K4_COMMERCIAL_PATH_2026_08.md](K4_COMMERCIAL_PATH_2026_08.md)
+- `UI-01`: [UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md](UI_EXPERT_WORKPLACE_TRIAGE_2026_09.md)
+- `TL-01`: [docs.md](../docs.md)
+- `TL-02`: [PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md](../partners/PROTOCOL_QUALITY_ACCEPTANCE_TASK07_2026_08.md)
+- `TL-03`: [TECHLAB_TASK_07_READINESS_2026.md](../partners/TECHLAB_TASK_07_READINESS_2026.md)
+- `TL-04`: [TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md](TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md)
+- `TL-05`: [TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md](TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md)
+- `TL-06`: [TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md](TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md)
+- `TL-07`: [TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md](TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md)
+- `TL-08`: [TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md](TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md)
+- `TL-09`: [TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md](TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md)
+- `TL-10`: [TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md](TECHLAB_SEVEN_TASKS_CARTOGRAPHY_2026_08.md)
+- `MIK-01`: [MIK_PILOT_COMPLIANCE_2026.md](../partners/MIK_PILOT_COMPLIANCE_2026.md)
+- `MIK-02`: [docs.md](../docs.md)
+- `IND-01`: [ids.xsd](../../samples/ids-xsd/ids.xsd)
+- `IND-02`: [ADR-001-verdict-ownership-2026.md](../architecture/ADR-001-verdict-ownership-2026.md)
+- `IND-03`: [solihin-rule-classes-2026-08.md](../evidence/solihin-rule-classes-2026-08.md)
+- `IND-04`: [PNST909_22_SCENARIO_COVERAGE_AXIS_2026_08.md](../evidence/PNST909_22_SCENARIO_COVERAGE_AXIS_2026_08.md)
+- `IND-05`: [ifc-bench-v2-smoke-latest.json](../evidence/ifc-bench-v2-smoke-latest.json)
+- `IND-06`: [aec-bench-false-pass-2026-08.md](../evidence/aec-bench-false-pass-2026-08.md)
+- `IND-07`: [ADR-001-verdict-ownership-2026.md](../architecture/ADR-001-verdict-ownership-2026.md)
+- `IND-08`: [federated-clash-planted-2026-08.md](../evidence/federated-clash-planted-2026-08.md)
+- `IND-09`: [ADR-001-verdict-ownership-2026.md](../architecture/ADR-001-verdict-ownership-2026.md)
+- `IND-10`: [ids.xsd](../../samples/ids-xsd/ids.xsd)
+- `IND-11`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md)
+- `IND-12`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md)
+- `IND-13`: [TZ_SEAM_COVERAGE_MAP_2026_08.md](TZ_SEAM_COVERAGE_MAP_2026_08.md)
+- `IND-14`: [TARGET_HYBRID_ARCHITECTURE_TZ_2026.md](../architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md)
+- `IND-15`: [federated-clash-planted-2026-08.md](../evidence/federated-clash-planted-2026-08.md)
+- `IND-16`: [ADR-003-dwg-oda-trial-kt3-2026.md](../architecture/ADR-003-dwg-oda-trial-kt3-2026.md)
+- `IND-17`: [pilot-claim-boundary-2026.md](../pilot-claim-boundary-2026.md)
+- `MIK-03`: [MIK_COMMISSION_SCORING_2026_08.md](MIK_COMMISSION_SCORING_2026_08.md)
+- `MIK-04`: [MIK_COMMISSION_SCORING_2026_08.md](MIK_COMMISSION_SCORING_2026_08.md)
+- `MIK-05`: [KT3_FIXTURE_VALIDATION_COVER_2026_08.md](KT3_FIXTURE_VALIDATION_COVER_2026_08.md)
+- `MIK-06`: [ADR-002-open-core-commercial-boundary-2026.md](../architecture/ADR-002-open-core-commercial-boundary-2026.md)
+- `TL-11`: [TECHLAB_APPLICATION_2026.md](../partners/TECHLAB_APPLICATION_2026.md)
+- `IND-18`: [AI_SYSTEM_IMPACT_ASSESSMENT_GOST_R_72514_2026.md](AI_SYSTEM_IMPACT_ASSESSMENT_GOST_R_72514_2026.md)
+- `IND-19`: [AI_TRANSPARENCY_TAXONOMY_GOST_R_72515_2026.md](AI_TRANSPARENCY_TAXONOMY_GOST_R_72515_2026.md)
+- `IND-20`: [AI_TRANSPARENCY_TAXONOMY_GOST_R_72515_2026.md](AI_TRANSPARENCY_TAXONOMY_GOST_R_72515_2026.md)
+- `MIK-07`: [MIK_CRITERION_EVIDENCE_MAP_2026_08.md](MIK_CRITERION_EVIDENCE_MAP_2026_08.md)
+- `IND-21`: [NATIONAL_AI_GOST_STACK_KT3_2026.md](NATIONAL_AI_GOST_STACK_KT3_2026.md)
+- `IND-22`: [NATIONAL_AI_GOST_STACK_KT3_2026.md](NATIONAL_AI_GOST_STACK_KT3_2026.md)
+- `IND-23`: [MIK_COMMISSION_SCORING_2026_08.md](MIK_COMMISSION_SCORING_2026_08.md)
+- `TL-12`: [MIK_PILOT_COMPLIANCE_2026.md](../partners/MIK_PILOT_COMPLIANCE_2026.md)
+- `MIK-08`: [MIK_A_LEVERS_PAST_50_2026_08.md](MIK_A_LEVERS_PAST_50_2026_08.md)
+- `IND-24`: [TRL_GOST_R_58048_SELF_ASSESS_2026.md](TRL_GOST_R_58048_SELF_ASSESS_2026.md)
+- `TL-13`: [K3_PARTNER_FIT_TICKSHEET_2026_08.md](K3_PARTNER_FIT_TICKSHEET_2026_08.md)
+- `MIK-09`: [K4_COMMERCIAL_PATH_2026_08.md](K4_COMMERCIAL_PATH_2026_08.md)
+- `IND-25`: [PNST_841_AI_QUALITY_EVAL_2026.md](PNST_841_AI_QUALITY_EVAL_2026.md)
+- `TL-14`: [MIK_SEAT_BRIEFS_2026_08.md](MIK_SEAT_BRIEFS_2026_08.md)
+- `MIK-10`: [MIK_A_LEVERS_PAST_50_2026_08.md](MIK_A_LEVERS_PAST_50_2026_08.md)
+- `TL-15`: [TECHLAB_APPLICATION_2026.md](../partners/TECHLAB_APPLICATION_2026.md)
+- `MIK-11`: [MIK_COMMISSION_SCORING_2026_08.md](MIK_COMMISSION_SCORING_2026_08.md)
+- `MIK-12`: [K4_COMMERCIAL_PATH_2026_08.md](K4_COMMERCIAL_PATH_2026_08.md)
+- `TL-16`: [K2_NOVELTY_VS_PEERS_2026_08.md](K2_NOVELTY_VS_PEERS_2026_08.md)
+- `IND-26`: [K4_COMMERCIAL_PATH_2026_08.md](K4_COMMERCIAL_PATH_2026_08.md)
+- `CH-11`: [FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md](FINDING_VOLUME_CLAIM_BOUNDARY_2026_08.md)
+- `IND-27`: [NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md](NATIVE_CAD_LICENSE_FORK_OSINT_2026_08.md)
+- `IND-28`: [README.md](../evidence/clash-measurement-slice-2026-08/README.md)
+- `CH-12`: [IFC_ANALYZE_VS_INGEST_CAP_2026_08.md](IFC_ANALYZE_VS_INGEST_CAP_2026_08.md)
+- `IND-29`: [IFC_ANALYZE_VS_INGEST_CAP_2026_08.md](IFC_ANALYZE_VS_INGEST_CAP_2026_08.md)
+- `PLAN-06`: [CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md](CALCULATION_COMPARE_FOUR_CHECKS_2026_09.md)
+- `TL-17`: [TZ_TECHLAB_TASK_07_V2_2026.md](../tz/TZ_TECHLAB_TASK_07_V2_2026.md)

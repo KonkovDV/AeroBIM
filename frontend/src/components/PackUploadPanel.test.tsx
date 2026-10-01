@@ -1,0 +1,75 @@
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+const uploadDocumentMock = vi.fn();
+
+vi.mock("../lib/api", () => ({
+  uploadDocument: (...args: unknown[]) => uploadDocumentMock(...args),
+}));
+
+import PackUploadPanel from "./PackUploadPanel";
+import { UI_COPY } from "../lib/ui-copy";
+
+describe("PackUploadPanel", () => {
+  beforeEach(() => {
+    uploadDocumentMock.mockReset();
+  });
+
+  it("does not upload native RVT and shows fail-closed copy", async () => {
+    render(<PackUploadPanel />);
+    const input = screen.getByLabelText(UI_COPY.packFileUpload) as HTMLInputElement;
+    const file = new File(["x"], "tower.rvt", { type: "application/octet-stream" });
+    fireEvent.change(input, { target: { files: [file] } });
+    const honesty = await screen.findByTestId("pack-kind-honesty");
+    expect(honesty.textContent).toMatch(/жёсткий отказ/i);
+    expect(uploadDocumentMock).not.toHaveBeenCalled();
+    expect(screen.getByTestId("pack-dropzone")).toBeTruthy();
+    expect(screen.getByTestId("upload-size-honesty").textContent).toMatch(/256 МиБ/);
+    expect(screen.getByTestId("upload-size-honesty").textContent).toMatch(/1,5 ГБ/);
+    expect(screen.getByTestId("upload-size-honesty").textContent).toMatch(/отправить заново/i);
+  });
+
+  it("cancels an in-flight upload via AbortSignal", async () => {
+    let capturedSignal: AbortSignal | undefined;
+    uploadDocumentMock.mockImplementation(
+      (_file: File, options?: { signal?: AbortSignal }) =>
+        new Promise((_resolve, reject) => {
+          capturedSignal = options?.signal;
+          options?.signal?.addEventListener("abort", () => {
+            reject(new Error("Upload cancelled"));
+          });
+        }),
+    );
+    render(<PackUploadPanel />);
+    const input = screen.getByLabelText(UI_COPY.packFileUpload) as HTMLInputElement;
+    const file = new File(["IFC"], "walls.ifc", { type: "application/octet-stream" });
+    fireEvent.change(input, { target: { files: [file] } });
+    const cancel = await screen.findByRole("button", { name: UI_COPY.cancelUpload });
+    fireEvent.click(cancel);
+    expect(capturedSignal?.aborted).toBe(true);
+    await waitFor(() => {
+      expect(screen.queryByRole("button", { name: UI_COPY.cancelUpload })).toBeNull();
+    });
+    // Отмена эксперта — не сбой: английский reject из мока не должен всплыть в UI.
+    expect(screen.queryByText("Upload cancelled")).toBeNull();
+    expect(screen.queryByText(/отменена/i)).toBeNull();
+  });
+
+  it("lets the operator pick a document role before the run", () => {
+    const onChooseRole = vi.fn();
+    render(
+      <PackUploadPanel
+        pendingRole={{ path: "docs/plan.pdf", filename: "plan.pdf", role: "drawing" }}
+        onChooseRole={onChooseRole}
+      />,
+    );
+    expect(screen.getByTestId("pack-role-picker")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: UI_COPY.packRoleRequirement }));
+    expect(onChooseRole).toHaveBeenCalledWith("requirement");
+  });
+
+  it("shows a draft-slot replacement note when the parent reports one", () => {
+    render(<PackUploadPanel draftApplyNote="Слот IFC заменён (было models/a.ifc)." />);
+    expect(screen.getByTestId("pack-draft-apply-note").textContent).toMatch(/заменён/);
+  });
+});

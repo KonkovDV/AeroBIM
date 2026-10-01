@@ -1,0 +1,8 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "kitchen_denylist_pin",
+  "algorithm": "HMAC-SHA256",
+  "token_count": 27,
+  "hmac_sha256": "4c429734dd9253ee4e8012d30dc276a7413e813dfbd8a48927cb438617ac865c",
+  "claim_boundary": "Pin only. Protected literals live outside git. Fail-closed if the list or HMAC key is missing."
+}

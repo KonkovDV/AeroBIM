@@ -1,0 +1,647 @@
+"""Filesystem-backed HITL review event store (W3.5).
+
+RT-HYPER-002: corrupt JSONL lines are counted; fail-closed profiles raise.
+RT-P5: idempotency_key de-dupe, sequence numbers, exclusive append lock.
+RT-AUDIT-001/002: locked API append + hash chain tamper-evidence.
+"""
+
+from __future__ import annotations
+
+import json
+import logging
+import os
+import shutil
+import time
+from dataclasses import asdict, replace
+from pathlib import Path
+from typing import NoReturn
+
+from aerobim.core.security.path_jail import safe_storage_token
+from aerobim.domain.models import ReviewEvent
+from aerobim.domain.review_event_append import (
+    HitlStateConflictError,
+    ReviewEventAppendSpec,
+    append_payload_fingerprint,
+    latest_finding_sequence,
+    stored_event_payload_fingerprint,
+)
+from aerobim.domain.review_event_chain import genesis_previous_hash, review_event_content_hash
+from aerobim.domain.review_state_machine import (
+    HitlTransitionError,
+    assert_hitl_transition,
+    latest_hitl_state,
+)
+
+_logger = logging.getLogger(__name__)
+
+_MAX_LINE_BYTES = 256 * 1024
+# 80 × backoff ≈ 5 s. 50 × 20 ms was 1 s — under CPU starvation a writer that
+# lost the race exhausted the budget and raised RuntimeError instead of conflict.
+_LOCK_ATTEMPTS = 80
+_LOCK_SLEEP_S = 0.02
+_LOCK_SLEEP_MAX_S = 0.25
+_LOCK_STALE_S = 60.0
+_NORM_PACK_EVENT_TYPES = frozenset({"norm_rule_proposed", "norm_rule_edited"})
+
+
+def _lock_backoff_s(attempt: int) -> float:
+    return min(_LOCK_SLEEP_S * (1.2**attempt), _LOCK_SLEEP_MAX_S)
+
+
+class AuditEventCorruptionError(RuntimeError):
+    """Raised when audit_fail_closed=True and JSONL contains invalid lines."""
+
+
+class ReviewEventChainError(RuntimeError):
+    """Raised when hash-chain verification fails under fail-closed."""
+
+
+class SequenceClaimError(RuntimeError):
+    """Raised when another writer already claimed this sequence slot (CAS conflict)."""
+
+
+def _acquire_excl_lock(lock_path: Path) -> int:
+    """Create exclusive lock file; reclaim stale locks by renaming the lock away.
+
+    Rename is atomic on the same filesystem: exactly one reclaim succeeds, and a
+    crashed reclaimer cannot leave a stuck ``.reclaim`` marker (N-54).
+    Sequence identity uses exclusive event files — lock is only an optimization.
+    """
+
+    try:
+        return os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+    except FileExistsError:
+        try:
+            age = time.time() - lock_path.stat().st_mtime
+        except OSError:
+            age = 0.0
+        if age < _LOCK_STALE_S:
+            raise
+        stolen = lock_path.with_name(f"{lock_path.name}.stolen.{os.getpid()}.{time.time_ns()}")
+        try:
+            os.rename(str(lock_path), str(stolen))
+        except OSError as exc:
+            raise FileExistsError from exc
+        try:
+            stolen.unlink(missing_ok=True)
+        except OSError:
+            pass
+        return os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+
+
+def _write_all(fd: int, payload: bytes) -> None:
+    offset = 0
+    while offset < len(payload):
+        written = os.write(fd, payload[offset:])
+        if written <= 0:
+            raise OSError("short write to review-event slot")
+        offset += written
+
+
+def _commit_sequence_slot(staging: Path, slot: Path) -> None:
+    """Publish a fully written staging file as ``.seq.N`` without replacing a peer.
+
+    POSIX: ``os.link`` fails if the slot exists. Windows: ``os.rename`` fails if
+    the destination exists. Never ``os.replace`` onto a live sequence file.
+    """
+
+    try:
+        os.link(str(staging), str(slot))
+        staging.unlink(missing_ok=True)
+        return
+    except FileExistsError as exc:
+        staging.unlink(missing_ok=True)
+        raise SequenceClaimError(f"sequence already claimed for {slot.name}") from exc
+    except OSError:
+        pass
+    if slot.exists():
+        staging.unlink(missing_ok=True)
+        raise SequenceClaimError(f"sequence already claimed for {slot.name}")
+    try:
+        os.rename(str(staging), str(slot))
+    except FileExistsError as exc:
+        staging.unlink(missing_ok=True)
+        raise SequenceClaimError(f"sequence already claimed for {slot.name}") from exc
+
+
+def _write_event_exclusive(target: Path, event: ReviewEvent, *, sequence: int) -> Path:
+    """Create the sequence file with a full write, then an exclusive publish.
+
+    Staging ``.writing.*`` files are not committed journal records. A crash
+    after create and before publish leaves no ``.seq.N`` slot.
+    """
+
+    slot = target.with_name(f"{target.name}.seq.{sequence}")
+    line = json.dumps(asdict(event), ensure_ascii=False) + "\n"
+    payload = line.encode("utf-8")
+    if len(payload) > _MAX_LINE_BYTES:
+        raise ValueError(f"Review event exceeds max line size ({_MAX_LINE_BYTES} bytes)")
+    staging = slot.with_name(f"{slot.name}.writing.{os.getpid()}.{time.time_ns()}")
+    fd = os.open(str(staging), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+    try:
+        _write_all(fd, payload)
+        os.fsync(fd)
+    except Exception:
+        os.close(fd)
+        staging.unlink(missing_ok=True)
+        raise
+    os.close(fd)
+    _commit_sequence_slot(staging, slot)
+    return slot
+
+
+class FilesystemReviewEventStore:
+    def __init__(self, storage_dir: Path, *, fail_closed: bool = False) -> None:
+        self._dir = storage_dir / "review-events"
+        self._dir.mkdir(parents=True, exist_ok=True)
+        self._fail_closed = fail_closed
+        self.last_invalid_line_count: int = 0
+        self.last_load_degraded: bool = False
+
+    def _path(self, report_id: str) -> Path:
+        # Windows NTFS: raw ``pack:…`` is an Alternate Data Stream, so seq/lock
+        # files vanish from iterdir() and the second append cannot acquire a lock.
+        return self._dir / f"{safe_storage_token(report_id)}.jsonl"
+
+    def append(self, event: ReviewEvent) -> str:
+        target = self._path(event.report_id)
+        return self._append_under_lock(target, event)
+
+    def append_api_event(self, spec: ReviewEventAppendSpec) -> ReviewEvent:
+        """Validate HITL transitions and assign sequence/hash under exclusive lock."""
+
+        target = self._path(spec.report_id)
+        lock_path = target.with_suffix(target.suffix + ".lock")
+        for attempt in range(_LOCK_ATTEMPTS):
+            try:
+                fd = _acquire_excl_lock(lock_path)
+                try:
+                    os.write(fd, f"{time.time():.3f}".encode("ascii"))
+                finally:
+                    os.close(fd)
+                try:
+                    return self._append_api_under_lock(target, spec)
+                finally:
+                    lock_path.unlink(missing_ok=True)
+            except (FileExistsError, SequenceClaimError):
+                time.sleep(_lock_backoff_s(attempt))
+        self._raise_after_lock_timeout(target, spec)
+
+    def list_for_report(self, report_id: str) -> list[ReviewEvent]:
+        return list(self._iter_events(report_id=report_id, raise_on_corrupt=self._fail_closed))
+
+    def discard_report(self, report_id: str) -> None:
+        """Compensating delete when report persist fails after HITL trail write."""
+
+        target = self._path(report_id)
+        lock_path = target.with_suffix(target.suffix + ".lock")
+        for attempt in range(_LOCK_ATTEMPTS):
+            try:
+                fd = _acquire_excl_lock(lock_path)
+                try:
+                    os.write(fd, f"{time.time():.3f}".encode("ascii"))
+                finally:
+                    os.close(fd)
+                try:
+                    target.unlink(missing_ok=True)
+                    prefix = f"{target.name}.seq."
+                    for slot in target.parent.glob(f"{target.name}.seq.*"):
+                        if slot.name.startswith(prefix) and slot.name[len(prefix) :].isdigit():
+                            slot.unlink(missing_ok=True)
+                    return
+                finally:
+                    lock_path.unlink(missing_ok=True)
+            except FileExistsError:
+                time.sleep(_lock_backoff_s(attempt))
+        raise RuntimeError(f"Could not acquire review-event lock for discard {target.name}")
+
+    def _migrate_legacy_jsonl_under_lock(self, target: Path) -> None:
+        """Promote a legacy JSONL journal to seq files once, with a backup.
+
+        After this commit, reads prefer seq files. The JSONL sidecar is removed
+        (backup remains as ``.pre-seq.bak``). Hash-chain is not a signature
+        and does not protect a disk-admin rewrite of every file.
+        """
+
+        prefix = f"{target.name}.seq."
+        seq_nums = sorted(
+            int(path.name[len(prefix) :])
+            for path in target.parent.glob(f"{target.name}.seq.*")
+            if path.name.startswith(prefix) and path.name[len(prefix) :].isdigit()
+        )
+        if not target.exists():
+            return
+        raw = target.read_text(encoding="utf-8")
+        if not raw.strip():
+            return
+        backup = target.with_name(f"{target.name}.pre-seq.bak")
+        if not backup.exists():
+            shutil.copy2(target, backup)
+        parsed = self._parse_journal_lines(
+            report_id=target.stem,
+            lines=raw.splitlines(),
+            raise_on_corrupt=self._fail_closed,
+            modern=False,
+        )
+        start = (seq_nums[-1] if seq_nums else 0) + 1
+        previous = genesis_previous_hash()
+        if seq_nums:
+            last_path = target.parent / f"{target.name}.seq.{seq_nums[-1]}"
+            last_parsed = self._parse_journal_lines(
+                report_id=target.stem,
+                lines=last_path.read_text(encoding="utf-8").splitlines(),
+                raise_on_corrupt=self._fail_closed,
+                modern=True,
+            )
+            if last_parsed and last_parsed[-1].content_hash:
+                previous = last_parsed[-1].content_hash
+        for index, event in enumerate(parsed, start=1):
+            if index < start:
+                continue
+            prev_hash = event.previous_event_hash or previous
+            content = event.content_hash or review_event_content_hash(
+                event, previous_event_hash=prev_hash
+            )
+            stamped = replace(
+                event,
+                sequence_number=event.sequence_number or index,
+                previous_event_hash=prev_hash,
+                content_hash=content,
+            )
+            try:
+                _write_event_exclusive(target, stamped, sequence=index)
+            except SequenceClaimError:
+                pass
+            previous = content
+        target.unlink(missing_ok=True)
+
+    def _append_api_under_lock(self, target: Path, spec: ReviewEventAppendSpec) -> ReviewEvent:
+        self._migrate_legacy_jsonl_under_lock(target)
+        existing = self._iter_events(
+            report_id=spec.report_id,
+            raise_on_corrupt=self._fail_closed,
+        )
+        existing_ids = {e.event_id for e in existing}
+        existing_keys = {e.idempotency_key for e in existing if e.idempotency_key}
+        idem = (spec.idempotency_key or "").strip() or None
+        event_id = (spec.event_id or "").strip() or None
+        if not event_id and idem:
+            import hashlib
+
+            event_id = hashlib.sha256(idem.encode("utf-8")).hexdigest()[:32]
+        if not event_id:
+            raise ValueError("event_id or idempotency_key is required")
+
+        if event_id in existing_ids:
+            existing_event = next(e for e in existing if e.event_id == event_id)
+            if stored_event_payload_fingerprint(existing_event) != append_payload_fingerprint(spec):
+                raise HitlStateConflictError("idempotency key reused with a different payload")
+            return existing_event
+        if idem and idem in existing_keys:
+            existing_event = next(e for e in existing if e.idempotency_key == idem)
+            if stored_event_payload_fingerprint(existing_event) != append_payload_fingerprint(spec):
+                raise HitlStateConflictError("idempotency key reused with a different payload")
+            return existing_event
+
+        server_state = latest_hitl_state(
+            existing,
+            spec.finding_id,
+            spec.issue_rule_id,
+        )
+        if spec.expected_review_version is not None:
+            current_version = latest_finding_sequence(
+                existing,
+                finding_id=spec.finding_id,
+                issue_rule_id=spec.issue_rule_id,
+            )
+            if (current_version or 0) != spec.expected_review_version:
+                raise HitlStateConflictError(
+                    "expected_review_version does not match finding sequence"
+                )
+        resulting_state: str | None = None
+        if spec.event_type not in _NORM_PACK_EVENT_TYPES:
+            client_previous = (spec.previous_state or "").strip() or None
+            if server_state is not None:
+                if spec.previous_state is None:
+                    raise HitlTransitionError(
+                        "previous_state is required when appending to existing HITL state"
+                    )
+                if client_previous != server_state:
+                    raise HitlStateConflictError(
+                        f"previous_state does not match server HITL state "
+                        f"(server={server_state!r}, client={client_previous!r})"
+                    )
+            try:
+                resulting_state = assert_hitl_transition(
+                    current=server_state,
+                    event_type=spec.event_type,
+                    actor=spec.actor,
+                    note=spec.note,
+                )
+            except HitlTransitionError:
+                raise
+
+        sequence = len(existing) + 1
+        previous_hash = (
+            existing[-1].content_hash
+            if existing and existing[-1].content_hash
+            else genesis_previous_hash()
+        )
+        draft = ReviewEvent(
+            event_id=event_id,
+            report_id=spec.report_id,
+            event_type=spec.event_type,  # type: ignore[arg-type]
+            created_at=spec.created_at,
+            issue_rule_id=spec.issue_rule_id,
+            actor=spec.actor,
+            note=spec.note,
+            latency_ms=spec.latency_ms,
+            idempotency_key=idem,
+            sequence_number=sequence,
+            previous_state=server_state,
+            resulting_state=resulting_state,
+            finding_id=spec.finding_id,
+            previous_event_hash=previous_hash,
+        )
+        content_hash = review_event_content_hash(draft, previous_event_hash=previous_hash)
+        stamped = replace(draft, content_hash=content_hash)
+        _write_event_exclusive(target, stamped, sequence=sequence)
+        return stamped
+
+    def _append_under_lock(self, target: Path, event: ReviewEvent) -> str:
+        """Read-modify-write under exclusive lock (RT-HITL-001)."""
+
+        lock_path = target.with_suffix(target.suffix + ".lock")
+        report_id = event.report_id
+        for attempt in range(_LOCK_ATTEMPTS):
+            try:
+                fd = _acquire_excl_lock(lock_path)
+                try:
+                    os.write(fd, f"{time.time():.3f}".encode("ascii"))
+                finally:
+                    os.close(fd)
+                try:
+                    self._migrate_legacy_jsonl_under_lock(target)
+                    existing = self._iter_events(
+                        report_id=report_id,
+                        raise_on_corrupt=self._fail_closed,
+                    )
+                    existing_ids = {e.event_id for e in existing}
+                    existing_keys = {e.idempotency_key for e in existing if e.idempotency_key}
+                    if event.event_id in existing_ids:
+                        return event.event_id
+                    if event.idempotency_key and event.idempotency_key in existing_keys:
+                        return next(
+                            e.event_id
+                            for e in existing
+                            if e.idempotency_key == event.idempotency_key
+                        )
+
+                    sequence = len(existing) + 1
+                    previous_hash = (
+                        existing[-1].content_hash
+                        if existing and existing[-1].content_hash
+                        else genesis_previous_hash()
+                    )
+                    draft = replace(
+                        event,
+                        sequence_number=sequence,
+                        previous_event_hash=event.previous_event_hash or previous_hash,
+                    )
+                    if not draft.content_hash:
+                        content_hash = review_event_content_hash(
+                            draft,
+                            previous_event_hash=draft.previous_event_hash or previous_hash,
+                        )
+                        draft = replace(draft, content_hash=content_hash)
+                    _write_event_exclusive(target, draft, sequence=sequence)
+                    return draft.event_id
+                finally:
+                    lock_path.unlink(missing_ok=True)
+            except (FileExistsError, SequenceClaimError):
+                time.sleep(_lock_backoff_s(attempt))
+        raise RuntimeError(f"Could not acquire review-event lock for {target.name}")
+
+    def _raise_after_lock_timeout(self, target: Path, spec: ReviewEventAppendSpec) -> NoReturn:
+        """A lost race must surface as HITL conflict, not a generic lock timeout.
+
+        Under CPU starvation the retry budget can expire after another writer
+        already committed. Re-read the journal: if the transition is no
+        longer legal, that is a conflict. Only a still-legal append with a
+        stuck lock is a RuntimeError.
+        """
+
+        existing = self._iter_events(
+            report_id=spec.report_id,
+            raise_on_corrupt=self._fail_closed,
+        )
+        server_state = latest_hitl_state(
+            existing,
+            spec.finding_id,
+            spec.issue_rule_id,
+        )
+        client_previous = (spec.previous_state or "").strip() or None
+        if spec.event_type not in _NORM_PACK_EVENT_TYPES:
+            if server_state is not None and client_previous != server_state:
+                raise HitlStateConflictError(
+                    f"previous_state does not match server HITL state "
+                    f"(server={server_state!r}, client={client_previous!r})"
+                )
+            try:
+                assert_hitl_transition(
+                    current=server_state,
+                    event_type=spec.event_type,
+                    actor=spec.actor,
+                    note=spec.note,
+                )
+            except HitlTransitionError as exc:
+                raise HitlStateConflictError(str(exc)) from exc
+        raise RuntimeError(f"Could not acquire review-event lock for {target.name}")
+
+    def _iter_events(self, *, report_id: str, raise_on_corrupt: bool) -> list[ReviewEvent]:
+        target = self._path(report_id)
+        if target.exists():
+            self._migrate_legacy_jsonl_under_lock(target)
+        self.last_invalid_line_count = 0
+        self.last_load_degraded = False
+        lines, modern = self._load_event_lines(target, raise_on_corrupt=raise_on_corrupt)
+        return self._parse_journal_lines(
+            report_id=report_id,
+            lines=lines,
+            raise_on_corrupt=raise_on_corrupt,
+            modern=modern,
+        )
+
+    def _parse_journal_lines(
+        self,
+        *,
+        report_id: str,
+        lines: list[str],
+        raise_on_corrupt: bool,
+        modern: bool,
+    ) -> list[ReviewEvent]:
+        if not lines:
+            return []
+        events: list[ReviewEvent] = []
+        seen_ids: set[str] = set()
+        seen_keys: set[str] = set()
+        expected_seq = 1
+        expected_prev_hash = genesis_previous_hash()
+        for line in lines:
+            if not line.strip():
+                if modern:
+                    self.last_invalid_line_count += 1
+                    msg = f"empty committed review-event slot for {report_id}"
+                    if raise_on_corrupt:
+                        raise AuditEventCorruptionError(msg)
+                    _logger.warning(msg)
+                    self.last_load_degraded = True
+                continue
+            if len(line.encode("utf-8")) > _MAX_LINE_BYTES:
+                self.last_invalid_line_count += 1
+                continue
+            try:
+                data = json.loads(line)
+                event = ReviewEvent(
+                    event_id=str(data["event_id"]),
+                    report_id=str(data["report_id"]),
+                    event_type=data["event_type"],
+                    created_at=str(data["created_at"]),
+                    issue_rule_id=data.get("issue_rule_id"),
+                    actor=data.get("actor"),
+                    note=data.get("note"),
+                    latency_ms=data.get("latency_ms"),
+                    pack_id=data.get("pack_id"),
+                    resulting_pack_version=data.get("resulting_pack_version"),
+                    target_approval_status=data.get("target_approval_status"),
+                    approval_ref=data.get("approval_ref"),
+                    rule_diff_json=data.get("rule_diff_json"),
+                    idempotency_key=data.get("idempotency_key"),
+                    sequence_number=data.get("sequence_number"),
+                    previous_state=data.get("previous_state"),
+                    resulting_state=data.get("resulting_state"),
+                    finding_id=data.get("finding_id"),
+                    content_hash=data.get("content_hash"),
+                    previous_event_hash=data.get("previous_event_hash"),
+                )
+                if event.event_id in seen_ids:
+                    self.last_invalid_line_count += 1
+                    continue
+                if event.idempotency_key and event.idempotency_key in seen_keys:
+                    self.last_invalid_line_count += 1
+                    continue
+                if event.sequence_number is not None and event.sequence_number != expected_seq:
+                    msg = (
+                        f"review-events sequence gap for {report_id}: "
+                        f"got {event.sequence_number} expected {expected_seq}"
+                    )
+                    if raise_on_corrupt:
+                        raise ReviewEventChainError(msg)
+                    _logger.warning(msg)
+                    self.last_load_degraded = True
+                if modern and not event.content_hash:
+                    msg = f"modern review-event missing content_hash for {report_id}"
+                    if raise_on_corrupt:
+                        raise ReviewEventChainError(msg)
+                    _logger.warning(msg)
+                    self.last_load_degraded = True
+                if event.content_hash:
+                    prev = event.previous_event_hash or genesis_previous_hash()
+                    if prev != expected_prev_hash:
+                        msg = (
+                            f"review-events hash-chain break for {report_id} "
+                            f"at seq {event.sequence_number}"
+                        )
+                        if raise_on_corrupt:
+                            raise ReviewEventChainError(msg)
+                        _logger.warning(msg)
+                        self.last_load_degraded = True
+                    recomputed = review_event_content_hash(event, previous_event_hash=prev)
+                    if recomputed != event.content_hash:
+                        msg = f"review-events content_hash mismatch for {report_id}"
+                        if raise_on_corrupt:
+                            raise ReviewEventChainError(msg)
+                        _logger.warning(msg)
+                        self.last_load_degraded = True
+                    expected_prev_hash = event.content_hash
+                seen_ids.add(event.event_id)
+                if event.idempotency_key:
+                    seen_keys.add(event.idempotency_key)
+                events.append(event)
+                expected_seq = (
+                    event.sequence_number + 1
+                    if event.sequence_number is not None
+                    else expected_seq + 1
+                )
+            except (json.JSONDecodeError, KeyError, TypeError, ValueError):
+                self.last_invalid_line_count += 1
+                if raise_on_corrupt:
+                    raise AuditEventCorruptionError(
+                        f"corrupt review-event line for {report_id}"
+                    ) from None
+                self.last_load_degraded = True
+        if self.last_invalid_line_count:
+            self.last_load_degraded = True
+            _logger.warning(
+                "review-events for %s degraded: invalid_lines=%s",
+                report_id,
+                self.last_invalid_line_count,
+            )
+            if raise_on_corrupt:
+                raise AuditEventCorruptionError(
+                    f"Audit JSONL corrupt for report {report_id}: "
+                    f"{self.last_invalid_line_count} invalid line(s)"
+                )
+        return events
+
+    def _load_event_lines(self, target: Path, *, raise_on_corrupt: bool) -> tuple[list[str], bool]:
+        """Prefer exclusive sequence files; fall back to legacy JSONL.
+
+        Sequence files are the modern journal. Empty committed slots are corrupt,
+        not a valid empty history. ``.writing.*`` staging files are ignored.
+        """
+
+        prefix = f"{target.name}.seq."
+        slots = [
+            path
+            for path in target.parent.glob(f"{target.name}.seq.*")
+            if path.name.startswith(prefix) and path.name[len(prefix) :].isdigit()
+        ]
+        if slots:
+            slots.sort(key=lambda path: int(path.name.rsplit(".", 1)[-1]))
+            nums = [int(path.name.rsplit(".", 1)[-1]) for path in slots]
+            expected = list(range(1, nums[-1] + 1)) if nums else []
+            if nums != expected:
+                msg = (
+                    f"review-events sequence file gap for {target.name}: "
+                    f"have {nums} expected contiguous {expected}"
+                )
+                if raise_on_corrupt:
+                    raise ReviewEventChainError(msg)
+                _logger.warning(msg)
+                self.last_load_degraded = True
+            lines = [path.read_text(encoding="utf-8").rstrip("\n") for path in slots]
+            if target.exists():
+                jsonl_lines = [
+                    line.rstrip("\n")
+                    for line in target.read_text(encoding="utf-8").splitlines()
+                    if line.strip()
+                ]
+                seq_lines = [line for line in lines if line.strip()]
+                incomplete_promotion = (
+                    len(jsonl_lines) > len(seq_lines) and jsonl_lines[: len(seq_lines)] == seq_lines
+                )
+                if jsonl_lines != seq_lines and not incomplete_promotion:
+                    msg = (
+                        f"review-events jsonl diverges from seq files for {target.name} "
+                        "(shadow store — N-57)"
+                    )
+                    if raise_on_corrupt:
+                        raise AuditEventCorruptionError(msg)
+                    _logger.warning(msg)
+                    self.last_load_degraded = True
+                    self.last_invalid_line_count += 1
+            return lines, True
+        if target.exists():
+            return target.read_text(encoding="utf-8").splitlines(), False
+        return [], False

@@ -1,0 +1,198 @@
+"""Typed advisory tool registry — AI cannot change verdict (ADR-001).
+
+``ids_assist_draft`` / ``compile_ids_draft`` is the Fuchs-shaped act (generate
+a checker/IDS). ``requirement_interpret`` is the Iversen-shaped act (choose how
+to read a clause). Both stay on the advisory contour: ``can_change_verdict``
+defaults to False and ``validate_invocation`` rejects a True flag.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Any, Literal
+
+AdvisoryToolName = Literal[
+    "ids_assist_draft",
+    "norm_corpus_retrieve",
+    "requirement_interpret",
+    "ifc_kg_query",
+    "compliance_agent_review",
+    "verify_loads",
+    "check_quantities",
+    "detect_clashes",
+    "detect_system_clash",
+    "drawing_vlm_read",
+]
+
+# Agent step names → registry contract names (SSOT for allowlist + traces).
+AGENT_TOOL_TO_REGISTRY: dict[str, AdvisoryToolName] = {
+    "retrieve_norms": "norm_corpus_retrieve",
+    "compile_ids_draft": "ids_assist_draft",
+    "analyze_logic": "requirement_interpret",
+    "query_ifc_kg": "ifc_kg_query",
+    "verify_loads": "verify_loads",
+    "check_quantities": "check_quantities",
+    "detect_clashes": "detect_clashes",
+    "detect_system_clash": "detect_system_clash",
+}
+
+
+@dataclass(frozen=True)
+class AdvisoryToolContract:
+    """Registry row for AI advisory tools — never on deterministic sign-off path."""
+
+    name: AdvisoryToolName
+    allowlist: frozenset[str]
+    json_schema_id: str
+    timeout_seconds: float
+    max_steps: int
+    evidence_required: bool
+    can_change_verdict: bool = False
+    contour: str = "ai_advisory"
+
+    def validate_invocation(self, *, tool_name: str, tenant_id: str | None) -> None:
+        if tool_name != self.name:
+            raise ValueError(f"tool {tool_name!r} does not match contract {self.name!r}")
+        if self.can_change_verdict:
+            raise ValueError("advisory tools must not change verdict")
+        if tenant_id is not None and tenant_id not in self.allowlist and self.allowlist:
+            raise ValueError(f"tenant {tenant_id!r} not in advisory tool allowlist")
+
+
+DEFAULT_ADVISORY_TOOL_REGISTRY: tuple[AdvisoryToolContract, ...] = (
+    AdvisoryToolContract(
+        name="ids_assist_draft",
+        allowlist=frozenset(),
+        json_schema_id="aerobim.ids_assist_draft.v1",
+        timeout_seconds=30.0,
+        max_steps=1,
+        evidence_required=True,
+    ),
+    AdvisoryToolContract(
+        name="norm_corpus_retrieve",
+        allowlist=frozenset(),
+        json_schema_id="aerobim.norm_corpus_retrieve.v1",
+        timeout_seconds=15.0,
+        max_steps=3,
+        evidence_required=True,
+    ),
+    AdvisoryToolContract(
+        name="requirement_interpret",
+        allowlist=frozenset(),
+        json_schema_id="aerobim.requirement_interpret.v1",
+        timeout_seconds=20.0,
+        max_steps=2,
+        evidence_required=True,
+    ),
+    AdvisoryToolContract(
+        name="ifc_kg_query",
+        allowlist=frozenset(),
+        json_schema_id="aerobim.ifc_kg_query.v1",
+        timeout_seconds=10.0,
+        max_steps=5,
+        evidence_required=True,
+    ),
+    AdvisoryToolContract(
+        name="compliance_agent_review",
+        allowlist=frozenset(),
+        json_schema_id="aerobim.compliance_agent_review.v1",
+        timeout_seconds=60.0,
+        max_steps=8,
+        evidence_required=True,
+    ),
+    AdvisoryToolContract(
+        name="verify_loads",
+        allowlist=frozenset(),
+        json_schema_id="aerobim.verify_loads.v1",
+        timeout_seconds=20.0,
+        max_steps=2,
+        evidence_required=True,
+    ),
+    AdvisoryToolContract(
+        name="check_quantities",
+        allowlist=frozenset(),
+        json_schema_id="aerobim.check_quantities.v1",
+        timeout_seconds=20.0,
+        max_steps=2,
+        evidence_required=True,
+    ),
+    AdvisoryToolContract(
+        name="detect_clashes",
+        allowlist=frozenset(),
+        json_schema_id="aerobim.detect_clashes.v1",
+        timeout_seconds=30.0,
+        max_steps=2,
+        evidence_required=True,
+    ),
+    AdvisoryToolContract(
+        name="detect_system_clash",
+        allowlist=frozenset(),
+        json_schema_id="aerobim.detect_system_clash.v1",
+        timeout_seconds=30.0,
+        max_steps=2,
+        evidence_required=True,
+    ),
+    AdvisoryToolContract(
+        # VLM drawing read (Kimi K3 / small Kimi-VL). Not an agent orchestrator
+        # step (absent from AGENT_TOOL_TO_REGISTRY): the drawing pipeline invokes
+        # it directly. Output is candidate annotations/regions only; the
+        # deterministic engine and the expert own the verdict (TR-2/27/31).
+        name="drawing_vlm_read",
+        allowlist=frozenset(),
+        json_schema_id="aerobim.drawing_vlm_read.v1",
+        timeout_seconds=60.0,
+        max_steps=1,
+        evidence_required=True,
+    ),
+)
+
+
+def allowed_agent_tool_names() -> frozenset[str]:
+    """Agent step allowlist derived from registry mapping — single SSOT."""
+
+    return frozenset(AGENT_TOOL_TO_REGISTRY.keys())
+
+
+def lookup_advisory_tool(name: str) -> AdvisoryToolContract | None:
+    for contract in DEFAULT_ADVISORY_TOOL_REGISTRY:
+        if contract.name == name:
+            return contract
+    return None
+
+
+def advisory_trace_record(
+    *,
+    tool_name: str,
+    request_id: str,
+    steps: int,
+    evidence_refs: tuple[str, ...],
+    payload: dict[str, Any],
+) -> dict[str, Any]:
+    """Serializable trace row for replay — does not mutate report verdict."""
+
+    contract = lookup_advisory_tool(tool_name)
+    if contract is None:
+        raise ValueError(f"unknown advisory tool: {tool_name}")
+    if steps > contract.max_steps:
+        raise ValueError(f"{tool_name} exceeded max_steps={contract.max_steps}")
+    if contract.evidence_required and not evidence_refs:
+        raise ValueError(f"{tool_name} requires evidence_refs")
+    return {
+        "tool_name": tool_name,
+        "request_id": request_id,
+        "steps": steps,
+        "evidence_refs": list(evidence_refs),
+        "can_change_verdict": False,
+        "payload": payload,
+    }
+
+
+__all__ = [
+    "AGENT_TOOL_TO_REGISTRY",
+    "AdvisoryToolContract",
+    "AdvisoryToolName",
+    "DEFAULT_ADVISORY_TOOL_REGISTRY",
+    "advisory_trace_record",
+    "allowed_agent_tool_names",
+    "lookup_advisory_tool",
+]

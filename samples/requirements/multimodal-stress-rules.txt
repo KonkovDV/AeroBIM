@@ -1,0 +1,13 @@
+# rule_id|rule_scope|ifc_entity|target_ref|property_set|property_name|operator|expected_value|unit|evidence_text
+REQ-STRESS-AREA-001|ifc-quantity|IFCSPACE|ROOM-101|Qto_SpaceBaseQuantities|NetFloorArea|gte|42|m2|Area baseline from TZ paragraph 4.2
+REQ-STRESS-AREA-002|ifc-quantity|IFCSPACE|ROOM-102|Qto_SpaceBaseQuantities|NetFloorArea|gte|18|m2|Minimum room area from planning appendix
+REQ-STRESS-WALL-001|ifc-property|IFCWALL|W-EXT-01|Pset_WallCommon|FireRating|eq|REI60||Exterior wall fire resistance class
+REQ-STRESS-WALL-002|ifc-quantity|IFCWALL|W-EXT-01|Qto_WallBaseQuantities|Width|gte|200|mm|Exterior wall minimum thickness
+REQ-STRESS-WALL-003|ifc-quantity|IFCWALL|W-INT-03|Qto_WallBaseQuantities|Width|gte|120|mm|Interior wall minimum thickness
+REQ-STRESS-WALL-004|ifc-property|IFCWALL|W-INT-03|Pset_WallCommon|IsExternal|eq|False||Interior wall must not be external
+REQ-STRESS-WALL-005|ifc-property|IFCWALL|W-EXT-02|Pset_WallCommon|IsExternal|eq|True||Exterior wall must be marked external
+REQ-STRESS-SPACE-001|ifc-property|IFCSPACE|ROOM-201|Pset_SpaceCommon|Reference|exists|||Space reference should be populated
+REQ-STRESS-SPACE-002|ifc-quantity|IFCSPACE|ROOM-201|Qto_SpaceBaseQuantities|NetFloorArea|gte|12|m2|Service room area floor
+REQ-STRESS-SPACE-003|ifc-quantity|IFCSPACE|ROOM-301|Qto_SpaceBaseQuantities|NetFloorArea|gte|24|m2|Office room area floor
+REQ-STRESS-WALL-006|ifc-quantity|IFCWALL|W-EXT-03|Qto_WallBaseQuantities|Length|gte|3000|mm|Facade wall length floor
+REQ-STRESS-WALL-007|ifc-property|IFCWALL|W-EXT-03|Pset_WallCommon|LoadBearing|eq|True||Facade wall load-bearing expectation

@@ -1,0 +1,64 @@
+{
+  "artifact_type": "offline_bundle_trial_fact",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-09-15T15:15:20.831230+00:00",
+  "claim_level": "image_bundle_only",
+  "checkpoint": "GO",
+  "customer_go": false,
+  "closes_rt001": false,
+  "closes_rt002": false,
+  "closes_rt003": false,
+  "precision_claim_publishable": false,
+  "customer_data_included": false,
+  "image_tag": "aerobim-backend:offline-bundle",
+  "image_id": "sha256:2f4f0849f9b90923052191b122a2b61bccca4120abe783432def2b813ee8981a",
+  "tar_name": "aerobim-backend-image.tar",
+  "tar_sha256": "6a51556285c29ede55fc6667529ba29b5e65610428358844ef18e6f72f0edb3e",
+  "tar_bytes": 913330688,
+  "files": {
+    "aerobim-backend-image.tar": {
+      "sha256": "6a51556285c29ede55fc6667529ba29b5e65610428358844ef18e6f72f0edb3e",
+      "bytes": 913330688
+    },
+    "requirements-lock.txt": {
+      "sha256": "e90318aa691e7e1f1501085eab999d7b4dc1868510954b6c9b27f2051ae0a51e",
+      "bytes": 120241
+    },
+    "requirements-dev-lock.txt": {
+      "sha256": "6ddd073af1fac8be314b59753ad9393b3828f84c4f48d8eb3b56a231e4346808",
+      "bytes": 160799
+    },
+    "Dockerfile": {
+      "sha256": "5de9cef53169aae2c900832674806dccff379beb1a01ea969b615c286625eecd",
+      "bytes": 2063
+    },
+    "INSTALL_OFFLINE.md": {
+      "sha256": "ef4dada6f760f540450883073ae64bcef68710bd5a7241fca0b9e7b43ca074a8",
+      "bytes": 1338
+    },
+    "sbom-spdx-lite.json": {
+      "sha256": "ff0dbe630d5f19223e03b994c5ceff29b3d7be82717472f1066b4f8922a0e385",
+      "bytes": 223804
+    },
+    "MIRROR_CHECKLIST.md": {
+      "sha256": "60840a04cc9b5a8eea41a377024485a558128cc2266d8c819e79fff3444c009c",
+      "bytes": 737
+    },
+    "install_offline.sh": {
+      "sha256": "00897e46af5aa4cb7c2146cc3ef37e93a3ac696d6ccc4cab7b81e9cc4463a3b7",
+      "bytes": 2488
+    },
+    "install_offline.ps1": {
+      "sha256": "c5caf0dbf47cc0a0a9943ba8951e06660a69b7331386a0e49069b89bd30ee57f",
+      "bytes": 2526
+    },
+    "wheelhouse-OUT_OF_SCOPE.json": {
+      "sha256": "b898049b8aefcc3e5ef0f9660276a820cfe6a885d78b54f7b7723f66d054a61a",
+      "bytes": 591
+    }
+  },
+  "bundle_rel": "artifacts/offline-bundle",
+  "valid_until": "2026-09-18",
+  "valid_until_note": "feature freeze or lockfile/Dockerfile change, whichever first",
+  "claim_boundary": "Docker image-track trial only. Not customer SLA. Not CDE-ready. Not MEP delivered. Checkpoint GO is regulatory_measurement_mvp."
+}

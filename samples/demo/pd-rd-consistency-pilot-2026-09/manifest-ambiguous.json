@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0.0",
+  "pack_version": "1.0.0",
+  "pack_id": "pd-rd-consistency-pilot-ambiguous",
+  "description": "SYNTHETIC: two IfcWall named WALL-01. Must not emit a confident contradiction.",
+  "project_name": "PD-RD consistency pilot (synthetic ambiguous match)",
+  "discipline": "architecture",
+  "stage": "RD",
+  "revision": "R1",
+  "corpus_kind": "synthetic",
+  "request": {
+    "ifc_path": "samples/demo/pd-rd-consistency-pilot-2026-09/wall-01-ambiguous-two-walls.ifc",
+    "drawings": [
+      {
+        "path": "samples/demo/pd-rd-consistency-pilot-2026-09/a-101-thickness-150mm.pdf",
+        "sheet_id": "A-101",
+        "format": "pdf",
+        "revision": "R1"
+      }
+    ]
+  }
+}

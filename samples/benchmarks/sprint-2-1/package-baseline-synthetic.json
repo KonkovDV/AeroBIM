@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0.0",
+  "pack_id": "sprint-2-1-package-baseline-synthetic",
+  "dataset_class": "synthetic",
+  "customer_evidence": false,
+  "claim_level": "engineering_baseline_only",
+  "description": "Synthetic defect pack — Level B + Sprint 2.1 mutation SSOT.",
+  "mutations": "samples/benchmarks/sprint-2-1/mutations/mutation-manifest.json",
+  "level_b": "samples/benchmarks/injected-defects-level-b.json",
+  "request": {
+    "ifc_path": "samples/ifc/wall-fire-rating-rei60.ifc",
+    "ids_path": "samples/ids/wall-fire-rating.ids",
+    "calculation_path": "samples/calculations/area-requirement.txt"
+  }
+}

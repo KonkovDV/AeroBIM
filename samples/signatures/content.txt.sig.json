@@ -1,0 +1,24 @@
+{
+  "schema": "aerobim_detached_signature_envelope_v1",
+  "content_sha256": "032ca60c46a88722dd3be64bf1b4f7f052c1d73347082c35bcae7819b89029e8",
+  "content_path_hint": "content.txt",
+  "signing_time": "2026-07-15T12:00:00+00:00",
+  "signers": [
+    {
+      "role": "author",
+      "subject": "fixture-author@example.invalid",
+      "cert_not_before": "2026-01-01T00:00:00+00:00",
+      "cert_not_after": "2027-01-01T00:00:00+00:00",
+      "signature_alg": "fixture-placeholder",
+      "signature_value": "not-a-cryptographic-signature"
+    },
+    {
+      "role": "reviewer",
+      "subject": "fixture-reviewer@example.invalid",
+      "cert_not_before": "2026-01-01T00:00:00+00:00",
+      "cert_not_after": "2027-01-01T00:00:00+00:00",
+      "signature_alg": "fixture-placeholder",
+      "signature_value": "not-a-cryptographic-signature"
+    }
+  ]
+}

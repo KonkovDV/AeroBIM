@@ -1,0 +1,21 @@
+# Customer corpus (gitignored)
+
+Place NDA-bound customer packages here only. Paths under `samples/customer/`
+are ignored by git except this README.
+
+Do **not** commit IFC, drawings, or labels from the appointing party / customer pilots.
+
+Share channel received 2026-08-25 (NDA). The locator is **not** in this public tree. Keep any locator outside git. GitHub copies, Actions logs, and forks are outside this tree and are not claimed purged.
+
+Do **not** say the customer sent no data. The channel is received. A hashed pack is **not** in git. RT-001 stays OPEN.
+
+Owner downloads locally (gitignored `files/`). A URL does **not** flip intake gates.
+
+Rotating an old share locator and asking GitHub to purge rewritten SHAs are **not open checklist items**. This does not assert that an old URL returns 404, and it does not close RT-001.
+
+## Checklist before flipping intake gates
+
+1. Dual human adjudicators (LLM does not count)
+2. Measure κ/α: `aerobim-measure-adjudicator-agreement --csv …`
+3. Validate gate: `aerobim-validate-customer-intake-gate`
+4. Product Checkpoint is **GO** (`regulatory_measurement_mvp`). `customer_go` stays **false** until RT-001b/c, RT-002c, RT-003c, and CDE T2 are evidenced in Claims Lock. Undifferentiated `closes_rt001/002/003` stay false.

@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.0.0",
+  "dataset_id": "aerobim-p1-detection-contract-synthetic",
+  "dataset_status": "synthetic",
+  "scope_reference": "HARNESS-CONTRACT-ONLY-NOT-CUSTOMER-EVIDENCE",
+  "adjudication": {
+    "method": "consensus",
+    "completed_at": "2026-07-10T12:00:00+03:00",
+    "adjudicators": [
+      { "id": "synthetic-author", "role": "fixture author" }
+    ]
+  },
+  "cases": [
+    {
+      "case_id": "SYNTHETIC-AR-001",
+      "expected_findings": [
+        {
+          "finding_class": "cross-document",
+          "rule_id": "SECTION-PAIR-AR-APARTMENT-AREA-TOTAL",
+          "target_ref": "APT-01",
+          "adjudication_status": "confirmed"
+        },
+        {
+          "finding_class": "missing-element",
+          "rule_id": "SECTION-PAIR-AR-DOOR-CLEAR-WIDTH",
+          "target_ref": "DOOR-TYPE-D1",
+          "adjudication_status": "confirmed"
+        },
+        {
+          "finding_class": "clash",
+          "rule_id": "SPATIAL-HARD-CLASH",
+          "target_ref": "GUID-A|GUID-B",
+          "adjudication_status": "confirmed"
+        },
+        {
+          "finding_class": "cross-document",
+          "rule_id": "SYNTHETIC-EXCLUDED",
+          "target_ref": "EXCLUDED-01",
+          "adjudication_status": "excluded"
+        },
+        {
+          "finding_class": "cross-document",
+          "rule_id": "SYNTHETIC-UNRESOLVED",
+          "target_ref": "UNRESOLVED-01",
+          "adjudication_status": "unresolved"
+        }
+      ]
+    },
+    {
+      "case_id": "SYNTHETIC-KJ-001",
+      "expected_findings": [
+        {
+          "finding_class": "cross-document",
+          "rule_id": "SECTION-PAIR-KJ-WALL-THICKNESS",
+          "target_ref": "WALL-KJ-01",
+          "adjudication_status": "confirmed"
+        },
+        {
+          "finding_class": "missing-element",
+          "rule_id": "SECTION-PAIR-KJ-LOAD-COMBINATION",
+          "target_ref": "CALC-LC-01",
+          "adjudication_status": "confirmed"
+        },
+        {
+          "finding_class": "clash",
+          "rule_id": "SPATIAL-HARD-CLASH",
+          "target_ref": "GUID-C|GUID-D",
+          "adjudication_status": "confirmed"
+        }
+      ]
+    }
+  ]
+}

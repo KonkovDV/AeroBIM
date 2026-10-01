@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0.0",
+  "pack_version": "1.0.0",
+  "pack_id": "project-package-ifc4-schema",
+  "ifc_schema": "IFC4",
+  "corpus_kind": "fixture",
+  "description": "IFC4 wall Pset/Qto schema-suite fixture (claim_level=fixture_only).",
+  "project_name": "IFC4 Schema Suite",
+  "discipline": "architecture",
+  "request": {
+    "ifc_path": "samples/ifc/wall-pset-qto-pass.ifc",
+    "requirement_path": "samples/requirements/wall-basic.txt",
+    "ids_path": "samples/ids/wall-pset-qto.ids"
+  }
+}

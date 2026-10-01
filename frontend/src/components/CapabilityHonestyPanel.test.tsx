@@ -1,0 +1,46 @@
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import CapabilityHonestyPanel from "./CapabilityHonestyPanel";
+import type { ReportCapabilities } from "../lib/types";
+import { UI_COPY } from "../lib/ui-copy";
+
+const baseCapabilities: ReportCapabilities = {
+  clash: { status: "ok", reason: "ifcclash" },
+  ids: { status: "ok" },
+  ifc_validation: { status: "ok" },
+  unit_scale: { status: "ok" },
+  raster: { status: "skipped", reason: "no drawings" },
+  ifc_schema: { status: "ok" },
+  mep_system_clash: { status: "not_verified", reason: "unconfigured provider" },
+  calculation_correctness: { status: "not_implemented" },
+  dwg_dxf: { status: "failed", reason: "DWG present without ODA" },
+};
+
+describe("CapabilityHonestyPanel", () => {
+  it("renders capability rows and blocking banner", () => {
+    render(
+      <CapabilityHonestyPanel
+        capabilities={baseCapabilities}
+        divergences={[
+          {
+            finding_key: "IDS-1",
+            engine_verdict: "error",
+            advisory_verdict: "ok",
+            resolution: "engine_wins",
+          },
+        ]}
+      />,
+    );
+
+    expect(screen.getByTestId("capability-honesty")).toBeTruthy();
+    expect(screen.getByText(/Блокирующие статусы \(1\)/i)).toBeTruthy();
+    expect(screen.getByText(/DWG: не выполнена/i)).toBeTruthy();
+    expect(screen.getByTestId("capability-skip-banner").textContent).toContain(UI_COPY.silenceIsNotSuccess);
+    expect(screen.getByTestId("divergence-list").textContent).toMatch(/принят результат автоматической проверки/);
+  });
+
+  it("shows incomplete-evidence message when capabilities missing", () => {
+    render(<CapabilityHonestyPanel capabilities={null} />);
+    expect(screen.getByText(/Матрицы возможностей в этом отчёте нет/i)).toBeTruthy();
+  });
+});

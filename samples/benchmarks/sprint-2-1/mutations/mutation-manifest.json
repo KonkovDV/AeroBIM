@@ -1,0 +1,71 @@
+{
+  "artifact_type": "sprint_2_1_mutation_manifest",
+  "schema_version": "1.0.0",
+  "ssot": true,
+  "claim_level": "synthetic_only",
+  "customer_evidence": false,
+  "note": "Single mutation SSOT for Sprint 2.1. Reuses Level B defects; does not invent customer findings. Sources under samples/ are never mutated in place — tests apply mutations to temp copies.",
+  "seed": 20260731,
+  "linked_level_b": "samples/benchmarks/injected-defects-level-b.json",
+  "mutation_catalog": [
+    "missing_property",
+    "wrong_property_value",
+    "wrong_unit",
+    "wrong_quantity",
+    "missing_element",
+    "wrong_ifc_class",
+    "hard_clash",
+    "revision_without_guid_stability",
+    "drawing_annotation_mismatch",
+    "malformed_calculation_evidence",
+    "empty_ocr",
+    "missing_norm_pack"
+  ],
+  "defects": [
+    {
+      "defect_id": "S21-M-001",
+      "mutation_type": "wrong_property_value",
+      "source_asset": "samples/ifc/wall-fire-rating-rei60.ifc",
+      "target_guid": null,
+      "expected_finding_kind": "IDS-Wall Fire Rating",
+      "expected_severity": "critical",
+      "expected_evidence_refs": ["samples/ids/wall-fire-rating.ids"],
+      "expected_status": "finding",
+      "level_b_ref": "LB-006-ifc-wrong-property-value"
+    },
+    {
+      "defect_id": "S21-M-002",
+      "mutation_type": "missing_property",
+      "source_asset": "samples/ifc/wall-fire-rating-rei60.ifc",
+      "target_guid": null,
+      "expected_finding_kind": "IDS-Wall Fire Rating",
+      "expected_severity": "critical",
+      "expected_evidence_refs": ["samples/ids/wall-fire-rating.ids"],
+      "expected_status": "finding",
+      "level_b_ref": "LB-005-ifc-missing-property-relation"
+    },
+    {
+      "defect_id": "S21-M-003",
+      "mutation_type": "wrong_quantity",
+      "source_asset": "samples/calculations/area-requirement.txt",
+      "target_guid": null,
+      "expected_finding_kind": "AEROBIM-LOAD-MISMATCH",
+      "expected_severity": "warning",
+      "expected_evidence_refs": [],
+      "expected_status": "finding",
+      "level_b_ref": "LB-001-load-value-mismatch"
+    },
+    {
+      "defect_id": "S21-M-004",
+      "mutation_type": "malformed_calculation_evidence",
+      "source_asset": "narrative",
+      "target_guid": null,
+      "expected_finding_kind": "AEROBIM-LOAD-FORMAT",
+      "expected_severity": "info",
+      "expected_evidence_refs": [],
+      "expected_status": "not_verifiable",
+      "level_b_ref": "LB-004-freetext-area-mutation",
+      "notes": "Known undetected boundary — honesty anchor, not product claim"
+    }
+  ]
+}

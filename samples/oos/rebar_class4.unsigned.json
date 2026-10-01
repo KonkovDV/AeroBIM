@@ -1,0 +1,11 @@
+{
+  "schema": "aerobim_signed_oos_v1",
+  "kind": "rebar_class4",
+  "signer": "",
+  "signed_at": "",
+  "scope_memo": "",
+  "statement": "Reinforcement vs calculation maps (Solihin class 4) are out of measurement. Pitch pset is not bar entities. Does not parse LIRA.",
+  "closes_rt001": false,
+  "closes_rt002": false,
+  "closes_rt003": false
+}

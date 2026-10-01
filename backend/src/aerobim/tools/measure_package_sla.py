@@ -1,0 +1,511 @@
+"""Measure project-package analysis SLA against TechLab target (≤ 30 min)."""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import platform
+import sys
+from datetime import UTC, datetime
+from pathlib import Path
+
+from aerobim.domain.architecture import DEFAULT_PACKAGE_STAGE_BUDGET, StageBudget
+from aerobim.domain.checkpoint import checkpoint_fields
+from aerobim.tools.benchmark_project_package import (
+    benchmark_project_package,
+    default_pack_path,
+    repo_root,
+)
+
+
+def _sha256_file(path: Path) -> str:
+    hasher = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            hasher.update(chunk)
+    return hasher.hexdigest()
+
+
+def _repo_relative_posix(path: Path) -> str:
+    """N-24: never publish operator-absolute paths in SLA evidence."""
+
+    try:
+        return path.resolve().relative_to(repo_root().resolve()).as_posix()
+    except (OSError, ValueError):
+        return path.as_posix().replace("\\", "/").lstrip("/")
+
+
+def _strip_repo_prefix(text: str) -> str:
+    root = repo_root().resolve()
+    variants = sorted(
+        {str(root), str(root).replace("\\", "/"), root.as_posix()},
+        key=len,
+        reverse=True,
+    )
+    out = text
+    for prefix in variants:
+        if not prefix:
+            continue
+        for needle in (prefix + "\\", prefix + "/", prefix):
+            out = out.replace(needle, "")
+    return out.replace("\\", "/").lstrip("/")
+
+
+def _scrub_repo_paths(value: object) -> object:
+    if isinstance(value, dict):
+        return {str(key): _scrub_repo_paths(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_scrub_repo_paths(item) for item in value]
+    if isinstance(value, str):
+        return _strip_repo_prefix(value)
+    return value
+
+
+def _scale_honesty(inventory: list[dict[str, object]]) -> dict[str, object]:
+    """Split inventory bytes: analyze path vs referenced assets not opened as IFC."""
+
+    by_kind = {"ifc": 0, "ids": 0, "rules": 0, "xsd_or_asset": 0, "other": 0}
+    referenced = inventory[1:] if inventory else []
+    for entry in referenced:
+        path = str(entry.get("path") or "").replace("\\", "/").lower()
+        raw_bytes = entry.get("bytes")
+        nbytes = int(raw_bytes) if isinstance(raw_bytes, int | float) else 0
+        if path.endswith(".ifc"):
+            by_kind["ifc"] += nbytes
+        elif path.endswith(".ids"):
+            by_kind["ids"] += nbytes
+        elif "requirement" in path or path.endswith(".txt"):
+            by_kind["rules"] += nbytes
+        elif path.endswith(".xsd") or "/xsd/" in path:
+            by_kind["xsd_or_asset"] += nbytes
+        else:
+            by_kind["other"] += nbytes
+    analyze_path_bytes = by_kind["ifc"] + by_kind["ids"] + by_kind["rules"]
+    unanalyzed = by_kind["xsd_or_asset"] + by_kind["other"]
+    return {
+        "representative_scale_basis": "referenced_file_inventory_not_analyze_rss",
+        "analyze_path_bytes": analyze_path_bytes,
+        "unanalyzed_referenced_bytes": unanalyzed,
+        "by_kind_bytes": by_kind,
+        "note": (
+            "representative_scale is an inventory flag. XSD/assets can dominate "
+            "bytes while the analyze contour still opens a tiny IFC."
+        ),
+    }
+
+
+def _pack_file_inventory(pack_path: Path) -> list[dict[str, object]]:
+    inventory: list[dict[str, object]] = [
+        {
+            "path": _repo_relative_posix(pack_path),
+            "bytes": pack_path.stat().st_size,
+            "sha256": _sha256_file(pack_path),
+        }
+    ]
+    try:
+        manifest = json.loads(pack_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return inventory
+    if not isinstance(manifest, dict):
+        return inventory
+
+    root = pack_path.parent
+    candidates: list[Path] = []
+    # Packs may nest input paths under a "request" object; scan both scopes so the
+    # inventory reflects the real referenced files, not just the manifest itself.
+    scopes = [manifest]
+    request = manifest.get("request")
+    if isinstance(request, dict):
+        scopes.append(request)
+    single_keys = (
+        "ifc_path",
+        "ids_path",
+        "drawing_path",
+        "calculation_path",
+        "requirement_path",
+        "technical_spec_path",
+    )
+    for scope in scopes:
+        for key in single_keys:
+            raw = scope.get(key)
+            if isinstance(raw, str) and raw.strip():
+                candidates.append(Path(raw))
+        for key in ("drawings", "requirements", "assets"):
+            raw = scope.get(key)
+            if isinstance(raw, list):
+                for item in raw:
+                    if isinstance(item, str):
+                        candidates.append(Path(item))
+                    elif isinstance(item, dict):
+                        for nested in ("path", "ifc_path", "drawing_path"):
+                            value = item.get(nested)
+                            if isinstance(value, str) and value.strip():
+                                candidates.append(Path(value))
+
+    seen: set[str] = {str(pack_path.resolve())}
+    for rel in candidates:
+        path = rel if rel.is_absolute() else (root / rel)
+        if not path.is_file():
+            # Manifests often use repo-root-relative paths.
+            alt = repo_root() / rel
+            path = alt if alt.is_file() else path
+        try:
+            resolved = str(path.resolve())
+        except OSError:
+            continue
+        if resolved in seen or not path.is_file():
+            continue
+        seen.add(resolved)
+        inventory.append(
+            {
+                "path": _repo_relative_posix(path),
+                "bytes": path.stat().st_size,
+                "sha256": _sha256_file(path),
+            }
+        )
+    return inventory
+
+
+def _machine_fingerprint() -> dict[str, object]:
+    ram_gb: float | None = None
+    try:
+        import psutil
+
+        ram_gb = round(psutil.virtual_memory().total / (1024**3), 2)
+    except Exception:
+        ram_gb = None
+    return {
+        "os": platform.platform(),
+        "cpu": platform.processor() or platform.machine(),
+        "ram_gb": ram_gb,
+        "python": platform.python_version(),
+    }
+
+
+def _machine_fingerprint_complete(machine: dict[str, object]) -> bool:
+    """Require stable OS/CPU/Python identity for customer-measurable SLA claims."""
+
+    os_name = machine.get("os")
+    cpu = machine.get("cpu")
+    python = machine.get("python")
+    return (
+        isinstance(os_name, str)
+        and bool(os_name.strip())
+        and isinstance(cpu, str)
+        and bool(cpu.strip())
+        and isinstance(python, str)
+        and bool(python.strip())
+    )
+
+
+REPRESENTATIVE_MIN_INPUT_BYTES = 1_048_576  # 1 MiB of referenced input files
+REPRESENTATIVE_MIN_INPUT_FILES = 3
+
+
+def package_scale(
+    inventory: list[dict[str, object]],
+    *,
+    manifest: dict[str, object] | None = None,
+) -> dict[str, object]:
+    """Aggregate package scale so a trivially small pack cannot be mistaken for a
+    real-scale SLA run (Red Team A2/A13). Observability only: verdict-neutral and
+    non-gating -- it surfaces size, it does not pass/fail the run.
+    """
+
+    manifest = manifest or {}
+    # inventory[0] is the pack manifest file itself; the rest are referenced inputs.
+    referenced = inventory[1:] if inventory else []
+
+    def _bytes(entry: dict[str, object]) -> int:
+        value = entry.get("bytes")
+        return int(value) if isinstance(value, int | float) else 0
+
+    def _path(entry: dict[str, object]) -> str:
+        value = entry.get("path")
+        return value if isinstance(value, str) else ""
+
+    input_files = len(referenced)
+    total_input_bytes = sum(_bytes(entry) for entry in referenced)
+    ifc_bytes = sum(_bytes(entry) for entry in referenced if _path(entry).lower().endswith(".ifc"))
+    largest_input_bytes = max((_bytes(entry) for entry in referenced), default=0)
+
+    # Drawings live in one scope (nested "request" preferred); count once (RT-3).
+    request_scope = manifest.get("request")
+    request_drawings = request_scope.get("drawings") if isinstance(request_scope, dict) else None
+    drawings = request_drawings if isinstance(request_drawings, list) else manifest.get("drawings")
+    drawing_count = len(drawings) if isinstance(drawings, list) else 0
+
+    is_representative = (
+        total_input_bytes >= REPRESENTATIVE_MIN_INPUT_BYTES
+        and input_files >= REPRESENTATIVE_MIN_INPUT_FILES
+    )
+    return {
+        "input_files": input_files,
+        "total_input_bytes": total_input_bytes,
+        "ifc_bytes": ifc_bytes,
+        "largest_input_bytes": largest_input_bytes,
+        "drawing_count": drawing_count,
+        "source_count": input_files,
+        "is_representative": is_representative,
+        "thresholds": {
+            "min_input_bytes": REPRESENTATIVE_MIN_INPUT_BYTES,
+            "min_input_files": REPRESENTATIVE_MIN_INPUT_FILES,
+        },
+    }
+
+
+def measure_package_sla(
+    pack_path: Path,
+    *,
+    max_minutes: float,
+    iterations: int = 1,
+    warmup_iterations: int = 0,
+    stage_budget: StageBudget | None = None,
+    corpus_kind: str = "fixture",
+    claim_level: str | None = None,
+    command: str | None = None,
+    mandatory_capabilities_complete: bool = False,
+) -> dict[str, object]:
+    if corpus_kind not in {"fixture", "customer"}:
+        raise ValueError("corpus_kind must be 'fixture' or 'customer'")
+    resolved_claim = claim_level or (
+        "customer_measurable" if corpus_kind == "customer" else "fixture_only"
+    )
+    if resolved_claim not in {"fixture_only", "customer_measurable"}:
+        raise ValueError("claim_level must be 'fixture_only' or 'customer_measurable'")
+    if resolved_claim == "customer_measurable" and corpus_kind != "customer":
+        raise ValueError("customer_measurable claim_level requires corpus_kind=customer")
+
+    pack_path = pack_path.resolve()
+    budget = stage_budget or DEFAULT_PACKAGE_STAGE_BUDGET
+    if abs(budget.total_minutes - max_minutes) > 1e-6 and stage_budget is None:
+        # Scale default contour budgets proportionally to the requested ceiling.
+        scale = max_minutes / DEFAULT_PACKAGE_STAGE_BUDGET.total_minutes
+        budget = StageBudget(
+            ingestion_minutes=round(DEFAULT_PACKAGE_STAGE_BUDGET.ingestion_minutes * scale, 4),
+            deterministic_validation_minutes=round(
+                DEFAULT_PACKAGE_STAGE_BUDGET.deterministic_validation_minutes * scale, 4
+            ),
+            ai_advisory_minutes=round(DEFAULT_PACKAGE_STAGE_BUDGET.ai_advisory_minutes * scale, 4),
+            evidence_reporting_minutes=round(
+                DEFAULT_PACKAGE_STAGE_BUDGET.evidence_reporting_minutes * scale, 4
+            ),
+        )
+
+    inventory = _pack_file_inventory(pack_path)
+    package_sha256 = _sha256_file(pack_path)
+    machine = _machine_fingerprint()
+    try:
+        manifest_for_scale = json.loads(pack_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        manifest_for_scale = {}
+    if not isinstance(manifest_for_scale, dict):
+        manifest_for_scale = {}
+    package_scale_summary = package_scale(inventory, manifest=manifest_for_scale)
+
+    if resolved_claim == "customer_measurable":
+        missing: list[str] = []
+        if corpus_kind != "customer":
+            missing.append("corpus_kind=customer")
+        if not package_sha256:
+            missing.append("pack_hash")
+        if not _machine_fingerprint_complete(machine):
+            missing.append("machine_fingerprint")
+        if not mandatory_capabilities_complete:
+            missing.append("mandatory_capabilities_complete")
+        if missing:
+            raise ValueError(
+                "customer_measurable claim refused: missing "
+                + ", ".join(missing)
+                + " (fixture runs must stay claim_level=fixture_only)"
+            )
+
+    cold_payload = benchmark_project_package(
+        pack_path=pack_path,
+        iterations=iterations,
+        warmup_iterations=0,
+        storage_dir=None,
+    )
+    warm_payload: dict[str, object] | None = None
+    if warmup_iterations > 0:
+        warm_payload = benchmark_project_package(
+            pack_path=pack_path,
+            iterations=max(1, iterations),
+            warmup_iterations=warmup_iterations,
+            storage_dir=None,
+        )
+
+    def _minutes_full(payload: dict[str, object]) -> tuple[float, float, float]:
+        summary = payload["summary"]
+        if not isinstance(summary, dict):
+            raise TypeError("benchmark summary must be a dict")
+        max_ms = float(summary["max_ms"])
+        avg_ms = float(summary["avg_ms"])
+        p95_ms = float(summary.get("p95_ms", max_ms))
+        return (
+            round(max_ms / 60_000.0, 4),
+            round(avg_ms / 60_000.0, 4),
+            round(p95_ms / 60_000.0, 4),
+        )
+
+    cold_max, cold_avg, cold_p95 = _minutes_full(cold_payload)
+    warm_max: float | None = None
+    warm_avg: float | None = None
+    warm_p95: float | None = None
+    if warm_payload is not None:
+        warm_max, warm_avg, warm_p95 = _minutes_full(warm_payload)
+
+    # Primary SLA gate uses cold p95 (shared cloud instances make avg unsafe).
+    max_minutes_observed = cold_max
+    avg_minutes_observed = cold_avg
+    p95_minutes_observed = cold_p95
+    sla_pass = p95_minutes_observed <= max_minutes
+    stage_budget_consistent = abs(budget.total_minutes - max_minutes) <= 1e-6
+    advisory_budget_minutes = float(budget.ai_advisory_minutes)
+    advisory_share_ok = (
+        advisory_budget_minutes <= max_minutes + 1e-9 and advisory_budget_minutes >= 0.0
+    )
+
+    import os
+
+    llm_advisory_enabled = (
+        os.getenv("AEROBIM_LLM_ADVISORY_ENABLED") or os.getenv("AEROBIM_LLM_LOCAL_ENABLED") or ""
+    ).strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+
+    resolved_command = command or (
+        f"python -m aerobim.tools.measure_package_sla --pack {_repo_relative_posix(pack_path)} "
+        f"--max-minutes {max_minutes} --iterations {iterations} "
+        f"--warmup-iterations {warmup_iterations}"
+    )
+
+    payload: dict[str, object] = {
+        "artifact_type": "customer_package_sla",
+        "schema_version": "1.4.0",
+        "generated_at": datetime.now(tz=UTC).isoformat(),
+        "customer_reference": "https://i.moscow/techlab",
+        "sla_target_minutes": max_minutes,
+        "sla_pass": sla_pass,
+        "sla_gate_metric": "p95_minutes_observed",
+        "max_minutes_observed": max_minutes_observed,
+        "avg_minutes_observed": avg_minutes_observed,
+        "p95_minutes_observed": p95_minutes_observed,
+        "stage_budgets": budget.as_dict(),
+        "stage_budget_consistent": stage_budget_consistent,
+        "advisory_budget_minutes": advisory_budget_minutes,
+        "advisory_budget_within_sla": advisory_share_ok,
+        "llm_advisory_enabled_env": llm_advisory_enabled,
+        "package_sha256": package_sha256,
+        "pack_hash": package_sha256,
+        "file_inventory": inventory,
+        "package_scale": package_scale_summary,
+        "representative_scale": bool(package_scale_summary["is_representative"]),
+        "scale_honesty": _scale_honesty(inventory),
+        "machine": machine,
+        "machine_fingerprint": machine,
+        "mandatory_capabilities_complete": mandatory_capabilities_complete,
+        "cold_run": {
+            "max_minutes": cold_max,
+            "avg_minutes": cold_avg,
+            "p95_minutes": cold_p95,
+            "benchmark": cold_payload,
+        },
+        "warm_run": {
+            "max_minutes": warm_max,
+            "avg_minutes": warm_avg,
+            "p95_minutes": warm_p95,
+            "benchmark": warm_payload,
+        },
+        "command": resolved_command,
+        "corpus_kind": corpus_kind,
+        "claim_level": resolved_claim,
+        "allowed_wording": (
+            "Fixture wall-clock only; gate=p95; not customer комплект SLA"
+            if resolved_claim == "fixture_only"
+            else "Customer package SLA measurement (gate=p95)"
+        ),
+        "benchmark": cold_payload,
+    }
+    payload.update(checkpoint_fields())
+    payload["closes_rt001"] = False
+    payload["closes_rt002"] = False
+    payload["closes_rt003"] = False
+    scrubbed = _scrub_repo_paths(payload)
+    assert isinstance(scrubbed, dict)
+    return scrubbed
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Measure analyze/project-package wall time vs the appointing party ≤30 min SLA"
+    )
+    parser.add_argument(
+        "--pack",
+        type=Path,
+        default=default_pack_path(),
+        help="Benchmark pack manifest (default: pilot-moscow if exists, else baseline)",
+    )
+    parser.add_argument(
+        "--max-minutes",
+        type=float,
+        default=30.0,
+        help="SLA ceiling in minutes (TechLab task page default: 30)",
+    )
+    parser.add_argument("--iterations", type=int, default=1)
+    parser.add_argument("--warmup-iterations", type=int, default=0)
+    parser.add_argument(
+        "--corpus-kind",
+        choices=("fixture", "customer"),
+        default="fixture",
+    )
+    parser.add_argument(
+        "--claim-level",
+        choices=("fixture_only", "customer_measurable"),
+        default=None,
+    )
+    parser.add_argument(
+        "--mandatory-capabilities-complete",
+        action="store_true",
+        help=(
+            "Required for customer_measurable claims; affirms mandatory pilot "
+            "capabilities completed on the measured customer package"
+        ),
+    )
+    parser.add_argument("--output", type=Path, default=None)
+    args = parser.parse_args()
+
+    pilot_pack = repo_root() / "samples" / "benchmarks" / "project-package-pilot-moscow-v1.json"
+    pack_path = args.pack
+    if pack_path == default_pack_path() and pilot_pack.exists():
+        pack_path = pilot_pack
+
+    result = measure_package_sla(
+        pack_path,
+        max_minutes=args.max_minutes,
+        iterations=args.iterations,
+        warmup_iterations=args.warmup_iterations,
+        corpus_kind=args.corpus_kind,
+        claim_level=args.claim_level,
+        mandatory_capabilities_complete=args.mandatory_capabilities_complete,
+    )
+    serialized = json.dumps(result, ensure_ascii=False, indent=2)
+
+    if args.output is not None:
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        tmp = args.output.with_suffix(".tmp")
+        tmp.write_text(serialized, encoding="utf-8")
+        tmp.replace(args.output)
+    else:
+        print(serialized)
+
+    if not result["sla_pass"]:
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

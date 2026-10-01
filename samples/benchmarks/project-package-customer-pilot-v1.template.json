@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0.0",
+  "pack_version": "1.0.0",
+  "pack_id": "project-package-customer-pilot-v1",
+  "description": "TEMPLATE — copy to project-package-customer-pilot-v1.json locally (gitignored). Fill paths after the appointing party intake / NDA.",
+  "project_name": "заказчик канала — пилотный корпус (заполнить)",
+  "discipline": "fire-safety+structure",
+  "stage": "S2",
+  "revision": "P-01",
+  "doc_status": "Shared",
+  "information_container_id": "cde-customer-pilot-001",
+  "request": {
+    "ifc_path": "LOCAL_PATH/samples/ifc/<customer-model>.ifc",
+    "requirement_path": "LOCAL_PATH/samples/requirements/residential-fire-safety-rules.txt",
+    "ids_path": "LOCAL_PATH/samples/ids/residential-fire-rating.ids",
+    "technical_spec_path": "LOCAL_PATH/samples/specifications/<customer-tz>.txt",
+    "calculation_path": "LOCAL_PATH/samples/calculations/<customer-calc>.txt",
+    "drawings": [
+      {
+        "path": "LOCAL_PATH/samples/drawings/<customer-annotations>.txt",
+        "sheet_id": "A-101",
+        "format": "text"
+      }
+    ]
+  },
+  "_intake_notes": {
+    "nda_required": true,
+    "do_not_commit": "See .gitignore — project-package-customer-pilot-v1.json",
+    "checklist": "samples/customer/README.md"
+  }
+}

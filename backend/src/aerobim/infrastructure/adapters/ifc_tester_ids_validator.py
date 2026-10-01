@@ -1,0 +1,363 @@
+from __future__ import annotations
+
+import re
+import tempfile
+from pathlib import Path
+from typing import Any
+
+from aerobim.domain.ids_schema_gate import (
+    RULE_IFC_VERSION,
+    RULE_SKIPPED,
+    RULE_STATUS_TYPE,
+    collect_schema_mismatches,
+    ids_reporter_status_is_bool,
+    parse_ids_specification_versions,
+    parse_ifc_file_schema,
+    skipped_spec_fail_closed_rule_id,
+)
+from aerobim.domain.models import FindingCategory, Severity, ValidationIssue
+
+_IDS_PSET_PROP = re.compile(r"\b((?:Pset|Qto)_\w+)\.(\w+)\b")
+_IDS_DATASET = re.compile(r"\bdataset\s+(\S+)", re.IGNORECASE)
+_IDS_EXPECTED = re.compile(r"(?:shall|must)\s+be\s+([^\s,;]+)", re.IGNORECASE)
+_IDS_QUOTED_VALUE = re.compile(
+    r'(?:property value|value)\s+"([^"]+)"',
+    re.IGNORECASE,
+)
+_IDS_VALUE_IS = re.compile(r"\bvalue\s+is\s+([^\s,;]+)", re.IGNORECASE)
+_IDS_NAME_SKIP = frozenset({"the", "property", "a", "an", "requirement"})
+
+
+def ids_structured_fields(
+    description: str,
+    entity_reason: str,
+) -> tuple[str | None, str | None, str | None, str | None]:
+    """Parse IfcTester prose into pset / property / expected / observed.
+
+    ``issue.message`` stays the English IfcTester dump. These fields feed
+    Russian remark essence without translating the stored message.
+    """
+
+    blob = f"{description} {entity_reason}".strip()
+    property_set: str | None = None
+    property_name: str | None = None
+    dotted = _IDS_PSET_PROP.search(blob)
+    if dotted:
+        property_set = dotted.group(1)
+        property_name = dotted.group(2)
+    else:
+        dataset = _IDS_DATASET.search(blob)
+        if dataset:
+            property_set = dataset.group(1).rstrip(".,;")
+        token = description.strip().split()[0].rstrip(".,;:") if description.strip() else ""
+        if token and token[0].isalpha() and token.lower() not in _IDS_NAME_SKIP:
+            property_name = token
+    expected: str | None = None
+    expected_match = _IDS_EXPECTED.search(blob)
+    if expected_match:
+        expected = expected_match.group(1).rstrip(".,;")
+    observed: str | None = None
+    quoted = _IDS_QUOTED_VALUE.search(entity_reason) or _IDS_QUOTED_VALUE.search(blob)
+    if quoted:
+        observed = quoted.group(1)
+    else:
+        value_is = _IDS_VALUE_IS.search(entity_reason)
+        if value_is:
+            observed = value_is.group(1).rstrip(".,;")
+    return property_set, property_name, expected, observed
+
+
+class IfcTesterIdsValidator:
+    """IDS-to-IFC validation adapter using IfcTester (IfcOpenShell ecosystem).
+
+    Loads an IDS XML file, validates it against an IFC model, and maps
+    the structured IfcTester ``Results`` into domain ``ValidationIssue`` objects.
+
+    IfcTester treats ``ifcVersion`` as metadata (BSI case 0101). This adapter
+    additionally fail-closes schema mismatch and skipped specs so a clean
+    reporter status cannot hide an un-run check.
+    """
+
+    def validate(self, ids_path: Path, ifc_path: Path) -> list[ValidationIssue]:
+        if not ids_path.exists():
+            raise FileNotFoundError(f"IDS file not found: {ids_path}")
+        if not ifc_path.exists():
+            raise FileNotFoundError(f"IFC file not found: {ifc_path}")
+
+        try:
+            from ifctester import ids, reporter
+        except ModuleNotFoundError as exc:
+            raise RuntimeError(
+                "ifcopenshell and ifctester are required for IDS validation"
+            ) from exc
+
+        ids_xml = ids_path.read_bytes().decode("utf-8-sig", errors="replace")
+        header = ifc_path.read_bytes()[: 64 * 1024].decode("utf-8", errors="replace")
+        model_schema = parse_ifc_file_schema(header)
+        our_mismatches = collect_schema_mismatches(
+            model_schema=model_schema,
+            specs=parse_ids_specification_versions(ids_xml),
+        )
+
+        # One decoded document for both parsers (HD3-IDS-02): IfcTester must not
+        # re-decode the on-disk bytes independently of our version gate.
+        with tempfile.NamedTemporaryFile(
+            suffix=".ids",
+            prefix="aerobim-ids-",
+            delete=False,
+            mode="w",
+            encoding="utf-8",
+        ) as handle:
+            handle.write(ids_xml)
+            decoded_ids_path = Path(handle.name)
+        try:
+            specs = ids.open(str(decoded_ids_path))
+            from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_model
+
+            ifc_file = open_ifc_model(ifc_path)
+            specs.validate(ifc_file)
+
+            json_reporter = reporter.Json(specs)
+            results = json_reporter.report()
+        finally:
+            decoded_ids_path.unlink(missing_ok=True)
+
+        mapped = self._map_results(results)
+        independent_names = {mismatch.spec_name for mismatch in our_mismatches}
+        issues = [
+            issue
+            for issue in mapped
+            if not (
+                issue.rule_id == RULE_IFC_VERSION
+                and self._spec_name_from_issue(issue) in independent_names
+            )
+        ]
+        for mismatch in our_mismatches:
+            issues.append(
+                self._schema_mismatch_issue(
+                    mismatch.spec_name,
+                    mismatch.model_schema,
+                    mismatch.ids_versions,
+                )
+            )
+        return issues
+
+    @staticmethod
+    def _spec_name_from_issue(issue: ValidationIssue) -> str:
+        message = issue.message
+        if message.startswith("[IDS] "):
+            return message[6:].split(":", 1)[0].strip()
+        return message
+
+    def _schema_mismatch_issue(
+        self,
+        spec_name: str,
+        model_schema: str,
+        ids_versions: tuple[str, ...],
+    ) -> ValidationIssue:
+        allowed = ",".join(ids_versions) if ids_versions else "(none)"
+        observed = model_schema or "(missing FILE_SCHEMA)"
+        return ValidationIssue(
+            rule_id=RULE_IFC_VERSION,
+            severity=Severity.ERROR,
+            message=(
+                f"[IDS] {spec_name}: FILE_SCHEMA {observed} is not in IDS "
+                f"ifcVersion [{allowed}] (AeroBIM fail-closed; IfcTester does "
+                "not treat version mismatch as a failure)"
+            ),
+            category=FindingCategory.IDS_VALIDATION,
+            expected_value=allowed,
+            observed_value=observed,
+            origin="deterministic",
+        )
+
+    def _map_results(self, results: dict[str, Any]) -> list[ValidationIssue]:
+        issues: list[ValidationIssue] = []
+
+        for spec in results.get("specifications", []):
+            spec_name = spec.get("name", "Unknown Specification")
+            spec_status = spec.get("status")
+            skip_rule = skipped_spec_fail_closed_rule_id(
+                is_skipped=spec.get("is_skipped"),
+                status=spec_status,
+                is_ifc_version=spec.get("is_ifc_version"),
+            )
+            if skip_rule is not None:
+                if skip_rule == RULE_IFC_VERSION:
+                    versions = spec.get("ifcVersion") or spec.get("ifc_version") or ()
+                    if isinstance(versions, str):
+                        version_tuple = tuple(versions.split())
+                    elif isinstance(versions, (list, tuple)):
+                        version_tuple = tuple(str(item) for item in versions)
+                    else:
+                        version_tuple = ()
+                    issues.append(
+                        self._schema_mismatch_issue(
+                            spec_name,
+                            "IfcTester.is_ifc_version=false",
+                            version_tuple,
+                        )
+                    )
+                else:
+                    issues.append(
+                        ValidationIssue(
+                            rule_id=RULE_SKIPPED,
+                            severity=Severity.ERROR,
+                            message=(
+                                f"[IDS] {spec_name}: specification was SKIPPED "
+                                "(optional/zero-check or never executed); "
+                                "AeroBIM fail-closed treats SKIPPED as FAILED"
+                            ),
+                            category=FindingCategory.IDS_VALIDATION,
+                            origin="deterministic",
+                        )
+                    )
+                continue
+
+            if spec_status is True:
+                continue
+
+            spec_issue_start = len(issues)
+            if not ids_reporter_status_is_bool(spec_status):
+                issues.append(
+                    ValidationIssue(
+                        rule_id=RULE_STATUS_TYPE,
+                        severity=Severity.ERROR,
+                        message=(
+                            f"[IDS] {spec_name}: specification status is not a boolean "
+                            f"({type(spec_status).__name__}={spec_status!r}); "
+                            "fail-closed treats non-bool status as FAILED"
+                        ),
+                        category=FindingCategory.IDS_VALIDATION,
+                        origin="deterministic",
+                    )
+                )
+
+            requirements = spec.get("requirements") or []
+            cardinality = str(spec.get("cardinality") or "").lower()
+
+            # Prohibited specs fail when applicability matches; requirements[] may be empty.
+            if not requirements and cardinality == "prohibited":
+                total_applicable = int(spec.get("total_applicable") or 0)
+                if total_applicable > 0:
+                    applicable_entities = spec.get("applicable_entities") or []
+                    if applicable_entities:
+                        for entity in applicable_entities:
+                            issues.append(
+                                self._build_issue(
+                                    spec_name=spec_name,
+                                    facet_type="Specification",
+                                    description="Prohibited specification applicability matched",
+                                    entity_reason=(
+                                        "Applicability must not match for prohibited specs"
+                                    ),
+                                    entity_element=entity.get("element"),
+                                )
+                            )
+                    else:
+                        issues.append(
+                            self._build_issue(
+                                spec_name=spec_name,
+                                facet_type="Specification",
+                                description="Prohibited specification applicability matched",
+                                entity_reason=(
+                                    f"{total_applicable} applicable entit"
+                                    f"{'y' if total_applicable == 1 else 'ies'} matched"
+                                ),
+                                entity_element=None,
+                            )
+                        )
+                continue
+
+            for requirement in requirements:
+                if requirement.get("status") is True:
+                    continue
+
+                facet_type = requirement.get("facet_type", "")
+                description = requirement.get("description", "")
+                failed_entities = requirement.get("failed_entities") or []
+
+                if failed_entities:
+                    for entity in failed_entities:
+                        issues.append(
+                            self._build_issue(
+                                spec_name=spec_name,
+                                facet_type=facet_type,
+                                description=description,
+                                entity_reason=str(entity.get("reason", "")),
+                                entity_element=entity.get("element"),
+                            )
+                        )
+                else:
+                    # Required spec with zero applicable entities reports status=false but no rows.
+                    issues.append(
+                        self._build_issue(
+                            spec_name=spec_name,
+                            facet_type=facet_type,
+                            description=description,
+                            entity_reason="Requirement not satisfied",
+                            entity_element=None,
+                        )
+                    )
+
+            if spec_status is not True and len(issues) == spec_issue_start:
+                issues.append(
+                    self._build_issue(
+                        spec_name=spec_name,
+                        facet_type="Specification",
+                        description="specification did not pass",
+                        entity_reason=(
+                            f"status={spec_status!r} produced no requirement findings; "
+                            "fail-closed treats this as FAILED"
+                        ),
+                        entity_element=None,
+                    )
+                )
+
+        return issues
+
+    def _build_issue(
+        self,
+        *,
+        spec_name: str,
+        facet_type: str,
+        description: str,
+        entity_reason: str,
+        entity_element: object,
+    ) -> ValidationIssue:
+        base_message = f"[IDS] {spec_name}: {facet_type}"
+        if description:
+            base_message = f"{base_message} — {description}"
+        if entity_reason:
+            base_message = f"{base_message} ({entity_reason})"
+
+        property_set, property_name, expected, observed = ids_structured_fields(
+            description,
+            entity_reason,
+        )
+        return ValidationIssue(
+            rule_id=f"IDS-{spec_name}",
+            severity=Severity.ERROR,
+            message=base_message,
+            category=FindingCategory.IDS_VALIDATION,
+            element_guid=self._extract_guid(entity_element),
+            property_set=property_set,
+            property_name=property_name,
+            expected_value=expected,
+            observed_value=observed,
+        )
+
+    def _extract_guid(self, element_repr: object) -> str | None:
+        if not element_repr:
+            return None
+
+        global_id = getattr(element_repr, "GlobalId", None)
+        if global_id is not None:
+            return str(global_id) or None
+
+        if not isinstance(element_repr, str):
+            element_repr = str(element_repr)
+
+        if "#" in element_repr:
+            return element_repr.split("#")[0].strip() or None
+        return element_repr or None

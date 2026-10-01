@@ -1,0 +1,73 @@
+"""Tests for the appointing party typical-error mapping tool."""
+
+from __future__ import annotations
+
+import json
+import unittest
+from pathlib import Path
+
+from aerobim.tools.map_typical_errors import default_catalog_path, map_typical_errors
+
+
+class MapTypicalErrorsTests(unittest.TestCase):
+    def test_catalog_maps_fire_and_structure_prefixes(self) -> None:
+        repo_root = Path(__file__).resolve().parents[2]
+        payload = map_typical_errors(
+            default_catalog_path(),
+            repo_root / "samples" / "requirements",
+        )
+        self.assertEqual(payload["artifact_type"], "customer_typical_errors_mapping")
+        self.assertEqual(payload["patterns_total"], 26)
+        self.assertGreaterEqual(payload["patterns_with_rule_match"], 8)
+        self.assertEqual(payload["patterns_with_explicit_gap"], 7)
+        self.assertEqual(payload["mapping_ratio"], 1.0)
+        self.assertEqual(payload["customer_confirmed_patterns"], 0)
+        self.assertFalse(payload["catalog_accepted_claim_allowed"])
+        self.assertEqual(payload["acceptance_checklists_detected"], 2)
+        self.assertEqual(payload["acceptance_checklists_ingested"], 0)
+        rows = payload["rows"]
+        fire_row = next(r for r in rows if r["error_id"] == "TYP-ERR-001")
+        self.assertEqual(fire_row["status"], "covered")
+        self.assertEqual(fire_row["techlab_tasks"], [4, 5])
+        self.assertTrue(payload["techlab_task_map_present"])
+        self.assertTrue(fire_row["matched_rule_ids"])
+        mep_gap = next(r for r in rows if r["error_id"] == "TYP-ERR-020")
+        self.assertEqual(mep_gap["status"], "gap")
+        self.assertEqual(mep_gap["roadmap_ref"], "MEP-CLASH-001")
+        lira_gap = next(r for r in rows if r["error_id"] == "TYP-ERR-021")
+        self.assertEqual(lira_gap["status"], "gap")
+        space_gap = next(r for r in rows if r["error_id"] == "TYP-ERR-023")
+        self.assertEqual(space_gap["status"], "gap")
+        deflection_gap = next(r for r in rows if r["error_id"] == "TYP-ERR-025")
+        self.assertEqual(deflection_gap["status"], "gap")
+
+    def test_cli_writes_json(self) -> None:
+        import tempfile
+
+        from aerobim.tools.map_typical_errors import main
+
+        repo_root = Path(__file__).resolve().parents[2]
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp) / "mapping.json"
+            import sys
+
+            old_argv = sys.argv
+            try:
+                sys.argv = [
+                    "map_typical_errors",
+                    "--catalog",
+                    str(default_catalog_path()),
+                    "--rules-dir",
+                    str(repo_root / "samples" / "requirements"),
+                    "--output",
+                    str(out),
+                ]
+                main()
+            finally:
+                sys.argv = old_argv
+            data = json.loads(out.read_text(encoding="utf-8"))
+            self.assertIn("coverage_ratio", data)
+
+
+if __name__ == "__main__":
+    unittest.main()

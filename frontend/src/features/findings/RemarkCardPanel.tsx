@@ -1,0 +1,280 @@
+import { useState } from "react";
+import type { ValidationIssue } from "../../lib/types";
+import type { ReviewEventRow } from "../../lib/api";
+import { hitlEventTypeLabel } from "../../lib/hitl-event-copy";
+import { eventMatchesIssue, latestHitlState, canEditFinding, canOpenFinding, canStartDecision } from "../../lib/hitl-state";
+import { clauseLine, essenceLine, findingListTitle, spatialOrMissing } from "../../lib/issue-triage";
+import { UI_COPY } from "../../lib/ui-copy";
+import EvidenceStepper from "./EvidenceStepper";
+
+function dash(value: string | null | undefined): string {
+  const text = value?.trim();
+  return text ? text : "—";
+}
+
+function GuidCopyRow({ guid }: { guid: string | null | undefined }) {
+  const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle");
+  const text = guid?.trim() ?? "";
+  if (!text) {
+    return <code>—</code>;
+  }
+
+  async function copyGuid(): Promise<void> {
+    /*
+     * Clipboard API есть только в защищённом контексте. Возможность проверяется явно,
+     * а не через перехват TypeError: сам GUID рядом в <code> и остаётся выделяемым вручную.
+     */
+    const clipboard = typeof navigator === "undefined" ? undefined : navigator.clipboard;
+    if (typeof clipboard?.writeText !== "function") {
+      setCopyState("failed");
+      return;
+    }
+    try {
+      await clipboard.writeText(text);
+      setCopyState("copied");
+    } catch {
+      setCopyState("failed");
+    }
+  }
+
+  return (
+    <span className="guid-copy-row">
+      <code>{text}</code>
+      <button type="button" className="toolbar-button" onClick={() => void copyGuid()}>
+        {UI_COPY.copyGuid}
+      </button>
+      {copyState === "copied" ? <span className="compact-copy">{UI_COPY.guidCopied}</span> : null}
+      {copyState === "failed" ? <span className="compact-copy">{UI_COPY.guidCopyFailed}</span> : null}
+    </span>
+  );
+}
+
+export type RemarkCardPanelProps = {
+  reportId?: string | null;
+  activeIssue: ValidationIssue | null;
+  remarkDraft: string;
+  remarkSaveState: "idle" | "saving" | "saved" | "failed";
+  hitlDecisionState: "idle" | "saving" | "accepted" | "rejected" | "failed";
+  hitlEnabled?: boolean;
+  reviewEvents?: ReviewEventRow[];
+  reviewEventsError?: string | null;
+  historyPending?: boolean;
+  conflictMessage?: string | null;
+  onDraftChange: (value: string) => void;
+  onSave: () => void;
+  onAccept: () => void;
+  onReject: () => void;
+  onOpen?: () => void;
+};
+
+export default function RemarkCardPanel({
+  reportId,
+  activeIssue,
+  remarkDraft,
+  remarkSaveState,
+  hitlDecisionState,
+  hitlEnabled = true,
+  reviewEvents = [],
+  reviewEventsError = null,
+  historyPending = false,
+  conflictMessage = null,
+  onDraftChange,
+  onSave,
+  onAccept,
+  onReject,
+  onOpen,
+}: RemarkCardPanelProps) {
+  const history = activeIssue
+    ? reviewEvents.filter((event) => eventMatchesIssue(event, activeIssue))
+    : [];
+  const historyError = reportId ? reviewEventsError : null;
+  const persisted = activeIssue ? latestHitlState(reviewEvents, activeIssue) : null;
+  const hitlLocked =
+    historyPending || remarkSaveState === "saving" || hitlDecisionState === "saving";
+  const editorLocked = hitlLocked || !canEditFinding(persisted);
+  const acceptLocked = hitlLocked || !canStartDecision(persisted);
+  const openLocked = hitlLocked || !canOpenFinding(persisted);
+
+  return (
+    <article className="detail-block" data-testid="remark-card">
+      {activeIssue ? (
+        <div className="remark-editor">
+          <EvidenceStepper issue={activeIssue} />
+          {activeIssue.remark?.ai_generated ? (
+            <p className="synthetic-content-mark" role="note">
+              {UI_COPY.syntheticMark}
+            </p>
+          ) : null}
+          <dl className="remark-tz-fields">
+            <div>
+              <dt>{UI_COPY.remarkEssence}</dt>
+              <dd>{essenceLine(activeIssue)}</dd>
+            </div>
+            <div>
+              <dt>{UI_COPY.remarkClause}</dt>
+              <dd>{clauseLine(activeIssue)}</dd>
+            </div>
+            <div>
+              <dt>{UI_COPY.remarkLocation}</dt>
+              <dd>{spatialOrMissing(activeIssue.remark?.location_line)}</dd>
+            </div>
+            <div>
+              <dt>{UI_COPY.remarkStorey}</dt>
+              <dd>{spatialOrMissing(activeIssue.storey_name ?? activeIssue.remark?.storey_name)}</dd>
+            </div>
+            <div>
+              <dt>{UI_COPY.remarkAxis}</dt>
+              <dd>{spatialOrMissing(activeIssue.grid_axis ?? activeIssue.remark?.grid_axis)}</dd>
+            </div>
+            <div>
+              <dt>{UI_COPY.remarkElement}</dt>
+              <dd>
+                {/*
+                  key по GUID: без него React переиспользует тот же узел, и подпись
+                  «GUID скопирован» оставалась висеть при переходе к другому замечанию.
+                */}
+                <GuidCopyRow
+                  key={activeIssue.element_guid ?? "none"}
+                  guid={activeIssue.element_guid}
+                />
+              </dd>
+            </div>
+          </dl>
+          {activeIssue.completeness && !activeIssue.completeness.full_triad ? (
+            <p className="compact-copy" role="note">
+              {UI_COPY.remarkIncomplete}
+            </p>
+          ) : null}
+          {activeIssue.completeness?.full_triad ? (
+            <p className="compact-copy" role="note">
+              {UI_COPY.remarkFullTriad}
+            </p>
+          ) : null}
+          <details className="remark-audit-details">
+            <summary>{UI_COPY.auditProvenance}</summary>
+            <dl className="remark-tz-fields">
+              <div>
+                <dt>{UI_COPY.provFindingId}</dt>
+                <dd>
+                  <code>{dash(activeIssue.finding_id)}</code>
+                </dd>
+              </div>
+              <div>
+                <dt>{UI_COPY.provSourceId}</dt>
+                <dd>
+                  <code>{dash(activeIssue.source_id)}</code>
+                </dd>
+              </div>
+              <div>
+                <dt>{UI_COPY.provEvidenceRefs}</dt>
+                <dd>{activeIssue.evidence_refs?.length ? activeIssue.evidence_refs.join(" · ") : "—"}</dd>
+              </div>
+            </dl>
+          </details>
+          <p className="compact-copy">
+            <strong>{findingListTitle(activeIssue) || UI_COPY.generatedRemark}</strong>
+          </p>
+          {hitlEnabled ? (
+            <>
+              <textarea
+                id="remark-editor"
+                value={remarkDraft}
+                rows={5}
+                disabled={editorLocked}
+                onChange={(event) => onDraftChange(event.target.value)}
+                onKeyDown={(event) => {
+                  if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+                    event.preventDefault();
+                    if (!editorLocked) {
+                      onSave();
+                    }
+                  }
+                }}
+                spellCheck
+                aria-label={UI_COPY.editRemark}
+              />
+              <div className="remark-actions">
+                {canOpenFinding(persisted) ? (
+                  <button type="button" className="remark-action remark-action-open" onClick={onOpen} disabled={openLocked || !onOpen}>
+                    {persisted === "rejected" ? UI_COPY.reopenFinding : UI_COPY.takeInWork}
+                  </button>
+                ) : null}
+                <button
+                  type="button"
+                  className="remark-action remark-action-save"
+                  onClick={onSave}
+                  disabled={editorLocked}
+                  title={UI_COPY.remarkSaveHotkey}
+                >
+                  {remarkSaveState === "saving" ? UI_COPY.savingRemark : UI_COPY.saveRemark}
+                </button>
+                <button
+                  type="button"
+                  className="remark-action remark-action-confirm"
+                  onClick={onAccept}
+                  disabled={acceptLocked}
+                  title={UI_COPY.confirmSavesDraft}
+                >
+                  {UI_COPY.confirmRemark}
+                </button>
+                <button
+                  type="button"
+                  className="remark-action remark-action-reject"
+                  onClick={onReject}
+                  disabled={acceptLocked}
+                >
+                  {UI_COPY.rejectRemark}
+                </button>
+                {persisted === "accepted" || persisted === "waived" ? (
+                  <span className="compact-copy">{UI_COPY.findingAcceptedLocked}</span>
+                ) : null}
+                {remarkSaveState === "saved" ? <span className="compact-copy">{UI_COPY.remarkSaved}</span> : null}
+                {remarkSaveState === "failed" ? <span className="compact-copy">{UI_COPY.remarkSaveFailed}</span> : null}
+                {conflictMessage ? (
+                  <p className="compact-copy" role="alert" data-testid="hitl-conflict">
+                    {conflictMessage}
+                  </p>
+                ) : null}
+                {hitlDecisionState === "accepted" || persisted === "accepted" ? (
+                  <span className="compact-copy">{UI_COPY.confirmed}</span>
+                ) : null}
+                {hitlDecisionState === "rejected" || persisted === "rejected" ? (
+                  <span className="compact-copy">{UI_COPY.rejected}</span>
+                ) : null}
+                {hitlDecisionState === "failed" ? <span className="compact-copy">{UI_COPY.remarkDecisionFailed}</span> : null}
+              </div>
+            </>
+          ) : (
+            <p className="compact-copy hitl-readonly-note" data-testid="hitl-readonly-note">
+              {UI_COPY.hitlUserAlias}
+            </p>
+          )}
+          <div className="review-history" data-testid="review-history">
+            <h4>{UI_COPY.hitlHistory}</h4>
+            {historyPending ? <p className="compact-copy">{UI_COPY.historyLoading}</p> : null}
+            {historyError ? (
+              <p className="compact-copy" role="alert">
+                {historyError}
+              </p>
+            ) : null}
+            {historyPending || historyError ? null : history.length === 0 ? (
+              <p className="compact-copy">{UI_COPY.noEvents}</p>
+            ) : (
+              <ol className="kpi-list">
+                {history.map((event) => (
+                  <li key={event.event_id}>
+                    <code>{hitlEventTypeLabel(event.event_type)}</code>
+                    {event.created_at ? ` · ${event.created_at}` : ""}
+                    {event.actor ? ` · ${event.actor}` : ""}
+                  </li>
+                ))}
+              </ol>
+            )}
+          </div>
+        </div>
+      ) : (
+        <p className="compact-copy">{UI_COPY.selectIssue}</p>
+      )}
+    </article>
+  );
+}

@@ -1,0 +1,269 @@
+"""ZIP member limits — decompression-bomb protection for uploads."""
+
+from __future__ import annotations
+
+import io
+import zipfile
+from dataclasses import dataclass
+from pathlib import Path
+
+from aerobim.core.security.object_limits import read_stream_capped
+
+DEFAULT_MAX_MEMBERS = 256
+DEFAULT_MAX_UNCOMPRESSED_BYTES = 512 * 1024 * 1024
+DEFAULT_MAX_MEMBER_BYTES = 256 * 1024 * 1024
+DEFAULT_MAX_COMPRESSION_RATIO = 100.0
+DEFAULT_MAX_ARCHIVE_FILE_BYTES = 512 * 1024 * 1024
+
+
+class ZipBombError(ValueError):
+    """Raised when a ZIP archive exceeds safe expansion limits."""
+
+
+@dataclass(frozen=True)
+class ZipInspection:
+    member_count: int
+    total_uncompressed_bytes: int
+    max_member_bytes: int
+    max_ratio: float
+
+
+def _inspect_zipfile(
+    archive: zipfile.ZipFile,
+    *,
+    max_members: int = DEFAULT_MAX_MEMBERS,
+    max_uncompressed_bytes: int = DEFAULT_MAX_UNCOMPRESSED_BYTES,
+    max_member_bytes: int = DEFAULT_MAX_MEMBER_BYTES,
+    max_compression_ratio: float = DEFAULT_MAX_COMPRESSION_RATIO,
+) -> ZipInspection:
+    """Inspect ZIP central directory without extracting member payloads."""
+
+    infos = archive.infolist()
+    if len(infos) > max_members:
+        raise ZipBombError(f"ZIP has too many members ({len(infos)} > {max_members})")
+
+    total = 0
+    max_member = 0
+    max_ratio = 0.0
+    for info in infos:
+        if info.is_dir():
+            continue
+        name = info.filename.replace("\\", "/")
+        if any(ord(ch) < 32 for ch in name):
+            raise ZipBombError(f"ZIP member path is not allowed: {info.filename!r}")
+        if name.startswith("/") or name.startswith("../") or "/../" in f"/{name}/":
+            raise ZipBombError(f"ZIP member path is not allowed: {info.filename!r}")
+        if ":" in name.split("/")[0]:
+            # Windows drive / alternate stream style absolute members
+            raise ZipBombError(f"ZIP member path is not allowed: {info.filename!r}")
+        size = int(info.file_size)
+        compress = max(int(info.compress_size), 1)
+        if size > max_member_bytes:
+            raise ZipBombError(
+                f"ZIP member {info.filename!r} too large ({size} > {max_member_bytes})"
+            )
+        ratio = size / compress
+        if ratio > max_compression_ratio and size > 1024 * 1024:
+            raise ZipBombError(
+                f"ZIP member {info.filename!r} compression ratio too high ({ratio:.1f})"
+            )
+        total += size
+        max_member = max(max_member, size)
+        max_ratio = max(max_ratio, ratio)
+        if total > max_uncompressed_bytes:
+            raise ZipBombError(
+                f"ZIP uncompressed size too large ({total} > {max_uncompressed_bytes})"
+            )
+    return ZipInspection(
+        member_count=len(infos),
+        total_uncompressed_bytes=total,
+        max_member_bytes=max_member,
+        max_ratio=max_ratio,
+    )
+
+
+def inspect_zip_bytes(
+    payload: bytes,
+    *,
+    max_members: int = DEFAULT_MAX_MEMBERS,
+    max_uncompressed_bytes: int = DEFAULT_MAX_UNCOMPRESSED_BYTES,
+    max_member_bytes: int = DEFAULT_MAX_MEMBER_BYTES,
+    max_compression_ratio: float = DEFAULT_MAX_COMPRESSION_RATIO,
+) -> ZipInspection:
+    """Inspect ZIP central directory from an in-memory payload."""
+
+    try:
+        with zipfile.ZipFile(io.BytesIO(payload), "r") as archive:
+            return _inspect_zipfile(
+                archive,
+                max_members=max_members,
+                max_uncompressed_bytes=max_uncompressed_bytes,
+                max_member_bytes=max_member_bytes,
+                max_compression_ratio=max_compression_ratio,
+            )
+    except zipfile.BadZipFile as exc:
+        raise ZipBombError(f"Invalid ZIP archive: {exc}") from exc
+
+
+def inspect_zip_path(
+    path: Path,
+    *,
+    max_members: int = DEFAULT_MAX_MEMBERS,
+    max_uncompressed_bytes: int = DEFAULT_MAX_UNCOMPRESSED_BYTES,
+    max_member_bytes: int = DEFAULT_MAX_MEMBER_BYTES,
+    max_compression_ratio: float = DEFAULT_MAX_COMPRESSION_RATIO,
+    max_archive_file_bytes: int = DEFAULT_MAX_ARCHIVE_FILE_BYTES,
+) -> ZipInspection:
+    """Inspect ZIP central directory from a filesystem path without loading whole file."""
+
+    try:
+        archive_size = path.stat().st_size
+    except OSError as exc:
+        raise ZipBombError(f"ZIP archive is not readable: {exc}") from exc
+    if archive_size > max_archive_file_bytes:
+        raise ZipBombError(
+            f"ZIP archive file too large ({archive_size} > {max_archive_file_bytes})"
+        )
+    try:
+        with zipfile.ZipFile(path, "r") as archive:
+            return _inspect_zipfile(
+                archive,
+                max_members=max_members,
+                max_uncompressed_bytes=max_uncompressed_bytes,
+                max_member_bytes=max_member_bytes,
+                max_compression_ratio=max_compression_ratio,
+            )
+    except zipfile.BadZipFile as exc:
+        raise ZipBombError(f"Invalid ZIP archive: {exc}") from exc
+
+
+def read_zip_member_capped(
+    archive: zipfile.ZipFile,
+    name: str,
+    *,
+    max_member_bytes: int = DEFAULT_MAX_MEMBER_BYTES,
+) -> bytes:
+    """Read one ZIP member with a streaming byte budget (RT-ZIP-001).
+
+    Central-directory ``file_size`` can lie; this caps actual decompressed bytes.
+    """
+
+    try:
+        info = archive.getinfo(name)
+    except KeyError as exc:
+        raise ZipBombError(f"ZIP member not found: {name!r}") from exc
+    if info.is_dir():
+        raise ZipBombError(f"ZIP member is a directory: {name!r}")
+    declared = int(info.file_size)
+    if declared > max_member_bytes:
+        raise ZipBombError(f"ZIP member {name!r} too large ({declared} > {max_member_bytes})")
+    with archive.open(name, "r") as stream:
+        payload = read_stream_capped(
+            stream,
+            max_bytes=max_member_bytes,
+        )
+    if len(payload) != declared:
+        raise ZipBombError(
+            f"ZIP member {name!r} inflated {len(payload)} bytes, "
+            f"central directory declared {declared}"
+        )
+    return payload
+
+
+_INFLATE_CHUNK = 65536
+
+
+def _verify_zipfile_inflate(
+    archive: zipfile.ZipFile,
+    *,
+    max_member_bytes: int,
+    max_total_bytes: int,
+) -> None:
+    """Stream-inflate every member; reject cap overflow or CD ``file_size`` lies."""
+
+    total = 0
+    for info in archive.infolist():
+        if info.is_dir():
+            continue
+        declared = int(info.file_size)
+        actual = 0
+        try:
+            with archive.open(info, "r") as member:
+                while True:
+                    chunk = member.read(_INFLATE_CHUNK)
+                    if not chunk:
+                        break
+                    actual += len(chunk)
+                    if actual > max_member_bytes:
+                        raise ZipBombError(
+                            f"ZIP member {info.filename!r} inflated past {max_member_bytes} bytes"
+                        )
+                    if actual > declared:
+                        raise ZipBombError(
+                            f"ZIP member {info.filename!r} inflated size "
+                            f"exceeds central-directory file_size ({declared})"
+                        )
+                    total += len(chunk)
+                    if total > max_total_bytes:
+                        raise ZipBombError(f"ZIP inflated total exceeds {max_total_bytes} bytes")
+        except zipfile.BadZipFile as exc:
+            raise ZipBombError(f"Invalid ZIP member {info.filename!r}: {exc}") from exc
+        if actual != declared:
+            raise ZipBombError(
+                f"ZIP member {info.filename!r} inflated {actual} bytes, "
+                f"central directory declared {declared}"
+            )
+
+
+def verify_zip_inflate(
+    path: Path,
+    *,
+    max_member_bytes: int = DEFAULT_MAX_MEMBER_BYTES,
+    max_total_bytes: int = DEFAULT_MAX_UNCOMPRESSED_BYTES,
+) -> None:
+    """Inflate every ZIP member with a streaming budget (ZIP-01)."""
+
+    try:
+        with zipfile.ZipFile(path, "r") as archive:
+            _verify_zipfile_inflate(
+                archive,
+                max_member_bytes=max_member_bytes,
+                max_total_bytes=max_total_bytes,
+            )
+    except zipfile.BadZipFile as exc:
+        raise ZipBombError(f"Invalid ZIP archive: {exc}") from exc
+
+
+def verify_zip_inflate_bytes(
+    payload: bytes,
+    *,
+    max_member_bytes: int = DEFAULT_MAX_MEMBER_BYTES,
+    max_total_bytes: int = DEFAULT_MAX_UNCOMPRESSED_BYTES,
+) -> None:
+    """In-memory counterpart of ``verify_zip_inflate``."""
+
+    try:
+        with zipfile.ZipFile(io.BytesIO(payload), "r") as archive:
+            _verify_zipfile_inflate(
+                archive,
+                max_member_bytes=max_member_bytes,
+                max_total_bytes=max_total_bytes,
+            )
+    except zipfile.BadZipFile as exc:
+        raise ZipBombError(f"Invalid ZIP archive: {exc}") from exc
+
+
+__all__ = [
+    "DEFAULT_MAX_ARCHIVE_FILE_BYTES",
+    "DEFAULT_MAX_COMPRESSION_RATIO",
+    "DEFAULT_MAX_MEMBER_BYTES",
+    "DEFAULT_MAX_MEMBERS",
+    "DEFAULT_MAX_UNCOMPRESSED_BYTES",
+    "ZipBombError",
+    "ZipInspection",
+    "inspect_zip_bytes",
+    "inspect_zip_path",
+    "read_zip_member_capped",
+    "verify_zip_inflate",
+    "verify_zip_inflate_bytes",
+]

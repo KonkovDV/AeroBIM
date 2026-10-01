@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0.0",
+  "pack_version": "1.0.0",
+  "pack_id": "project-package-techlab-fire",
+  "description": "Techlab fire-safety discipline benchmark: fire rating validation across walls, doors, floors, stairs.",
+  "project_name": "Жилой дом Альфа — Пожарная безопасность",
+  "discipline": "fire-safety",
+  "request": {
+    "ifc_path": "samples/ifc/walls-multi-entity.ifc",
+    "requirement_path": "samples/requirements/techlab-fire-safety-rules.txt",
+    "technical_spec_path": "samples/specifications/techlab-tz.txt",
+    "drawings": [
+      {
+        "path": "samples/drawings/techlab-annotations.txt",
+        "sheet_id": "A-101",
+        "format": "text"
+      }
+    ]
+  }
+}

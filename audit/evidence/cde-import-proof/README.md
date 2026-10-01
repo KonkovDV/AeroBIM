@@ -1,0 +1,52 @@
+# CDE import proof (RT-008 Tier 2)
+
+**Status:** `NOT_VERIFIED`
+
+**Target identified 2026-08-28 (address level):** the customer's pack share link
+resolves to the **10D** СОД contour. The application layer is session-gated, so
+the address is confirmed but the folder contents were not read; the link access
+type (authorized-only vs public, TTL) must be asked of the customer. Closure
+path **without customer files**: vendor public Swagger API + free developer
+license → synthetic BCF push into a demo-tenant registry → log + screenshot +
+hashes below. Demo-tenant push is engineering evidence, not customer registry
+proof — this file flips only on the real import.
+
+Tracked gate for independent evidence that an AeroBIM BCF ZIP (or BCF-API
+push) imported successfully into a customer CDE.
+
+Sensitive screenshots/logs may live in the gitignored mirror
+`docs/evidence/internal/cde-import-proof/` — this tracked folder must still
+receive a `STATUS.json` flip to `VERIFIED` plus hash references.
+
+## Required before claiming “BCF ready for CDE”
+
+| File | Purpose |
+|------|---------|
+| `import-log.txt` or tool export log | Timestamped import success/failure |
+| screenshot / PDF (path referenced in STATUS) | Topics visible in CDE UI |
+| `STATUS.json` | Machine gate (`status` must become `VERIFIED`) |
+| `T2_EVIDENCE_TEMPLATE.json` | Empty field template — fill only with real pilot evidence |
+| `hashes.json` | SHA-256 of BCF ZIP + screenshot + log |
+
+Do **not** invent screenshots. Until real pilot import lands, keep
+`STATUS.json` at `NOT_VERIFIED`.
+
+## Integrity gate (2026-07-25, SLSA-style artifact binding)
+
+`python -m aerobim.tools.verify_bcf_t2_evidence --dir <pack> \
+  --structural-evidence audit/evidence/bcf-structural-handoff-<date>.json`
+
+- every `hashes.json` entry naming a pack file is **recomputed** (SHA-256) and
+  must match — stale/foreign hash packs can never flip `claim_allowed`;
+- `import-log.txt` and `screenshot.png` must each have a verified hash entry;
+- `bcf_zip_sha256` must equal a `sha256` from the T1 structural-handoff JSON,
+  proving the imported archive is the one we exported (artifact binding).
+
+Ladder taxonomy: [`docs/architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md`](../../../docs/architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md)
+(T0 export → T1 structural → **T2 CDE import** → T3 round-trip → T4 production).
+
+## Upstream
+
+- Structural T1: `audit/evidence/bcf-structural-handoff-2026-07-25.json`
+- CDE claim rule: keep `STATUS.json` at `NOT_VERIFIED` until real import evidence lands
+- Allowed wording: **structural ZIP AVAILABLE**; **CDE NOT_VERIFIED**

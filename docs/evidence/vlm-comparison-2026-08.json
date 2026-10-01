@@ -1,0 +1,111 @@
+{
+  "artifact_type": "vlm_stamp_comparison",
+  "schema_version": "1.1.0",
+  "claim_level": "fixture_only",
+  "claim_boundary": "VLM advisory on open fixture title-block/spec crops. Stamp pixels are not sent (PII clip). fixture_only. Not door/window counting. Not product accuracy. Invalid JSON → fail-closed skip for that region.",
+  "scenario": "stamp_title_block_explication",
+  "not_in_scope": [
+    "door_count",
+    "window_count",
+    "whole_sheet_geometry"
+  ],
+  "models": [
+    {
+      "id": "qwen3-vl",
+      "route": "Yandex AI Studio allowlisted host",
+      "role": "primary"
+    },
+    {
+      "id": "kimi",
+      "route": "refused on Yandex host (kimi-k3 default gate)",
+      "role": "not_run_on_studio"
+    }
+  ],
+  "status": "LIVE",
+  "skip_reason": null,
+  "metrics": {
+    "n_sheets": 1,
+    "corpus": "open_fixture_vertical_slice_pdf",
+    "qwen": {
+      "id": "qwen",
+      "status": "roundtrip_ok",
+      "host": "llm.api.cloud.yandex.net",
+      "model": "gpt://<folder>/qwen3.6-35b-a3b",
+      "elapsed_ms": 1606.1,
+      "regions_detected": 5,
+      "regions_planned": 1,
+      "regions_read": 1,
+      "stamp_regions_excluded": 4,
+      "observation_count": 1,
+      "degraded_regions": 1,
+      "schema_fail_region_share": 0.0,
+      "spot_checks": {
+        "mentions_wall_01": true,
+        "mentions_150": true,
+        "note": "Open-fixture substring checks, not adjudicated precision/recall"
+      },
+      "skipped_vlm": false,
+      "pipeline_reason": "Layer 1: 1 region(s) queued for region-restricted VLM; excluded role=4 crs=0 pii_clip=0 (PII guard)",
+      "cost_note": "Token usage is per-region inside the client; pack-level RUB is not aggregated here without usage on each read. Order-of-magnitude only.",
+      "rub_per_1k_tokens_assumed": {
+        "input": 0.2,
+        "output": 0.4
+      }
+    },
+    "kimi": {
+      "id": "kimi",
+      "status": "GATE_REFUSED",
+      "reason": "Yandex Studio requires AEROBIM_VLM_MODEL or AEROBIM_LLM_MODEL (e.g. gpt://<folder>/qwen3.6-35b-a3b); kimi-k3 default is refused",
+      "metrics": null
+    }
+  },
+  "recommendation": "Qwen is LIVE on this open fixture (structured roundtrip recorded 2026-08-13). Kimi is GATED on the Studio host. comparison_status=comparison_not_run: same input/prompt/schema was not executed for both models. Not a bake-off. Not product accuracy. Does not close RT-001.",
+  "generated_at": "2026-08-13T20:21:47.237117+00:00",
+  "machine": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.13.7",
+    "machine": "AMD64",
+    "system": "Windows"
+  },
+  "customer_accuracy_not_established": true,
+  "content_sha256": "969da6d9f9f709840d87a5de7e6b8d5b9d6719241250db12b6f3cd6dba3f4101",
+  "dotenv_loaded": true,
+  "models_run": [
+    {
+      "id": "qwen",
+      "status": "roundtrip_ok",
+      "host": "llm.api.cloud.yandex.net",
+      "model": "gpt://<folder>/qwen3.6-35b-a3b",
+      "elapsed_ms": 1606.1,
+      "regions_detected": 5,
+      "regions_planned": 1,
+      "regions_read": 1,
+      "stamp_regions_excluded": 4,
+      "observation_count": 1,
+      "degraded_regions": 1,
+      "schema_fail_region_share": 0.0,
+      "spot_checks": {
+        "mentions_wall_01": true,
+        "mentions_150": true,
+        "note": "Open-fixture substring checks, not adjudicated precision/recall"
+      },
+      "skipped_vlm": false,
+      "pipeline_reason": "Layer 1: 1 region(s) queued for region-restricted VLM; excluded role=4 crs=0 pii_clip=0 (PII guard)",
+      "cost_note": "Token usage is per-region inside the client; pack-level RUB is not aggregated here without usage on each read. Order-of-magnitude only.",
+      "rub_per_1k_tokens_assumed": {
+        "input": 0.2,
+        "output": 0.4
+      }
+    },
+    {
+      "id": "kimi",
+      "status": "GATE_REFUSED",
+      "reason": "Yandex Studio requires AEROBIM_VLM_MODEL or AEROBIM_LLM_MODEL (e.g. gpt://<folder>/qwen3.6-35b-a3b); kimi-k3 default is refused",
+      "metrics": null
+    }
+  ],
+  "comparison_status": "comparison_not_run",
+  "comparison_reason": "Qwen and Kimi were not executed on the same input, prompt, and output schema in one repeatable artifact. Do not invent a bake-off.",
+  "qwen_fixture_status": "LIVE",
+  "kimi_status": "GATED"
+}

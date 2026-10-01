@@ -1,0 +1,948 @@
+﻿#			
+# User Defined PropertySet Definition File			
+#			
+# Format:			
+#    PropertySet:	<Pset Name>	I[nstance]/T[ype]	<element list separated by ','>
+#	<Property Name 1>	<Data type>	<[opt] Revit parameter name, if different from IFC>
+#	<Property Name 2>	<Data type>	<[opt] Revit parameter name, if different from IFC>
+#	...		
+#			
+# Data types supported: Area, Boolean, ClassificationReference, ColorTemperature, Count, Currency, 			
+#	ElectricalCurrent, ElectricalEfficacy, ElectricalVoltage, Force, Frequency, Identifier, 		
+#	Illuminance, Integer, Label, Length, Logical, LuminousFlux, LuminousIntensity, 		
+#	NormalisedRatio, PlaneAngle, PositiveLength, PositivePlaneAngle, PositiveRatio, Power, 		
+#	Pressure, Ratio, Real, Text, ThermalTransmittance, ThermodynamicTemperature, Volume, 		
+#	VolumetricFlowRate		
+#
+#
+PropertySet:	RusSet_Common	I	IfcBuildingElementProxyType
+	RUS_MSSK_Element_Code	Text	Код элемента МССК
+	RUS_Name	Text	Наименование
+	RUS_MSSK_Element_Name	Text	Наименование элемента МССК
+#
+PropertySet:	RusSet_Quantities	I	IfcBuildingElementProxyType
+	RUS_Volume	Real	Объем
+	RUS_Height	Real	Высота
+	RUS_Width Real	Ширина
+	RUS_Length	Real	Длина
+#
+PropertySet:	RusSet_Location	I	IfcBuildingElementProxyType
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Project	I	IfcBuilding
+	RUS_ProjectName	Text	Наименование проекта
+	RUS_BuildingAddress	Text	Адрес
+#
+PropertySet:	RusSet_AGR	I	IfcBuilding
+	RUS_FNO	Text	Функциональное назначение объекта
+#
+PropertySet:	RusSet_AGR	I	IfcSite
+	RUS_AreaSquare	Real	Площадь земельного участка
+	RUS_LandID	Text	Кадастровый номер участка
+#
+PropertySet:	RusSet_Common	I	IfcCivilElementType
+	RUS_Name	Text	Наименование
+#
+PropertySet:	RusSet_Quantities	I	IfcCivilElementType
+	RUS_Area	Real	Площадь
+#
+PropertySet:	RusSet_Quantities	T	IfcCivilElement
+	RUS_Area	Real	Площадь
+#
+PropertySet:	RusSet_Common	I	IfcSpace
+	RUS_MSSK_SpaceAndZone_Code	Text	Код помещения и зоны МССК
+	RUS_Name	Text	Наименование (помещения)
+	RUS_MSSK_SpaceAndZone_Name	Text	Наименование помещения и зоны МССК
+#
+PropertySet:	RusSet_Quantities	I	IfcSpace
+	RUS_Volume	Real	Объем
+	RUS_Height	Real	Полная высота
+	RUS_FinishCeilingHeight Real	Высота подвесного потолка
+	RUS_FinishFloorHeight	Real	Высота пола
+	RUS_Area	Real	Площадь
+	RUS_Area1	Real	Площадь1
+	RUS_FloorArea	Real	Площадь пола
+	RUS_WallArea	Real	Площадь стен
+	RUS_CeilingArea	Real	Площадь потолка
+#
+PropertySet:	RusSet_Location	I	IfcSpace
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Label	I	IfcSpace
+	RUS_DocumentationPart	Text	Раздел (подраздел ПД) (помещения)
+#
+PropertySet:	RusSet_Identification	I	IfcSpace
+	RUS_Zone	Text	Категория функциональной зоны
+	RUS_Zone_Sub	Text	Функциональная зона
+	RUS_Group_Type	Text	Группа помещений
+	RUS_Group_Number	Text	Номер группы помещений
+	RUS_Number	Text	Номер помещения
+	RUS_Number	Text	Номер
+	RUS_NumRoom	Text	Количество помещений в группе
+	RUS_Wet	Boolean	Мокрое помещение
+	RUS_HandicapAccessible	Boolean	Доступность МГН
+#
+PropertySet:	RusSet_FireSafety	I	IfcSpace
+	RUS_FireRiskFactor	Text	Категория помещения по пожарной и взрывопожарной опасности
+#
+PropertySet:	RusSet_Rated	I	IfcSpace
+	RUS_Capacity	Text	Количество людей в помещении
+	RUS_Temperature	Real	Температура в помещении
+#
+PropertySet:	RusSet_AGR	I	IfcSpace
+	RUS_BasementFloor	Boolean	Подземный этаж (помещения)
+	RUS_GroundFloor	Boolean	Плавающая высотная отметка уровня
+	RUS_ResidentalRoom	Boolean	Жилая зона
+	RUS_SPP	Boolean	Элемент СПП в ГНС
+	RUS_TotalArea	Boolean	Элемент общая площадь
+	RUS_StudioApart	Boolean	Студия (тип квартиры)
+#
+PropertySet:	RusSet_Common	I	IfcSpatialZoneType
+	RUS_MSSK_SpaceAndZone_Code	Text	Код помещения и зоны МССК
+	RUS_Name	Text	Наименование
+	RUS_MSSK_SpaceAndZone_Name	Text	Наименование помещения и зоны МССК
+#
+PropertySet:	RusSet_Quantities	I	IfcSpatialZoneType
+	RUS_Area	Real	Площадь
+#
+PropertySet:	RusSet_Location	I	IfcSpatialZoneType
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Common	I	IfcWallType
+	RUS_MSSK_Element_Code	Text	Код элемента МССК
+	RUS_MSSK_Material_Code	Text	Код материала МССК
+	RUS_Name	Text	Наименование
+	RUS_MSSK_Material_Name	Text	Наименование материала МССК
+	RUS_MSSK_Element_Name	Text	Наименование элемента МССК
+	RUS_Standard	Text	Стандарт (ГОСТ, ТУ)
+#
+PropertySet:	RusSet_Quantities	T	IfcWall
+	RUS_Volume	Real	Объем
+	RUS_Height	Real	Неприсоединенная высота
+	RUS_Thickness	Real	Толщина
+	RUS_Length	Real	Длина
+	RUS_Length	Real	ADSK_Размер_Высота
+	RUS_Thickness	Real	ADSK_Размер_Ширина
+	RUS_Height	Real	Ширина
+#
+PropertySet:	RusSet_Quantities	I	IfcWallType
+	RUS_Volume	Real	Объем
+	RUS_Height	Real	Неприсоединенная высота
+	RUS_Thickness	Real	Толщина
+	RUS_Length	Real	Длина
+	RUS_Length	Real	ADSK_Размер_Высота
+	RUS_Thickness	Real	ADSK_Размер_Ширина
+	RUS_Height	Real	Ширина
+#
+PropertySet:	RusSet_Location	I	IfcWallType
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Location	T	IfcWall
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Label	I	IfcWallType
+	RUS_Position	Text	Позиция
+	RUS_DocumentationPart	Text	Раздел (подраздел ПД)
+#
+PropertySet:	RusSet_FireSafety	I	IfcWallType
+	RUS_FireRating	Text	Предел огнестойкости
+#
+PropertySet:	RusSet_Construction	I	IfcWallType
+	RUS_StrengthClass	Text	Класс бетона
+	RUS_ReinforcementStrengthClass	Text	Класс арматурной стали
+	RUS_ConstructionMethod	Text	Место производства
+	RUS_WaterImpermeability	Text	Марка бетона по водонепроницаемости
+	RUS_FreezeDurability	Text	Марка бетона по морозостойкости
+#
+PropertySet:	RusSet_Identification	I	IfcWallType
+	RUS_LoadBearing	Boolean	Несущий
+	RUS_UndergroundLevel	Boolean	Подземный уровень
+#
+PropertySet:	RusSet_Manufacture	I	IfcWallType
+	RUS_SerialNumber	Text	Номер серии
+#
+PropertySet:	RusSet_Common	I	IfcCoveringType
+	RUS_MSSK_Element_Code	Text	Код элемента МССК
+	RUS_MSSK_Material_Code	Text	Код материала МССК
+	RUS_Name	Text	Наименование
+	RUS_MSSK_Material_Name	Text	Наименование материала МССК
+	RUS_MSSK_Element_Name	Text	Наименование элемента МССК
+#
+PropertySet:	RusSet_Quantities	T	IfcCovering
+	RUS_Volume	Real	Объем
+	RUS_SurfaceArea	Real	Площадь
+	RUS_Thickness Real	Толщина
+	RUS_Thickness Real	ADSK_Размер_Ширина
+#
+PropertySet:	RusSet_Quantities	I	IfcCoveringType
+	RUS_Volume	Real	Объем
+	RUS_SurfaceArea	Real	Площадь
+	RUS_Thickness Real	Толщина
+	RUS_Thickness Real	ADSK_Размер_Ширина
+#
+PropertySet:	RusSet_Location	I	IfcCoveringType
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Label	I	IfcCoveringType
+	RUS_DocumentationPart	Text	Раздел (подраздел ПД)
+	RUS_Position	Text	Позиция
+#
+PropertySet:	RusSet_Identification	I	IfcCoveringType
+	RUS_MSSK_Material_Code	Text	Код материала МССК 1
+	RUS_MSSK_Material_Code	Text	Код материала МССК 2
+	RUS_MSSK_Material_Code	Text	Код материала МССК 3
+	RUS_MSSK_Material_Code	Text	Код материала МССК 4
+	RUS_MSSK_Material_Code	Text	Код материала МССК 5
+	RUS_MSSK_Material_Name	Text	Наименование материала МССК 1
+	RUS_MSSK_Material_Name	Text	Наименование материала МССК 2
+	RUS_MSSK_Material_Name	Text	Наименование материала МССК 3
+	RUS_MSSK_Material_Name	Text	Наименование материала МССК 4
+	RUS_MSSK_Material_Name	Text	Наименование материала МССК 5
+	RUS_Thickness	Real	Толщина материала 1
+	RUS_Thickness	Real	Толщина материала 2
+	RUS_Thickness	Real	Толщина материала 3
+	RUS_Thickness	Real	Толщина материала 4
+	RUS_Thickness	Real	Толщина материала 5
+	RUS_Name	Text	Название материала 1
+	RUS_Name	Text	Название материала 2
+	RUS_Name	Text	Название материала 3
+	RUS_Name	Text	Название материала 4
+	RUS_Name	Text	Название материала 5
+#
+PropertySet:	RusSet_Common	I	IfcColumnType
+	RUS_MSSK_Element_Code	Text	Код элемента МССК
+	RUS_MSSK_Material_Code	Text	Код материала МССК
+	RUS_Name	Text	Наименование
+	RUS_MSSK_Material_Name	Text	Наименование материала МССК
+	RUS_MSSK_Element_Name	Text	Наименование элемента МССК
+	RUS_Standard	Text	Стандарт (ГОСТ, ТУ)
+#
+PropertySet:	RusSet_Quantities	T	IfcColumn
+	RUS_Width	Real	Ширина
+	RUS_Length	Real	Неприсоединенная высота
+	RUS_Diameter	Real	Диаметр
+	RUS_Volume	Real	Объем
+	RUS_Weight	Real	Масса
+	RUS_Width	Real	ADSK_Размер_Ширина
+	RUS_Length	Real	Высота
+	RUS_Height	Real	ADSK_Размер_Высота
+	RUS_Height	Real	Длина
+#
+PropertySet:	RusSet_Quantities	I	IfcColumnType
+	RUS_Width	Real	Ширина
+	RUS_Length	Real	Неприсоединенная высота
+	RUS_Diameter	Real	Диаметр
+	RUS_Volume	Real	Объем
+	RUS_Weight	Real	Масса
+	RUS_Width	Real	ADSK_Размер_Ширина
+	RUS_Length	Real	Высота
+	RUS_Height	Real	ADSK_Размер_Высота
+	RUS_Height	Real	Длина
+#
+PropertySet:	RusSet_Location	I	IfcColumnType
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Location	T	IfcColumn
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Label	I	IfcColumnType
+	RUS_Position	Text	Позиция
+	RUS_DocumentationPart	Text	Раздел (подраздел ПД)
+#
+PropertySet:	RusSet_FireSafety	I	IfcColumnType
+	RUS_FireRating	Text	Предел огнестойкости
+#
+PropertySet:	RusSet_Construction	I	IfcColumnType
+	RUS_StrengthClass	Text	Класс бетона
+	RUS_ReinforcementStrengthClass	Text	Класс арматурной стали
+	RUS_ConstructionMethod	Text	Место производства
+	RUS_WaterImpermeability	Text	Марка бетона по водонепроницаемости
+	RUS_FreezeDurability	Text	Марка бетона по морозостойкости
+	RUS_SteelGrade	Text	Марка стали
+	RUS_ProfileType	Text	Тип профиля
+	RUS_MaterialType	Text	Тип материала
+#
+PropertySet:	RusSet_Identification	I	IfcColumnType
+	RUS_LoadBearing	Boolean	Несущий
+	RUS_UndergroundLevel	Boolean	Подземный уровень
+	RUS_CrossSection_Circular	Boolean	Круглое сечение
+#
+PropertySet:	RusSet_Manufacture	I	IfcColumnType
+	RUS_SerialNumber	Text	Номер серии
+#
+PropertySet:	RusSet_Common	I	IfcBeamType
+	RUS_MSSK_Element_Code	Text	Код элемента МССК
+	RUS_MSSK_Material_Code	Text	Код материала МССК
+	RUS_Name	Text	Наименование
+	RUS_MSSK_Material_Name	Text	Наименование материала МССК
+	RUS_MSSK_Element_Name	Text	Наименование элемента МССК
+	RUS_Standard	Text	Стандарт (ГОСТ, ТУ)
+#
+PropertySet:	RusSet_Quantities	T	IfcBeam
+	RUS_Length	Real	Длина
+	RUS_Volume	Real	Объем
+	RUS_Width	Real	Ширина
+	RUS_Height	Real	Неприсоединенная высота
+	RUS_Weight	Real	Масса
+	RUS_Width	Real	ADSK_Размер_Ширина
+	RUS_Height	Real	ADSK_Размер_Высота
+	RUS_Height	Real	Высота
+#
+PropertySet:	RusSet_Quantities	I	IfcBeamType
+	RUS_Width	Real	ADSK_Размер_Ширина
+	RUS_Height	Real	ADSK_Размер_Высота
+	RUS_Width	Real	Ширина
+	RUS_Height	Real	Высота
+	RUS_Length	Real	Длина
+	RUS_Height	Real	Высота
+#
+PropertySet:	RusSet_Location	I	IfcBeamType
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Label	I	IfcBeamType
+	RUS_Position	Text	Позиция
+	RUS_DocumentationPart	Text	Раздел (подраздел ПД)
+#
+PropertySet:	RusSet_FireSafety	I	IfcBeamType
+	RUS_FireRating	Text	Предел огнестойкости
+#
+PropertySet:	RusSet_Construction	I	IfcBeamType
+	RUS_StrengthClass	Text	Класс бетона
+	RUS_ReinforcementStrengthClass	Text	Класс арматурной стали
+	RUS_ConstructionMethod	Text	Место производства
+	RUS_WaterImpermeability	Text	Марка бетона по водонепроницаемости
+	RUS_FreezeDurability	Text	Марка бетона по морозостойкости
+	RUS_SteelGrade	Text	Марка стали
+	RUS_ProfileType	Text	Тип профиля
+	RUS_MaterialType	Text	Тип материала
+#
+PropertySet:	RusSet_Identification	I	IfcBeamType
+	RUS_LoadBearing	Boolean	Несущий
+	RUS_UndergroundLevel	Boolean	Подземный уровень
+#
+PropertySet:	RusSet_Manufacture	I	IfcBeamType
+	RUS_SerialNumber	Text	Номер серии
+#
+PropertySet:	RusSet_Common	I	IfcStairType
+	RUS_MSSK_Element_Code	Text	Код элемента МССК
+	RUS_MSSK_Material_Code	Text	Код материала МССК
+	RUS_Name	Text	Наименование
+	RUS_MSSK_Material_Name	Text	Наименование материала МССК
+	RUS_MSSK_Element_Name	Text	Наименование элемента МССК
+	RUS_Standard	Text	Стандарт (ГОСТ, ТУ)
+#
+PropertySet:	RusSet_Quantities	T	IfcStair
+	RUS_Width	Real	Текущая ширина марша
+	RUS_Width	Real	Мин. ширина марша
+	RUS_Height	Real	Высота марша
+	RUS_Height	Real	Требуемая высота лестницы
+	RUS_Height	Real	Высота_марша
+	RUS_Volume	Real	Объем
+	RUS_Weight	Real	Масса
+	RUS_Width	Real	ADSK_Размер_Ширина
+	RUS_Width	Real	Ширина.
+	RUS_Height	Real	Высота
+	RUS_Width	Real	Ширина
+	RUS_Height	Real	ADSK_Размер_Длина
+#
+PropertySet:	RusSet_Quantities	I	IfcStairType
+	RUS_Width	Real	Текущая ширина марша
+	RUS_Width	Real	Мин. ширина марша
+	RUS_Height	Real	Высота марша
+	RUS_Height	Real	Требуемая высота лестницы
+	RUS_Height	Real	Высота_марша
+	RUS_Volume	Real	Объем
+	RUS_Weight	Real	Масса
+	RUS_Width	Real	ADSK_Размер_Ширина
+	RUS_Width	Real	Ширина.
+	RUS_Height	Real	Высота
+	RUS_Width	Real	Ширина
+	RUS_Height	Real	ADSK_Размер_Длина
+#
+PropertySet:	RusSet_Location	I	IfcStairType
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Location	T	IfcStair
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Label	I	IfcStairType
+	RUS_Position	Text	Позиция
+	RUS_DocumentationPart	Text	Раздел (подраздел ПД)
+#
+PropertySet:	RusSet_FireSafety	I	IfcStairType
+	RUS_FireRating	Text	Предел огнестойкости
+#
+PropertySet:	RusSet_Construction	I	IfcStairType
+	RUS_StrengthClass	Text	Класс бетона
+	RUS_ReinforcementStrengthClass	Text	Класс арматурной стали
+	RUS_ConstructionMethod	Text	Место производства
+	RUS_WaterImpermeability	Text	Марка бетона по водонепроницаемости
+	RUS_FreezeDurability	Text	Марка бетона по морозостойкости
+	RUS_SteelGrade	Text	Марка стали
+#
+PropertySet:	RusSet_Identification	I	IfcStairType
+	RUS_UndergroundLevel	Boolean	Подземный уровень
+#
+PropertySet:	RusSet_Manufacture	I	IfcStairType
+	RUS_SerialNumber	Text	Номер серии
+#
+PropertySet:	RusSet_Common	I	IfcRampFlightType
+	RUS_MSSK_Element_Code	Text	Код элемента МССК
+	RUS_MSSK_Material_Code	Text	Код материала МССК
+	RUS_Name	Text	Наименование
+	RUS_MSSK_Material_Name	Text	Наименование материала МССК
+	RUS_MSSK_Element_Name	Text	Наименование элемента МССК
+#
+PropertySet:	RusSet_Quantities	T	IfcRampFlight
+	RUS_Slope	Real	Уклон
+	RUS_Slope	Real	Уклон.
+	RUS_Width	Real	Ширина
+	RUS_Height	Real	Неприсоединенная высота
+	RUS_Height	Real	Высота
+	RUS_Volume	Real	Объем
+	RUS_Weight	Real	Масса
+#
+PropertySet:	RusSet_Quantities	I	IfcRampFlightType
+	RUS_Slope	Real	Уклон
+	RUS_Slope	Real	Уклон.
+	RUS_Width	Real	Ширина
+	RUS_Height	Real	Неприсоединенная высота
+	RUS_Height	Real	Высота
+	RUS_Volume	Real	Объем
+	RUS_Weight	Real	Масса
+#
+PropertySet:	RusSet_Location	I	IfcRampFlightType
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Location	T	IfcRampFlight
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Label	I	IfcRampFlightType
+	RUS_Position	Text	Позиция
+	RUS_DocumentationPart	Text	Раздел (подраздел ПД)
+#
+PropertySet:	RusSet_FireSafety	I	IfcRampFlightType
+	RUS_FireRating	Text	Предел огнестойкости
+#
+PropertySet:	RusSet_Construction	I	IfcRampFlightType
+	RUS_StrengthClass	Text	Класс бетона
+	RUS_ConstructionMethod	Text	Место производства
+	RUS_WaterImpermeability	Text	Марка бетона по водонепроницаемости
+	RUS_FreezeDurability	Text	Марка бетона по морозостойкости
+	RUS_SteelGrade	Text	Марка стали
+#
+PropertySet:	RusSet_Identification	I	IfcRampFlightType
+	RUS_IsExternal	Boolean	Наружный элемент
+	RUS_UndergroundLevel	Boolean	Подземный уровень
+#
+PropertySet:	RusSet_Common	I	IfcRampType
+	RUS_MSSK_Element_Code	Text	Код элемента МССК
+	RUS_MSSK_Material_Code	Text	Код материала МССК
+	RUS_Name	Text	Наименование
+	RUS_MSSK_Material_Name	Text	Наименование материала МССК
+	RUS_MSSK_Element_Name	Text	Наименование элемента МССК
+#
+PropertySet:	RusSet_Quantities	T	IfcRamp
+	RUS_Slope	Real	Уклон
+	RUS_Slope	Real	Уклон.
+	RUS_Width	Real	Ширина
+	RUS_Height	Real	Неприсоединенная высота
+	RUS_Volume	Real	Объем
+	RUS_Weight	Real	Масса
+	RUS_Height	Real	Высота
+#
+PropertySet:	RusSet_Quantities	I	IfcRampType
+	RUS_Slope	Real	Уклон
+	RUS_Slope	Real	Уклон.
+	RUS_Width	Real	Ширина
+	RUS_Height	Real	Неприсоединенная высота
+	RUS_Volume	Real	Объем
+	RUS_Weight	Real	Масса
+	RUS_Height	Real	Высота
+#
+PropertySet:	RusSet_Location	I	IfcRampType
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Location	T	IfcRamp
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Label	I	IfcRampType
+	RUS_Position	Text	Позиция
+	RUS_DocumentationPart	Text	Раздел (подраздел ПД)
+#
+PropertySet:	RusSet_FireSafety	I	IfcRampType
+	RUS_FireRating	Text	Предел огнестойкости
+#
+PropertySet:	RusSet_Construction	I	IfcRampType
+	RUS_StrengthClass	Text	Класс бетона
+	RUS_ConstructionMethod	Text	Место производства
+	RUS_WaterImpermeability	Text	Марка бетона по водонепроницаемости
+	RUS_FreezeDurability	Text	Марка бетона по морозостойкости
+	RUS_SteelGrade	Text	Марка стали
+#
+PropertySet:	RusSet_Identification	I	IfcRampType
+	RUS_IsExternal	Boolean	Наружный элемент
+	RUS_UndergroundLevel	Boolean	Подземный уровень
+#
+PropertySet:	RusSet_Common	I	IfcRailingType
+	RUS_MSSK_Element_Code	Text	Код элемента МССК
+	RUS_MSSK_Material_Code	Text	Код материала МССК
+	RUS_Name	Text	Наименование
+	RUS_MSSK_Material_Name	Text	Наименование материала МССК
+	RUS_MSSK_Element_Name	Text	Наименование элемента МССК
+#
+PropertySet:	RusSet_Quantities	T	IfcRailing
+	RUS_Length	Real	Длина
+	RUS_Height	Real	Неприсоединенная высота
+#
+PropertySet:	RusSet_Location	I	IfcRailingType
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Label	I	IfcRailingType
+	RUS_Position	Text	Позиция
+	RUS_DocumentationPart	Text	Раздел (подраздел ПД)
+#
+PropertySet:	RusSet_Common	I	IfcWindowType
+	RUS_MSSK_Element_Code	Text	Код элемента МССК
+	RUS_MSSK_Material_Code	Text	Код материала МССК
+	RUS_Name	Text	Наименование
+	RUS_MSSK_Material_Name	Text	Наименование материала МССК
+	RUS_MSSK_Element_Name	Text	Наименование элемента МССК
+#
+PropertySet:	RusSet_Quantities	T	IfcWindow
+	RUS_Width	Real	Ширина
+	RUS_Height	Real	Высота
+	RUS_SillHeight	Real	Высота нижнего бруса
+	RUS_GlazingArea	Real	Площадь остекления
+#
+PropertySet:	RusSet_Quantities	I	IfcWindowType
+	RUS_Width	Real	Ширина
+	RUS_Height	Real	Высота
+	RUS_SillHeight	Real	Высота подоконника
+	RUS_SillHeight	Real	Высота нижнего бруса
+	RUS_GlazingArea	Real	Площадь остекления
+#
+PropertySet:	RusSet_Location	I	IfcWindowType
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Location	T	IfcWindow
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Label	I	IfcWindowType
+	RUS_Position	Text	Позиция
+	RUS_DocumentationPart	Text	Раздел (подраздел ПД)
+#
+PropertySet:	RusSet_Common	I	IfcDoorType
+	RUS_MSSK_Element_Code	Text	Код элемента МССК
+	RUS_MSSK_Material_Code	Text	Код материала МССК
+	RUS_Name	Text	Наименование
+	RUS_MSSK_Material_Name	Text	Наименование материала МССК
+	RUS_MSSK_Element_Name	Text	Наименование элемента МССК
+#
+PropertySet:	RusSet_Quantities	T	IfcDoor
+	RUS_Width	Real	Ширина
+	RUS_Height	Real	Неприсоединенная высота
+	RUS_Height	Real	Высота
+	RUS_GlazingArea	Real	Площадь остекления
+#
+PropertySet:	RusSet_Location	I	IfcDoorType
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Location	T	IfcDoor
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Label	I	IfcDoorType
+	RUS_Position	Text	Позиция
+	RUS_DocumentationPart	Text	Раздел (подраздел ПД)
+#
+PropertySet:	RusSet_Common	I	IfcCurtainWallType
+	RUS_MSSK_Element_Code	Text	Код элемента МССК
+	RUS_MSSK_Material_Code	Text	Код материала МССК
+	RUS_Name	Text	Наименование
+	RUS_MSSK_Material_Name	Text	Наименование материала МССК
+	RUS_MSSK_Element_Name	Text	Наименование элемента МССК
+#
+PropertySet:	RusSet_Quantities	T	IfcCurtainWall
+	RUS_Width	Real	Ширина
+	RUS_Width	Real	Длина
+	RUS_Thickness	Real	Толщина
+	RUS_Height	Real	Неприсоединенная высота
+	RUS_Area	Real	Площадь
+	RUS_Volume	Real	Объем
+#
+PropertySet:	RusSet_Quantities	I	IfcCurtainWallType
+	RUS_Width	Real	Ширина
+	RUS_Width	Real	Длина
+	RUS_Thickness	Real	Толщина
+	RUS_Height	Real	Неприсоединенная высота
+	RUS_Area	Real	Площадь
+	RUS_Volume	Real	Объем
+#
+PropertySet:	RusSet_Location	I	IfcCurtainWallType
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Location	T	IfcCurtainWall
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Label	I	IfcCurtainWallType
+	RUS_Position	Text	Позиция
+	RUS_DocumentationPart	Text	Раздел (подраздел ПД)
+#
+PropertySet:	RusSet_Common	I	IfcMemberType
+	RUS_MSSK_Element_Code	Text	Код элемента МССК
+	RUS_MSSK_Material_Code	Text	Код материала МССК
+	RUS_Name	Text	Наименование
+	RUS_MSSK_Material_Name	Text	Наименование материала МССК
+	RUS_MSSK_Element_Name	Text	Наименование элемента МССК
+	RUS_Standard	Text	Стандарт (ГОСТ, ТУ)
+#
+PropertySet:	RusSet_Quantities	T	IfcMember
+	RUS_Length	Real	Длина
+	RUS_Volume	Real	Объем
+	RUS_Weight	Real	Масса
+	RUS_Width	Real	Ширина
+	RUS_Height	Real	Неприсоединенная высота
+	RUS_Diameter	Real	Диаметр
+#
+PropertySet:	RusSet_Location	I	IfcMemberType
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Location	T	IfcMember
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Label	I	IfcMemberType
+	RUS_Position	Text	Марка
+	RUS_DocumentationPart	Text	Раздел (подраздел ПД)
+#
+PropertySet:	RusSet_FireSafety	I	IfcMemberType
+	RUS_FireRating	Text	Предел огнестойкости
+#
+PropertySet:	RusSet_Construction	I	IfcMemberType
+	RUS_StrengthClass	Text	Класс бетона
+	RUS_ReinforcementStrengthClass	Text	Класс арматурной стали
+	RUS_ConstructionMethod	Text	Место производства
+	RUS_WaterImpermeability	Text	Марка бетона по водонепроницаемости
+	RUS_FreezeDurability	Text	Марка бетона по морозостойкости
+	RUS_SteelGrade	Text	Марка стали
+	RUS_ProfileType	Text	Тип профиля
+	RUS_MaterialType	Text	Тип материала
+#
+PropertySet:	RusSet_Identification	I	IfcMemberType
+	RUS_LoadBearing	Boolean	Несущий
+	RUS_CrossSection_Circular	Boolean	Круглое сечение
+#
+PropertySet:	RusSet_Common	I	IfcPlateType
+	RUS_MSSK_Element_Code	Text	Код элемента МССК
+	RUS_MSSK_Material_Code	Text	Код материала МССК
+	RUS_Name	Text	Наименование
+	RUS_MSSK_Material_Name	Text	Наименование материала МССК
+	RUS_MSSK_Element_Name	Text	Наименование элемента МССК
+#
+PropertySet:	RusSet_Quantities	T	IfcPlate
+	RUS_Width	Real	Ширина
+	RUS_Thickness	Real	Толщина
+	RUS_Height	Real	Высота
+	RUS_Area	Real	Площадь
+	RUS_Weight	Real	Масса
+	RUS_Length	Real	Длина
+#
+PropertySet:	RusSet_Quantities	I	IfcPlateType
+	RUS_Width	Real	Ширина
+	RUS_Thickness	Real	Толщина
+	RUS_Height	Real	Высота
+	RUS_Area	Real	Площадь
+	RUS_Weight	Real	Масса
+	RUS_Length	Real	Длина
+#
+PropertySet:	RusSet_Location	I	IfcPlateType
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Location	T	IfcPlate
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Label	I	IfcPlateType
+	RUS_DocumentationPart	Text	Раздел (подраздел ПД)
+#
+PropertySet:	RusSet_Construction	I	IfcPlateType
+	RUS_SteelGrade	Text	Марка стали
+#
+PropertySet:	RusSet_Common	I	IfcFurnitureType
+	RUS_MSSK_Element_Code	Text	Код элемента МССК
+	RUS_Name	Text	Наименование
+	RUS_MSSK_Element_Name	Text	Наименование элемента МССК
+#
+PropertySet:	RusSet_Quantities	I	IfcFurnitureType
+	RUS_Width	Real	Ширина
+	RUS_Height	Real	Высота
+	RUS_Length	Real	Длина
+#
+PropertySet:	RusSet_Location	I	IfcFurnitureType
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Construction	I	IfcFurnitureType
+	RUS_MaterialType	Text	Тип материала
+#
+PropertySet:	RusSet_Common	I	IfcSlabType
+	RUS_MSSK_Element_Code	Text	Код элемента МССК
+	RUS_MSSK_Material_Code	Text	Код материала МССК
+	RUS_Name	Text	Наименование
+	RUS_MSSK_Material_Name	Text	Наименование материала МССК
+	RUS_MSSK_Element_Name	Text	Наименование элемента МССК
+	RUS_Standard	Text	Стандарт (ГОСТ, ТУ)
+#
+PropertySet:	RusSet_Quantities	T	IfcSlab
+	RUS_Width	Real	Ширина
+	RUS_Thickness	Real	Толщина
+	RUS_Thickness	Real	Общая толщина
+	RUS_Length	Real	Длина
+	RUS_Volume	Real	Объем
+	RUS_Area	Real	Площадь
+	RUS_Width	Real	ADSK_Размер_Ширина
+	RUS_Length	Real	ADSK_Размер_Длина
+	RUS_Thickness	Real	ADSK_Размер_Высота
+#
+PropertySet:	RusSet_Quantities	I	IfcSlabType
+	RUS_Width	Real	Ширина
+	RUS_Length	Real	Длина
+	RUS_Thickness	Real	Толщина
+	RUS_Area	Real	Площадь
+	RUS_Width	Real	ADSK_Размер_Ширина
+	RUS_Length	Real	ADSK_Размер_Длина
+	RUS_Thickness	Real	ADSK_Размер_Высота
+#
+PropertySet:	RusSet_Location	I	IfcSlabType
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Location	T	IfcSlab
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Label	I	IfcSlabType
+	RUS_Position	Text	Позиция
+	RUS_DocumentationPart	Text	Раздел (подраздел ПД)
+#
+PropertySet:	RusSet_FireSafety	I	IfcSlabType
+	RUS_FireRating	Text	Предел огнестойкости
+#
+PropertySet:	RusSet_Construction	I	IfcSlabType
+	RUS_StrengthClass	Text	Класс бетона
+	RUS_ReinforcementStrengthClass	Text	Класс арматурной стали
+	RUS_ConstructionMethod	Text	Место производства
+	RUS_WaterImpermeability	Text	Марка бетона по водонепроницаемости
+	RUS_FreezeDurability	Text	Марка бетона по морозостойкости
+#
+PropertySet:	RusSet_Identification	I	IfcSlabType
+	RUS_LoadBearing	Boolean	Несущий
+	RUS_UndergroundLevel	Boolean	Подземный уровень
+#
+PropertySet:	RusSet_Manufacture	I	IfcSlabType
+	RUS_SerialNumber	Text	Номер серии
+#
+PropertySet:	RusSet_Common	I	IfcPileType
+	RUS_MSSK_Element_Code	Text	Код элемента МССК
+	RUS_MSSK_Material_Code	Text	Код материала МССК
+	RUS_Name	Text	Наименование
+	RUS_MSSK_Material_Name	Text	Наименование материала МССК
+	RUS_MSSK_Element_Name	Text	Наименование элемента МССК
+	RUS_Standard	Text	Стандарт (ГОСТ, ТУ)
+#
+PropertySet:	RusSet_Quantities	T	IfcPile
+	RUS_Length	Real	L
+	RUS_Width	Real	Ширина
+	RUS_Height	Real	Неприсоединенная высота
+	RUS_Diameter	Real	Диаметр.
+	RUS_Volume	Real	Объем
+	RUS_Diameter	Real	Диаметр
+#
+PropertySet:	RusSet_Quantities	I	IfcPileType
+	RUS_Length	Real	L
+	RUS_Width	Real	Ширина
+	RUS_Height	Real	Неприсоединенная высота
+	RUS_Diameter	Real	Диаметр.
+	RUS_Volume	Real	Объем
+	RUS_Diameter	Real	Диаметр
+#
+PropertySet:	RusSet_Location	I	IfcPileType
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Label	I	IfcPileType
+	RUS_Position	Text	Позиция
+	RUS_DocumentationPart	Text	Раздел (подраздел ПД)
+#
+PropertySet:	RusSet_Construction	I	IfcPileType
+	RUS_StrengthClass	Text	Класс бетона
+	RUS_ConstructionMethod	Text	Место производства
+	RUS_WaterImpermeability	Text	Марка бетона по водонепроницаемости
+	RUS_FreezeDurability	Text	Марка бетона по морозостойкости
+	RUS_SteelGrade	Text	Марка стали
+	RUS_ProfileType	Text	Тип профиля
+	RUS_MaterialType	Text	Тип материала
+#
+PropertySet:	RusSet_Identification	I	IfcPileType
+	RUS_CrossSection_Circular	Boolean	Круглое сечение
+#
+PropertySet:	RusSet_Manufacture	I	IfcPileType
+	RUS_SerialNumber	Text	Номер серии
+#
+PropertySet:	RusSet_Common	I	IfcFootingType
+	RUS_MSSK_Element_Code	Text	Код элемента МССК
+	RUS_MSSK_Material_Code	Text	Код материала МССК
+	RUS_Name	Text	Наименование
+	RUS_MSSK_Material_Name	Text	Наименование материала МССК
+	RUS_MSSK_Element_Name	Text	Наименование элемента МССК
+	RUS_Standard	Text	Стандарт (ГОСТ, ТУ)
+#
+PropertySet:	RusSet_Quantities	T	IfcFooting
+	RUS_Width	Real	Ширина
+	RUS_Height	Real	Неприсоединенная высота
+	RUS_Length	Real	Длина
+	RUS_Volume	Real	Объем
+#
+PropertySet:	RusSet_Location	I	IfcFootingType
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Label	I	IfcFootingType
+	RUS_Position	Text	Марка
+	RUS_DocumentationPart	Text	Раздел (подраздел ПД)
+#
+PropertySet:	RusSet_Construction	I	IfcFootingType
+	RUS_StrengthClass	Text	Класс бетона
+	RUS_ReinforcementStrengthClass	Text	Класс арматурной стали
+	RUS_ConstructionMethod	Text	Место производства
+	RUS_WaterImpermeability	Text	Марка бетона по водонепроницаемости
+	RUS_FreezeDurability	Text	Марка бетона по морозостойкости
+#
+PropertySet:	RusSet_Manufacture	I	IfcFootingType
+	RUS_SerialNumber	Text	Номер серии
+#
+PropertySet:	RusSet_Common	I	IfcStairFlightType
+	RUS_MSSK_Element_Code	Text	Код элемента МССК
+	RUS_MSSK_Material_Code	Text	Код материала МССК
+	RUS_Name	Text	Наименование
+	RUS_MSSK_Material_Name	Text	Наименование материала МССК
+	RUS_MSSK_Element_Name	Text	Наименование элемента МССК
+	RUS_Standard	Text	Стандарт (ГОСТ, ТУ)
+#
+PropertySet:	RusSet_Quantities	T	IfcStairFlight
+	RUS_Width	Real	Текущая ширина марша
+	RUS_Width	Real	Мин. ширина марша
+	RUS_Height	Real	Высота марша
+	RUS_Height	Real	Требуемая высота лестницы
+	RUS_Height	Real	Высота_марша
+	RUS_Volume	Real	Объем
+	RUS_Weight	Real	Масса
+	RUS_Width	Real	ADSK_Размер_Ширина
+	RUS_Width	Real	Ширина.
+	RUS_Height	Real	Высота
+	RUS_Width	Real	Ширина
+	RUS_Height	Real	ADSK_Размер_Длина
+#
+PropertySet:	RusSet_Quantities	I	IfcStairFlightType
+	RUS_Width	Real	Текущая ширина марша
+	RUS_Width	Real	Мин. ширина марша
+	RUS_Height	Real	Высота марша
+	RUS_Height	Real	Требуемая высота лестницы
+	RUS_Height	Real	Высота_марша
+	RUS_Volume	Real	Объем
+	RUS_Weight	Real	Масса
+	RUS_Width	Real	ADSK_Размер_Ширина
+	RUS_Height	Real	Высота
+	RUS_Width	Real	Ширина
+	RUS_Width	Real	Ширина.
+	RUS_Height	Real	ADSK_Размер_Длина
+#
+PropertySet:	RusSet_Location	I	IfcStairFlightType
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Location	T	IfcStairFlight
+	RUS_Object	Text	Номер объекта (корпуса)
+	RUS_Object_Sub	Text	Номер подобъекта (секции)
+#
+PropertySet:	RusSet_Label	I	IfcStairFlightType
+	RUS_Position	Text	Позиция
+	RUS_DocumentationPart	Text	Раздел (подраздел ПД)
+#
+PropertySet:	RusSet_FireSafety	I	IfcStairFlightType
+	RUS_FireRating	Text	Предел огнестойкости
+#
+PropertySet:	RusSet_Construction	I	IfcStairFlightType
+	RUS_StrengthClass	Text	Класс бетона
+	RUS_ReinforcementStrengthClass	Text	Класс арматурной стали
+	RUS_ConstructionMethod	Text	Место производства
+	RUS_WaterImpermeability	Text	Марка бетона по водонепроницаемости
+	RUS_FreezeDurability	Text	Марка бетона по морозостойкости
+	RUS_SteelGrade	Text	Марка стали
+#
+PropertySet:	RusSet_Identification	I	IfcStairFlightType
+	RUS_UndergroundLevel	Boolean	Подземный уровень
+#
+PropertySet:	RusSet_Manufacture	I	IfcStairFlightType
+#
+PropertySet:	RusSet_Common	I	IfcOpeningElementType
+	RUS_MSSK_Element_Code	Text	ADSK_Позиция
+	RUS_Name	Text	ADSK_Примечание
+#
+PropertySet:	RusSet_Common	T	IfcOpeningElement
+	RUS_MSSK_Element_Code	Text	ADSK_Позиция
+	RUS_Name	Text	ADSK_Примечание
+#
+PropertySet:	RusSet_Quantities	I	IfcOpeningElementType
+	RUS_Width	Real	Ширина
+	RUS_Width	Real	Толщина
+	RUS_Height	Real	Высота
+	RUS_Thickness	Real	ADSK_Толщина стены
+	RUS_Width	Real	ADSK_Отверстие_Ширина
+	RUS_Height	Real	ADSK_Отверстие_Высота
+	RUS_Thickness	Real	ADSK_Размер_Глубина
+	RUS_Thickness	Real	ADSK_Размер_Толщина основы
+	RUS_Thickness	Real	Отверстие глубина
+	RUS_Thickness	Real	Неприсоединенная высота
+#
+PropertySet:	RusSet_Quantities	T	IfcOpeningElement
+	RUS_Width	Real	Ширина
+	RUS_Width	Real	Толщина
+	RUS_Height	Real	Высота
+	RUS_Thickness	Real	ADSK_Толщина стены
+	RUS_Width	Real	ADSK_Отверстие_Ширина
+	RUS_Height	Real	ADSK_Отверстие_Высота
+	RUS_Thickness	Real	ADSK_Размер_Глубина
+	RUS_Thickness	Real	ADSK_Размер_Толщина основы
+	RUS_Thickness	Real	Отверстие глубина
+	RUS_Thickness	Real	Неприсоединенная высота
+#
+PropertySet:	Material	T	IfcMaterial
+	RUS_MSSK_Material_Name	Text	ADSK_Материал наименование
+	RUS_MSSK_Material_Code	Text	ADSK_Материал обозначение
+#
+PropertySet:	Material	I	IfcMaterialType
+	RUS_MSSK_Material_Name	Text	ADSK_Материал наименование
+	RUS_MSSK_Material_Code	Text	ADSK_Материал обозначение

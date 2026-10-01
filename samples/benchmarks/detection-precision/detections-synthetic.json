@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "aerobim-p1-detection-contract-run",
+  "cases": [
+    {
+      "case_id": "SYNTHETIC-AR-001",
+      "findings": [
+        {
+          "finding_class": "cross-document",
+          "rule_id": "SECTION-PAIR-AR-APARTMENT-AREA-TOTAL",
+          "target_ref": "APT-01"
+        },
+        {
+          "finding_class": "clash",
+          "rule_id": "SPATIAL-HARD-CLASH",
+          "target_ref": "GUID-A|GUID-B"
+        },
+        {
+          "finding_class": "cross-document",
+          "rule_id": "SECTION-PAIR-AR-FACADE-MATERIAL",
+          "target_ref": "FACADE-TYPE-F1"
+        }
+      ]
+    },
+    {
+      "case_id": "SYNTHETIC-KJ-001",
+      "findings": [
+        {
+          "finding_class": "cross-document",
+          "rule_id": "SECTION-PAIR-KJ-WALL-THICKNESS",
+          "target_ref": "WALL-KJ-01"
+        },
+        {
+          "finding_class": "clash",
+          "rule_id": "SPATIAL-HARD-CLASH",
+          "target_ref": "GUID-C|GUID-D"
+        },
+        {
+          "finding_class": "clash",
+          "rule_id": "SPATIAL-HARD-CLASH",
+          "target_ref": "GUID-X|GUID-Y"
+        }
+      ]
+    }
+  ]
+}

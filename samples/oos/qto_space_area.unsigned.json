@@ -1,0 +1,11 @@
+{
+  "schema": "aerobim_signed_oos_v1",
+  "kind": "qto_space_area",
+  "signer": "",
+  "signed_at": "",
+  "scope_memo": "",
+  "statement": "Area checks are out of measurement until QTO NetFloorArea is exported. Missing QTO is not a TEP Does-not.",
+  "closes_rt001": false,
+  "closes_rt002": false,
+  "closes_rt003": false
+}

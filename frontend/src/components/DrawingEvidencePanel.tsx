@@ -1,0 +1,603 @@
+import { useEffect, useMemo, useRef, useState } from "react";
+import { fetchDrawingAssetPreviewBlobUrl } from "../lib/api";
+import {
+  applyDrawingPan,
+  applyDrawingPinch,
+  applyDrawingScaleStep,
+  applyDrawingWheel,
+  IDENTITY_DRAWING_VIEW,
+  prefersReducedMotion,
+  type DrawingPointer,
+  type DrawingViewTransform,
+} from "../lib/drawing-zoom";
+import {
+  matchIssueForDrawingRegion,
+  isHitlClickableRegion,
+  type IndexedIssue,
+} from "../lib/issue-triage";
+import type {
+  DrawingAsset,
+  DrawingRegionRef,
+  ValidationIssue,
+  ValidationReport,
+} from "../lib/types";
+import { UI_COPY } from "../lib/ui-copy";
+
+interface DrawingEvidencePanelProps {
+  report: ValidationReport | null;
+  activeIssue: ValidationIssue | null;
+  issues?: IndexedIssue[];
+  onSelectIssue?: (index: number, issue: ValidationIssue) => void;
+}
+
+type OverlayRect = {
+  key: string;
+  className: string;
+  style: { left: string; top: string; width: string; height: string };
+  label: string;
+  region?: DrawingRegionRef;
+  clickable?: boolean;
+};
+
+function findMatchingAsset(report: ValidationReport, issue: ValidationIssue | null): DrawingAsset | null {
+  const problemZone = issue?.problem_zone;
+  if (problemZone?.sheet_id === null || problemZone?.sheet_id === undefined) {
+    return null;
+  }
+  const page = problemZone.page_number;
+  const wantedId = (issue?.evidence_refs ?? []).find((ref) =>
+    report.drawing_assets.some((asset) => asset.asset_id === ref),
+  );
+  if (wantedId) {
+    return report.drawing_assets.find((asset) => asset.asset_id === wantedId) ?? null;
+  }
+  const exact = report.drawing_assets.filter((asset) => {
+    if (asset.sheet_id !== problemZone.sheet_id) {
+      return false;
+    }
+    if (page === null || page === undefined) {
+      return true;
+    }
+    return asset.page_number === page;
+  });
+  if (exact.length === 1) {
+    return exact[0] ?? null;
+  }
+  return null;
+}
+
+function sheetPageMismatch(report: ValidationReport, issue: ValidationIssue | null): boolean {
+  const zone = issue?.problem_zone;
+  if (!zone?.sheet_id || zone.page_number === null || zone.page_number === undefined) {
+    return false;
+  }
+  const onSheet = report.drawing_assets.filter((asset) => asset.sheet_id === zone.sheet_id);
+  if (onSheet.length === 0) {
+    return false;
+  }
+  return !onSheet.some((asset) => asset.page_number === zone.page_number);
+}
+
+function describeAsset(asset: DrawingAsset): string {
+  return UI_COPY.drawingPage(asset.sheet_id, asset.page_number);
+}
+
+function isNormalizedBBox(region: DrawingRegionRef): boolean | null {
+  const system = (region.coordinate_system ?? "").toLowerCase();
+  if (system.includes("normalized")) {
+    return true;
+  }
+  if (system.includes("pixel") || system.includes("page-")) {
+    return false;
+  }
+  if (system) {
+    return null;
+  }
+  const [x0, y0, x1, y1] = region.bbox_xyxy;
+  if ([x0, y0, x1, y1].every((value) => value >= 0 && value <= 1.0001)) {
+    return true;
+  }
+  return false;
+}
+
+function regionPixelBox(
+  region: DrawingRegionRef,
+  imageMetrics: { width: number; height: number },
+  coordinateWidth: number,
+  coordinateHeight: number,
+): { left: number; top: number; width: number; height: number } | null {
+  const [x0, y0, x1, y1] = region.bbox_xyxy;
+  if (!(x1 > x0 && y1 > y0)) {
+    return null;
+  }
+  const normalized = isNormalizedBBox(region);
+  if (normalized === null) {
+    return null;
+  }
+  if (normalized) {
+    return {
+      left: x0 * imageMetrics.width,
+      top: y0 * imageMetrics.height,
+      width: (x1 - x0) * imageMetrics.width,
+      height: (y1 - y0) * imageMetrics.height,
+    };
+  }
+  const pageWidth = region.page_width ?? coordinateWidth;
+  const pageHeight = region.page_height ?? coordinateHeight;
+  if (pageWidth <= 0 || pageHeight <= 0) {
+    return null;
+  }
+  return {
+    left: (x0 / pageWidth) * imageMetrics.width,
+    top: (y0 / pageHeight) * imageMetrics.height,
+    width: ((x1 - x0) / pageWidth) * imageMetrics.width,
+    height: ((y1 - y0) / pageHeight) * imageMetrics.height,
+  };
+}
+
+function regionClassName(region: DrawingRegionRef): string {
+  const role = (region.layout_role ?? "content").toLowerCase();
+  if (role === "stamp") {
+    return "drawing-evidence-rect drawing-evidence-rect-stamp";
+  }
+  if (role === "title_block") {
+    return "drawing-evidence-rect drawing-evidence-rect-title";
+  }
+  if (region.hitl_required === true) {
+    return "drawing-evidence-rect drawing-evidence-rect-hitl";
+  }
+  return "drawing-evidence-rect drawing-evidence-rect-region";
+}
+
+export default function DrawingEvidencePanel({
+  report,
+  activeIssue,
+  issues = [],
+  onSelectIssue,
+}: DrawingEvidencePanelProps) {
+  const [imageMetrics, setImageMetrics] = useState<{ width: number; height: number } | null>(null);
+  const [imageError, setImageError] = useState<string | null>(null);
+  const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [view, setView] = useState<DrawingViewTransform>(IDENTITY_DRAWING_VIEW);
+  const [regionNote, setRegionNote] = useState<string | null>(null);
+  const panningRef = useRef(false);
+  const lastPointRef = useRef<{ x: number; y: number } | null>(null);
+  const pointersRef = useRef(new Map<number, DrawingPointer>());
+  const pinchStartRef = useRef<{ distance: number; view: DrawingViewTransform } | null>(null);
+  const previewCacheRef = useRef(new Map<string, string>());
+  const viewportRef = useRef<HTMLDivElement | null>(null);
+  const viewRef = useRef(view);
+  viewRef.current = view;
+  const reducedMotion = prefersReducedMotion();
+
+  const problemZone = activeIssue?.problem_zone ?? null;
+  const matchedAsset = report ? findMatchingAsset(report, activeIssue) : null;
+  const drawingAssets = report?.drawing_assets ?? [];
+
+  useEffect(() => {
+    if (report === null || drawingAssets.length === 0) {
+      setSelectedAssetId(null);
+      return;
+    }
+
+    const nextAssetId = matchedAsset?.asset_id ?? drawingAssets[0]?.asset_id ?? null;
+    setSelectedAssetId(nextAssetId);
+  }, [report, matchedAsset, drawingAssets]);
+
+  const selectedAsset = useMemo(() => {
+    if (drawingAssets.length === 0) {
+      return null;
+    }
+    return drawingAssets.find((asset) => asset.asset_id === selectedAssetId) ?? drawingAssets[0] ?? null;
+  }, [drawingAssets, selectedAssetId]);
+
+  useEffect(() => {
+    const cache = previewCacheRef.current;
+    return () => {
+      for (const url of cache.values()) {
+        URL.revokeObjectURL(url);
+      }
+      cache.clear();
+    };
+  }, [report?.report_id]);
+
+  useEffect(() => {
+    if (!report || !selectedAsset) {
+      setPreviewUrl(null);
+      return;
+    }
+
+    const cacheKey = `${report.report_id}:${selectedAsset.asset_id}`;
+    const cached = previewCacheRef.current.get(cacheKey);
+    if (cached) {
+      setPreviewUrl(cached);
+      return;
+    }
+
+    let cancelled = false;
+    setPreviewUrl(null);
+    setImageMetrics(null);
+    fetchDrawingAssetPreviewBlobUrl(report.report_id, selectedAsset.asset_id)
+      .then((url) => {
+        if (cancelled) {
+          URL.revokeObjectURL(url);
+          return;
+        }
+        previewCacheRef.current.set(cacheKey, url);
+        setPreviewUrl(url);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setPreviewUrl(null);
+          setImageError(UI_COPY.drawingLoadFailed);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [report, selectedAsset]);
+
+  const isOverlayTarget = selectedAsset !== null && matchedAsset !== null && selectedAsset.asset_id === matchedAsset.asset_id;
+
+  useEffect(() => {
+    setImageMetrics(null);
+    setImageError(null);
+    setView(IDENTITY_DRAWING_VIEW);
+    setRegionNote(null);
+  }, [previewUrl]);
+
+  const coordinateWidth = selectedAsset?.coordinate_width ?? imageMetrics?.width ?? null;
+  const coordinateHeight = selectedAsset?.coordinate_height ?? imageMetrics?.height ?? null;
+  const canDrawOverlay =
+    isOverlayTarget &&
+    imageMetrics !== null &&
+    coordinateWidth !== null &&
+    coordinateHeight !== null &&
+    problemZone?.x !== null &&
+    problemZone?.y !== null &&
+    problemZone?.width !== null &&
+    problemZone?.height !== null;
+
+  const normalizedZone = canDrawOverlay && problemZone !== null
+    ? {
+        x: problemZone.x ?? 0,
+        y: problemZone.y ?? 0,
+        width: problemZone.width ?? 0,
+        height: problemZone.height ?? 0,
+      }
+    : null;
+
+  const issueOverlay: OverlayRect | null =
+    normalizedZone !== null && imageMetrics !== null && coordinateWidth !== null && coordinateHeight !== null
+      ? {
+          key: "problem-zone",
+          className: "drawing-evidence-rect",
+          label: UI_COPY.problemZoneLabel,
+          style: {
+            left: `${(normalizedZone.x / coordinateWidth) * imageMetrics.width}px`,
+            top: `${(normalizedZone.y / coordinateHeight) * imageMetrics.height}px`,
+            width: `${(normalizedZone.width / coordinateWidth) * imageMetrics.width}px`,
+            height: `${(normalizedZone.height / coordinateHeight) * imageMetrics.height}px`,
+          },
+        }
+      : null;
+
+  const sheetRegions = useMemo(() => {
+    if (!selectedAsset || !report?.drawing_regions) {
+      return [] as DrawingRegionRef[];
+    }
+    return report.drawing_regions.filter((region) => {
+      if (region.sheet_id !== selectedAsset.sheet_id) {
+        return false;
+      }
+      const pointer = region.evidence_ref?.trim();
+      if (pointer) {
+        return pointer === selectedAsset.asset_id;
+      }
+      return true;
+    });
+  }, [report, selectedAsset]);
+
+  const regionOverlays = useMemo(() => {
+    if (!imageMetrics || coordinateWidth === null || coordinateHeight === null) {
+      return [] as OverlayRect[];
+    }
+    const overlays: OverlayRect[] = [];
+    sheetRegions.forEach((region, index) => {
+      const box = regionPixelBox(region, imageMetrics, coordinateWidth, coordinateHeight);
+      if (box === null) {
+        return;
+      }
+      overlays.push({
+        key: `region-${region.sheet_id}-${index}`,
+        className: regionClassName(region),
+        label: region.layout_role ?? region.modality,
+        region,
+        clickable: isHitlClickableRegion(region),
+        style: {
+          left: `${box.left}px`,
+          top: `${box.top}px`,
+          width: `${box.width}px`,
+          height: `${box.height}px`,
+        },
+      });
+    });
+    return overlays;
+  }, [sheetRegions, imageMetrics, coordinateWidth, coordinateHeight]);
+
+  const hitlRegions = useMemo(
+    () => (report?.drawing_regions ?? []).filter((region) => region.hitl_required === true),
+    [report],
+  );
+
+  return (
+    <section className="panel drawing-evidence-panel">
+      <div className="panel-header">
+        <div>
+          <p className="panel-kicker">{UI_COPY.drawingKicker}</p>
+          <h2>{UI_COPY.drawingTitle}</h2>
+        </div>
+      </div>
+
+      {report === null ? (
+        <div className="panel-empty compact">{UI_COPY.selectReportDrawing}</div>
+      ) : drawingAssets.length === 0 ? (
+        <div className="panel-empty compact">{UI_COPY.noDrawingAssets}</div>
+      ) : (
+        <>
+          <div className="drawing-evidence-meta">
+            <span>{selectedAsset ? describeAsset(selectedAsset) : UI_COPY.assetNa}</span>
+            <span>{selectedAsset?.media_type ?? UI_COPY.previewNa}</span>
+            <span>{isOverlayTarget ? UI_COPY.overlayTarget : UI_COPY.browseMode}</span>
+            {regionOverlays.length > 0 ? (
+              <span className="selection-badge">{UI_COPY.regionOverlays(regionOverlays.length)}</span>
+            ) : null}
+            {hitlRegions.length > 0 ? (
+              <span className="selection-badge">{UI_COPY.hitlRegions(hitlRegions.length)}</span>
+            ) : null}
+          </div>
+
+          {hitlRegions.length > 0 && (
+            <ul className="drawing-hitl-list" aria-label={UI_COPY.hitlRegionsAria}>
+              {hitlRegions.map((region, index) => (
+                <li key={`${region.sheet_id}-${index}`}>
+                  <strong>{region.sheet_id}</strong>
+                  <span>{region.modality}</span>
+                  <span>{UI_COPY.hitlRequiredLabel}</span>
+                  <span>{UI_COPY.regionConfidence(region.confidence.toFixed(2))}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {drawingAssets.length > 1 && (
+            <div className="drawing-evidence-selector" role="group" aria-label={UI_COPY.drawingAssetsAria}>
+              {drawingAssets.map((asset) => {
+                const isActive = selectedAsset?.asset_id === asset.asset_id;
+                const isMatch = matchedAsset?.asset_id === asset.asset_id;
+                return (
+                  <button
+                    key={asset.asset_id}
+                    type="button"
+                    className={`drawing-evidence-chip ${isActive ? "active" : ""}`}
+                    aria-pressed={isActive}
+                    onClick={() => {
+                      setSelectedAssetId(asset.asset_id);
+                    }}
+                  >
+                    <span>{describeAsset(asset)}</span>
+                    {isMatch && <span className="selection-badge">{UI_COPY.issueMatch}</span>}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          <div className="drawing-zoom-toolbar">
+            <button
+              type="button"
+              className="toolbar-button"
+              data-testid="drawing-zoom-out"
+              onClick={() => setView((current) => applyDrawingScaleStep(current, -1))}
+            >
+              {UI_COPY.drawingZoomOut}
+            </button>
+            <button
+              type="button"
+              className="toolbar-button"
+              data-testid="drawing-zoom-in"
+              onClick={() => setView((current) => applyDrawingScaleStep(current, 1))}
+            >
+              {UI_COPY.drawingZoomIn}
+            </button>
+            <button
+              type="button"
+              className="toolbar-button"
+              data-testid="drawing-reset-zoom"
+              onClick={() => setView(IDENTITY_DRAWING_VIEW)}
+            >
+              {UI_COPY.drawingResetZoom}
+            </button>
+            <p className="compact-copy">{UI_COPY.drawingZoomHint}</p>
+          </div>
+          {regionNote ? (
+            <p className="compact-copy" role="note" data-testid="drawing-region-note">
+              {regionNote}
+            </p>
+          ) : null}
+
+          <div
+            className="drawing-evidence-viewport"
+            data-testid="drawing-evidence-viewport"
+            ref={viewportRef}
+            onWheel={(event) => {
+              if (event.cancelable) {
+                event.preventDefault();
+              }
+              const rect = event.currentTarget.getBoundingClientRect();
+              const pointer = { x: event.clientX - rect.left, y: event.clientY - rect.top };
+              setView((current) => applyDrawingWheel(current, event.deltaY, reducedMotion, pointer));
+            }}
+            onPointerDown={(event) => {
+              if ((event.target as HTMLElement).closest("[data-region-button]")) {
+                return;
+              }
+              const rect = event.currentTarget.getBoundingClientRect();
+              const point = { x: event.clientX - rect.left, y: event.clientY - rect.top };
+              pointersRef.current.set(event.pointerId, point);
+              if (pointersRef.current.size >= 2) {
+                const points = [...pointersRef.current.values()];
+                const first = points[0];
+                const second = points[1];
+                if (first && second) {
+                  pinchStartRef.current = {
+                    distance: Math.hypot(second.x - first.x, second.y - first.y),
+                    view: viewRef.current,
+                  };
+                }
+                panningRef.current = false;
+                lastPointRef.current = null;
+                return;
+              }
+              panningRef.current = true;
+              lastPointRef.current = { x: event.clientX, y: event.clientY };
+              event.currentTarget.setPointerCapture(event.pointerId);
+            }}
+            onPointerMove={(event) => {
+              if (pointersRef.current.has(event.pointerId)) {
+                const rect = event.currentTarget.getBoundingClientRect();
+                pointersRef.current.set(event.pointerId, {
+                  x: event.clientX - rect.left,
+                  y: event.clientY - rect.top,
+                });
+              }
+              if (pointersRef.current.size >= 2 && pinchStartRef.current) {
+                const points = [...pointersRef.current.values()];
+                const first = points[0];
+                const second = points[1];
+                if (!first || !second) {
+                  return;
+                }
+                const distance = Math.hypot(second.x - first.x, second.y - first.y);
+                const start = pinchStartRef.current;
+                if (start.distance > 0 && distance > 0) {
+                  const midpoint = { x: (first.x + second.x) / 2, y: (first.y + second.y) / 2 };
+                  setView(applyDrawingPinch(start.view, distance / start.distance, midpoint));
+                }
+                return;
+              }
+              if (!panningRef.current || !lastPointRef.current) {
+                return;
+              }
+              const dx = event.clientX - lastPointRef.current.x;
+              const dy = event.clientY - lastPointRef.current.y;
+              lastPointRef.current = { x: event.clientX, y: event.clientY };
+              setView((current) => applyDrawingPan(current, dx, dy));
+            }}
+            onPointerUp={(event) => {
+              pointersRef.current.delete(event.pointerId);
+              if (pointersRef.current.size < 2) {
+                pinchStartRef.current = null;
+              }
+              panningRef.current = false;
+              lastPointRef.current = null;
+            }}
+          >
+            <div
+              className={`drawing-evidence-zoom ${reducedMotion ? "reduced" : ""}`}
+              style={{ transform: `translate(${view.x}px, ${view.y}px) scale(${view.scale})` }}
+              data-testid="drawing-evidence-zoom"
+            >
+              <div className="drawing-evidence-stage">
+                <img
+                  src={previewUrl ?? undefined}
+                  alt={UI_COPY.drawingAlt(selectedAsset?.sheet_id ?? "drawing")}
+                  className="drawing-evidence-image"
+                  onLoad={(event) => {
+                    setImageMetrics({
+                      width: event.currentTarget.naturalWidth,
+                      height: event.currentTarget.naturalHeight,
+                    });
+                  }}
+                  onError={() => {
+                    setImageError(UI_COPY.drawingLoadFailed);
+                  }}
+                />
+                {regionOverlays.map((overlay) =>
+                  overlay.clickable && overlay.region ? (
+                    <button
+                      key={overlay.key}
+                      type="button"
+                      className={`${overlay.className} drawing-region-button`}
+                      style={overlay.style}
+                      data-region-label={overlay.label}
+                      data-region-button="true"
+                      data-testid="drawing-hitl-region"
+                      aria-label={UI_COPY.regionSelectFinding(overlay.region.sheet_id)}
+                      onClick={() => {
+                        const matched = matchIssueForDrawingRegion(issues, overlay.region!);
+                        if (matched.kind === "ambiguous") {
+                          setRegionNote(UI_COPY.regionAmbiguous);
+                          return;
+                        }
+                        if (matched.kind !== "match" || !onSelectIssue) {
+                          setRegionNote(UI_COPY.regionNoFinding);
+                          return;
+                        }
+                        setRegionNote(null);
+                        onSelectIssue(matched.row.index, matched.row.issue);
+                      }}
+                    />
+                  ) : (
+                    <div
+                      key={overlay.key}
+                      className={overlay.className}
+                      style={overlay.style}
+                      data-region-label={overlay.label}
+                    />
+                  ),
+                )}
+                {issueOverlay && (
+                  <div className={issueOverlay.className} style={issueOverlay.style} data-testid="problem-zone-overlay" />
+                )}
+                {imageError && (
+                  <div className="viewer-overlay viewer-overlay-error">
+                    <p>{imageError}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="drawing-evidence-caption">
+            <strong>{activeIssue?.rule_id ?? UI_COPY.drawingCaptionDefault}</strong>
+            <p>{UI_COPY.drawingCaptionBody}</p>
+            {problemZone === null && (
+              <p>{UI_COPY.drawingNoZone}</p>
+            )}
+            {problemZone !== null && matchedAsset === null && selectedAsset !== null && (
+              <p>
+                {report && sheetPageMismatch(report, activeIssue)
+                  ? UI_COPY.overlayWrongPage
+                  : UI_COPY.unmatchedSheet(problemZone.sheet_id ?? "лист")}
+              </p>
+            )}
+            {sheetRegions.some((region) => isNormalizedBBox(region) === null) ? (
+              <p>{UI_COPY.overlayUnsupportedCoords}</p>
+            ) : null}
+            {!isOverlayTarget && selectedAsset !== null && matchedAsset !== null && (
+              <p>
+                {UI_COPY.drawingBrowsingOther(describeAsset(selectedAsset), describeAsset(matchedAsset))}
+              </p>
+            )}
+            {problemZone !== null && matchedAsset !== null && !canDrawOverlay && !imageError && (
+              <p>{UI_COPY.drawingIncompleteZone}</p>
+            )}
+          </div>
+        </>
+      )}
+    </section>
+  );
+}

@@ -1,0 +1,234 @@
+import { mkdir } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import path from "node:path";
+import process from "node:process";
+import { pathToFileURL } from "node:url";
+
+import { parseArgs, validateExportLinks } from "./capture-review-shell-smoke-helpers.mjs";
+import {
+  STACK_VITE_DEV,
+  assertForcedLight,
+  assertHonestyOnExpertScreen,
+  launchChromium,
+  waitForViewerReady,
+} from "./capture-review-smoke-shared.mjs";
+
+export { parseArgs, validateExportLinks };
+export { buildSmokePayload };
+
+async function artifactMetadata(filePath) {
+  const fileBuffer = await readFile(filePath);
+  const fileStats = await stat(filePath);
+  return {
+    path: filePath,
+    size_bytes: fileStats.size,
+    sha256: createHash("sha256").update(fileBuffer).digest("hex"),
+  };
+}
+
+async function buildSmokePayload(options, artifactPaths, checks) {
+  const integrity = {
+    trace: await artifactMetadata(artifactPaths.tracePath),
+    issue: await artifactMetadata(artifactPaths.issueScreenshotPath),
+    clash:
+      artifactPaths.clashScreenshotPath !== null
+        ? await artifactMetadata(artifactPaths.clashScreenshotPath)
+        : null,
+  };
+
+  return {
+    baseUrl: options.baseUrl,
+    reportPrefix: options.reportPrefix,
+    generatedAt: new Date().toISOString(),
+    stack: STACK_VITE_DEV,
+    screenshots: {
+      issue: artifactPaths.issueScreenshotPath,
+      clash: artifactPaths.clashScreenshotPath,
+    },
+    trace: artifactPaths.tracePath,
+    artifact_integrity: integrity,
+    checks,
+  };
+}
+
+async function clickIfVisible(locator) {
+  if (await locator.count()) {
+    await locator.first().click();
+  }
+}
+
+async function getLocatorText(locator, description) {
+  const text = await locator.textContent();
+  if (!text) {
+    throw new Error(`Expected text content for ${description}`);
+  }
+  return text.trim();
+}
+
+async function assertIssueReviewState(page) {
+  const exportBar = page.getByTestId("export-actions");
+  await exportBar.waitFor({ state: "visible", timeout: 30_000 });
+  for (const name of ["HTML", "JSON", "BCF"]) {
+    await exportBar.getByRole("button", { name, exact: true }).waitFor({ state: "visible" });
+  }
+  await exportBar.getByRole("button", { name: /PDF/ }).waitFor({ state: "visible" });
+  const xlsx = exportBar.getByRole("button", { name: /XLSX/ });
+  if ((await xlsx.count()) !== 0) {
+    throw new Error("XLSX must not render at all (no endpoint, not MVP)");
+  }
+
+  await page.locator(".drawing-evidence-panel .drawing-evidence-rect").waitFor({
+    state: "visible",
+    timeout: 30_000,
+  });
+
+  const activeIssueBlock = page
+    .locator(".provenance-panel .detail-block")
+    .filter({ has: page.getByRole("heading", { name: "Активная находка" }) })
+    .first();
+  await activeIssueBlock.waitFor({ state: "visible", timeout: 30_000 });
+
+  return {
+    exportButtons: ["html", "json", "bcf", "pdf"],
+    overlayVisible: true,
+    xlsxRendered: false,
+    activeIssueRuleId: await getLocatorText(page.locator(".drawing-evidence-caption strong").first(), "active issue rule id"),
+  };
+}
+
+async function assertPresetScopeState(page) {
+  const presetName = "Smoke JSON Preset";
+
+  await page.getByLabel("Имя пресета").fill(presetName);
+  await page.getByLabel("Область пресета").selectOption("file");
+  await page.getByRole("button", { name: "Сохранить пресет" }).click();
+
+  const presetChip = page
+    .locator(".preset-chip")
+    .filter({ has: page.getByRole("button", { name: presetName }) })
+    .first();
+  await presetChip.waitFor({ state: "visible", timeout: 30_000 });
+
+  const scopeBadge = presetChip.locator(".preset-scope-badge").first();
+  const scopeText = (await scopeBadge.textContent())?.trim().toLowerCase();
+  if (!scopeText?.includes("json") && !scopeText?.includes("файл")) {
+    throw new Error(`Expected preset scope badge to be JSON file exchange, got: ${scopeText ?? "<empty>"}`);
+  }
+
+  return {
+    presetName,
+    scope: scopeText,
+  };
+}
+
+async function assertClashReviewState(page, clashCard) {
+  if (!(await clashCard.count())) {
+    return {
+      clashCardPresent: false,
+      clashFocusVisible: false,
+    };
+  }
+
+  await page.locator(".collection-card-button.active").first().waitFor({
+    state: "visible",
+    timeout: 30_000,
+  });
+  await page.locator(".viewer-meta").getByText("пара клэша").waitFor({
+    state: "visible",
+    timeout: 30_000,
+  });
+
+  return {
+    clashCardPresent: true,
+    clashFocusVisible: true,
+    clashHeading: await getLocatorText(page.locator(".viewer-selection-card strong").first(), "clash selection heading"),
+  };
+}
+
+async function main() {
+  const options = parseArgs(process.argv.slice(2));
+  const browser = await launchChromium();
+  const context = await browser.newContext({
+    viewport: { width: 1600, height: 1600 },
+    colorScheme: "dark",
+  });
+
+  await mkdir(options.outputDir, { recursive: true });
+
+  const tracePath = path.join(options.outputDir, "review-shell-smoke.trace.zip");
+  const issueScreenshotPath = path.join(options.outputDir, "review-shell-issue.png");
+  const clashScreenshotPath = path.join(options.outputDir, "review-shell-clash.png");
+
+  await context.tracing.start({ screenshots: true, snapshots: true, sources: true });
+  const page = await context.newPage();
+
+  try {
+    await page.goto(options.baseUrl, { waitUntil: "domcontentloaded", timeout: 30_000 });
+    const colorScheme = await assertForcedLight(page);
+    // Shell opens on the expert workplace; the report index lives on «Проекты».
+    await page.getByRole("button", { name: "Проекты", exact: true }).click();
+    await page.locator(".report-card").first().waitFor({ state: "visible", timeout: 30_000 });
+
+    const presetChecks = await assertPresetScopeState(page);
+
+    const seededReport = page.locator(".report-card").filter({ hasText: options.reportPrefix });
+    if (await seededReport.count()) {
+      await seededReport.first().click();
+    } else {
+      await page.locator(".report-card").first().click();
+    }
+
+    await page.locator(".issue-card").first().waitFor({ state: "visible", timeout: 30_000 });
+    await page.locator(".issue-card").first().click();
+    await page.locator(".drawing-evidence-panel .drawing-evidence-image").waitFor({
+      state: "visible",
+      timeout: 30_000,
+    });
+    const issueChecks = await assertIssueReviewState(page);
+    const honesty = await assertHonestyOnExpertScreen(page);
+    const viewer = await waitForViewerReady(page);
+    await page.screenshot({ path: issueScreenshotPath, fullPage: true });
+
+    const clashCard = page.locator(".collection-card-button").first();
+    await clickIfVisible(clashCard);
+    const clashChecks = await assertClashReviewState(page, clashCard);
+    let capturedClashScreenshotPath = null;
+    if (await clashCard.count()) {
+      await page.screenshot({ path: clashScreenshotPath, fullPage: true });
+      capturedClashScreenshotPath = clashScreenshotPath;
+    }
+
+    await context.tracing.stop({ path: tracePath });
+    const smokePayload = await buildSmokePayload(
+      options,
+      {
+        issueScreenshotPath,
+        clashScreenshotPath: capturedClashScreenshotPath,
+        tracePath,
+      },
+      {
+        issue: issueChecks,
+        clash: clashChecks,
+        presets: presetChecks,
+        honesty,
+        viewer,
+        colorScheme: { emulated: "dark", computed: colorScheme },
+      },
+    );
+    console.log(JSON.stringify(smokePayload, null, 2));
+  } finally {
+    await browser.close();
+  }
+}
+
+const isDirectExecution = process.argv[1]
+  ? import.meta.url === pathToFileURL(process.argv[1]).href
+  : false;
+
+if (isDirectExecution) {
+  main().catch((error) => {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exitCode = 1;
+  });
+}

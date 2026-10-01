@@ -1,0 +1,13 @@
+buildingSMART BCF-XML schemas (vendored verbatim)
+Source: https://github.com/buildingSMART/BCF-XML
+  release_2_1/Schemas → samples/bcf-xsd/release_2_1/
+  release_3_0/Schemas → samples/bcf-xsd/release_3_0/
+License: Creative Commons Attribution-NoDerivatives 4.0 International (CC BY-ND 4.0)
+https://creativecommons.org/licenses/by-nd/4.0/
+
+Upstream LICENSE (BCF-XML release_3_0):
+  https://github.com/buildingSMART/BCF-XML/blob/release_3_0/LICENSE
+
+These XSD files are redistributed unmodified for local structural validation of
+AeroBIM BCF exports. Do not modify schema contents; re-vendor from upstream.
+Attribution must be preserved. AeroBIM claim boundary: XSD-valid ≠ CDE import proof.

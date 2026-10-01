@@ -1,0 +1,42 @@
+{
+  "artifact_type": "offline_runtime_smoke",
+  "schema_version": "1.0.0",
+  "date": "2026-07-31",
+  "generated_at": "2026-07-31T10:53:27.671739+00:00",
+  "claim_level": "runtime_smoke_only",
+  "scope_honesty": "Proves the production image STARTS and SERVES with no network at all (docker --network none: no DNS, no outbound, loopback only). Does NOT prove offline INSTALL/BUILD: the image build itself pulls the digest-pinned base and hash-locked wheels over the network. Full offline bundle (wheelhouse + install scripts, P-002) remains NOT VERIFIED.",
+  "environment": {
+    "docker": "29.5.2 (linux/x86_64)",
+    "image_tag": "aerobim-backend:offline-smoke",
+    "image_id": "sha256:84f1c36a27aeab699381506f626eb7720c2674e09f09cdccc982acbb0bcef917",
+    "base_image": "python:3.12-slim@sha256:57cd7c3a7a273101a6485ba99423ee568157882804b1124b4dd04266317710de",
+    "run_flags": "--network none, AEROBIM_ENV=production (image default), bearer set"
+  },
+  "checks": [
+    {
+      "check": "container starts with --network none",
+      "result": "PASS (Up, healthy)"
+    },
+    {
+      "check": "GET /health inside container",
+      "result": "PASS 200 {service: aerobim-backend, status: ok}"
+    },
+    {
+      "check": "GET /v1/system/capabilities with bearer",
+      "result": "PASS 200 schema 1.3.0"
+    },
+    {
+      "check": "GET /v1/system/capabilities without bearer",
+      "result": "PASS rejected 401 (fail-closed)"
+    },
+    {
+      "check": "network namespace",
+      "result": "PASS networks={none}, no IP/gateway/DNS"
+    },
+    {
+      "check": "no model download / telemetry required at startup",
+      "result": "PASS (start succeeds with zero connectivity)"
+    }
+  ],
+  "finding_fixed_by_this_run": "First run FAILED at startup: LoinMetadataResolver read samples/benchmarks/loin-rule-metadata.json at import time and the image ships without samples/ -> FileNotFoundError, container exit 1. Fixed: resolver is fail-soft (available=False + degrade_reason; enrichment is verdict-neutral), Dockerfile documents the mount option. The production image had never been started before this smoke."
+}

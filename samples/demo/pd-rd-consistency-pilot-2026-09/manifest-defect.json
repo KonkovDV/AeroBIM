@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0.0",
+  "pack_version": "1.0.0",
+  "pack_id": "pd-rd-consistency-pilot-defect",
+  "description": "SYNTHETIC: IFC WALL-01 Width 200 mm vs A-101 text-layer thickness 150 mm. Source contradiction, not a SP finding.",
+  "project_name": "PD-RD consistency pilot (synthetic defect)",
+  "discipline": "architecture",
+  "stage": "RD",
+  "revision": "R1",
+  "corpus_kind": "synthetic",
+  "request": {
+    "ifc_path": "samples/demo/pd-rd-consistency-pilot-2026-09/wall-01-width-200mm.ifc",
+    "drawings": [
+      {
+        "path": "samples/demo/pd-rd-consistency-pilot-2026-09/a-101-thickness-150mm.pdf",
+        "sheet_id": "A-101",
+        "format": "pdf",
+        "revision": "R1"
+      }
+    ]
+  }
+}

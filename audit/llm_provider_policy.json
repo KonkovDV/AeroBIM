@@ -1,0 +1,83 @@
+{
+  "artifact_type": "llm_provider_policy",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-07-31",
+  "default_profile": "default_deny_customer",
+  "api_key_env": [
+    "AEROBIM_LLM_API_KEY",
+    "AEROBIM_LLM_PROVIDER",
+    "AEROBIM_LLM_MODEL",
+    "AEROBIM_LLM_BASE_URL"
+  ],
+  "forbidden_key_storage": [
+    "git",
+    ".env committed",
+    "logs",
+    "evidence bundle",
+    "prompt persistence",
+    "exception messages"
+  ],
+  "providers": [
+    {
+      "provider": "kimi",
+      "models": ["kimi-mock", "CLOUD_DATA_POLICY_UNKNOWN"],
+      "data_retention": "CLOUD_DATA_POLICY_UNKNOWN",
+      "training_use": "CLOUD_DATA_POLICY_UNKNOWN",
+      "data_residency": "CLOUD_DATA_POLICY_UNKNOWN",
+      "dpa": "CLOUD_DATA_POLICY_UNKNOWN",
+      "customer_data": "deny_by_default",
+      "synthetic_public": "allowed_under_explicit_profile",
+      "offline_fallback": "deterministic_only"
+    },
+    {
+      "provider": "qwen",
+      "models": ["qwen-mock", "Qwen3.6-27B", "CLOUD_DATA_POLICY_UNKNOWN"],
+      "data_retention": "LOCAL_WEIGHTS_WHEN_ONPREM",
+      "training_use": "forbidden",
+      "data_residency": "onprem_when_AEROBIM_LLM_LOCAL_ENABLED",
+      "dpa": "N/A_for_local_open_weight",
+      "customer_data": "deny_by_default_structured_findings_only",
+      "synthetic_public": "allowed_under_explicit_profile",
+      "offline_fallback": "deterministic_templates",
+      "notes": "Cloud qwen3.8-max NOT_VERIFIED/forbidden default. Local vLLM via AEROBIM_LLM_* only."
+    },
+    {
+      "provider": "yandex-ai-studio",
+      "models": ["qwen3-235b", "URI+version pin via AEROBIM_LLM_MODEL_REVISION"],
+      "data_retention": "VENDOR_POLICY_SEE_DPA",
+      "training_use": "forbidden_by_default_confirm_in_DPA",
+      "data_residency": "RF_Yandex_Cloud_or_onprem_Stackland",
+      "dpa": "REQUIRED_BEFORE_CUSTOMER_CONFIDENTIAL",
+      "customer_data": "deny_CONFIDENTIAL_RESTRICTED_on_multitenant_cloud",
+      "allowed_classifications": ["PUBLIC", "INTERNAL"],
+      "synthetic_public": "allowed_under_explicit_profile",
+      "offline_fallback": "local_weights_or_deterministic_templates",
+      "hosts_allowlisted": [
+        "ai.api.cloud.yandex.net",
+        "llm.api.cloud.yandex.net"
+      ],
+      "logging_disabled_header": "x-data-logging-enabled: false",
+      "vendor_request_history_retrievable": false,
+      "model_lifecycle": "uri_pinned_no_silent_swap",
+      "notes": "KT#2 T2 private_shared cloud for open corpora only. Pilot T1 = on-prem Studio / same adapter base_url. Never tier_defaults.private. Host allowlist enforced in Settings.from_env. AeroBIM audit_event is primary record of model calls (vendor history not retrievable)."
+    },
+    {
+      "provider": "gemma",
+      "models": ["gemma-mock", "CLOUD_DATA_POLICY_UNKNOWN"],
+      "data_retention": "CLOUD_DATA_POLICY_UNKNOWN",
+      "training_use": "CLOUD_DATA_POLICY_UNKNOWN",
+      "data_residency": "CLOUD_DATA_POLICY_UNKNOWN",
+      "dpa": "CLOUD_DATA_POLICY_UNKNOWN",
+      "customer_data": "deny_by_default",
+      "synthetic_public": "allowed_under_explicit_profile",
+      "offline_fallback": "deterministic_only"
+    }
+  ],
+  "invariants": [
+    "LLM cannot set summary.passed",
+    "LLM cannot change summary.outcome",
+    "LLM cannot approve norm packs",
+    "LLM cannot suppress deterministic findings",
+    "customer egress default deny"
+  ]
+}

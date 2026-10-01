@@ -1,0 +1,198 @@
+{
+  "schema_version": "1.3.0",
+  "artifact_type": "aerobim_weekly_eng_status",
+  "generated_at": "2026-10-01T17:50:22.839630+00:00",
+  "claim_boundary": "Engineering weekly status only. No invented commercial funnel. Checkpoint GO (regulatory_measurement_mvp; customer_go false) until RF PD+expertise corpus, the appointing party acceptance profile, and measured federated MEP. Fixture != customer accuracy.",
+  "checkpoint": "GO",
+  "rt_open": [
+    "RT-001",
+    "RT-002",
+    "RT-003"
+  ],
+  "commercial_funnel": {
+    "status": "OWNER_ONLY",
+    "path": ".local/commercial-ops/outreach-log.md",
+    "contacted": null,
+    "replied": null,
+    "demo_agreed": null,
+    "note": "Do not publish contacted/replied/demo zeros or invented counts to GH. If outreach-log absent, mark data_missing — never soft-pedal.",
+    "data_status": "MISSING",
+    "print_as": "commercial block empty — no outreach-log.md"
+  },
+  "runtime_baseline": {
+    "commit_sha": "313e050505c6e6d3365feb4ba215aed41a94fe10",
+    "schema_version": "1.4.0",
+    "metrics": {
+      "backend_src_loc": 111304,
+      "backend_test_loc": 71988,
+      "backend_test_functions": 3443,
+      "extraction_macro_f1": 0.8600000000000001
+    },
+    "architecture_inventory": {
+      "public_domain_protocols": 48,
+      "adapter_modules": 77,
+      "di_tokens": 63
+    },
+    "quality_gates": {
+      "ruff": {
+        "status": "PASS"
+      },
+      "mypy": {
+        "status": "PASS"
+      },
+      "pytest": {
+        "status": "PASS"
+      },
+      "vitest": {
+        "status": "PASS"
+      },
+      "build": {
+        "status": "PASS"
+      }
+    }
+  },
+  "coverage_map": {
+    "source": "docs/evidence/EXPERIMENT_B_TYPICAL_REMARKS_KR_COVERAGE_2026_08.md",
+    "kr_detectable_share_approx": 0.167,
+    "kr_detectable_rows": [
+      "#2",
+      "#3",
+      "#4",
+      "#24"
+    ],
+    "kr_missing_attribute_rows": [
+      "#9",
+      "#10"
+    ],
+    "ar_recount": "docs/evidence/EXPERIMENT_B_AR_SPB_AMUR_RECOUNT_2026_08.md",
+    "claim_level": "AUTHOR_CLAIM_coverage_map_not_precision"
+  },
+  "pnst909_22_scenario_axis": {
+    "inventory": "docs/evidence/pnst909-22-scenario-ids-inventory-latest.json",
+    "runtime": "docs/evidence/pnst909-22-scenario-runtime-latest.json",
+    "pairing": "docs/evidence/pnst909-22-scenario-pairing.json",
+    "cli": "python -m aerobim.tools.run_pnst909_22_scenario_runtime",
+    "tos_cite": "GO",
+    "summary": {
+      "scenarios_total": 22,
+      "executed": 18,
+      "coverage_class_counts": {
+        "runtime_clean": 18,
+        "out_of_pack": 4
+      },
+      "runtime_status_counts": {
+        "EXECUTED": 18,
+        "NO_IDS_IN_PACK": 4
+      },
+      "share_executed": 0.818,
+      "share_ids_available": 0.818
+    },
+    "runtime_generated_at": "2026-08-05T20:04:31.762645+00:00",
+    "runtime_status": "PARTIAL_18_OF_22_CLEAN",
+    "ishigaki_cli": "python -m aerobim.tools.run_ishigaki_ids_bench_smoke",
+    "ishigaki_evidence": "docs/evidence/ishigaki-ids-bench-smoke-latest.json"
+  },
+  "adjudication_corpus_plan": {
+    "artifact_type": "adjudication_corpus_plan",
+    "schema_version": "1.0.0",
+    "inputs": {
+      "threshold": 0.6,
+      "expected_precision": 0.75,
+      "alpha": 0.05,
+      "target_power": 0.8,
+      "ci_half_width": 0.08
+    },
+    "power_design": {
+      "n": 62,
+      "p0": 0.6,
+      "p_true": 0.75,
+      "alpha": 0.05,
+      "critical_k": 44,
+      "attained_alpha": 0.049228,
+      "power": 0.812117,
+      "method": "exact_binomial_one_sided"
+    },
+    "wilson_width_n": 111,
+    "recommended_n": 111,
+    "recommended_n_note": "max(power design, CI-width design); exact binomial power is sawtoothed in n — nearby n are equivalent design points",
+    "decision_preview_at_recommended_n": [
+      {
+        "planning_rate": 0.6,
+        "successes": 67,
+        "trials": 111,
+        "alpha": 0.05,
+        "point": 0.603604,
+        "lower": 0.510609,
+        "upper": 0.689667,
+        "half_width": 0.089529,
+        "method": "wilson_score",
+        "demonstrates_threshold": false
+      },
+      {
+        "planning_rate": 0.75,
+        "successes": 83,
+        "trials": 111,
+        "alpha": 0.05,
+        "point": 0.747748,
+        "lower": 0.659598,
+        "upper": 0.819323,
+        "half_width": 0.079863,
+        "method": "wilson_score",
+        "demonstrates_threshold": true
+      },
+      {
+        "planning_rate": 0.85,
+        "successes": 94,
+        "trials": 111,
+        "alpha": 0.05,
+        "point": 0.846847,
+        "lower": 0.768364,
+        "upper": 0.902125,
+        "half_width": 0.06688,
+        "method": "wilson_score",
+        "demonstrates_threshold": true
+      }
+    ],
+    "anchors": [
+      "Wilson 1927 score interval",
+      "Brown, Cai & DasGupta 2001 (Statistical Science) — Wilson recommended",
+      "Miller 2024 arXiv 2411.00640 — power analysis for evals"
+    ],
+    "claim_boundary": "sizes the dual-expert labeling effort only; predicts no precision value; fixture evidence never becomes customer evidence (RT-001)"
+  },
+  "interpretation_use": {
+    "ledger": "docs/quality/INTERPRETATION_USE_LEDGER_2026_08.md",
+    "cli": "python -m aerobim.tools.export_interpretation_use_ledger",
+    "checkpoint": "GO"
+  },
+  "ifc_cache_ram_ceiling": {
+    "schema_version": "1.0.0",
+    "artifact_type": "ifc_cache_ram_ceiling",
+    "generated_at": null,
+    "claim_boundary": "Process-local LRU ceiling (max_cached_models × max_ifc_bytes). Not federated-pack RSS, not VM sizing, not customer SLA. closes_rt003=false.",
+    "max_cached_models": 8,
+    "max_bytes_per_model": 268435456,
+    "ceiling_bytes": 2147483648,
+    "ceiling_gib": 2.0,
+    "measured_rss_delta_bytes": null,
+    "representative_scale": false,
+    "spf_ram_multiplier_literature": 10,
+    "spf_ram_multiplier_source": "IfcOpenShell#7116 SPF ~8–10x disk on ~275–300 MB; planning uses 10",
+    "literature_rss_ceiling_bytes": 21474836480,
+    "literature_rss_not_measured": true,
+    "closes_rt003": false,
+    "checkpoint": "GO",
+    "cli": "python -m aerobim.tools.export_ifc_cache_ram_ceiling",
+    "evidence": "docs/evidence/ifc-cache-ram-ceiling-latest.json"
+  },
+  "next_levers": [
+    "Exp A: 18/22 IDS runtime_clean published (ToS GO) — do not sell as precision",
+    "PNST scenarios 3/18/21/22 still out_of_pack (no IDS in download)",
+    "AR recount: SPb n=4 / Amur n=5 — do not merge organs into one %",
+    "Norm-pack: edition field via samples/config/documentation-standard-edition.json",
+    "MISSING_ATTRIBUTE #9/#10 drawing_purpose roles (or stay conditional)",
+    "Owner DWG decision A/B/C: docs/tz/DWG_DECISION_OPTIONS_ABC_2026_08.md",
+    "RT-002 appointing-party-signed acceptance profile (public MOEXP IDS ≠ that profile)",
+    "RT-003 measure public federated IFC (west_riverside / sixty5); not MEP delivered"
+  ]
+}

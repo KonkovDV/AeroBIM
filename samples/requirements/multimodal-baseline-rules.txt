@@ -1,0 +1,2 @@
+# rule_id|rule_scope|ifc_entity|target_ref|property_set|property_name|operator|expected_value|unit|evidence_text
+REQ-AREA-001|ifc-quantity|IFCSPACE|ROOM-101|Qto_SpaceBaseQuantities|NetFloorArea|gte|42|m2|Area from TZ paragraph 4.2

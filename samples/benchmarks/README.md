@@ -1,0 +1,60 @@
+# Benchmark Packs
+
+Manifest-backed packs for repeatable latency rails, ablation studies, and publication artifacts.
+
+Each pack references fixtures under `samples/` and stays license-safe.
+
+## Project-package packs
+
+| Pack | Role |
+|---|---|
+| `project-package-baseline.json` | Multimodal baseline (IFC, IDS, narrative, calculation, drawing) |
+| `project-package-fire-compliance.json` | Fire-compliance profile |
+| `project-package-stress-multisource.json` | Stress profile with expanded inputs |
+| `project-package-pilot-moscow-v1.json` | Pilot Moscow bundle |
+| `project-package-ablation-a0.json` | Ablation A0: IFC + IDS only |
+| `project-package-ablation-a1.json` | Ablation A1: + structured requirements |
+| `project-package-ablation-a2.json` | Ablation A2: + narrative specification |
+| `project-package-ablation-a3.json` | Ablation A3: full multimodal pack |
+
+## Extraction quality
+
+| Artifact | Role |
+|---|---|
+| `russian-aec-ground-truth.json` | 10 RU documents, 50 annotated requirements |
+| `english-aec-ground-truth.json` | 2 EN structured fixtures, 10 requirements |
+| `annotation/iaa-worksheet-template.json` | Cohen’s κ dual-annotator worksheet |
+| `benchmark-extraction-quality.json` | CI metadata for extraction gate |
+| `bsdd-pilot-terms.json` | Offline bSDD term map (pilot properties) |
+| `loin-rule-metadata.json` | LOIN purpose/milestone/actor per rule prefix |
+
+Threshold profile: `benchmark-thresholds.json` (advisory and enforced **fixture** latency rails). Customer-stated «5–10 packs/day» is recorded under `operator_notes` with `publishable_sla: false` — it is **not** converted from `min_reports_per_second`.
+
+## Open corpora (WP-06)
+
+Pinned profiles under `open-corpora/` — regression (honest IDS/IFC binary count), pilot-approx timing, load (AR/KZH + MEP).  
+Claim boundary: regression/timing only — **not** product accuracy.
+
+```bash
+python -m aerobim.tools.run_open_corpora_profiles --mode smoke   # CI
+python -m aerobim.tools.run_open_corpora_profiles --mode full    # manual
+python -m aerobim.tools.compute_quality_protocol_stats --tp 83 --fp 28 --fn 10
+```
+
+## Commands (from `backend/`)
+
+```bash
+python -m aerobim.tools.benchmark_project_package --iterations 1 --warmup-iterations 0
+python -m aerobim.tools.evaluate_extraction --min-macro-f1 0.70
+python -m aerobim.tools.run_ablation_study
+python -m aerobim.tools.generate_benchmark_report --output-dir ../docs/evidence
+```
+
+Threshold evaluation on CI artifacts:
+
+```bash
+python -m aerobim.tools.benchmark_threshold_gate \
+  --artifact-dir ../artifacts/ci-benchmark-smoke \
+  --threshold-profile ../samples/benchmarks/benchmark-thresholds.json \
+  --mode advisory
+```

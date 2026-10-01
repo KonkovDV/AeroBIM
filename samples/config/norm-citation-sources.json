@@ -1,0 +1,15 @@
+{
+  "schema": "aerobim_norm_citation_sources_v1",
+  "claim_boundary": "Fixture citing sources. Moscow AGR PDF is not vendored; the citation of GOST R 21.101-2020 is the public fact used for the demo warning.",
+  "sources": [
+    {
+      "id": "moscow_agr_cim_requirements",
+      "title": "Требования Москвы к ЦИМ АГР (Депградполитики + ДИТ)",
+      "as_of": "2026-08-14",
+      "cites": [
+        "ГОСТ Р 21.101-2020"
+      ],
+      "notes": "Live departmental CIM AGR requirements still name the 2020 edition after 2026-04-01 replacement. AeroBIM raises AEROBIM-NORM-SUPERSEDED. Not a full AGR profile."
+    }
+  ]
+}

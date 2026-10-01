@@ -1,0 +1,887 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ids xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://standards.buildingsmart.org/IDS http://standards.buildingsmart.org/IDS/1.0/ids.xsd" xmlns="http://standards.buildingsmart.org/IDS">
+  <info>
+    <title>Минимальный атрибутивный состав элементов ЦИМ ИГИ</title>
+    <copyright>СПб ГАУ "Центр государственной экспертизы"</copyright>
+    <version>1.1.0</version>
+    <description>Рекомендации по минимальному составу моделируемых элементов ЦИМ, их классификации и особенностям формирования геометрии.</description>
+    <author>bim@spbexp.ru</author>
+    <date>2024-12-10</date>
+    <purpose>Проверка атрибутивного состава элементов цифровых информационных моделей инженерно-геологических изысканий (ЦИМ ИГИ).</purpose>
+    <milestone>Инженерные изыскания</milestone>
+  </info>
+  <specifications>
+    <specification name="2.1.1 Проектируемый ОКС" ifcVersion="IFC4 IFC4X3_ADD2" identifier="2.1.1" description="Используется для определения посадки здания и определения достаточности геологической изученности." instructions="Моделируется по габаритным контурам планируемого к проектированию ОКС согласно (в случае, если они определены в рамках технического задания на выполнение инженерных изысканий).&#xA;В атрибуте PredefinedType (Подтип IFC) указывается значение &quot;USERDEFINED&quot;.&#xA;В атрибуте ObjectType указывается значение &quot;STRUCTURAL_VOLUME&quot; или &quot;Проектируемый ОКС&quot;.">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCSPATIALZONE" />
+              <xs:enumeration value="IFCSPATIALZONETYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="STRUCTURAL_VOLUME" />
+              <xs:enumeration value="Проектируемый ОКС" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+      </applicability>
+    </specification>
+    <specification name="2.1.2 Фундамент проектируемого ОКС" ifcVersion="IFC4 IFC4X3_ADD2" identifier="2.1.2" description="Используется для определения посадки здания и определения достаточности геологической изученности." instructions="Геометрия элемента должна отражать особенности фундамента планируемого ОКС (плитный/свайный/ленточный, глубина заложения и т.д.).&#xA;В атрибуте PredefinedType (Подтип IFC) указывается значение &quot;USERDEFINED&quot;.&#xA;В атрибуте ObjectType указывается значение &quot;FOOTING&quot; или &quot;Фундамент проектируемого ОКС&quot;.">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCSPATIALZONE" />
+              <xs:enumeration value="IFCSPATIALZONETYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="FOOTING" />
+              <xs:enumeration value="Фундамент проектируемого ОКС" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип фундамента</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="2.1.3 Геологическая выработка/скважина (IFC4)" ifcVersion="IFC4" identifier="2.1.3" description="Представляет из себя фиктивный элемент ЦИМ (без геометрии), с установленными иерархическими связями (IfcRelationship) с геологическими слоями, выявленными в рамках выработки/скважины." instructions="В случае невозможности реализации связей между геологическими выработками и выявленными в ней геологическими слоями допускается формировать выработку самостоятельным объемным элементом от отметки устья до отметки забоя.&#xA;При выгрузке в IFC4 в атрибуте PredefinedType (Подтип IFC) указывается значение &quot;USERDEFINED&quot;.&#xA;В атрибуте ObjectType указывается значение &quot;BOREHOLE&quot; или &quot;Геологическая выработка&quot; или &quot;Скважина&quot;.">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCGEOGRAPHICELEMENT" />
+              <xs:enumeration value="IFCGEOGRAPHICELEMENTTYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="BOREHOLE" />
+              <xs:enumeration value="Геологическая выработка" />
+              <xs:enumeration value="Cкважина" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер скважины</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCDATE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Дата бурения</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Координата X</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Координата Y</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Абсолютная отметка устья</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Вид бурения</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Агрегат бурения</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCLENGTHMEASURE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Глубина выработки</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCLENGTHMEASURE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Диаметр бурения</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Источник данных</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Допускается не указывать при отсутствии данных." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Уровень появления грунтовых вод</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Допускается не указывать при отсутствии данных." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Установившийся уровень грунтовых вод</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Допускается не указывать при отсутствии данных." dataType="IFCDATE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Дата замера</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="2.1.3 Геологическая выработка/скважина (IFC4x3)" ifcVersion="IFC4X3_ADD2" identifier="2.1.3" description="Представляет из себя фиктивный элемент ЦИМ (без геометрии), с установленными иерархическими связями (IfcRelationship) с геологическими слоями, выявленными в рамках выработки/скважины." instructions="В случае невозможности реализации связей между геологическими выработками и выявленными в ней геологическими слоями допускается формировать выработку самостоятельным объемным элементом от отметки устья до отметки забоя.">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCBOREHOLE" />
+            </xs:restriction>
+          </name>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер скважины</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCDATE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Дата бурения</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Координата X</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Координата Y</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Абсолютная отметка устья</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Вид бурения</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Агрегат бурения</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCLENGTHMEASURE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Глубина выработки</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCLENGTHMEASURE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Диаметр бурения</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Источник данных</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Допускается не указывать при отсутствии данных." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Уровень появления грунтовых вод</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Допускается не указывать при отсутствии данных." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Установившийся уровень грунтовых вод</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Допускается не указывать при отсутствии данных." dataType="IFCDATE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Дата замера</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="2.1.4 Геологический слой (IFC4)" ifcVersion="IFC4" identifier="2.1.4" description="Формируется по выявленным инженерно-геологическим элементам в составе геологической выработки/скважины. " instructions="Моделируются в виде цилиндров или параллелепипедов условными размерами в плане (200-2000 мм) от отметки подошвы, высотой равной мощности выделенного слоя.&#xA;В атрибуте PredefinedType (Подтип IFC) указывается значение &quot;USERDEFINED&quot;.&#xA;В атрибуте ObjectType указывается значение &quot;GEOLOGICAL_LAYER&quot; или &quot;Геологический слой&quot;.">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCGEOGRAPHICELEMENT" />
+              <xs:enumeration value="IFCGEOGRAPHICELEMENTTYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="GEOLOGICAL_LAYER" />
+              <xs:enumeration value=" Геологический слой" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <partOf cardinality="required" relation="IFCRELAGGREGATES">
+          <entity>
+            <name>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="IFCGEOGRAPHICELEMENT" />
+              </xs:restriction>
+            </name>
+            <predefinedType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="BOREHOLE" />
+                <xs:enumeration value="Скважина" />
+                <xs:enumeration value="Геологическая выработка" />
+              </xs:restriction>
+            </predefinedType>
+          </entity>
+        </partOf>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер ИГЭ</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Описание ИГЭ</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="2.1.4 Геологический слой (IFC4x3)" ifcVersion="IFC4X3_ADD2" identifier="2.1.4" description="Формируется по выявленным инженерно-геологическим элементам в составе геологической выработки/скважины. " instructions="Моделируются в виде цилиндров или параллелепипедов условными размерами в плане (200-2000 мм) от отметки подошвы, высотой равной мощности выделенного слоя.&#xA;В атрибуте PredefinedType (Подтип IFC) указывается значение &quot;USERDEFINED&quot;.&#xA;В атрибуте ObjectType указывается значение &quot;GEOLOGICAL_LAYER&quot; или &quot;Геологический слой&quot;.">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCGEOGRAPHICELEMENT" />
+              <xs:enumeration value="IFCGEOGRAPHICELEMENTTYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="GEOLOGICAL_LAYER" />
+              <xs:enumeration value=" Геологический слой" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <partOf cardinality="required" relation="IFCRELAGGREGATES">
+          <entity>
+            <name>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="IFCBOREHOLE" />
+              </xs:restriction>
+            </name>
+          </entity>
+        </partOf>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер ИГЭ</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Описание ИГЭ</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="2.1.5 Геологический пласт (IFC4)" ifcVersion="IFC4" identifier="2.1.5" instructions="Формируется в виде объемного элемента по правилам построения инженерно-геологических разрезов между геологическими слоями, выявленными в скважинах. Допускается введение фиктивных скважин с геологическими слоями для формирования корректного напластования грунтов.&#xA;В атрибуте PredefinedType (Подтип IFC) указывается значение &quot;USERDEFINED&quot;.&#xA;В атрибуте ObjectType указывается значение &quot;SOLID_STRATUM&quot; или &quot;Геологический пласт&quot;.">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCGEOGRAPHICELEMENT" />
+              <xs:enumeration value="IFCGEOGRAPHICELEMENTTYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Геологический пласт" />
+              <xs:enumeration value="SOLID_STRATUM" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCDATE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Возраст ИГЭ</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер ИГЭ</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Описание ИГЭ</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Допускается не указывать при отсутствии данных." dataType="IFCMASSDENSITYMEASURE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Плотность</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Допускается не указывать при отсутствии данных." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Коэффициент пористости</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Допускается не указывать при отсутствии данных." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Угол внутреннего трения</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Допускается не указывать при отсутствии данных." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Удельное сцепление</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Для глинистых грунтов. Допускается не указывать при отсутствии данных." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Природная влажность</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Для глинистых грунтов. Допускается не указывать при отсутствии данных." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Число пластичности</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Для глинистых грунтов. Допускается не указывать при отсутствии данных." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Показатель текучести</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Для глинистых грунтов. Допускается не указывать при отсутствии данных." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Показатель консистенции</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="2.1.5 Геологический пласт (IFC4x3)" ifcVersion="IFC4X3_ADD2" identifier="2.1.5" instructions="Формируется в виде объемного элемента по правилам построения инженерно-геологических разрезов между геологическими слоями, выявленными в скважинах. Допускается введение фиктивных скважин с геологическими слоями для формирования корректного напластования грунтов.">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCGEOTECHNICALSTRATUM" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Геологический пласт" />
+              <xs:enumeration value="SOLID" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCDATE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Возраст ИГЭ</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер ИГЭ</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Описание ИГЭ</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Допускается не указывать при отсутствии данных." dataType="IFCMASSDENSITYMEASURE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Плотность</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Допускается не указывать при отсутствии данных." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Коэффициент пористости</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Допускается не указывать при отсутствии данных." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Угол внутреннего трения</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Допускается не указывать при отсутствии данных." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Удельное сцепление</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Для глинистых грунтов. Допускается не указывать при отсутствии данных." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Природная влажность</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Для глинистых грунтов. Допускается не указывать при отсутствии данных." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Число пластичности</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Для глинистых грунтов. Допускается не указывать при отсутствии данных." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Показатель текучести</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Для глинистых грунтов. Допускается не указывать при отсутствии данных." dataType="IFCREAL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Показатель консистенции</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="2.2.1 Грунтовые воды / подземные воды (IFC4)" ifcVersion="IFC4" identifier="2.2.1" instructions="Формируется в виде отдельного объемного элемента (по аналогии с геологическими пластами) или TIN-поверхности по устоявшимся уровням воды или выявленным водоносным горизонтам.&#xA;В атрибуте PredefinedType (Подтип IFC) указывается значение &quot;USERDEFINED&quot;.&#xA;В атрибуте ObjectType указывается значение &quot;GROUNDWATER&quot; или &quot;Грунтовые воды&quot; или &quot;Подземные воды&quot;.">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCGEOGRAPHICELEMENT" />
+              <xs:enumeration value="IFCGEOGRAPHICELEMENTTYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="GROUNDWATER" />
+              <xs:enumeration value="Подземные воды" />
+              <xs:enumeration value="Грунтовые воды" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Наименование</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCDATE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Дата</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Допускается не указывать при отсутствии данных." dataType="IFCBOOLEAN">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Напорные</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Допускается не указывать при отсутствии данных." dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Связь с ПВО</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="2.2.1 Грунтовые воды / подземные воды (IFC4x3)" ifcVersion="IFC4X3_ADD2" identifier="2.2.1" instructions="Формируется в виде отдельного объемного элемента (по аналогии с геологическими пластами) или TIN-поверхности по устоявшимся уровням воды или выявленным водоносным горизонтам.">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCGEOTECHNICALSTRATUM" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="WATER" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Наименование</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCDATE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Дата</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Допускается не указывать при отсутствии данных." dataType="IFCBOOLEAN">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Напорные</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Допускается не указывать при отсутствии данных." dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Связь с ПВО</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="2.2.2 Подземные пустоты (IFC4)" ifcVersion="IFC4" identifier="2.2.2" instructions="Формируется в виде отдельного объемного элемента (по аналогии с геологическими пластами) или TIN-поверхности.&#xA;В атрибуте PredefinedType (Подтип IFC) указывается значение &quot;USERDEFINED&quot;.&#xA;В атрибуте ObjectType указывается значение &quot;VOID_STRATUM&quot; или &quot;Подземные пустоты&quot;.">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCGEOGRAPHICELEMENT" />
+              <xs:enumeration value="IFCGEOGRAPHICELEMENTTYPE" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="VOID_STRATUM" />
+              <xs:enumeration value="Подземные пустоты" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="optional" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип пустоты</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCDATE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Дата</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Допускается не указывать при отсутствии данных." dataType="IFCBOOLEAN">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Напорные</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Допускается не указывать при отсутствии данных." dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Связь с ПВО</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="2.2.2 Подземные пустоты (IFC4x3)" ifcVersion="IFC4X3_ADD2" identifier="2.2.2" instructions="Формируется в виде отдельного объемного элемента (по аналогии с геологическими пластами) или TIN-поверхности.">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="IFCGEOTECHNICALSTRATUM" />
+            </xs:restriction>
+          </name>
+          <predefinedType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="VOID" />
+            </xs:restriction>
+          </predefinedType>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="optional" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип пустоты</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" dataType="IFCDATE">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Дата</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Допускается не указывать при отсутствии данных." dataType="IFCBOOLEAN">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Напорные</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="optional" instructions="Допускается не указывать при отсутствии данных." dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Связь с ПВО</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="А.3 Правила заполнения атрибута &quot;Источник данных&quot;" ifcVersion="IFC4 IFC4X3_ADD2" identifier="А.3">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <property dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Источник данных</simpleValue>
+          </baseName>
+        </property>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Источник данных</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Архивные материалы" />
+              <xs:enumeration value="Новые данные" />
+            </xs:restriction>
+          </value>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="А.13 Правила заполнения атрибута &quot;Тип фундамента&quot;" ifcVersion="IFC4 IFC4X3_ADD2" identifier="А.13">
+      <applicability minOccurs="0" maxOccurs="unbounded">
+        <property dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип фундамента</simpleValue>
+          </baseName>
+        </property>
+      </applicability>
+      <requirements>
+        <property cardinality="required" dataType="IFCLABEL">
+          <propertySet>
+            <simpleValue>Данные</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип фундамента</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Плитный" />
+              <xs:enumeration value="Ленточный" />
+              <xs:enumeration value="Свайный" />
+              <xs:enumeration value="Столбчатый" />
+            </xs:restriction>
+          </value>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="Проверка отсутствия уровней (IfcBuildingStorey)" ifcVersion="IFC4">
+      <applicability minOccurs="0" maxOccurs="0">
+        <entity>
+          <name>
+            <simpleValue>IFCBUILDINGSTOREY</simpleValue>
+          </name>
+        </entity>
+      </applicability>
+    </specification>
+  </specifications>
+</ids>

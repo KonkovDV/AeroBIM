@@ -1,0 +1,851 @@
+"""Shared per-app HTTP context: auth dependency, path jail, ACL and serializers.
+
+``ApiContext`` is built once per ``create_http_app`` call from the DI container
+and passed to router factories. ``require_bearer_auth`` is a *bound method*
+used directly as a FastAPI dependency (``Depends(ctx.require_bearer_auth)``),
+which replaces the former closures inside the monolithic ``create_http_app``.
+
+This module imports FastAPI at import time; ``api.py`` therefore imports it
+lazily, after its "Install FastAPI" guard. No ``from __future__ import
+annotations`` here: FastAPI must evaluate dependency annotations at runtime.
+"""
+
+import re as _re
+import secrets
+import unicodedata
+from dataclasses import asdict
+from pathlib import Path
+from typing import Annotated, Any
+
+from fastapi import Header, HTTPException, Request
+
+from aerobim.application.services.iso19650_metadata import enrich_iso19650_metadata
+from aerobim.application.services.loin_metadata_resolver import LoinMetadataResolver
+from aerobim.core.di.container import Container
+from aerobim.core.di.tokens import Tokens
+from aerobim.core.security.path_jail import (
+    PathJailError,
+    assert_path_under_tenant_prefix,
+    reject_symlinks,
+    resolve_storage_path,
+    tenant_storage_prefix,
+)
+from aerobim.core.security.upload_quota import FilesystemUploadQuotaStore
+from aerobim.domain.ifc_size_policy import BAND_ANALYZE_DISK, classify_ifc_bytes
+from aerobim.domain.models import (
+    AnalyzeProjectPackageJob,
+    DrawingAsset,
+    RequirementSource,
+    SourceKind,
+    ValidationReport,
+    ValidationRequest,
+)
+from aerobim.domain.object_acl import (
+    LAB_ANONYMOUS_TENANT_ID,
+    LAB_REVIEWER_AUTH_SCHEME,
+    LAB_REVIEWER_SUBJECT,
+    AuthPrincipal,
+    principal_may_access_job,
+    principal_may_access_norm_pack,
+    principal_may_access_report,
+    principal_may_access_tenant_id,
+    principal_may_list_unscoped_reports,
+)
+from aerobim.infrastructure.auth.oidc_bff_phase3 import (
+    DEFAULT_BFF_SESSION_STORE,
+    parse_session_cookie,
+    require_verified_bff_session,
+    session_cookie_name,
+)
+from aerobim.infrastructure.security.oidc_token_validator import OidcValidationError
+from aerobim.presentation.http.csrf import (
+    BFF_CSRF_HEADER,
+    csrf_header_matches,
+    mutating_bff_cookie_requires_csrf,
+)
+from aerobim.presentation.http.errors import (
+    public_bad_request_detail,
+    public_csrf_header_required_detail,
+    public_ifc_analyze_cap_body,
+    public_ifc_disk_backend_detail,
+    public_not_found_detail,
+    public_storage_boundary_detail,
+)
+from aerobim.presentation.http.package_request_builders import (
+    build_project_package_request,
+    build_requirement_source,
+)
+from aerobim.presentation.http.rate_limit import (
+    heavy_get_path_is_rate_limited,
+    post_path_is_rate_limited,
+)
+from aerobim.presentation.http.schemas import AnalyzeProjectPackageRequest
+
+REPORT_ID_RE = _re.compile(r"^[a-f0-9]{32}$")
+DRAWING_ASSET_ID_RE = _re.compile(r"^[A-Za-z0-9_-]{1,128}$")
+BCF_PROJECT_ID_RE = _re.compile(
+    r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+)
+LOIN_RESOLVER = LoinMetadataResolver()
+UPLOAD_HASH_CHUNK = 1024 * 1024
+UPLOAD_SNIFF_BYTES = 4096
+
+_ALLOWED_PREVIEW_MEDIA_TYPES = frozenset(
+    {
+        "image/png",
+        "image/jpeg",
+        "image/webp",
+        "image/gif",
+        "application/pdf",
+    }
+)
+
+# Egress mark for AI remark drafts (HTTP JSON + BCF provenance must agree).
+_AI_CONTENT_MARKING = "ai_generated=true;expert_confirmation_required=true"
+
+
+def _oidc_tenant_from_claim(value: object) -> str:
+    if value is None:
+        return ""
+    if not isinstance(value, str):
+        raise HTTPException(
+            status_code=401,
+            detail="OIDC token tenant claim must be a string",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return unicodedata.normalize("NFC", value.strip())
+
+
+def attachment_content_disposition(filename: str) -> str:
+    """RFC 6266 / RFC 5987 attachment header with safe ASCII + UTF-8 fallback."""
+    from urllib.parse import quote
+
+    normalized = filename.replace("\x00", "").replace("\r", "").replace("\n", "")
+    ascii_safe = normalized.replace('"', "").replace("\\", "_").replace("/", "_").replace(";", "_")
+    ascii_safe = "".join(
+        ch if ord(ch) < 128 and ch not in ('"', "\\") else "_" for ch in ascii_safe
+    )
+    ascii_safe = (ascii_safe.strip() or "download").strip(" .")
+    utf8_encoded = quote(normalized, safe="")
+    if ascii_safe != normalized.strip():
+        return f"attachment; filename=\"{ascii_safe}\"; filename*=UTF-8''{utf8_encoded}"
+    return f'attachment; filename="{ascii_safe}"'
+
+
+def safe_preview_media_type(raw: str | None) -> str:
+    value = (raw or "").strip().lower()
+    return value if value in _ALLOWED_PREVIEW_MEDIA_TYPES else "application/octet-stream"
+
+
+class ApiContext:
+    """Per-app dependencies and route helpers resolved from the DI container."""
+
+    def __init__(self, container: Container) -> None:
+        self.container = container
+        self.settings = container.resolve(Tokens.SETTINGS)
+        self.logger = container.resolve(Tokens.LOGGER)
+        self.validate_use_case = container.resolve(Tokens.VALIDATE_IFC_AGAINST_IDS_USE_CASE)
+        self.analyze_use_case = container.resolve(Tokens.ANALYZE_PROJECT_PACKAGE_USE_CASE)
+        self.audit_store = container.resolve(Tokens.AUDIT_REPORT_STORE)
+        self.oidc_validator = None
+        if container.is_registered(Tokens.OIDC_TOKEN_VALIDATOR):
+            self.oidc_validator = container.resolve(Tokens.OIDC_TOKEN_VALIDATOR)
+        self.object_store = None
+        if container.is_registered(Tokens.OBJECT_STORE):
+            self.object_store = container.resolve(Tokens.OBJECT_STORE)
+        self.upload_quota_store = FilesystemUploadQuotaStore(
+            self.settings.storage_dir,
+            max_uploads_per_day=self.settings.max_uploads_per_tenant_day,
+            max_bytes_per_day=self.settings.max_upload_bytes_per_tenant_day,
+            fail_closed=self.settings.audit_fail_closed,
+        )
+
+    # -- Auth -------------------------------------------------------------
+
+    def _principal_from_verified_bff_cookie(self, request: Request) -> AuthPrincipal | None:
+        """Bind a Phase-3 lab cookie only when identity_verified (HD3-BFF-01).
+
+        Unverified lab sessions never become AuthPrincipal. Not production SSO.
+        """
+
+        settings = self.settings
+        if not settings.oidc_bff_phase3_ready:
+            return None
+        secret = settings.oidc_bff_cookie_secret or ""
+        if not secret:
+            return None
+        secure = not settings.debug and not settings.is_dev_environment
+        raw = request.cookies.get(session_cookie_name(secure=secure))
+        session_id = parse_session_cookie(raw, secret)
+        if session_id is None:
+            return None
+        try:
+            session = require_verified_bff_session(DEFAULT_BFF_SESSION_STORE.get(session_id))
+        except PermissionError:
+            return None
+        tenant = (session.tenant_id or "").strip()
+        if not tenant:
+            return None
+        return AuthPrincipal(
+            tenant_id=tenant,
+            subject=session.subject,
+            roles=session.roles,
+            auth_scheme="oidc",
+        )
+
+    def require_bearer_auth(
+        self,
+        request: Request,
+        authorization: Annotated[str | None, Header()] = None,
+    ) -> AuthPrincipal:
+        settings = self.settings
+        configured_token = settings.api_bearer_token
+        oidc_ready = self.oidc_validator is not None
+        # Cookie present on a mutation → custom header, even if Vite also injects Bearer.
+        if mutating_bff_cookie_requires_csrf(method=request.method, cookies=request.cookies):
+            if not csrf_header_matches(request.headers.get(BFF_CSRF_HEADER)):
+                raise HTTPException(
+                    status_code=403,
+                    detail=public_csrf_header_required_detail(),
+                )
+
+        if not authorization:
+            cookie_principal = self._principal_from_verified_bff_cookie(request)
+            if cookie_principal is not None:
+                return self._bind_authenticated(request, cookie_principal)
+
+        if configured_token is None and not oidc_ready and not authorization:
+            if settings.oidc_bff_phase3_ready:
+                raise HTTPException(
+                    status_code=401,
+                    detail="Missing Authorization header",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+            if settings.is_dev_environment and settings.allow_anonymous_dev:
+                bound_tenant = (settings.api_tenant_id or "").strip() or LAB_ANONYMOUS_TENANT_ID
+                return self._bind_authenticated(
+                    request,
+                    AuthPrincipal(
+                        tenant_id=bound_tenant,
+                        subject="anonymous-dev",
+                        auth_scheme="anonymous",
+                    ),
+                )
+            if settings.is_dev_environment:
+                raise HTTPException(
+                    status_code=401,
+                    detail=(
+                        "API auth required: set AEROBIM_API_BEARER_TOKEN "
+                        "or AEROBIM_ALLOW_ANONYMOUS_DEV=true for local anonymous access"
+                    ),
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+            raise HTTPException(
+                status_code=503,
+                detail=(
+                    "API auth is required outside development "
+                    "(set AEROBIM_API_BEARER_TOKEN and/or OIDC settings)"
+                ),
+            )
+
+        if not authorization:
+            raise HTTPException(
+                status_code=401,
+                detail="Missing Authorization header",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        # Unverified BFF lab cookies are never accepted (HD3-BFF-01).
+        # Verified Phase-3 cookies bind above, before this Bearer path.
+
+        scheme, _, token = authorization.partition(" ")
+        if scheme.lower() != "bearer" or not token:
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid Authorization header format",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        # AUTH-01: hmac.compare_digest(str, str) raises TypeError on non-ASCII.
+        if not token.isascii():
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid API token",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+        if configured_token is not None and secrets.compare_digest(token, configured_token):
+            return self._bind_authenticated(
+                request,
+                AuthPrincipal(
+                    tenant_id=settings.api_tenant_id,
+                    subject="api-bearer",
+                    is_service_token=True,
+                    auth_scheme="bearer",
+                ),
+            )
+
+        reviewer_token = settings.dev_reviewer_token
+        if (
+            reviewer_token is not None
+            and settings.is_dev_environment
+            and secrets.compare_digest(token, reviewer_token)
+        ):
+            bound_tenant = (settings.api_tenant_id or "").strip() or LAB_ANONYMOUS_TENANT_ID
+            return self._bind_authenticated(
+                request,
+                AuthPrincipal(
+                    tenant_id=bound_tenant,
+                    subject=LAB_REVIEWER_SUBJECT,
+                    is_service_token=False,
+                    roles=frozenset({"reviewer"}),
+                    auth_scheme=LAB_REVIEWER_AUTH_SCHEME,
+                ),
+            )
+
+        if oidc_ready:
+            assert self.oidc_validator is not None
+            try:
+                claims = self.oidc_validator.validate(token)
+                claim_name = (settings.oidc_tenant_claim or "tenant_id").strip() or "tenant_id"
+                # Tenant comes only from AEROBIM_OIDC_TENANT_CLAIM (default name
+                # tenant_id). Never tid / org_id / api_tenant_id fallbacks.
+                tenant_claim = claims.get(claim_name)
+                tenant = _oidc_tenant_from_claim(tenant_claim)
+                if not tenant:
+                    raise HTTPException(
+                        status_code=401,
+                        detail="OIDC token missing required tenant claim",
+                        headers={"WWW-Authenticate": "Bearer"},
+                    )
+                subject = claims.get("sub")
+                if not isinstance(subject, str) or not subject.strip():
+                    raise HTTPException(
+                        status_code=401,
+                        detail="OIDC token missing required subject",
+                        headers={"WWW-Authenticate": "Bearer"},
+                    )
+                from aerobim.domain.auth_roles import extract_oidc_roles
+
+                roles = extract_oidc_roles(
+                    claims,
+                    roles_claim=settings.oidc_roles_claim,
+                )
+                return self._bind_authenticated(
+                    request,
+                    AuthPrincipal(
+                        tenant_id=tenant,
+                        subject=subject.strip(),
+                        roles=roles,
+                        auth_scheme="oidc",
+                    ),
+                )
+            except HTTPException:
+                raise
+            except OidcValidationError as exc:
+                self.logger.warning("OIDC token validation failed", detail=str(exc))
+                raise HTTPException(
+                    status_code=401,
+                    detail="Invalid API token",
+                    headers={"WWW-Authenticate": "Bearer"},
+                ) from exc
+
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid API token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    def _bind_authenticated(self, request: Request, principal: AuthPrincipal) -> AuthPrincipal:
+        self._enforce_principal_rate_limit(request, principal)
+        return principal
+
+    def _enforce_principal_rate_limit(self, request: Request, principal: AuthPrincipal) -> None:
+        """Per-principal bucket after a successful bind (RL-01). Pre-auth is per-IP."""
+
+        path = request.url.path
+        if request.method == "POST":
+            if not post_path_is_rate_limited(path):
+                return
+            bucket = "principal"
+        elif request.method == "GET" and heavy_get_path_is_rate_limited(path):
+            bucket = "principal-get"
+        else:
+            return
+        backend = getattr(request.app.state, "rate_limit_backend", None)
+        rpm = int(getattr(request.app.state, "http_rate_limit_per_minute", 0) or 0)
+        window = float(getattr(request.app.state, "rate_limit_window_seconds", 60.0) or 60.0)
+        if backend is None or rpm <= 0:
+            return
+        tenant = (principal.tenant_id or "").strip() or "unknown"
+        subject = (principal.subject or "").strip() or "unknown"
+        allowed = backend.allow(
+            bucket=bucket,
+            key=f"{tenant}:{subject}",
+            max_events=rpm,
+            window_seconds=window,
+        )
+        if not allowed:
+            raise HTTPException(
+                status_code=429,
+                detail="Rate limit exceeded",
+                headers={"Retry-After": str(int(window))},
+            )
+
+    # -- Path jail / limits -------------------------------------------------
+
+    def resolve_safe_path(
+        self,
+        user_path: str,
+        *,
+        principal: AuthPrincipal | None = None,
+    ) -> Path:
+        """Resolve user-supplied path strictly within storage_dir; reject symlinks.
+
+        When object ACL is enforced, paths must stay under ``tenants/{tenant}/``.
+        """
+        settings = self.settings
+        try:
+            resolved = resolve_storage_path(user_path, base=settings.storage_dir)
+            if settings.enforce_object_acl:
+                if principal is None or not (principal.tenant_id or "").strip():
+                    raise HTTPException(
+                        status_code=403,
+                        detail="Object ACL requires authenticated tenant for path access",
+                    )
+                assert_path_under_tenant_prefix(
+                    resolved,
+                    base=settings.storage_dir,
+                    tenant_id=principal.tenant_id or "",
+                )
+            return resolved
+        except PathJailError as exc:
+            detail = str(exc)
+            # Cross-tenant path probes must not oracle via 403 + prefix detail (RT-POST-02).
+            if "tenant storage prefix" in detail:
+                raise HTTPException(status_code=404, detail="Object not found") from exc
+            raise HTTPException(status_code=400, detail="Invalid storage path") from exc
+
+    def enforce_ifc_size(self, ifc_path: Path) -> None:
+        if not ifc_path.is_file():
+            return
+        size = ifc_path.stat().st_size
+        decision = classify_ifc_bytes(
+            size,
+            analyze_cap_bytes=self.settings.max_ifc_bytes,
+            ingest_cap_bytes=self.settings.max_model_bytes,
+        )
+        if not decision.analyze_allowed:
+            raise HTTPException(
+                status_code=413,
+                detail=public_ifc_analyze_cap_body(),
+            )
+        if decision.band == BAND_ANALYZE_DISK:
+            from aerobim.infrastructure.adapters.ifc_file_open import (
+                rocksdb_backend_available,
+            )
+
+            if not rocksdb_backend_available():
+                raise HTTPException(
+                    status_code=503,
+                    detail=public_ifc_disk_backend_detail(),
+                )
+
+    # -- Object ACL assertions ---------------------------------------------
+
+    def assert_report_access(self, report: ValidationReport, principal: AuthPrincipal) -> None:
+        if principal_may_access_report(
+            enforce_object_acl=self.settings.enforce_object_acl,
+            principal=principal,
+            report=report,
+        ):
+            return
+        raise HTTPException(status_code=404, detail=public_not_found_detail())
+
+    def assert_job_access(self, job: AnalyzeProjectPackageJob, principal: AuthPrincipal) -> None:
+        if principal_may_access_job(
+            enforce_object_acl=self.settings.enforce_object_acl,
+            principal=principal,
+            job=job,
+        ):
+            return
+        raise HTTPException(status_code=404, detail=public_not_found_detail())
+
+    def assert_norm_pack_access(self, principal: AuthPrincipal, *, tenant_id: str | None) -> None:
+        if principal_may_access_norm_pack(
+            enforce_object_acl=self.settings.enforce_object_acl,
+            principal=principal,
+            tenant_id=tenant_id,
+        ):
+            return
+        raise HTTPException(status_code=404, detail=public_not_found_detail())
+
+    def load_authorized_report(self, report_id: str, principal: AuthPrincipal) -> ValidationReport:
+        """ACL-before-payload: peek tenant, then load the report body."""
+
+        self.validate_report_id(report_id)
+        peek = getattr(self.audit_store, "peek_tenant_id", None)
+        if self.settings.enforce_object_acl and callable(peek):
+            raw_tenant = peek(report_id)
+            tenant = raw_tenant.strip() if isinstance(raw_tenant, str) else None
+            if not principal_may_access_tenant_id(
+                enforce_object_acl=True,
+                principal=principal,
+                tenant_id=tenant,
+            ):
+                raise HTTPException(status_code=404, detail=public_not_found_detail())
+        report: ValidationReport | None = self.audit_store.get(report_id)
+        if report is None:
+            raise HTTPException(status_code=404, detail=public_not_found_detail())
+        self.assert_report_access(report, principal)
+        return report
+
+    def load_authorized_job(
+        self, job_id: str, principal: AuthPrincipal
+    ) -> AnalyzeProjectPackageJob:
+        """ACL-before-serialize: 404 for missing and cross-tenant jobs."""
+
+        self.validate_job_id(job_id)
+        get_job_status_use_case = self.container.resolve(
+            Tokens.GET_ANALYZE_PROJECT_PACKAGE_JOB_STATUS_USE_CASE
+        )
+        job: AnalyzeProjectPackageJob | None = get_job_status_use_case.execute(job_id)
+        if job is None:
+            raise HTTPException(status_code=404, detail=public_not_found_detail())
+        self.assert_job_access(job, principal)
+        return job
+
+    def resolve_bound_tenant(
+        self,
+        principal: AuthPrincipal,
+        *,
+        payload_tenant_id: str | None = None,
+    ) -> str | None:
+        """Bind request tenant from principal; reject body/principal spoof."""
+
+        principal_tenant = (principal.tenant_id or "").strip() or None
+        payload_tenant = (payload_tenant_id or "").strip() or None
+        if (
+            payload_tenant
+            and principal_tenant
+            and payload_tenant.casefold() != principal_tenant.casefold()
+        ):
+            raise HTTPException(status_code=400, detail=public_bad_request_detail())
+        if self.settings.enforce_object_acl:
+            if principal_tenant is None:
+                raise HTTPException(
+                    status_code=403,
+                    detail="Object ACL requires authenticated tenant binding",
+                )
+            return principal_tenant
+        # Lab ACL-off: body tenant_id never selects a tenant unless the principal
+        # is already bound or is an explicit platform_admin (TENANT-PAYLOAD-01).
+        if principal_tenant is None and payload_tenant:
+            if not principal_may_list_unscoped_reports(principal):
+                raise HTTPException(status_code=400, detail=public_bad_request_detail())
+        return principal_tenant or payload_tenant
+
+    # -- Identifier validation ----------------------------------------------
+
+    def validate_report_id(self, report_id: str) -> None:
+        if not REPORT_ID_RE.match(report_id):
+            raise HTTPException(status_code=400, detail="Invalid report ID format")
+
+    def validate_job_id(self, job_id: str) -> None:
+        if not REPORT_ID_RE.match(job_id):
+            raise HTTPException(status_code=400, detail="Invalid job ID format")
+
+    def validate_drawing_asset_id(self, asset_id: str) -> None:
+        if not DRAWING_ASSET_ID_RE.match(asset_id):
+            raise HTTPException(status_code=400, detail="Invalid drawing asset ID format")
+
+    # -- Serialization -------------------------------------------------------
+
+    def _enrich_issue_export(self, issue: dict[str, object]) -> dict[str, object]:
+        enriched = dict(issue)
+        remark = enriched.get("remark")
+        if isinstance(remark, dict) and remark.get("ai_generated"):
+            enriched["remark"] = {
+                **remark,
+                "content_marking": remark.get("content_marking") or _AI_CONTENT_MARKING,
+            }
+        from aerobim.domain.finding_layer import classify_finding_layer
+        from aerobim.domain.remark_completeness import remark_completeness
+
+        enriched["layer"] = classify_finding_layer(enriched)
+        enriched["completeness"] = remark_completeness(enriched)
+        rule_id = str(enriched.get("rule_id", ""))
+        loin = LOIN_RESOLVER.resolve(rule_id)
+        if loin is None:
+            return enriched
+        return {
+            **enriched,
+            "loin_purpose": loin.purpose,
+            "loin_milestone": loin.milestone,
+            "loin_actor": loin.actor,
+            "loin_information_level": loin.information_level,
+        }
+
+    def serialize_public_report(
+        self, report: ValidationReport, *, include_review: bool = False
+    ) -> dict[str, Any]:
+        data = asdict(report)
+        data.pop("ifc_path", None)
+        data.pop("ifc_object_key", None)
+        drawing_assets = []
+        for asset in data.get("drawing_assets", []):
+            asset.pop("object_key", None)
+            asset.pop("source_path", None)
+            drawing_assets.append(asset)
+        data["drawing_assets"] = drawing_assets
+        data["issues"] = [
+            self._enrich_issue_export(issue) if isinstance(issue, dict) else issue
+            for issue in data.get("issues", ())
+        ]
+        if include_review and self.container.is_registered(Tokens.REVIEW_EVENT_STORE):
+            from aerobim.domain.review_projection import attach_review_projection
+
+            events = self.container.resolve(Tokens.REVIEW_EVENT_STORE).list_for_report(
+                report.report_id
+            )
+            data["issues"] = attach_review_projection(list(data.get("issues") or []), events)
+            data["issues"] = [
+                self._enrich_issue_export(issue) if isinstance(issue, dict) else issue
+                for issue in data.get("issues", ())
+            ]
+        from aerobim.domain.calculation_report_section import calculation_section
+        from aerobim.domain.finding_volume import volume_from_findings
+        from aerobim.domain.remark_completeness import completeness_table
+        from aerobim.domain.run_passport import (
+            build_run_passport,
+            passport_from_traces,
+            sources_from_report,
+        )
+
+        data["finding_volume"] = volume_from_findings(
+            [issue for issue in data.get("issues") or () if isinstance(issue, dict)]
+        )
+        data["remark_completeness"] = completeness_table(
+            [issue for issue in data.get("issues") or () if isinstance(issue, dict)]
+        )
+        stored_passport = passport_from_traces(getattr(report, "tool_traces", ()) or ())
+        if stored_passport is not None:
+            data["run_passport"] = stored_passport
+        else:
+            data["run_passport"] = build_run_passport(
+                sources=sources_from_report(report),
+                report_id=report.report_id,
+                rules_version=str(report.schema_version or ""),
+                timing_basis="sources_only",
+            )
+        data["calculation_section"] = calculation_section()
+        from aerobim.domain.executive_brief import executive_brief
+
+        data["executive_brief"] = executive_brief(data)
+        data["iso19650"] = enrich_iso19650_metadata(report)
+        return data
+
+    def serialize_analyze_project_package_job(
+        self, job: AnalyzeProjectPackageJob
+    ) -> dict[str, object]:
+        payload = asdict(job)
+        payload["status"] = job.status.value
+        payload["status_url"] = f"/v1/analyze/project-package/jobs/{job.job_id}"
+        payload["report_url"] = f"/v1/reports/{job.report_id}" if job.report_id else None
+        return payload
+
+    # -- Report source resolution --------------------------------------------
+
+    def assert_object_key_under_tenant(
+        self,
+        object_key: str,
+        *,
+        report: ValidationReport,
+        principal: AuthPrincipal,
+    ) -> None:
+        """When ACL is on, object keys must live under the tenant storage prefix."""
+        if not self.settings.enforce_object_acl:
+            return
+        tenant = (getattr(report, "tenant_id", None) or principal.tenant_id or "").strip()
+        if not tenant:
+            raise HTTPException(status_code=404, detail="Object not found")
+        try:
+            prefix = tenant_storage_prefix(tenant)
+        except PathJailError as exc:
+            raise HTTPException(status_code=404, detail="Object not found") from exc
+        key = (object_key or "").lstrip("/")
+        if not key.startswith(prefix):
+            raise HTTPException(status_code=404, detail="Object not found")
+
+    def _dev_sample_ifc_source(self, resolved: Path) -> Path | None:
+        """Allow fixture IFC under ``samples/`` in development/test only.
+
+        Benchmarks and CLI seeds may store an absolute path into the git
+        samples tree. Production still 409s anything outside the storage jail.
+        """
+        if not self.settings.is_dev_environment:
+            return None
+        if resolved.suffix.lower() != ".ifc":
+            return None
+        samples = Path(__file__).resolve().parents[5] / "samples"
+        try:
+            samples_base = samples.resolve()
+        except OSError:
+            return None
+        try:
+            if not resolved.is_relative_to(samples_base):
+                return None
+            reject_symlinks(resolved, base=samples_base)
+        except (PathJailError, ValueError, OSError):
+            return None
+        if not resolved.is_file():
+            return None
+        return resolved
+
+    def resolve_report_ifc_source(
+        self,
+        report_id: str,
+        *,
+        principal: AuthPrincipal | None = None,
+    ) -> tuple[str, bytes | Path]:
+        settings = self.settings
+        report = self.audit_store.get(report_id)
+        if report is None:
+            raise HTTPException(status_code=404, detail=public_not_found_detail())
+
+        if report.ifc_object_key and self.object_store is not None:
+            if principal is not None:
+                self.assert_object_key_under_tenant(
+                    report.ifc_object_key, report=report, principal=principal
+                )
+            payload = self.object_store.get_bytes(report.ifc_object_key)
+            if payload is None:
+                raise HTTPException(status_code=404, detail=public_not_found_detail())
+            return report.ifc_path.name, payload
+
+        candidate = report.ifc_path
+        base = settings.storage_dir.resolve()
+        resolved = candidate.resolve() if candidate.is_absolute() else (base / candidate).resolve()
+        if not resolved.is_relative_to(base):
+            sample = self._dev_sample_ifc_source(resolved)
+            if sample is not None:
+                return report.ifc_path.name, sample
+            raise HTTPException(
+                status_code=409,
+                detail="Stored IFC source escapes storage boundary",
+            )
+        try:
+            reject_symlinks(resolved, base=base)
+        except PathJailError as exc:
+            raise HTTPException(status_code=409, detail=public_storage_boundary_detail()) from exc
+        if settings.enforce_object_acl:
+            tenant = (getattr(report, "tenant_id", None) or "").strip()
+            if not tenant and principal is not None:
+                tenant = (principal.tenant_id or "").strip()
+            if tenant:
+                try:
+                    assert_path_under_tenant_prefix(
+                        resolved,
+                        base=base,
+                        tenant_id=tenant,
+                    )
+                except PathJailError as exc:
+                    raise HTTPException(status_code=404, detail=public_not_found_detail()) from exc
+        if not resolved.exists():
+            raise HTTPException(status_code=404, detail=public_not_found_detail())
+        return report.ifc_path.name, resolved
+
+    def resolve_report_drawing_asset_preview(
+        self,
+        report_id: str,
+        asset_id: str,
+        *,
+        principal: AuthPrincipal | None = None,
+    ) -> tuple[DrawingAsset, bytes | Path]:
+        settings = self.settings
+        report = self.audit_store.get(report_id)
+        if report is None:
+            raise HTTPException(status_code=404, detail=public_not_found_detail())
+
+        drawing_asset = next(
+            (asset for asset in report.drawing_assets if asset.asset_id == asset_id), None
+        )
+        if drawing_asset is None or not drawing_asset.stored_filename:
+            raise HTTPException(status_code=404, detail=public_not_found_detail())
+
+        if drawing_asset.object_key and self.object_store is not None:
+            if principal is not None:
+                self.assert_object_key_under_tenant(
+                    drawing_asset.object_key, report=report, principal=principal
+                )
+            payload = self.object_store.get_bytes(drawing_asset.object_key)
+            if payload is None:
+                raise HTTPException(status_code=404, detail=public_not_found_detail())
+            return drawing_asset, payload
+
+        asset_root = (settings.storage_dir / "drawing-assets" / report_id).resolve()
+        resolved = (asset_root / drawing_asset.stored_filename).resolve()
+        if not resolved.is_relative_to(asset_root):
+            raise HTTPException(
+                status_code=409, detail="Stored drawing asset escapes storage boundary"
+            )
+        try:
+            reject_symlinks(resolved, base=settings.storage_dir.resolve())
+        except PathJailError as exc:
+            raise HTTPException(status_code=409, detail=public_storage_boundary_detail()) from exc
+        if settings.enforce_object_acl:
+            tenant = (getattr(report, "tenant_id", None) or "").strip()
+            if not tenant and principal is not None:
+                tenant = (principal.tenant_id or "").strip()
+            if tenant:
+                try:
+                    assert_path_under_tenant_prefix(
+                        resolved,
+                        base=settings.storage_dir.resolve(),
+                        tenant_id=tenant,
+                    )
+                except PathJailError as exc:
+                    raise HTTPException(status_code=404, detail=public_not_found_detail()) from exc
+        if not resolved.exists():
+            raise HTTPException(status_code=404, detail=public_not_found_detail())
+        return drawing_asset, resolved
+
+    # -- Request builders ------------------------------------------------------
+
+    def build_requirement_source(
+        self,
+        text: str,
+        path: str | None,
+        source_kind: SourceKind,
+        *,
+        revision: str | None = None,
+        stage: str | None = None,
+        doc_status: str | None = None,
+        source_id: str | None = None,
+        principal: AuthPrincipal | None = None,
+    ) -> RequirementSource:
+        return build_requirement_source(
+            text,
+            path,
+            source_kind,
+            resolve_path=self.resolve_safe_path,
+            revision=revision,
+            stage=stage,
+            doc_status=doc_status,
+            source_id=source_id,
+            principal=principal,
+        )
+
+    def build_project_package_request(
+        self,
+        payload: AnalyzeProjectPackageRequest,
+        *,
+        tenant_id: str | None = None,
+        principal: AuthPrincipal | None = None,
+    ) -> ValidationRequest:
+        return build_project_package_request(
+            payload,
+            resolve_path=self.resolve_safe_path,
+            enforce_ifc_size=self.enforce_ifc_size,
+            storage_dir=self.settings.storage_dir,
+            tenant_id=tenant_id,
+            principal=principal,
+        )

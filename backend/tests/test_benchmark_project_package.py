@@ -1,0 +1,249 @@
+from __future__ import annotations
+
+import json
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+
+from aerobim.domain.models import ValidationReport, ValidationSummary
+
+
+class BenchmarkProjectPackageToolTests(unittest.TestCase):
+    def test_repository_benchmark_manifests_load_with_real_fixtures(self) -> None:
+        from aerobim.tools.benchmark_project_package import load_benchmark_pack
+
+        repo_root = Path(__file__).resolve().parents[2]
+        manifests = [
+            repo_root / "samples" / "benchmarks" / "project-package-baseline.json",
+            repo_root / "samples" / "benchmarks" / "project-package-fire-compliance.json",
+            repo_root / "samples" / "benchmarks" / "project-package-stress-multisource.json",
+            repo_root / "samples" / "benchmarks" / "project-package-pilot-moscow-v1.json",
+        ]
+
+        for manifest_path in manifests:
+            benchmark_pack = load_benchmark_pack(manifest_path, repo_root_path=repo_root)
+            self.assertTrue(benchmark_pack.pack_id)
+            self.assertTrue(benchmark_pack.pack_version)
+            self.assertTrue(benchmark_pack.manifest_schema_version)
+            self.assertTrue(benchmark_pack.request.ifc_path.exists())
+            self.assertIsNotNone(benchmark_pack.request.requirement_source.path)
+            assert benchmark_pack.request.requirement_source.path is not None
+            self.assertTrue(benchmark_pack.request.requirement_source.path.exists())
+
+    def test_load_benchmark_pack_builds_request_relative_to_repo_root(self) -> None:
+        from aerobim.tools.benchmark_project_package import load_benchmark_pack
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "samples" / "benchmarks").mkdir(parents=True)
+            (root / "samples" / "ifc").mkdir(parents=True)
+            (root / "samples" / "requirements").mkdir(parents=True)
+            (root / "samples" / "drawings").mkdir(parents=True)
+            (root / "samples" / "specifications").mkdir(parents=True)
+
+            ifc_path = root / "samples" / "ifc" / "fixture.ifc"
+            requirement_path = root / "samples" / "requirements" / "rules.txt"
+            drawing_path = root / "samples" / "drawings" / "drawing.txt"
+            spec_path = root / "samples" / "specifications" / "spec.txt"
+
+            ifc_path.write_text("ISO-10303-21;\nEND-ISO-10303-21;\n", encoding="utf-8")
+            requirement_path.write_text(
+                "REQ-001|IFCWALL|Pset_WallCommon|FireRating|REI60\n", encoding="utf-8"
+            )
+            drawing_path.write_text(
+                "ANN-001|A-101|WALL-01|thickness|150|mm|1|10|20|100|50\n", encoding="utf-8"
+            )
+            spec_path.write_text("Wall fire rating must be REI60\n", encoding="utf-8")
+
+            manifest_path = root / "samples" / "benchmarks" / "baseline.json"
+            manifest_path.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "1.0.0",
+                        "pack_version": "1.2.3",
+                        "pack_id": "baseline",
+                        "description": "baseline pack",
+                        "project_name": "Residential Tower Alpha",
+                        "discipline": "architecture",
+                        "request": {
+                            "ifc_path": "samples/ifc/fixture.ifc",
+                            "requirement_path": "samples/requirements/rules.txt",
+                            "technical_spec_path": "samples/specifications/spec.txt",
+                            "drawings": [
+                                {
+                                    "path": "samples/drawings/drawing.txt",
+                                    "sheet_id": "A-101",
+                                    "format": "text",
+                                }
+                            ],
+                        },
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                ),
+                encoding="utf-8",
+            )
+
+            benchmark_pack = load_benchmark_pack(manifest_path, repo_root_path=root)
+
+            self.assertEqual(benchmark_pack.pack_id, "baseline")
+            self.assertEqual(benchmark_pack.pack_version, "1.2.3")
+            self.assertEqual(benchmark_pack.manifest_schema_version, "1.0.0")
+            self.assertEqual(benchmark_pack.request.project_name, "Residential Tower Alpha")
+            self.assertEqual(benchmark_pack.request.discipline, "architecture")
+            self.assertTrue(benchmark_pack.request.ifc_path.samefile(ifc_path))
+            assert benchmark_pack.request.requirement_source.path is not None
+            self.assertTrue(
+                benchmark_pack.request.requirement_source.path.samefile(requirement_path)
+            )
+            assert benchmark_pack.request.technical_spec_source is not None
+            assert benchmark_pack.request.technical_spec_source.path is not None
+            self.assertTrue(benchmark_pack.request.technical_spec_source.path.samefile(spec_path))
+            self.assertEqual(len(benchmark_pack.request.drawing_sources), 1)
+            assert benchmark_pack.request.drawing_sources[0].path is not None
+            self.assertTrue(benchmark_pack.request.drawing_sources[0].path.samefile(drawing_path))
+
+    def test_summarize_benchmark_runs_calculates_aggregate_metrics(self) -> None:
+        from aerobim.tools.benchmark_project_package import summarize_benchmark_runs
+
+        summary = summarize_benchmark_runs(
+            [
+                {
+                    "elapsed_ms": 100.0,
+                    "report_id": "a" * 32,
+                    "issue_count": 1,
+                    "requirement_count": 2,
+                },
+                {
+                    "elapsed_ms": 300.0,
+                    "report_id": "b" * 32,
+                    "issue_count": 2,
+                    "requirement_count": 3,
+                },
+            ]
+        )
+
+        self.assertEqual(summary["min_ms"], 100.0)
+        self.assertEqual(summary["max_ms"], 300.0)
+        self.assertEqual(summary["avg_ms"], 200.0)
+        self.assertGreater(summary["reports_per_second"], 0)
+        self.assertEqual(summary["sample_n"], 2)
+        self.assertTrue(summary["p95_equals_max"])
+        self.assertEqual(summary["spike_ratio_max_over_p50"], 3.0)
+
+    def test_summarize_p95_not_max_when_n_large_enough(self) -> None:
+        from aerobim.tools.benchmark_project_package import summarize_benchmark_runs
+
+        # 20 samples: 19×10ms + one 500ms spike → p95 should stay near steady-state.
+        runs = [
+            {
+                "elapsed_ms": 500.0 if index == 20 else 10.0,
+                "report_id": f"{index:032d}",
+                "issue_count": 0,
+                "requirement_count": 0,
+            }
+            for index in range(1, 21)
+        ]
+        summary = summarize_benchmark_runs(runs)
+        self.assertEqual(summary["sample_n"], 20)
+        self.assertEqual(summary["max_ms"], 500.0)
+        self.assertLess(summary["p95_ms"], summary["max_ms"])
+        self.assertFalse(summary["p95_equals_max"])
+
+    def test_run_benchmark_executes_warmups_and_measured_runs(self) -> None:
+        from aerobim.domain.models import RequirementSource, ValidationRequest
+        from aerobim.tools.benchmark_project_package import run_benchmark
+
+        class _FakeAnalyzeUseCase:
+            def __init__(self) -> None:
+                self.calls = 0
+
+            def execute(self, request: ValidationRequest) -> ValidationReport:
+                self.calls += 1
+                return ValidationReport(
+                    report_id=f"{self.calls:032d}",
+                    request_id=request.request_id,
+                    ifc_path=request.ifc_path,
+                    created_at="2026-04-14T12:00:00+00:00",
+                    project_name=request.project_name,
+                    discipline=request.discipline,
+                    requirements=(),
+                    issues=(),
+                    summary=ValidationSummary(
+                        requirement_count=0,
+                        issue_count=0,
+                        error_count=0,
+                        warning_count=0,
+                        passed=True,
+                    ),
+                )
+
+        use_case = _FakeAnalyzeUseCase()
+        request = ValidationRequest(
+            request_id="bench-001",
+            ifc_path=Path("sample.ifc"),
+            requirement_source=RequirementSource(
+                text="REQ-001|IFCWALL|Pset_WallCommon|FireRating|REI60"
+            ),
+            project_name="Residential Tower Alpha",
+            discipline="architecture",
+        )
+
+        result = run_benchmark(use_case, request, iterations=2, warmup_iterations=1)
+
+        self.assertEqual(use_case.calls, 3)
+        self.assertEqual(result["iterations"], 2)
+        self.assertEqual(result["warmup_iterations"], 1)
+        self.assertEqual(len(result["measured_runs"]), 2)
+        self.assertEqual(result["measured_runs"][0]["project_name"], "Residential Tower Alpha")
+        self.assertEqual(result["measured_runs"][0]["discipline"], "architecture")
+
+    def test_benchmark_project_package_emits_standardized_schema(self) -> None:
+        from aerobim.tools.benchmark_project_package import benchmark_project_package
+
+        repo_root = Path(__file__).resolve().parents[2]
+        pack_path = repo_root / "samples" / "benchmarks" / "project-package-baseline.json"
+
+        with tempfile.TemporaryDirectory() as tmp:
+            payload = benchmark_project_package(
+                pack_path=pack_path,
+                iterations=1,
+                warmup_iterations=0,
+                storage_dir=Path(tmp),
+            )
+
+        self.assertEqual(payload["artifact_type"], "benchmark_project_package")
+        self.assertEqual(payload["schema_version"], "1.2.0")
+        self.assertTrue(payload["customer_accuracy_not_established"])
+        self.assertEqual(payload["claim_level"], "fixture_only")
+        self.assertFalse(payload["accuracy_measured"])
+        self.assertIn("ifc_entity_count", payload)
+        self.assertIn("dependencies", payload)
+        self.assertIn("p50_ms", payload["summary"])
+        self.assertIn("p95_ms", payload["summary"])
+        self.assertIn("machine", payload)
+        self.assertIn("generated_at", payload)
+        self.assertIn("benchmark_pack", payload)
+        benchmark_pack = payload["benchmark_pack"]
+        self.assertIsInstance(benchmark_pack, dict)
+        self.assertEqual(benchmark_pack["pack_id"], payload["pack_id"])
+        self.assertEqual(benchmark_pack["pack_version"], payload["pack_version"])
+
+    def test_ifc_release_markdown_uses_repo_relative_json_path(self) -> None:
+        from aerobim.tools.benchmark_project_package import (
+            _repo_display_path,
+            repo_root,
+        )
+
+        json_path = repo_root() / "audit" / "evidence" / "ifc-release-benchmark-2026-08.json"
+        self.assertEqual(
+            _repo_display_path(json_path),
+            "audit/evidence/ifc-release-benchmark-2026-08.json",
+        )
+
+
+if __name__ == "__main__":
+    unittest.main()

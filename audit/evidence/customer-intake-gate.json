@@ -1,0 +1,74 @@
+{
+  "artifact_type": "customer_intake_gate",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-07-17",
+  "claim_level": "not_ready",
+  "status": "BLOCKED_NO_CUSTOMER_DATA",
+  "gates": {
+    "nda_signed": false,
+    "scope_memo_signed": false,
+    "customer_package_in_samples_customer": false,
+    "customer_approved_norm_pack_with_approval_ref": false,
+    "ids_or_property_table_present": false,
+    "dual_human_adjudicators_named": false,
+    "cohens_kappa_or_krippendorff_alpha_reported": false,
+    "confusion_matrix_reported": false,
+    "zero_unresolved_labels": false,
+    "precision_claim_publishable": false,
+    "cde_bcf_import_evidence": false,
+    "customer_sla_pack_measured": false,
+    "mep_federated_scope": false
+  },
+  "rules": {
+    "llm_assist_counts_as_adjudicator": false,
+    "synthetic_f1_is_product_accuracy": false,
+    "fixture_sla_is_customer_sla": false,
+    "customer_approved_without_approval_ref": false
+  },
+  "share_url_received": true,
+  "share_url": null,
+  "share_received_at": "2026-08-25",
+  "share_ingested_in_git": false,
+  "speech": {
+    "forbid_no_customer_data_phrase": true,
+    "channel_received": true,
+    "hashed_pack_in_git": false,
+    "note": "25.08 channel is not a hashed pack in git; RT-001 stays OPEN"
+  },
+  "owner_machine_engine_rehearsal": {
+    "date": "2026-08-26",
+    "claim_level": "local_rehearsal_not_detection",
+    "detected_count": 0,
+    "ifc_analyzed_under_cap": 14,
+    "ifc_over_cap_inventory_only": 1,
+    "used_customer_ids": false,
+    "ingested_in_git": false,
+    "closes_rt001": false,
+    "closes_rt002": false,
+    "closes_rt003": false
+  },
+  "closes_rt001": false,
+  "closes_rt002": false,
+  "closes_rt003": false,
+  "next_actions": [
+    "Do not wait for samples/customer/ in git before KT#3 — re-scope 2026-08-23",
+    "KT#3 jury show: docs/demo/KT3_JURY_FAQ_2026_08_25.md + run_demo_ifc_acceptance_gate",
+    "Customer share received 2026-08-25 — not ingested in git; not a hashed pack; RT-001 OPEN",
+    "Do not say no customer data — say channel received, pack not in git",
+    "2026-08-26 coverage_map: 6 AR IfcSpace lack NetFloorArea; FireRating 5.7% EI45 ≠ design TZ; does not close RT-001",
+    "2026-08-26 owner-disk IFC engine rehearsal used fixture IDS/rules; detected_count=0; does not close RT-001",
+    "Run python -m aerobim.tools.run_kt3_without_customer",
+    "Keep checkpoint GO (regulatory_measurement_mvp); customer_go false until residual volumes close",
+    "docs/quality/TZ_SEAM_COVERAGE_MAP_2026_08.md — coverage_map_only; not detection"
+  ],
+  "references": [
+    "samples/customer/README.md",
+    "docs/partners/CUSTOMER_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md",
+    "docs/demo/KT3_JURY_FAQ_2026_08_25.md",
+    "audit/reports/CLAIMS_LOCK_2026_07_17.md",
+    "audit/reports/CRITICAL_BLOCKERS.md",
+    "docs/pilot-claim-boundary-2026.md",
+    "audit/evidence/cde-import-proof/STATUS.json",
+    "backend/src/aerobim/tools/measure_adjudicator_agreement.py"
+  ]
+}

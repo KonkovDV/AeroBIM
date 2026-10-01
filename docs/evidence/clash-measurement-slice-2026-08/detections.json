@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "extent-clash-fixture-2026-08-11",
+  "claim_level": "fixture_only",
+  "detector": "aabb_extent_overlap",
+  "ifc_path": "samples/ifc/clash-extent-overlap-fixture.ifc",
+  "cases": [
+    {
+      "case_id": "EXTENT-CLASH-FIXTURE-001",
+      "findings": [
+        {
+          "finding_class": "clash",
+          "rule_id": "SPATIAL-EXTENT-CLASH",
+          "target_ref": "0X6$Bzu5n23RDMNswou8Cq|2Gyr7M6Gj9Jvqb8WayhFpS"
+        },
+        {
+          "finding_class": "clash",
+          "rule_id": "SPATIAL-EXTENT-CLASH",
+          "target_ref": "0YBe_wnz912gEp_xB7xYZr|0stS5CkzD9uQ97Kma3MF4p"
+        },
+        {
+          "finding_class": "clash",
+          "rule_id": "SPATIAL-EXTENT-CLASH",
+          "target_ref": "0pChytAa98pAzDdNPBzUuu|1Vj5HEf0TDgPaR2oT2RHOJ"
+        },
+        {
+          "finding_class": "clash",
+          "rule_id": "SPATIAL-EXTENT-CLASH",
+          "target_ref": "1JckDccf54PwAPL1pJiO4W|2wUuWHwGH8$u0xvjnIetKm"
+        },
+        {
+          "finding_class": "clash",
+          "rule_id": "SPATIAL-EXTENT-CLASH",
+          "target_ref": "1n8loHEFX80OgmJHMcmWJy|3hsxUqker0LRsBeRdFZHgl"
+        },
+        {
+          "finding_class": "clash",
+          "rule_id": "SPATIAL-EXTENT-CLASH",
+          "target_ref": "1qSDHaXB1BjBVNY_BJM$Lm|2BfN_3Jsz0aBQe_SzOgfo5"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "artifact_type": "sprint_2_1_source_provenance",
+  "schema_version": "1.1.0",
+  "generated_at": "2026-08-04",
+  "claim_level": "engineering_baseline_only",
+  "policy": {
+    "unknown_license_blocks_public_release": true,
+    "customer_confidential_forbidden_in_public_benchmark": true,
+    "synthetic_never_equals_customer": true
+  },
+  "entries": [
+    {
+      "path_glob": "samples/ifc/*",
+      "dataset_class": "fixture",
+      "license": "AeroBIM repo fixture",
+      "redistribution": "allowed",
+      "attribution": "AeroBIM authors"
+    },
+    {
+      "path_glob": "samples/ids/*",
+      "dataset_class": "fixture",
+      "license": "AeroBIM repo fixture",
+      "redistribution": "allowed",
+      "attribution": "AeroBIM authors",
+      "note": "Excludes buildingsmart-testcases tree (see dedicated entry)"
+    },
+    {
+      "path_glob": "samples/ids/buildingsmart-testcases/**",
+      "dataset_class": "third_party_vendored",
+      "license": "CC BY-ND 4.0",
+      "redistribution": "allowed unmodified with attribution; no derivatives",
+      "status": "READY",
+      "attribution": "buildingSMART International",
+      "upstream_repo": "https://github.com/buildingSMART/IDS",
+      "upstream_commit": "016bbadce0d227d8eabbbc3e8b2b3788590b8a97",
+      "notice": "samples/ids/buildingsmart-testcases/NOTICE"
+    },
+    {
+      "path_glob": "samples/ids-xsd/*",
+      "dataset_class": "third_party_vendored",
+      "license": "CC BY-ND 4.0",
+      "redistribution": "allowed under CC BY-ND 4.0 with attribution; no derivatives",
+      "status": "READY",
+      "attribution": "buildingSMART International",
+      "verified_at": "2026-08-04",
+      "verification_note": "RT-W-01 closed"
+    },
+    {
+      "path_glob": "samples/bcf-xsd/*",
+      "dataset_class": "third_party_vendored",
+      "license": "CC BY-ND 4.0",
+      "redistribution": "allowed under CC BY-ND 4.0 with attribution; no derivatives",
+      "status": "READY",
+      "attribution": "buildingSMART International",
+      "verified_at": "2026-08-04",
+      "verification_note": "RT-W-01 closed"
+    },
+    {
+      "path_glob": "samples/benchmarks/injected-defects-level-b.json",
+      "dataset_class": "synthetic",
+      "license": "AeroBIM repo fixture",
+      "redistribution": "allowed",
+      "ground_truth": "present",
+      "claim_level": "synthetic_only"
+    },
+    {
+      "path_glob": "samples/benchmarks/sprint-2-1/mutations/mutation-manifest.json",
+      "dataset_class": "synthetic",
+      "license": "AeroBIM repo fixture",
+      "redistribution": "allowed",
+      "ground_truth": "present",
+      "claim_level": "synthetic_only"
+    }
+  ]
+}

@@ -1,0 +1,263 @@
+/* --- Семантические метки ---
+   Одна геометрия для всего семейства: различаются только смыслом. --- */
+
+.status-pill,
+.severity-pill,
+.origin-pill,
+.confidence-pill,
+.outcome-badge,
+.preset-scope-badge,
+.preset-chip,
+.triage-band {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--vl-space-1);
+  padding: 1px var(--vl-space-2);
+  border: 1px solid var(--vl-line-strong);
+  border-radius: var(--vl-radius-pill);
+  background: var(--vl-sunken);
+  font-size: var(--vl-text-3xs);
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0.03em;
+  color: var(--vl-text-secondary);
+  white-space: nowrap;
+}
+
+.status-pill.pass,
+.outcome-badge.outcome-pass {
+  border-color: var(--vl-green700);
+  background: var(--vl-green-soft);
+  color: var(--vl-green700);
+}
+
+.status-pill.fail,
+.outcome-badge.outcome-fail,
+.outcome-badge.outcome-block,
+.severity-pill.severity-error {
+  border-color: var(--vl-red600);
+  background: var(--vl-red-soft);
+  color: var(--vl-red600);
+}
+
+.severity-pill.severity-warning,
+.outcome-badge.outcome-warn,
+.outcome-badge.outcome-review {
+  border-color: var(--vl-amber700);
+  background: var(--vl-amber-soft);
+  color: var(--vl-amber800);
+}
+
+.severity-pill.severity-info {
+  border-color: var(--vl-accent-line);
+  background: var(--vl-accent-soft);
+  color: var(--vl-accent-hover);
+}
+
+.origin-pill.origin-deterministic {
+  border-color: var(--vl-accent-line);
+  background: var(--vl-accent-soft);
+  color: var(--vl-accent-hover);
+}
+
+/* Советующий источник и низкая уверенность помечены пунктиром:
+   отличие от детерминированной проверки видно и без цвета. */
+.origin-pill.origin-advisory,
+.confidence-pill.confidence-low {
+  border-style: dashed;
+  border-color: var(--vl-amber700);
+  background: var(--vl-amber-soft);
+  color: var(--vl-amber800);
+}
+
+.preset-scope-badge.preset-scope-browser,
+.preset-scope-badge.preset-scope-local {
+  border-color: var(--vl-line-strong);
+  color: var(--vl-text-muted);
+}
+
+.preset-scope-badge.preset-scope-file {
+  border-color: var(--vl-accent-line);
+  color: var(--vl-accent-hover);
+}
+
+.preset-scope-badge.preset-scope-team {
+  border-color: var(--vl-green700);
+  color: var(--vl-green700);
+}
+
+/* --- Полосы критичности ---
+   Значения цвета подобраны измерением, а не на глаз: для двух нижних
+   ступеней взят тёмный нейтральный (10.62:1), а не более светлый
+   вариант на 7.72:1. --- */
+.triage-band.triage-band-critical {
+  border-color: var(--vl-red600);
+  background: var(--vl-red-soft);
+  color: var(--vl-red600);
+}
+
+.triage-band.triage-band-major {
+  border-color: var(--vl-amber700);
+  background: var(--vl-amber-soft);
+  color: var(--vl-amber800);
+}
+
+.triage-band.triage-band-minor {
+  border-color: var(--vl-line-strong);
+  background: var(--vl-sunken);
+  color: var(--vl-text-secondary);
+}
+
+.triage-band.triage-band-negligible {
+  border-color: var(--vl-line);
+  background: var(--vl-canvas);
+  color: var(--vl-text-secondary);
+}
+
+/* --- Столбики показателей --- */
+
+.kpi-bars,
+.kpi-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--vl-space-2);
+  padding: var(--vl-space-3) var(--vl-space-4);
+  margin: 0;
+  list-style: none;
+}
+
+.kpi-bar-row {
+  display: grid;
+  grid-template-columns: minmax(84px, 1fr) 2.6fr auto;
+  align-items: center;
+  gap: var(--vl-space-3);
+}
+
+.kpi-bar-label {
+  font-size: var(--vl-text-xs);
+  color: var(--vl-text-secondary);
+}
+
+.kpi-bar-track {
+  /* Дорожка и заливка часто стоят на span: без этого высота
+     и процентная ширина не применяются и столбиков не видно. */
+  display: block;
+  height: 8px;
+  border-radius: var(--vl-radius-pill);
+  background: var(--vl-sunken);
+  border: 1px solid var(--vl-line);
+  overflow: hidden;
+}
+
+.kpi-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: var(--vl-radius-pill);
+  background: var(--vl-accent);
+  transition: width var(--vl-dur) var(--vl-ease);
+}
+
+.kpi-bar-count {
+  font-size: var(--vl-text-xs);
+  font-weight: 700;
+  color: var(--vl-text);
+  min-width: 4ch;
+  text-align: right;
+}
+
+/* --- Таблицы --- */
+
+.coverage-table,
+.capability-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--vl-text-xs);
+}
+
+.coverage-table th,
+.capability-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: var(--vl-space-2) var(--vl-space-3);
+  background: var(--vl-sunken);
+  border-bottom: 1px solid var(--vl-line-strong);
+  font-size: var(--vl-text-3xs);
+  font-weight: 600;
+  letter-spacing: var(--vl-track-caps);
+  text-transform: uppercase;
+  color: var(--vl-text-muted);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.coverage-table td,
+.capability-table td {
+  padding: var(--vl-space-2) var(--vl-space-3);
+  border-bottom: 1px solid var(--vl-line);
+  color: var(--vl-text-secondary);
+  vertical-align: top;
+}
+
+.coverage-table tbody tr:hover td,
+.capability-table tbody tr:hover td {
+  background: var(--vl-sunken);
+}
+
+.coverage-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vl-space-2) var(--vl-space-3);
+  padding: var(--vl-space-2) var(--vl-space-4);
+  font-size: var(--vl-text-xs);
+  color: var(--vl-text-muted);
+}
+
+/* Состояния покрытия. Неизвестное и недостаточное отмечены как отдельный
+   случай, а не приравнены к успешной проверке. */
+.cov-no-findings,
+.cov-done {
+  color: var(--vl-green700);
+  font-weight: 600;
+}
+
+.cov-findings,
+.cov-not-done {
+  color: var(--vl-red600);
+  font-weight: 600;
+}
+
+.cov-partial,
+.cov-expert-required,
+.cov-expert {
+  color: var(--vl-amber800);
+  font-weight: 600;
+}
+
+.cov-not-checked,
+.cov-insufficient-data {
+  color: var(--vl-text-muted);
+  font-style: italic;
+}
+
+.cov-reason {
+  color: var(--vl-text-muted);
+}
+
+.coverage-tz-gaps {
+  padding: var(--vl-space-2) var(--vl-space-4) var(--vl-space-3);
+  font-size: var(--vl-text-xs);
+  color: var(--vl-text-secondary);
+}
+
+.capability-table tr.cap-ok td:first-child {
+  box-shadow: inset 3px 0 0 var(--vl-green700);
+}
+
+.capability-table tr.cap-warn td:first-child {
+  box-shadow: inset 3px 0 0 var(--vl-amber700);
+}
+
+.capability-table tr.cap-block td:first-child {
+  box-shadow: inset 3px 0 0 var(--vl-red600);
+}

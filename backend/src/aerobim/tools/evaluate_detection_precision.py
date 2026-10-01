@@ -1,0 +1,833 @@
+"""Exact-match TP/FP/FN harness for adjudicated AeroBIM findings.
+
+The harness measures a frozen detection run against an independent label set.  It
+never treats synthetic fixtures as customer precision evidence and provides an
+optional protocol gate for datasets that claim to have completed adjudication.
+"""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import sys
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+from aerobim.domain.findings import FindingPredicate
+
+_SCHEMA_VERSION = "1.0.0"
+_EVAL_SCHEMA_VERSION = "1.1.0"
+_HELD_OUT_SPLIT_VALUES = frozenset({"held_out", "holdout", "test", "held-out"})
+_MAX_INPUT_BYTES = 10 * 1024 * 1024
+_MAX_FINDINGS = 100_000
+_DATASET_STATUSES = {"synthetic", "draft", "adjudicated"}
+_LABEL_STATUSES = {"confirmed", "excluded", "unresolved"}
+# Claims Lock: these claim_level values can never promote to corpus_kind=customer,
+# even when dataset_status=adjudicated (fixture dual-rater templates).
+_NON_CUSTOMER_CLAIM_LEVELS = frozenset(
+    {
+        "fixture_only",
+        "synthetic_only",
+        "open_bench_only",
+        "engineering_baseline_only",
+        "harness_only",
+        "not_ready",
+    }
+)
+
+
+@dataclass(frozen=True, order=True)
+class FindingKey:
+    """Stable identity used for exact matching; display fields do not affect equality."""
+
+    case_id: str
+    finding_class: str
+    match_key: str
+    rule_id: str = field(compare=False)
+    target_ref: str | None = field(default=None, compare=False)
+    element_guid: str | None = field(default=None, compare=False)
+    discipline: str | None = field(default=None, compare=False)
+
+    def as_dict(self) -> dict[str, str | None]:
+        return {
+            "case_id": self.case_id,
+            "finding_class": self.finding_class,
+            "match_key": self.match_key,
+            "rule_id": self.rule_id,
+            "target_ref": self.target_ref,
+            "element_guid": self.element_guid,
+            "discipline": self.discipline,
+        }
+
+
+@dataclass(frozen=True)
+class MetricCounts:
+    tp: int
+    fp: int
+    fn: int
+
+    @property
+    def precision(self) -> float | None:
+        denominator = self.tp + self.fp
+        if denominator:
+            return self.tp / denominator
+        return None
+
+    @property
+    def recall(self) -> float | None:
+        denominator = self.tp + self.fn
+        if denominator:
+            return self.tp / denominator
+        return None
+
+    @property
+    def f1(self) -> float | None:
+        precision = self.precision
+        recall = self.recall
+        if precision is None or recall is None:
+            return None
+        denominator = precision + recall
+        return 2 * precision * recall / denominator if denominator else 0.0
+
+    def as_dict(self) -> dict[str, int | float | str | bool | None]:
+        support = self.tp + self.fn
+        total = self.tp + self.fp + self.fn
+        precision = self.precision
+        recall = self.recall
+        f1 = self.f1
+        return {
+            "tp": self.tp,
+            "fp": self.fp,
+            "fn": self.fn,
+            "precision": None if precision is None else round(precision, 6),
+            "recall": None if recall is None else round(recall, 6),
+            "f1": None if f1 is None else round(f1, 6),
+            "precision_status": "defined" if precision is not None else "undefined_no_predictions",
+            "recall_status": "defined" if recall is not None else "undefined_no_positives",
+            "critical_recall": None if recall is None else round(recall, 6),
+            "critical_recall_subset": "all_labeled_findings_not_a_severity_filter",
+            "false_positive_burden": round(self.fp / total, 6) if total else 0.0,
+            "false_positive_burden_denominator": "tp+fp+fn",
+            "support": support,
+            "empty_support": total == 0,
+        }
+
+
+@dataclass(frozen=True)
+class ParsedLabels:
+    dataset_id: str
+    dataset_status: str
+    scope_reference: str | None
+    expected: frozenset[FindingKey]
+    excluded_count: int
+    unresolved_count: int
+    publishable_protocol_gate: bool
+    adjudicator_count: int
+    held_out_split: bool
+    claim_level: str | None = None
+
+
+@dataclass(frozen=True)
+class ParsedDetections:
+    run_id: str
+    findings: frozenset[FindingKey]
+
+
+def evaluate_detection_precision(
+    labels_path: Path,
+    detections_path: Path,
+    *,
+    require_publishable: bool = False,
+    agreement_path: Path | None = None,
+    require_agreement_for_publishable: bool = True,
+) -> dict[str, object]:
+    """Evaluate exact finding identities and return a deterministic JSON-ready report."""
+
+    labels_payload = _load_json(labels_path, artifact="labels")
+    detections_payload = _load_json(detections_path, artifact="detections")
+    labels = _parse_labels(labels_payload, require_publishable=require_publishable)
+    detections = _parse_detections(detections_payload)
+
+    true_positives = labels.expected & detections.findings
+    false_positives = detections.findings - labels.expected
+    false_negatives = labels.expected - detections.findings
+    micro = MetricCounts(
+        tp=len(true_positives),
+        fp=len(false_positives),
+        fn=len(false_negatives),
+    )
+
+    classes = sorted({item.finding_class for item in labels.expected | detections.findings})
+    per_class: dict[str, dict[str, int | float | str | bool | None]] = {}
+    class_counts: list[MetricCounts] = []
+    for finding_class in classes:
+        counts = MetricCounts(
+            tp=sum(item.finding_class == finding_class for item in true_positives),
+            fp=sum(item.finding_class == finding_class for item in false_positives),
+            fn=sum(item.finding_class == finding_class for item in false_negatives),
+        )
+        class_counts.append(counts)
+        per_class[finding_class] = counts.as_dict()
+
+    if class_counts:
+        defined_precision = [c.precision for c in class_counts if c.precision is not None]
+        defined_recall = [c.recall for c in class_counts if c.recall is not None]
+        defined_f1 = [c.f1 for c in class_counts if c.f1 is not None]
+        f1_for_macro = [c.f1 if c.f1 is not None else 0.0 for c in class_counts]
+        macro: dict[str, object] = {
+            "precision": (
+                round(sum(defined_precision) / len(defined_precision), 6)
+                if defined_precision
+                else None
+            ),
+            "recall": (
+                round(sum(defined_recall) / len(defined_recall), 6) if defined_recall else None
+            ),
+            "f1": round(sum(f1_for_macro) / len(f1_for_macro), 6) if f1_for_macro else None,
+            "class_count": len(class_counts),
+            "defined_precision_classes": len(defined_precision),
+            "defined_recall_classes": len(defined_recall),
+            "defined_f1_classes": len(defined_f1),
+            "class_coverage": round(len(defined_f1) / len(class_counts), 6),
+            "macro_averaging": ("unweighted_mean_over_evaluation_classes_zero_if_undefined"),
+            "empty_classes": False,
+        }
+    else:
+        # RT-PREC-001: empty class set must not report perfect F1=1.0.
+        macro = {
+            "precision": None,
+            "recall": None,
+            "f1": None,
+            "class_count": 0,
+            "empty_classes": True,
+        }
+
+    from aerobim.domain.architecture import (
+        PrecisionClaim,
+        precision_claim_publishable_with_agreement,
+    )
+
+    corpus_kind = _resolve_corpus_kind(
+        dataset_status=labels.dataset_status,
+        claim_level=labels.claim_level,
+        scope_reference=labels.scope_reference,
+    )
+    warning = None
+    if corpus_kind != "customer" or labels.dataset_status != "adjudicated":
+        warning = (
+            "Dataset is not adjudicated customer evidence; metrics are harness/fixture "
+            "results and must not be published as AeroBIM product accuracy."
+        )
+    if macro.get("empty_classes"):
+        empty_warning = (
+            "No finding classes in labels∪detections; macro metrics are null "
+            "(not 1.0) and not publishable."
+        )
+        warning = f"{warning} {empty_warning}" if warning else empty_warning
+
+    # Harness always materializes FN identities — product gate still requires the flag.
+    fn_tracked = True
+    macro_precision = macro["precision"]
+    claim = PrecisionClaim(
+        metric="macro_precision",
+        value=float(macro_precision) if isinstance(macro_precision, int | float) else 0.0,
+        corpus_id=str(labels.dataset_id),
+        corpus_kind=corpus_kind,  # type: ignore[arg-type]
+        adjudicators=int(labels.adjudicator_count),
+        date="",
+        held_out_split=labels.held_out_split,
+        fn_tracked=fn_tracked,
+    )
+
+    agreement_payload: dict[str, object] | None = None
+    labels_hash = hashlib.sha256(labels_path.read_bytes()).hexdigest()
+    if agreement_path is not None:
+        agreement_payload = _load_agreement_json(agreement_path)
+        if agreement_payload.get("artifact_type") != "adjudicator_agreement":
+            raise ValueError("agreement JSON must have artifact_type=adjudicator_agreement")
+
+    # Fixture/synthetic claim_level must never skip agreement (latent publishable flip).
+    agreement_required = require_agreement_for_publishable or corpus_kind != "customer"
+    try:
+        publishable = precision_claim_publishable_with_agreement(
+            claim,
+            agreement=agreement_payload,
+            require_agreement=agreement_required,
+            held_out_split=labels.held_out_split,
+            fn_tracked=fn_tracked,
+            expected_corpus_hash=labels_hash if agreement_payload is not None else None,
+        )
+    except ValueError as exc:
+        publishable = False
+        contract = f"agreement contract rejected: {exc}"
+        warning = f"{warning} {contract}" if warning else contract
+    if corpus_kind != "customer":
+        publishable = False
+    if macro.get("empty_classes"):
+        publishable = False
+    if require_publishable and macro.get("empty_classes"):
+        raise ValueError(
+            "PrecisionClaim is not publishable: empty finding-class set (macro metrics null)"
+        )
+    if require_publishable and not publishable:
+        raise ValueError(
+            "PrecisionClaim is not publishable: need customer corpus, ≥2 adjudicators, "
+            "held-out split, FN tracking, and agreement artifact passing κ≥0.60 "
+            "(and α≥0.67 when reported)"
+        )
+
+    return {
+        "artifact_type": "aerobim_detection_precision_evaluation",
+        "schema_version": _EVAL_SCHEMA_VERSION,
+        "dataset_id": labels.dataset_id,
+        "dataset_status": labels.dataset_status,
+        "claim_level": labels.claim_level,
+        "scope_reference": labels.scope_reference,
+        "run_id": detections.run_id,
+        "matching_policy": "exact-v1",
+        "publishable_protocol_gate": labels.publishable_protocol_gate,
+        "adjudicator_count": labels.adjudicator_count,
+        "corpus_kind": corpus_kind,
+        "held_out_split": labels.held_out_split,
+        "fn_tracked": fn_tracked,
+        "finding_predicates": [predicate.value for predicate in FindingPredicate],
+        "agreement_path": str(agreement_path.as_posix()) if agreement_path else None,
+        "require_agreement_for_publishable": agreement_required,
+        "precision_claim": {
+            "metric": claim.metric,
+            "value": claim.value,
+            "corpus_id": claim.corpus_id,
+            "corpus_kind": claim.corpus_kind,
+            "adjudicators": claim.adjudicators,
+            "held_out_split": claim.held_out_split,
+            "fn_tracked": claim.fn_tracked,
+            "base_publishable": claim.publishable,
+            "publishable": publishable,
+            "labels_sha256": labels_hash,
+            "render": (
+                claim.render_value()
+                if publishable
+                else (
+                    f"{claim.metric}=withheld "
+                    f"(corpus_kind={claim.corpus_kind}, adjudicators={claim.adjudicators}; "
+                    "not publishable as product accuracy)"
+                )
+            ),
+        },
+        "labels": {
+            "confirmed": len(labels.expected),
+            "excluded": labels.excluded_count,
+            "unresolved": labels.unresolved_count,
+        },
+        "detections": len(detections.findings),
+        "micro": micro.as_dict(),
+        "macro": macro,
+        "per_class": per_class,
+        "per_discipline": _bucket_metrics(
+            true_positives,
+            false_positives,
+            false_negatives,
+            key_fn=lambda item: item.discipline or "unknown",
+        ),
+        "clash_vs_nonclash": _bucket_metrics(
+            true_positives,
+            false_positives,
+            false_negatives,
+            key_fn=_clash_bucket,
+        ),
+        "false_positives": [item.as_dict() for item in sorted(false_positives)],
+        "false_negatives": [item.as_dict() for item in sorted(false_negatives)],
+        "warning": warning,
+    }
+
+
+def threshold_failures(
+    report: dict[str, object],
+    *,
+    min_precision: float | None = None,
+    min_recall: float | None = None,
+    min_f1: float | None = None,
+) -> list[str]:
+    """Return stable human-readable threshold failures for CI gating."""
+
+    micro = report.get("micro")
+    if not isinstance(micro, dict):
+        raise ValueError("Evaluation report is missing micro metrics")
+    failures: list[str] = []
+    thresholds = {
+        "precision": min_precision,
+        "recall": min_recall,
+        "f1": min_f1,
+    }
+    for metric, threshold in thresholds.items():
+        if threshold is None:
+            continue
+        if not 0.0 <= threshold <= 1.0:
+            raise ValueError(f"{metric} threshold must be in [0, 1]")
+        actual = micro[metric]
+        if actual is None:
+            failures.append(f"micro {metric} is undefined (empty support)")
+            continue
+        actual_f = float(actual)
+        if actual_f < threshold:
+            failures.append(f"micro {metric} {actual_f:.6f} < required {threshold:.6f}")
+    return failures
+
+
+def _load_json(path: Path, *, artifact: str) -> dict[str, Any]:
+    if path.is_symlink():
+        raise ValueError(f"Symlinked {artifact} input is not accepted: {path}")
+    if not path.exists():
+        raise FileNotFoundError(path)
+    if not path.is_file():
+        raise ValueError(f"{artifact.capitalize()} path is not a regular file: {path}")
+    size = path.stat().st_size
+    if size > _MAX_INPUT_BYTES:
+        raise ValueError(f"{artifact.capitalize()} input exceeds {_MAX_INPUT_BYTES} bytes: {path}")
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8-sig"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError(f"Invalid UTF-8 JSON {artifact} input: {path}") from exc
+    if not isinstance(payload, dict):
+        raise ValueError(f"{artifact.capitalize()} root must be a JSON object")
+    if payload.get("schema_version") != _SCHEMA_VERSION:
+        raise ValueError(f"{artifact.capitalize()} schema_version must be {_SCHEMA_VERSION!r}")
+    return payload
+
+
+def _load_agreement_json(path: Path) -> dict[str, Any]:
+    """Load adjudicator agreement without binding to detection-precision schema."""
+
+    if path.is_symlink():
+        raise ValueError(f"Symlinked agreement input is not accepted: {path}")
+    if not path.exists():
+        raise FileNotFoundError(path)
+    if not path.is_file():
+        raise ValueError(f"Agreement path is not a regular file: {path}")
+    size = path.stat().st_size
+    if size > _MAX_INPUT_BYTES:
+        raise ValueError(f"Agreement input exceeds {_MAX_INPUT_BYTES} bytes: {path}")
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8-sig"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError(f"Invalid UTF-8 JSON agreement input: {path}") from exc
+    if not isinstance(payload, dict):
+        raise ValueError("Agreement root must be a JSON object")
+    schema = payload.get("schema_version")
+    if schema not in {"1.0.0", "1.1.0", "1.2.0", "1.3.0"}:
+        raise ValueError("Agreement schema_version must be '1.0.0', '1.1.0', '1.2.0', or '1.3.0'")
+    return payload
+
+
+def _parse_labels(
+    payload: dict[str, Any],
+    *,
+    require_publishable: bool,
+) -> ParsedLabels:
+    dataset_id = _required_string(payload, "dataset_id")
+    dataset_status = _required_string(payload, "dataset_status").lower()
+    if dataset_status not in _DATASET_STATUSES:
+        raise ValueError(
+            f"Unsupported dataset_status {dataset_status!r}; "
+            f"expected one of {sorted(_DATASET_STATUSES)}"
+        )
+    scope_reference = _optional_string(payload.get("scope_reference"), "scope_reference")
+    raw_cases = payload.get("cases")
+    if not isinstance(raw_cases, list) or not raw_cases:
+        raise ValueError("Labels cases must be a non-empty array")
+
+    expected: set[FindingKey] = set()
+    excluded_count = 0
+    unresolved_count = 0
+    total_items = 0
+    seen_case_ids: set[str] = set()
+    for case_index, case in enumerate(raw_cases):
+        if not isinstance(case, dict):
+            raise ValueError(f"labels.cases[{case_index}] must be an object")
+        case_id = _required_string(case, "case_id", prefix=f"labels.cases[{case_index}].")
+        if case_id in seen_case_ids:
+            raise ValueError(f"Duplicate labels case_id: {case_id}")
+        seen_case_ids.add(case_id)
+        raw_findings = case.get("expected_findings")
+        if not isinstance(raw_findings, list):
+            raise ValueError(f"labels case {case_id!r} expected_findings must be an array")
+        for finding_index, finding in enumerate(raw_findings):
+            total_items += 1
+            if total_items > _MAX_FINDINGS:
+                raise ValueError(f"Labels exceed maximum of {_MAX_FINDINGS} findings")
+            if not isinstance(finding, dict):
+                raise ValueError(
+                    f"labels case {case_id!r} finding[{finding_index}] must be an object"
+                )
+            status = str(finding.get("adjudication_status", "confirmed")).lower()
+            if status not in _LABEL_STATUSES:
+                raise ValueError(
+                    f"Unsupported adjudication_status {status!r} in labels case {case_id!r}"
+                )
+            key = _parse_finding(
+                finding,
+                case_id=case_id,
+                source="labels",
+                discipline=_optional_string(case.get("discipline"), "labels.discipline")
+                or _optional_string(finding.get("discipline"), "labels.finding.discipline"),
+            )
+            if status == "excluded":
+                excluded_count += 1
+                continue
+            if status == "unresolved":
+                unresolved_count += 1
+                continue
+            if key in expected:
+                raise ValueError(
+                    f"Duplicate confirmed label identity in case {case_id!r}: {key.match_key}"
+                )
+            expected.add(key)
+
+    publishable_gate, adjudicator_count = _validate_adjudication_protocol(
+        payload,
+        dataset_status=dataset_status,
+        scope_reference=scope_reference,
+        unresolved_count=unresolved_count,
+    )
+    if require_publishable and not publishable_gate:
+        raise ValueError(
+            "Labels do not satisfy the publishable adjudication protocol gate: "
+            "status=adjudicated, scope_reference, two adjudicators, timezone-aware "
+            "completion time, and zero unresolved labels are required"
+        )
+    held_out_split = _parse_held_out_split(payload)
+    claim_level = _optional_string(payload.get("claim_level"), "claim_level")
+    if claim_level is not None:
+        claim_level = claim_level.casefold()
+    # Fixture claim_level cannot pass the product publishable protocol gate.
+    if claim_level in _NON_CUSTOMER_CLAIM_LEVELS:
+        publishable_gate = False
+    return ParsedLabels(
+        dataset_id=dataset_id,
+        dataset_status=dataset_status,
+        scope_reference=scope_reference,
+        expected=frozenset(expected),
+        excluded_count=excluded_count,
+        unresolved_count=unresolved_count,
+        publishable_protocol_gate=publishable_gate,
+        adjudicator_count=adjudicator_count,
+        held_out_split=held_out_split,
+        claim_level=claim_level,
+    )
+
+
+def _parse_detections(payload: dict[str, Any]) -> ParsedDetections:
+    run_id = _required_string(payload, "run_id")
+    raw_cases = payload.get("cases")
+    if not isinstance(raw_cases, list):
+        raise ValueError("Detections cases must be an array")
+    findings: set[FindingKey] = set()
+    total_items = 0
+    seen_case_ids: set[str] = set()
+    for case_index, case in enumerate(raw_cases):
+        if not isinstance(case, dict):
+            raise ValueError(f"detections.cases[{case_index}] must be an object")
+        case_id = _required_string(case, "case_id", prefix=f"detections.cases[{case_index}].")
+        if case_id in seen_case_ids:
+            raise ValueError(f"Duplicate detections case_id: {case_id}")
+        seen_case_ids.add(case_id)
+        raw_findings = case.get("findings")
+        if not isinstance(raw_findings, list):
+            raise ValueError(f"detections case {case_id!r} findings must be an array")
+        for finding_index, finding in enumerate(raw_findings):
+            total_items += 1
+            if total_items > _MAX_FINDINGS:
+                raise ValueError(f"Detections exceed maximum of {_MAX_FINDINGS} findings")
+            if not isinstance(finding, dict):
+                raise ValueError(
+                    f"detections case {case_id!r} finding[{finding_index}] must be an object"
+                )
+            key = _parse_finding(
+                finding,
+                case_id=case_id,
+                source="detections",
+                discipline=_optional_string(case.get("discipline"), "detections.discipline")
+                or _optional_string(finding.get("discipline"), "detections.finding.discipline"),
+            )
+            if key in findings:
+                raise ValueError(
+                    f"Duplicate detection identity in case {case_id!r}: {key.match_key}"
+                )
+            findings.add(key)
+    return ParsedDetections(run_id=run_id, findings=frozenset(findings))
+
+
+def _parse_finding(
+    payload: dict[str, Any],
+    *,
+    case_id: str,
+    source: str,
+    discipline: str | None = None,
+) -> FindingKey:
+    finding_class = _required_string(payload, "finding_class", prefix=f"{source}.").lower()
+    rule_id = _required_string(payload, "rule_id", prefix=f"{source}.")
+    target_ref = _optional_string(payload.get("target_ref"), f"{source}.target_ref")
+    element_guid = _optional_string(payload.get("element_guid"), f"{source}.element_guid")
+    explicit_match_key = _optional_string(payload.get("match_key"), f"{source}.match_key")
+    if explicit_match_key is None and target_ref is None and element_guid is None:
+        raise ValueError(
+            f"{source} finding {rule_id!r} requires match_key, target_ref, or element_guid"
+        )
+    if explicit_match_key is not None:
+        match_key = f"explicit:{explicit_match_key}"
+    else:
+        match_key = "composite:" + json.dumps(
+            [rule_id, target_ref or "", element_guid or ""],
+            ensure_ascii=False,
+            separators=(",", ":"),
+        )
+    inferred_discipline = discipline
+    if inferred_discipline is None:
+        # SYNTHETIC-AR-001 → ar; CUST-OV-02 → ov
+        parts = case_id.replace("_", "-").split("-")
+        if len(parts) >= 2 and parts[1].isalpha() and len(parts[1]) <= 4:
+            inferred_discipline = parts[1].lower()
+    return FindingKey(
+        case_id=case_id,
+        finding_class=finding_class,
+        match_key=match_key,
+        rule_id=rule_id,
+        target_ref=target_ref,
+        element_guid=element_guid,
+        discipline=inferred_discipline,
+    )
+
+
+def _bucket_metrics(
+    true_positives: frozenset[FindingKey],
+    false_positives: frozenset[FindingKey],
+    false_negatives: frozenset[FindingKey],
+    *,
+    key_fn: Callable[[FindingKey], str],
+) -> dict[str, dict[str, int | float | str | bool | None]]:
+    buckets = sorted(
+        {
+            key_fn(item)
+            for item in true_positives | false_positives | false_negatives
+            if key_fn(item)
+        }
+    )
+    out: dict[str, dict[str, int | float | str | bool | None]] = {}
+    for bucket in buckets:
+        counts = MetricCounts(
+            tp=sum(1 for item in true_positives if key_fn(item) == bucket),
+            fp=sum(1 for item in false_positives if key_fn(item) == bucket),
+            fn=sum(1 for item in false_negatives if key_fn(item) == bucket),
+        )
+        out[str(bucket)] = counts.as_dict()
+    return out
+
+
+def _clash_bucket(item: FindingKey) -> str:
+    if item.finding_class in {"clash", "spatial", "mep_clash", "system_clash"}:
+        return "clash"
+    return "non_clash"
+
+
+def _resolve_corpus_kind(
+    *,
+    dataset_status: str,
+    claim_level: str | None,
+    scope_reference: str | None,
+) -> str:
+    """Map labels metadata to corpus_kind without promoting fixtures to customer.
+
+    ``claim_level`` is the Claims Lock SSOT. Scope text is not used for promotion
+    (harness fixtures often say NOT-CUSTOMER while customer templates also reuse
+    similar phrasing during tests).
+    """
+
+    del scope_reference  # reserved for future explicit markers; unused by design
+    if claim_level in _NON_CUSTOMER_CLAIM_LEVELS:
+        if claim_level in {"synthetic_only", "open_bench_only", "engineering_baseline_only"}:
+            return "synthetic"
+        return "fixture"
+    if dataset_status == "adjudicated":
+        return "customer"
+    if dataset_status == "draft":
+        return "fixture"
+    return "synthetic"
+
+
+def _parse_held_out_split(payload: dict[str, Any]) -> bool:
+    """Detect explicit held-out / test-split flags on a labels artifact."""
+
+    if payload.get("held_out_split") is True:
+        return True
+    raw_split = payload.get("evaluation_split") or payload.get("split")
+    if isinstance(raw_split, str) and raw_split.strip().casefold() in _HELD_OUT_SPLIT_VALUES:
+        return True
+    return False
+
+
+def _validate_adjudication_protocol(
+    payload: dict[str, Any],
+    *,
+    dataset_status: str,
+    scope_reference: str | None,
+    unresolved_count: int,
+) -> tuple[bool, int]:
+    raw_adjudication = payload.get("adjudication")
+    if not isinstance(raw_adjudication, dict):
+        return False, 0
+    raw_adjudicators = raw_adjudication.get("adjudicators")
+    if not isinstance(raw_adjudicators, list):
+        return False, 0
+    adjudicator_ids: set[str] = set()
+    for item in raw_adjudicators:
+        if not isinstance(item, dict):
+            continue
+        raw_id = item.get("id")
+        if isinstance(raw_id, str) and raw_id.strip():
+            adjudicator_ids.add(raw_id.strip())
+    completed_at = raw_adjudication.get("completed_at")
+    completed_with_timezone = False
+    if isinstance(completed_at, str):
+        try:
+            parsed = datetime.fromisoformat(completed_at.replace("Z", "+00:00"))
+            completed_with_timezone = parsed.tzinfo is not None
+        except ValueError:
+            completed_with_timezone = False
+    method = raw_adjudication.get("method")
+    # dual_independent ≡ dual-human adjudication protocol (customer template SSOT)
+    publishable_methods = {"consensus", "majority-with-resolution", "dual_independent"}
+    return (
+        dataset_status == "adjudicated"
+        and scope_reference is not None
+        and len(adjudicator_ids) >= 2
+        and completed_with_timezone
+        and method in publishable_methods
+        and unresolved_count == 0,
+        len(adjudicator_ids),
+    )
+
+
+def _required_string(
+    payload: dict[str, Any],
+    key: str,
+    *,
+    prefix: str = "",
+) -> str:
+    value = _optional_string(payload.get(key), f"{prefix}{key}")
+    if value is None:
+        raise ValueError(f"{prefix}{key} must be a non-empty string")
+    return value
+
+
+def _optional_string(value: object, field_name: str) -> str | None:
+    if value is None:
+        return None
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError(f"{field_name} must be a non-empty string when provided")
+    normalized = value.strip()
+    if len(normalized) > 1024:
+        raise ValueError(f"{field_name} exceeds 1024 characters")
+    return normalized
+
+
+def _write_json_atomic(path: Path, payload: dict[str, object]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    temporary.replace(path)
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description="Evaluate exact-match TP/FP/FN for labeled AeroBIM findings"
+    )
+    parser.add_argument("--labels", type=Path, required=True)
+    parser.add_argument("--detections", type=Path, required=True)
+    parser.add_argument("--output", type=Path)
+    parser.add_argument("--min-precision", type=float)
+    parser.add_argument("--min-recall", type=float)
+    parser.add_argument("--min-f1", type=float)
+    parser.add_argument(
+        "--require-publishable",
+        action="store_true",
+        help="Reject datasets that do not pass the two-adjudicator protocol gate",
+    )
+    parser.add_argument(
+        "--agreement-json",
+        type=Path,
+        default=None,
+        help="Adjudicator agreement artifact (κ/α) required for publishable claims",
+    )
+    parser.add_argument(
+        "--no-require-agreement",
+        action="store_true",
+        help="Allow base PrecisionClaim.publishable without agreement artifact (debug only)",
+    )
+    return parser
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = build_parser().parse_args(argv)
+    if args.no_require_agreement and args.require_publishable:
+        print(
+            "ERROR: --no-require-agreement cannot combine with --require-publishable",
+            file=sys.stderr,
+        )
+        return 2
+    if args.no_require_agreement:
+        print(
+            "WARNING: --no-require-agreement is a debug escape (RT-PREC-001)",
+            file=sys.stderr,
+        )
+    report = evaluate_detection_precision(
+        args.labels,
+        args.detections,
+        require_publishable=args.require_publishable,
+        agreement_path=args.agreement_json,
+        require_agreement_for_publishable=not args.no_require_agreement,
+    )
+    if args.no_require_agreement:
+        report["debug_escape"] = True
+    failures = threshold_failures(
+        report,
+        min_precision=args.min_precision,
+        min_recall=args.min_recall,
+        min_f1=args.min_f1,
+    )
+    report["gate"] = {
+        "passed": not failures,
+        "failures": failures,
+        "thresholds": {
+            "min_precision": args.min_precision,
+            "min_recall": args.min_recall,
+            "min_f1": args.min_f1,
+        },
+    }
+    if args.output is not None:
+        _write_json_atomic(args.output, report)
+    micro = report["micro"]
+    print(
+        json.dumps(
+            {
+                "dataset_id": report["dataset_id"],
+                "run_id": report["run_id"],
+                "micro": micro,
+                "gate_passed": not failures,
+                "warning": report["warning"],
+                "debug_escape": report.get("debug_escape", False),
+            },
+            ensure_ascii=False,
+        )
+    )
+    return 2 if failures else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

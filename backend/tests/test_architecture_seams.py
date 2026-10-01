@@ -1,0 +1,286 @@
+from __future__ import annotations
+
+import unittest
+from pathlib import Path
+from unittest.mock import MagicMock
+
+from aerobim.application.services.ids_assist_boundary import StubIdsAssistDraftAdapter
+from aerobim.application.use_cases.analyze_project_package import AnalyzeProjectPackageUseCase
+from aerobim.domain.architecture import (
+    Contour,
+    EvidenceProvenance,
+    PrecisionClaim,
+    assert_precision_publishable,
+)
+from aerobim.domain.models import (
+    CapabilityState,
+    CapabilityStatus,
+    GeneratedRemark,
+    ReportCapabilities,
+    RequirementSource,
+    ValidationRequest,
+)
+from aerobim.domain.system_capabilities import assert_honesty_capabilities_not_silently_ok
+from aerobim.tools.generate_tz_matrix_status import generate_tz_matrix_status
+
+
+class ArchitectureSeamTests(unittest.TestCase):
+    def test_precision_claim_blocks_non_customer_publish(self) -> None:
+        claim = PrecisionClaim(
+            metric="macro_precision",
+            value=0.95,
+            corpus_id="synthetic-x",
+            corpus_kind="synthetic",
+            adjudicators=0,
+            date="2026-07-16",
+        )
+        self.assertFalse(claim.publishable)
+        self.assertIn("withheld", claim.render_value())
+        with self.assertRaisesRegex(ValueError, "not publishable"):
+            assert_precision_publishable(claim)
+
+    def test_precision_claim_allows_customer_with_two_adjudicators(self) -> None:
+        claim = PrecisionClaim(
+            metric="macro_precision",
+            value=0.91,
+            corpus_id="customer-1",
+            corpus_kind="customer",
+            adjudicators=2,
+            date="2026-07-16",
+        )
+        self.assertTrue(claim.publishable)
+        self.assertIn("0.9100", claim.render_value())
+        assert_precision_publishable(claim)
+
+    def test_self_audit_cannot_display_as_external(self) -> None:
+        provenance = EvidenceProvenance(
+            author_relationship="self",
+            label="April 2026 external academic audit",
+        )
+        self.assertEqual(provenance.display_label(), "internal self-audit")
+
+    def test_tz_matrix_generator_marks_mep_missing(self) -> None:
+        payload = generate_tz_matrix_status()
+        mep = next(row for row in payload["rows"] if "MEP" in row["requirement"])
+        self.assertEqual(mep["status"], "missing")
+        self.assertEqual(payload["author_relationship"], "self")
+        self.assertFalse(payload["interpretation_use"]["closes_rt001"])
+        self.assertFalse(payload["customer_corpus_present"])
+        self.assertFalse(payload["capabilities_executed"])
+
+    def test_tz_matrix_fixture_ok_stays_partial_without_customer(self) -> None:
+        caps = ReportCapabilities(
+            ids=CapabilityStatus(CapabilityState.OK, "fixture ids"),
+        )
+        payload = generate_tz_matrix_status(
+            capabilities=caps,
+            evidence_path="samples/benchmarks/project-package-wall-fire-rating.json",
+        )
+        ids_row = next(row for row in payload["rows"] if row["capability"] == "ids")
+        self.assertEqual(ids_row["status"], "partial")
+        self.assertEqual(
+            ids_row["evidence_path"],
+            "samples/benchmarks/project-package-wall-fire-rating.json",
+        )
+        self.assertEqual(payload["capabilities_snapshot"]["ids"]["status"], "ok")
+        self.assertFalse(payload["customer_corpus_present"])
+        self.assertTrue(payload["capabilities_executed"])
+
+    def test_honesty_capabilities_never_silently_ok(self) -> None:
+        caps = ReportCapabilities()
+        assert_honesty_capabilities_not_silently_ok(caps)
+        self.assertEqual(caps.dwg_dxf.status, CapabilityState.MISSING)
+        self.assertEqual(caps.cv_human_level.status, CapabilityState.MISSING)
+        self.assertEqual(caps.mep_system_clash.status, CapabilityState.NOT_VERIFIED)
+        self.assertEqual(caps.calculation_correctness.status, CapabilityState.NOT_IMPLEMENTED)
+        with self.assertRaises(AssertionError):
+            assert_honesty_capabilities_not_silently_ok(
+                ReportCapabilities(
+                    dwg_dxf=CapabilityStatus(CapabilityState.OK, "fake"),
+                )
+            )
+
+    def test_sota_stub_ids_assist_is_tracked_in_known_bugs(self) -> None:
+        root = Path(__file__).resolve().parents[2]
+        known = (root / "docs" / "KNOWN_BUGS.md").read_text(encoding="utf-8")
+        self.assertIn("STUB-IDS-ASSIST-001", known)
+        adapter_src = (
+            root
+            / "backend"
+            / "src"
+            / "aerobim"
+            / "application"
+            / "services"
+            / "ids_assist_boundary.py"
+        ).read_text(encoding="utf-8")
+        self.assertIn("@sota-stub", adapter_src)
+        self.assertIn("StubIdsAssistDraftAdapter", adapter_src)
+
+    def test_hd19_s3_presign_is_capped_and_unwired(self) -> None:
+        """Presign GET is HeadObject-capped; no src callers of ``.presign_get(``."""
+
+        root = Path(__file__).resolve().parents[2]
+        known = (root / "docs" / "KNOWN_BUGS.md").read_text(encoding="utf-8")
+        self.assertIn("HD19-S3-01", known)
+        s3_src = (
+            root
+            / "backend"
+            / "src"
+            / "aerobim"
+            / "infrastructure"
+            / "adapters"
+            / "s3_object_store.py"
+        ).read_text(encoding="utf-8")
+        self.assertIn("head_object", s3_src)
+        self.assertIn("max_get_bytes", s3_src)
+        self.assertIn("pin_s3_outbound_dials", s3_src)
+        src = root / "backend" / "src"
+        callers: list[str] = []
+        for path in src.rglob("*.py"):
+            text = path.read_text(encoding="utf-8")
+            if ".presign_get(" in text:
+                callers.append(path.relative_to(src).as_posix())
+        self.assertEqual(callers, [])
+        factories = (src / "aerobim" / "infrastructure" / "di" / "_di_factories.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("RegionRestrictedVlmPipeline", factories)
+        self.assertIn("def _build_advisory_vlm_pipeline", factories)
+        build_fn = factories.split("def _build_advisory_vlm_pipeline", 1)[1].split(
+            "\ndef _build_", 1
+        )[0]
+        self.assertNotIn("VlmDrawingPipeline", build_fn)
+        self.assertIn("return RegionRestrictedVlmPipeline", build_fn)
+
+    def test_advisory_off_equals_advisory_on_for_summary_passed(self) -> None:
+        """AI advisory contour must not mutate deterministic summary.passed."""
+
+        class _Empty:
+            def extract(self, _source):
+                return []
+
+            def synthesize(self, _source):
+                return []
+
+            def analyze(self, _source):
+                return []
+
+        class _Remark:
+            def generate(self, issue):
+                return GeneratedRemark(title=issue.rule_id, body=issue.message)
+
+        class _Store:
+            def __init__(self) -> None:
+                self.report = None
+
+            def save(self, report):
+                self.report = report
+                return report.report_id
+
+            def get(self, report_id):
+                if self.report is not None and self.report.report_id == report_id:
+                    return self.report
+                return None
+
+        def _build() -> AnalyzeProjectPackageUseCase:
+            empty = _Empty()
+            return AnalyzeProjectPackageUseCase(
+                requirement_extractor=empty,
+                narrative_rule_synthesizer=empty,
+                drawing_analyzer=empty,
+                ifc_validator=MagicMock(validate=MagicMock(return_value=[])),
+                ids_validator=MagicMock(validate=MagicMock(return_value=[])),
+                remark_generator=_Remark(),
+                audit_report_store=_Store(),
+            )
+
+        request = ValidationRequest(
+            request_id="adv-iso",
+            ifc_path=Path("synthetic.ifc"),
+            requirement_source=RequirementSource(),
+            ids_path=Path("dummy.ids"),
+        )
+        off = _build().execute(request)
+        # Advisory contour call (IDS assist stub) must not affect the next analyze pass.
+        StubIdsAssistDraftAdapter().draft_from_narrative("wall fire rating")
+        on = _build().execute(request)
+        self.assertEqual(off.summary.passed, on.summary.passed)
+        self.assertEqual(Contour.AI_ADVISORY.value, "ai_advisory")
+
+    def test_product_split_vs_2026_acc_literature(self) -> None:
+        from aerobim.domain.llm_advisory import (
+            FORBIDDEN_LLM_ACTIONS,
+            LLM_GENERATED_FUNCTION_WRITES_SUMMARY_PASSED,
+            LLM_SELECTS_CHECK_ON_VERDICT_PATH,
+        )
+
+        self.assertIn("call_tool", FORBIDDEN_LLM_ACTIONS)
+        self.assertIn("change_verdict", FORBIDDEN_LLM_ACTIONS)
+        self.assertFalse(LLM_SELECTS_CHECK_ON_VERDICT_PATH)
+        self.assertFalse(LLM_GENERATED_FUNCTION_WRITES_SUMMARY_PASSED)
+
+        repo = Path(__file__).resolve().parents[2]
+        analyze_src = (
+            repo
+            / "backend"
+            / "src"
+            / "aerobim"
+            / "application"
+            / "use_cases"
+            / "analyze_project_package.py"
+        ).read_text(encoding="utf-8")
+        self.assertNotIn("ids_assist", analyze_src)
+        self.assertNotIn("IdsAssist", analyze_src)
+
+        ids_assist = (
+            repo
+            / "backend"
+            / "src"
+            / "aerobim"
+            / "application"
+            / "services"
+            / "ids_assist_boundary.py"
+        ).read_text(encoding="utf-8")
+        self.assertIn("Never wire into AnalyzeProjectPackageUseCase", ids_assist)
+        self.assertIn("approval_ref", ids_assist)
+
+        adr = (repo / "docs" / "architecture" / "ADR-001-verdict-ownership-2026.md").read_text(
+            encoding="utf-8"
+        )
+        faq = (repo / "docs" / "demo" / "KT3_JURY_FAQ_2026_08_25.md").read_text(encoding="utf-8")
+        related = (repo / "docs" / "RELATED_WORK_PREPRINT_2026_09.md").read_text(encoding="utf-8")
+        for text in (adr, faq, related):
+            self.assertIn("Iversen", text)
+            self.assertIn("Fuchs", text)
+            self.assertIn("лучше Iversen", text)
+
+
+class ExportRuntimeBaselineTests(unittest.TestCase):
+    def test_export_writes_metrics(self) -> None:
+        from aerobim.tools.export_runtime_baseline import export_runtime_baseline
+
+        backend = Path(__file__).resolve().parents[1]
+        baseline = export_runtime_baseline(backend_root=backend, commit_sha="test")
+        self.assertEqual(baseline["schema_version"], "1.4.0")
+        backend_block = baseline["backend"]
+        assert isinstance(backend_block, dict)
+        self.assertGreater(int(backend_block["test_functions"]), 0)
+        self.assertGreater(int(backend_block["tests_collected"]), 0)
+        self.assertEqual(backend_block["test_functions_source"], "ast_test_defs")
+        self.assertEqual(backend_block["tests_collected_source"], "pytest_collect_only")
+        # AST defs vs pytest items: parametrize expands; optional extras
+        # (pdf-agpl, kitchen secrets) skip collection. Equality is not an invariant.
+        self.assertIsInstance(backend_block.get("uncollected"), list)
+        self.assertIsNone(backend_block["tests_passed"])
+        metrics = baseline["metrics"]
+        assert isinstance(metrics, dict)
+        self.assertGreater(int(metrics["backend_src_loc"]), 1000)
+        self.assertGreater(int(metrics["backend_test_functions"]), 100)
+        self.assertIn("readme_snippet", baseline)
+        self.assertIn("quality_gates", baseline)
+        self.assertIn("environment", baseline)
+        self.assertEqual(baseline["frontend"]["tests_passed"], None)
+
+
+if __name__ == "__main__":
+    unittest.main()

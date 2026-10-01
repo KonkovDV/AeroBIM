@@ -1,0 +1,13 @@
+#!/bin/sh
+# Local CI mirror before push: fast gates (ruff, claims lint, baseline drift,
+# docs metadata, links, KT#2 handoff). Skips on clones without the backend
+# venv (e.g. jury reading the pack). Emergency bypass: git push --no-verify
+if [ -x "backend/.venv/Scripts/python.exe" ]; then
+  PY="backend/.venv/Scripts/python.exe"
+elif [ -x "backend/.venv/bin/python" ]; then
+  PY="backend/.venv/bin/python"
+else
+  echo "pre-push: backend venv not found; skipping local CI mirror" >&2
+  exit 0
+fi
+"$PY" scripts/pre_push_gate.py

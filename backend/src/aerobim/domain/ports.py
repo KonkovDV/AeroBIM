@@ -1,0 +1,420 @@
+from __future__ import annotations
+
+from collections.abc import Sequence
+from pathlib import Path
+from typing import Literal, Protocol, runtime_checkable
+
+from aerobim.domain.bcf_api import BcfApiPushResult
+from aerobim.domain.cad_ingest import CadIngestResult
+from aerobim.domain.consistency import (
+    MultimodalDrawingResult,
+    PackageManifest,
+    QuantityClaim,
+)
+from aerobim.domain.extraction_integrity import ExtractionIntegritySignals
+from aerobim.domain.ifc_model_diff import (
+    IfcModelDiff as IfcModelDiff,
+)
+from aerobim.domain.ifc_model_diff import IfcModelDiffResult as IfcModelDiffResult
+
+# Re-export MEP port for contour/DI discovery (implementation stays in domain.mep).
+from aerobim.domain.mep import MepSystemGraphProvider as MepSystemGraphProvider
+from aerobim.domain.models import (
+    AnalyzeProjectPackageJob,
+    ClashResult,
+    DrawingAnnotation,
+    DrawingRegionRef,
+    DrawingSource,
+    GeneratedRemark,
+    NormPackVersionInfo,
+    NormRulePack,
+    ParsedRequirement,
+    ReportListFilters,
+    ReportSummaryEntry,
+    RequirementSource,
+    ReviewEvent,
+    ValidationIssue,
+    ValidationReport,
+    ValidationRequest,
+)
+from aerobim.domain.norm_assist import IdsCompileDraft, NormPassage
+from aerobim.domain.package_completeness import PackageCompletenessReport, PackageInventory
+from aerobim.domain.review_event_append import ReviewEventAppendSpec
+from aerobim.domain.section_pairing import SectionPairingReport
+from aerobim.domain.signature_immutability import SignatureAuditResult
+from aerobim.domain.space_efficiency_advisory import SpaceInventoryRow
+
+
+class RequirementExtractor(Protocol):
+    def extract(self, source: RequirementSource) -> list[ParsedRequirement]: ...
+
+
+class NarrativeRuleSynthesizer(Protocol):
+    def synthesize(self, source: RequirementSource) -> list[ParsedRequirement]: ...
+
+
+class NormRulePackLoader(Protocol):
+    """Load and validate an agreed or explicitly non-approved rule pack."""
+
+    def load(self, pack_path: Path) -> NormRulePack: ...
+
+
+class SectionDiffAnalyzer(Protocol):
+    """Deterministically compare one paired PD/RD discipline section."""
+
+    def compare(self, pd_section_path: Path, rd_section_path: Path) -> list[ValidationIssue]: ...
+
+    def analyze(self, pd_section_path: Path, rd_section_path: Path) -> SectionPairingReport:
+        """Compare a PD/RD pair and return findings plus coverage metadata.
+
+        ``compare`` remains the minimal findings-only contract; ``analyze``
+        additionally surfaces the resolved canonical discipline and canonical-key
+        coverage so the capability status can stay honest about what was mapped.
+        """
+        ...
+
+
+class DrawingAnalyzer(Protocol):
+    def analyze(self, source: DrawingSource) -> list[DrawingAnnotation]: ...
+
+
+class RasterDrawingAnalyzer(Protocol):
+    """Domain port for optional raster/PDF drawing analysis (OCR + layout).
+
+    Unlike ``DrawingAnalyzer`` (structured text/JSON), this port accepts
+    raster or PDF inputs and returns ``DrawingAnnotation`` records via
+    deterministic OCR and layout heuristics. Non-deterministic adapters
+    may implement the same port but are outside the pilot sign-off path.
+    """
+
+    def analyze_image(
+        self,
+        image_path: Path,
+        sheet_id: str | None = None,
+    ) -> list[DrawingAnnotation]: ...
+
+
+class IfcValidator(Protocol):
+    def validate(
+        self,
+        ifc_path: Path,
+        requirements: Sequence[ParsedRequirement],
+    ) -> list[ValidationIssue]: ...
+
+
+@runtime_checkable
+class GuidLookup(Protocol):
+    """Minimal spatial-index presence check used by annotation GUID confirm."""
+
+    def lookup(self, guid: str) -> object | None: ...
+
+
+@runtime_checkable
+class IfcSpatialIndexProvider(Protocol):
+    """Optional port extension: GUID presence checks for annotation↔IFC links (P2-04)."""
+
+    def spatial_index_for(self, ifc_path: Path) -> GuidLookup | None: ...
+
+
+class IdsValidator(Protocol):
+    def validate(self, ids_path: Path, ifc_path: Path) -> list[ValidationIssue]: ...
+
+
+class RemarkGenerator(Protocol):
+    def generate(self, issue: ValidationIssue) -> GeneratedRemark: ...
+
+
+class AuditReportStore(Protocol):
+    def save(self, report: ValidationReport) -> str: ...
+
+    def get(self, report_id: str) -> ValidationReport | None: ...
+
+    def peek_tenant_id(self, report_id: str) -> str | None: ...
+
+    def list_reports(
+        self,
+        filters: ReportListFilters | None = None,
+    ) -> list[ReportSummaryEntry]: ...
+
+
+class ReviewEventStore(Protocol):
+    def append(self, event: ReviewEvent) -> str: ...
+
+    def list_for_report(self, report_id: str) -> list[ReviewEvent]: ...
+
+    def append_api_event(self, spec: ReviewEventAppendSpec) -> ReviewEvent: ...
+
+
+class NormRulePackVersionStore(Protocol):
+    """Immutable norm-pack version history (P0.3 HITL). Never overwrites prior versions."""
+
+    def save_version(
+        self,
+        *,
+        pack_id: str,
+        version: str,
+        payload: bytes,
+        created_by: str | None,
+        parent_version: str | None,
+        approval_status: str | None,
+        approval_ref: str | None,
+        tenant_id: str | None = None,
+    ) -> NormPackVersionInfo: ...
+
+    def list_versions(
+        self,
+        pack_id: str,
+        *,
+        tenant_id: str | None = None,
+    ) -> list[NormPackVersionInfo]: ...
+
+    def get_version_bytes(
+        self,
+        pack_id: str,
+        version: str,
+        *,
+        tenant_id: str | None = None,
+    ) -> bytes | None: ...
+
+    def verify_version_integrity(
+        self,
+        pack_id: str,
+        version: str,
+        *,
+        tenant_id: str | None = None,
+        expected_sha256: str | None = None,
+    ) -> str:
+        """Recompute payload hash; raise on mismatch (blocks sign-off)."""
+        ...
+
+
+class BsiValidationService(Protocol):
+    """Optional remote IFC schema conformity submission (bSI Validation Service)."""
+
+    def submit(self, ifc_path: Path) -> str:
+        """Return external validation request id (``public_id``)."""
+        ...
+
+
+class ObjectStore(Protocol):
+    """Blob store. ``put_bytes`` is for small payloads; upload ingest uses ``put_file``."""
+
+    def put_bytes(
+        self,
+        key: str,
+        payload: bytes,
+        *,
+        content_type: str | None = None,
+    ) -> str: ...
+
+    def put_file(
+        self,
+        key: str,
+        path: Path,
+        *,
+        content_type: str | None = None,
+    ) -> str: ...
+
+    def get_bytes(self, key: str) -> bytes | None: ...
+
+    def delete(self, key: str) -> None: ...
+
+    def presign_get(self, key: str, *, expires_in_seconds: int = 3600) -> str | None: ...
+
+
+class AnalyzeProjectPackageJobStore(Protocol):
+    def create(
+        self,
+        job: AnalyzeProjectPackageJob,
+        *,
+        max_concurrent_per_tenant: int | None = None,
+    ) -> str: ...
+
+    def get(self, job_id: str) -> AnalyzeProjectPackageJob | None: ...
+
+    def get_by_idempotency_key(
+        self,
+        idempotency_key: str,
+        *,
+        tenant_id: str | None = None,
+    ) -> AnalyzeProjectPackageJob | None: ...
+
+    def count_active_for_tenant(self, tenant_id: str) -> int: ...
+
+    def mark_running(
+        self, job_id: str, *, owner: str | None = None
+    ) -> AnalyzeProjectPackageJob | None: ...
+
+    def mark_succeeded(
+        self, job_id: str, report_id: str, *, owner: str | None = None
+    ) -> AnalyzeProjectPackageJob | None: ...
+
+    def mark_failed(
+        self, job_id: str, error_message: str, *, owner: str | None = None
+    ) -> AnalyzeProjectPackageJob | None: ...
+
+    def heartbeat(
+        self, job_id: str, *, lease_seconds: int = 120, owner: str | None = None
+    ) -> AnalyzeProjectPackageJob | None: ...
+
+    def request_cancel(self, job_id: str) -> AnalyzeProjectPackageJob | None: ...
+
+    def mark_cancelled(
+        self, job_id: str, reason: str | None = None
+    ) -> AnalyzeProjectPackageJob | None: ...
+
+    def reclaim_stale_running(
+        self, *, now_iso: str | None = None
+    ) -> list[AnalyzeProjectPackageJob]: ...
+
+    def reclaim_stale_queued(
+        self, ttl_seconds: int | None = None, *, now_iso: str | None = None
+    ) -> list[AnalyzeProjectPackageJob]: ...
+
+    def requeue_failed_without_report(self, job_id: str) -> AnalyzeProjectPackageJob | None:
+        """Return an abandoned failed job that never published a report to QUEUED.
+
+        Only lease-expiry and process-restart failures are eligible.
+        Succeeded jobs stay succeeded. Business failures and exhausted retries stay failed.
+        """
+        ...
+
+    def requeue_abandoned_failures(self) -> list[AnalyzeProjectPackageJob]: ...
+
+
+class ExternalEvidenceVerifier(Protocol):
+    """Port for third-party calculation / reinforcement evidence verification."""
+
+    def verify(self, request: ValidationRequest) -> list[ValidationIssue]: ...
+
+
+class ClashDetector(Protocol):
+    """Domain port for BIM clash/collision detection."""
+
+    def detect(self, ifc_path: Path) -> list[ClashResult]: ...
+
+
+class IfcSchemaValidator(Protocol):
+    """Pre-gate: SPF / schema / implementer-agreement checks before project rules."""
+
+    def validate_schema(self, ifc_path: Path) -> list[ValidationIssue]: ...
+
+
+class IdsDocumentAuditor(Protocol):
+    """Pre-gate: validate an IDS document before model checking."""
+
+    def audit(self, ids_path: Path) -> list[ValidationIssue]: ...
+
+
+class BcfApiClient(Protocol):
+    """OpenCDE BCF API 3.0 client — push coordination topics to a remote hub."""
+
+    def push_report_topics(
+        self,
+        report: ValidationReport,
+        *,
+        project_id: str,
+    ) -> BcfApiPushResult: ...
+
+
+class CadModelIngestor(Protocol):
+    """DWG/DXF → drawing annotations.
+
+    Honesty: never claim OK for native DWG without ODA evidence.
+    """
+
+    def ingest(self, path: Path, *, sheet_id: str | None = None) -> CadIngestResult: ...
+
+
+class OfficeDocumentIngestor(Protocol):
+    """MS Office / rich docs → RequirementSource with extracted text."""
+
+    def ingest(self, path: Path) -> RequirementSource: ...
+
+
+class QuantityConsistencyChecker(Protocol):
+    """IFC quantity сверка vs declared claims (areas/space). Not solver correctness."""
+
+    def check(
+        self,
+        ifc_path: Path,
+        declared: Sequence[QuantityClaim],
+    ) -> list[ValidationIssue]: ...
+
+
+class LoadEvidenceVerifier(Protocol):
+    """Load-table / calc-sheet numeric match. Not independent correctness."""
+
+    def verify(self, request: ValidationRequest) -> list[ValidationIssue]: ...
+
+
+class LogicConsistencyAnalyzer(Protocol):
+    """Cross-section / package logical gaps (orphan sheets, unpaired PD/RD, etc.)."""
+
+    def analyze(self, manifest: PackageManifest) -> list[ValidationIssue]: ...
+
+
+class DrawingRegionDetector(Protocol):
+    """Layout region priors / detector (Blueprint-style); never implies cv_human_level OK."""
+
+    def detect(self, path: Path, *, sheet_id: str | None = None) -> list[DrawingRegionRef]: ...
+
+
+class MultimodalDrawingPipeline(Protocol):
+    """Detector+VLM with mandatory OCR degrade when extras absent."""
+
+    def analyze(
+        self,
+        source: DrawingSource,
+        *,
+        mode: Literal["auto", "ocr_only", "detector_vlm"] = "auto",
+    ) -> MultimodalDrawingResult: ...
+
+
+class ExtractionIntegritySignalProducer(Protocol):
+    """Produce integrity SIGNALS for one PDF (infrastructure; domain assesses)."""
+
+    def produce(self, path: Path) -> ExtractionIntegritySignals: ...
+
+
+class RequirementToIdsCompiler(Protocol):
+    """TZ/requirements → draft IDS 1.0 XML (advisory; never auto sign-off)."""
+
+    def compile(self, source: RequirementSource) -> IdsCompileDraft: ...
+
+    def compile_requirements(
+        self,
+        requirements: Sequence[ParsedRequirement],
+    ) -> IdsCompileDraft: ...
+
+
+class NormCorpusRetriever(Protocol):
+    """Keyword/RAG-style retrieve over local norm corpus; citations required."""
+
+    def retrieve(self, query: str, *, top_k: int = 8) -> list[NormPassage]: ...
+
+
+class DocumentSignatureAuditor(Protocol):
+    """Detached envelope audit: presence / hash / roles — never legal УКЭП."""
+
+    def audit(
+        self,
+        content_path: Path,
+        *,
+        envelope_path: Path | None = None,
+        required_roles: Sequence[str] = (),
+    ) -> SignatureAuditResult: ...
+
+
+class PackageInventoryLoader(Protocol):
+    """Load declared package inventory JSON for completeness assessment (WP-05)."""
+
+    def load(self, inventory_path: Path) -> PackageInventory: ...
+
+    def assess(self, inventory_path: Path) -> PackageCompletenessReport: ...
+
+
+class IfcSpaceInventoryExtractor(Protocol):
+    """Local IfcSpace inventory for advisory space-efficiency candidates (no egress)."""
+
+    def extract(self, ifc_path: Path | str | None) -> tuple[SpaceInventoryRow, ...]: ...

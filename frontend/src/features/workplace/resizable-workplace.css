@@ -1,0 +1,42 @@
+/* Local controls: no changes to evidence coordinates or finding-row geometry. */
+.workspace-layout-controls {
+  margin-block: 0 16px;
+  color: var(--vl-text);
+  background: var(--vl-surface);
+  border: 1px solid var(--vl-line);
+  border-radius: 8px;
+}
+.workspace-layout-controls > summary {
+  min-block-size: 44px;
+  padding: 10px 16px;
+  box-sizing: border-box;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+}
+.workspace-layout-fields {
+  display: none;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 24px;
+  padding: 8px 16px 0;
+}
+.workspace-layout-controls[open] > .workspace-layout-fields { display: flex; }
+.workspace-layout-controls:not([open]) > :not(summary) { display: none; }
+.workspace-layout-fields > label { flex: 1 1 220px; min-inline-size: 0; font-size: .875rem; }
+.workspace-layout-fields label > span { display: flex; justify-content: space-between; gap: 16px; }
+.workspace-layout-fields output { font-variant-numeric: tabular-nums; }
+.workspace-layout-fields input[type="range"] { inline-size: 100%; min-block-size: 44px; margin: 0; accent-color: var(--vl-accent); }
+.workspace-layout-fields > button { min-block-size: 44px; padding: 8px 16px; }
+.workspace-layout-controls > p { margin: 0; padding: 8px 16px 16px; font-size: .875rem; line-height: 1.5; color: var(--vl-text-secondary); }
+.workspace-grid > .grid-resizer { inline-size: 100%; touch-action: none; }
+.workspace-grid > .grid-resizer::after { content: ""; position: absolute; inset: 0 -8px; }
+.workspace-grid > .grid-resizer:focus-visible { outline: 3px solid var(--vl-accent); outline-offset: 2px; }
+.workspace-grid > .grid-resizer:focus-visible::before { background: var(--vl-accent); }
+@media (forced-colors: active) {
+  .workspace-layout-controls { border-color: CanvasText; }
+  .workspace-grid > .grid-resizer:focus-visible { outline-color: Highlight; }
+}
+@media (max-width: 1100px), print {
+  .workspace-layout-controls { display: none; }
+}

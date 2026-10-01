@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0.0",
+  "pack_id": "sprint-2-1-package-baseline-open",
+  "dataset_class": "fixture",
+  "customer_evidence": false,
+  "claim_level": "engineering_baseline_only",
+  "description": "Open/fixture baseline pack (alias of project-package-baseline).",
+  "request": {
+    "ifc_path": "samples/ifc/walls-multi-entity.ifc",
+    "requirement_path": "samples/requirements/multimodal-baseline-rules.txt",
+    "ids_path": "samples/ids/walls-multi-entity.ids",
+    "technical_spec_path": "samples/specifications/tz-area-fire.txt",
+    "calculation_path": "samples/calculations/area-requirement.txt",
+    "drawings": [
+      {
+        "path": "samples/drawings/room-thickness-annotations.txt",
+        "sheet_id": "A-101",
+        "format": "text"
+      }
+    ]
+  }
+}

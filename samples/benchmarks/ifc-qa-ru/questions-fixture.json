@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0.0",
+  "dataset_id": "aerobim-ifc-qa-ru-fixture",
+  "dataset_status": "synthetic",
+  "claim_boundary": "Fixture CI only — not product accuracy; do not cite IfcLLM 93-100%.",
+  "cases": [
+    {
+      "question_id": "RU-WALL-01",
+      "question": "Найди все стены в модели",
+      "expect_entity_hint": "IfcWall",
+      "min_guids": 1
+    },
+    {
+      "question_id": "RU-SPACE-01",
+      "question": "Перечисли пространства",
+      "expect_entity_hint": "IfcSpace",
+      "min_guids": 0
+    }
+  ]
+}

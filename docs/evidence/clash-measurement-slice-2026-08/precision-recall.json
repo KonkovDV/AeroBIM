@@ -1,0 +1,105 @@
+{
+  "artifact_type": "aerobim_detection_precision_evaluation",
+  "schema_version": "1.1.0",
+  "dataset_id": "aerobim-extent-clash-fixture-2026-08-11",
+  "dataset_status": "adjudicated",
+  "claim_level": "fixture_only",
+  "scope_reference": "FIXTURE-EXTENT-CLASH-ONLY-NOT-CUSTOMER-EVIDENCE",
+  "run_id": "extent-clash-fixture-2026-08-11",
+  "matching_policy": "exact-v1",
+  "publishable_protocol_gate": false,
+  "adjudicator_count": 2,
+  "corpus_kind": "fixture",
+  "held_out_split": false,
+  "fn_tracked": true,
+  "finding_predicates": [
+    "geometric_clash",
+    "norm_violation",
+    "cross_document",
+    "ids_facet",
+    "drawing_measure",
+    "schema_gate",
+    "version_mismatch",
+    "other"
+  ],
+  "agreement_path": null,
+  "require_agreement_for_publishable": true,
+  "precision_claim": {
+    "metric": "macro_precision",
+    "value": 1.0,
+    "corpus_id": "aerobim-extent-clash-fixture-2026-08-11",
+    "corpus_kind": "fixture",
+    "adjudicators": 2,
+    "held_out_split": false,
+    "fn_tracked": true,
+    "base_publishable": false,
+    "publishable": false,
+    "render": "macro_precision=withheld (corpus_kind=fixture, adjudicators=2; not publishable as product accuracy)"
+  },
+  "labels": {
+    "confirmed": 6,
+    "excluded": 0,
+    "unresolved": 0
+  },
+  "detections": 6,
+  "micro": {
+    "tp": 6,
+    "fp": 0,
+    "fn": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "critical_recall": 1.0,
+    "false_positive_burden": 0.0,
+    "support": 6
+  },
+  "macro": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "class_count": 1,
+    "empty_classes": false
+  },
+  "per_class": {
+    "clash": {
+      "tp": 6,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "critical_recall": 1.0,
+      "false_positive_burden": 0.0,
+      "support": 6
+    }
+  },
+  "per_discipline": {
+    "unknown": {
+      "tp": 6,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "critical_recall": 1.0,
+      "false_positive_burden": 0.0,
+      "support": 6
+    }
+  },
+  "clash_vs_nonclash": {
+    "clash": {
+      "tp": 6,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "critical_recall": 1.0,
+      "false_positive_burden": 0.0,
+      "support": 6
+    }
+  },
+  "false_positives": [],
+  "false_negatives": [],
+  "warning": "Dataset is not adjudicated customer evidence; metrics are harness/fixture results and must not be published as AeroBIM product accuracy."
+}

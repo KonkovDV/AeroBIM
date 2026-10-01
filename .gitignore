@@ -1,0 +1,254 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+backend/.venv/
+backend/.venv-3.12/
+backend/.venv-313/
+backend/.venv-pilot/
+.venv/
+.pytest_cache/
+.mypy_cache/
+.hypothesis/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Node / frontend
+node_modules/
+dist/
+coverage/
+frontend/artifacts/
+frontend/vitest-out.txt
+
+# Runtime
+.env
+.env.*
+!.env.example
+var/
+tmp/
+backend/var/
+
+# CI / local benchmark dumps (regenerate via Actions or local gate)
+artifacts/*
+!artifacts/README.md
+!artifacts/demo/
+!artifacts/demo/.gitkeep
+artifacts/demo/*.mp4
+
+# Editor metadata (not product source)
+.cursor/
+.cursorignore
+.cursorindexingignore
+agent-transcripts/
+# Multi-root editor workspace lives outside this repository.
+# Do not keep a copy in this git root (it is not AeroBIM product source).
+APS.code-workspace
+
+# Local operator artifacts — keep OUTSIDE this worktree when possible
+# (sibling ../AeroBIM-private/). A tracked .local/ inside a public repo is N-46 risk.
+.local/
+
+# Kitchen denylist literals and HMAC key (pin is audit/evidence/kitchen-denylist.pin.json)
+.local/kitchen-denylist.txt
+.local/kitchen-hmac.key
+.local/pack/
+
+# IfcOpenShell RocksDB cache for files over the SPF cap (never commit)
+**/.aerobim-ifc-rdb/
+
+# Native authoring / solver / coordinator packs (IFC fixtures stay tracked)
+*.rvt
+*.rfa
+*.rte
+*.nwd
+*.nwc
+*.lir
+*.spr
+*.dwg
+!samples/cad/placeholder-source.dwg
+
+# Local operator baseline exports (WP-A11 — never commit)
+docs/evidence/local/
+docs/evidence/runtime-baseline-latest-dirty.json
+docs/evidence/runtime-baseline-latest.ci-generated.json
+
+docs/evidence/sprint2-synthetic-baseline-2026-08-0[6-9].*
+docs/evidence/sprint2-synthetic-baseline-2026-08-1*.*
+
+# Accidental private dump at repo root (use sibling ../AeroBIM-private/, not in-tree .local/)
+/AeroBIM/
+
+# Customer/audit derivative zips (ADR-005 — never commit)
+audit/*.zip
+audit/AeroBIM-audit-*.zip
+
+# Commercial ops with contacts / outreach PII (live copies under .local/commercial-ops/)
+docs/customer-discovery/*.csv
+docs/customer-discovery/outreach-log.md
+docs/customer-discovery/letters-ready-to-send*.md
+docs/customer-discovery/call-list*.md
+docs/customer-discovery/VERIFICATION_*.md
+docs/customer-discovery/email-1-tone-sample*.md
+docs/customer-discovery/sprint*
+docs/customer-discovery/COMMERCIAL_TRACK_STEP1*
+docs/customer-discovery/COMMERCIAL_VALIDATION*
+docs/customer-discovery/form-messages*
+docs/customer-discovery/*.SUPERSEDED.md
+docs/customer-discovery/*.header-note.txt
+
+# Operator / debug (not TechLab jury surface)
+docs/archive/
+docs/ops/
+docs/evaluation/
+docs/prompts/
+docs/openapi.json
+ops/
+audit/reports/RED_TEAM_*.md
+audit/reports/RT_HYPERDEEP_*.md
+audit/reports/REDTEAM_*.md
+audit/reports/P0_EXECUTION_*.md
+audit/reports/PHASE0_AUDIT_*.md
+audit/evidence/*.txt
+audit/evidence/phase*-command-results-*.json
+audit/evidence/baseline-command-results-*.json
+audit/evidence/redteam-*.json
+audit/evidence/phase10-*.json
+
+# Customer / NDA pilot (never commit NDA corpus)
+files/
+docs/partners/*_CALL_*.md
+docs/partners/*_PACK_AUDIT*.md
+samples/benchmarks/project-package-*-pilot-v1.json
+docs/evidence/sla-customer-*.json
+docs/techlab-scorecard-2026.zip
+docs/pilot/*_PILOT_ENV_RUNBOOK*
+docs/pilot/*_DEMO_COPYLEFT*
+docs/partners/LETTER_OF_INTEREST_*_TEMPLATE*
+docs/gtm/*_OSINT_VECTOR*
+docs/quality/*REPORT_RECONCILIATION*
+# Call scripts and pack audits — .local/partners/ or ../AeroBIM-private/
+docs/partners/CUSTOMER_CALL_*.md
+docs/partners/MENTOR_CALL_*.md
+docs/partners/CUSTOMER_PACK_AUDIT*.md
+samples/benchmarks/project-package-customer-pilot-v1.json
+samples/customer/**
+!samples/customer/README.md
+docs/evidence/internal/
+docs/evidence/sla-customer-*.json
+docs/customer-techlab-scorecard-2026.zip
+*.log
+backend/cache/
+
+# Session dumps / AI audit kitchen (not the TechLab jury pack)
+docs/quality/RED_TEAM_ATOMIC*.md
+docs/quality/RED_TEAM_HYPERDEEP*.md
+docs/quality/RED_TEAM_HD_REMAINING*.md
+docs/quality/RED_TEAM_GRAND*
+docs/quality/DOCUMENTS_CROSS_AUDIT*
+docs/quality/RT_RUN_*.md
+docs/quality/PLAIN_LANGUAGE_SESSION*.md
+docs/quality/*_WAVE_*.md
+docs/ai/MASTER_RED_TEAM_PROMPT*.md
+docs/audit/RED_TEAM_*.md
+!docs/audit/RED_TEAM_NPA_LEGAL_FORCE_2026_08_14.md
+docs/quality/RED_TEAM_WAVE*.md
+docs/quality/AEROBIM_HYPERDEEP*
+docs/quality/TASK0_*
+docs/audit/_*.txt
+docs/audit/_*.tsv
+docs/audit/N43_REHEARSAL*
+docs/demo/mentor-mikhail-*/
+docs/demo/mentor-call-*.md
+docs/review/
+
+# Operator / session kitchen — local only, never the TechLab jury pack
+docs/quality/CUSTOMER_PILOT_BACKLOG*
+docs/quality/FINDINGS_RECLASSIFICATION*
+docs/quality/RELEASE_EVIDENCE_INDEX*
+docs/quality/RELEASE_STATUS_*
+docs/quality/TRACKER_FRIDAY_OPENING*
+docs/quality/TRACKER_MEETING_PACK*
+docs/demo/CONSULTATIONS*
+docs/demo/KT2_DEMO_REHEARSAL*
+docs/demo/KT2_HANDOFF_COVER*
+docs/demo/KT2_LK_COVER*
+docs/demo/KT2_CLONE_TO_DEMO_CHECK*
+docs/audit/FREEZE_PROTOCOL*
+docs/audit/N43_MONITORING*
+docs/audit/RT_CUSTOMER_BLOCKERS*
+docs/customer/CUSTOMER_OUTREACH_TRACKER.csv
+docs/gtm/customer-outreach*
+docs/gtm/outreach-tracker*
+docs/customer-outreach-sprint-*
+docs/pilot/CUSTOMER_PILOT_ENV_RUNBOOK*
+docs/pilot/KT2_UPLOAD_PACK*
+docs/pilot/CUSTOMER_KICKOFF_MAP*
+docs/pilot/FOUR_DIRECTION_HONESTY_IMPL*
+docs/pilot/CUSTOMER_DEMO_COPYLEFT*
+audit/reports/RT_STATS_*
+audit/reports/SPRINT3_RED_TEAM*
+audit/reports/HYBRID_AI_ARCHITECTURE*
+audit/reports/HYBRID_AI_RESEARCH*
+audit/reports/HYBRID_AI_ROUTING*
+audit/reports/HYBRID_AI_THREAT*
+audit/reports/EXTRACTION_INTEGRITY_AUDIT*
+docs/evidence/sprint2-baseline-report.html
+docs/evidence/kt2-handoff-2026-08-11/vertical-slice/report.html
+docs/architecture/ARCHITECTURE_DEEP_AUDIT*
+docs/architecture/ARCHITECTURE_REVIEW_BRIEF*
+docs/architecture/LLM_BUDGET_BILLING*
+docs/architecture/YANDEX_STUDIO_GRANT_OPS*
+docs/architecture/YANDEX_AI_STUDIO_AEROBIM_DEEP*
+docs/architecture/WORLD_PRACTICES_LITERATURE*
+docs/research/INDUSTRY_LECTURE_NOTES*
+docs/research/sprint-2-1-research-to-code*
+docs/evidence/RED_TEAM_P2_REMEDIATION*
+docs/evidence/runtime-baseline-wave-a-*
+docs/customer-demo/severity-taxonomy-draft.md
+docs/ai/LLM_COMPARATIVE_BENCHMARK.md
+docs/pilot/HARNESS_AND_DEMO_RUNBOOK*
+docs/partners/LETTER_OF_INTEREST_CUSTOMER_TEMPLATE*
+docs/partners/REQUESTS_MASTER_LIST*
+audit/sprint-2-1-*
+scripts/rewrite-author*
+scripts/git_commit.ps1
+scripts/bootstrap_claims_allow_file.py
+scripts/commit_staged_n43*
+scripts/fix_b5690*
+scripts/activate_a4_signing*
+
+# Operator session leftovers unpublished 2026-08-17 (jury clone must not read as a chat dump)
+docs/gtm/CUSTOMER_OSINT_VECTOR*
+docs/demo/TRACKER_MEETING_*FOLLOWUP*
+docs/quality/RED_TEAM_REAUDIT*
+docs/evidence/DATASET_HUNT_LOG*
+
+# Local debug / editor / agent scratch (never the TechLab pack)
+*.orig
+*.rej
+*~
+.ipynb_checkpoints/
+.claude/
+.codex/
+
+# Build outputs
+bin/
+obj/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vs/
+
+# Internal corpus must stay outside Git; block if accidentally copied under tree
+aerobim-internal-data/
+**/aerobim-internal-data/
+
+# Agent/operator local drops (pre-demo reports; NDA gate patterns stay untracked)
+/out/
+.nda/
+

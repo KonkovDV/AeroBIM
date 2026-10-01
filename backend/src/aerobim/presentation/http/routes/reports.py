@@ -1,0 +1,287 @@
+"""Report listing, retrieval, review events/KPI and source/preview routes."""
+
+import hashlib
+from dataclasses import asdict
+from datetime import UTC, datetime
+from pathlib import Path
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi.responses import FileResponse
+
+from aerobim.application.services.review_kpi import summarize_review_events
+from aerobim.core.di.tokens import Tokens
+from aerobim.core.security.path_jail import PathJailError, reject_symlinks
+from aerobim.domain.check_coverage import coverage_from_report, derive_report_scope
+from aerobim.domain.models import ReportListFilters
+from aerobim.domain.object_acl import (
+    AuthPrincipal,
+    principal_may_access_tenant_id,
+    principal_may_list_unscoped_reports,
+    review_actor_from_principal,
+)
+from aerobim.domain.revision_diff import compare_report_revisions
+from aerobim.presentation.http.context import (
+    ApiContext,
+    attachment_content_disposition,
+    safe_preview_media_type,
+)
+from aerobim.presentation.http.errors import (
+    public_bad_request_detail,
+    public_hitl_state_conflict_detail,
+    public_not_found_detail,
+)
+from aerobim.presentation.http.schemas import ReviewEventRequest
+
+
+def build_reports_router(ctx: ApiContext) -> APIRouter:
+    router = APIRouter()
+    settings = ctx.settings
+    audit_store = ctx.audit_store
+
+    @router.get("/v1/reports")
+    def list_reports(
+        principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
+        project: str | None = None,
+        discipline: str | None = None,
+        passed: bool | None = None,
+    ) -> dict[str, object]:
+        # F-03: empty tenant never lists the catalogue unless platform_admin.
+        principal_tenant = (principal.tenant_id or "").strip() or None
+        unscoped = principal_may_list_unscoped_reports(principal)
+        if not unscoped and not principal_tenant:
+            return {"reports": [], "count": 0}
+        entries = audit_store.list_reports(
+            ReportListFilters(
+                project=project,
+                discipline=discipline,
+                passed=passed,
+                tenant_id=None if unscoped else principal_tenant,
+            )
+        )
+        if settings.enforce_object_acl and not unscoped:
+            if not principal_tenant:
+                entries = []
+            else:
+                # Prefer summary/peek tenant — do not reconstruct findings for list ACL.
+                filtered = []
+                peek = getattr(audit_store, "peek_tenant_id", None)
+                for entry in entries:
+                    tenant = (getattr(entry, "tenant_id", None) or "").strip() or None
+                    if not tenant and callable(peek):
+                        raw = peek(entry.report_id)
+                        tenant = raw.strip() if isinstance(raw, str) else None
+                    if principal_may_access_tenant_id(
+                        enforce_object_acl=True,
+                        principal=principal,
+                        tenant_id=tenant,
+                    ):
+                        filtered.append(entry)
+                entries = filtered
+        return {"reports": [asdict(e) for e in entries], "count": len(entries)}
+
+    @router.get("/v1/reports/{report_id}")
+    def get_report(
+        report_id: str,
+        principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
+    ) -> dict[str, object]:
+        ctx.validate_report_id(report_id)
+        report = ctx.load_authorized_report(report_id, principal)
+        return ctx.serialize_public_report(report, include_review=True)
+
+    @router.get("/v1/reports/{report_id}/coverage")
+    def get_report_coverage(
+        report_id: str,
+        principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
+    ) -> dict[str, object]:
+        # Read-only, verdict-neutral: per-source check-coverage derived on-the-fly from
+        # the stored report ('no findings' != 'not checked'). Never sets summary.passed.
+        ctx.validate_report_id(report_id)
+        report = ctx.load_authorized_report(report_id, principal)
+        return coverage_from_report(report, scope=derive_report_scope(report)).to_dict(
+            report=report
+        )
+
+    @router.post("/v1/reports/{report_id}/review-events")
+    def append_review_event(
+        report_id: str,
+        payload: ReviewEventRequest,
+        principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
+    ) -> dict[str, object]:
+        from aerobim.domain.object_acl import principal_may_append_hitl_event
+        from aerobim.domain.review_event_append import (
+            HitlStateConflictError,
+            ReviewEventAppendSpec,
+            assert_review_target_in_report,
+        )
+        from aerobim.domain.review_state_machine import HitlTransitionError
+        from aerobim.presentation.http.errors import public_hitl_forbidden_detail
+
+        ctx.validate_report_id(report_id)
+        report = ctx.load_authorized_report(report_id, principal)
+        if not principal_may_append_hitl_event(
+            enforce_hitl_reviewer_auth=settings.enforce_hitl_reviewer_auth,
+            require_hitl_reviewer_roles=settings.require_hitl_reviewer_roles,
+            principal=principal,
+            event_type=payload.event_type,
+        ):
+            raise HTTPException(status_code=403, detail=public_hitl_forbidden_detail())
+        try:
+            assert_review_target_in_report(
+                report,
+                finding_id=payload.finding_id,
+                issue_rule_id=payload.issue_rule_id,
+                event_type=payload.event_type,
+            )
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=public_bad_request_detail()) from exc
+        review_store = ctx.container.resolve(Tokens.REVIEW_EVENT_STORE)
+        actor = review_actor_from_principal(principal)
+        idem = (payload.idempotency_key or "").strip()
+        if not idem:
+            idem_seed = "|".join(
+                [
+                    report_id,
+                    payload.event_type,
+                    payload.issue_rule_id or "",
+                    payload.finding_id or "",
+                    actor or "",
+                    payload.note or "",
+                    (payload.previous_state or "").strip(),
+                ]
+            )
+            idem = "api:" + hashlib.sha256(idem_seed.encode("utf-8")).hexdigest()[:40]
+        event_id = hashlib.sha256(idem.encode("utf-8")).hexdigest()[:32]
+        try:
+            event = review_store.append_api_event(
+                ReviewEventAppendSpec(
+                    report_id=report_id,
+                    event_type=payload.event_type,
+                    created_at=datetime.now(tz=UTC).isoformat(),
+                    issue_rule_id=payload.issue_rule_id,
+                    actor=actor,
+                    note=payload.note,
+                    latency_ms=payload.latency_ms,
+                    finding_id=payload.finding_id,
+                    previous_state=payload.previous_state,
+                    idempotency_key=idem,
+                    event_id=event_id,
+                    expected_review_version=payload.expected_review_version,
+                )
+            )
+        except HitlStateConflictError as exc:
+            raise HTTPException(
+                status_code=409,
+                detail=public_hitl_state_conflict_detail(),
+            ) from exc
+        except HitlTransitionError as exc:
+            raise HTTPException(
+                status_code=400,
+                detail=public_bad_request_detail(),
+            ) from exc
+        return {"event": asdict(event)}
+
+    @router.get("/v1/reports/{report_id}/review-events")
+    def list_review_events(
+        report_id: str,
+        principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
+    ) -> dict[str, object]:
+        ctx.validate_report_id(report_id)
+        ctx.load_authorized_report(report_id, principal)
+        review_store = ctx.container.resolve(Tokens.REVIEW_EVENT_STORE)
+        events = review_store.list_for_report(report_id)
+        return {"events": [asdict(e) for e in events], "count": len(events)}
+
+    @router.get("/v1/reports/{report_id}/review-kpi")
+    def get_review_kpi(
+        report_id: str,
+        principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
+    ) -> dict[str, object]:
+        ctx.validate_report_id(report_id)
+        ctx.load_authorized_report(report_id, principal)
+        review_store = ctx.container.resolve(Tokens.REVIEW_EVENT_STORE)
+        events = review_store.list_for_report(report_id)
+        return {"report_id": report_id, "kpi": summarize_review_events(events)}
+
+    @router.get("/v1/reports/{report_id}/source/ifc", response_model=None)
+    def get_report_ifc_source(
+        report_id: str,
+        principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
+    ) -> Response | FileResponse:
+        ctx.validate_report_id(report_id)
+        ctx.load_authorized_report(report_id, principal)
+        filename, source_payload = ctx.resolve_report_ifc_source(report_id, principal=principal)
+        if isinstance(source_payload, bytes):
+            download_name = filename or f"{report_id}.ifc"
+            return Response(
+                content=source_payload,
+                media_type="application/octet-stream",
+                headers={"Content-Disposition": attachment_content_disposition(download_name)},
+            )
+        try:
+            reject_symlinks(Path(source_payload), base=settings.storage_dir.resolve())
+        except PathJailError as exc:
+            raise HTTPException(status_code=404, detail=public_not_found_detail()) from exc
+        return FileResponse(
+            path=source_payload,
+            media_type="application/octet-stream",
+            headers={
+                "Content-Disposition": attachment_content_disposition(
+                    filename or f"{report_id}.ifc"
+                )
+            },
+        )
+
+    @router.get(
+        "/v1/reports/{report_id}/drawing-assets/{asset_id}/preview",
+        response_model=None,
+    )
+    def get_report_drawing_asset_preview(
+        report_id: str,
+        asset_id: str,
+        principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
+    ) -> Response | FileResponse:
+        ctx.validate_report_id(report_id)
+        ctx.validate_drawing_asset_id(asset_id)
+        ctx.load_authorized_report(report_id, principal)
+        drawing_asset, preview_payload = ctx.resolve_report_drawing_asset_preview(
+            report_id, asset_id, principal=principal
+        )
+        media_type = safe_preview_media_type(drawing_asset.media_type)
+        if isinstance(preview_payload, bytes):
+            download_name = drawing_asset.stored_filename or f"{asset_id}.png"
+            return Response(
+                content=preview_payload,
+                media_type=media_type,
+                headers={"Content-Disposition": attachment_content_disposition(download_name)},
+            )
+        try:
+            reject_symlinks(Path(preview_payload), base=settings.storage_dir.resolve())
+        except PathJailError as exc:
+            raise HTTPException(status_code=404, detail=public_not_found_detail()) from exc
+        return FileResponse(
+            path=preview_payload,
+            media_type=media_type,
+            headers={
+                "Content-Disposition": attachment_content_disposition(
+                    drawing_asset.stored_filename or f"{asset_id}.png"
+                )
+            },
+        )
+
+    @router.get("/v1/reports/{report_id}/revision-diff")
+    def get_revision_diff(
+        report_id: str,
+        against: str,
+        principal: Annotated[AuthPrincipal, Depends(ctx.require_bearer_auth)],
+    ) -> dict[str, object]:
+        """Finding delta vs another persisted report. Not 'resolved'. Not summary.passed."""
+        ctx.validate_report_id(report_id)
+        ctx.validate_report_id(against)
+        if report_id == against:
+            raise HTTPException(status_code=400, detail=public_bad_request_detail())
+        baseline = ctx.load_authorized_report(report_id, principal)
+        head = ctx.load_authorized_report(against, principal)
+        return compare_report_revisions(baseline, head).to_dict()
+
+    return router

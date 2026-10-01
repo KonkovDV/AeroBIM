@@ -1,0 +1,933 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Install contract (RT-POST-09 / RTATOM A2.5):
+#   python -m pip install --upgrade "pip==25.2"
+#   pip install --require-hashes -r requirements-dev-lock.txt
+#   pip install -e . --no-deps
+# Residual: floating pip bootstrap before pin; uv install after lock is unhashed but version-pinned.
+# Regenerate locks (Linux/CI target — ifcopenshell needs manylinux_2_31):
+#   uv pip compile --python 3.12 --python-platform x86_64-manylinux_2_31 --generate-hashes --extra=raster -o requirements-lock.txt pyproject.toml
+#   uv pip compile --python 3.12 --python-platform x86_64-manylinux_2_31 --generate-hashes --extra=dev --extra=raster --extra=pdf-agpl -o requirements-dev-lock.txt pyproject.toml
+#   uv pip compile --python 3.12 --python-platform x86_64-pc-windows-msvc --generate-hashes --extra=dev --extra=raster -o requirements-win-lock.txt pyproject.toml
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/materialize-kitchen-denylist
+        env:
+          AEROBIM_KITCHEN_DENYLIST_B64: ${{ secrets.AEROBIM_KITCHEN_DENYLIST_B64 }}
+          AEROBIM_KITCHEN_HMAC_KEY: ${{ secrets.AEROBIM_KITCHEN_HMAC_KEY }}
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Install locked toolchain
+        run: |
+          python -m pip install --upgrade "pip==25.2"
+          pip install --require-hashes -r requirements-dev-lock.txt
+          pip install -e . --no-deps
+          # Residual: uv itself is version-pinned but not hash-verified (bootstrap after lock).
+          pip install "uv==0.8.22"
+      - name: Lockfile drift check (runtime + dev locks must match pyproject extras)
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess
+          import sys
+
+          # Compare name==version only (ignore trailing \, markers, and hashes).
+          # Locks are compiled for CI/Docker Linux (manylinux_2_31) so Windows
+          # extras like colorama do not falsely trip drift.
+          def pins(text: str) -> set[str]:
+              out: set[str] = set()
+              for line in text.splitlines():
+                  s = line.strip().lower()
+                  if not s or s.startswith("#") or s.startswith("--"):
+                      continue
+                  if "==" not in s:
+                      continue
+                  namever = s.rstrip("\\").strip().split(";", 1)[0].strip()
+                  if "==" in namever:
+                      out.add(namever)
+              return out
+
+          def check(lock_name: str, extras: list[str], platform: str) -> None:
+              before = Path(lock_name).read_text(encoding="utf-8")
+              out = Path(f"{lock_name}.check.txt")
+              # Seed the check output with the committed lock so uv PRESERVES
+              # satisfying pins (pip-tools semantics; no --upgrade). The gate then
+              # flags only a genuine pyproject<->lock divergence (dep added/removed/
+              # constraint changed), not a mere upstream patch release — Dependabot
+              # owns freshness/security bumps via PRs; locks stay fully hash-pinned.
+              out.write_text(before, encoding="utf-8")
+              cmd = [
+                  sys.executable, "-m", "uv", "pip", "compile",
+                  "--python", "3.12",
+                  "--python-platform", platform,
+                  "--generate-hashes",
+                  *extras,
+                  "-o", str(out),
+                  "pyproject.toml",
+              ]
+              subprocess.check_call(cmd)
+              after = out.read_text(encoding="utf-8")
+              if pins(before) != pins(after):
+                  only_before = sorted(pins(before) - pins(after))
+                  only_after = sorted(pins(after) - pins(before))
+                  raise SystemExit(
+                      f"{lock_name} is stale; regenerate via "
+                      f"uv pip compile --python-platform {platform} "
+                      f"--generate-hashes ...; only_before={only_before}; "
+                      f"only_after={only_after}"
+                  )
+              print(f"{lock_name} pin set OK")
+
+          check("requirements-lock.txt", ["--extra=raster"], "x86_64-manylinux_2_31")
+          check("requirements-dev-lock.txt", ["--extra=dev", "--extra=raster", "--extra=pdf-agpl"], "x86_64-manylinux_2_31")
+          check("requirements-win-lock.txt", ["--extra=dev", "--extra=raster"], "x86_64-pc-windows-msvc")
+          PY
+      - name: Runtime lock must not install optional AGPL PyMuPDF
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          lock = Path("requirements-lock.txt").read_text(encoding="utf-8")
+          for line in lock.splitlines():
+              s = line.strip().lower().rstrip("\\").strip()
+              if s.startswith("pymupdf==") or s.startswith("pymupdf["):
+                  raise SystemExit(
+                      "pymupdf must not appear in requirements-lock.txt; "
+                      "keep it behind optional extra pdf-agpl / requirements-dev-lock.txt"
+                  )
+          print("runtime lock excludes pymupdf OK")
+          PY
+      - name: Windows lock must omit uvloop and PyMuPDF
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          lock = Path("requirements-win-lock.txt").read_text(encoding="utf-8").lower()
+          for needle, label in (("uvloop==", "uvloop"), ("pymupdf==", "pymupdf")):
+              if needle in lock:
+                  raise SystemExit(
+                      f"{label} must not appear in requirements-win-lock.txt; "
+                      "Windows hashed lock is .[dev,raster] on x86_64-pc-windows-msvc, "
+                      "not the Linux/CI lock and not pdf-agpl"
+                  )
+          if "ifcopenshell==" not in lock:
+              raise SystemExit("requirements-win-lock.txt missing ifcopenshell")
+          print("windows lock excludes uvloop and pymupdf OK")
+          PY
+      - name: Claims Lock linter (WP-R10)
+        run: python ../scripts/lint_claims.py
+      - name: Claims Lock full-docs scan (WP-A5)
+        run: python ../scripts/lint_claims.py --full-docs
+      - name: Claims Lock matrix guard (I-9)
+        run: python ../scripts/lint_claims.py --matrix-guard
+      - name: Claims Lock boundary guard (G6)
+        run: python ../scripts/lint_claims.py --claim-boundary-guard
+      - name: Runtime baseline README drift check
+        run: python -m aerobim.tools.export_runtime_baseline --check-readme --skip-artifact-drift
+      - run: ruff check src tests
+      - run: ruff format --check src tests
+      - name: Ruff S-band inventory drift check
+        run: python scripts/verify_ruff_s_band_inventory.py
+
+  docs-links:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Install locked toolchain
+        run: |
+          python -m pip install --upgrade "pip==25.2"
+          pip install --require-hashes -r requirements-dev-lock.txt
+          pip install -e . --no-deps
+      - name: Check markdown relative links
+        run: python -m aerobim.tools.check_markdown_links --root ..
+      - name: Docs metadata integrity (WP-A3)
+        run: python ../scripts/check_docs_metadata_integrity.py
+      - name: Live evidence freshness (7-day allowlist)
+        run: python ../scripts/check_live_evidence_freshness.py
+
+  typecheck:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Install locked toolchain
+        run: |
+          python -m pip install --upgrade "pip==25.2"
+          pip install --require-hashes -r requirements-dev-lock.txt
+          pip install -e . --no-deps
+      - run: mypy src/aerobim --strict --ignore-missing-imports
+
+  pytest-readme-extras:
+    # Jury clone: README extras only (no pdf-agpl lock, no optional publication-denylist secrets).
+    # Must stay 0-failed so documented `pip install -e ".[dev,raster]"` matches CI.
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Install README extras (dev,raster)
+        run: |
+          python -m pip install --upgrade "pip==25.2"
+          pip install -e ".[dev,raster]"
+      - name: Pytest (0 failed; skips allowed)
+        run: pytest tests -q --tb=line
+
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/materialize-kitchen-denylist
+        env:
+          AEROBIM_KITCHEN_DENYLIST_B64: ${{ secrets.AEROBIM_KITCHEN_DENYLIST_B64 }}
+          AEROBIM_KITCHEN_HMAC_KEY: ${{ secrets.AEROBIM_KITCHEN_HMAC_KEY }}
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Install locked toolchain
+        run: |
+          python -m pip install --upgrade "pip==25.2"
+          pip install --require-hashes -r requirements-dev-lock.txt
+          pip install -e . --no-deps
+      - name: Pytest + coverage (single run)
+        run: |
+          mkdir -p ../artifacts/coverage ../artifacts/pytest
+          pytest tests -v --tb=short \
+            --cov=aerobim \
+            --cov-report=term-missing:skip-covered \
+            --cov-report=xml:../artifacts/coverage/coverage.xml \
+            --junitxml=../artifacts/pytest/junit.xml
+      - name: SPb GAU CGE official IDS profile
+        run: >
+          python -m aerobim.tools.validate_spb_cge_profile
+          --no-write
+          --verify-committed-evidence
+      - name: Upload coverage artifact
+        if: success()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: backend-coverage
+          path: artifacts/coverage/coverage.xml
+          if-no-files-found: warn
+      - name: Upload pytest JUnit artifact
+        if: success()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: backend-pytest-junit
+          path: artifacts/pytest/junit.xml
+          if-no-files-found: error
+      - name: Verify synthetic detection-precision harness contract
+        run: |
+          python -m aerobim.tools.evaluate_detection_precision \
+            --labels ../samples/benchmarks/detection-precision/labels-synthetic.json \
+            --detections ../samples/benchmarks/detection-precision/detections-synthetic.json \
+            --min-precision 0.6 \
+            --min-recall 0.6 \
+            --min-f1 0.6
+      - name: Verify IFC QA RU fixture (advisory scaffold only)
+        run: |
+          python -m aerobim.tools.evaluate_ifc_qa \
+            --questions ../samples/benchmarks/ifc-qa-ru/questions-fixture.json \
+            --ifc ../samples/ifc/wall-pset-qto-pass.ifc \
+            --min-accuracy 0.5
+      - name: Verify advisory drawing-grounding harness fidelity (fixture-only)
+        run: |
+          python -m aerobim.tools.evaluate_drawing_advisory_grounding \
+            --cases ../samples/benchmarks/drawing-advisory/cases-synthetic.json \
+            --min-fidelity 1.0
+      - name: Open corpora pin smoke + quality protocol stats (WP-06/07; not product accuracy)
+        run: |
+          mkdir -p ../artifacts/open-corpora
+          python -m aerobim.tools.run_open_corpora_profiles --mode smoke
+          python -m aerobim.tools.compute_quality_protocol_stats \
+            --tp 5 --fp 5 --fn 2 \
+            --expected-p 0.75 --margin 0.08 \
+            --output ../artifacts/open-corpora/quality-protocol-stats-smoke.json
+
+  baseline-integrity:
+    runs-on: ubuntu-latest
+    # HD20-CI-01: pytest-readme-extras must pass (jury clone / README extras)
+    # before this job runs, but it is not in AEROBIM_GATES_ATTESTED below.
+    # Attested names are the jobs whose artifacts mint the baseline
+    # (JUnit from `test`, vitest from `frontend`). Extras allows skips;
+    # `test` is the coverage/JUnit pin.
+    needs:
+      - lint
+      - typecheck
+      - test
+      - pytest-readme-extras
+      - frontend
+      - supply-chain-audit
+      - sprint-2-1-gates
+      - security-regression
+      - offline-bundle-smoke
+      - openapi-contract
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Download vitest JSON artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: frontend-vitest-json
+          path: frontend/var
+      - name: Download pytest JUnit artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: backend-pytest-junit
+          path: artifacts/pytest
+      - name: Install locked toolchain
+        run: |
+          python -m pip install --upgrade "pip==25.2"
+          pip install --require-hashes -r requirements-dev-lock.txt
+          pip install -e . --no-deps
+      - name: Generate CI runtime baseline
+        env:
+          # HD20-CI-01: do not add pytest-readme-extras. That job is a need
+          # (jury clone) but mints no JUnit/vitest for this artifact.
+          AEROBIM_GATES_ATTESTED: >-
+            test,frontend,supply-chain-audit,sprint-2-1-gates,security-regression,offline-bundle-smoke,openapi-contract
+        run: |
+          # Do NOT --run-gates here: this job has no frontend node_modules, and re-pytest
+          # is flaky under ifcopenshell teardown. Upstream needs: jobs already passed.
+          # lint and typecheck are needs so ruff=PASS / mypy=PASS are not written unless
+          # those jobs succeeded. They are not attested metric sources (no JUnit/vitest).
+          # Generate BEFORE the drift check: when the committed artifact drifts, the check
+          # still fails the job (alarm intact), but the refreshed CI-attested artifact is
+          # produced first and uploaded below, so the maintainer can commit it. A stale
+          # committed artifact must never block its own refresh (chicken-and-egg).
+          python -m aerobim.tools.export_runtime_baseline \
+            --gate ruff=PASS \
+            --gate mypy=PASS \
+            --gate pytest=PASS \
+            --gate vitest=PASS \
+            --gate build=PASS \
+            --pytest-junit ../artifacts/pytest/junit.xml \
+            --vitest-json ../frontend/var/vitest-results.json \
+            --require-clean-tree \
+            --require-complete \
+            --out ../docs/evidence/runtime-baseline-latest.ci-generated.json
+          python - <<'PY'
+          import json, sys
+          from pathlib import Path
+          p = Path("../docs/evidence/runtime-baseline-latest.ci-generated.json")
+          b = json.loads(p.read_text(encoding="utf-8"))
+          att = b.get("attestation") if isinstance(b.get("attestation"), dict) else {}
+          ok = (
+              b.get("publishable") is True
+              and b.get("artifact_completeness") == "full"
+              and att.get("attested_by") == "ci"
+              and att.get("run_id")
+          )
+          print("generated_publishable", b.get("publishable"), att.get("attested_by"), att.get("run_id"))
+          if not ok:
+              print("CI-generated baseline is not publishable; refusing soft-fail bootstrap", file=sys.stderr)
+              raise SystemExit(1)
+          PY
+          python -m aerobim.tools.export_runtime_baseline --check-readme --check-complete
+      - name: Upload CI-generated runtime baseline
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: ci-runtime-baseline
+          path: docs/evidence/runtime-baseline-latest.ci-generated.json
+          if-no-files-found: warn
+      - name: Compare committed vs CI baseline (WP-A11) + publishable (N-22)
+        env:
+          # HD20-CI-01: same CSV as generate; extras is a need, not a metric source.
+          AEROBIM_GATES_ATTESTED: >-
+            test,frontend,supply-chain-audit,sprint-2-1-gates,security-regression,offline-bundle-smoke,openapi-contract
+        run: |
+          python - <<'PY'
+          import json
+          import subprocess
+          import sys
+          from pathlib import Path
+          from aerobim.tools.export_runtime_baseline import compare_baseline_snapshots
+
+          repo = Path("..")
+          committed_path = repo / "docs/evidence/runtime-baseline-latest.json"
+          generated_path = repo / "docs/evidence/runtime-baseline-latest.ci-generated.json"
+          committed = json.loads(committed_path.read_text(encoding="utf-8"))
+          generated = json.loads(generated_path.read_text(encoding="utf-8"))
+          attestation = committed.get("attestation") if isinstance(committed.get("attestation"), dict) else {}
+          bootstrap = attestation.get("attested_by") != "ci" or committed.get("publishable") is not True
+
+          errors = compare_baseline_snapshots(committed, generated, repo=repo)
+          volatile_prefixes = (
+              "baseline_field_mismatch:commit_sha",
+              "baseline_field_mismatch:tree_sha",
+          )
+          hard = [
+              e
+              for e in errors
+              if not any(e.startswith(p) for p in volatile_prefixes)
+          ]
+          soft = [e for e in errors if e not in hard]
+          if soft:
+              print("SOFT SHA lag (evidence tip vs this run):", *soft, sep="\n", file=sys.stderr)
+          if hard:
+              for err in hard:
+                  print(err, file=sys.stderr)
+              if bootstrap:
+                  print(
+                      "BOOTSTRAP: committed baseline is not CI-attested/publishable yet; "
+                      "artifact ci-runtime-baseline uploaded — commit it to main, then re-run.",
+                      file=sys.stderr,
+                  )
+                  raise SystemExit(0)
+              print(
+                  "Committed baseline must match CI-generated artifact; "
+                  "download runtime-baseline-latest.ci-generated.json from Actions and commit.",
+                  file=sys.stderr,
+              )
+              raise SystemExit(1)
+          if soft:
+              print("Committed baseline structurally OK; SHA tip lag tolerated (WP-A11)")
+              if committed.get("publishable") is not True:
+                  print("Committed baseline lost publishable=true during tip lag", file=sys.stderr)
+                  raise SystemExit(1)
+          else:
+              print("Committed baseline matches CI generation (WP-A11)")
+
+          for flag in ("--check-committed-baseline", "--check-publishable"):
+              completed = subprocess.run(
+                  [sys.executable, "-m", "aerobim.tools.export_runtime_baseline", flag],
+                  check=False,
+              )
+              if completed.returncode != 0:
+                  if bootstrap:
+                      print(f"BOOTSTRAP: {flag} soft-fail until CI artifact is committed")
+                      raise SystemExit(0)
+                  # Merge-ref / tip lag: SHA-bound checks trail HEAD until evidence is re-committed.
+                  if soft and flag in ("--check-committed-baseline", "--check-publishable"):
+                      print(f"SOFT: {flag} deferred while SHA tip lag is open")
+                      continue
+                  raise SystemExit(completed.returncode)
+          PY
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - name: Vitest with JSON artifact (WP-A3)
+        run: |
+          mkdir -p var
+          npm test -- --run --reporter=default --reporter=json --outputFile=var/vitest-results.json
+      - name: Upload vitest JSON artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: frontend-vitest-json
+          path: frontend/var/vitest-results.json
+          if-no-files-found: warn
+      - name: npm audit (high severity blocking)
+        run: npm audit --audit-level=high
+      - run: npm run build
+
+  supply-chain-audit:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Signature window is last inspect_depth commits; default shallow PR
+          # checkout is depth=1 and silently collapses the ratio to 1/1 (N-56 dry-run).
+          fetch-depth: 80
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Install pip-audit (pinned)
+        run: python -m pip install "pip-audit==2.9.0"
+      - name: Audit shipped runtime lock (blocking; fully pinned set)
+        # --no-deps audits the exact pinned lock without re-resolving (locks are
+        # complete transitive sets); --strict fails on any vuln or skipped dep.
+        run: python -m pip_audit -r requirements-lock.txt --no-deps --strict --progress-spinner off
+      - name: Audit dev/test lock (advisory)
+        continue-on-error: true
+        run: python -m pip_audit -r requirements-dev-lock.txt --no-deps --progress-spinner off
+      - name: Import trusted signing public keys
+        working-directory: backend
+        run: python scripts/import_trusted_signing_keys.py --keys-dir ../governance/trusted_signing_keys
+      - name: Commit signature governance (enforced policy)
+        working-directory: backend
+        run: python scripts/verify_commit_signatures.py --policy ../governance/commit_signing_policy.json
+      - name: Deferred controls registry (fail after activates_on)
+        working-directory: backend
+        run: >
+          python scripts/verify_deferred_controls.py
+          --registry ../governance/deferred_controls_registry.json
+          --policy ../governance/commit_signing_policy.json
+      - name: No private Red Team paths in tracked tree (N-51)
+        working-directory: backend
+        run: python scripts/verify_no_private_tracked_paths.py
+
+  benchmark-smoke:
+    runs-on: ubuntu-latest
+    needs: test
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Install locked toolchain
+        run: |
+          python -m pip install --upgrade "pip==25.2"
+          pip install --require-hashes -r requirements-dev-lock.txt
+          pip install -e . --no-deps
+      - name: Prepare benchmark artifact directory
+        run: mkdir -p ../artifacts/ci-benchmark-smoke
+      - name: Run baseline benchmark pack
+        run: |
+          python -m aerobim.tools.benchmark_project_package \
+            --pack ../samples/benchmarks/project-package-baseline.json \
+            --iterations 1 \
+            --warmup-iterations 0 \
+            --storage-dir ./var/reports-ci-smoke-baseline \
+            --output ../artifacts/ci-benchmark-smoke/project-package-baseline.json
+      - name: Run fire-compliance benchmark pack
+        run: |
+          python -m aerobim.tools.benchmark_project_package \
+            --pack ../samples/benchmarks/project-package-fire-compliance.json \
+            --iterations 1 \
+            --warmup-iterations 0 \
+            --storage-dir ./var/reports-ci-smoke-fire \
+            --output ../artifacts/ci-benchmark-smoke/project-package-fire-compliance.json
+      - name: Run stress multisource benchmark pack
+        run: |
+          python -m aerobim.tools.benchmark_project_package \
+            --pack ../samples/benchmarks/project-package-stress-multisource.json \
+            --iterations 1 \
+            --warmup-iterations 0 \
+            --storage-dir ./var/reports-ci-smoke-stress \
+            --output ../artifacts/ci-benchmark-smoke/project-package-stress-multisource.json
+      - name: Run pilot Moscow benchmark pack
+        run: |
+          python -m aerobim.tools.benchmark_project_package \
+            --pack ../samples/benchmarks/project-package-pilot-moscow-v1.json \
+            --iterations 1 \
+            --warmup-iterations 0 \
+            --storage-dir ./var/reports-ci-smoke-pilot-moscow \
+            --output ../artifacts/ci-benchmark-smoke/project-package-pilot-moscow-v1.json
+      - name: Build benchmark-smoke summary
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          artifact_dir = Path("../artifacts/ci-benchmark-smoke")
+          packs = [
+            "project-package-baseline.json",
+            "project-package-fire-compliance.json",
+            "project-package-stress-multisource.json",
+            "project-package-pilot-moscow-v1.json",
+          ]
+
+          lines = [
+            "## Benchmark Smoke Summary",
+            "",
+            "| Pack | Avg ms | Reports/s | Issues | Requirements |",
+            "|---|---:|---:|---:|---:|",
+          ]
+
+          for pack_file in packs:
+            payload = json.loads((artifact_dir / pack_file).read_text(encoding="utf-8"))
+            summary = payload.get("summary", {})
+            measured = payload.get("measured_runs", [])
+            first_run = measured[0] if measured else {}
+            lines.append(
+              "| {pack} | {avg} | {rps} | {issues} | {requirements} |".format(
+                pack=payload.get("pack_id", pack_file),
+                avg=summary.get("avg_ms", "n/a"),
+                rps=summary.get("reports_per_second", "n/a"),
+                issues=first_run.get("issue_count", "n/a"),
+                requirements=first_run.get("requirement_count", "n/a"),
+              )
+            )
+
+          summary_markdown = "\n".join(lines) + "\n"
+          summary_path = artifact_dir / "benchmark-summary.md"
+          summary_path.write_text(summary_markdown, encoding="utf-8")
+
+          github_step_summary = os.environ.get("GITHUB_STEP_SUMMARY")
+          if github_step_summary:
+            with open(github_step_summary, "a", encoding="utf-8") as handle:
+              handle.write(summary_markdown)
+          PY
+      - name: Evaluate benchmark thresholds (advisory)
+        run: |
+          python -m aerobim.tools.benchmark_threshold_gate \
+            --artifact-dir ../artifacts/ci-benchmark-smoke \
+            --threshold-profile ../samples/benchmarks/benchmark-thresholds.json \
+            --mode advisory \
+            --markdown-output ../artifacts/ci-benchmark-smoke/benchmark-threshold-summary.md \
+            --output ../artifacts/ci-benchmark-smoke/benchmark-threshold-evaluation.json
+          cat ../artifacts/ci-benchmark-smoke/benchmark-threshold-summary.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Evaluate benchmark thresholds (enforced)
+        run: |
+          python -m aerobim.tools.benchmark_threshold_gate \
+            --artifact-dir ../artifacts/ci-benchmark-smoke \
+            --threshold-profile ../samples/benchmarks/benchmark-thresholds.json \
+            --mode enforced \
+            --markdown-output ../artifacts/ci-benchmark-smoke/benchmark-threshold-enforced-summary.md \
+            --output ../artifacts/ci-benchmark-smoke/benchmark-threshold-enforced-evaluation.json
+          cat ../artifacts/ci-benchmark-smoke/benchmark-threshold-enforced-summary.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload benchmark-smoke artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ci-benchmark-smoke-artifacts
+          path: |
+            artifacts/ci-benchmark-smoke/*.json
+            artifacts/ci-benchmark-smoke/benchmark-summary.md
+            artifacts/ci-benchmark-smoke/benchmark-threshold-summary.md
+            artifacts/ci-benchmark-smoke/benchmark-threshold-enforced-summary.md
+
+  fixture-sla-smoke:
+    runs-on: ubuntu-latest
+    needs: test
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Install locked toolchain
+        run: |
+          python -m pip install --upgrade "pip==25.2"
+          pip install --require-hashes -r requirements-dev-lock.txt
+          pip install -e . --no-deps
+      - name: FIXTURE SLA smoke (pilot-moscow fixture pack; claim_level=fixture_only, NOT customer evidence)
+        env:
+          AEROBIM_PRIORITY_PROFILE: pilot
+        run: |
+          mkdir -p ../artifacts/fixture-sla-smoke
+          python -m aerobim.tools.measure_package_sla \
+            --pack ../samples/benchmarks/project-package-pilot-moscow-v1.json \
+            --max-minutes 30 \
+            --iterations 1 \
+            --warmup-iterations 0 \
+            --output ../artifacts/fixture-sla-smoke/fixture-sla-pilot-moscow-ci.json
+      - name: Upload the appointing party SLA artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: fixture-sla-smoke-artifacts
+          path: artifacts/fixture-sla-smoke/*.json
+
+  extraction-quality:
+    runs-on: ubuntu-latest
+    needs: test
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Install locked toolchain
+        run: |
+          python -m pip install --upgrade "pip==25.2"
+          pip install --require-hashes -r requirements-dev-lock.txt
+          pip install -e . --no-deps
+      - name: Evaluate Russian AEC extraction quality (advisory gate)
+        run: |
+          mkdir -p ../artifacts/extraction-quality
+          python -m aerobim.tools.evaluate_extraction \
+            --output ../artifacts/extraction-quality/russian-aec-extraction.json \
+            --min-macro-f1 0.70
+      - name: Upload extraction-quality artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: extraction-quality-artifacts
+          path: artifacts/extraction-quality/*.json
+
+  openapi-contract:
+    runs-on: ubuntu-latest
+    needs: test
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Install locked toolchain
+        run: |
+          python -m pip install --upgrade "pip==25.2"
+          pip install --require-hashes -r requirements-dev-lock.txt
+          pip install -e . --no-deps
+      - name: Export OpenAPI schema
+        run: python scripts/export_openapi.py ../artifacts/openapi.json
+      - name: Verify schema has expected paths
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          schema = json.loads(Path("../artifacts/openapi.json").read_text(encoding="utf-8"))
+          paths = set(schema.get("paths", {}).keys())
+          required = {"/health", "/v1/reports", "/v1/analyze/project-package"}
+          missing = required - paths
+          if missing:
+              raise SystemExit(f"OpenAPI schema is missing required paths: {missing}")
+          print(f"Schema OK — {len(paths)} paths present")
+          PY
+      - name: Upload OpenAPI schema artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: openapi-schema
+          path: artifacts/openapi.json
+      - name: Release attestation (binds commit/tree/locks/ClaimsLock/SBOM hashes)
+        run: |
+          mkdir -p ../artifacts/release-attestation
+          python -m aerobim.tools.export_release_attestation \
+            --test-run-id "${{ github.run_id }}-${{ github.run_attempt }}" \
+            --out ../artifacts/release-attestation/release-attestation.json
+      - name: Upload release attestation artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: release-attestation
+          path: artifacts/release-attestation/release-attestation.json
+
+  offline-bundle-smoke:
+    # ubuntu-latest GitHub-hosted runners already ship a working Docker daemon,
+    # so no self-hosted runner is required to prove offline install+runtime.
+    # For a genuinely air-gapped runner, swap `runs-on` for your self-hosted
+    # label -- the steps below are identical (build has network; the proof is
+    # docker load from tar + --network none runtime).
+    runs-on: ubuntu-latest
+    needs: test
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Install locked toolchain
+        run: |
+          python -m pip install --upgrade "pip==25.2"
+          pip install --require-hashes -r requirements-dev-lock.txt
+          pip install -e . --no-deps
+      - name: Docker version (diagnostics)
+        run: docker version
+      - name: Offline bundle build (docker build + docker save tar + sha256 manifest)
+        run: python -m aerobim.tools.offline_bundle build
+      - name: Offline bundle verify (recompute sha256 of every file vs manifest)
+        run: python -m aerobim.tools.offline_bundle verify
+      - name: Offline install+runtime smoke (rmi tag; docker load; run --network none; API)
+        run: python -m aerobim.tools.offline_bundle smoke
+      - name: И1 closed-contour gate (verify + smoke)
+        run: python -m aerobim.tools.offline_bundle closed-contour --smoke
+      - name: Complete release attestation (binds built image digest + CI run id)
+        run: |
+          IMAGE_ID=$(python -c "import json; print(json.load(open('../artifacts/offline-bundle/BUNDLE_MANIFEST.json'))['image_id'])")
+          python -m aerobim.tools.export_release_attestation \
+            --docker-digest "$IMAGE_ID" \
+            --test-run-id "${{ github.run_id }}-${{ github.run_attempt }}" \
+            --out ../artifacts/offline-bundle/release-attestation-complete.json
+      - name: Upload offline-bundle manifest + complete attestation (image tar NOT uploaded, ~850 MiB)
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: offline-bundle-manifest
+          path: |
+            artifacts/offline-bundle/BUNDLE_MANIFEST.json
+            artifacts/offline-bundle/release-attestation-complete.json
+
+  # Sprint 2.1 gates: dataset/license/baseline/LLM contract (mock only; no API keys; no customer data).
+  sprint-2-1-gates:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Install locked toolchain
+        run: |
+          python -m pip install --upgrade "pip==25.2"
+          pip install --require-hashes -r requirements-dev-lock.txt
+          pip install -e . --no-deps
+      - name: dataset-manifest
+        run: pytest tests/test_sprint_2_1_dataset.py -v --tb=short
+      - name: license-inventory
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          payload = json.loads(Path("../audit/dataset_license_manifest.json").read_text(encoding="utf-8"))
+          assert payload["artifact_type"] == "dataset_license_manifest"
+          for row in payload["entries"]:
+              if row.get("redistribution") == "unknown":
+                  assert row.get("public_benchmark") == "INTERNAL_ONLY_LICENSE_REVIEW", row
+          print("license-inventory OK")
+          PY
+      - name: sprint-2-1-baseline
+        run: |
+          mkdir -p ../artifacts/sprint-2-1
+          python -m aerobim.tools.run_sprint_2_1_baseline \
+            --pack ../samples/benchmarks/sprint-2-1/baseline-package.json \
+            --iterations 1 \
+            --warmup-iterations 0 \
+            --output ../artifacts/sprint-2-1/baseline.json \
+            --report ../artifacts/sprint-2-1/baseline.md
+          pytest tests/test_sprint_2_1_baseline.py -v --tb=short
+      - name: llm-advisory-contract
+        run: |
+          python -m aerobim.tools.benchmark_llm_advisory \
+            --cases ../samples/benchmarks/llm-advisory/sprint-2-1-cases.json \
+            --output ../artifacts/sprint-2-1/llm-comparison.json
+      - name: llm-advisory-invariance
+        run: pytest tests/test_llm_advisory_invariance.py -v --tb=short
+      - name: prompt-injection-fixtures
+        run: pytest tests/test_llm_prompt_injection.py tests/test_llm_evidence_bounded.py -v --tb=short
+      - name: Upload sprint-2-1 artifacts
+        if: success()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: sprint-2-1-baseline
+          path: artifacts/sprint-2-1/
+          if-no-files-found: warn
+
+  # Security regression battery (engineering). Not a production multi-tenant certification.
+  security-regression:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Install locked toolchain
+        run: |
+          python -m pip install --upgrade "pip==25.2"
+          pip install --require-hashes -r requirements-dev-lock.txt
+          pip install -e . --no-deps
+      - name: Security regression battery
+        run: |
+          mkdir -p ../artifacts/security-rerun
+          pytest \
+            tests/test_api_security.py \
+            tests/test_api_object_acl.py \
+            tests/test_security_bomb_guards.py \
+            tests/test_security_hardening_2026_07_27.py \
+            tests/test_rt_phase4_security.py \
+            tests/test_outbound_guard_invariant.py \
+            tests/test_mutation_kills_path_jail.py \
+            tests/test_mutation_kills_object_acl.py \
+            tests/test_upload_content_security.py \
+            tests/test_advisory_cache_tenant_isolation.py \
+            tests/test_rt_phase8_tenancy.py \
+            tests/test_rt_norm_pack_tenancy.py \
+            tests/test_hybrid_privacy_guard.py \
+            tests/test_llm_prompt_injection.py \
+            tests/test_llm_advisory_invariance.py \
+            tests/test_llm_evidence_bounded.py \
+            tests/test_p0_remediation_fail_closed.py \
+            tests/test_rt_remediation_post.py \
+            tests/test_extraction_integrity.py \
+            tests/test_extraction_integrity_capability.py \
+            tests/test_extraction_integrity_producer.py \
+            tests/test_rt_wave3_remediation_2026_08.py \
+            tests/test_rt_wave4_remediation_2026_08.py \
+            tests/test_rt_wave5_remediation_2026_08.py \
+            -q --tb=short \
+            | tee ../artifacts/security-rerun/pytest-security.out.txt
+      - name: Write security-rerun claim-safe summary
+        if: success()
+        run: |
+          python - <<'PY'
+          import json
+          from datetime import UTC, datetime
+          from pathlib import Path
+          out = Path("../artifacts/security-rerun")
+          out.mkdir(parents=True, exist_ok=True)
+          payload = {
+            "artifact_type": "security_rerun_ci",
+            "schema_version": "1.0.0",
+            "generated_at": datetime.now(tz=UTC).isoformat(),
+            "claim_level": "engineering_regression_only",
+            "customer_evidence": False,
+            "forbidden_claims": [
+              "production multi-tenant security certification",
+              "penetration test complete",
+            ],
+            "note": "Mirrors local security battery; see docs/security/PILOT_THREAT_MODEL_2026_07.md",
+          }
+          (out / "run_manifest.json").write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+          )
+          print("security-rerun summary OK")
+          PY
+      - name: Upload security-rerun artifacts
+        if: success()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: security-rerun
+          path: artifacts/security-rerun/
+          if-no-files-found: warn

@@ -1,0 +1,32 @@
+{
+  "schema": "aerobim_norm_citation_catalog_v1",
+  "claim_boundary": "Citation catalog only. Not a claim that AeroBIM implements the replacement standard. Not Moscow AGR completeness.",
+  "documents": [
+    {
+      "id": "GOST_R_21.101-2020",
+      "aliases": [
+        "21.101-2020",
+        "ГОСТ Р 21.101-2020",
+        "GOST R 21.101-2020"
+      ],
+      "status": "superseded",
+      "replaced_by": "GOST_R_21.101-2026",
+      "replaced_on": "2026-04-01",
+      "authority": "Rosstandart order 129-st of 12.02.2026",
+      "url": "https://www.rst.gov.ru/"
+    },
+    {
+      "id": "GOST_R_21.101-2026",
+      "aliases": [
+        "21.101-2026",
+        "ГОСТ Р 21.101-2026",
+        "GOST R 21.101-2026"
+      ],
+      "status": "in_force",
+      "replaced_by": null,
+      "replaced_on": null,
+      "authority": "Rosstandart order 129-st of 12.02.2026, in force 01.04.2026",
+      "url": "https://www.rst.gov.ru/"
+    }
+  ]
+}

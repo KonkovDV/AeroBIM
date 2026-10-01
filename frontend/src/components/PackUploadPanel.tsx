@@ -1,0 +1,143 @@
+import { useState, type DragEvent } from "react";
+import { UI_COPY } from "../lib/ui-copy";
+import { packCompositionLine, packDraftHasAny, type PackDocumentRole, type PackDraft } from "../lib/pack-draft";
+import { useUploads } from "../hooks/useUploads";
+import type { PackRoleChoice } from "../hooks/usePackDraft";
+
+export type PackUploadPanelProps = {
+  onUploadedPath?: (path: string, filename: string) => void;
+  onContinueToRun?: () => void;
+  /** HD14-FE-01: slot replacement / not-in-draft. Not a pack-processed claim. */
+  draftApplyNote?: string | null;
+  /** Текущий draft комплекта: состав виден до перехода к прогону. */
+  packDraft?: PackDraft;
+  pendingRole?: PackRoleChoice | null;
+  onChooseRole?: (role: PackDocumentRole) => void;
+};
+
+export default function PackUploadPanel({
+  onUploadedPath,
+  onContinueToRun,
+  draftApplyNote,
+  packDraft,
+  pendingRole = null,
+  onChooseRole,
+}: PackUploadPanelProps) {
+  const { status, detail, progress, honesty, startFile, cancel } = useUploads({ onUploadedPath });
+  const [dragging, setDragging] = useState(false);
+
+  function onDrop(event: DragEvent<HTMLDivElement>): void {
+    event.preventDefault();
+    setDragging(false);
+    void startFile(event.dataTransfer.files?.[0]);
+  }
+
+  return (
+    <section className="panel upload-panel" data-testid="pack-upload-panel">
+      <div className="panel-header">
+        <div>
+          <p className="panel-kicker">{UI_COPY.uploadKicker}</p>
+          <h2>{UI_COPY.uploadTitle}</h2>
+        </div>
+      </div>
+      <p className="compact-copy">{UI_COPY.uploadHint}</p>
+      <p className="compact-copy" data-testid="upload-size-honesty">
+        {UI_COPY.uploadSizeHonesty}
+      </p>
+      <div
+        className={`pack-dropzone ${dragging ? "dragging" : ""}`}
+        data-testid="pack-dropzone"
+        onDragEnter={(event) => {
+          event.preventDefault();
+          setDragging(true);
+        }}
+        onDragOver={(event) => {
+          event.preventDefault();
+          setDragging(true);
+        }}
+        onDragLeave={(event) => {
+          event.preventDefault();
+          setDragging(false);
+        }}
+        onDrop={onDrop}
+      >
+        <p>{UI_COPY.dropHint}</p>
+        <label className="toolbar-button preset-file-upload">
+          {UI_COPY.chooseFile}
+          <input
+            type="file"
+            aria-label={UI_COPY.packFileUpload}
+            onChange={(event) => {
+              void startFile(event.target.files?.[0]);
+              event.target.value = "";
+            }}
+          />
+        </label>
+      </div>
+      {status === "uploading" && progress !== null ? (
+        <p className="compact-copy" data-testid="upload-progress" role="status">
+          {UI_COPY.uploading} {progress}%
+          <progress max={100} value={progress} aria-label={UI_COPY.uploadProgress}>
+            {progress}%
+          </progress>
+          <button type="button" className="toolbar-button" aria-label={UI_COPY.cancelUpload} onClick={cancel}>
+            {UI_COPY.cancelUpload}
+          </button>
+        </p>
+      ) : null}
+      {honesty ? (
+        <p className="upload-honesty" role="note" data-testid="pack-kind-honesty">
+          {honesty}
+        </p>
+      ) : null}
+      {draftApplyNote ? (
+        <p className="pack-draft-apply-note" role="status" data-testid="pack-draft-apply-note">
+          {draftApplyNote}
+        </p>
+      ) : null}
+      {packDraft && packDraftHasAny(packDraft) ? (
+        <p className="compact-copy" data-testid="pack-composition">
+          {UI_COPY.packComposition}: {packCompositionLine(packDraft)}
+        </p>
+      ) : null}
+      {pendingRole && onChooseRole ? (
+        <div className="pack-role-picker" data-testid="pack-role-picker" role="group" aria-label={UI_COPY.packRoleAria}>
+          <p className="compact-copy">{UI_COPY.packRoleHint(pendingRole.filename)}</p>
+          {(
+            [
+              ["drawing", UI_COPY.packRoleDrawing],
+              ["requirement", UI_COPY.packRoleRequirement],
+              ["technical_spec", UI_COPY.packRoleSpec],
+              ["calculation", UI_COPY.packRoleCalculation],
+            ] as const
+          ).map(([role, label]) => (
+            <button
+              key={role}
+              type="button"
+              className={`toolbar-button ${pendingRole.role === role ? "active" : ""}`}
+              aria-pressed={pendingRole.role === role}
+              onClick={() => onChooseRole(role)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      ) : null}
+      {status === "uploading" && progress === null ? <p className="compact-copy">{UI_COPY.uploading}</p> : null}
+      {status === "ok" ? (
+        <p className="compact-copy">
+          {UI_COPY.uploadAccepted}
+          {onContinueToRun ? (
+            <>
+              {" "}
+              <button type="button" className="toolbar-button" onClick={onContinueToRun}>
+                {UI_COPY.toRun}
+              </button>
+            </>
+          ) : null}
+        </p>
+      ) : null}
+      {detail ? <p className="compact-copy">{detail}</p> : null}
+    </section>
+  );
+}

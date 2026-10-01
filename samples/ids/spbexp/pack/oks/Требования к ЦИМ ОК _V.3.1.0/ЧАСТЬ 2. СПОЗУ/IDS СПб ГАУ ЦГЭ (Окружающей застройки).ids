@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ids xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://standards.buildingsmart.org/IDS http://standards.buildingsmart.org/IDS/1.0/ids.xsd" xmlns="http://standards.buildingsmart.org/IDS">
+  <info>
+    <title>Требования к элементам ЦИМ (Окружающей застройки)</title>
+    <copyright>Отдел ТИМ, СПб ГАУ "ЦГЭ"</copyright>
+    <version>3.1</version>
+    <description>ЦГЭ.ЦИМ.3.0
+Часть 2. ОКРУЖАЮЩЕЙ ЗАСТРОЙКИ
+</description>
+    <author>bim@spbexp.ru</author>
+    <date>2024-12-09</date>
+    <purpose>Проверка атрибутивного состава, по требованиям СПб ГАУ "ЦГЭ"</purpose>
+    <milestone>Проектирование</milestone>
+  </info>
+  <specifications>
+    <specification name="Таблица 2.А.1 – Имена атрибутов для элемента «Здание» (IfcBuilding)" ifcVersion="IFC4" identifier="Таблица 2.А.1" description="Требования к ЦИМ.&#xA;Часть 2. ПЛАНИРОВОЧНАЯ ОРГАНИЗАЦИЯ ЗЕМЕЛЬНОГО УЧАСТКА&#xA;Приложение А. (обязательное).&#xA;Именование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Общие параметры здания (ПОЗУ)&#xA;">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <simpleValue>IFCBUILDING</simpleValue>
+          </name>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается корпуса по экспликации на генеральном плане земельного участка." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Местоположение</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер корпуса</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается номер секции. Если нет деления на секции, то указывается знак «-» (прочерк)" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Местоположение</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Номер секции</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается организация, разработавшая ЦИМ." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Общие данные по разделу</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Исполнитель</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается список нормативных документов, в соответствии с которыми разрабатывалась ЦИМ. Разделитель между номерами документов «;» (точка с запятой)." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Общие данные по разделу</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Нормативные документы</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+    <specification name="Таблица 2.А.16 – Имена атрибутов для элемента «ОКС окружающей застройки» (IfcBuildingElementProxy)" ifcVersion="IFC4" identifier="Таблица 2.А.16" description="Требования к ЦИМ.&#xA;Часть 2. ПЛАНИРОВОЧНАЯ ОРГАНИЗАЦИЯ ЗЕМЕЛЬНОГО УЧАСТКА&#xA;Приложение А. (обязательное).&#xA;Именование и описание атрибутов, экспортируемых в ЦИМ формата IFC" instructions="Элементы ЦИМ окружающей застройки.&#xA;Формируется надземная часть ОКС окружающей застройки в виде объемных элементов с проектным&#xA;или истинным:&#xA; местоположением;&#xA; контуром;&#xA; высотой;&#xA; цветом фасада.&#xA;Рекомендуется моделировать на нулевой отметке ЦИМ.">
+      <applicability minOccurs="1" maxOccurs="unbounded">
+        <entity>
+          <name>
+            <simpleValue>IFCBUILDINGELEMENTPROXY</simpleValue>
+          </name>
+        </entity>
+      </applicability>
+      <requirements>
+        <property cardinality="required" instructions="Указывается адрес ОКС окружающей застройки" dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Адрес объекта </simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается описание типа ОКС окружающей застройки." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Тип объекта</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Булевое значение, указывающее, что ОКС относится к жилому фонду." dataType="IFCBOOLEAN">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Жилое</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:IFCBOOLEAN">
+              <xs:enumeration value="True" />
+              <xs:enumeration value="False" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается категория технического состояния существующего ОКС в соответствии с ГОСТ 31937-2011." dataType="IFCTEXT">
+          <propertySet>
+            <simpleValue>Идентификация</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Категория технического состояния</simpleValue>
+          </baseName>
+          <value>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="нормативное" />
+              <xs:enumeration value="работоспособное" />
+              <xs:enumeration value="ограниченно работоспособное" />
+            </xs:restriction>
+          </value>
+        </property>
+        <property cardinality="required" instructions="Указывается площадь элемента." dataType="IFCAREAMEASURE">
+          <propertySet>
+            <simpleValue>Геометрические параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Площадь</simpleValue>
+          </baseName>
+        </property>
+        <property cardinality="required" instructions="Указывается высота элемента." dataType="IFCLENGTHMEASURE">
+          <propertySet>
+            <simpleValue>Геометрические параметры</simpleValue>
+          </propertySet>
+          <baseName>
+            <simpleValue>Высота</simpleValue>
+          </baseName>
+        </property>
+      </requirements>
+    </specification>
+  </specifications>
+</ids>

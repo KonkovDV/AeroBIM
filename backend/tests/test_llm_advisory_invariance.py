@@ -1,0 +1,115 @@
+"""Advisory ON/OFF must not mutate deterministic verdict fields."""
+
+from __future__ import annotations
+
+import copy
+import unittest
+
+from aerobim.domain.llm_advisory import LlmDataPolicy, LlmRequest, MockLlmProvider
+
+
+class LlmAdvisoryInvarianceTests(unittest.TestCase):
+    def test_advisory_invariance(self) -> None:
+        deterministic = {
+            "summary": {"passed": False, "outcome": "review_required"},
+            "findings": [{"rule_id": "AEROBIM-CROSS-DOC", "severity": "warning"}],
+        }
+        before = copy.deepcopy(deterministic)
+        provider = MockLlmProvider(provider="kimi", model="kimi-mock")
+        request = LlmRequest(
+            request_id="inv-1",
+            deterministic_findings=tuple(deterministic["findings"]),
+            evidence_refs=("f:1",),
+            data_policy=LlmDataPolicy(allow_synthetic_public=True),
+        )
+        response = provider.generate(request)
+        self.assertEqual(response.status, "advisory")
+        # Mock cannot and must not rewrite the deterministic summary.
+        self.assertEqual(deterministic, before)
+        self.assertFalse(getattr(response, "affects_summary_passed", False))
+
+    def test_provider_contract(self) -> None:
+        for name in ("kimi", "qwen", "gemma"):
+            provider = MockLlmProvider(provider=name, model=f"{name}-mock")
+            response = provider.generate(
+                LlmRequest(
+                    request_id=f"c-{name}",
+                    evidence_refs=("e:1",),
+                    data_policy=LlmDataPolicy(allow_synthetic_public=True),
+                )
+            )
+            self.assertEqual(response.provider, name)
+            self.assertTrue(response.schema_valid)
+            self.assertEqual(response.status, "advisory")
+
+    def test_external_egress_policy(self) -> None:
+        provider = MockLlmProvider(provider="qwen", model="qwen-mock")
+        response = provider.generate(
+            LlmRequest(
+                request_id="deny",
+                data_policy=LlmDataPolicy(
+                    allow_customer_data=False,
+                    allow_synthetic_public=False,
+                ),
+            )
+        )
+        self.assertEqual(response.status, "blocked_by_policy")
+
+    def test_iversen_fuchs_shaped_acts_stay_off_verdict_path(self) -> None:
+        from aerobim.domain.llm_advisory import (
+            FORBIDDEN_LLM_ACTIONS,
+            LLM_GENERATED_FUNCTION_WRITES_SUMMARY_PASSED,
+            LLM_SELECTS_CHECK_ON_VERDICT_PATH,
+        )
+
+        self.assertIn("call_tool", FORBIDDEN_LLM_ACTIONS)
+        self.assertIn("change_verdict", FORBIDDEN_LLM_ACTIONS)
+        self.assertFalse(LLM_SELECTS_CHECK_ON_VERDICT_PATH)
+        self.assertFalse(LLM_GENERATED_FUNCTION_WRITES_SUMMARY_PASSED)
+
+    def test_malicious_advisory_cannot_raise_severity_or_invent_refs(self) -> None:
+        from aerobim.application.services.determinism_gate import DeterminismGate
+        from aerobim.domain.models import FindingCategory, Severity, ValidationIssue
+
+        engine = [
+            ValidationIssue(
+                rule_id="AEROBIM-CROSS-DOC",
+                severity=Severity.WARNING,
+                message="values differ",
+                category=FindingCategory.CROSS_DOCUMENT,
+                origin="deterministic",
+                finding_id="eng-1",
+                element_guid="2nJrDaLQfJ1QPhdJR0o97J",
+                evidence_refs=("engine:1",),
+            )
+        ]
+        advisory = [
+            ValidationIssue(
+                rule_id="AEROBIM-CROSS-DOC",
+                severity=Severity.ERROR,
+                message="LLM flips this to ERROR and invents a GUID",
+                category=FindingCategory.CROSS_DOCUMENT,
+                origin="advisory",
+                finding_id="adv-hallucinated",
+                element_guid="ZZZZZZZZZZZZZZZZZZZZZZ",
+                evidence_refs=("invented-ref",),
+            )
+        ]
+        merged, divergences = DeterminismGate().reconcile(
+            engine_issues=engine,
+            advisory_issues=advisory,
+            evidence_universe=frozenset({"2nJrDaLQfJ1QPhdJR0o97J"}),
+        )
+        self.assertTrue(any(issue.origin == "deterministic" for issue in merged))
+        advisory_only = [issue for issue in merged if issue.origin == "advisory"]
+        self.assertTrue(advisory_only)
+        self.assertTrue(all(issue.severity is Severity.INFO for issue in advisory_only))
+        self.assertTrue(any("ungrounded" in (issue.message or "") for issue in advisory_only))
+        self.assertTrue(divergences)
+        self.assertFalse(
+            any(issue.severity is Severity.ERROR and issue.origin == "advisory" for issue in merged)
+        )
+
+
+if __name__ == "__main__":
+    unittest.main()

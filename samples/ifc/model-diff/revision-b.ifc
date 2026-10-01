@@ -1,0 +1,15 @@
+ISO-10303-21;
+HEADER;
+FILE_DESCRIPTION(('ViewDefinition[DesignTransferView]'),'2;1');
+FILE_NAME('revision-b.ifc','2026-08-04T12:00:00',(''),(''),'IfcOpenShell','AeroBIM','');
+FILE_SCHEMA(('IFC4'));
+ENDSEC;
+DATA;
+#1=IFCPROJECT('2O2Fr$t4X7Zf8NOew3FLOH',$,'Diff Fixture B',$,$,$,$,$,#2);
+#2=IFCUNITASSIGNMENT((#3));
+#3=IFCSIUNIT(*,.LENGTHUNIT.,.MILLI.,.METRE.);
+#10=IFCWALL('0aKrY0eXn00Qu9HBZ7Ao4t',$,'Wall Keep',$,$,$,$,$,$);
+#12=IFCWALL('3rH_tKFeT2wQPlyfwCmALO',$,'Wall Renamed',$,$,$,$,$,$);
+#13=IFCWALL('2xF$K1m0p5bYwHc9uR4nQs',$,'Wall Added',$,$,$,$,$,$);
+ENDSEC;
+END-ISO-10303-21;

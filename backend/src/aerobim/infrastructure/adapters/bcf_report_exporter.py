@@ -1,0 +1,468 @@
+"""BCF XML report exporter.
+
+Converts a ``ValidationReport`` into a minimal BCF 2.1 XML ZIP archive
+(buildingSMART BCF-XML schema, ISO 16739-based).
+
+Each ``ValidationIssue`` with severity ERROR becomes a BCF Topic (markup.bcf).
+Detected clashes are exported as additional BCF topics in deterministic triage
+order (band → severity metric → pair key; see ``domain.clash_triage``) so
+coordination tools can consume them directly. Topic child-element order follows
+the official ``markup.xsd`` (release_2_1) sequence: ReferenceLink*, Title,
+Priority?, Index?, Labels*, CreationDate, CreationAuthor, ModifiedDate?,
+ModifiedAuthor?, Description?. Markup then emits Comment* (HITL events) before
+Viewpoints*. CreationAuthor is the machine; expert identity is Comment Author
+and ModifiedAuthor. TopicStatus is Closed after accepted/waived HITL.
+Official 2.1 XSDs declare no targetNamespace, so markup/version/visinfo are
+emitted without namespaces (matches buildingSMART sample files and enables
+local XSD validation against vendored ``samples/bcf-xsd/release_2_1``).
+
+The archive structure follows::
+
+    bcf.version
+    <guid>/
+        markup.bcf
+        viewpoint.bcfv
+
+The exporter emits a minimal orthogonal viewpoint per topic. Snapshots remain
+optional and are intentionally omitted here.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import io
+import uuid
+import zipfile
+from collections.abc import Sequence
+from dataclasses import dataclass
+from xml.etree.ElementTree import Element, SubElement, tostring
+
+from aerobim.domain.clash_triage import TriagedClash, triage_clash_results
+from aerobim.domain.models import (
+    FindingCategory,
+    ReviewEvent,
+    Severity,
+    ValidationIssue,
+    ValidationReport,
+)
+from aerobim.domain.review_projection import (
+    bcf_hitl_overlay,
+    effective_text_for_issue,
+    issue_is_rejected,
+)
+
+
+@dataclass(frozen=True)
+class _BcfCommentPayload:
+    guid: str
+    date: str
+    author: str
+    text: str
+
+
+@dataclass(frozen=True)
+class _BcfTopicPayload:
+    topic_guid: str
+    viewpoint_guid: str
+    title: str
+    description: str
+    creation_date: str
+    creation_author: str
+    reference_links: tuple[str, ...]
+    selected_guids: tuple[str, ...]
+    topic_type: str
+    topic_status: str = "Open"
+    labels: tuple[str, ...] = ()
+    priority: str | None = None
+    """BCF Topic/Priority text (e.g. triage band Critical/Major/Minor)."""
+    topic_index: int | None = None
+    """BCF Topic/Index sort order (deterministic triage rank for clashes)."""
+    camera_x: float = 10.0
+    camera_y: float = 10.0
+    camera_z: float = 10.0
+    camera_is_model_space: bool = False
+    modified_date: str | None = None
+    modified_author: str | None = None
+    comments: tuple[_BcfCommentPayload, ...] = ()
+
+
+def _schematic_camera(seed: str) -> tuple[float, float, float]:
+    """Distinct fallback eye per topic. Not IFC model-space coordinates."""
+
+    digest = hashlib.sha256(f"aerobim:bcf-camera:{seed}".encode()).digest()
+    return (
+        6.0 + digest[0] / 255.0 * 12.0,
+        6.0 + digest[1] / 255.0 * 12.0,
+        6.0 + digest[2] / 255.0 * 12.0,
+    )
+
+
+def _stable_uuid(seed: str) -> str:
+    """Deterministic UUID from seed (BCF Guid fields require UUID form)."""
+
+    digest = hashlib.sha256(f"aerobim:bcf:{seed}".encode()).hexdigest()
+    return str(uuid.UUID(digest[:32]))
+
+
+def bilingual_remark_body(issue: ValidationIssue) -> str:
+    """RU + EN template bodies for BCF Description (TZ P0 locale parity)."""
+
+    from aerobim.infrastructure.adapters.template_remark_generator import (
+        TemplateRemarkGenerator,
+    )
+
+    try:
+        ru = TemplateRemarkGenerator(locale="ru").generate(issue).body
+        en = TemplateRemarkGenerator(locale="en").generate(issue).body
+    except ValueError:
+        fallback = issue.remark.body if issue.remark is not None else (issue.message or "")
+        return fallback
+    return f"[RU] {ru}\n\n[EN] {en}"
+
+
+def bcf_topic_zip_dir(topic_guid: str) -> str:
+    """Canonical UUID directory name; reject path separators (HD2-BCF-01)."""
+
+    try:
+        return str(uuid.UUID(str(topic_guid)))
+    except ValueError as exc:
+        raise ValueError(f"BCF topic guid is not a UUID: {topic_guid!r}") from exc
+
+
+def export_bcf(
+    report: ValidationReport,
+    *,
+    review_events: Sequence[ReviewEvent] | None = None,
+) -> bytes:
+    """Return a BCF 2.1 ZIP archive as raw bytes."""
+    buf = io.BytesIO()
+
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr("bcf.version", _bcf_version_xml())
+
+        for topic in _collect_topics(report, review_events=review_events):
+            topic_dir = bcf_topic_zip_dir(topic.topic_guid)
+            zf.writestr(f"{topic_dir}/", "")
+            zf.writestr(f"{topic_dir}/markup.bcf", _build_markup(topic))
+            zf.writestr(f"{topic_dir}/viewpoint.bcfv", _build_viewpoint(topic))
+
+    return buf.getvalue()
+
+
+def _bcf_version_xml() -> str:
+    # version.xsd (release_2_1): no targetNamespace; VersionId attr + DetailedVersion.
+    root = Element("Version", VersionId="2.1")
+    SubElement(root, "DetailedVersion").text = "2.1"
+    return _to_xml_str(root)
+
+
+def collect_bcf_topics(
+    report: ValidationReport,
+    *,
+    review_events: Sequence[ReviewEvent] | None = None,
+) -> list[_BcfTopicPayload]:
+    """Public topic enumeration shared by BCF ZIP export and BCF API push."""
+    return _collect_topics(report, review_events=review_events)
+
+
+def _collect_topics(
+    report: ValidationReport,
+    *,
+    review_events: Sequence[ReviewEvent] | None = None,
+) -> list[_BcfTopicPayload]:
+    topics: list[_BcfTopicPayload] = []
+
+    for issue in report.issues:
+        if not _should_export_issue_as_bcf_topic(issue):
+            continue
+        if issue_is_rejected(issue, review_events):
+            continue
+
+        reference_links = tuple(
+            link
+            for link in (
+                issue.element_guid,
+                issue.target_ref,
+                *(issue.evidence_refs or ()),
+            )
+            if link
+        )
+        selected_guids: tuple[str, ...] = (issue.element_guid,) if issue.element_guid else ()
+        rule_upper = (issue.rule_id or "").upper()
+        is_mep = rule_upper.startswith("AEROBIM-MEP-")
+        claim_lines = tuple(
+            ref for ref in (issue.evidence_refs or ()) if str(ref).startswith("claim_boundary:")
+        )
+        is_template_or_unverified = (
+            rule_upper
+            in {
+                "AEROBIM-MEP-TEMPLATE",
+                "AEROBIM-MEP-UNCLASSIFIED",
+                "AEROBIM-MEP-FINDING",
+            }
+            or any("NOT_VERIFIED" in str(ref) or "synthetic" in str(ref) for ref in claim_lines)
+            or issue.severity != Severity.ERROR
+        )
+        if is_mep:
+            mep_guids = tuple(
+                ref
+                for ref in (issue.evidence_refs or ())
+                if isinstance(ref, str)
+                and len(ref) == 22
+                and not ref.startswith(("mep:", "claim_boundary:"))
+            )
+            if mep_guids:
+                selected_guids = mep_guids
+            # Only customer ERROR with geometry may be Clash; else Comment + claim boundary.
+            topic_type = (
+                "Clash"
+                if rule_upper == "AEROBIM-MEP-FORBIDDEN" and not is_template_or_unverified
+                else "Comment"
+            )
+        else:
+            topic_type = "Error" if issue.severity == Severity.ERROR else "CoordinationWarning"
+        bilingual = bilingual_remark_body(issue)
+        stored = issue.remark.body if issue.remark is not None else ""
+        if review_events:
+            lead = effective_text_for_issue(issue, review_events)
+        elif stored and stored not in bilingual:
+            lead = stored
+        else:
+            lead = bilingual
+        if lead == bilingual:
+            base_description = bilingual
+        else:
+            base_description = f"{lead}\n\n{bilingual}"
+        ai_generated = bool(issue.remark is not None and issue.remark.ai_generated)
+        provenance_lines = [
+            f"finding_id={issue.finding_id}" if issue.finding_id else None,
+            f"source_id={issue.source_id}" if issue.source_id else None,
+            (f"evidence_refs={','.join(issue.evidence_refs)}" if issue.evidence_refs else None),
+            f"origin={issue.origin}" if issue.origin else None,
+            f"ifc_globalid={issue.element_guid}" if issue.element_guid else None,
+            (
+                "norm="
+                + " · ".join(
+                    part
+                    for part in (issue.norm_source, issue.norm_edition, issue.norm_clause)
+                    if part and str(part).strip()
+                )
+                if any(
+                    part and str(part).strip()
+                    for part in (issue.norm_source, issue.norm_edition, issue.norm_clause)
+                )
+                else "norm="
+            ),
+            "ai_generated=true;expert_confirmation_required=true" if ai_generated else None,
+            "claim_boundary:RT-003_OPEN;MEP_not_delivered;geometry_may_be_NOT_VERIFIED"
+            if is_mep
+            else None,
+        ]
+        description = base_description
+        extras = [line for line in provenance_lines if line]
+        if review_events:
+            machine = issue.remark.body if issue.remark is not None else (issue.message or "")
+            if base_description != machine:
+                extras.append(f"machine_text={machine}")
+        if extras:
+            description = f"{base_description}\n\n" + "\n".join(extras)
+        title = issue.rule_id or "Validation Issue"
+        if issue.priority:
+            title = f"[P{issue.priority}] {title}"
+        seed = issue.finding_id or f"{issue.rule_id}|{issue.element_guid}|{issue.target_ref}"
+        cam_x, cam_y, cam_z = _schematic_camera(seed)
+        zone = issue.problem_zone
+        camera_is_model_space = False
+        if zone is not None and zone.x is not None and zone.y is not None:
+            cam_x, cam_y, cam_z = float(zone.x), float(zone.y), 10.0
+            # Sheet millimetres are not IFC world metres; still a distinct focus.
+            camera_is_model_space = False
+        if not camera_is_model_space:
+            description = (
+                f"{description}\n\n"
+                "[AeroBIM] Orthogonal camera is a schematic fallback; "
+                "model-space coordinates were not available for this topic."
+            )
+        labels = tuple(
+            label
+            for label in (
+                f"origin:{issue.origin}" if issue.origin else None,
+                f"category:{issue.category.value}" if issue.category else None,
+                "ai_generated:true" if ai_generated else None,
+                "mep:system-clash" if is_mep else None,
+                "mep:not_verified" if is_mep and is_template_or_unverified else None,
+            )
+            if label
+        )
+        hitl = bcf_hitl_overlay(issue, review_events)
+        hitl_comments = tuple(
+            _BcfCommentPayload(
+                guid=_stable_uuid(f"comment:{item.event_id}"),
+                date=item.date,
+                author=item.author,
+                text=item.text,
+            )
+            for item in hitl.comments
+        )
+        topics.append(
+            _BcfTopicPayload(
+                topic_guid=_stable_uuid(f"topic:{seed}"),
+                viewpoint_guid=_stable_uuid(f"viewpoint:{seed}"),
+                title=title,
+                description=description,
+                creation_date=report.created_at,
+                creation_author="aerobim-backend",
+                reference_links=reference_links,
+                selected_guids=selected_guids,
+                topic_type=topic_type,
+                topic_status=hitl.topic_status,
+                labels=labels,
+                camera_x=cam_x,
+                camera_y=cam_y,
+                camera_z=cam_z,
+                camera_is_model_space=camera_is_model_space,
+                modified_date=hitl.modified_date,
+                modified_author=hitl.modified_author,
+                comments=hitl_comments,
+            )
+        )
+
+    for item in triage_clash_results(report.clash_results).items:
+        topics.append(_clash_topic_payload(report, item))
+
+    return topics
+
+
+def _should_export_issue_as_bcf_topic(issue: ValidationIssue) -> bool:
+    if issue.severity == Severity.ERROR:
+        return True
+
+    rule_id = (issue.rule_id or "").upper()
+    # MEP system-pair findings (even WARNING/unclassified) are coordination topics.
+    if rule_id.startswith("AEROBIM-MEP-"):
+        return True
+
+    # OpenRebar cross-document warnings are actionable coordination findings.
+    if issue.severity != Severity.WARNING:
+        return False
+
+    return issue.category == FindingCategory.CROSS_DOCUMENT and rule_id.startswith("OPENREBAR-")
+
+
+def _clash_topic_payload(
+    report: ValidationReport,
+    item: TriagedClash,
+) -> _BcfTopicPayload:
+    clash = item.clash
+    pair_a, pair_b = item.pair_key
+    # Pair-key seed keeps topic GUIDs stable across engine output reorderings.
+    seed = f"clash:{pair_a}|{pair_b}|{clash.clash_type}"
+    return _BcfTopicPayload(
+        topic_guid=_stable_uuid(f"topic:{seed}"),
+        viewpoint_guid=_stable_uuid(f"viewpoint:{seed}"),
+        title=f"Clash {item.rank}: {clash.clash_type} [{item.band.value}]",
+        description=(
+            f"{clash.description}. "
+            f"Distance: {clash.distance:.6f} m. "
+            f"Elements: {clash.element_a_guid}, {clash.element_b_guid}.\n\n"
+            f"triage:{item.rationale}\n"
+            f"triage:duplicates_merged={item.duplicates_merged}\n\n"
+            "[AeroBIM] Orthogonal camera is a schematic fallback; "
+            "model-space clash coordinates are not exported."
+        ),
+        creation_date=report.created_at,
+        creation_author="aerobim-backend",
+        reference_links=(clash.element_a_guid, clash.element_b_guid),
+        selected_guids=(clash.element_a_guid, clash.element_b_guid),
+        topic_type="Clash",
+        labels=(
+            "origin:deterministic",
+            "category:spatial",
+            f"triage:band={item.band.value}",
+        ),
+        priority=item.band.value.capitalize(),
+        topic_index=item.rank,
+        camera_x=_schematic_camera(seed)[0],
+        camera_y=_schematic_camera(seed)[1],
+        camera_z=_schematic_camera(seed)[2],
+        camera_is_model_space=False,
+    )
+
+
+def _build_markup(topic: _BcfTopicPayload) -> str:
+    root = Element("Markup")
+
+    topic_node = SubElement(
+        root,
+        "Topic",
+        Guid=topic.topic_guid,
+        TopicType=topic.topic_type,
+        TopicStatus=topic.topic_status,
+    )
+    # markup.xsd (release_2_1) Topic sequence: ReferenceLink*, Title, Priority?,
+    # Index?, Labels*, CreationDate, CreationAuthor, ..., Description?.
+    for reference_link in topic.reference_links:
+        SubElement(topic_node, "ReferenceLink").text = reference_link
+    SubElement(topic_node, "Title").text = topic.title
+    if topic.priority:
+        SubElement(topic_node, "Priority").text = topic.priority
+    if topic.topic_index is not None:
+        SubElement(topic_node, "Index").text = str(topic.topic_index)
+    for label in topic.labels:
+        SubElement(topic_node, "Labels").text = label
+    SubElement(topic_node, "CreationDate").text = topic.creation_date
+    SubElement(topic_node, "CreationAuthor").text = topic.creation_author
+    if topic.modified_date:
+        SubElement(topic_node, "ModifiedDate").text = topic.modified_date
+    if topic.modified_author:
+        SubElement(topic_node, "ModifiedAuthor").text = topic.modified_author
+    SubElement(topic_node, "Description").text = topic.description
+
+    # markup.xsd (release_2_1): Comment* between Topic and Viewpoints.
+    for comment in topic.comments:
+        comment_node = SubElement(root, "Comment", Guid=comment.guid)
+        SubElement(comment_node, "Date").text = comment.date
+        SubElement(comment_node, "Author").text = comment.author
+        SubElement(comment_node, "Comment").text = comment.text
+
+    # markup.xsd: Viewpoints is a ViewPoint-typed element with Guid attribute.
+    viewpoint = SubElement(root, "Viewpoints", Guid=topic.viewpoint_guid)
+    SubElement(viewpoint, "Viewpoint").text = "viewpoint.bcfv"
+    SubElement(viewpoint, "Index").text = "0"
+
+    return _to_xml_str(root)
+
+
+def _build_viewpoint(topic: _BcfTopicPayload) -> str:
+    root = Element("VisualizationInfo", Guid=topic.viewpoint_guid)
+
+    # visinfo.xsd (release_2_1) Components: ViewSetupHints?, Selection?,
+    # Visibility (required), Coloring?. Empty Selection/Coloring are invalid
+    # (both require >=1 child), so they are emitted only when populated.
+    components = SubElement(root, "Components")
+    if topic.selected_guids:
+        selection = SubElement(components, "Selection")
+        for ifc_guid in topic.selected_guids:
+            SubElement(selection, "Component", IfcGuid=ifc_guid)
+    SubElement(components, "Visibility", DefaultVisibility="true")
+
+    # OrthogonalCamera (release_2_1): no AspectRatio element (3.0-only).
+    camera = SubElement(root, "OrthogonalCamera")
+    _vector_node(camera, "CameraViewPoint", topic.camera_x, topic.camera_y, topic.camera_z)
+    _vector_node(camera, "CameraDirection", -0.577350269, -0.577350269, -0.577350269)
+    _vector_node(camera, "CameraUpVector", 0.0, 0.0, 1.0)
+    SubElement(camera, "ViewToWorldScale").text = "10.0"
+
+    SubElement(root, "ClippingPlanes")
+    return _to_xml_str(root)
+
+
+def _vector_node(parent: Element, name: str, x: float, y: float, z: float) -> None:
+    vector = SubElement(parent, name)
+    SubElement(vector, "X").text = str(x)
+    SubElement(vector, "Y").text = str(y)
+    SubElement(vector, "Z").text = str(z)
+
+
+def _to_xml_str(element: Element) -> str:
+    return '<?xml version="1.0" encoding="UTF-8"?>\n' + tostring(element, encoding="unicode")

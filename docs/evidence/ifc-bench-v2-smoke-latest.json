@@ -1,0 +1,551 @@
+{
+  "artifact_type": "ifc_bench_v2_smoke",
+  "schema_version": "1.3.0",
+  "generated_at": "2026-08-16T08:30:18.560289+00:00",
+  "claim_level": "open_bench_only",
+  "claim_boundary": "IFC-Bench open_bench_only: deterministic countable subset via IfcOpenShell. NOT product accuracy. Never claim >90%. Does not close RT-001.",
+  "closes_rt001": false,
+  "benchmark": {
+    "name": "IFC-Bench-v2",
+    "citation": "Hellin et al. — v1 EC3 2025 / GitHub archive; v2 HF sylvainHellin/ifc-bench + arXiv:2605.01698",
+    "dataset_root": ".local/ifc-bench-v2",
+    "version": "v2",
+    "questions_path": "questions/ifc-bench-v2.csv",
+    "questions_sha256": "e47ccd097306f5bca49b9c8ac0b4cd72f296df9f7ff7a02625b3f06c1691da9b",
+    "questions_sha256_matches_pin": true,
+    "pinned_sha256_reference": "e47ccd097306f5bca49b9c8ac0b4cd72f296df9f7ff7a02625b3f06c1691da9b",
+    "question_count": 1026,
+    "ifc_files_present": 33,
+    "ifc_hash_max_bytes": 83886080,
+    "ifc_files": [
+      {
+        "path": "projects/dental_clinic/arc.ifc",
+        "bytes": 13208096,
+        "sha256": "b90fe57b8aa9329d762a564770e697d4f7357677484e3a78ede4ab6d2163c0c0"
+      },
+      {
+        "path": "projects/dental_clinic/mep.ifc",
+        "bytes": 125780663,
+        "sha256": null,
+        "sha256_skipped": "oversize"
+      },
+      {
+        "path": "projects/dental_clinic/str.ifc",
+        "bytes": 19375987,
+        "sha256": "3351ee3bd19aea39167ba466237fe06de64ea391b0a31b0aacc017c84311e14d"
+      },
+      {
+        "path": "projects/digital_hub/arc.ifc",
+        "bytes": 9022255,
+        "sha256": "19d7d02d53c2b88e86890ee236297b12bbb0f7748030cd32ff6a22762e9966bb"
+      },
+      {
+        "path": "projects/digital_hub/heating.ifc",
+        "bytes": 20890415,
+        "sha256": "a5603e8f6aa4cbf63aece92f92f503e9a578702d8fe96a6d4661490f1843710d"
+      },
+      {
+        "path": "projects/digital_hub/plumbing.ifc",
+        "bytes": 25178864,
+        "sha256": "0b1d6b0abd8d4cc3f5f798c7581bed2b39b40110ba6348d5470bbef646cfed79"
+      },
+      {
+        "path": "projects/digital_hub/ventilation.ifc",
+        "bytes": 12737833,
+        "sha256": "c0a1807875957c4154d45d14a3b5ed480dd3178a5bdc3262302a7eccf76d5cb1"
+      },
+      {
+        "path": "projects/duplex/arc.ifc",
+        "bytes": 1656153,
+        "sha256": "707a032566dee8e969a44d95509be46d646440e2443624709f8d3ae2b45f4656"
+      },
+      {
+        "path": "projects/duplex/mep.ifc",
+        "bytes": 11129368,
+        "sha256": "285f85de4424416ba6bade121588dbe0ae278fb4fdb0f4b782051cfdc7c92972"
+      },
+      {
+        "path": "projects/sixty5/arc.ifc",
+        "bytes": 342657851,
+        "sha256": null,
+        "sha256_skipped": "oversize"
+      },
+      {
+        "path": "projects/sixty5/electrical.ifc",
+        "bytes": 97058912,
+        "sha256": null,
+        "sha256_skipped": "oversize"
+      },
+      {
+        "path": "projects/sixty5/facade.ifc",
+        "bytes": 6067026,
+        "sha256": "a9a1b20214da8ac1e1bea1f8670bef24f20a0d53a8ebaef4eb20b5a447640c79"
+      },
+      {
+        "path": "projects/sixty5/kitchen.ifc",
+        "bytes": 49670229,
+        "sha256": "1905b992071729d1c780b18f6103e4d1d08307a4707d5f33a4413216f36776ac"
+      },
+      {
+        "path": "projects/sixty5/plumbing.ifc",
+        "bytes": 222099255,
+        "sha256": null,
+        "sha256_skipped": "oversize"
+      },
+      {
+        "path": "projects/sixty5/str.ifc",
+        "bytes": 7422441,
+        "sha256": "79f294c643438ac7a494e4871857244c2de0eefa536eda5977af20640a301a22"
+      },
+      {
+        "path": "projects/sixty5/ventilation.ifc",
+        "bytes": 114891068,
+        "sha256": null,
+        "sha256_skipped": "oversize"
+      },
+      {
+        "path": "projects/wbdg_office/arc.ifc",
+        "bytes": 4099293,
+        "sha256": "7108485ac8d2856922a83f1353aea8c6eaab60ff393546750bf648200617a544"
+      },
+      {
+        "path": "projects/wbdg_office/mep.ifc",
+        "bytes": 41894594,
+        "sha256": "835263f1a9f84663e19b2d1a73420a09919293d7932a3a514d1fa26ede3dcc1e"
+      },
+      {
+        "path": "projects/wbdg_office/str.ifc",
+        "bytes": 11067475,
+        "sha256": "3286777da15bac8a5b2bffaa14fd10a34fa72cbdfbabc8b072c05737f4c280cb"
+      },
+      {
+        "path": "projects/west_riverside_hospital/arc_ifc2x3.ifc",
+        "bytes": 80318141,
+        "sha256": "989ace1d52f694ee94d80bd99aa81d0ff3d76cf21f34fcfd00a286ac897ed8a6"
+      },
+      {
+        "path": "projects/west_riverside_hospital/arc_ifc4.ifc",
+        "bytes": 80937122,
+        "sha256": "230afa4d72a59c9ce18cdd9a7bc7c5c3e409a46078de6e14b19741b4cf92cf09"
+      },
+      {
+        "path": "projects/west_riverside_hospital/elec_ifc2x3.ifc",
+        "bytes": 4725101,
+        "sha256": "e443ca5e13756de89f50b61256e512925ce38b76d3a20a4a17fa35ffa6650c95"
+      },
+      {
+        "path": "projects/west_riverside_hospital/elec_ifc4.ifc",
+        "bytes": 4435308,
+        "sha256": "8e404c4e4c9085338383a89ae57a3a31ebe96ee406214392a1bf69a6775dcecc"
+      },
+      {
+        "path": "projects/west_riverside_hospital/fire_ifc2x3.ifc",
+        "bytes": 906328,
+        "sha256": "a94a9c179a5d22724576d8f4b668dec94a59b6dd447ea6c8a4ede5206c17201d"
+      },
+      {
+        "path": "projects/west_riverside_hospital/fire_ifc4.ifc",
+        "bytes": 905021,
+        "sha256": "f04e6fb62ad10cd78177d1d390758e912e3ad65881a184cca8ea1da07c59ae23"
+      },
+      {
+        "path": "projects/west_riverside_hospital/mech_ifc2x3.ifc",
+        "bytes": 78764170,
+        "sha256": "0c0551bf150dae56702515a53d55cf7f289d3637ccd7b399b092c47b9fa9272d"
+      },
+      {
+        "path": "projects/west_riverside_hospital/mech_ifc4.ifc",
+        "bytes": 73047260,
+        "sha256": "04a29bc312fe0b026634ad86390e8b72c1d1c1765255351f787503d3d8ce1c13"
+      },
+      {
+        "path": "projects/west_riverside_hospital/plumb_ifc2x3.ifc",
+        "bytes": 24998920,
+        "sha256": "5f3e24ed70828387453d161caae7d7547b3c97803cc81df6c97849aa11676aa8"
+      },
+      {
+        "path": "projects/west_riverside_hospital/plumb_ifc4.ifc",
+        "bytes": 23762808,
+        "sha256": "bb53f0eb8f7295e91e0fb6ec6b79a30022a2e0e248714aab6bb1a8930c4793dd"
+      },
+      {
+        "path": "projects/west_riverside_hospital/sprinkle_ifc2x3.ifc",
+        "bytes": 35659244,
+        "sha256": "99e928f6714b69afd7e709b83f96904d3e3661640df7d5d4391415bd3c977c3e"
+      },
+      {
+        "path": "projects/west_riverside_hospital/sprinkle_ifc4.ifc",
+        "bytes": 33990094,
+        "sha256": "0e30c25a77ebcd75b2fc3a6cb87dc3891bd476f60a269e36eb5e0149bcc06ea7"
+      },
+      {
+        "path": "projects/west_riverside_hospital/str_ifc2x3.ifc",
+        "bytes": 6398139,
+        "sha256": "5f404bfbce09d3de30ac360d98067ce4b40e7b6a9603ebea67d6d5fe9d48c0f2"
+      },
+      {
+        "path": "projects/west_riverside_hospital/str_ifc4.ifc",
+        "bytes": 6484576,
+        "sha256": "7eed88eb21dafdc5a5950d9b1ee18df3fd00fcd376a14fd1bae80658e371975e"
+      }
+    ]
+  },
+  "eval_split": {
+    "present": true,
+    "path": "questions/eval-split-hellin2026.csv",
+    "published_test_rows": 514,
+    "published_train_rows": 512,
+    "scored_in_test": 12,
+    "scored_in_train": 15,
+    "scored_unlisted": 0,
+    "note": "Published test split is 514 rows. This block only says how many of the deterministic scored probes fall in that split. It is not a 514 false-pass rate."
+  },
+  "summary": {
+    "total_questions": 1026,
+    "scored": 27,
+    "matched": 27,
+    "mismatched": 0,
+    "skipped_unmapped_or_uncomparable": 999,
+    "errors": 0,
+    "skip_breakdown": {
+      "unmapped_nl": 634,
+      "non_numeric_gt": 66,
+      "incomplete_info": 110,
+      "gpl_project_excluded": 189,
+      "first_number_on_unmapped": 634,
+      "how_many_unmapped_non_gpl": 53,
+      "note": "A first-number parse on an unmapped row is not a safe countable probe. Do not treat first_number_on_unmapped as extra product accuracy. GPLv3 projects are excluded from the MIT smoke, not scored as errors."
+    },
+    "exact_match_rate_on_scored": 1.0,
+    "denominator_note": "scored=27 of total_questions=1026; unmapped NL, incomplete GT, and GPLv3 projects skipped; missing IFC → error",
+    "note": "Rate is over the deterministic countable subset only (27/1026 questions). Unmapped NL items are skipped."
+  },
+  "results": [
+    {
+      "question": "What is the thickness of the insulation of the external walls?",
+      "project": "dental_clinic",
+      "ifc_model": "arc",
+      "probe_id": "dental_arc_insulated_panel_mm",
+      "predicted": 42,
+      "expected": 42.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "93",
+      "skip_reason": null
+    },
+    {
+      "question": "How many X-RAY rooms are there in total?",
+      "project": "dental_clinic",
+      "ifc_model": "arc",
+      "probe_id": "dental_arc_xray_space_count",
+      "predicted": 1,
+      "expected": 1.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "95",
+      "skip_reason": null
+    },
+    {
+      "question": "How many rooms are there in the clinic ?",
+      "project": "dental_clinic",
+      "ifc_model": "arc",
+      "probe_id": "dental_arc_space_count",
+      "predicted": 269,
+      "expected": 269.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "99",
+      "skip_reason": null
+    },
+    {
+      "question": "How many toilet rooms are there on the second floor?",
+      "project": "dental_clinic",
+      "ifc_model": "arc",
+      "probe_id": "dental_arc_floor2_toilet_count",
+      "predicted": 8,
+      "expected": 8.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "117",
+      "skip_reason": null
+    },
+    {
+      "question": "What is the floor to floor height between the first and the second floor?",
+      "project": "dental_clinic",
+      "ifc_model": "arc",
+      "probe_id": "dental_arc_floor_to_floor_m",
+      "predicted": 4.57,
+      "expected": 4.57,
+      "status": "matched",
+      "detail": null,
+      "question_id": "118",
+      "skip_reason": null
+    },
+    {
+      "question": "What are the dimensions of the window with guid 0otfaO0qPDAhynjJ6DmgH8?",
+      "project": "dental_clinic",
+      "ifc_model": "arc",
+      "probe_id": "dental_arc_window_guid_height_m",
+      "predicted": 1.735,
+      "expected": 1.735,
+      "status": "matched",
+      "detail": null,
+      "question_id": "119",
+      "skip_reason": null
+    },
+    {
+      "question": "how many windows are there in this building?",
+      "project": "dental_clinic",
+      "ifc_model": "arc",
+      "probe_id": "dental_arc_window_count",
+      "predicted": 58,
+      "expected": 58.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "123",
+      "skip_reason": null
+    },
+    {
+      "question": "How many doors are there in this building?",
+      "project": "dental_clinic",
+      "ifc_model": "arc",
+      "probe_id": "dental_arc_door_count",
+      "predicted": 254,
+      "expected": 254.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "124",
+      "skip_reason": null
+    },
+    {
+      "question": "How many walls are load-bearing compared with non-load-bearing?",
+      "project": "digital_hub",
+      "ifc_model": "arc",
+      "probe_id": "digital_hub_arc_load_bearing_wall_count",
+      "predicted": 0,
+      "expected": 0.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "158",
+      "skip_reason": null
+    },
+    {
+      "question": "Which component types comprise the heating system and how many of each?",
+      "project": "digital_hub",
+      "ifc_model": "heating",
+      "probe_id": "digital_hub_heating_distribution_element_count",
+      "predicted": 1795,
+      "expected": 1795.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "200",
+      "skip_reason": null
+    },
+    {
+      "question": "What heating systems are present in this building, and what is the count of systems by category?",
+      "project": "digital_hub",
+      "ifc_model": "heating",
+      "probe_id": "digital_hub_heating_system_count",
+      "predicted": 42,
+      "expected": 42.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "211",
+      "skip_reason": null
+    },
+    {
+      "question": "How many air terminals serve each building storey?",
+      "project": "digital_hub",
+      "ifc_model": "ventilation",
+      "probe_id": "digital_hub_vent_air_terminal_count",
+      "predicted": 148,
+      "expected": 148.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "237",
+      "skip_reason": null
+    },
+    {
+      "question": "What is the width of the door 1hOSvn6df7F8_7GcBWlRGQ ?",
+      "project": "duplex",
+      "ifc_model": "arc",
+      "probe_id": "duplex_arc_door_guid_width_m",
+      "predicted": 1.25,
+      "expected": 1.25,
+      "status": "matched",
+      "detail": null,
+      "question_id": "242",
+      "skip_reason": null
+    },
+    {
+      "question": "What is the floor-to-floor height between the ground floor and first floor?",
+      "project": "duplex",
+      "ifc_model": "arc",
+      "probe_id": "duplex_arc_floor_to_floor_m",
+      "predicted": 3.1,
+      "expected": 3.1,
+      "status": "matched",
+      "detail": null,
+      "question_id": "244",
+      "skip_reason": null
+    },
+    {
+      "question": "How many interior doors are there in this building?",
+      "project": "duplex",
+      "ifc_model": "arc",
+      "probe_id": "duplex_arc_interior_door_count",
+      "predicted": 10,
+      "expected": 10.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "274",
+      "skip_reason": null
+    },
+    {
+      "question": "How many rooms are there in house A?",
+      "project": "duplex",
+      "ifc_model": "arc",
+      "probe_id": "duplex_arc_house_a_space_count",
+      "predicted": 10,
+      "expected": 10.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "279",
+      "skip_reason": null
+    },
+    {
+      "question": "How many bedrooms are there?",
+      "project": "duplex",
+      "ifc_model": "arc",
+      "probe_id": "duplex_arc_bedroom_count",
+      "predicted": 4,
+      "expected": 4.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "281",
+      "skip_reason": null
+    },
+    {
+      "question": "How many steps does the stair in house A have?",
+      "project": "duplex",
+      "ifc_model": "arc",
+      "probe_id": "duplex_arc_stair_risers",
+      "predicted": 16,
+      "expected": 16.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "282",
+      "skip_reason": null
+    },
+    {
+      "question": "how many bathroom are there ?",
+      "project": "duplex",
+      "ifc_model": "arc",
+      "probe_id": "duplex_arc_bathroom_count",
+      "predicted": 4,
+      "expected": 4.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "285",
+      "skip_reason": null
+    },
+    {
+      "question": "Which rooms have thermostats installed?",
+      "project": "duplex",
+      "ifc_model": "mep",
+      "probe_id": "duplex_mep_thermostat_count",
+      "predicted": 2,
+      "expected": 2.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "294",
+      "skip_reason": null
+    },
+    {
+      "question": "How many light fixtures are specified in the model, and what is the breakdown by type?",
+      "project": "duplex",
+      "ifc_model": "mep",
+      "probe_id": "duplex_mep_light_fixture_count",
+      "predicted": 14,
+      "expected": 14.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "302",
+      "skip_reason": null
+    },
+    {
+      "question": "How many piles are used in this building, and could you provide a breakdown by pile type including quantities and percentages?",
+      "project": "sixty5",
+      "ifc_model": "str",
+      "probe_id": "sixty5_str_pile_count",
+      "predicted": 146,
+      "expected": 146.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "878",
+      "skip_reason": null
+    },
+    {
+      "question": "What is the total number of railings installed in the building and what are their types?",
+      "project": "wbdg_office",
+      "ifc_model": "arc",
+      "probe_id": "wbdg_arc_railing_count",
+      "predicted": 10,
+      "expected": 10.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "974",
+      "skip_reason": null
+    },
+    {
+      "question": "How many MEP components exist per type?",
+      "project": "wbdg_office",
+      "ifc_model": "mep",
+      "probe_id": "wbdg_mep_flow_terminal_count",
+      "predicted": 1456,
+      "expected": 1456.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "984",
+      "skip_reason": null
+    },
+    {
+      "question": "How many water heaters are in this building, and what are their specifications?",
+      "project": "wbdg_office",
+      "ifc_model": "mep",
+      "probe_id": "wbdg_mep_water_heater_count",
+      "predicted": 1,
+      "expected": 1.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "996",
+      "skip_reason": null
+    },
+    {
+      "question": "How many electrical receptacles are installed in total, and what is the distribution by type?",
+      "project": "wbdg_office",
+      "ifc_model": "mep",
+      "probe_id": "wbdg_mep_receptacle_count",
+      "predicted": 441,
+      "expected": 441.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "1014",
+      "skip_reason": null
+    },
+    {
+      "question": "Which types of columns are present in this building, and how many?",
+      "project": "wbdg_office",
+      "ifc_model": "str",
+      "probe_id": "wbdg_str_column_count",
+      "predicted": 80,
+      "expected": 80.0,
+      "status": "matched",
+      "detail": null,
+      "question_id": "1020",
+      "skip_reason": null
+    }
+  ],
+  "skipped_count": 999,
+  "output_sha256": "6ca587ebe79e4d7d4cb76a5b42f9111991476568111262d5d1c06ffd059477e1"
+}

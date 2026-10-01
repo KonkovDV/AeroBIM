@@ -1,0 +1,847 @@
+"""Tests for BCF report export adapter and clash detection port."""
+
+from __future__ import annotations
+
+import io
+import sys
+import tempfile
+import types
+import unittest
+import zipfile
+from datetime import UTC, datetime
+from pathlib import Path
+from unittest.mock import patch
+from uuid import uuid4
+
+from aerobim.domain.models import (
+    ClashResult,
+    FindingCategory,
+    Severity,
+    ValidationIssue,
+    ValidationReport,
+    ValidationSummary,
+)
+
+
+def _make_report(
+    *,
+    issue_count: int = 1,
+    severity: Severity = Severity.ERROR,
+    with_guid: bool = True,
+) -> ValidationReport:
+    issues = tuple(
+        ValidationIssue(
+            rule_id=f"IDS-TestRule-{i}",
+            severity=severity,
+            message=f"Test issue {i}",
+            category=FindingCategory.IDS_VALIDATION,
+            element_guid=f"guid-{i}" if with_guid else None,
+        )
+        for i in range(issue_count)
+    )
+    return ValidationReport(
+        report_id=uuid4().hex,
+        request_id="req-bcf-test",
+        ifc_path=Path("test.ifc"),
+        created_at=datetime.now(tz=UTC).isoformat(),
+        requirements=(),
+        issues=issues,
+        summary=ValidationSummary(
+            requirement_count=0,
+            issue_count=issue_count,
+            error_count=issue_count if severity == Severity.ERROR else 0,
+            warning_count=issue_count if severity == Severity.WARNING else 0,
+            passed=severity != Severity.ERROR,
+        ),
+    )
+
+
+def _make_report_with_clash() -> ValidationReport:
+    report = _make_report(issue_count=1, with_guid=True)
+    return ValidationReport(
+        report_id=report.report_id,
+        request_id=report.request_id,
+        ifc_path=report.ifc_path,
+        created_at=report.created_at,
+        requirements=report.requirements,
+        issues=report.issues,
+        summary=report.summary,
+        drawing_annotations=report.drawing_annotations,
+        clash_results=(
+            ClashResult(
+                element_a_guid="clash-a-guid",
+                element_b_guid="clash-b-guid",
+                clash_type="hard",
+                distance=0.015,
+                description="Hard clash between wall and pipe",
+            ),
+        ),
+    )
+
+
+class BcfExportTests(unittest.TestCase):
+    def test_bcf_description_carries_itz_sto_sp_stamp(self) -> None:
+        from dataclasses import replace
+
+        from aerobim.infrastructure.adapters.bcf_report_exporter import collect_bcf_topics
+
+        report = _make_report(issue_count=1)
+        stamped = replace(report.issues[0], norm_source="СП 63", norm_clause="8.1")
+        topics = collect_bcf_topics(replace(report, issues=(stamped,)))
+        self.assertTrue(topics)
+        self.assertIn("norm=СП 63 · 8.1", topics[0].description)
+
+    def test_bcf_exports_template_mep_as_comment_not_clash(self) -> None:
+        from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
+
+        report = ValidationReport(
+            report_id=uuid4().hex,
+            request_id="req-mep-bcf",
+            ifc_path=Path("test.ifc"),
+            created_at=datetime.now(tz=UTC).isoformat(),
+            requirements=(),
+            issues=(
+                ValidationIssue(
+                    rule_id="AEROBIM-MEP-TEMPLATE",
+                    severity=Severity.WARNING,
+                    message="Template matrix co-presence only",
+                    category=FindingCategory.SPATIAL,
+                    element_guid="3ZAR7ASd14MuxcHc7_fqIb",
+                    target_ref="HVAC-SUPPLY|SPRINKLER",
+                    evidence_refs=(
+                        "3ZAR7ASd14MuxcHc7_fqIb",
+                        "0aKrY0eXn00Qu9HBZ7Ao4t",
+                        "claim_boundary:geometry_NOT_VERIFIED",
+                        "claim_boundary:matrix_synthetic",
+                    ),
+                    origin="deterministic",
+                ),
+            ),
+            summary=ValidationSummary(
+                requirement_count=0,
+                issue_count=1,
+                error_count=0,
+                warning_count=1,
+                passed=True,
+            ),
+        )
+        bcf_bytes = export_bcf(report)
+        with zipfile.ZipFile(io.BytesIO(bcf_bytes), "r") as zf:
+            markup = next(n for n in zf.namelist() if n.endswith("/markup.bcf"))
+            xml = zf.read(markup).decode("utf-8")
+            self.assertIn('TopicType="Comment"', xml)
+            self.assertNotIn('TopicType="Clash"', xml)
+            self.assertIn("RT-003_OPEN", xml)
+            self.assertIn("mep:not_verified", xml)
+
+    def test_bcf_archive_is_valid_zip(self) -> None:
+        from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
+
+        report = _make_report(issue_count=2)
+        bcf_bytes = export_bcf(report)
+        self.assertIsInstance(bcf_bytes, bytes)
+        self.assertGreater(len(bcf_bytes), 0)
+
+        with zipfile.ZipFile(io.BytesIO(bcf_bytes), "r") as zf:
+            names = zf.namelist()
+            self.assertIn("bcf.version", names)
+            # 2 error issues → 2 topic folders
+            markup_files = [n for n in names if n.endswith("/markup.bcf")]
+            self.assertEqual(len(markup_files), 2)
+
+    def test_bcf_version_contains_2_1(self) -> None:
+        from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
+
+        report = _make_report(issue_count=1)
+        bcf_bytes = export_bcf(report)
+
+        with zipfile.ZipFile(io.BytesIO(bcf_bytes), "r") as zf:
+            version_xml = zf.read("bcf.version").decode("utf-8")
+            self.assertIn("2.1", version_xml)
+
+    def test_bcf_markup_contains_topic_elements(self) -> None:
+        from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
+
+        report = _make_report(issue_count=1, with_guid=True)
+        bcf_bytes = export_bcf(report)
+
+        with zipfile.ZipFile(io.BytesIO(bcf_bytes), "r") as zf:
+            markup_files = [n for n in zf.namelist() if n.endswith("/markup.bcf")]
+            self.assertEqual(len(markup_files), 1)
+            markup_xml = zf.read(markup_files[0]).decode("utf-8")
+            self.assertIn("<Topic", markup_xml)
+            self.assertIn("<Title>", markup_xml)
+            self.assertIn("IDS-TestRule-0", markup_xml)
+            self.assertIn("guid-0", markup_xml)
+
+    def test_bcf_marks_ai_generated_remark_in_provenance_and_label(self) -> None:
+        from aerobim.domain.models import GeneratedRemark
+        from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
+
+        report = _make_report(issue_count=1, with_guid=True)
+        issue = report.issues[0]
+        marked = ValidationIssue(
+            rule_id=issue.rule_id,
+            severity=issue.severity,
+            message=issue.message,
+            category=issue.category,
+            element_guid=issue.element_guid,
+            finding_id="fid-ai-1",
+            origin="deterministic",
+            remark=GeneratedRemark(
+                title="AI draft",
+                body="Model-written remark body",
+                ai_generated=True,
+                expert_confirmation_required=True,
+            ),
+        )
+        report = ValidationReport(
+            report_id=report.report_id,
+            request_id=report.request_id,
+            ifc_path=report.ifc_path,
+            created_at=report.created_at,
+            requirements=report.requirements,
+            issues=(marked,),
+            summary=report.summary,
+        )
+        bcf_bytes = export_bcf(report)
+        with zipfile.ZipFile(io.BytesIO(bcf_bytes), "r") as zf:
+            markup = next(n for n in zf.namelist() if n.endswith("/markup.bcf"))
+            xml = zf.read(markup).decode("utf-8")
+            self.assertIn("Model-written remark body", xml)
+            self.assertIn("ai_generated=true;expert_confirmation_required=true", xml)
+            self.assertIn("ai_generated:true", xml)
+
+    def test_bcf_markup_references_viewpoint_file(self) -> None:
+        from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
+
+        report = _make_report(issue_count=1, with_guid=True)
+        bcf_bytes = export_bcf(report)
+
+        with zipfile.ZipFile(io.BytesIO(bcf_bytes), "r") as zf:
+            markup_files = [n for n in zf.namelist() if n.endswith("/markup.bcf")]
+            viewpoint_files = [n for n in zf.namelist() if n.endswith("/viewpoint.bcfv")]
+            self.assertEqual(len(markup_files), 1)
+            self.assertEqual(len(viewpoint_files), 1)
+            markup_xml = zf.read(markup_files[0]).decode("utf-8")
+            # markup.xsd (release_2_1): Viewpoints is ViewPoint-typed with Guid attr.
+            self.assertIn("<Viewpoints", markup_xml)
+            self.assertIn("viewpoint.bcfv", markup_xml)
+
+    def test_bcf_viewpoint_contains_camera_and_selected_guid(self) -> None:
+        from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
+
+        report = _make_report(issue_count=1, with_guid=True)
+        bcf_bytes = export_bcf(report)
+
+        with zipfile.ZipFile(io.BytesIO(bcf_bytes), "r") as zf:
+            viewpoint_files = [n for n in zf.namelist() if n.endswith("/viewpoint.bcfv")]
+            self.assertEqual(len(viewpoint_files), 1)
+            viewpoint_xml = zf.read(viewpoint_files[0]).decode("utf-8")
+            self.assertIn("<OrthogonalCamera>", viewpoint_xml)
+            self.assertIn("<Selection>", viewpoint_xml)
+            self.assertIn('IfcGuid="guid-0"', viewpoint_xml)
+
+    def test_bcf_only_includes_errors(self) -> None:
+        from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
+
+        report = _make_report(issue_count=3, severity=Severity.WARNING)
+        bcf_bytes = export_bcf(report)
+
+        with zipfile.ZipFile(io.BytesIO(bcf_bytes), "r") as zf:
+            markup_files = [n for n in zf.namelist() if n.endswith("/markup.bcf")]
+            self.assertEqual(len(markup_files), 0, "Warnings should not produce BCF topics")
+
+    def test_bcf_empty_report_produces_version_only(self) -> None:
+        from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
+
+        report = _make_report(issue_count=0)
+        bcf_bytes = export_bcf(report)
+
+        with zipfile.ZipFile(io.BytesIO(bcf_bytes), "r") as zf:
+            names = zf.namelist()
+            self.assertEqual(names, ["bcf.version"])
+
+    def test_bcf_exports_openrebar_cross_document_warning(self) -> None:
+        from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
+
+        report = ValidationReport(
+            report_id=uuid4().hex,
+            request_id="req-openrebar-warning",
+            ifc_path=Path("test.ifc"),
+            created_at=datetime.now(tz=UTC).isoformat(),
+            requirements=(),
+            issues=(
+                ValidationIssue(
+                    rule_id="OPENREBAR-PROVENANCE-DIGEST",
+                    severity=Severity.WARNING,
+                    message="OpenRebar provenance digest mismatch",
+                    category=FindingCategory.CROSS_DOCUMENT,
+                    target_ref="SLAB-03",
+                ),
+            ),
+            summary=ValidationSummary(
+                requirement_count=0,
+                issue_count=1,
+                error_count=0,
+                warning_count=1,
+                passed=True,
+            ),
+        )
+
+        bcf_bytes = export_bcf(report)
+        with zipfile.ZipFile(io.BytesIO(bcf_bytes), "r") as zf:
+            markup_files = [n for n in zf.namelist() if n.endswith("/markup.bcf")]
+            self.assertEqual(len(markup_files), 1)
+            markup_xml = zf.read(markup_files[0]).decode("utf-8")
+            self.assertIn("OPENREBAR-PROVENANCE-DIGEST", markup_xml)
+            self.assertIn("CoordinationWarning", markup_xml)
+
+    def test_bcf_exports_clash_results_as_additional_topics(self) -> None:
+        from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
+
+        report = _make_report_with_clash()
+        bcf_bytes = export_bcf(report)
+
+        with zipfile.ZipFile(io.BytesIO(bcf_bytes), "r") as zf:
+            markup_files = [n for n in zf.namelist() if n.endswith("/markup.bcf")]
+            viewpoint_files = [n for n in zf.namelist() if n.endswith("/viewpoint.bcfv")]
+            self.assertEqual(len(markup_files), 2)
+            self.assertEqual(len(viewpoint_files), 2)
+            combined_markup = "\n".join(zf.read(name).decode("utf-8") for name in markup_files)
+            self.assertIn("Hard clash between wall and pipe", combined_markup)
+            combined_viewpoints = "\n".join(
+                zf.read(name).decode("utf-8") for name in viewpoint_files
+            )
+            self.assertIn('IfcGuid="clash-a-guid"', combined_viewpoints)
+            self.assertIn('IfcGuid="clash-b-guid"', combined_viewpoints)
+
+
+class BcfApiExportTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        try:
+            from fastapi.testclient import TestClient
+        except ModuleNotFoundError as exc:
+            raise unittest.SkipTest("FastAPI/httpx not installed") from exc
+        import importlib.util
+        import sys
+
+        sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+        from aerobim.core.di.tokens import Tokens
+        from aerobim.presentation.http.api import create_http_app
+
+        # Load _make_test_container from test_api_security via file path
+        spec = importlib.util.spec_from_file_location(
+            "test_api_security",
+            Path(__file__).resolve().parent / "test_api_security.py",
+        )
+        mod = importlib.util.module_from_spec(spec)  # type: ignore[arg-type]
+        spec.loader.exec_module(mod)  # type: ignore[union-attr]
+        container = mod._make_test_container()
+        app = create_http_app(container)
+        cls.client = TestClient(app)
+        cls.store = container.resolve(Tokens.AUDIT_REPORT_STORE)
+
+    def test_bcf_export_nonexistent_report_returns_404(self) -> None:
+        response = self.client.get("/v1/reports/00000000000000000000000000000000/export/bcf")
+        self.assertEqual(response.status_code, 404)
+
+    def test_bcf_export_returns_zip_content(self) -> None:
+        report = _make_report(issue_count=1, with_guid=True)
+        self.store.save(report)
+        report_id = report.report_id
+        bcf_resp = self.client.get(f"/v1/reports/{report_id}/export/bcf")
+        self.assertEqual(bcf_resp.status_code, 200)
+        self.assertIn("bcfzip", bcf_resp.headers.get("content-type", ""))
+        # Must be a valid zip
+        with zipfile.ZipFile(io.BytesIO(bcf_resp.content), "r") as zf:
+            self.assertIn("bcf.version", zf.namelist())
+
+
+class ClashDetectorPortTests(unittest.TestCase):
+    def test_clash_detector_registered_in_container(self) -> None:
+        from aerobim.core.config.settings import Settings
+        from aerobim.core.di.tokens import Tokens
+        from aerobim.infrastructure.di.bootstrap import bootstrap_container
+
+        tmp = tempfile.mkdtemp()
+        settings = Settings(
+            application_name="test",
+            environment="test",
+            host="127.0.0.1",
+            port=8080,
+            storage_dir=Path(tmp) / "var",
+            debug=True,
+        )
+        settings.storage_dir.mkdir(parents=True, exist_ok=True)
+        container = bootstrap_container(settings)
+        clash_detector = container.resolve(Tokens.CLASH_DETECTOR)
+        self.assertIsNotNone(clash_detector)
+        self.assertTrue(hasattr(clash_detector, "detect"))
+
+    def test_clash_detector_raises_on_missing_file(self) -> None:
+        from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
+
+        detector = IfcClashDetector()
+        with self.assertRaises(FileNotFoundError):
+            detector.detect(Path("/nonexistent/model.ifc"))
+
+    def test_clash_detector_graceful_without_ifcclash(self) -> None:
+        """When ifcclash is not installed, detect() raises ClashCapabilityError(skipped)."""
+        from aerobim.domain.errors import ClashCapabilityError
+        from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
+
+        detector = IfcClashDetector()
+        ifc_path = (
+            Path(__file__).resolve().parents[2] / "samples" / "ifc" / "wall-fire-rating-rei60.ifc"
+        )
+        if not ifc_path.exists():
+            self.skipTest("IFC fixture not available")
+
+        try:
+            results = detector.detect(ifc_path)
+        except ClashCapabilityError as exc:
+            # Tiny fixtures may fail geom initialize when ifcclash is installed;
+            # missing optional stack still reports skipped.
+            self.assertIn(exc.status, {"skipped", "failed"})
+            return
+
+        # ifcclash installed → real list result
+        self.assertIsInstance(results, list)
+
+    def test_clash_detector_runtime_failure_raises_capability_error(self) -> None:
+        from aerobim.domain.errors import ClashCapabilityError
+        from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
+
+        detector = IfcClashDetector()
+        ifc_path = (
+            Path(__file__).resolve().parents[2] / "samples" / "ifc" / "wall-fire-rating-rei60.ifc"
+        )
+        if not ifc_path.exists():
+            self.skipTest("IFC fixture not available")
+
+        with patch.object(
+            detector, "_run_clash_detection", side_effect=AssertionError("geom init failed")
+        ):
+            with self.assertRaises(ClashCapabilityError) as ctx:
+                detector.detect(ifc_path)
+
+        self.assertEqual(ctx.exception.status, "failed")
+        self.assertIn("geom init failed", ctx.exception.reason)
+
+    def test_clash_detector_nameless_exception_includes_type(self) -> None:
+        from aerobim.domain.errors import ClashCapabilityError
+        from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
+
+        detector = IfcClashDetector()
+        ifc_path = (
+            Path(__file__).resolve().parents[2] / "samples" / "ifc" / "wall-fire-rating-rei60.ifc"
+        )
+        if not ifc_path.exists():
+            self.skipTest("IFC fixture not available")
+
+        with patch.object(detector, "_run_clash_detection", side_effect=RuntimeError()):
+            with self.assertRaises(ClashCapabilityError) as ctx:
+                detector.detect(ifc_path)
+
+        self.assertEqual(ctx.exception.status, "failed")
+        self.assertIn("RuntimeError", ctx.exception.reason)
+        self.assertNotEqual(ctx.exception.reason.strip(), "Clash detection failed:")
+
+    def test_clash_detector_empty_assertion_names_fixture_geom_init(self) -> None:
+        from aerobim.domain.errors import ClashCapabilityError
+        from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
+
+        detector = IfcClashDetector()
+        ifc_path = (
+            Path(__file__).resolve().parents[2] / "samples" / "ifc" / "wall-fire-rating-rei60.ifc"
+        )
+        if not ifc_path.exists():
+            self.skipTest("IFC fixture not available")
+
+        with patch.object(detector, "_run_clash_detection", side_effect=AssertionError()):
+            with self.assertRaises(ClashCapabilityError) as ctx:
+                detector.detect(ifc_path)
+
+        self.assertEqual(ctx.exception.status, "failed")
+        self.assertIn("AssertionError", ctx.exception.reason)
+        self.assertIn("tiny wall fixtures", ctx.exception.reason)
+        self.assertNotEqual(ctx.exception.reason.strip(), "Clash detection failed:")
+
+    def test_clash_detector_cleans_temporary_output_directory(self) -> None:
+        from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
+
+        detector = IfcClashDetector(skip_tiny_elements=False)
+        ifc_path = (
+            Path(__file__).resolve().parents[2] / "samples" / "ifc" / "wall-fire-rating-rei60.ifc"
+        )
+        if not ifc_path.exists():
+            self.skipTest("IFC fixture not available")
+
+        tracked_dir = Path(tempfile.mkdtemp(prefix="aerobim-clash-test-")) / "tracked-output"
+        tracked_dir.mkdir(parents=True, exist_ok=True)
+
+        fake_package = types.ModuleType("ifcclash")
+        fake_submodule = types.ModuleType("ifcclash.ifcclash")
+
+        class _FakeClashSettings:
+            def __init__(self) -> None:
+                self.output = ""
+
+        class _FakeClasher:
+            def __init__(self, settings: _FakeClashSettings) -> None:
+                self.settings = settings
+                self.clash_sets: list[dict[str, object]] = []
+
+            def clash(self) -> None:
+                self.clash_sets = [{"clashes": {}}]
+
+        fake_submodule.ClashSettings = _FakeClashSettings
+        fake_submodule.Clasher = _FakeClasher
+        fake_package.ifcclash = fake_submodule
+
+        try:
+            with patch("tempfile.TemporaryDirectory") as temp_dir_factory:
+                temp_dir_factory.return_value.__enter__.return_value = str(tracked_dir)
+                temp_dir_factory.return_value.__exit__.side_effect = lambda exc_type, exc, tb: (
+                    tracked_dir.rmdir()
+                )
+
+                with patch.dict(
+                    sys.modules,
+                    {
+                        "ifcclash": fake_package,
+                        "ifcclash.ifcclash": fake_submodule,
+                    },
+                ):
+                    detector.detect(ifc_path)
+
+            self.assertFalse(tracked_dir.exists())
+        finally:
+            if tracked_dir.exists():
+                tracked_dir.rmdir()
+
+    def test_clash_result_dataclass_fields(self) -> None:
+        from aerobim.domain.models import ClashResult
+
+        result = ClashResult(
+            element_a_guid="abc",
+            element_b_guid="def",
+            clash_type="hard",
+            distance=0.005,
+            description="Test clash",
+        )
+        self.assertEqual(result.element_a_guid, "abc")
+        self.assertEqual(result.clash_type, "hard")
+        self.assertAlmostEqual(result.distance, 0.005)
+
+    def test_detect_between_raises_on_missing_file(self) -> None:
+        from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
+
+        detector = IfcClashDetector()
+        existing = (
+            Path(__file__).resolve().parents[2] / "samples" / "ifc" / "wall-fire-rating-rei60.ifc"
+        )
+        if not existing.exists():
+            self.skipTest("IFC fixture not available")
+        with self.assertRaises(FileNotFoundError):
+            detector.detect_between(existing, Path("/nonexistent-b.ifc"))
+        with self.assertRaises(FileNotFoundError):
+            detector.detect_between(Path("/nonexistent-a.ifc"), existing)
+
+    def test_detect_between_builds_federated_clash_set(self) -> None:
+        from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
+
+        detector = IfcClashDetector(skip_tiny_elements=False)
+        ifc_a = (
+            Path(__file__).resolve().parents[2] / "samples" / "ifc" / "wall-fire-rating-rei60.ifc"
+        )
+        ifc_b = (
+            Path(__file__).resolve().parents[2]
+            / "samples"
+            / "ifc"
+            / "clash-two-overlapping-boxes.ifc"
+        )
+        if not ifc_a.exists() or not ifc_b.exists():
+            self.skipTest("IFC fixtures not available")
+
+        captured: list[list[dict[str, object]]] = []
+        fake_package = types.ModuleType("ifcclash")
+        fake_submodule = types.ModuleType("ifcclash.ifcclash")
+
+        class _FakeClashSettings:
+            def __init__(self) -> None:
+                self.output = ""
+                self.logger = None
+
+        class _FakeClasher:
+            def __init__(self, settings: _FakeClashSettings) -> None:
+                self.settings = settings
+                self.clash_sets: list[dict[str, object]] = []
+
+            def clash(self) -> None:
+                captured.append(list(self.clash_sets))
+                self.clash_sets = [
+                    {
+                        "clashes": {
+                            "1": {
+                                "a_global_id": "guid-a",
+                                "b_global_id": "guid-b",
+                                "a_name": "Wall",
+                                "b_name": "Duct",
+                                "distance": 0.01,
+                            }
+                        }
+                    }
+                ]
+
+        fake_submodule.ClashSettings = _FakeClashSettings
+        fake_submodule.Clasher = _FakeClasher
+        fake_package.ifcclash = fake_submodule
+
+        with patch.dict(
+            sys.modules,
+            {
+                "ifcclash": fake_package,
+                "ifcclash.ifcclash": fake_submodule,
+            },
+        ):
+            results = detector.detect_between(ifc_a, ifc_b)
+
+        self.assertEqual(len(captured), 1)
+        clash_set = captured[0][0]
+        self.assertEqual(clash_set["a"], [{"file": str(ifc_a)}])
+        self.assertEqual(clash_set["b"], [{"file": str(ifc_b)}])
+        self.assertTrue(clash_set["check_all"])
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].element_a_guid, "guid-a")
+        self.assertEqual(results[0].element_b_guid, "guid-b")
+
+    def test_planted_federated_boxes_clash_when_ifcclash_installed(self) -> None:
+        import importlib.util
+
+        if importlib.util.find_spec("ifcclash") is None:
+            self.skipTest("ifcclash optional extra not installed")
+        from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
+
+        root = Path(__file__).resolve().parents[2]
+        path_a = root / "samples" / "ifc" / "clash-federated-box-a.ifc"
+        path_b = root / "samples" / "ifc" / "clash-federated-box-b.ifc"
+        if not path_a.is_file() or not path_b.is_file():
+            self.skipTest("planted federated clash fixtures missing")
+        results = IfcClashDetector().detect_between(path_a, path_b)
+        self.assertGreaterEqual(len(results), 1)
+
+    def test_detect_clearance_between_builds_clearance_clash_set(self) -> None:
+        from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
+
+        detector = IfcClashDetector(skip_tiny_elements=False)
+        ifc_a = (
+            Path(__file__).resolve().parents[2] / "samples" / "ifc" / "wall-fire-rating-rei60.ifc"
+        )
+        ifc_b = (
+            Path(__file__).resolve().parents[2]
+            / "samples"
+            / "ifc"
+            / "clash-two-overlapping-boxes.ifc"
+        )
+        if not ifc_a.exists() or not ifc_b.exists():
+            self.skipTest("IFC fixtures not available")
+
+        captured: list[list[dict[str, object]]] = []
+        fake_package = types.ModuleType("ifcclash")
+        fake_submodule = types.ModuleType("ifcclash.ifcclash")
+
+        class _FakeClashSettings:
+            def __init__(self) -> None:
+                self.output = ""
+                self.logger = None
+
+        class _FakeClasher:
+            def __init__(self, settings: _FakeClashSettings) -> None:
+                self.settings = settings
+                self.clash_sets: list[dict[str, object]] = []
+
+            def clash(self) -> None:
+                captured.append(list(self.clash_sets))
+                self.clash_sets = [
+                    {
+                        "mode": "clearance",
+                        "clashes": {
+                            "1": {
+                                "a_global_id": "guid-a",
+                                "b_global_id": "guid-b",
+                                "a_name": "Duct",
+                                "b_name": "Pipe",
+                                "type": "clearance",
+                                "distance": 0.03,
+                            }
+                        },
+                    }
+                ]
+
+        fake_submodule.ClashSettings = _FakeClashSettings
+        fake_submodule.Clasher = _FakeClasher
+        fake_package.ifcclash = fake_submodule
+
+        with patch.dict(
+            sys.modules,
+            {
+                "ifcclash": fake_package,
+                "ifcclash.ifcclash": fake_submodule,
+            },
+        ):
+            results = detector.detect_clearance_between(ifc_a, ifc_b, clearance_m=0.05)
+
+        self.assertEqual(len(captured), 1)
+        clash_set = captured[0][0]
+        self.assertEqual(clash_set["mode"], "clearance")
+        self.assertEqual(clash_set["clearance"], 0.05)
+        self.assertTrue(clash_set["check_all"])
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].clash_type, "clearance")
+
+    def test_clearance_gap_hits_when_ifcclash_installed(self) -> None:
+        import importlib.util
+
+        if importlib.util.find_spec("ifcclash") is None:
+            self.skipTest("ifcclash optional extra not installed")
+        from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
+
+        root = Path(__file__).resolve().parents[2]
+        path_a = root / "samples" / "ifc" / "clash-clearance-gap-a.ifc"
+        path_b = root / "samples" / "ifc" / "clash-clearance-gap-b.ifc"
+        if not path_a.is_file() or not path_b.is_file():
+            self.skipTest("clearance-gap fixtures missing")
+        hard = IfcClashDetector().detect_between(path_a, path_b)
+        soft = IfcClashDetector().detect_clearance_between(path_a, path_b, clearance_m=0.05)
+        self.assertEqual(len(hard), 0)
+        self.assertGreaterEqual(len(soft), 1)
+        self.assertTrue(all(hit.clash_type == "clearance" for hit in soft))
+
+    def test_planted_clash_exports_bcf_file_ingest_round_trip(self) -> None:
+        import importlib.util
+
+        if importlib.util.find_spec("ifcclash") is None:
+            self.skipTest("ifcclash optional extra not installed")
+        from aerobim.infrastructure.adapters.bcf_consumers import consume_bcf_zip
+        from aerobim.infrastructure.adapters.bcf_report_exporter import export_bcf
+        from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
+        from aerobim.tools.ingest_bcf_zip import ingest_payload
+
+        root = Path(__file__).resolve().parents[2]
+        path_a = root / "samples" / "ifc" / "clash-federated-box-a.ifc"
+        path_b = root / "samples" / "ifc" / "clash-federated-box-b.ifc"
+        if not path_a.is_file() or not path_b.is_file():
+            self.skipTest("planted federated clash fixtures missing")
+        hits = IfcClashDetector().detect_between(path_a, path_b)
+        self.assertGreaterEqual(len(hits), 1)
+        report = ValidationReport(
+            report_id=uuid4().hex,
+            request_id="req-clash-bcf-roundtrip",
+            ifc_path=path_a,
+            created_at=datetime.now(tz=UTC).isoformat(),
+            requirements=(),
+            issues=(),
+            summary=ValidationSummary(
+                requirement_count=0,
+                issue_count=0,
+                error_count=0,
+                warning_count=0,
+                passed=True,
+            ),
+            clash_results=tuple(hits),
+        )
+        archive = export_bcf(report)
+        topics = consume_bcf_zip(archive)
+        self.assertGreaterEqual(len(topics), 1)
+        exported_guids = {guid for topic in topics for guid in topic.selected_ifc_guids}
+        planted = {hits[0].element_a_guid, hits[0].element_b_guid}
+        self.assertTrue(exported_guids.intersection(planted))
+        with tempfile.TemporaryDirectory() as tmp:
+            zip_path = Path(tmp) / "clash-roundtrip.bcfzip"
+            zip_path.write_bytes(archive)
+            payload = ingest_payload(zip_path)
+        self.assertEqual(payload["cde_import"], "NOT_VERIFIED")
+        self.assertFalse(payload["closes_rt003"])
+        self.assertTrue(payload["structural_ok"])
+
+
+class ClashTinyWallSkipTests(unittest.TestCase):
+    def test_aabb_volume_helper(self) -> None:
+        from aerobim.infrastructure.adapters.ifc_clash_detector import aabb_volume_m3
+
+        self.assertAlmostEqual(aabb_volume_m3(0, 0, 0, 1, 2, 3), 6.0)
+        self.assertEqual(aabb_volume_m3(1, 1, 1, 0, 0, 0), 0.0)
+
+    def test_guid_include_selector(self) -> None:
+        from aerobim.infrastructure.adapters.ifc_clash_detector import guid_include_selector
+
+        self.assertIsNone(guid_include_selector([]))
+        self.assertEqual(guid_include_selector(["abc", " def "]), "#abc, #def")
+
+    def test_self_clash_set_includes_selector(self) -> None:
+        from aerobim.infrastructure.adapters.ifc_clash_detector import self_clash_set
+
+        payload = self_clash_set(Path("model.ifc"), selector="#guid-1")
+        self.assertEqual(payload["a"][0]["selector"], "#guid-1")
+
+    def test_skip_tiny_disabled_keeps_assertion_mapping(self) -> None:
+        from aerobim.domain.errors import ClashCapabilityError
+        from aerobim.infrastructure.adapters.ifc_clash_detector import IfcClashDetector
+
+        detector = IfcClashDetector(skip_tiny_elements=False)
+        ifc_path = (
+            Path(__file__).resolve().parents[2] / "samples" / "ifc" / "wall-fire-rating-rei60.ifc"
+        )
+        if not ifc_path.exists():
+            self.skipTest("IFC fixture not available")
+        with patch.object(detector, "_run_clash_sets", side_effect=AssertionError()):
+            with self.assertRaises(ClashCapabilityError) as ctx:
+                detector.detect(ifc_path)
+        self.assertEqual(ctx.exception.status, "failed")
+        self.assertIn("tiny wall fixtures", ctx.exception.reason)
+
+    def test_selector_for_skips_tiny_products(self) -> None:
+        from aerobim.infrastructure.adapters.ifc_clash_detector import (
+            ClashGeometryProbe,
+            IfcClashDetector,
+        )
+
+        detector = IfcClashDetector(skip_tiny_elements=True, min_aabb_volume_m3=1e-6)
+        probe = ClashGeometryProbe(
+            included_guids=("keep-me",),
+            skipped=(("tiny-wall", "aabb_volume=1.0e-09m3 below 1e-06"),),
+        )
+        with patch(
+            "aerobim.infrastructure.adapters.ifc_clash_detector.probe_clash_geometry",
+            return_value=probe,
+        ):
+            selector = detector._selector_for(Path("model.ifc"))
+        self.assertEqual(selector, "#keep-me")
+
+    def test_selector_for_fails_when_all_products_skipped(self) -> None:
+        from aerobim.domain.errors import ClashCapabilityError
+        from aerobim.infrastructure.adapters.ifc_clash_detector import (
+            ClashGeometryProbe,
+            IfcClashDetector,
+        )
+
+        detector = IfcClashDetector(skip_tiny_elements=True)
+        probe = ClashGeometryProbe(
+            included_guids=(),
+            skipped=(("tiny-wall", "geom init AssertionError"),),
+        )
+        with patch(
+            "aerobim.infrastructure.adapters.ifc_clash_detector.probe_clash_geometry",
+            return_value=probe,
+        ):
+            with self.assertRaises(ClashCapabilityError) as ctx:
+                detector._selector_for(Path("model.ifc"))
+        self.assertEqual(ctx.exception.status, "failed")
+        self.assertIn("skipped all products", ctx.exception.reason)
+
+
+if __name__ == "__main__":
+    unittest.main()

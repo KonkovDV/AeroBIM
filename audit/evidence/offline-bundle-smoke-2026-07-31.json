@@ -1,0 +1,47 @@
+{
+  "artifact_type": "offline_bundle_smoke",
+  "schema_version": "1.0.0",
+  "date": "2026-07-31",
+  "generated_at": "2026-07-31T14:40:06.003102+00:00",
+  "claim_level": "image_bundle_only",
+  "scope_honesty": "Proves offline INSTALL and offline RUNTIME for a closed contour that already has Docker: the production image is built from hash-locked wheels + digest-pinned base, saved to a tar, the local tag is REMOVED, then the image is restored purely from the tar (docker load) and served with --network none. Does NOT prove bare-metal / no-Docker install (wheelhouse) — that remains NOT VERIFIED. The 850 MB image tar is gitignored (artifacts/*), regenerated via `python -m aerobim.tools.offline_bundle build`.",
+  "environment": {
+    "docker": "29.5.2 (linux/x86_64)",
+    "image_tag": "aerobim-backend:offline-bundle",
+    "image_id": "sha256:76e222de114a0bdd6f88bcfa3ca5cc47549dea38933ff56819938180434a784c",
+    "base_image": "python:3.12-slim@sha256:57cd7c3a7a273101a6485ba99423ee568157882804b1124b4dd04266317710de",
+    "image_tar_sha256": "90cdb85f77acb3eb4bb5d3384a0d7f2f3623cea9c09c97285d8038bd3fae2116",
+    "image_tar_bytes": 891592704
+  },
+  "checks": [
+    {
+      "check": "offline_bundle build (docker build + docker save tar + locks + manifest)",
+      "result": "PASS rc=0"
+    },
+    {
+      "check": "offline_bundle verify (sha256 of every bundle file vs manifest)",
+      "result": "PASS rc=0 all match"
+    },
+    {
+      "check": "offline install: docker rmi tag then docker load -i tar",
+      "result": "PASS (image restored from tar only)"
+    },
+    {
+      "check": "offline runtime: docker run --network none",
+      "result": "PASS container Up healthy"
+    },
+    {
+      "check": "GET /health inside container",
+      "result": "PASS 200"
+    },
+    {
+      "check": "GET /v1/system/capabilities with bearer",
+      "result": "PASS 200"
+    },
+    {
+      "check": "manifest tamper/missing detection (unit tests)",
+      "result": "PASS 4/4 test_offline_bundle_manifest"
+    }
+  ],
+  "supersedes_note": "extends audit/evidence/offline-runtime-smoke-2026-07-31.json: that proved runtime-only; this adds the install-from-tar step (docker load after tag removal)."
+}

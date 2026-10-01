@@ -1,0 +1,14 @@
+# H1.1 mutation testing config: domain/object_acl.py (RT-005 tenant ACL core).
+# Run from backend/:
+#   cosmic-ray init tests/mutation/object_acl.toml var/mutation/object_acl.sqlite
+#   cosmic-ray baseline tests/mutation/object_acl.toml
+#   cosmic-ray exec tests/mutation/object_acl.toml var/mutation/object_acl.sqlite
+#   cr-rate var/mutation/object_acl.sqlite   # acceptance: kill rate >= 85%
+[cosmic-ray]
+module-path = "src/aerobim/domain/object_acl.py"
+timeout = 60.0
+excluded-modules = []
+test-command = "python -m pytest -x -q tests/test_mutation_kills_object_acl.py tests/test_p0_remediation_fail_closed.py tests/test_rt_norm_pack_tenancy.py tests/test_rt_phase8_tenancy.py tests/test_api_object_acl.py"
+
+[cosmic-ray.distributor]
+name = "local"

@@ -1,0 +1,312 @@
+from __future__ import annotations
+
+import hashlib
+import json
+import tempfile
+import unittest
+from pathlib import Path
+
+from aerobim.tools.evaluate_detection_precision import (
+    evaluate_detection_precision,
+    main,
+    threshold_failures,
+)
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+FIXTURE_DIR = REPO_ROOT / "samples" / "benchmarks" / "detection-precision"
+LABELS = FIXTURE_DIR / "labels-synthetic.json"
+DETECTIONS = FIXTURE_DIR / "detections-synthetic.json"
+
+
+class DetectionPrecisionHarnessTests(unittest.TestCase):
+    def test_computes_exact_micro_and_per_class_counts(self) -> None:
+        report = evaluate_detection_precision(LABELS, DETECTIONS)
+
+        self.assertEqual(
+            report["micro"],
+            {
+                "tp": 4,
+                "fp": 2,
+                "fn": 2,
+                "precision": 0.666667,
+                "recall": 0.666667,
+                "f1": 0.666667,
+                "critical_recall": 0.666667,
+                "critical_recall_subset": "all_labeled_findings_not_a_severity_filter",
+                "false_positive_burden": 0.25,
+                "false_positive_burden_denominator": "tp+fp+fn",
+                "support": 6,
+                "precision_status": "defined",
+                "recall_status": "defined",
+                "empty_support": False,
+            },
+        )
+        self.assertEqual(report["labels"]["excluded"], 1)
+        self.assertEqual(report["labels"]["unresolved"], 1)
+        self.assertEqual(report["per_class"]["missing-element"]["fn"], 2)
+        self.assertEqual(report["per_class"]["missing-element"]["support"], 2)
+        self.assertIn("false_positive_burden", report["per_class"]["missing-element"])
+        self.assertIn("critical_recall", report["per_class"]["missing-element"])
+        self.assertEqual(len(report["false_positives"]), 2)
+        self.assertEqual(len(report["false_negatives"]), 2)
+        self.assertTrue(report["fn_tracked"])
+        self.assertFalse(report["held_out_split"])
+        self.assertFalse(report["precision_claim"]["publishable"])
+
+    def test_synthetic_fixture_never_passes_publishable_protocol_gate(self) -> None:
+        report = evaluate_detection_precision(LABELS, DETECTIONS)
+
+        self.assertFalse(report["publishable_protocol_gate"])
+        self.assertEqual(report["corpus_kind"], "synthetic")
+        self.assertFalse(report["precision_claim"]["publishable"])
+        self.assertIn("not adjudicated customer evidence", report["warning"])
+        with self.assertRaisesRegex(ValueError, "publishable adjudication protocol gate"):
+            evaluate_detection_precision(LABELS, DETECTIONS, require_publishable=True)
+
+    def test_fixture_claim_level_never_customer_even_when_adjudicated(self) -> None:
+        payload = json.loads(LABELS.read_text(encoding="utf-8"))
+        payload["dataset_status"] = "adjudicated"
+        payload["claim_level"] = "fixture_only"
+        payload["held_out_split"] = True
+        payload["scope_reference"] = "FIXTURE-EXTENT-CLASH-ONLY-NOT-CUSTOMER-EVIDENCE"
+        payload["adjudication"]["adjudicators"] = [
+            {"id": "engineer-1", "role": "fixture rater A"},
+            {"id": "engineer-2", "role": "fixture rater B"},
+        ]
+        unresolved = payload["cases"][0]["expected_findings"][4]
+        unresolved["adjudication_status"] = "excluded"
+        agreement = {
+            "artifact_type": "adjudicator_agreement",
+            "schema_version": "1.1.0",
+            "cohen_kappa": 0.82,
+            "pass_threshold_0_60": True,
+            "krippendorff_alpha": 0.79,
+            "pass_alpha_0_67": True,
+        }
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            labels_path = Path(temporary_directory) / "labels.json"
+            agreement_path = Path(temporary_directory) / "agreement.json"
+            labels_path.write_text(json.dumps(payload), encoding="utf-8")
+            agreement_path.write_text(json.dumps(agreement), encoding="utf-8")
+            report = evaluate_detection_precision(
+                labels_path,
+                DETECTIONS,
+                agreement_path=agreement_path,
+                require_agreement_for_publishable=False,
+            )
+        self.assertEqual(report["corpus_kind"], "fixture")
+        self.assertFalse(report["publishable_protocol_gate"])
+        self.assertFalse(report["precision_claim"]["base_publishable"])
+        self.assertFalse(report["precision_claim"]["publishable"])
+        self.assertIn("withheld", report["precision_claim"]["render"])
+        self.assertTrue(report["require_agreement_for_publishable"])
+
+    def test_missing_agreement_never_publishable(self) -> None:
+        payload = json.loads(LABELS.read_text(encoding="utf-8"))
+        payload["dataset_status"] = "adjudicated"
+        payload["held_out_split"] = True
+        payload["adjudication"]["adjudicators"] = [
+            {"id": "engineer-1", "role": "AR adjudicator"},
+            {"id": "engineer-2", "role": "BIM adjudicator"},
+        ]
+        unresolved = payload["cases"][0]["expected_findings"][4]
+        unresolved["adjudication_status"] = "excluded"
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            labels_path = Path(temporary_directory) / "labels.json"
+            labels_path.write_text(json.dumps(payload), encoding="utf-8")
+            report = evaluate_detection_precision(labels_path, DETECTIONS)
+            self.assertTrue(report["precision_claim"]["base_publishable"])
+            self.assertFalse(report["precision_claim"]["publishable"])
+            self.assertIn("withheld", report["precision_claim"]["render"])
+            with self.assertRaisesRegex(ValueError, "PrecisionClaim is not publishable"):
+                evaluate_detection_precision(
+                    labels_path,
+                    DETECTIONS,
+                    require_publishable=True,
+                )
+
+    def test_two_adjudicator_protocol_gate_can_be_enforced(self) -> None:
+        payload = json.loads(LABELS.read_text(encoding="utf-8"))
+        payload["dataset_status"] = "adjudicated"
+        payload["held_out_split"] = True
+        payload["adjudication"]["adjudicators"] = [
+            {"id": "engineer-1", "role": "AR adjudicator"},
+            {"id": "engineer-2", "role": "BIM adjudicator"},
+        ]
+        unresolved = payload["cases"][0]["expected_findings"][4]
+        unresolved["adjudication_status"] = "excluded"
+        agreement = {
+            "artifact_type": "adjudicator_agreement",
+            "schema_version": "1.1.0",
+            "cohen_kappa": 0.82,
+            "pass_threshold_0_60": True,
+            "krippendorff_alpha": 0.79,
+            "pass_alpha_0_67": True,
+        }
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            labels_path = Path(temporary_directory) / "labels.json"
+            agreement_path = Path(temporary_directory) / "agreement.json"
+            labels_path.write_text(json.dumps(payload), encoding="utf-8")
+            agreement["labels_sha256"] = hashlib.sha256(labels_path.read_bytes()).hexdigest()
+            agreement_path.write_text(json.dumps(agreement), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "PrecisionClaim is not publishable"):
+                evaluate_detection_precision(
+                    labels_path,
+                    DETECTIONS,
+                    require_publishable=True,
+                )
+            report = evaluate_detection_precision(
+                labels_path,
+                DETECTIONS,
+                require_publishable=True,
+                agreement_path=agreement_path,
+            )
+
+        self.assertTrue(report["publishable_protocol_gate"])
+        self.assertEqual(report["adjudicator_count"], 2)
+        self.assertTrue(report["held_out_split"])
+        self.assertTrue(report["fn_tracked"])
+        self.assertTrue(report["precision_claim"]["publishable"])
+        self.assertIsNone(report["warning"])
+
+    def test_adjudicated_without_held_out_not_publishable(self) -> None:
+        payload = json.loads(LABELS.read_text(encoding="utf-8"))
+        payload["dataset_status"] = "adjudicated"
+        payload["adjudication"]["adjudicators"] = [
+            {"id": "engineer-1", "role": "AR adjudicator"},
+            {"id": "engineer-2", "role": "BIM adjudicator"},
+        ]
+        unresolved = payload["cases"][0]["expected_findings"][4]
+        unresolved["adjudication_status"] = "excluded"
+        agreement = {
+            "artifact_type": "adjudicator_agreement",
+            "schema_version": "1.1.0",
+            "cohen_kappa": 0.82,
+            "pass_threshold_0_60": True,
+            "krippendorff_alpha": 0.79,
+            "pass_alpha_0_67": True,
+        }
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            labels_path = Path(temporary_directory) / "labels.json"
+            agreement_path = Path(temporary_directory) / "agreement.json"
+            labels_path.write_text(json.dumps(payload), encoding="utf-8")
+            agreement_path.write_text(json.dumps(agreement), encoding="utf-8")
+            report = evaluate_detection_precision(
+                labels_path,
+                DETECTIONS,
+                agreement_path=agreement_path,
+            )
+        self.assertFalse(report["held_out_split"])
+        self.assertFalse(report["precision_claim"]["publishable"])
+
+    def test_threshold_failures_are_ci_friendly(self) -> None:
+        report = evaluate_detection_precision(LABELS, DETECTIONS)
+
+        self.assertEqual(
+            threshold_failures(
+                report,
+                min_precision=0.7,
+                min_recall=0.6,
+                min_f1=0.7,
+            ),
+            [
+                "micro precision 0.666667 < required 0.700000",
+                "micro f1 0.666667 < required 0.700000",
+            ],
+        )
+
+    def test_cli_writes_atomic_report_and_returns_gate_code(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            output = Path(temporary_directory) / "evaluation.json"
+            exit_code = main(
+                [
+                    "--labels",
+                    str(LABELS),
+                    "--detections",
+                    str(DETECTIONS),
+                    "--min-precision",
+                    "0.6",
+                    "--min-recall",
+                    "0.6",
+                    "--output",
+                    str(output),
+                ]
+            )
+            payload = json.loads(output.read_text(encoding="utf-8"))
+
+        self.assertEqual(exit_code, 0)
+        self.assertTrue(payload["gate"]["passed"])
+
+    def test_no_require_agreement_blocked_with_require_publishable(self) -> None:
+        exit_code = main(
+            [
+                "--labels",
+                str(LABELS),
+                "--detections",
+                str(DETECTIONS),
+                "--require-publishable",
+                "--no-require-agreement",
+            ]
+        )
+        self.assertEqual(exit_code, 2)
+
+    def test_no_require_agreement_stamps_debug_escape(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            output = Path(temporary_directory) / "evaluation.json"
+            exit_code = main(
+                [
+                    "--labels",
+                    str(LABELS),
+                    "--detections",
+                    str(DETECTIONS),
+                    "--no-require-agreement",
+                    "--output",
+                    str(output),
+                ]
+            )
+            payload = json.loads(output.read_text(encoding="utf-8"))
+        self.assertEqual(exit_code, 0)
+        self.assertTrue(payload["debug_escape"])
+
+    def test_empty_class_set_does_not_report_perfect_macro(self) -> None:
+        labels = {
+            "artifact_type": "aerobim_detection_labels",
+            "schema_version": "1.0.0",
+            "dataset_id": "empty-classes",
+            "dataset_status": "synthetic",
+            "cases": [],
+            "adjudication": {"adjudicators": []},
+        }
+        detections = {
+            "artifact_type": "aerobim_detection_run",
+            "schema_version": "1.0.0",
+            "run_id": "empty-run",
+            "cases": [],
+        }
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            labels_path = Path(temporary_directory) / "labels.json"
+            detections_path = Path(temporary_directory) / "detections.json"
+            labels_path.write_text(json.dumps(labels), encoding="utf-8")
+            detections_path.write_text(json.dumps(detections), encoding="utf-8")
+            # May fail schema if cases required non-empty — catch either path.
+            try:
+                report = evaluate_detection_precision(labels_path, detections_path)
+            except ValueError as exc:
+                self.assertIn("non-empty", str(exc).lower())
+                return
+            self.assertTrue(report["macro"]["empty_classes"])
+            self.assertIsNone(report["macro"]["f1"])
+            self.assertFalse(report["precision_claim"]["publishable"])
+
+    def test_duplicate_detection_identity_is_rejected(self) -> None:
+        payload = json.loads(DETECTIONS.read_text(encoding="utf-8"))
+        payload["cases"][0]["findings"].append(dict(payload["cases"][0]["findings"][0]))
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            detections_path = Path(temporary_directory) / "detections.json"
+            detections_path.write_text(json.dumps(payload), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "Duplicate detection identity"):
+                evaluate_detection_precision(LABELS, detections_path)
+
+
+if __name__ == "__main__":
+    unittest.main()

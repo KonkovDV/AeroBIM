@@ -1,0 +1,345 @@
+"""N-33 / A-2: review-event sequence must stay unique under concurrent append."""
+
+from __future__ import annotations
+
+import json
+import os
+import tempfile
+import threading
+import time
+import unittest
+from pathlib import Path
+from unittest import mock
+
+from aerobim.domain.review_event_append import ReviewEventAppendSpec
+from aerobim.infrastructure.adapters.filesystem_review_event_store import (
+    FilesystemReviewEventStore,
+    HitlStateConflictError,
+)
+
+
+class ConcurrentReviewEventAppendTests(unittest.TestCase):
+    def test_exactly_one_accept_wins_under_parallel_writers(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            store = FilesystemReviewEventStore(Path(tmp), fail_closed=True)
+            report_id = "a" * 32
+            store.append_api_event(
+                ReviewEventAppendSpec(
+                    report_id=report_id,
+                    event_type="opened",
+                    created_at="2026-08-09T12:00:00+00:00",
+                    issue_rule_id="R1",
+                    actor="seed",
+                    note="seed",
+                    latency_ms=1,
+                    finding_id="f1",
+                    previous_state=None,
+                    idempotency_key="seed",
+                    event_id=None,
+                )
+            )
+
+            workers = 8
+            barrier = threading.Barrier(workers)
+            accepted_sequences: list[int] = []
+            conflicts = 0
+            lock = threading.Lock()
+
+            def worker(idx: int) -> None:
+                nonlocal conflicts
+                barrier.wait()
+                try:
+                    event = store.append_api_event(
+                        ReviewEventAppendSpec(
+                            report_id=report_id,
+                            event_type="accepted",
+                            created_at="2026-08-09T12:00:01+00:00",
+                            issue_rule_id="R1",
+                            actor=f"actor-{idx}",
+                            note="accept",
+                            latency_ms=1,
+                            finding_id="f1",
+                            previous_state="opened",
+                            idempotency_key=f"idem-{idx}",
+                            event_id=None,
+                        )
+                    )
+                    with lock:
+                        accepted_sequences.append(event.sequence_number)
+                except HitlStateConflictError:
+                    with lock:
+                        conflicts += 1
+
+            threads = [threading.Thread(target=worker, args=(i,)) for i in range(workers)]
+            for thread in threads:
+                thread.start()
+            for thread in threads:
+                thread.join()
+
+            events = store.list_for_report(report_id)
+            sequences = [event.sequence_number for event in events]
+            self.assertEqual(accepted_sequences, [2])
+            self.assertEqual(conflicts, workers - 1)
+            self.assertEqual(sequences, [1, 2])
+            self.assertEqual(len(sequences), len(set(sequences)))
+
+    def test_stale_lock_is_reclaimed(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            store = FilesystemReviewEventStore(Path(tmp), fail_closed=True)
+            report_id = "b" * 32
+            target = Path(tmp) / "review-events" / f"{report_id}.jsonl"
+            target.parent.mkdir(parents=True, exist_ok=True)
+            lock_path = target.with_suffix(target.suffix + ".lock")
+            lock_path.write_text("stale", encoding="utf-8")
+            old = time.time() - 120.0
+            os.utime(lock_path, (old, old))
+            event = store.append_api_event(
+                ReviewEventAppendSpec(
+                    report_id=report_id,
+                    event_type="opened",
+                    created_at="2026-08-09T12:00:00+00:00",
+                    issue_rule_id="R1",
+                    actor="seed",
+                    note="seed",
+                    latency_ms=1,
+                    finding_id="f1",
+                    previous_state=None,
+                    idempotency_key="after-stale",
+                    event_id=None,
+                )
+            )
+            self.assertEqual(event.sequence_number, 1)
+            self.assertFalse(lock_path.exists())
+            slot = target.with_name(f"{target.name}.seq.1")
+            self.assertTrue(slot.exists())
+            self.assertIn('"event_type": "opened"', slot.read_text(encoding="utf-8"))
+            self.assertFalse(target.exists(), msg="durable record is the seq file, not jsonl")
+
+    def test_jsonl_must_not_appear_after_append(self) -> None:
+        """N-57: no shadow jsonl after exclusive seq writes."""
+
+        with tempfile.TemporaryDirectory() as tmp:
+            store = FilesystemReviewEventStore(Path(tmp), fail_closed=True)
+            report_id = "c" * 32
+            store.append_api_event(
+                ReviewEventAppendSpec(
+                    report_id=report_id,
+                    event_type="opened",
+                    created_at="2026-08-09T12:00:00+00:00",
+                    issue_rule_id="R1",
+                    actor="seed",
+                    note="seed",
+                    latency_ms=1,
+                    finding_id="f1",
+                    previous_state=None,
+                    idempotency_key="seed",
+                    event_id=None,
+                )
+            )
+            target = Path(tmp) / "review-events" / f"{report_id}.jsonl"
+            self.assertFalse(target.exists())
+            self.assertTrue(target.with_name(f"{target.name}.seq.1").exists())
+
+    def test_sequence_gap_is_fail_closed(self) -> None:
+        """N-57: deleting .seq.N is indistinguishable from deletion — reader must yell."""
+
+        from aerobim.infrastructure.adapters.filesystem_review_event_store import (
+            ReviewEventChainError,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "review-events"
+            root.mkdir(parents=True, exist_ok=True)
+            report_id = "d" * 32
+            target = root / f"{report_id}.jsonl"
+            for seq in range(1, 11):
+                payload = {
+                    "event_id": f"e{seq}",
+                    "report_id": report_id,
+                    "event_type": "opened" if seq == 1 else "edited",
+                    "created_at": f"2026-08-09T12:00:{seq:02d}+00:00",
+                    "sequence_number": seq,
+                }
+                (root / f"{target.name}.seq.{seq}").write_text(
+                    json.dumps(payload) + "\n",
+                    encoding="utf-8",
+                )
+            (root / f"{target.name}.seq.7").unlink()
+            store = FilesystemReviewEventStore(Path(tmp), fail_closed=True)
+            with self.assertRaises(ReviewEventChainError):
+                store.list_for_report(report_id)
+
+    def test_diverging_jsonl_is_fail_closed(self) -> None:
+        """N-57: shadow jsonl that disagrees with seq files must not be invisible."""
+
+        from aerobim.infrastructure.adapters.filesystem_review_event_store import (
+            AuditEventCorruptionError,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "review-events"
+            root.mkdir(parents=True, exist_ok=True)
+            report_id = "e" * 32
+            target = root / f"{report_id}.jsonl"
+            event = {
+                "event_id": "e1",
+                "report_id": report_id,
+                "event_type": "opened",
+                "created_at": "2026-08-09T12:00:00+00:00",
+                "sequence_number": 1,
+            }
+            (root / f"{target.name}.seq.1").write_text(
+                json.dumps(event) + "\n",
+                encoding="utf-8",
+            )
+            target.write_text('{"event_id":"tampered"}\n', encoding="utf-8")
+            store = FilesystemReviewEventStore(Path(tmp), fail_closed=True)
+            with self.assertRaises(AuditEventCorruptionError):
+                store.list_for_report(report_id)
+
+    def test_sequence_slot_blocks_duplicate_even_without_lock(self) -> None:
+        """N-50/N-54: exclusive event file is the invariant; lock is only an optimization."""
+
+        from aerobim.domain.models import ReviewEvent
+        from aerobim.infrastructure.adapters.filesystem_review_event_store import (
+            SequenceClaimError,
+            _write_event_exclusive,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp) / "r.jsonl"
+            event = ReviewEvent(
+                event_id="e1",
+                report_id="r" * 32,
+                event_type="opened",
+                created_at="2026-08-09T12:00:00+00:00",
+                issue_rule_id="R1",
+                actor="a",
+                note="n",
+                latency_ms=1,
+                sequence_number=1,
+            )
+            slot = _write_event_exclusive(target, event, sequence=1)
+            self.assertTrue(slot.exists())
+            self.assertIn("opened", slot.read_text(encoding="utf-8"))
+            with self.assertRaises(SequenceClaimError):
+                _write_event_exclusive(target, event, sequence=1)
+
+    def test_lock_timeout_after_peer_won_is_conflict(self) -> None:
+        """A writer that exhausted retries after a peer accepted must not 500."""
+
+        import aerobim.infrastructure.adapters.filesystem_review_event_store as store_mod
+
+        with tempfile.TemporaryDirectory() as tmp:
+            store = FilesystemReviewEventStore(Path(tmp), fail_closed=True)
+            report_id = "f" * 32
+            store.append_api_event(
+                ReviewEventAppendSpec(
+                    report_id=report_id,
+                    event_type="opened",
+                    created_at="2026-08-09T12:00:00+00:00",
+                    issue_rule_id="R1",
+                    actor="seed",
+                    note="seed",
+                    latency_ms=1,
+                    finding_id="f1",
+                    previous_state=None,
+                    idempotency_key="seed",
+                    event_id=None,
+                )
+            )
+            store.append_api_event(
+                ReviewEventAppendSpec(
+                    report_id=report_id,
+                    event_type="accepted",
+                    created_at="2026-08-09T12:00:01+00:00",
+                    issue_rule_id="R1",
+                    actor="winner",
+                    note="accept",
+                    latency_ms=1,
+                    finding_id="f1",
+                    previous_state="opened",
+                    idempotency_key="winner",
+                    event_id=None,
+                )
+            )
+            target = Path(tmp) / "review-events" / f"{report_id}.jsonl"
+            lock_path = target.with_suffix(target.suffix + ".lock")
+            fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+            try:
+                with (
+                    mock.patch.object(store_mod, "_LOCK_ATTEMPTS", 2),
+                    mock.patch.object(store_mod, "_lock_backoff_s", lambda _attempt: 0.0),
+                ):
+                    with self.assertRaises(HitlStateConflictError):
+                        store.append_api_event(
+                            ReviewEventAppendSpec(
+                                report_id=report_id,
+                                event_type="accepted",
+                                created_at="2026-08-09T12:00:02+00:00",
+                                issue_rule_id="R1",
+                                actor="late",
+                                note="accept",
+                                latency_ms=1,
+                                finding_id="f1",
+                                previous_state="opened",
+                                idempotency_key="late",
+                                event_id=None,
+                            )
+                        )
+            finally:
+                os.close(fd)
+                lock_path.unlink(missing_ok=True)
+
+    def test_lock_timeout_without_peer_is_runtime_error(self) -> None:
+        import aerobim.infrastructure.adapters.filesystem_review_event_store as store_mod
+
+        with tempfile.TemporaryDirectory() as tmp:
+            store = FilesystemReviewEventStore(Path(tmp), fail_closed=True)
+            report_id = "g" * 32
+            store.append_api_event(
+                ReviewEventAppendSpec(
+                    report_id=report_id,
+                    event_type="opened",
+                    created_at="2026-08-09T12:00:00+00:00",
+                    issue_rule_id="R1",
+                    actor="seed",
+                    note="seed",
+                    latency_ms=1,
+                    finding_id="f1",
+                    previous_state=None,
+                    idempotency_key="seed",
+                    event_id=None,
+                )
+            )
+            target = Path(tmp) / "review-events" / f"{report_id}.jsonl"
+            lock_path = target.with_suffix(target.suffix + ".lock")
+            fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+            try:
+                with (
+                    mock.patch.object(store_mod, "_LOCK_ATTEMPTS", 2),
+                    mock.patch.object(store_mod, "_lock_backoff_s", lambda _attempt: 0.0),
+                ):
+                    with self.assertRaises(RuntimeError):
+                        store.append_api_event(
+                            ReviewEventAppendSpec(
+                                report_id=report_id,
+                                event_type="accepted",
+                                created_at="2026-08-09T12:00:01+00:00",
+                                issue_rule_id="R1",
+                                actor="blocked",
+                                note="accept",
+                                latency_ms=1,
+                                finding_id="f1",
+                                previous_state="opened",
+                                idempotency_key="blocked",
+                                event_id=None,
+                            )
+                        )
+            finally:
+                os.close(fd)
+                lock_path.unlink(missing_ok=True)
+
+
+if __name__ == "__main__":
+    unittest.main()

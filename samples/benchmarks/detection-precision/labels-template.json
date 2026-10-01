@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0.0",
+  "dataset_id": "REPLACE-with-customer-dataset-id",
+  "dataset_status": "draft",
+  "scope_reference": "REPLACE-with-signed-scope-memo-reference",
+  "adjudication": {
+    "method": "consensus",
+    "completed_at": "REPLACE-with-timezone-aware-ISO-8601",
+    "adjudicators": [
+      { "id": "REPLACE-engineer-a", "role": "adjudicator" },
+      { "id": "REPLACE-engineer-b", "role": "adjudicator" }
+    ]
+  },
+  "cases": [
+    {
+      "case_id": "REPLACE-CASE-ID",
+      "expected_findings": [
+        {
+          "finding_class": "cross-document",
+          "rule_id": "REPLACE-RULE-ID",
+          "target_ref": "REPLACE-TARGET-OR-USE-element_guid-OR-match_key",
+          "adjudication_status": "confirmed"
+        }
+      ]
+    }
+  ]
+}

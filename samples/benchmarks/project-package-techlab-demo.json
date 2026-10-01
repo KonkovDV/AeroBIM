@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0.0",
+  "pack_version": "1.0.0",
+  "pack_id": "project-package-techlab-demo",
+  "description": "Techlab pilot demo package: Russian AEC multimodal validation over IFC, IDS, ТЗ, расчёты, and 2D drawing annotations with typical discrepancy patterns.",
+  "project_name": "Жилой дом Альфа — Секция А",
+  "discipline": "architecture",
+  "request": {
+    "ifc_path": "samples/ifc/walls-multi-entity.ifc",
+    "requirement_path": "samples/requirements/techlab-demo-rules.txt",
+    "ids_path": "samples/ids/walls-multi-entity.ids",
+    "technical_spec_path": "samples/specifications/techlab-tz.txt",
+    "calculation_path": "samples/calculations/techlab-area-calc.txt",
+    "drawings": [
+      {
+        "path": "samples/drawings/techlab-annotations.txt",
+        "sheet_id": "A-101",
+        "format": "text"
+      }
+    ]
+  }
+}

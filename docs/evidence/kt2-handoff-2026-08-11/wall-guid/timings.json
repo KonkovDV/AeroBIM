@@ -1,0 +1,6 @@
+{
+  "analyze_elapsed_ms": 1724.92,
+  "time_to_first_finding_ms": 1724.92,
+  "time_to_first_finding_semantics": "batch pipeline: equals analyze_elapsed_ms when issue_count > 0; null when no findings; not a streaming-latency claim",
+  "generated_at": "2026-08-11T17:35:16.847950+00:00"
+}

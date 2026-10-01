@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0.0",
+  "profile_id": "open-corpora-pilot-approx",
+  "profile_kind": "pilot_approx",
+  "description": "Public buildingSMART IFC sample + in-repo residential package inventory. Measures package analyze wall-clock only.",
+  "claim_boundary": "Open/fixture timing only. No expert TP/FP labels; never customer SLA; never product accuracy.",
+  "request": {
+    "ifc_path": "samples/ifc/public/buildingsmart-sample-test-files/wall-with-opening-and-window.ifc",
+    "requirement_path": "samples/requirements/multimodal-baseline-rules.txt",
+    "package_inventory_path": "samples/packages/residential-complete-inventory.json",
+    "require_package_completeness": true
+  },
+  "pins": {
+    "ifc_sha256": "73b0e45d931d5dc13bfee5fdc7bd80f796526445458b2de74c4168d209097832",
+    "requirement_sha256": "2e71db5bebbe412695d36bb21a167706c3ae4ffa7bf8d008a346aac066799dbb",
+    "package_inventory_sha256": "f254fb2c503ffd10b6f0f58fbefb4171a68c8b3fc732f79779f99d0f16d1b56b"
+  },
+  "secondary_public_ifc": {
+    "path": "samples/ifc/public/buildingsmart-sample-test-files/tessellated-item.ifc",
+    "sha256": "758974f7d558f11b8d8121816954179def32594ed7eafcd1faae70ee0a8e5946",
+    "note": "Also present under samples/ifc/public/; primary analyze uses wall-with-opening-and-window.ifc"
+  },
+  "iterations": 1,
+  "warmup_iterations": 0
+}

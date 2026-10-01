@@ -1,0 +1,27 @@
+{
+  "artifact_type": "sprint_2_1_expected_findings",
+  "schema_version": "1.0.0",
+  "claim_level": "synthetic_only",
+  "customer_evidence": false,
+  "note": "Expected findings for mutation cases only. Baseline open pack may yield zero TP if no mutations applied — that is honest.",
+  "findings": [
+    {
+      "finding_id": "S21-M-001",
+      "rule_id": "IDS-Wall Fire Rating",
+      "severity": "critical",
+      "mutation_ref": "S21-M-001"
+    },
+    {
+      "finding_id": "S21-M-002",
+      "rule_id": "IDS-Wall Fire Rating",
+      "severity": "critical",
+      "mutation_ref": "S21-M-002"
+    },
+    {
+      "finding_id": "S21-M-003",
+      "rule_id": "AEROBIM-LOAD-MISMATCH",
+      "severity": "warning",
+      "mutation_ref": "S21-M-003"
+    }
+  ]
+}

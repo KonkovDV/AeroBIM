@@ -1,0 +1,143 @@
+"""P-001 license gate: every declared backend dependency must be classified in
+audit/dependency_license_inventory.json; unknown or release-blocking licenses
+fail CI (engineering gate, NOT a legal opinion)."""
+
+from __future__ import annotations
+
+import json
+import re
+import tomllib
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+_INVENTORY = _REPO_ROOT / "audit" / "dependency_license_inventory.json"
+_PYPROJECT = _REPO_ROOT / "backend" / "pyproject.toml"
+
+_ALLOWED_RISK = {"permissive", "weak_copyleft", "strong_copyleft_or_commercial"}
+
+
+def _inventory() -> dict[str, dict[str, object]]:
+    data = json.loads(_INVENTORY.read_text(encoding="utf-8"))
+    deps = data["dependencies"]
+    assert isinstance(deps, list) and deps
+    return {str(item["name"]).lower(): item for item in deps if isinstance(item, dict)}
+
+
+def _declared_dependencies() -> set[str]:
+    payload = tomllib.loads(_PYPROJECT.read_text(encoding="utf-8"))
+    names: set[str] = set()
+    groups: list[list[str]] = [payload["project"]["dependencies"]]
+    for group, items in payload["project"].get("optional-dependencies", {}).items():
+        if group == "dev":
+            continue  # dev tools are not shipped
+        groups.append(items)
+    for group_items in groups:
+        for spec in group_items:
+            name = re.split(r"[<>=!\[;\s]", spec.strip(), maxsplit=1)[0]
+            if name:
+                names.add(name.lower())
+    return names
+
+
+def test_every_shipped_dependency_is_classified() -> None:
+    inventory = _inventory()
+    missing = sorted(_declared_dependencies() - set(inventory))
+    assert not missing, (
+        "Dependencies without a license classification (add them to "
+        f"audit/dependency_license_inventory.json): {missing}"
+    )
+
+
+def test_no_unknown_risk_class() -> None:
+    bad = [
+        name
+        for name, item in _inventory().items()
+        if str(item.get("risk_class")) not in _ALLOWED_RISK
+    ]
+    assert not bad, f"Unclassified/unknown license risk blocks release: {sorted(bad)}"
+
+
+def test_copyleft_and_commercial_entries_flag_legal_review() -> None:
+    bad = [
+        name
+        for name, item in _inventory().items()
+        if str(item.get("risk_class")) in {"weak_copyleft", "strong_copyleft_or_commercial"}
+        and item.get("legal_review_required") is not True
+    ]
+    assert not bad, (
+        f"Copyleft/dual-commercial entries must carry legal_review_required=true: {sorted(bad)}"
+    )
+
+
+def test_frontend_runtime_dependencies_are_classified() -> None:
+    # Direct runtime deps of the browser shell must carry a license classification;
+    # dev tooling (vite/vitest/types) is not shipped and stays out of scope.
+    package_json = _REPO_ROOT / "frontend" / "package.json"
+    payload = json.loads(package_json.read_text(encoding="utf-8"))
+    runtime = {name.lower() for name in (payload.get("dependencies") or {})}
+    missing = sorted(runtime - set(_inventory()))
+    assert not missing, f"Frontend runtime deps without license classification: {missing}"
+
+
+def test_ifcopenshell_lgpl_flags_legal_review() -> None:
+    # F-15: core IFC kernel is LGPL; inventory flags legal review (not a runtime vuln).
+    item = _inventory()["ifcopenshell"]
+    assert item["risk_class"] == "weak_copyleft"
+    assert item["legal_review_required"] is True
+    assert item["scope"] == "core"
+
+
+def test_web_ifc_mpl_is_acknowledged() -> None:
+    # VERIFIED 2026-07-31: web-ifc 0.0.77 declares MPL-2.0 (file-level copyleft).
+    item = _inventory()["web-ifc"]
+    assert item["risk_class"] == "weak_copyleft"
+    assert item["legal_review_required"] is True
+
+
+def test_pymupdf_dual_license_is_acknowledged() -> None:
+    # VERIFIED 2026-07-31 / Option B 2026-07-31: PyMuPDF remains dual AGPL/Artifex
+    # but is no longer a core dependency — optional ``pdf-agpl`` only.
+    item = _inventory()["pymupdf"]
+    assert item["risk_class"] == "strong_copyleft_or_commercial"
+    assert item["legal_review_required"] is True
+    assert item["scope"] == "extra:pdf-agpl"
+
+
+def test_pymupdf_absent_from_default_extras() -> None:
+    payload = tomllib.loads(_PYPROJECT.read_text(encoding="utf-8"))
+    extras = payload["project"]["optional-dependencies"]
+    for name, specs in extras.items():
+        if name == "pdf-agpl":
+            continue
+        blob = " ".join(specs).lower()
+        assert "pymupdf" not in blob, name
+    core = " ".join(payload["project"]["dependencies"]).lower()
+    assert "pymupdf" not in core
+
+
+def test_core_pdf_stack_is_permissive() -> None:
+    inventory = _inventory()
+    for name in ("pypdfium2", "pdfminer.six", "pillow", "reportlab"):
+        item = inventory[name]
+        assert item["risk_class"] == "permissive", name
+        assert item["scope"] == "core", name
+        assert item["legal_review_required"] is False, name
+
+
+def test_inventory_core_versions_match_requirements_lock() -> None:
+    """Inventory versions must track CI/Docker lock SSOT (catches LIC-001 drift)."""
+
+    lock_text = (_REPO_ROOT / "backend" / "requirements-lock.txt").read_text(encoding="utf-8")
+    inventory = _inventory()
+    drifts: list[str] = []
+    for name, item in inventory.items():
+        if str(item.get("scope")) not in {"core", "core-transitive", "extra:raster"}:
+            continue
+        match = re.search(rf"^{re.escape(name)}==([^\s\\\\]+)", lock_text, flags=re.M | re.I)
+        if match is None:
+            continue
+        lock_ver = match.group(1)
+        inv_ver = str(item.get("lock_version") or item.get("installed_version") or "")
+        if inv_ver != lock_ver:
+            drifts.append(f"{name}: inventory={inv_ver!r} lock={lock_ver!r}")
+    assert not drifts, "License inventory drifted from requirements-lock.txt:\n" + "\n".join(drifts)

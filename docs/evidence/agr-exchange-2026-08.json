@@ -1,0 +1,166 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "agr_exchange_fixture",
+  "claim_level": "agr_exchange_fixture",
+  "claim_boundary": "AGR exchange-shape checks on a fixture (class 1). Not moscow_agr profile. Not УКЭП. Not CRS. Not MSSK. Official ДГП TEP example + Vedomost XSD are public city files, not a appointing-party-signed acceptance pack. Not customer CIM acceptance. Cited NPA is territorial (Moscow 17-PP + DGP-R-1/26); the stroimprosto IDS zip is not itself an NPA. Does not substitute GrK art. 49 expertise, PP 614 IM obligation, or an AGR certificate.",
+  "legal_qualification": {
+    "as_of": "2026-08-14",
+    "product_function": "precheck_exchange_shape",
+    "legal_force_of_cited_npa": "territorial_npa",
+    "ids_zip_legal_force": "not_npa",
+    "territorial_scope": "moscow",
+    "cited_instrument_ids": [
+      "MOSCOW-17-PP",
+      "DGP-R-1-26"
+    ],
+    "substitutes_agr_certificate": false,
+    "substitutes_grk_art_49_expertise": false,
+    "substitutes_pp614_im_obligation": false,
+    "substitutes_egrz_remark_corpus": false,
+    "federal_im_obligation_created": false,
+    "closes_rt002": false,
+    "claim_boundary": "Legal-force labels for engineering honesty. Not a court opinion. Not statutory compliance of a customer package. Checkpoint GO; customer_go false."
+  },
+  "generated_at": "2026-08-14T17:31:17.243988+00:00",
+  "machine": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10",
+    "machine": "AMD64",
+    "system": "Windows"
+  },
+  "manifest": "samples/agr/exchange-fixture-manifest.json",
+  "summary": {
+    "case_count": 11,
+    "cases_matching_expect": 11
+  },
+  "cases": [
+    {
+      "id": "pass-ifc4-referenceview",
+      "ifc": "samples/ifc/wall-ifc4-referenceview.ifc",
+      "declared_filename": "MSK_AGR_AR-01_IFC4-RV_20260814.ifc",
+      "size_bytes": 760,
+      "expect_rule_ids": [],
+      "observed_rule_ids": [],
+      "expect_matched": true
+    },
+    {
+      "id": "fail-design-transfer-view",
+      "ifc": "samples/ifc/wall-pset-qto-pass.ifc",
+      "declared_filename": "MSK_AGR_AR-01_IFC4-RV_20260814.ifc",
+      "size_bytes": 997,
+      "expect_rule_ids": [
+        "AEROBIM-AGR-REFERENCE-VIEW"
+      ],
+      "observed_rule_ids": [
+        "AEROBIM-AGR-REFERENCE-VIEW"
+      ],
+      "expect_matched": true
+    },
+    {
+      "id": "fail-ifc4x3-schema",
+      "ifc": "samples/ifc/wall-pset-ifc4x3.ifc",
+      "declared_filename": "MSK_AGR_AR-01_IFC4-RV_20260814.ifc",
+      "size_bytes": 1005,
+      "expect_rule_ids": [
+        "AEROBIM-AGR-IFC-SCHEMA"
+      ],
+      "observed_rule_ids": [
+        "AEROBIM-AGR-IFC-SCHEMA"
+      ],
+      "expect_matched": true
+    },
+    {
+      "id": "fail-building-element-proxy",
+      "ifc": "samples/ifc/wall-with-building-element-proxy.ifc",
+      "declared_filename": "MSK_AGR_AR-01_IFC4-RV_20260814.ifc",
+      "size_bytes": 639,
+      "expect_rule_ids": [
+        "AEROBIM-AGR-PROXY-BANNED"
+      ],
+      "observed_rule_ids": [
+        "AEROBIM-AGR-PROXY-BANNED"
+      ],
+      "expect_matched": true
+    },
+    {
+      "id": "fail-filename-shape",
+      "ifc": "samples/ifc/wall-ifc4-referenceview.ifc",
+      "declared_filename": "bad:name.ifc",
+      "size_bytes": 760,
+      "expect_rule_ids": [
+        "AEROBIM-AGR-FILENAME"
+      ],
+      "observed_rule_ids": [
+        "AEROBIM-AGR-FILENAME"
+      ],
+      "expect_matched": true
+    },
+    {
+      "id": "fail-tep-xml-missing",
+      "ifc": "samples/ifc/wall-ifc4-referenceview.ifc",
+      "declared_filename": "MSK_AGR_AR-01_IFC4-RV_20260814.ifc",
+      "size_bytes": 760,
+      "expect_rule_ids": [
+        "AEROBIM-AGR-TEP-XML"
+      ],
+      "observed_rule_ids": [
+        "AEROBIM-AGR-TEP-XML"
+      ],
+      "expect_matched": true
+    },
+    {
+      "id": "pass-tep-xml-sidecar",
+      "ifc": "samples/ifc/wall-ifc4-referenceview.ifc",
+      "declared_filename": "MSK_AGR_AR-01_IFC4-RV_20260814.ifc",
+      "size_bytes": 760,
+      "expect_rule_ids": [],
+      "observed_rule_ids": [],
+      "expect_matched": true
+    },
+    {
+      "id": "pass-tep-official-root",
+      "ifc": "samples/ifc/wall-ifc4-referenceview.ifc",
+      "declared_filename": "MSK_AGR_AR-01_IFC4-RV_20260814.ifc",
+      "size_bytes": 760,
+      "expect_rule_ids": [],
+      "observed_rule_ids": [],
+      "expect_matched": true
+    },
+    {
+      "id": "fail-tep-wrong-root",
+      "ifc": "samples/ifc/wall-ifc4-referenceview.ifc",
+      "declared_filename": "MSK_AGR_AR-01_IFC4-RV_20260814.ifc",
+      "size_bytes": 760,
+      "expect_rule_ids": [
+        "AEROBIM-AGR-TEP-ROOT"
+      ],
+      "observed_rule_ids": [
+        "AEROBIM-AGR-TEP-ROOT"
+      ],
+      "expect_matched": true
+    },
+    {
+      "id": "pass-vedomost-xsd",
+      "ifc": "samples/ifc/wall-ifc4-referenceview.ifc",
+      "declared_filename": "MSK_AGR_AR-01_IFC4-RV_20260814.ifc",
+      "size_bytes": 760,
+      "expect_rule_ids": [],
+      "observed_rule_ids": [],
+      "expect_matched": true
+    },
+    {
+      "id": "fail-vedomost-xsd",
+      "ifc": "samples/ifc/wall-ifc4-referenceview.ifc",
+      "declared_filename": "MSK_AGR_AR-01_IFC4-RV_20260814.ifc",
+      "size_bytes": 760,
+      "expect_rule_ids": [
+        "AEROBIM-AGR-VEDOMOST-XSD"
+      ],
+      "observed_rule_ids": [
+        "AEROBIM-AGR-VEDOMOST-XSD"
+      ],
+      "expect_matched": true
+    }
+  ],
+  "content_sha256": "d729e5d448b353d7a545e70b7be2a91765ee82497cb1d97a748f352b48d045d2"
+}

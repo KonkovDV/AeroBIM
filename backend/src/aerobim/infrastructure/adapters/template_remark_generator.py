@@ -1,0 +1,319 @@
+from __future__ import annotations
+
+from aerobim.domain.models import (
+    ComparisonOperator,
+    FindingCategory,
+    GeneratedRemark,
+    ValidationIssue,
+)
+
+
+class TemplateRemarkGenerator:
+    """Deterministic remark templates for RU/EN product locales (TZ P0).
+
+    the appointing party answer 2.1.5 (2026-08-25): essence (one sentence) + bound norm/STO
+    clause (never invented) + location detail (axis / storey / sheet / element).
+    """
+
+    def __init__(self, *, locale: str = "ru") -> None:
+        normalized = (locale or "ru").strip().lower()
+        self._locale = "en" if normalized.startswith("en") else "ru"
+
+    def generate(self, issue: ValidationIssue) -> GeneratedRemark:
+        if self._locale == "en":
+            remark = self._generate_en(issue)
+        else:
+            remark = self._generate_ru(issue)
+        from aerobim.domain.remark_shape import shape_from_remark, validate_remark_shape
+
+        violations = validate_remark_shape(shape_from_remark(remark).as_payload())
+        if violations:
+            raise ValueError("remark shape invalid: " + "; ".join(violations))
+        return remark
+
+    def _generate_ru(self, issue: ValidationIssue) -> GeneratedRemark:
+        essence = self._build_essence_ru(issue)
+        priority_hint = f" [приоритет {issue.priority}]" if issue.priority else ""
+        title = f"{self._category_marker_ru(issue)}: {essence}{priority_hint}"
+        clause_cite, clause_bound = self._norm_line(issue)
+        location_line = self._location_line(issue)
+        detail = self._detail_ru(issue)
+        body = (
+            f"Суть: {essence}. "
+            f"Норма/СТО: {clause_cite}. "
+            f"Локация: {location_line}. "
+            f"Развёрнуто: {detail}"
+        )
+        zone = issue.problem_zone
+        return GeneratedRemark(
+            title=title,
+            body=body,
+            essence=essence,
+            clause_cite=clause_cite,
+            clause_bound=clause_bound,
+            location_line=location_line,
+            detail=detail,
+            storey_name=issue.storey_name,
+            grid_axis=issue.grid_axis,
+            sheet_id=zone.sheet_id if zone else None,
+            element_guid=issue.element_guid or (zone.element_guid if zone else None),
+        )
+
+    def _generate_en(self, issue: ValidationIssue) -> GeneratedRemark:
+        essence = self._build_essence_en(issue)
+        priority_hint = f" [priority {issue.priority}]" if issue.priority else ""
+        title = f"{self._category_marker_en(issue)}: {essence}{priority_hint}"
+        clause_cite, clause_bound = self._norm_line(issue)
+        location_line = self._location_line(issue)
+        detail = self._detail_en(issue)
+        body = (
+            f"Essence: {essence}. "
+            f"Norm/STO: {clause_cite}. "
+            f"Location: {location_line}. "
+            f"Detail: {detail}"
+        )
+        zone = issue.problem_zone
+        return GeneratedRemark(
+            title=title,
+            body=body,
+            essence=essence,
+            clause_cite=clause_cite,
+            clause_bound=clause_bound,
+            location_line=location_line,
+            detail=detail,
+            storey_name=issue.storey_name,
+            grid_axis=issue.grid_axis,
+            sheet_id=zone.sheet_id if zone else None,
+            element_guid=issue.element_guid or (zone.element_guid if zone else None),
+        )
+
+    def _category_marker_ru(self, issue: ValidationIssue) -> str:
+        if issue.category is FindingCategory.CROSS_DOCUMENT:
+            return "Междокументное расхождение"
+        if issue.category is FindingCategory.DRAWING_VALIDATION:
+            return "Замечание по чертежу"
+        if issue.category is FindingCategory.SPATIAL:
+            return "Пространственное замечание"
+        return "Замечание по модели"
+
+    def _category_marker_en(self, issue: ValidationIssue) -> str:
+        if issue.category is FindingCategory.CROSS_DOCUMENT:
+            return "Cross-document conflict"
+        if issue.category is FindingCategory.DRAWING_VALIDATION:
+            return "Drawing remark"
+        if issue.category is FindingCategory.SPATIAL:
+            return "Spatial remark"
+        return "Model remark"
+
+    def _first_sentence(self, text: str) -> str:
+        stripped = text.strip()
+        if not stripped:
+            return ""
+        head, sep, _rest = stripped.partition(". ")
+        if sep:
+            return head.rstrip(".")
+        return stripped.rstrip(".")
+
+    def _structured_essence_ru(self, issue: ValidationIssue) -> str:
+        expected = (issue.expected_value or "").strip()
+        observed = (issue.observed_value or "").strip()
+        field = self._build_field_name(issue)
+        if expected and observed:
+            return f"{field}: ожидалось {expected}, факт {observed}"
+        if expected:
+            return f"{field}: ожидалось {expected}, значение отсутствует"
+        return ""
+
+    def _structured_essence_en(self, issue: ValidationIssue) -> str:
+        expected = (issue.expected_value or "").strip()
+        observed = (issue.observed_value or "").strip()
+        field = self._build_field_name(issue)
+        if expected and observed:
+            return f"{field}: expected {expected}, observed {observed}"
+        if expected:
+            return f"{field}: expected {expected}, value missing"
+        return ""
+
+    def _build_essence_ru(self, issue: ValidationIssue) -> str:
+        if issue.category is FindingCategory.IDS_VALIDATION:
+            structured = self._structured_essence_ru(issue)
+            if structured:
+                return structured
+        message = self._first_sentence(issue.message or "")
+        if message:
+            return message
+        if issue.category is FindingCategory.CROSS_DOCUMENT:
+            return "Обнаружено противоречие между источниками"
+        if issue.category is FindingCategory.SPATIAL:
+            return "Обнаружен пространственный конфликт"
+        return f"Расхождение по {self._build_field_name(issue)}"
+
+    def _build_essence_en(self, issue: ValidationIssue) -> str:
+        if issue.category is FindingCategory.IDS_VALIDATION:
+            structured = self._structured_essence_en(issue)
+            if structured:
+                return structured
+        message = self._first_sentence(issue.message or "")
+        if message:
+            return message
+        if issue.category is FindingCategory.CROSS_DOCUMENT:
+            return "Contradiction detected between sources"
+        if issue.category is FindingCategory.SPATIAL:
+            return "Spatial conflict detected"
+        return f"Mismatch on {self._build_field_name(issue)}"
+
+    def _norm_line(self, issue: ValidationIssue) -> tuple[str, bool]:
+        parts: list[str] = []
+        if issue.norm_source and issue.norm_source.strip():
+            parts.append(issue.norm_source.strip())
+        if issue.norm_clause and issue.norm_clause.strip():
+            parts.append(issue.norm_clause.strip())
+        if parts:
+            cite = " ".join(parts)
+            return cite, True
+        if self._locale == "en":
+            from aerobim.domain.remark_shape import UNBOUND_CLAUSE_EN
+
+            return UNBOUND_CLAUSE_EN, False
+        from aerobim.domain.remark_shape import UNBOUND_CLAUSE_RU
+
+        return UNBOUND_CLAUSE_RU, False
+
+    def _location_line(self, issue: ValidationIssue) -> str:
+        bits: list[str] = []
+        ru = self._locale != "en"
+        zone = issue.problem_zone
+        guid = issue.element_guid or (zone.element_guid if zone else None)
+        if issue.storey_name:
+            bits.append(f"{'этаж' if ru else 'storey'} {issue.storey_name}")
+        elif guid:
+            bits.append(
+                "этаж: нет в пространственном индексе" if ru else "storey: not in spatial index"
+            )
+        if issue.grid_axis:
+            bits.append(f"{'ось' if ru else 'axis'} {issue.grid_axis}")
+        elif guid:
+            bits.append(
+                "ось: нет в пространственном индексе" if ru else "axis: not in spatial index"
+            )
+        if zone and zone.sheet_id:
+            label = "sheet" if self._locale == "en" else "лист"
+            bits.append(f"{label} {zone.sheet_id}")
+        if issue.target_ref:
+            bits.append(issue.target_ref)
+        if guid:
+            bits.append(f"GUID {guid}")
+        if bits:
+            return "; ".join(bits)
+        return "no precise location" if self._locale == "en" else "без точной привязки"
+
+    def _detail_ru(self, issue: ValidationIssue) -> str:
+        field_name = self._build_field_name(issue)
+        expected_text = self._build_expected_text_ru(issue)
+        observed_text = self._build_observed_text(issue)
+        location_text = self._build_location_text(issue)
+
+        if issue.category is FindingCategory.CROSS_DOCUMENT:
+            return (
+                f"{issue.message or 'Обнаружено противоречие между источниками.'} "
+                f"Ожидание: {expected_text}. Факт: {observed_text}. "
+                f"Привязка: {location_text}."
+            )
+        if issue.category is FindingCategory.DRAWING_VALIDATION:
+            return (
+                f"Проблемная зона на чертеже {location_text}: "
+                f"показатель {field_name} имеет значение "
+                f"{observed_text}, тогда как {expected_text}."
+            )
+        if issue.category is FindingCategory.SPATIAL:
+            return (
+                f"{issue.message or 'Обнаружен пространственный конфликт.'} "
+                f"Привязка: {location_text}."
+            )
+        return (
+            f"Для {issue.ifc_entity or 'элемента'} {location_text} "
+            f"поле {field_name} имеет значение "
+            f"{observed_text}, тогда как {expected_text}."
+        )
+
+    def _detail_en(self, issue: ValidationIssue) -> str:
+        field_name = self._build_field_name(issue)
+        expected_text = self._build_expected_text_en(issue)
+        observed_text = self._build_observed_text(issue)
+        location_text = self._build_location_text(issue)
+
+        if issue.category is FindingCategory.CROSS_DOCUMENT:
+            return (
+                f"{issue.message or 'Contradiction detected between sources.'} "
+                f"Expected: {expected_text}. Observed: {observed_text}. "
+                f"Location: {location_text}."
+            )
+        if issue.category is FindingCategory.DRAWING_VALIDATION:
+            return (
+                f"Problem zone on drawing {location_text}: "
+                f"metric {field_name} is {observed_text}, but {expected_text}."
+            )
+        if issue.category is FindingCategory.SPATIAL:
+            return f"{issue.message or 'Spatial conflict detected.'} Location: {location_text}."
+        return (
+            f"For {issue.ifc_entity or 'element'} {location_text}, "
+            f"field {field_name} is {observed_text}, but {expected_text}."
+        )
+
+    def _compose_body_ru(self, issue: ValidationIssue, *, essence: str) -> str:
+        clause_cite, _bound = self._norm_line(issue)
+        return (
+            f"Суть: {essence}. "
+            f"Норма/СТО: {clause_cite}. "
+            f"Локация: {self._location_line(issue)}. "
+            f"Развёрнуто: {self._detail_ru(issue)}"
+        )
+
+    def _compose_body_en(self, issue: ValidationIssue, *, essence: str) -> str:
+        clause_cite, _bound = self._norm_line(issue)
+        return (
+            f"Essence: {essence}. "
+            f"Norm/STO: {clause_cite}. "
+            f"Location: {self._location_line(issue)}. "
+            f"Detail: {self._detail_en(issue)}"
+        )
+
+    def _build_field_name(self, issue: ValidationIssue) -> str:
+        if issue.property_set and issue.property_name:
+            return f"{issue.property_set}.{issue.property_name}"
+        if issue.property_name:
+            return issue.property_name
+        return (
+            issue.target_ref
+            or issue.ifc_entity
+            or ("requirement" if self._locale == "en" else "требование")
+        )
+
+    def _build_expected_text_ru(self, issue: ValidationIssue) -> str:
+        unit_suffix = f" {issue.unit}" if issue.unit else ""
+        if issue.operator is ComparisonOperator.GREATER_OR_EQUAL:
+            return f"значение должно быть не менее {issue.expected_value}{unit_suffix}"
+        if issue.operator is ComparisonOperator.LESS_OR_EQUAL:
+            return f"значение должно быть не более {issue.expected_value}{unit_suffix}"
+        if issue.operator is ComparisonOperator.EXISTS:
+            return "поле должно присутствовать"
+        return f"ожидалось значение {issue.expected_value}{unit_suffix}"
+
+    def _build_expected_text_en(self, issue: ValidationIssue) -> str:
+        unit_suffix = f" {issue.unit}" if issue.unit else ""
+        if issue.operator is ComparisonOperator.GREATER_OR_EQUAL:
+            return f"value must be at least {issue.expected_value}{unit_suffix}"
+        if issue.operator is ComparisonOperator.LESS_OR_EQUAL:
+            return f"value must be at most {issue.expected_value}{unit_suffix}"
+        if issue.operator is ComparisonOperator.EXISTS:
+            return "the field must be present"
+        return f"expected value {issue.expected_value}{unit_suffix}"
+
+    def _build_observed_text(self, issue: ValidationIssue) -> str:
+        if issue.observed_value is None:
+            return "not found" if self._locale == "en" else "не найдено"
+        unit_suffix = f" {issue.unit}" if issue.unit else ""
+        return f"{issue.observed_value}{unit_suffix}"
+
+    def _build_location_text(self, issue: ValidationIssue) -> str:
+        return self._location_line(issue)

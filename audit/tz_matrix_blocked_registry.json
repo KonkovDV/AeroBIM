@@ -1,0 +1,17 @@
+{
+  "description": "Explicit TZ matrix rows that must not be marked done until RT-001/002/003 customer data exists.",
+  "blocked_requirement_patterns": [
+    "(?i)customer corpus",
+    "(?i)approved norm pack",
+    "(?i)mep federated",
+    "(?i)mep\\s*/\\s*system intersections",
+    "(?i)cde bcf",
+    "(?i)dual adjudication",
+    "(?i)rt-001",
+    "(?i)rt-002",
+    "(?i)rt-003",
+    "(?i)clash accuracy",
+    "(?i)inconsistency accuracy"
+  ],
+  "forbidden_statuses": ["done"]
+}

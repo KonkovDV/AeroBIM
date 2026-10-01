@@ -1,0 +1,19 @@
+# Документация
+
+**Ссылка для формы:** https://github.com/KonkovDV/AeroBIM/tree/main/docs
+
+> Мы на стадии доработки контура заказчика. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение у назначающей стороны ещё не начались. Checkpoint `GO` — регуляторно-измерительный MVP. `customer_go` остаётся false, пока нет независимого размеченного корпуса, двух разметчиков, подписанного профиля назначающей стороны и подтверждения импорта в СОД.
+
+| Документ | Роль |
+|---|---|
+| [`docs/docs.md`](../../docs/docs.md) | Техническое обоснование |
+| [`TZ_COMPLIANCE_MATRIX_2026.md`](../../docs/tz/TZ_COMPLIANCE_MATRIX_2026.md) | Построчная матрица ТЗ |
+| [`TZ_REQUIREMENTS_COVERAGE_2026_08.md`](../TZ_REQUIREMENTS_COVERAGE_2026_08.md) | Карта этой подачи |
+| [`pilot-claim-boundary-2026.md`](../../docs/pilot-claim-boundary-2026.md) | Что проверено, что запланировано · кадр 6 |
+| [`QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](../../docs/pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md) | Как будем мерить, когда появятся данные заказчика |
+| [`regulatory-baseline-2026.md`](../../docs/regulatory-baseline-2026.md) | Срез норм; полного соответствия ГОСТ не заявляем |
+| [`ADR-001-verdict-ownership-2026.md`](../../docs/architecture/ADR-001-verdict-ownership-2026.md) | Кто пишет `summary.passed` · кадр 5 |
+
+Методика опубликована **до** данных заказчика, чтобы цифры нельзя было подогнать после факта.
+
+Для измерения на комплекте заказчика нужны четыре поставки: комплект одной ревизии, подписанный профиль приёмки, два инженера-разметчика, целевая СОД для BCF. Без них `customer_go` остаётся false. Запрос: [`CUSTOMER_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md`](../../docs/partners/CUSTOMER_ACCEPTANCE_PROFILE_V0_1_2026_08_15.md).

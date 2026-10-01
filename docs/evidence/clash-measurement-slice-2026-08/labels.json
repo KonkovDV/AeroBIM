@@ -1,0 +1,65 @@
+{
+  "schema_version": "1.0.0",
+  "dataset_id": "aerobim-extent-clash-fixture-2026-08-11",
+  "dataset_status": "adjudicated",
+  "scope_reference": "FIXTURE-EXTENT-CLASH-ONLY-NOT-CUSTOMER-EVIDENCE",
+  "claim_level": "fixture_only",
+  "adjudication": {
+    "method": "dual_independent",
+    "completed_at": "2026-08-12T15:43:40.493319+00:00",
+    "adjudicators": [
+      {
+        "id": "engineer-a",
+        "role": "fixture rater A"
+      },
+      {
+        "id": "engineer-b",
+        "role": "fixture rater B"
+      }
+    ],
+    "notes": "Both raters confirm AABB extent overlaps on the synthetic fixture; not a customer package adjudication."
+  },
+  "cases": [
+    {
+      "case_id": "EXTENT-CLASH-FIXTURE-001",
+      "expected_findings": [
+        {
+          "finding_class": "clash",
+          "rule_id": "SPATIAL-EXTENT-CLASH",
+          "target_ref": "0X6$Bzu5n23RDMNswou8Cq|2Gyr7M6Gj9Jvqb8WayhFpS",
+          "adjudication_status": "confirmed"
+        },
+        {
+          "finding_class": "clash",
+          "rule_id": "SPATIAL-EXTENT-CLASH",
+          "target_ref": "0YBe_wnz912gEp_xB7xYZr|0stS5CkzD9uQ97Kma3MF4p",
+          "adjudication_status": "confirmed"
+        },
+        {
+          "finding_class": "clash",
+          "rule_id": "SPATIAL-EXTENT-CLASH",
+          "target_ref": "0pChytAa98pAzDdNPBzUuu|1Vj5HEf0TDgPaR2oT2RHOJ",
+          "adjudication_status": "confirmed"
+        },
+        {
+          "finding_class": "clash",
+          "rule_id": "SPATIAL-EXTENT-CLASH",
+          "target_ref": "1JckDccf54PwAPL1pJiO4W|2wUuWHwGH8$u0xvjnIetKm",
+          "adjudication_status": "confirmed"
+        },
+        {
+          "finding_class": "clash",
+          "rule_id": "SPATIAL-EXTENT-CLASH",
+          "target_ref": "1n8loHEFX80OgmJHMcmWJy|3hsxUqker0LRsBeRdFZHgl",
+          "adjudication_status": "confirmed"
+        },
+        {
+          "finding_class": "clash",
+          "rule_id": "SPATIAL-EXTENT-CLASH",
+          "target_ref": "1qSDHaXB1BjBVNY_BJM$Lm|2BfN_3Jsz0aBQe_SzOgfo5",
+          "adjudication_status": "confirmed"
+        }
+      ]
+    }
+  ]
+}

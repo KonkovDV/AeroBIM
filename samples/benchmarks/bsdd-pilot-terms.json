@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0.0",
+  "terms": [
+    {
+      "property_names": ["FireRating"],
+      "aliases": ["огнестойкость", "fire rating"],
+      "bsdd_uri": "https://identifier.buildingsmart.org/uri/buildingsmart/ifc/4.3/prop/FireRating"
+    },
+    {
+      "property_names": ["ThermalTransmittance"],
+      "aliases": ["сопротивление теплопередаче", "u-value"],
+      "bsdd_uri": "https://identifier.buildingsmart.org/uri/buildingsmart/ifc/4.3/prop/ThermalTransmittance"
+    },
+    {
+      "property_names": ["Thickness"],
+      "aliases": ["толщина", "thickness"],
+      "bsdd_uri": "https://identifier.buildingsmart.org/uri/buildingsmart/ifc/4.3/prop/Thickness"
+    },
+    {
+      "property_names": ["ConcreteStrengthClass"],
+      "aliases": ["класс прочности", "strength class"],
+      "bsdd_uri": "https://identifier.buildingsmart.org/uri/buildingsmart/ifc/4.3/prop/ConcreteStrengthClass"
+    },
+    {
+      "property_names": ["ThermalConductivity"],
+      "aliases": ["теплопроводность", "lambda"],
+      "bsdd_uri": "https://identifier.buildingsmart.org/uri/buildingsmart/ifc/4.3/prop/ThermalConductivity"
+    }
+  ]
+}

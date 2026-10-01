@@ -1,0 +1,201 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aerobim-backend"
+version = "0.1.0"
+description = "AeroBIM backend for cross-modal IFC, IDS, drawing, and specification validation"
+requires-python = ">=3.12"
+# MIT covers AeroBIM's OWN code only; third-party components keep their own
+# licenses. Core PDF path is permissive (pypdfium2 / pdfminer.six); optional
+# ``pdf-agpl`` may still pull PyMuPDF (AGPL/Artifex dual, LIC-001). SSOT:
+# audit/dependency_license_inventory.json + docs/license-policy-2026.md.
+license = { text = "MIT" }
+classifiers = [
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+  "Framework :: FastAPI",
+  "Topic :: Scientific/Engineering",
+  "Topic :: Software Development :: Quality Assurance",
+]
+dependencies = [
+  "fastapi>=0.115,<1.0",
+  "uvicorn[standard]>=0.32,<1.0",
+  "python-multipart>=0.0.9",
+  "ifcopenshell>=0.8.4",
+  "ifctester>=0.8.4",
+  "starlette>=0.41",
+  "pypdfium2>=4.30,<6.0",
+  "pdfminer.six>=20240706",
+  "pillow>=10.0,<13.0",
+  "defusedxml>=0.7.1",
+  "python-docx>=1.1,<2.0",
+  "openpyxl>=3.1,<4.0",
+  "reportlab>=4.2,<5.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/KonkovDV/AeroBIM"
+Repository = "https://github.com/KonkovDV/AeroBIM"
+Issues = "https://github.com/KonkovDV/AeroBIM/issues"
+
+[project.scripts]
+aerobim-export-runtime-baseline = "aerobim.tools.export_runtime_baseline:main"
+aerobim-export-api-contract-summary = "aerobim.tools.export_api_contract_summary:main"
+aerobim-evaluate-detection-precision = "aerobim.tools.evaluate_detection_precision:main"
+aerobim-export-detections-from-report = "aerobim.tools.export_detections_from_report:main"
+aerobim-evaluate-ifc-qa = "aerobim.tools.evaluate_ifc_qa:main"
+aerobim-check-markdown-links = "aerobim.tools.check_markdown_links:main"
+aerobim-build-detection-labels = "aerobim.tools.build_detection_labels:main"
+aerobim-run-demo-path = "aerobim.tools.run_demo_path:main"
+aerobim-run-kt3-without-customer = "aerobim.tools.run_kt3_without_customer:main"
+aerobim-review-shell = "aerobim.tools.run_review_stand:main"
+aerobim-measure-adjudicator-agreement = "aerobim.tools.measure_adjudicator_agreement:main"
+aerobim-emit-package-source-hash-chain = "aerobim.tools.emit_package_source_hash_chain:main"
+aerobim-validate-customer-intake-gate = "aerobim.tools.validate_customer_intake_gate:main"
+aerobim-measure-package-sla = "aerobim.tools.measure_package_sla:main"
+aerobim-export-evidence-bundle = "aerobim.tools.export_evidence_bundle:main"
+aerobim-register-dwg-conversion = "aerobim.tools.register_dwg_conversion:main"
+aerobim-vlm-advisory-smoke = "aerobim.tools.vlm_advisory_smoke:main"
+aerobim-vlm-region-smoke = "aerobim.tools.vlm_region_smoke:main"
+# Deprecated aliases (historical Kimi-first naming).
+aerobim-kimi-advisory-smoke = "aerobim.tools.vlm_advisory_smoke:main"
+aerobim-kimi-region-smoke = "aerobim.tools.vlm_region_smoke:main"
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=9.0.3,<10.0",
+  "pytest-cov>=6.0,<8.0",
+  "hypothesis>=6.100,<7.0",
+  "httpx>=0.27",
+  "ruff>=0.7,<1.0",
+  "mypy>=1.12,<2.0",
+  "jsonschema>=4.23,<5.0",
+]
+raster = [
+  "rapidocr>=3.8,<4.0",
+  "onnxruntime>=1.22,<2.0",
+]
+clash = [
+  "ifcclash>=0.8.4",
+]
+docling = [
+  "docling>=2.0",
+]
+cad = [
+  "ezdxf>=1.3,<2.0",
+]
+vision = [
+  "pillow>=10.0,<13.0",
+]
+pdf-agpl = [
+  # Optional AGPL/Artifex dual path for legacy tools / fixture generators only.
+  # Not required for the production PDF pipeline (LIC-001 Option B).
+  "pymupdf>=1.27,<2.0",
+]
+enterprise = [
+  "boto3>=1.42,<2.0",
+  "sqlalchemy[asyncio]>=2.0,<3.0",
+  "asyncpg>=0.30,<1.0",
+  "PyJWT[crypto]>=2.9,<3.0",
+  "redis>=5.0,<6.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"aerobim.presentation.http.fonts" = ["*.ttf", "OFL.txt"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "S", "RUF100"]
+# S-band inventory: governance/ruff_s_band_inventory.json
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106", "S107", "S108", "S110", "S311", "S314", "S603"]
+"src/aerobim/core/di/tokens.py" = ["S105"]
+"src/aerobim/domain/hybrid/data_classification.py" = ["S105"]
+"src/aerobim/domain/hybrid/sensitive_entities.py" = ["S105"]
+"src/aerobim/domain/package_outcome.py" = ["S105"]
+"src/aerobim/domain/eval_statistics.py" = ["S311"]
+"src/aerobim/tools/**" = ["S101", "S105", "S310", "S311", "S314", "S603", "S607", "E501"]
+"src/aerobim/application/services/compliance_agent_orchestrator.py" = ["S101"]
+"src/aerobim/application/services/package_ingestion.py" = ["S101"]
+"src/aerobim/domain/norm_rule_eligibility.py" = ["S101"]
+"src/aerobim/domain/region_read_plan.py" = ["S101"]
+"src/aerobim/domain/sequential_inference.py" = ["S101"]
+"src/aerobim/core/security/outbound_url.py" = ["S101", "S310"]
+"src/aerobim/infrastructure/adapters/bsi_validation_service.py" = ["S310"]
+"src/aerobim/infrastructure/adapters/http_bcf_api_client.py" = ["S310"]
+"src/aerobim/infrastructure/adapters/vlm_advisory_client.py" = ["S310"]
+"src/aerobim/infrastructure/adapters/llm_extraction_adapters.py" = ["S310"]
+"src/aerobim/infrastructure/adapters/openai_compat_llm_provider.py" = ["S310"]
+"src/aerobim/infrastructure/security/oidc_token_validator.py" = ["S310"]
+"src/aerobim/infrastructure/auth/oidc_bff_phase3.py" = ["S310"]
+"src/aerobim/infrastructure/adapters/federated_ifc_mep_system_graph.py" = ["S112"]
+"src/aerobim/infrastructure/adapters/filesystem_audit_store.py" = ["S110"]
+"src/aerobim/infrastructure/adapters/ifc_aabb_mep_pair_filter.py" = ["S110"]
+"src/aerobim/presentation/http/context.py" = ["S101"]
+"src/aerobim/infrastructure/adapters/region_restricted_vlm_pipeline.py" = ["S101"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+
+[[tool.mypy.overrides]]
+module = [
+  "docling.*",
+  "ifcclash",
+  "rapidocr",
+  "ifctester",
+  "jwt",
+  "ezdxf",
+  "ezdxf.*",
+  "redis",
+  "PIL",
+  "PIL.*",
+  "sqlalchemy",
+  "sqlalchemy.*",
+  "defusedxml",
+  "defusedxml.*",
+  "pypdfium2",
+  "pypdfium2.*",
+  "reportlab",
+  "reportlab.*",
+  "pdfminer",
+  "pdfminer.*",
+  "pymupdf",
+  "pymupdf.*",
+  "boto3",
+  "boto3.*",
+  "botocore",
+  "botocore.*",
+  "ifcopenshell",
+  "ifcopenshell.*",
+  "psutil",
+  "psutil.*",
+  "openpyxl",
+  "openpyxl.*",
+]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = [
+  "pymupdf",
+  "pymupdf.*",
+  "redis",
+  "redis.*",
+]
+follow_imports = "skip"
