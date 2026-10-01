@@ -289,6 +289,63 @@ def _n59_unsigned_key_dir_commits(
     return violations
 
 
+def _history_includes_root() -> bool:
+    """True when every root reachable from HEAD is a real parentless commit.
+
+    A shallow boundary still records ``parent`` lines, so ``rev-list
+    --max-parents=0`` is empty and this returns False. A republished
+    history whose oldest commit has no parent returns True.
+    """
+
+    listed = subprocess.run(
+        ["git", "rev-list", "--max-parents=0", "HEAD"],
+        text=True,
+        capture_output=True,
+        check=False,
+        encoding="utf-8",
+        errors="replace",
+    )
+    if listed.returncode != 0:
+        return False
+    shas = [line.strip() for line in (listed.stdout or "").splitlines() if line.strip()]
+    if not shas:
+        return False
+    for sha in shas:
+        meta = subprocess.run(
+            ["git", "cat-file", "-p", sha],
+            text=True,
+            capture_output=True,
+            check=False,
+            encoding="utf-8",
+            errors="replace",
+        )
+        if meta.returncode != 0:
+            return False
+        if any(line.startswith("parent ") for line in (meta.stdout or "").splitlines()):
+            return False
+    return True
+
+
+def _effective_inspect_depth(
+    row_count: int,
+    configured: int,
+    *,
+    includes_root: bool,
+) -> int | None:
+    """Window size, or None when a short fetch must be refused.
+
+    ``None`` is the shallow-checkout case (N-56): fewer commits than
+    ``inspect_depth`` and the true root is not in the fetch. A complete
+    history shorter than the configured window is audited in full.
+    """
+
+    if row_count >= configured:
+        return configured
+    if includes_root and row_count > 0:
+        return row_count
+    return None
+
+
 def _effective_min_ratio(policy: dict[str, object]) -> float:
     base = float(policy.get("min_signed_ratio", 0.0) or 0.0)
     target = float(policy.get("ratchet_target_ratio", 0.0) or 0.0)
@@ -347,13 +404,24 @@ def main() -> int:
         return 1
 
     rows = _commit_sig_rows(depth)
-    if len(rows) < depth:
+    window = _effective_inspect_depth(
+        len(rows),
+        depth,
+        includes_root=_history_includes_root(),
+    )
+    if window is None:
         print(
             f"ERROR: available history {len(rows)} < inspect_depth {depth} "
             "(shallow checkout collapses the signing window — refuse, do not decorate)",
             file=sys.stderr,
         )
         return 3
+    if window != depth:
+        print(
+            f"history_complete=true commits={window} "
+            f"inspect_depth={depth} window=full_history"
+        )
+        depth = window
 
     signed, unverifiable, other_bad, total, named = _classify(
         rows, author_trusted, platform_trusted

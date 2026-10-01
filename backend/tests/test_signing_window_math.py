@@ -67,6 +67,21 @@ class SigningWindowMathTests(unittest.TestCase):
             )
         )
 
+    def test_complete_short_history_uses_full_window(self) -> None:
+        self.assertEqual(
+            _MOD._effective_inspect_depth(2, 50, includes_root=True),
+            2,
+        )
+
+    def test_shallow_short_history_is_refused(self) -> None:
+        self.assertIsNone(_MOD._effective_inspect_depth(2, 50, includes_root=False))
+
+    def test_full_window_is_unchanged(self) -> None:
+        self.assertEqual(
+            _MOD._effective_inspect_depth(50, 50, includes_root=False),
+            50,
+        )
+
     def test_author_trusted_sig_rejects_unsigned_and_platform(self) -> None:
         author = {"AAAA"}
         self.assertTrue(_MOD._is_author_trusted_sig("G", "AAAA", author))
