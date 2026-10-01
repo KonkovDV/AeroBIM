@@ -241,9 +241,7 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
 
     def test_seven_jury_surfaces_carry_verbatim_formula(self) -> None:
         repo = self._repo()
-        en_readme = repo / "README.en.md"
         surfaces = (
-            repo / "README.md",
             repo / "docs" / "docs.md",
             repo / "docs" / "TIER0_INDEX.md",
             repo / "docs" / "demo" / "KT2_JURY_FAQ_2026_08_12.md",
@@ -255,16 +253,35 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
             repo / "submission" / "04-prototype" / "README.md",
             repo / "submission" / "05-additional" / "README.md",
         )
-        self.assertIn(_SPEECH_FORMULA_EN_VERBATIM, en_readme.read_text(encoding="utf-8"))
         for path in surfaces:
             text = path.read_text(encoding="utf-8")
             self.assertIn(_SPEECH_FORMULA_VERBATIM, text, msg=path.as_posix())
 
-    def test_readme_checkpoint_heading_is_go_not_product_no_go(self) -> None:
+    def test_readme_is_standalone_not_a_programme_pitch(self) -> None:
         repo = self._repo()
         for name in ("README.md", "README.en.md"):
             text = (repo / name).read_text(encoding="utf-8")
-            self.assertIn("## Checkpoint: `GO`", text, msg=name)
+            for marker in (
+                "Техлаб",
+                "TechLab",
+                "комиссия № 7",
+                "commission № 7",
+                "Для жюри",
+                "For the jury",
+                "customer_go",
+                "## Checkpoint",
+                _SPEECH_FORMULA_VERBATIM,
+                _SPEECH_FORMULA_EN_VERBATIM,
+            ):
+                self.assertNotIn(marker, text, msg=f"{name}: {marker[:40]}")
+            self.assertIn("NOT_VERIFIED", text, msg=name)
+
+    def test_claim_boundary_checkpoint_is_go_not_product_no_go(self) -> None:
+        repo = self._repo()
+        boundary = (repo / "docs" / "pilot-claim-boundary-2026.md").read_text(encoding="utf-8")
+        self.assertIn("**Checkpoint:** **`GO`**", boundary)
+        for name in ("README.md", "README.en.md"):
+            text = (repo / name).read_text(encoding="utf-8")
             self.assertNotIn("## Checkpoint: `NO_GO`", text, msg=name)
             self.assertNotIn("Checkpoint stays `NO_GO`", text, msg=name)
             self.assertNotIn("Checkpoint — `NO_GO`", text, msg=name)

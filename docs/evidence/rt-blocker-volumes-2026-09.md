@@ -2,9 +2,9 @@
 ---
 title: "RT-001 / RT-002 / RT-003 — measurement substitutes vs residuals"
 date: "2026-09-04"
-last_updated: "2026-09-05"
+last_updated: "2026-10-01"
 status: active
-version: "1.3.1"
+version: "1.3.2"
 checkpoint: GO
 go_kind: regulatory_measurement_mvp
 customer_go: false
@@ -47,6 +47,14 @@ claim_boundary: >
 | **RT-003** | `b3_mep_system_clash` (речь **RT-003c**) | **OPEN** | `mep_system_clash=NOT_VERIFIED`. 0 duct/pipe/cable в IFC комплекта. `IfcFlowTerminal` на АР — не граф заказчика. Репетиция HVAC ≠ координация инженерки на пакете |
 | **RT-003** | `c_customer_federated_ifc` | **OPEN** | Нет выгрузки NWD→IFC заказчика и signed clearance |
 | **CDE T2** | импорт BCF | **NOT_VERIFIED** | Структурный ZIP (T1) ≠ журнал импорта в СОД |
+
+## Речевые литеры
+
+| ID | Закрыто на клоне | Остаётся пилоту |
+|---|---|---|
+| **RT-001** | `a_content_pairing` **CLOSED** (**RT-001a**) — типовые замечания экспертизы РФ + публичные IDS + учебный комплект. `b_protocol_rehearsal` **CLOSED** — два независимых симулированных прохода на том же учебном комплекте, κ/α/AC1 на симуляции | `b_criterion_dual_rater` **OPEN** (**RT-001b**) (двое людей + заключение на *тот же* том). `c_customer_corpus` **OPEN**. Симуляция — не двое людей |
+| **RT-002** | `a_regulatory` **CLOSED** (**RT-002a**) — публичные IDS (Мособлгосэкспертиза, СПб ГАУ ЦГЭ, городской АГР) как линейка измерения. `b_eir_carrier` **CLOSED** (**RT-002b**) — EIR v4.0 и BIM-стандарт v4.0 на канальном комплекте как **текст**. Публичный IDS экспертизы — не EIR назначающей стороны | `c_corporate_signed` **OPEN** (**RT-002c**; `b_corporate` остаётся OPEN) — подпись заказчика канала / `customer_approved` IDS |
+| **RT-003** | `a_federated_geometric_rehearsal` **CLOSED** (**RT-003a**) — посаженный IfcClash (стены; труба против стены). `b_navis_federation_carrier` **CLOSED** — три NWD-федерации. `b_ifc_system_graph_rehearsal` **CLOSED** (**RT-003b**) — граф `IfcSystem` на учебной HVAC-модели (две системы, `IfcRelAssignsToGroup`); не труба против стены | `b_mep_system_clash` **OPEN** (**RT-003c**, `NOT_VERIFIED`) — 0 duct/pipe/cable в IFC заказчика. `c_customer_federated_ifc` **OPEN** |
 
 Open benches (AEC-Bench, IFC-Bench, GNI) по-прежнему **другой контур**, чем RT-001b: они не пары «российский том ПД ↔ заключение экспертизы».
 

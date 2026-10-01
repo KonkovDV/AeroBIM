@@ -24,14 +24,12 @@
 [English version](README.en.md)
 
 [![CI](https://img.shields.io/github/actions/workflow/status/KonkovDV/AeroBIM/ci.yml?branch=main&label=CI)](https://github.com/KonkovDV/AeroBIM/actions/workflows/ci.yml?query=branch%3Amain)
-[![Checkpoint](https://img.shields.io/badge/checkpoint-GO-brightgreen.svg)](docs/pilot-claim-boundary-2026.md)
-[![Customer sign-off](https://img.shields.io/badge/customer_sign--off-NO__GO-red.svg)](docs/pilot-claim-boundary-2026.md)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-Зелёный бейдж — Checkpoint `GO`: макет, на котором уже можно мерить. Учебные комплекты запускаются. Красный — подписи заказчика ещё нет (`customer_go` false).
+**AeroBIM** — автоматическая проверка проектной и рабочей документации. Самостоятельный открытый проект под лицензией MIT.
 
-**AeroBIM** сверяет комплект ПД и РД сам с собой: модель, лист, ведомость, ТЗ, расчёт. По отдельности файл может быть чистым. Ошибка сидит между файлами и обычно вылезает уже на площадке.
+Программа сверяет комплект ПД и РД сам с собой: модель, лист, ведомость, ТЗ, расчёт. По отдельности файл может быть чистым. Ошибка сидит между файлами и обычно вылезает уже на площадке.
 
 В карточке — пункт нормы, этаж или ось, GUID. Эксперт принимает, отклоняет или правит замечание. Флаг комплекта `summary.passed` считает программа. Языковая модель этот флаг не пишет. Наружу уходят HTML, JSON, PDF и BCF.
 
@@ -45,71 +43,32 @@
 
 **Как выглядит находка.** Учебный пример, не замер на объекте: защитный слой 30 мм в модели и 40 мм на листе, расхождение 10 мм. Считает программа. В карточке — требование, GUID и строка листа. Человек решает, что делать с замечанием. Наружу уходит файл BCF 2.1 или 3.0.
 
-## Для жюри
-
-Техлаб Москва, комиссия № 7: автоматическая проверка проектной и рабочей документации. В открытом репозитории заказчик канала не назван. Демо-день — 21 сентября 2026. Сами ставим УГТ 4 по ГОСТ Р 58048. Это самооценка, не заключение института.
-
-> Мы на стадии доработки контура заказчика. Одна команда показывает находку с доказательствами на учебном комплекте. Валидация эффективности и внедрение у назначающей стороны ещё не начались. Checkpoint `GO` — регуляторно-измерительный MVP. `customer_go` остаётся false, пока нет независимого размеченного корпуса, двух разметчиков, подписанного профиля назначающей стороны и подтверждения импорта в СОД.
-
-Показ — семь кадров: [`AeroBIM.pptx`](submission/03-presentation/AeroBIM.pptx) · [`AeroBIM.pdf`](submission/03-presentation/AeroBIM.pdf) · [текст](submission/03-presentation/demo_day_slides.md). Полная версия на 43 слайда лежит рядом с кнопками. На показ идут семь кадров. Живая команда: с корня клона `run-jury.bat` или `./run-jury.sh`, либо из `backend/` `python -m aerobim.tools.run_kt3_jury`.
-
-| Кадр | На слайде | Куда в репозитории |
-|---|---|---|
-| 1 | Шлюз ПД/РД, комиссия № 7 | Этот README |
-| 2 | Два инженера, роли | [кадр 2](submission/03-presentation/demo_day_slides.md#kadr-2) |
-| 3 | Шов комплекта; цифры на фикстуре; гипотеза пилота | [0,86 / 10/10 / 1/8](submission/05-additional/README.md) |
-| 4 | Учебный узел 30/40 мм → BCF | Схема на слайде. Живой прогон — посаженные дефекты git, не этот узел: [прототип](submission/04-prototype/README.md) |
-| 5 | Детерминированное ядро; ИИ не пишет итог | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) · [граница ingest](docs/tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md) |
-| 6 | Восемь недель; GO пилота ≠ Checkpoint `GO` | [граница заявлений](docs/pilot-claim-boundary-2026.md) · [кадр 6](submission/03-presentation/demo_day_slides.md#kadr-6) |
-| 7 | Почта и GitHub | Кадр 7 PPTX; телефон только там |
-
-| | |
-|---|---|
-| **Пакет формы** | [`submission/README.md`](submission/README.md) — пять полей |
-| **Граница заявлений** | [документ](docs/pilot-claim-boundary-2026.md) |
-
-### Запрос
-
-Оплачиваемый пилот по программе, 2 млн ₽, один корпус, восемь недель от соглашения. Письмом: комплект одной ревизии с IFC, эксперт-валидатор, режим данных и лист целевых KPI. Цель — минус один круг согласования и дельта ревизий в СОД заказчика.
-
-С 2 апреля 2026 года ЦИМ АГР в IFC обязателен к подаче в Москве (постановление Правительства Москвы № 17-ПП от 16 января 2026; совместное распоряжение ДИТ и ДГП № ДГП-Р-1/26/64-16-6/26). С 18 августа 2026 совместное распоряжение ДГП/ДИТ № ДГП-Р-56/26/64-16-473/26 уточняет параметры трёхмерных моделей в информационных системах Москвы. Это городские правила подачи. Вход AeroBIM — IFC.
-
-## Пять кресел
-
-Два кресла — мы. Три — партнёр, если договоримся.
-
-| Кресло | Роль | Куда смотреть |
-|---|---|---|
-| **Пилотирование** (оператор) | Живой прогон на учебном комплекте. Программа испытаний, методика и акт — предмет пилота | [прототип](submission/04-prototype/README.md) |
-| **Спрос** (оператор) | Вход без внедрения: веб и файловый обмен. Оплата по подтверждённым находкам — план речи, не позиция запроса | [Запрос](#запрос) · [кадр 6](submission/03-presentation/demo_day_slides.md#kadr-6) |
-| **Техзаказчик** (партнёр) | Минус один круг согласования комплекта. Дельта ревизий: находки → устранено / проигнорировано / новое. Решение по замечанию пишет эксперт | [кадр 6](submission/03-presentation/demo_day_slides.md#kadr-6) |
-| **Проектный офис** (партнёр) | Замечание уходит файлом BCF. Архив мы собираем. Что СОД его приняла — ещё не показано. Эксперт решает по замечанию и флаг комплекта не переписывает | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) |
-| **Информационное моделирование** (партнёр) | Шов документов. Вход — IFC | [граница ingest](docs/tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md) |
-
-На учебном комплекте показываем протокол. После согласованной ревизии отчёт считает программа.
-
-## Что принимает клон
+## Что принимает AeroBIM
 
 | | |
 |---|---|
 | Вход | IFC 2x3 / 4 / 4x3, IDS 1.0, PDF вектор/растр, текст спецификации |
 | Сверка | Программа: IFC, IDS и сравнение между файлами. Допуск на число задаёт профиль |
-| Рабочее место | Браузер: модель, превью листа и зона из отчёта, тексты на русском и английском, кнопки решения эксперта. Чертёж здесь не правят. Листа заказчика в этом контуре нет |
+| Рабочее место | Браузер: модель, превью листа и зона из отчёта, тексты на русском и английском, кнопки решения эксперта. Чертёж здесь не правят |
 | Отчёт | HTML + JSON + PDF + структурный архив BCF 2.1 / 3.0 |
 | Вердикт | `summary.passed` считает программа. В ISO 19650 это Shared-gate: прохождение настроенных правил, не разрешение на стройку. Языковая модель этот флаг не пишет ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)) |
 
 Если обязательная проверка не дошла до конца, комплект не проходит.
 
-## Статус
+## Стадия
 
-| | |
-|---|---|
-| **Работает на этом клоне** | Учебные комплекты, отказ IDS, если набор правил не загрузился, командная строка, CI, файл BCF, оболочка с превью листа из отчёта. Лист заказчика — ещё предмет пилота |
-| **Предмет пилота** | Два разметчика-человека + заключение на тот же том (RT-001b) · подписанный профиль назначающей стороны (RT-002c) · system-aware clash (**RT-003c**) · федеративный IFC заказчика (`c_customer_federated_ifc`) · импорт BCF в СОД заказчика |
+Регуляторно-измерительный MVP. Код и учебные комплекты из `samples/` запускаются: одна команда показывает находку с доказательствами на учебном комплекте. Все замеры пока сделаны на учебных и открытых данных.
+
+Чего ещё нет:
+
+- размеченного корпуса реальных проектов и двух разметчиков-людей на одной выборке. Точность на реальных комплектах не заявляется;
+- подписанного профиля приёмки конкретной организации. В `samples/` лежат опубликованные наборы правил;
+- проверки коллизий инженерных систем по графу систем: `mep_system_clash` остаётся `NOT_VERIFIED`;
+- подтверждения, что СОД принимает выгруженный BCF. Экспорт структурный, импорт — `NOT_VERIFIED`.
 
 ## Try it
 
-Как запустить показ. Python 3.12 и venv в `backend/.venv`. Для живого CLI показа Node не нужен. Оболочка ревью — Node 20+ и npm. Кавычки у `".[dev,raster]"` в PowerShell обязательны.
+Python 3.12 и venv в `backend/.venv`. Для демо-прогона в командной строке Node не нужен. Оболочка ревью — Node 20+ и npm. Кавычки у `".[dev,raster]"` в PowerShell обязательны.
 
 **Windows (PowerShell).** Если `Activate.ps1` режет ExecutionPolicy, venv не активируйте — зовите `python.exe` напрямую.
 
@@ -136,7 +95,7 @@ source .venv/bin/activate
 pip install -e ".[dev,raster]"
 ```
 
-Показ — живой CLI из `backend/`. В учебном комплекте посажены дефекты, команда их находит (`summary.passed=false`). Либо из корня клона: `./run-jury.sh`.
+Демо-прогон — из `backend/`. В учебном комплекте посажены дефекты, команда их находит (`summary.passed=false`). Либо из корня клона: `./run-jury.sh`.
 
 ```bash
 python -m aerobim.tools.run_kt3_jury
@@ -157,7 +116,7 @@ python -m aerobim.main   # http://127.0.0.1:8080/health
 
 Опциональные наборы `.[clash]`, `.[docling]`, `.[enterprise]`, `.[pdf-agpl]` для команд выше не нужны.
 
-Если `py -3.12` нет, поставьте CPython 3.12 с python.org, не из Microsoft Store. Голый `py` может схватить 3.13. Клонируйте git, не скачивайте ZIP с GitHub. Если IfcOpenShell на Windows не импортируется, поставьте Microsoft VC++ 2015-2022 x64. Проверка окружения — `.\check-launch.bat` из корня клона. Предупреждение запуск показа не останавливает. Код выхода 2 останавливает. Клон лучше положить в короткий путь латиницей, например `C:\AeroBIM`.
+Если `py -3.12` нет, поставьте CPython 3.12 с python.org, не из Microsoft Store. Голый `py` может схватить 3.13. Клонируйте git, не скачивайте ZIP с GitHub. Если IfcOpenShell на Windows не импортируется, поставьте Microsoft VC++ 2015-2022 x64. Проверка окружения — `.\check-launch.bat` из корня клона. Предупреждение демо-прогон не останавливает. Код выхода 2 останавливает. Клон лучше положить в короткий путь латиницей, например `C:\AeroBIM`.
 
 <details>
 <summary>uv, hashed Windows lock, Dev Container, закрытый контур</summary>
@@ -175,7 +134,7 @@ Hashed Windows-зависимости (онлайн, не air-gap): [`backend/re
 
 Закрытый контур без pip — Docker-образ: [`docs/offline-deployment-2026.md`](docs/offline-deployment-2026.md). `install_offline.ps1` грузит tar, не lock.
 
-Dev Container / Codespaces — вклад разработчика, не CLI показа: [`.devcontainer/`](.devcontainer/). Python 3.12, Node 22, `.[dev,raster]`. Не `customer_pilot`.
+Dev Container / Codespaces — окружение для разработки, не демо-прогон: [`.devcontainer/`](.devcontainer/). Python 3.12, Node 22, `.[dev,raster]`. Не `customer_pilot`.
 </details>
 
 ## Как устроен прогон
@@ -199,26 +158,7 @@ flowchart LR
 
 </details>
 
-## Checkpoint: `GO` (`regulatory_measurement_mvp`)
-
-Checkpoint — макет, на котором мы мерим сами себя. `customer_go` остаётся **false**. Пока нет пакета назначающей стороны, стоят публичные наборы правил и учебные комплекты. Общие флаги `closes_rt001`, `closes_rt002` и `closes_rt003` — false. Ниже — что уже закрыто на клоне и что остаётся пилоту.
-
-<details>
-<summary>RT-001 · RT-002 · RT-003 — закрыто на клоне / предмет пилота</summary>
-
-| ID | Сейчас | Пилот |
-|---|---|---|
-| **RT-001** | `a_content_pairing` **CLOSED** (**RT-001a**) — типовые замечания экспертизы РФ + публичные IDS + учебный комплект. `b_protocol_rehearsal` **CLOSED** — два независимых симулированных прохода на том же учебном комплекте, κ/α/AC1 на симуляции | `b_criterion_dual_rater` **OPEN** (**RT-001b**) (двое людей + заключение на *тот же* том). `c_customer_corpus` **OPEN**. Симуляция — не двое людей |
-| **RT-002** | `a_regulatory` **CLOSED** (**RT-002a**) — публичные IDS (Мособлгосэкспертиза, СПб ГАУ ЦГЭ, городской АГР) как линейка измерения. `b_eir_carrier` **CLOSED** (**RT-002b**) — EIR v4.0 и BIM-стандарт v4.0 на канальном комплекте как **текст**. Публичный IDS экспертизы — не EIR назначающей стороны | `c_corporate_signed` **OPEN** (**RT-002c**; `b_corporate` остаётся OPEN) — подпись заказчика канала / `customer_approved` IDS |
-| **RT-003** | `a_federated_geometric_rehearsal` **CLOSED** (**RT-003a**) — посаженный IfcClash (стены; труба против стены). `b_navis_federation_carrier` **CLOSED** — три NWD-федерации. `b_ifc_system_graph_rehearsal` **CLOSED** (**RT-003b**) — граф `IfcSystem` на учебной HVAC-модели (две системы, `IfcRelAssignsToGroup`); не труба против стены | `b_mep_system_clash` **OPEN** (**RT-003c**, `NOT_VERIFIED`) — 0 duct/pipe/cable в IFC заказчика; EIR называет LOD ОВ/ВК/ИТП/ЭОМ/СС, моделей нет. `c_customer_federated_ifc` **OPEN** |
-
-Экспорт BCF ZIP — структурный. Импорт в независимую СОД — **NOT_VERIFIED**. Вход — IFC.
-
-ГОСТ Р 21.101-2026 (приказ Росстандарта № 129-ст от 12 февраля 2026; **в силе с 1 апреля 2026**, взамен 21.101-2020), п. 8.2.4: GUID — идентификатор электронного документа в пакете ПД/РД. AeroBIM адресует находки к GUID. Дата введения стандарта (1 апреля) — не дата обязательной подачи ЦИМ АГР в Москве (2 апреля).
-
-</details>
-
-## Возможности клона
+## Возможности
 
 <details>
 <summary>На учебных комплектах</summary>
@@ -228,7 +168,7 @@ Checkpoint — макет, на котором мы мерим сами себя
 - ε-полоса (SI); извлечение требований из текста по шаблонам; языковая модель не подписывает итог
 - Каждая проверка отчитывается `ok` / `skipped` / `failed`; ACL к артефактам на профилях `customer_pilot` / `production` (в development выключено); HTML/JSON; PDF; BCF 2.1 / 3.0
 - PDF: pypdfium2 + pdfminer, по умолчанию `AEROBIM_PDF_BACKEND=pdfium`
-- В браузере — модель и превью листа с зоной из отчёта. Чертёж не редактируется. Листа заказчика здесь нет
+- В браузере — модель и превью листа с зоной из отчёта. Чертёж не редактируется
 - Паки нормативных правил (учебный пак ≠ подписанный профиль) и опциональный инвентарь комплектности
 - Протокол измерения качества (интервалы Уилсона, планировщик выборки)
 
@@ -304,7 +244,7 @@ presentation/    FastAPI
 | `AEROBIM_CORS_ORIGINS` | *(auto)* | Comma-separated CORS origins |
 | `AEROBIM_CORS_ALLOW_CREDENTIALS` | *(auto)* | `true` in development/test for a finite origin list; `customer_pilot`/`production` require explicit `true` |
 | `AEROBIM_ENV` | `development` | Environment name; non-dev requires bearer/OIDC (fail-closed) |
-| `AEROBIM_SIGNOFF_PROFILE` | *(auto)* | `customer_pilot` and `production` are closed customer contours: capabilities fail closed and outbound advisory LLM calls are forbidden. `customer_pilot_demo` and `moscow_agr_2026` are **honest-scope** contours (development/test only): clash/MEP/bSI-submit stay out of scope (honest SKIPPED, not faked); FAILED engines still block; LLM egress still forbidden. `moscow_agr_2026` cites DGP-R-1/26 CIM AGR, not demo convenience, and does not close RT-003 or the appointing party RT-002. Unset outside development resolves to `production`. Also accepts `development` and `fixture` |
+| `AEROBIM_SIGNOFF_PROFILE` | *(auto)* | `customer_pilot` and `production` are closed customer contours: capabilities fail closed and outbound advisory LLM calls are forbidden. `customer_pilot_demo` and `moscow_agr_2026` are **honest-scope** contours (development/test only): clash/MEP/bSI-submit stay out of scope (honest SKIPPED, not faked); FAILED engines still block; LLM egress still forbidden. `moscow_agr_2026` cites DGP-R-1/26 CIM AGR, not demo convenience. Unset outside development resolves to `production`. Also accepts `development` and `fixture` |
 | `AEROBIM_API_BEARER_TOKEN` | *(unset)* | Bearer for `/v1/*`; required unless `AEROBIM_ALLOW_ANONYMOUS_DEV` |
 | `AEROBIM_ALLOW_ANONYMOUS_DEV` | `false` | Opt-in anonymous API in development/test only (`from_env`) |
 | `AEROBIM_CLASH_AFFECTS_PASS` | `false` | Soft only in development/fixture; forced `true` under pilot/production sign-off |
@@ -316,8 +256,8 @@ presentation/    FastAPI
 | `AEROBIM_MEP_AABB_FILTER` | `true` | Optional AABB broadphase for MEP matrix pairs; still `geometry_verified=False` |
 | `AEROBIM_PDF_BACKEND` | `pdfium` | Core PDF: `pdfium` / `none`; optional legacy `pymupdf` only with `pdf-agpl` |
 | `AEROBIM_MAX_IFC_BYTES` | `268435456` | Max **SPF in-memory** IFC open: 256 MiB. Comparable to the buildingSMART Validation Service cap of 256 MB on an uncompressed `.ifc`, not the same unit. Files above this and up to the model ingest cap open via IfcOpenShell RocksDB |
-| `AEROBIM_MAX_OFFICE_BYTES` | `268435456` (dev); `500000000` on `customer_pilot`/`production` unless `AEROBIM_APPLY_PILOT_UPLOAD_CAPS=0` | Office ingest cap (PDF/Office). Customer stated 500 MB decimal (2026-08-25) |
-| `AEROBIM_MAX_MODEL_BYTES` | `268435456` (dev); `1500000000` on `customer_pilot`/`production` unless `AEROBIM_APPLY_PILOT_UPLOAD_CAPS=0` | Model ingest **and disk-analyze** cap (IFC/ZIP/CAD). Customer stated 1.5 GB decimal. WASM viewer stays 256 MiB |
+| `AEROBIM_MAX_OFFICE_BYTES` | `268435456` (dev); `500000000` on `customer_pilot`/`production` unless `AEROBIM_APPLY_PILOT_UPLOAD_CAPS=0` | Office ingest cap (PDF/Office), 500 MB decimal when applied |
+| `AEROBIM_MAX_MODEL_BYTES` | `268435456` (dev); `1500000000` on `customer_pilot`/`production` unless `AEROBIM_APPLY_PILOT_UPLOAD_CAPS=0` | Model ingest **and disk-analyze** cap (IFC/ZIP/CAD), 1.5 GB decimal when applied. WASM viewer stays 256 MiB |
 | `AEROBIM_APPLY_PILOT_UPLOAD_CAPS` | `true` under `customer_pilot`/`production`; ignored in development | Apply the stated 500 MB / 1.5 GB caps. SPF open stays 256 MiB; 1.5 GB IFC uses RocksDB |
 | `AEROBIM_CROSS_DOC_SEVERITY` | `warning` | Severity for cross-document contradictions: `error` (blocking), `warning`, `info` |
 | `AEROBIM_REMARK_LOCALE` | `ru` | Remark template language for deterministic generators (`ru` / `en`) |
@@ -397,18 +337,16 @@ presentation/    FastAPI
 ## Документация
 
 <details>
-<summary>Пакет, показ, граница заявлений</summary>
+<summary>Презентации, архитектура, лицензии</summary>
 
 | Тема | Документ |
 |---|---|
-| Пакет подачи | [индекс](submission/README.md) |
-| Презентация демо-дня | [PowerPoint, 7 слайдов](submission/03-presentation/AeroBIM.pptx) · [PDF](submission/03-presentation/AeroBIM.pdf) · [текст слайдов](submission/03-presentation/demo_day_slides.md) |
+| Презентация | [PowerPoint, 7 слайдов](submission/03-presentation/AeroBIM.pptx) · [PDF](submission/03-presentation/AeroBIM.pdf) · [текст слайдов](submission/03-presentation/demo_day_slides.md) |
 | Полная версия | [PowerPoint, 43 слайда](submission/03-presentation/AeroBIM-full.pptx) · [PDF](submission/03-presentation/AeroBIM-full.pdf) · [текст](submission/03-presentation/AeroBIM-full.md) |
-| Прототип | [команда запуска](submission/04-prototype/README.md) |
-| Цифры кадра 3 | [что измерено, чем не является](submission/05-additional/README.md) |
-| Граница заявлений | [документ](docs/pilot-claim-boundary-2026.md) |
-| УГТ | [самооценка УГТ 4](docs/quality/TRL_GOST_R_58048_SELF_ASSESS_2026.md) |
-| Архитектура | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) |
+| Цифры на слайдах | [что измерено и чем это не является](submission/05-additional/README.md) |
+| Вердикт | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) |
+| Совместимость IFC | [матрица](docs/ifc-compatibility-matrix.md) |
+| Закрытый контур | [офлайн-развёртывание](docs/offline-deployment-2026.md) |
 | Оболочка ревью | [фронтенд](frontend/README.md) |
 | Лицензии | [политика лицензий](docs/license-policy-2026.md) |
 
@@ -526,7 +464,7 @@ frontend/     Оболочка ревью (Vite + React; просмотр IFC 3D
 samples/      Учебные комплекты IFC, IDS, чертежей и спецификаций
 docs/         Документация и доказательства
 audit/        Реестр блокеров
-submission/   Пакет для жюри Техлаба (показ — 7 слайдов; полная версия — 43)
+submission/   Презентации: 7 слайдов и полная версия на 43
 ```
 
 Счётчики CI:

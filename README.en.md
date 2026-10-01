@@ -24,14 +24,12 @@
 [Русская версия](README.md)
 
 [![CI](https://img.shields.io/github/actions/workflow/status/KonkovDV/AeroBIM/ci.yml?branch=main&label=CI)](https://github.com/KonkovDV/AeroBIM/actions/workflows/ci.yml?query=branch%3Amain)
-[![Checkpoint](https://img.shields.io/badge/checkpoint-GO-brightgreen.svg)](docs/pilot-claim-boundary-2026.md)
-[![Customer sign-off](https://img.shields.io/badge/customer_sign--off-NO__GO-red.svg)](docs/pilot-claim-boundary-2026.md)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-The green badge is Checkpoint `GO`: the regulatory-measurement MVP; code and fixture packs run. The red badge is appointing-party sign-off still ahead (`customer_go` false).
+**AeroBIM** is automated verification of design and working documentation. It is a standalone open-source project under the MIT licence.
 
-**AeroBIM** checks a design/working pack against itself: model, sheet, schedule, brief and calculation. Each file can open cleanly on its own. The defect lives in the seam and usually surfaces on site.
+It checks a design/working pack against itself: model, sheet, schedule, brief and calculation. Each file can open cleanly on its own. The defect lives in the seam and usually surfaces on site.
 
 A finding carries a clause, a storey or grid, and a GUID. An expert records the decision on a finding. The `summary.passed` flag is set by the deterministic gate: a person does not write it, and a language model does not write it. Output is HTML, JSON, PDF, and a BCF file.
 
@@ -47,71 +45,32 @@ It operates on the **seam between files**.
 
 **What a finding looks like.** Demo case: cover 30 mm in the model, 40 mm on the sheet — 10 mm gap. The deterministic layer does the compare. The card traces to the requirement, GUID and sheet row. A person decides. Export is a BCF 2.1/3.0 file.
 
-## For the jury
-
-Moscow TechLab programme, commission № 7: automated verification of design and working documentation (the appointing party is unnamed in the public tree). Demo-day: 21 September 2026. Self-assessed TRL 4 under GOST R 58048.
-
-> We are in *refinement* on the customer contour. One command shows a fail-closed finding on a fixture. Effectiveness validation and deployment have not started. Checkpoint `GO` is the regulatory-measurement MVP. `customer_go` stays false until an independent labeled pack, two raters, a signed appointing-party profile, and CDE proof.
-
-The show is seven slides: [`AeroBIM.pptx`](submission/03-presentation/AeroBIM.pptx) · [`AeroBIM.pdf`](submission/03-presentation/AeroBIM.pdf) · [slide text](submission/03-presentation/demo_day_slides.md). The 43-slide file is an appendix above the buttons, not the show. Live command: `run-jury.bat` or `./run-jury.sh` from the clone root, or `python -m aerobim.tools.run_kt3_jury` from `backend/`.
-
-| Slide | On the deck | In the repo |
-|---|---|---|
-| 1 | Pack gateway, commission № 7 | This README |
-| 2 | Two engineers, roles | [slide 2](submission/03-presentation/demo_day_slides.md#kadr-2) |
-| 3 | Pack seam; fixture numbers; pilot hypothesis | [0.86 / 10/10 / 1/8](submission/05-additional/README.md) |
-| 4 | Teaching node 30/40 mm → BCF | Illustration on the slide. Live CLI finds planted git-fixture defects, not that node: [prototype](submission/04-prototype/README.md) |
-| 5 | Deterministic core; AI does not write the outcome | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) · [ingest boundary](docs/tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md) |
-| 6 | Eight weeks; pilot GO ≠ Checkpoint `GO` | [claim boundary](docs/pilot-claim-boundary-2026.md) · [slide 6](submission/03-presentation/demo_day_slides.md#kadr-6) |
-| 7 | Mail and GitHub | PPTX slide 7; phone only there |
-
-| | |
-|---|---|
-| **Form pack** | [`submission/README.md`](submission/README.md) — five fields |
-| **Claim boundary** | [document](docs/pilot-claim-boundary-2026.md) |
-
-### Ask
-
-A paid programme pilot, 2 million ₽, one building, eight weeks from the agreement. By letter: one-revision pack with IFC, an expert validator, data mode and a target-KPI sheet. The aim is minus one pack-review cycle and a revision delta in the appointing party’s CDE.
-
-From 2 April 2026 Moscow requires an AGR CIM in IFC (Moscow Government decree № 17-ПП of 16 January 2026; joint DIT/DGP order № ДГП-Р-1/26/64-16-6/26). From 18 August 2026 joint DGP/DIT order № ДГП-Р-56/26/64-16-473/26 updates 3D-model parameters in Moscow information systems — that is not AeroBIM ingest. Those are **city filing rules**. AeroBIM ingest is IFC.
-
-## Five seats
-
-Two seats are the programme operator; three are the partner by agreement.
-
-| Seat | Role | Where to look |
-|---|---|---|
-| **Piloting** (operator) | Live run on the fixture pack. Trial programme, method and act are the pilot subject | [prototype](submission/04-prototype/README.md) |
-| **Demand** (operator) | No contour rollout: web and file exchange. Pay-on-findings is a speech plan, not the written Ask | [Ask](#ask) · [slide 6](submission/03-presentation/demo_day_slides.md#kadr-6) |
-| **Appointing technical customer** (partner) | Minus one pack-review cycle. Revision delta: findings → fixed / ignored / new. HITL | [slide 6](submission/03-presentation/demo_day_slides.md#kadr-6) |
-| **Project office** (partner) | The remark leaves as a BCF file. We assemble the archive. CDE import is not shown yet. The expert decides the remark and does not rewrite the pack flag | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) |
-| **Information modelling** (partner) | Document seam. Ingest is IFC | [ingest boundary](docs/tz/NATIVE_AUTODESK_INGEST_BOUNDARY_2026.md) |
-
-Protocol on the fixture pack. A deterministic report after an agreed revision.
-
-## What the clone accepts
+## What AeroBIM accepts
 
 | | |
 |---|---|
 | Ingest | IFC 2x3 / 4 / 4x3, IDS 1.0, PDF vector/raster, specification text |
 | Cross-check | Deterministic IFC + IDS + cross-document compare (configured ε-band) |
-| Workplace | Review shell (Vite): IFC model, saved sheet preview and zone from the report, RU/EN templates, HITL. Not a drawing editor and not a customer sheet |
+| Workplace | Review shell (Vite): IFC model, saved sheet preview and zone from the report, RU/EN templates, HITL. Not a drawing editor |
 | Report | HTML + JSON + PDF + structural BCF 2.1 / 3.0 ZIP |
 | Verdict | `summary.passed` is a Shared-gate. LLM/VLM never write it ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)) |
 
 An unfinished mandatory check cannot yield a positive pack result.
 
-## Status
+## Stage
 
-| | |
-|---|---|
-| **Runs on this clone** | Fixture packs, fail-closed IDS, CLI, CI, structural BCF, review shell with the sheet preview stored on the report. Customer-sheet review is a pilot subject |
-| **Pilot subject** | Dual human raters + pack-specific conclusions (RT-001b) · appointing-party-signed profile (RT-002c) · system-aware clash (**RT-003c**) · customer federated IFC (`c_customer_federated_ifc`) · BCF import into the appointing party’s CDE |
+Regulatory-measurement MVP. The code and the fixture packs in `samples/` run: one command shows a finding with evidence on a fixture pack. Every measurement so far uses fixture or open data.
+
+Not there yet:
+
+- a labelled corpus of real projects with two human raters on the same sample. Accuracy on real packs is not claimed;
+- an acceptance profile signed by a specific organisation. `samples/` ships published rule sets;
+- system-aware clash detection on the MEP system graph: `mep_system_clash` stays `NOT_VERIFIED`;
+- proof that a CDE imports the exported BCF. Export is structural; import is `NOT_VERIFIED`.
 
 ## Try it
 
-Python 3.12 and a venv in `backend/.venv`. The live jury CLI does **not** need Node. The review shell needs Node 20+ and npm. Keep the quotes around `".[dev,raster]"` in PowerShell.
+Python 3.12 and a venv in `backend/.venv`. The command-line demo does **not** need Node. The review shell needs Node 20+ and npm. Keep the quotes around `".[dev,raster]"` in PowerShell.
 
 **Windows (PowerShell).** If ExecutionPolicy blocks `Activate.ps1`, skip activation and call `python.exe` directly.
 
@@ -159,7 +118,7 @@ If 8080 or 5173 is already bound, stop leftover Docker (`aerobim-backend`) or th
 
 Optional extras `.[clash]`, `.[docling]`, `.[enterprise]`, `.[pdf-agpl]` are not needed for the commands above.
 
-If `py -3.12` is missing, install CPython 3.12 from python.org — not the Microsoft Store stub. Do not type bare `py`: the launcher may pick 3.13. Use `git clone`, not the GitHub ZIP. If IfcOpenShell fails to import on Windows, install the Microsoft VC++ 2015-2022 x64 redistributable. Diagnostics: `.\check-launch.bat` from the clone root (not `python -m aerobim.tools.check_local_launch` without the venv). Doctor warnings do not stop the jury CLI; a fatal (exit 2) does. Clone into a short Latin path (`C:\AeroBIM`), not a user profile with non-ASCII characters.
+If `py -3.12` is missing, install CPython 3.12 from python.org — not the Microsoft Store stub. Do not type bare `py`: the launcher may pick 3.13. Use `git clone`, not the GitHub ZIP. If IfcOpenShell fails to import on Windows, install the Microsoft VC++ 2015-2022 x64 redistributable. Diagnostics: `.\check-launch.bat` from the clone root (not `python -m aerobim.tools.check_local_launch` without the venv). Doctor warnings do not stop the demo run; a fatal (exit 2) does. Clone into a short Latin path (`C:\AeroBIM`), not a user profile with non-ASCII characters.
 
 <details>
 <summary>uv, hashed Windows lock, Dev Container, closed contour</summary>
@@ -177,7 +136,7 @@ Hashed Windows deps (online, not air-gap): [`backend/requirements-win-lock.txt`]
 
 Closed contour without pip is the Docker image: [`docs/offline-deployment-2026.md`](docs/offline-deployment-2026.md). `install_offline.ps1` loads the tar, not a lock.
 
-Dev Container / Codespaces is a contributor environment, not the jury CLI: [`.devcontainer/`](.devcontainer/). Python 3.12, Node 22, `.[dev,raster]`. Do not set `customer_pilot`.
+Dev Container / Codespaces is a contributor environment, not the demo run: [`.devcontainer/`](.devcontainer/). Python 3.12, Node 22, `.[dev,raster]`. Do not set `customer_pilot`.
 </details>
 
 ## What a run does
@@ -201,26 +160,7 @@ flowchart LR
 
 </details>
 
-## Checkpoint: `GO` (`regulatory_measurement_mvp`)
-
-Checkpoint is the **regulatory-measurement MVP**. `customer_go` stays **false**. Code and fixtures work. Public rule sets and fixture packs stand in until the appointing-party pack is in. Undifferentiated `closes_rt001/002/003` stay false.
-
-<details>
-<summary>RT-001 · RT-002 · RT-003 — closed on the clone / pilot subject</summary>
-
-| ID | Now | Pilot |
-|---|---|---|
-| **RT-001** | `a_content_pairing` **CLOSED** (**RT-001a**) — RF expertise typical-error catalogs + public examination IDS + fixture pack. `b_protocol_rehearsal` **CLOSED** — two simulated independent passes on the same fixture pack, κ/α/AC1 on the simulation | `b_criterion_dual_rater` **OPEN** (**RT-001b**) (two humans + conclusions on the *same* pack). `c_customer_corpus` **OPEN**. Simulation is not two people |
-| **RT-002** | `a_regulatory` **CLOSED** (**RT-002a**) — public IDS (Moscow Region State Expertise, SPb GAU CGE, city AGR) as the measurement ruler. `b_eir_carrier` **CLOSED** (**RT-002b**) — EIR v4.0 workbook + BIM-standard v4.0 present as **text** on the channel pack. Public examination IDS is not the appointing-party EIR | `c_corporate_signed` **OPEN** (**RT-002c**; `b_corporate` stays OPEN) — the appointing party signature / `customer_approved` IDS |
-| **RT-003** | `a_federated_geometric_rehearsal` **CLOSED** (**RT-003a**) — planted IfcClash (crossing walls; pipe vs wall). `b_navis_federation_carrier` **CLOSED** — three NWD federations on the channel pack. `b_ifc_system_graph_rehearsal` **CLOSED** (**RT-003b**) — sample HVAC `IfcSystem` graph (two systems, `IfcRelAssignsToGroup`); not pipe vs wall | `b_mep_system_clash` **OPEN** (**RT-003c**, `NOT_VERIFIED`) — 0 duct/pipe/cable on customer IFC; EIR names OV/VK/ITP/EOM/SS LOD, models absent. `c_customer_federated_ifc` **OPEN** |
-
-BCF ZIP export is structural. Import into an independent CDE is **NOT_VERIFIED**. Ingest is IFC.
-
-GOST R 21.101-2026 (Rosstandart order № 129-ст of 12 February 2026; **in force 1 April 2026**, replacing 21.101-2020), clause 8.2.4: GUID is the identifier of an electronic design document in the pack. AeroBIM addresses findings to a GUID. The standard’s in-force date (1 April) is not the Moscow AGR IFC filing date (2 April).
-
-</details>
-
-## Clone capabilities
+## Capabilities
 
 <details>
 <summary>On fixture packs</summary>
@@ -230,7 +170,7 @@ GOST R 21.101-2026 (Rosstandart order № 129-ст of 12 February 2026; **in for
 - Configured ε-band (SI-normalised); deterministic requirement extraction from narrative text; advisory LLM does not sign anything off
 - Every check reports `ok` / `skipped` / `failed`; tenant/object ACL on artifacts under `customer_pilot` / `production` (off by default in development); HTML/JSON; PDF; structural BCF 2.1 / 3.0 ZIP
 - PDF via pypdfium2 + pdfminer; default `AEROBIM_PDF_BACKEND=pdfium`
-- Browser IFC viewer and the sheet preview with the zone stored on the report. Not a drawing editor and not a customer-sheet check
+- Browser IFC viewer and the sheet preview with the zone stored on the report. Not a drawing editor
 - Norm rule packs (a fixture pack is not a customer-signed profile) and an opt-in completeness inventory
 - Quality measurement protocol (Wilson intervals, sample-size planner)
 
@@ -306,7 +246,7 @@ A local clone runs on defaults. CI checks the table against `settings.py` both w
 | `AEROBIM_CORS_ORIGINS` | *(auto)* | Comma-separated CORS origins |
 | `AEROBIM_CORS_ALLOW_CREDENTIALS` | *(auto)* | `true` in development/test for a finite origin list; `customer_pilot`/`production` require explicit `true` |
 | `AEROBIM_ENV` | `development` | Environment name; non-dev requires bearer/OIDC (fail-closed) |
-| `AEROBIM_SIGNOFF_PROFILE` | *(auto)* | `customer_pilot` and `production` are closed customer contours: capabilities fail closed and outbound advisory LLM calls are forbidden. `customer_pilot_demo` and `moscow_agr_2026` are **honest-scope** contours (development/test only): clash/MEP/bSI-submit stay out of scope (honest SKIPPED, not faked); FAILED engines still block; LLM egress still forbidden. `moscow_agr_2026` cites DGP-R-1/26 CIM AGR, not demo convenience, and does not close RT-003 or the appointing party RT-002. Unset outside development resolves to `production`. Also accepts `development` and `fixture` |
+| `AEROBIM_SIGNOFF_PROFILE` | *(auto)* | `customer_pilot` and `production` are closed customer contours: capabilities fail closed and outbound advisory LLM calls are forbidden. `customer_pilot_demo` and `moscow_agr_2026` are **honest-scope** contours (development/test only): clash/MEP/bSI-submit stay out of scope (honest SKIPPED, not faked); FAILED engines still block; LLM egress still forbidden. `moscow_agr_2026` cites DGP-R-1/26 CIM AGR, not demo convenience. Unset outside development resolves to `production`. Also accepts `development` and `fixture` |
 | `AEROBIM_API_BEARER_TOKEN` | *(unset)* | Bearer for `/v1/*`; required unless `AEROBIM_ALLOW_ANONYMOUS_DEV` |
 | `AEROBIM_ALLOW_ANONYMOUS_DEV` | `false` | Opt-in anonymous API in development/test only (`from_env`) |
 | `AEROBIM_CLASH_AFFECTS_PASS` | `false` | Soft only in development/fixture; forced `true` under pilot/production sign-off |
@@ -318,8 +258,8 @@ A local clone runs on defaults. CI checks the table against `settings.py` both w
 | `AEROBIM_MEP_AABB_FILTER` | `true` | Optional AABB broadphase for MEP matrix pairs; still `geometry_verified=False` |
 | `AEROBIM_PDF_BACKEND` | `pdfium` | Core PDF: `pdfium` / `none`; optional legacy `pymupdf` only with `pdf-agpl` |
 | `AEROBIM_MAX_IFC_BYTES` | `268435456` | Max **SPF in-memory** IFC open: 256 MiB. Comparable to the buildingSMART Validation Service cap of 256 MB on an uncompressed `.ifc`, not the same unit. Files above this and up to the model ingest cap open via IfcOpenShell RocksDB |
-| `AEROBIM_MAX_OFFICE_BYTES` | `268435456` (dev); `500000000` on `customer_pilot`/`production` unless `AEROBIM_APPLY_PILOT_UPLOAD_CAPS=0` | Office ingest cap (PDF/Office). Customer stated 500 MB decimal (2026-08-25) |
-| `AEROBIM_MAX_MODEL_BYTES` | `268435456` (dev); `1500000000` on `customer_pilot`/`production` unless `AEROBIM_APPLY_PILOT_UPLOAD_CAPS=0` | Model ingest **and disk-analyze** cap (IFC/ZIP/CAD). Customer stated 1.5 GB decimal. WASM viewer stays 256 MiB |
+| `AEROBIM_MAX_OFFICE_BYTES` | `268435456` (dev); `500000000` on `customer_pilot`/`production` unless `AEROBIM_APPLY_PILOT_UPLOAD_CAPS=0` | Office ingest cap (PDF/Office), 500 MB decimal when applied |
+| `AEROBIM_MAX_MODEL_BYTES` | `268435456` (dev); `1500000000` on `customer_pilot`/`production` unless `AEROBIM_APPLY_PILOT_UPLOAD_CAPS=0` | Model ingest **and disk-analyze** cap (IFC/ZIP/CAD), 1.5 GB decimal when applied. WASM viewer stays 256 MiB |
 | `AEROBIM_APPLY_PILOT_UPLOAD_CAPS` | `true` under `customer_pilot`/`production`; ignored in development | Apply the stated 500 MB / 1.5 GB caps. SPF open stays 256 MiB; 1.5 GB IFC uses RocksDB |
 | `AEROBIM_CROSS_DOC_SEVERITY` | `warning` | Severity for cross-document contradictions: `error` (blocking), `warning`, `info` |
 | `AEROBIM_REMARK_LOCALE` | `ru` | Remark template language for deterministic generators (`ru` / `en`) |
@@ -504,7 +444,7 @@ frontend/     Review shell (Vite + React; IFC 3D viewer)
 samples/      IFC, IDS, drawing and specification fixtures
 docs/         Documentation and evidence
 audit/        Blocker register
-submission/   TechLab jury pack (show — 7 slides; full deck — 43)
+submission/   Presentations: 7 slides and the full 43-slide deck
 ```
 
 CI pass counts:
@@ -517,18 +457,16 @@ tests_passed: backend=3427, frontend=404; commit 313e050505c6; see docs/evidence
 ## Documentation
 
 <details>
-<summary>Pack, show, claim boundary</summary>
+<summary>Presentations, architecture, licensing</summary>
 
 | Topic | Document |
 |---|---|
-| Form pack | [index](submission/README.md) |
-| Demo-day presentation | [PowerPoint, 7 slides](submission/03-presentation/AeroBIM.pptx) · [PDF](submission/03-presentation/AeroBIM.pdf) · [slide text](submission/03-presentation/demo_day_slides.md) |
+| Presentation | [PowerPoint, 7 slides](submission/03-presentation/AeroBIM.pptx) · [PDF](submission/03-presentation/AeroBIM.pdf) · [slide text](submission/03-presentation/demo_day_slides.md) |
 | Full deck | [PowerPoint, 43 slides](submission/03-presentation/AeroBIM-full.pptx) · [PDF](submission/03-presentation/AeroBIM-full.pdf) · [text](submission/03-presentation/AeroBIM-full.md) |
-| Prototype | [run command](submission/04-prototype/README.md) |
-| Slide 3 numbers | [what was measured, what it is not](submission/05-additional/README.md) |
-| Claim boundary | [document](docs/pilot-claim-boundary-2026.md) |
-| TRL | [TRL 4 self-assessment](docs/quality/TRL_GOST_R_58048_SELF_ASSESS_2026.md) |
-| Architecture | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) |
+| Slide numbers | [what was measured and what it is not](submission/05-additional/README.md) |
+| Verdict | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) |
+| IFC compatibility | [matrix](docs/ifc-compatibility-matrix.md) |
+| Closed contour | [offline deployment](docs/offline-deployment-2026.md) |
 | Review shell | [Frontend](frontend/README.md) |
 | Licensing | [License policy](docs/license-policy-2026.md) |
 

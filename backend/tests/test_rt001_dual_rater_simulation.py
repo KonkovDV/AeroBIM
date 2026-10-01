@@ -93,13 +93,16 @@ class Rt001DualRaterSimulationTests(unittest.TestCase):
         with self.assertRaises(Rt001DualRaterSimulationError):
             require_honest_rt001_dual_rater_simulation(dirty)
 
-    def test_volumes_and_readme_keep_human_residual_open(self) -> None:
+    def test_volumes_and_boundary_docs_keep_human_residual_open(self) -> None:
         volumes = assemble_rt_blocker_volumes(REPO_ROOT)
         self.assertEqual(volumes["RT-001"]["b_protocol_rehearsal"], "CLOSED")
         self.assertEqual(volumes["RT-001"]["b_criterion_dual_rater"], "OPEN")
         self.assertEqual(volumes["RT-001"]["independent_human_raters"], 0)
         self.assertFalse(volumes["closes_rt001"])
-        for name in ("README.md", "README.en.md"):
+        for name in (
+            "docs/pilot-claim-boundary-2026.md",
+            "docs/evidence/rt-blocker-volumes-2026-09.md",
+        ):
             text = (REPO_ROOT / name).read_text(encoding="utf-8")
             self.assertIn("b_protocol_rehearsal", text)
             self.assertIn("RT-001b", text)
