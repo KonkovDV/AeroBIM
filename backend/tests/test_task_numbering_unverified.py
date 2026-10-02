@@ -24,6 +24,7 @@ _ALLOW_RELATIVE = frozenset(
 
 _SURFACE_FILES = (
     "README.md",
+    "README.ru.md",
     "docs/docs.md",
     "docs/partners/TECHLAB_TASK_07_READINESS_2026.md",
     "docs/partners/TECHLAB_APPLICATION_2026.md",
@@ -72,7 +73,7 @@ class TaskNumberingUnverifiedTests(unittest.TestCase):
         )
 
     def test_canonical_phrase_on_readme_and_application(self) -> None:
-        readme = (_REPO / "README.md").read_text(encoding="utf-8")
+        readme = (_REPO / "README.ru.md").read_text(encoding="utf-8")
         self.assertIn("автоматическая проверка проектной и рабочей документации", readme)
         application = (_REPO / "docs/partners/TECHLAB_APPLICATION_2026.md").read_text(
             encoding="utf-8"

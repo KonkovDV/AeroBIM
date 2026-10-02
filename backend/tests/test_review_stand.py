@@ -178,7 +178,7 @@ class ReviewShellLauncherTests(unittest.TestCase):
         self.assertIn("*.sh text eol=lf", attrs)
 
     def test_readme_points_diagnostics_at_check_launch_bat(self) -> None:
-        for name in ("README.md", "README.en.md"):
+        for name in ("README.md", "README.ru.md"):
             text = (repo_root() / name).read_text(encoding="utf-8")
             self.assertIn("run-jury.bat", text, msg=name)
             self.assertIn(".\\check-launch.bat", text, msg=name)
@@ -186,8 +186,8 @@ class ReviewShellLauncherTests(unittest.TestCase):
             self.assertIn("VC++ 2015-2022", text, msg=name)
             self.assertNotIn("один путь в коде", text, msg=name)
             self.assertNotIn("same code path", text, msg=name)
-        ru = (repo_root() / "README.md").read_text(encoding="utf-8")
-        en = (repo_root() / "README.en.md").read_text(encoding="utf-8")
+        en = (repo_root() / "README.md").read_text(encoding="utf-8")
+        ru = (repo_root() / "README.ru.md").read_text(encoding="utf-8")
         self.assertIn("один порт и два адаптера", ru)
         self.assertIn("one port and two adapters", en)
         self.assertIn("не импорт в СОД", ru)
@@ -232,13 +232,13 @@ class ReviewShellLauncherTests(unittest.TestCase):
             self.assertFalse((repo_root() / rel).exists(), msg=rel)
 
     def test_readme_power_shell_recipe_requires_dot_slash(self) -> None:
-        for name in ("README.md", "README.en.md"):
+        for name in ("README.md", "README.ru.md"):
             text = (repo_root() / name).read_text(encoding="utf-8")
             self.assertIn(".\\start.bat", text, msg=name)
             self.assertIn("Start-Process", text, msg=name)
 
     def test_readme_windows_clone_calls_venv_python_exe(self) -> None:
-        for name in ("README.md", "README.en.md"):
+        for name in ("README.md", "README.ru.md"):
             text = (repo_root() / name).read_text(encoding="utf-8")
             self.assertIn(
                 r".\.venv\Scripts\python.exe -m pip install -e",

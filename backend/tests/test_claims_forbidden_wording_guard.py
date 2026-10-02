@@ -90,7 +90,7 @@ def test_ssot_covers_ru_markers_and_core_surfaces() -> None:
         assert marker in markers
     for rel in (
         "README.md",
-        "README.en.md",
+        "README.ru.md",
         "docs/TIER0_INDEX.md",
         "docs/docs.md",
         "docs/demo/KT2_JURY_FAQ_2026_08_12.md",

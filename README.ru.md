@@ -21,7 +21,7 @@
 
 # AeroBIM
 
-[English version](README.en.md)
+[English version](README.md)
 
 [![CI](https://img.shields.io/github/actions/workflow/status/KonkovDV/AeroBIM/ci.yml?branch=main&label=CI)](https://github.com/KonkovDV/AeroBIM/actions/workflows/ci.yml?query=branch%3Amain)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/downloads/)
@@ -228,7 +228,7 @@ presentation/    FastAPI
 
 </details>
 
-Локальный клон работает на значениях по умолчанию. Таблица ниже на английском: CI сверяет её с `settings.py` в обе стороны. Та же таблица — в [README.en.md](README.en.md).
+Локальный клон работает на значениях по умолчанию. Таблица ниже на английском: CI сверяет её с `settings.py` в обе стороны. Та же таблица — в [README.md](README.md).
 
 ## Configuration
 

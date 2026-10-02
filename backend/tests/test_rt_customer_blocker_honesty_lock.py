@@ -234,7 +234,7 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
             self.assertNotIn("finding на fixture", text, msg=path.name)
             self.assertNotIn("live CLI с fail-closed", text, msg=path.name)
             self.assertNotIn("signed scope и CDE", text, msg=path.name)
-        ru = (self._repo() / "README.md").read_text(encoding="utf-8")
+        ru = (self._repo() / "README.ru.md").read_text(encoding="utf-8")
         self.assertIn("находку с доказательствами на учебном комплекте", ru)
         self.assertNotIn("finding на fixture", ru)
         self.assertNotIn("fail-closed доказатель", ru)
@@ -259,7 +259,7 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
 
     def test_readme_is_standalone_not_a_programme_pitch(self) -> None:
         repo = self._repo()
-        for name in ("README.md", "README.en.md"):
+        for name in ("README.md", "README.ru.md"):
             text = (repo / name).read_text(encoding="utf-8")
             for marker in (
                 "Техлаб",
@@ -280,7 +280,7 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
         repo = self._repo()
         boundary = (repo / "docs" / "pilot-claim-boundary-2026.md").read_text(encoding="utf-8")
         self.assertIn("**Checkpoint:** **`GO`**", boundary)
-        for name in ("README.md", "README.en.md"):
+        for name in ("README.md", "README.ru.md"):
             text = (repo / name).read_text(encoding="utf-8")
             self.assertNotIn("## Checkpoint: `NO_GO`", text, msg=name)
             self.assertNotIn("Checkpoint stays `NO_GO`", text, msg=name)
@@ -399,6 +399,7 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
             self._repo() / "backend" / "src" / "aerobim" / "domain" / "interpretation_use.py",
             self._repo() / "docs" / "TIER0_INDEX.md",
             self._repo() / "README.md",
+            self._repo() / "README.ru.md",
             self._repo() / "submission" / "README.md",
             self._repo() / "docs" / "tz" / "TRI_SOURCE_REQUIREMENTS_MATRIX_2026.md",
         )
@@ -424,7 +425,7 @@ class Kt2SpeechFormulaHonestyTests(unittest.TestCase):
         surfaces = (
             repo / "docs" / "TIER0_INDEX.md",
             repo / "README.md",
-            repo / "README.en.md",
+            repo / "README.ru.md",
         )
         for path in surfaces:
             text = path.read_text(encoding="utf-8")
