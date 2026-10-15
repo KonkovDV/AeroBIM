@@ -12,14 +12,14 @@
   "closes_rt001": false,
   "closes_rt002": false,
   "closes_rt003": false,
-  "generated_at": "2026-10-15T17:33:57.167310+00:00",
-  "git_commit": "363c880d0182c7010957cbefb730d44843eecbab",
+  "generated_at": "2026-10-15T22:58:59.255153+00:00",
+  "git_commit": "83c2e286afb3dfe529210b233d3100ce11a6c2f8",
   "seed": 20260915,
   "source_label": "wall_fire_rating_rei60_seam_clean",
-  "source_path_sha256": "58af2d9551e12ddbbf5e45c85da3a25f6476065245a536cf6f7339b271c3cc93",
+  "source_path_sha256": "d69e5a36137a1e6c48276b35401c8b3e1fc796b2cdd154241c4066819b05b5f0",
   "source_content_hashed": false,
-  "manifest_sha256": "c7bb7a19ebd26c04f573f95b5f8dcdf3cf37d0d55e678bd19d8e9b070fe4c16b",
-  "frozen_formula": "On the frozen source wall_fire_rating_rei60_seam_clean (path-string hash only; IFC bytes not in git) at commit 363c880d0182c7010957cbefb730d44843eecbab with seed 20260915 the mutation-kill recall below was obtained.",
+  "manifest_sha256": "fd3342c7f9cccf7ab14cc58dffdf158bcad09567627379118f1eea391b154f81",
+  "frozen_formula": "On the frozen source wall_fire_rating_rei60_seam_clean (path-string hash only; IFC bytes not in git) at commit 83c2e286afb3dfe529210b233d3100ce11a6c2f8 with seed 20260915 the mutation-kill recall below was obtained.",
   "detection_proxy": "killed = targeted (rule_id, element_guid, norm_clause|target_ref) multiset differs from seam-clean CONTROL, or fail-closed analyze error",
   "plan_deviation": "CLOSED vs the 2026-08-30 plan on the seam-clean wall+IDS fixture: CONTROL has summary.passed=true and control_issue_count=0. Attribution is targeted (rule_id + element_guid + norm_clause|target_ref), not the house-5 CONTROL-multiset. The 2026-09-03 0/6 pin stays historical. Not customer recall.",
   "determinism_check": {
@@ -158,6 +158,5 @@
       "method": "wilson_score"
     },
     "denominator_note": "CONTROL excluded; classes with applied=false excluded (no defect was injected there)."
-  },
-  "freshness_refresh_note": "2026-10-15: regenerated_at bump for live-latest ≤7d gate; content claim_boundary unchanged; Checkpoint GO; customer_go false"
+  }
 }
