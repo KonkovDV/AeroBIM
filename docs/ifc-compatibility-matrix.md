@@ -8,16 +8,16 @@
 
 | Feature | IFC2x3 | IFC4 | IFC4x3 | Notes |
 |---|---|---|---|---|
-| Property sets (`Pset_*`) | ✅ Full | ✅ Full | ✅ Full | `by_type("IfcPropertySet")` |
-| Quantity sets (`Qto_*` / `BaseQuantities`) | ⚠️ Partial | ✅ Full | ✅ Full | IFC2x3 uses `BaseQuantities` prefix; IFC4+ uses `Qto_` prefix |
-| SI unit assignment (`IfcUnitAssignment`) | ✅ Full | ✅ Full | ✅ Full | `_get_unit_scales()` reads all three releases |
-| IFC GUID format | ✅ | ✅ | ✅ | 22-char base64 encoding, stable across releases |
-| Classification references (`IfcClassificationReference`) | ✅ | ✅ | ✅ | |
-| `IfcWall` / `IfcSlab` / `IfcBeam` / `IfcColumn` | ✅ | ✅ | ✅ | Core structural types stable across releases |
-| `IfcRelAssociatesConstraint` (constraint linking) | ❌ | ✅ | ✅ | Not available in IFC2x3 |
-| Alignment entities (`IfcAlignment`) | ❌ | ❌ | ✅ | IFC4x3 only (infrastructure domain) |
-| Road/rail geometry (`IfcRoad`, `IfcRailway`) | ❌ | ❌ | ✅ | IFC4x3 only |
-| IDS validation via IfcTester | ✅ | ✅ | ✅ | IfcTester v0.9+ supports all three |
+| Property sets (`Pset_*`) | Full | Full | Full | `by_type("IfcPropertySet")` |
+| Quantity sets (`Qto_*` / `BaseQuantities`) | Partial | Full | Full | IFC2x3 uses `BaseQuantities` prefix; IFC4+ uses `Qto_` prefix |
+| SI unit assignment (`IfcUnitAssignment`) | Full | Full | Full | `_get_unit_scales()` reads all three releases |
+| IFC GUID format | Yes | Yes | Yes | 22-char base64 encoding, stable across releases |
+| Classification references (`IfcClassificationReference`) | Yes | Yes | Yes | |
+| `IfcWall` / `IfcSlab` / `IfcBeam` / `IfcColumn` | Yes | Yes | Yes | Core structural types stable across releases |
+| `IfcRelAssociatesConstraint` (constraint linking) | No | Yes | Yes | Not available in IFC2x3 |
+| Alignment entities (`IfcAlignment`) | No | No | Yes | IFC4x3 only (infrastructure domain) |
+| Road/rail geometry (`IfcRoad`, `IfcRailway`) | No | No | Yes | IFC4x3 only |
+| IDS validation via IfcTester | Yes | Yes | Yes | IfcTester v0.9+ supports all three |
 
 ## Degradation Rules
 

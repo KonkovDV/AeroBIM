@@ -177,7 +177,7 @@ Checkpoint **`GO`**; `customer_go` **false**. `PrecisionClaim.publishable` **fal
 |---|---|---|
 | X-01 | CLAIMS_LOCK_2026_07_17.md header vs live checkpoint | Header still says Checkpoint verdict NO_GO; live product checkpoint is GO since 2026-09-04. Treat the July file as HISTORICAL_PIN plus Pass 14 wording, not as current SSOT. |
 | X-02 | weekly-eng-status-latest.json checkpoint vs TIER0 | CLOSED 2026-09-15: weekly pin regenerated via export_weekly_eng_status; checkpoint GO; runtime_baseline SHA is the attested pin 139896709507. The 2026-08-17 NO_GO snapshot is historical. Do not mix the August file with HEAD. |
-| X-03 | techlab-alignment R1–R15 checkmarks vs this pack | Alignment uses ✅ on several rows that this audit marks fixture-only or target_metric (R11/R15 SLA, R5 clash, R14 catalog). Prefer this table’s weaker status. |
+| X-03 | techlab-alignment R1–R15 checkmarks vs this pack | Alignment uses check marks on several rows that this audit marks fixture-only or target_metric (R11/R15 SLA, R5 clash, R14 catalog). Prefer this table’s weaker status. |
 | X-04 | Desktop deck 13.09 vs git | Deck (outside git) printed УГТ-5, 837 as partner AR↔MEP, 0.43 as F1, n≥62, KR 17%, 389-in-50, SSO/BCF-ready. Licensed copy is submission/03-presentation/demo_day_slides.md. PPTX itself is still the owner’s file. |
 | X-05 | AUDITOR_BRIEF freeze 2026-09-04 vs HEAD docs | Standalone auditor brief is dated 04–08.09 and must not be read as HEAD evidence counts. CI integers live only in runtime-baseline-latest.json. |
 | X-06 | System A vs System B weights | Selection 40/20/15/15/10 vs finalist 30/20/20/20/10. Desktop scan 14.09 matches both tables; PDF still not in git. Do not cite as attested_by=ci. |
