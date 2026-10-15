@@ -1007,6 +1007,32 @@ input:focus-visible,
   border: 1px dashed #9a6700;
 }
 
+.confidence-pill.confidence-abstain {
+  color: #5b4b8a;
+  border-color: #5b4b8a;
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(91, 75, 138, 0.12),
+    rgba(91, 75, 138, 0.12) 4px,
+    rgba(91, 75, 138, 0.04) 4px,
+    rgba(91, 75, 138, 0.04) 8px
+  );
+}
+.confidence-pill.confidence-mid {
+  color: #8a6d1d;
+  border-color: #8a6d1d;
+  background: rgba(138, 109, 29, 0.1);
+}
+.confidence-pill.confidence-high {
+  color: #1f6b4a;
+  border-color: #1f6b4a;
+  background: rgba(31, 107, 74, 0.1);
+}
+.confidence-pattern {
+  font-weight: 700;
+}
+
+
 .outcome-badge {
   display: inline-block;
   padding: 2px 8px;
