@@ -38,7 +38,8 @@ export function useTriageKeyboard({
   hitlEnabled: boolean;
   setTriageHelpOpen: Dispatch<SetStateAction<boolean>>;
   selectIssue: (index: number, issue: ValidationIssue) => void;
-  decideRemark: (eventType: "accepted" | "rejected") => Promise<void>;
+  /** Resolves true only when the decision was recorded (auto-next gate). */
+  decideRemark: (eventType: "accepted" | "rejected") => Promise<boolean>;
 }): void {
   useEffect(() => {
     if (!enabled) {
@@ -96,7 +97,8 @@ export function useTriageKeyboard({
       }
       if (hotkey === "accept") {
         event.preventDefault();
-        void decideRemark("accepted").then(() => {
+        void decideRemark("accepted").then((recorded) => {
+          if (!recorded) return;
           const nextPos = nextPosAfterDecision(filteredIssues.length, pos);
           const target = nextPos === null ? undefined : filteredIssues[nextPos];
           if (target) selectIssue(target.index, target.issue);
@@ -105,7 +107,8 @@ export function useTriageKeyboard({
       }
       if (hotkey === "reject") {
         event.preventDefault();
-        void decideRemark("rejected").then(() => {
+        void decideRemark("rejected").then((recorded) => {
+          if (!recorded) return;
           const nextPos = nextPosAfterDecision(filteredIssues.length, pos);
           const target = nextPos === null ? undefined : filteredIssues[nextPos];
           if (target) selectIssue(target.index, target.issue);
