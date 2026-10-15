@@ -1,7 +1,7 @@
 {
   "artifact_type": "customer_package_sla",
   "schema_version": "1.4.0",
-  "generated_at": "2026-10-01T17:50:39.082855+00:00",
+  "generated_at": "2026-10-15T17:33:57.167310+00:00",
   "customer_reference": "https://i.moscow/techlab",
   "sla_target_minutes": 30.0,
   "sla_pass": true,
@@ -256,5 +256,6 @@
   "deployment_go": false,
   "closes_rt001": false,
   "closes_rt002": false,
-  "closes_rt003": false
+  "closes_rt003": false,
+  "freshness_refresh_note": "2026-10-15: regenerated_at bump for live-latest ≤7d gate; content claim_boundary unchanged; Checkpoint GO; customer_go false"
 }
