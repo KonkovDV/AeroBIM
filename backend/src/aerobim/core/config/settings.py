@@ -1113,9 +1113,7 @@ class Settings:
             pdf_backend=(os.getenv("AEROBIM_PDF_BACKEND") or "pdfium").strip().lower() or "pdfium",
             norm_rule_pack_path=(os.getenv("AEROBIM_NORM_RULE_PACK") or "").strip() or None,
             allow_anonymous_dev=_read_bool("AEROBIM_ALLOW_ANONYMOUS_DEV", False),
-            anonymous_external_loopback=_read_bool(
-                "AEROBIM_ANONYMOUS_EXTERNAL_LOOPBACK", False
-            ),
+            anonymous_external_loopback=_read_bool("AEROBIM_ANONYMOUS_EXTERNAL_LOOPBACK", False),
             oda_cad_enabled=_read_bool("AEROBIM_ODA_CAD_ENABLED", False),
             mep_system_clash_enabled=_read_bool("AEROBIM_MEP_SYSTEM_CLASH_ENABLED", False),
             mep_scope_memo_ref=(os.getenv("AEROBIM_MEP_SCOPE_MEMO_REF") or "").strip() or None,
