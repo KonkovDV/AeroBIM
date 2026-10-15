@@ -491,6 +491,14 @@ class Settings:
     Default is **False** (fail-closed). Opt in explicitly for local TestClient /
     demo paths via ``allow_anonymous_dev=True`` or ``AEROBIM_ALLOW_ANONYMOUS_DEV=true``.
     """
+    anonymous_external_loopback: bool = False
+    """Ack that anonymous API is published only via loopback-mapped ports.
+
+    Required when ``allow_anonymous_dev`` is on and ``host`` is not loopback
+    (typical Docker: bind ``0.0.0.0`` inside the container while compose maps
+    ``127.0.0.1:8080:8080``). Bare-metal demos should keep ``AEROBIM_HOST`` on
+    loopback and leave this false. Never set when publishing to LAN/WAN.
+    """
     oda_cad_enabled: bool = False
     """Legal-gated ODA/Teigha DWG path (``AEROBIM_ODA_CAD_ENABLED``). Default off."""
     mep_system_clash_enabled: bool = False
@@ -827,6 +835,39 @@ class Settings:
             f"AEROBIM_ENV={self.environment!r} signoff_profile={self.signoff_profile!r}"
         )
 
+    def require_anonymous_bind_safe(self) -> None:
+        """Fail closed: anonymous API must not bind off-loopback without ack.
+
+        AB-P0-05. Inside Docker the process often listens on ``0.0.0.0`` while
+        compose publishes only ``127.0.0.1:8080`` — set
+        ``AEROBIM_ANONYMOUS_EXTERNAL_LOOPBACK=true`` to acknowledge that
+        external mapping. Pilot/production reject anonymous entirely.
+        """
+        if not self.allow_anonymous_dev:
+            return
+        if not self.is_dev_environment:
+            raise RuntimeError(
+                "AEROBIM_ALLOW_ANONYMOUS_DEV is ignored outside development/test; "
+                f"AEROBIM_ENV={self.environment!r}"
+            )
+        hard_profile = self.signoff_profile in {"customer_pilot", "production"}
+        if hard_profile:
+            raise RuntimeError(
+                "AEROBIM_ALLOW_ANONYMOUS_DEV cannot be true under "
+                f"signoff_profile={self.signoff_profile!r}"
+            )
+        host = (self.host or "").strip().lower().strip("[]")
+        if host in _LOOPBACK_CORS_HOSTS:
+            return
+        if self.anonymous_external_loopback:
+            return
+        raise RuntimeError(
+            "AEROBIM_ALLOW_ANONYMOUS_DEV=true requires AEROBIM_HOST in "
+            "{127.0.0.1, ::1, localhost} or AEROBIM_ANONYMOUS_EXTERNAL_LOOPBACK=true "
+            "(when container bind is 0.0.0.0 but ports map to loopback only); "
+            f"got AEROBIM_HOST={self.host!r}"
+        )
+
     def require_oidc_runtime_deps(self) -> None:
         """Fail closed when OIDC is configured but PyJWT is not installed."""
         if not self.oidc_enabled:
@@ -1072,6 +1113,9 @@ class Settings:
             pdf_backend=(os.getenv("AEROBIM_PDF_BACKEND") or "pdfium").strip().lower() or "pdfium",
             norm_rule_pack_path=(os.getenv("AEROBIM_NORM_RULE_PACK") or "").strip() or None,
             allow_anonymous_dev=_read_bool("AEROBIM_ALLOW_ANONYMOUS_DEV", False),
+            anonymous_external_loopback=_read_bool(
+                "AEROBIM_ANONYMOUS_EXTERNAL_LOOPBACK", False
+            ),
             oda_cad_enabled=_read_bool("AEROBIM_ODA_CAD_ENABLED", False),
             mep_system_clash_enabled=_read_bool("AEROBIM_MEP_SYSTEM_CLASH_ENABLED", False),
             mep_scope_memo_ref=(os.getenv("AEROBIM_MEP_SCOPE_MEMO_REF") or "").strip() or None,
@@ -1324,6 +1368,7 @@ class Settings:
                     "AEROBIM_DEV_REVIEWER_TOKEN must differ from AEROBIM_API_BEARER_TOKEN"
                 )
         settings.require_secure_auth()
+        settings.require_anonymous_bind_safe()
         settings.require_oidc_runtime_deps()
         settings.require_durable_runtime()
         if not profile_gate and settings.http_rate_limit_per_minute <= 0:

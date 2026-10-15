@@ -251,6 +251,7 @@ Windows: `deploy\demo\validate-demo.bat`
 | `AEROBIM_SIGNOFF_PROFILE` | `customer_pilot_demo` | `moscow_agr_2026` — акцент Москвы |
 | `AEROBIM_ENV` | `development` | Не менять на `production` для демо |
 | `AEROBIM_ALLOW_ANONYMOUS_DEV` | `true` | Только `development`. Для защищённого демо убрать + `AEROBIM_API_BEARER_TOKEN` |
+| `AEROBIM_ANONYMOUS_EXTERNAL_LOOPBACK` | `true` в Docker | Обязателен, если `AEROBIM_HOST=0.0.0.0` внутри контейнера при публикации только на `127.0.0.1` |
 | `AEROBIM_REMARK_LOCALE` | `ru` | `en` — замечания на английском |
 | `AEROBIM_CORS_ORIGINS` | `http://127.0.0.1:5173` | Только Vite. Порт 3000 не используем |
 | `AEROBIM_HOST` | `127.0.0.1` | Анонимный API остаётся на петле |
@@ -307,6 +308,8 @@ cp .env.demo .env.demo.local
 - `customer_pilot_demo` и `moscow_agr_2026` — `development`/`test` only
 - Не запускайте `AEROBIM_SIGNOFF_PROFILE=customer_pilot` / `production` на первом клоне
 - Анонимный API `AEROBIM_ALLOW_ANONYMOUS_DEV=true` работает только в `ENV=development`
+- Анонимный API на не-loopback bind без `AEROBIM_ANONYMOUS_EXTERNAL_LOOPBACK=true` — отказ старта (AB-P0-05)
+- Compose demo публикует порт только на `127.0.0.1:8080` — не менять на `0.0.0.0:8080` / `8080:8080`
 - LLM-исходящий запрещён (`AEROBIM_CUSTOMER_PACK_LLM_EGRESS=deny`)
 - `requirements-lock.txt` — Linux/CI lock, на Windows не ставить
 

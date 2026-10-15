@@ -3,7 +3,7 @@
 title: "Citeable evidence (jury / FAIR)"
 status: active
 version: "2.5.21"
-last_updated: "2026-09-22"
+last_updated: "2026-10-15"
 ---
 
 # Evidence fixtures
@@ -48,7 +48,7 @@ Only **citeable** snapshots for TechLab review and reproducibility. Working dump
 | [`upstream-validate-overlap-2026-08.md`](upstream-validate-overlap-2026-08.md) | What duplicates bSI validate / Gherkin / ifcbench; keep vs replace. Not a run |
 | [`../samples/benchmarks/ifc-bench-v2/IMPORT_PINS.json`](../../samples/benchmarks/ifc-bench-v2/IMPORT_PINS.json) | IFC-Bench **v2** pins (1027 QA, CC BY 4.0 QA; GPLv3 models excluded from MIT tree); checkout not vendored |
 | [`checkpoint2-evidence-bundle-latest.json`](checkpoint2-evidence-bundle-latest.json) | P2-04 wall-guid demo bundle pin (fixture GO) |
-| [`runtime-baseline-latest.json`](runtime-baseline-latest.json) | Runtime LOC / tests / gates (schema 1.2.0; completeness checked in CI) |
+| [`runtime-baseline-latest.json`](runtime-baseline-latest.json) | Runtime LOC / tests / gates (schema 1.4.0; `attested_by=ci`; pin on graph SHA — see [HISTORY_REWRITE note](HISTORY_REWRITE_ORPHAN_SHA_2026_10.md)) |
 | [`sla-fixture-p95-2026-08-04.json`](sla-fixture-p95-2026-08-04.json) | Fixture SLA schema **1.4.0**, gate=**p95**; not customer; advisory on/off dual-run is still manual. Speech sheet: [`../demo/KT2_FIXTURE_TIMING_2026_08_16.md`](../demo/KT2_FIXTURE_TIMING_2026_08_16.md) |
 | [`lab-before-after-fixture-tool-only-latest.json`](lab-before-after-fixture-tool-only-latest.json) | Lab before/after journal: `t_tool_ms` on git wall+IDS; `t_manual_s` null; not partner B4; not A1–A8 |
 | [`offline-bundle-trial-latest.json`](offline-bundle-trial-latest.json) | Docker image-track trial fact from `offline_bundle --write-docs-evidence`; tar sha256; not customer data; not CDE |
