@@ -29,13 +29,16 @@ class _Logger:
         pass
 
 
+_ALL_IFACES = "0.0.0.0"  # noqa: S104 - test value for bind gate
+
+
 class _NoOpUseCase:
-    def execute(self, request):  # noqa: ANN001
+    def execute(self, request):
         raise RuntimeError("not used in these tests")
 
 
 class _AuditStore:
-    def get(self, report_id: str):  # noqa: ANN201
+    def get(self, report_id: str):
         return None
 
 
@@ -99,18 +102,18 @@ class AnonymousBindSafeTests(unittest.TestCase):
         self._settings(host="::1").require_anonymous_bind_safe()
 
     def test_non_loopback_without_ack_raises(self) -> None:
-        s = self._settings(host="0.0.0.0")
+        s = self._settings(host=_ALL_IFACES)
         with self.assertRaises(RuntimeError) as ctx:
             s.require_anonymous_bind_safe()
         self.assertIn("AEROBIM_ANONYMOUS_EXTERNAL_LOOPBACK", str(ctx.exception))
 
     def test_non_loopback_with_ack_ok(self) -> None:
         self._settings(
-            host="0.0.0.0", anonymous_external_loopback=True
+            host=_ALL_IFACES, anonymous_external_loopback=True
         ).require_anonymous_bind_safe()
 
     def test_anonymous_off_skips_gate(self) -> None:
-        self._settings(allow_anonymous_dev=False, host="0.0.0.0").require_anonymous_bind_safe()
+        self._settings(allow_anonymous_dev=False, host=_ALL_IFACES).require_anonymous_bind_safe()
 
     def test_production_env_rejects_anonymous_flag(self) -> None:
         s = self._settings(environment="production", host="127.0.0.1")
@@ -130,7 +133,7 @@ class AnonymousHttpContextTests(unittest.TestCase):
                 Path(tmp),
                 environment="development",
                 allow_anonymous_dev=True,
-                host="0.0.0.0",
+                host=_ALL_IFACES,
                 anonymous_external_loopback=False,
             )
             with self.assertRaises(HTTPException) as exc:
@@ -144,7 +147,7 @@ class AnonymousHttpContextTests(unittest.TestCase):
                 Path(tmp),
                 environment="development",
                 allow_anonymous_dev=True,
-                host="0.0.0.0",
+                host=_ALL_IFACES,
                 anonymous_external_loopback=True,
                 api_tenant_id="tenant-demo",
             )
