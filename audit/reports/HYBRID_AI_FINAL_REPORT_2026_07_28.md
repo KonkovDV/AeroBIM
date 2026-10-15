@@ -136,11 +136,11 @@ privacy-leakage, policy-violation, replay). Доверительные инте�
 отказов; **не** объявлять победителя по одному среднему.
 
 ## 25. План разработки
-P0 ✅ (классификация, policy, tenant-scoped route, public-block, ACL, кэш-изоляция,
-secret-guard, audit-event, OFF==ON, no-model-route-override, injection, лимиты). P1 ✅
+P0 (закрыто) (классификация, policy, tenant-scoped route, public-block, ACL, кэш-изоляция,
+secret-guard, audit-event, OFF==ON, no-model-route-override, injection, лимиты). P1 (закрыто)
 (Privacy Guard, маскирование/токенизация, restore-таблица, версии policy/mask, статусы
-маршрута + композитный гейт) / ⏳ (живое подключение pre-gate). P2 ⏳ (адаптеры провайдеров/
-локальное обнаружение сущностей ✅ `sensitive_entities.py`; маршрутизатор моделей ✅ `model_router.py`; provider-конфиг из Settings ✅; интеграционный стенд ✅; snapshot/replay-bundle ⏳). P3 (по §11): стенд на синтетике/обезличенном **без внешнего выхода** ✅ `bench_hybrid_contour` (метрики контура/restore/egress — не точность продукта); живой тестовый контур + данные заказчика — гейтированы. Крипто/агенты (TEE/FHE/MPC/ZK) — **не начаты**.
+маршрута + композитный гейт) / (в работе) (живое подключение pre-gate). P2 (в работе) (адаптеры провайдеров/
+локальное обнаружение сущностей (закрыто) `sensitive_entities.py`; маршрутизатор моделей (закрыто) `model_router.py`; provider-конфиг из Settings (закрыто); интеграционный стенд (закрыто); snapshot/replay-bundle (в работе)). P3 (по §11): стенд на синтетике/обезличенном **без внешнего выхода** (закрыто) `bench_hybrid_contour` (метрики контура/restore/egress — не точность продукта); живой тестовый контур + данные заказчика — гейтированы. Крипто/агенты (TEE/FHE/MPC/ZK) — **не начаты**.
 
 ## 26. Изменённые/добавленные файлы
 `domain/hybrid/{data_classification,trust_policy,audit_event,privacy_guard,sensitive_entities,model_router,__init__}.py`;

@@ -1,7 +1,7 @@
 {
   "artifact_type": "aerobim_tz_matrix_status",
   "schema_version": "1.2.0",
-  "generated_at": "2026-10-01T17:50:26.556088+00:00",
+  "generated_at": "2026-10-15T22:58:58.288945+00:00",
   "author_relationship": "self",
   "claim_boundary": "Capability snapshot. Fixture OK ≠ customer done. Not product accuracy. Checkpoint GO (regulatory_measurement_mvp; customer_go false).",
   "checkpoint": "GO",
