@@ -45,7 +45,9 @@ services:
 
       # ── Анонимный доступ (только development) ──────────────────────────────
       # Убрать для демо с токеном — задать AEROBIM_API_BEARER_TOKEN ниже.
+      # Внутри контейнера bind 0.0.0.0; снаружи только 127.0.0.1:8080 (см. ports).
       AEROBIM_ALLOW_ANONYMOUS_DEV: "true"
+      AEROBIM_ANONYMOUS_EXTERNAL_LOOPBACK: "true"
       AEROBIM_API_BEARER_TOKEN: ${AEROBIM_API_BEARER_TOKEN:-}
 
       # Оболочка — Vite на 5173. Порт 3000 этому показу не принадлежит.

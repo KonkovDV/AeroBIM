@@ -378,6 +378,18 @@
       "legal_review_required": true,
       "usage": "browser review shell (runtime dependency)",
       "mitigation_options": "MPL-2.0 is file-level copyleft: keep web-ifc unmodified, disclose"
+    },
+    {
+      "name": "source-map-js",
+      "scope": "frontend",
+      "installed_version": "1.2.2",
+      "license_metadata": "BSD-3-Clause",
+      "spdx_guess": "BSD-3-Clause",
+      "risk_class": "permissive",
+      "verified": true,
+      "legal_review_required": false,
+      "usage": "pinned transitive (postcss/vite) security bump; not imported by app code",
+      "mitigation_options": ""
     }
   ],
   "out_of_scope_unknowns": [

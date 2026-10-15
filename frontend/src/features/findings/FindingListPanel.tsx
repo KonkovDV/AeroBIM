@@ -1,6 +1,10 @@
 import { startTransition, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { ValidationIssue } from "../../lib/types";
 import {
+  confidenceVisualClass,
+  honestyVisualLabel,
+} from "../../lib/status-labels";
+import {
   FINDING_GROUP_HEADER_HEIGHT,
   buildFindingListItems,
   buildItemOffsets,
@@ -126,12 +130,21 @@ function IssueCard({
         ) : issue.origin === "deterministic" ? (
           <span className="origin-pill origin-deterministic">{UI_COPY.deterministic}</span>
         ) : null}
-        {typeof issue.confidence === "number" && issue.confidence < 0.6 ? (
+        {typeof issue.confidence === "number" ? (
           <span
-            className="confidence-pill confidence-low"
-            title={UI_COPY.lowConfidenceTitle}
+            className={`confidence-pill confidence-${confidenceVisualClass(issue.confidence)}`}
+            title={`${honestyVisualLabel(confidenceVisualClass(issue.confidence))} · uncalibrated (fixture/open only)`}
+            data-testid="confidence-honesty-chip"
           >
-            {UI_COPY.lowConfidence(issue.confidence.toFixed(2))}
+            <span className="confidence-pattern" aria-hidden="true">
+              {confidenceVisualClass(issue.confidence) === "abstain"
+                ? "◇"
+                : confidenceVisualClass(issue.confidence) === "mid"
+                  ? "▲"
+                  : "●"}
+            </span>{" "}
+            {honestyVisualLabel(confidenceVisualClass(issue.confidence))}{" "}
+            {issue.confidence.toFixed(2)}
           </span>
         ) : null}
       </div>

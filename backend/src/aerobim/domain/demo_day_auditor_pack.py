@@ -1002,7 +1002,7 @@ CONTRADICTIONS: Final[tuple[dict[str, str], ...]] = (
     {
         "id": "X-03",
         "where": "techlab-alignment R1–R15 checkmarks vs this pack",
-        "drift": "Alignment uses ✅ on several rows that this audit marks fixture-only or target_metric (R11/R15 SLA, R5 clash, R14 catalog). Prefer this table’s weaker status.",
+        "drift": "Alignment uses check marks on several rows that this audit marks fixture-only or target_metric (R11/R15 SLA, R5 clash, R14 catalog). Prefer this table’s weaker status.",
     },
     {
         "id": "X-04",
