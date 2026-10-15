@@ -79,7 +79,7 @@ raster = [
   "onnxruntime>=1.22,<2.0",
 ]
 clash = [
-  "ifcclash>=0.8.4",
+  "ifcclash>=0.8.4,<0.9",  # lockstep with ifcopenshell<0.9
 ]
 docling = [
   "docling>=2.0",
