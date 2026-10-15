@@ -62,7 +62,8 @@ def dual_read_stamp_field(
 
     v = normalize_stamp_text(vector_text) if vector_text else ""
     o = normalize_stamp_text(ocr_text) if ocr_text else ""
-    low_conf = ocr_confidence is not None and ocr_confidence < min_ocr_confidence
+    # Unknown OCR confidence is doubt, not confidence: never AGREED on it.
+    low_conf = ocr_confidence is None or ocr_confidence < min_ocr_confidence
 
     def res(s: DualReadStatus, r: DualReadReason, val: str | None = None) -> DualReadResult:
         return DualReadResult(field, s, r, val, vector_text, ocr_text)

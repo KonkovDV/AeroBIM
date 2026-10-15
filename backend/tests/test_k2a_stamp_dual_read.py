@@ -15,7 +15,12 @@ def test_not_found() -> None:
 
 @pytest.mark.parametrize(
     ("vec", "ocr", "conf"),
-    [("АР-01", None, None), (None, "АР-01", None), ("АР-01", "АР-01", 0.2)],
+    [
+        ("АР-01", None, None),
+        (None, "АР-01", None),
+        ("АР-01", "АР-01", 0.2),
+        ("АР-01", "АР-01", None),
+    ],
 )
 def test_unreadable_abstains(vec: str | None, ocr: str | None, conf: float | None) -> None:
     r = dual_read_stamp_field("sheet_code", vec, ocr, ocr_confidence=conf)
