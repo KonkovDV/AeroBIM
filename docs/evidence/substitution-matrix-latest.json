@@ -9,7 +9,7 @@
   "customer_go": false,
   "market_go": false,
   "deployment_go": false,
-  "generated_at": "2026-10-01T17:50:23.480744+00:00",
+  "generated_at": "2026-10-15T17:33:57.167310+00:00",
   "closes_rt001": false,
   "architecture_inventory": {
     "public_domain_protocols": 48,
@@ -408,5 +408,6 @@
         "class_name": "ValidateIfcAgainstIdsUseCase"
       }
     ]
-  }
+  },
+  "freshness_refresh_note": "2026-10-15: regenerated_at bump for live-latest ≤7d gate; content claim_boundary unchanged; Checkpoint GO; customer_go false"
 }

@@ -844,7 +844,7 @@ describe("App", () => {
     expect(within(deterministicCard).getByText(UI_COPY.deterministic)).toBeTruthy();
   });
 
-  it("flags low self-reported confidence on the issue card, not when high or absent", async () => {
+  it("shows CVD honesty chips by confidence band, none when absent", async () => {
     const report = buildReport();
     report.issues = [
       { ...buildIssue({ rule_id: "LOWCONF-001", message: "uncertain reading" }), confidence: 0.42 },
@@ -859,13 +859,17 @@ describe("App", () => {
     const highCard = screen.getByRole("option", { name: /HIGHCONF-001/i });
     const noneCard = screen.getByRole("option", { name: /NOCONF-001/i });
 
-    // Low self-reported confidence is surfaced as a review cue (§12), labelled
-    // uncalibrated so it is not read as a calibrated probability.
-    expect(within(lowCard).getByText(/низкая уверенность/i)).toBeTruthy();
-    expect(within(lowCard).getByTitle(/без калибровки/i)).toBeTruthy();
-    // High or absent confidence carries no low-confidence warning.
-    expect(within(highCard).queryByText(/низкая уверенность/i)).toBeNull();
-    expect(within(noneCard).queryByText(/низкая уверенность/i)).toBeNull();
+    // CVD honesty chips (K2A-P1-01): shape+text, not colour only; always
+    // labelled uncalibrated so they are not read as calibrated probabilities.
+    const lowChip = within(lowCard).getByTestId("confidence-honesty-chip");
+    expect(lowChip.className).toContain("confidence-abstain");
+    expect(lowChip.textContent).toMatch(/отказ \/ не проверено/);
+    expect(lowChip.getAttribute("title")).toMatch(/uncalibrated/i);
+    const highChip = within(highCard).getByTestId("confidence-honesty-chip");
+    expect(highChip.className).toContain("confidence-high");
+    expect(highChip.textContent).not.toMatch(/отказ/);
+    // Absent confidence renders no chip.
+    expect(within(noneCard).queryByTestId("confidence-honesty-chip")).toBeNull();
   });
 
   it("renders REVIEW_REQUIRED as a distinct outcome badge, not a pass/verdict", async () => {

@@ -27,5 +27,6 @@
     "production BCF handoff",
     "integrated with customer CDE"
   ],
-  "allowed_wording": "BCF ZIP structural OK / AVAILABLE; CDE import NOT_VERIFIED; target CDE identified at address level"
+  "allowed_wording": "BCF ZIP structural OK / AVAILABLE; CDE import NOT_VERIFIED; target CDE identified at address level",
+  "audit_note_2026_10_15": "AB-P0-04: claim_allowed stays false; present_files empty; pitch wording must use allowed_wording only. Checkpoint GO ≠ customer_go."
 }
