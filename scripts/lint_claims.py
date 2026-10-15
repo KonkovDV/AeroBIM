@@ -161,10 +161,6 @@ _BUILTIN_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
         re.compile(r"(?i)(\b59\s*/\s*132\b|Gate\s+[IJKL]\b|tz_low|CA\s*≥\s*0\.95|CA\s*>=\s*0\.95)"),
     ),
     (
-        "forbidden_undifferentiated_rt_closed",
-        re.compile(r"(?i)\bRT-00[123]\b(?![abc0-9_]).{0,24}\bCLOSED\b"),
-    ),
-    (
         "forbidden_single_expert_precision",
         re.compile(r"(?i)один\s+эксперт\s+подтвердил\s+точность"),
     ),

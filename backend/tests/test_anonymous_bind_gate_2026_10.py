@@ -7,10 +7,74 @@ import unittest
 from pathlib import Path
 
 from fastapi import HTTPException
+from starlette.requests import Request
 
 from aerobim.core.config.settings import Settings
+from aerobim.core.di.container import Container
+from aerobim.core.di.tokens import Tokens
+from aerobim.presentation.http.context import ApiContext
 
-from tests.test_mutation_kills_http_context import _auth, _make_ctx, _status_auth
+
+class _Logger:
+    def info(self, message: str, **context: object) -> None:
+        pass
+
+    def warning(self, message: str, **context: object) -> None:
+        pass
+
+    def error(self, message: str, **context: object) -> None:
+        pass
+
+    def debug(self, message: str, **context: object) -> None:
+        pass
+
+
+class _NoOpUseCase:
+    def execute(self, request):  # noqa: ANN001
+        raise RuntimeError("not used in these tests")
+
+
+class _AuditStore:
+    def get(self, report_id: str):  # noqa: ANN201
+        return None
+
+
+def _make_ctx(storage: Path, **settings_kwargs: object) -> ApiContext:
+    defaults: dict[str, object] = dict(
+        application_name="aerobim-anon-test",
+        environment="development",
+        host="127.0.0.1",
+        port=8080,
+        storage_dir=storage,
+        debug=True,
+    )
+    defaults.update(settings_kwargs)
+    settings = Settings(**defaults)  # type: ignore[arg-type]
+    container = Container()
+    container.register(Tokens.SETTINGS, lambda _: settings)
+    container.register(Tokens.LOGGER, lambda _: _Logger())
+    container.register(Tokens.VALIDATE_IFC_AGAINST_IDS_USE_CASE, lambda _: _NoOpUseCase())
+    container.register(Tokens.ANALYZE_PROJECT_PACKAGE_USE_CASE, lambda _: _NoOpUseCase())
+    container.register(Tokens.AUDIT_REPORT_STORE, lambda _: _AuditStore())
+    return ApiContext(container)
+
+
+def _http_request() -> Request:
+    return Request(
+        {
+            "type": "http",
+            "asgi": {"version": "3.0"},
+            "http_version": "1.1",
+            "method": "GET",
+            "scheme": "http",
+            "path": "/",
+            "raw_path": b"/",
+            "query_string": b"",
+            "headers": [],
+            "client": ("testclient", 50000),
+            "server": ("test", 80),
+        }
+    )
 
 
 class AnonymousBindSafeTests(unittest.TestCase):
@@ -69,9 +133,10 @@ class AnonymousHttpContextTests(unittest.TestCase):
                 host="0.0.0.0",
                 anonymous_external_loopback=False,
             )
-            exc = _status_auth(ctx, None)
-            self.assertEqual(exc.status_code, 401)
-            self.assertIn("loopback", str(exc.detail).lower())
+            with self.assertRaises(HTTPException) as exc:
+                ctx.require_bearer_auth(_http_request(), None)
+            self.assertEqual(exc.exception.status_code, 401)
+            self.assertIn("loopback", str(exc.exception.detail).lower())
 
     def test_context_allows_with_ack(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -83,7 +148,7 @@ class AnonymousHttpContextTests(unittest.TestCase):
                 anonymous_external_loopback=True,
                 api_tenant_id="tenant-demo",
             )
-            principal = _auth(ctx, None)
+            principal = ctx.require_bearer_auth(_http_request(), None)
             self.assertEqual(principal.subject, "anonymous-dev")
             self.assertEqual(principal.tenant_id, "tenant-demo")
 
