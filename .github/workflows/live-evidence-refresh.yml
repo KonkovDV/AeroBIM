@@ -1,0 +1,69 @@
+name: Live evidence refresh (manual)
+
+# Regenerates the six allowlisted live docs/evidence/*-latest.json files
+# (scripts/check_live_evidence_freshness.py) on a GitHub runner, where the
+# IDS XSD imports (w3.org) resolve, so SLA wall-clock is not inflated by a
+# blocked network. Uploads them as an artifact; a human/agent commits them
+# unchanged citing the run id. Nothing is pushed from here.
+
+on:
+  workflow_dispatch:
+  # workflow_dispatch only works once this file is on main; until then the
+  # PR that edits it runs it too.
+  pull_request:
+    paths:
+      - .github/workflows/live-evidence-refresh.yml
+
+permissions:
+  contents: read
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Install locked toolchain (+ ifcclash for the TZ clash row)
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade "pip==25.2"
+          pip install --require-hashes -r requirements-dev-lock.txt
+          pip install -e . --no-deps
+          # Version-pinned, same release line as the locked ifcopenshell 0.8.5.
+          pip install --no-deps "ifcclash==0.8.5"
+          python -c "import ifcclash"
+      - name: Regenerate live evidence with project tooling
+        run: |
+          set -euo pipefail
+          python -m aerobim.tools.export_data_residency --write-docs-evidence
+          python -m aerobim.tools.export_substitution_matrix --write-docs-evidence
+          python -m aerobim.tools.generate_tz_matrix_status \
+            --from-fixture ../samples/benchmarks/project-package-wall-fire-rating.json \
+            --write-docs-evidence
+          python -m aerobim.tools.run_seam_clean_injection_recall --write-docs-evidence
+          (cd .. && python -m aerobim.tools.measure_package_sla \
+            --pack samples/benchmarks/project-package-sla-representative.json \
+            --max-minutes 30.0 --iterations 1 --warmup-iterations 0 \
+            --output docs/evidence/sla-package-scale-latest.json)
+          python -m aerobim.tools.export_weekly_eng_status
+          python ../scripts/check_live_evidence_freshness.py
+          git -C .. status --short docs/evidence
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: live-evidence
+          path: |
+            docs/evidence/weekly-eng-status-latest.json
+            docs/evidence/tz-matrix-status-latest.json
+            docs/evidence/defect-injection-recall-run-latest.json
+            docs/evidence/DEFECT_INJECTION_RECALL_SEAM_CLEAN_2026_09.md
+            docs/evidence/sla-package-scale-latest.json
+            docs/evidence/data-residency-inventory-latest.json
+            docs/evidence/substitution-matrix-latest.json

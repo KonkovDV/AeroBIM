@@ -222,6 +222,18 @@ class ApiContext:
                     headers={"WWW-Authenticate": "Bearer"},
                 )
             if settings.is_dev_environment and settings.allow_anonymous_dev:
+                # AB-P0-05: refuse anonymous when bind is off-loopback without ack.
+                host = (settings.host or "").strip().lower().strip("[]")
+                loopback = host in {"localhost", "127.0.0.1", "::1"}
+                if not loopback and not settings.anonymous_external_loopback:
+                    raise HTTPException(
+                        status_code=401,
+                        detail=(
+                            "Anonymous API refused: AEROBIM_HOST is not loopback and "
+                            "AEROBIM_ANONYMOUS_EXTERNAL_LOOPBACK is unset"
+                        ),
+                        headers={"WWW-Authenticate": "Bearer"},
+                    )
                 bound_tenant = (settings.api_tenant_id or "").strip() or LAB_ANONYMOUS_TENANT_ID
                 return self._bind_authenticated(
                     request,

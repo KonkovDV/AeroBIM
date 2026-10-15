@@ -1,14 +1,14 @@
 {
   "artifact_type": "customer_package_sla",
   "schema_version": "1.4.0",
-  "generated_at": "2026-10-01T17:50:39.082855+00:00",
+  "generated_at": "2026-10-15T22:59:04.329820+00:00",
   "customer_reference": "https://i.moscow/techlab",
   "sla_target_minutes": 30.0,
   "sla_pass": true,
   "sla_gate_metric": "p95_minutes_observed",
-  "max_minutes_observed": 0.076,
-  "avg_minutes_observed": 0.076,
-  "p95_minutes_observed": 0.076,
+  "max_minutes_observed": 0.0721,
+  "avg_minutes_observed": 0.0721,
+  "p95_minutes_observed": 0.0721,
   "stage_budgets": {
     "ingestion_minutes": 5.0,
     "deterministic_validation_minutes": 18.0,
@@ -87,22 +87,22 @@
     "note": "representative_scale is an inventory flag. XSD/assets can dominate bytes while the analyze contour still opens a tiny IFC."
   },
   "machine": {
-    "os": "Windows-11-10.0.26200-SP0",
-    "cpu": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "os": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+    "cpu": "x86_64",
     "ram_gb": null,
-    "python": "3.12.10"
+    "python": "3.12.15"
   },
   "machine_fingerprint": {
-    "os": "Windows-11-10.0.26200-SP0",
-    "cpu": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "os": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+    "cpu": "x86_64",
     "ram_gb": null,
-    "python": "3.12.10"
+    "python": "3.12.15"
   },
   "mandatory_capabilities_complete": false,
   "cold_run": {
-    "max_minutes": 0.076,
-    "avg_minutes": 0.076,
-    "p95_minutes": 0.076,
+    "max_minutes": 0.0721,
+    "avg_minutes": 0.0721,
+    "p95_minutes": 0.0721,
     "benchmark": {
       "iterations": 1,
       "warmup_iterations": 0,
@@ -110,8 +110,8 @@
         {
           "iteration": 1,
           "request_id": "benchmark-project-package-sla-representative-scale-run-001",
-          "elapsed_ms": 4561.596,
-          "report_id": "dc014441bc1d4d5784e84257ee0653b3",
+          "elapsed_ms": 4324.031,
+          "report_id": "3af0e4172e414be7afd730fe71e3c6ee",
           "issue_count": 7,
           "requirement_count": 5,
           "project_name": "SLA representative-scale fixture",
@@ -119,12 +119,12 @@
         }
       ],
       "summary": {
-        "min_ms": 4561.596,
-        "max_ms": 4561.596,
-        "avg_ms": 4561.596,
-        "p50_ms": 4561.596,
-        "p95_ms": 4561.596,
-        "reports_per_second": 0.219,
+        "min_ms": 4324.031,
+        "max_ms": 4324.031,
+        "avg_ms": 4324.031,
+        "p50_ms": 4324.031,
+        "p95_ms": 4324.031,
+        "reports_per_second": 0.231,
         "sample_n": 1,
         "p95_equals_max": true,
         "spike_ratio_max_over_p50": 1.0,
@@ -132,7 +132,7 @@
       },
       "artifact_type": "benchmark_project_package",
       "schema_version": "1.2.0",
-      "generated_at": "2026-10-01T17:50:38.741516+00:00",
+      "generated_at": "2026-10-15T22:59:04.159485+00:00",
       "claim_level": "fixture_only",
       "customer_accuracy_not_established": true,
       "accuracy_measured": false,
@@ -156,19 +156,19 @@
       "ifc_bytes": 799,
       "ifc_entity_count": 9,
       "ifc_schema_from_header": "IFC4",
-      "peak_traced_memory_bytes": 21329121,
+      "peak_traced_memory_bytes": 21579459,
       "dependencies": {
         "ifcopenshell": "0.8.5",
         "ifctester": "0.8.5",
-        "fastapi": "0.141.1"
+        "fastapi": "0.140.8"
       },
       "machine": {
-        "platform": "Windows-11-10.0.26200-SP0",
-        "python": "3.12.10",
-        "machine": "AMD64",
-        "system": "Windows"
+        "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+        "python": "3.12.15",
+        "machine": "x86_64",
+        "system": "Linux"
       },
-      "storage_dir": "backend/var/reports"
+      "storage_dir": "var/reports"
     }
   },
   "warm_run": {
@@ -188,8 +188,8 @@
       {
         "iteration": 1,
         "request_id": "benchmark-project-package-sla-representative-scale-run-001",
-        "elapsed_ms": 4561.596,
-        "report_id": "dc014441bc1d4d5784e84257ee0653b3",
+        "elapsed_ms": 4324.031,
+        "report_id": "3af0e4172e414be7afd730fe71e3c6ee",
         "issue_count": 7,
         "requirement_count": 5,
         "project_name": "SLA representative-scale fixture",
@@ -197,12 +197,12 @@
       }
     ],
     "summary": {
-      "min_ms": 4561.596,
-      "max_ms": 4561.596,
-      "avg_ms": 4561.596,
-      "p50_ms": 4561.596,
-      "p95_ms": 4561.596,
-      "reports_per_second": 0.219,
+      "min_ms": 4324.031,
+      "max_ms": 4324.031,
+      "avg_ms": 4324.031,
+      "p50_ms": 4324.031,
+      "p95_ms": 4324.031,
+      "reports_per_second": 0.231,
       "sample_n": 1,
       "p95_equals_max": true,
       "spike_ratio_max_over_p50": 1.0,
@@ -210,7 +210,7 @@
     },
     "artifact_type": "benchmark_project_package",
     "schema_version": "1.2.0",
-    "generated_at": "2026-10-01T17:50:38.741516+00:00",
+    "generated_at": "2026-10-15T22:59:04.159485+00:00",
     "claim_level": "fixture_only",
     "customer_accuracy_not_established": true,
     "accuracy_measured": false,
@@ -234,19 +234,19 @@
     "ifc_bytes": 799,
     "ifc_entity_count": 9,
     "ifc_schema_from_header": "IFC4",
-    "peak_traced_memory_bytes": 21329121,
+    "peak_traced_memory_bytes": 21579459,
     "dependencies": {
       "ifcopenshell": "0.8.5",
       "ifctester": "0.8.5",
-      "fastapi": "0.141.1"
+      "fastapi": "0.140.8"
     },
     "machine": {
-      "platform": "Windows-11-10.0.26200-SP0",
-      "python": "3.12.10",
-      "machine": "AMD64",
-      "system": "Windows"
+      "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+      "python": "3.12.15",
+      "machine": "x86_64",
+      "system": "Linux"
     },
-    "storage_dir": "backend/var/reports"
+    "storage_dir": "var/reports"
   },
   "checkpoint": "GO",
   "go_kind": "regulatory_measurement_mvp",
