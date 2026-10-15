@@ -61,3 +61,7 @@
 - Ставить `customer_go=true` без реального корпуса.  
 - Тяжёлые dependabot (#130 ifcopenshell 0.9 и др.) до стабилизации #141.  
 - Merge поверх красного #141.
+
+## CI note (этот docs PR #146)
+
+`docs-links` падает на **pre-existing** `check_live_evidence_freshness`: `*-latest.json` от 2026-10-01 (~14d, max 7d) — не из‑за текста HANDOFF. Пока evidence не обновлён, docs-only PR не станет green. **Не** ставить `customer_go=true`. Следующий аккаунт: либо `make evidence`/регенерация latest JSON (отдельный PR), либо merge handoff осознанно поверх известного долга после фикса #141.
