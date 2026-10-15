@@ -61,20 +61,20 @@ Single traceability document mapping **customer requirements** ([i.moscow/techla
 
 | # | the appointing party requirement (task page) | AeroBIM module / artifact | Status | Evidence / limit |
 |---|---|---|---|---|
-| R1 | 2D drawings | Drawing evidence adapter, PDF/OCR baseline, 2D overlay UI | ✅ fixture | Vision-heavy path = planned, not pilot sign-off |
-| R2 | BIM models | IFC + IDS validators | ✅ | `pytest`, benchmark packs |
-| R3 | TZ + calculations | Narrative + structured requirements, cross-doc | ✅ | F1 gate ≥ 0.70 |
-| R4 | Match docs + norms | IDS + JSON norm packs + cross-doc + PD↔RD section scaffold | ✅ partial | Norms = agreed packs; customer approval still required |
-| R5 | Collisions / clashes | Cross-doc `ConflictKind`; optional IfcClash extra | ✅ / opt-in | Clarify 3D clash vs doc contradiction with customer |
-| R6 | Calculation / dimension / area errors | Quantity algebra + cross-doc | ✅ | Pilot pack informational 0 cross-doc on fixture |
-| R7 | Logic / missing elements | IDS + requirement operators (`exists`, bounds) | ✅ | |
-| R8 | Highlight problem zones | `problem_zone`, drawing overlay | ✅ | `run_live_review_smoke` |
-| R9 | Prioritize remarks | `compute_issue_priority`, the appointing party profile (`AEROBIM_PRIORITY_PROFILE=customer`) | ✅ | [`domain/review_priority.py`](../backend/src/aerobim/domain/review_priority.py) |
-| R10 | Designer comments | `TemplateRemarkGenerator` (RU/EN) + HITL edit + BCF | ✅ | `AEROBIM_REMARK_LOCALE`; frontend remark editor |
+| R1 | 2D drawings | Drawing evidence adapter, PDF/OCR baseline, 2D overlay UI | Yes, fixture | Vision-heavy path = planned, not pilot sign-off |
+| R2 | BIM models | IFC + IDS validators | Yes | `pytest`, benchmark packs |
+| R3 | TZ + calculations | Narrative + structured requirements, cross-doc | Yes | F1 gate ≥ 0.70 |
+| R4 | Match docs + norms | IDS + JSON norm packs + cross-doc + PD↔RD section scaffold | Yes, partial | Norms = agreed packs; customer approval still required |
+| R5 | Collisions / clashes | Cross-doc `ConflictKind`; optional IfcClash extra | Yes / opt-in | Clarify 3D clash vs doc contradiction with customer |
+| R6 | Calculation / dimension / area errors | Quantity algebra + cross-doc | Yes | Pilot pack informational 0 cross-doc on fixture |
+| R7 | Logic / missing elements | IDS + requirement operators (`exists`, bounds) | Yes | |
+| R8 | Highlight problem zones | `problem_zone`, drawing overlay | Yes | `run_live_review_smoke` |
+| R9 | Prioritize remarks | `compute_issue_priority`, the appointing party profile (`AEROBIM_PRIORITY_PROFILE=customer`) | Yes | [`domain/review_priority.py`](../backend/src/aerobim/domain/review_priority.py) |
+| R10 | Designer comments | `TemplateRemarkGenerator` (RU/EN) + HITL edit + BCF | Yes | `AEROBIM_REMARK_LOCALE`; frontend remark editor |
 | R11 | Faster review | SLA tool + pilot KPI protocol | 🚧 measure | [`measure_package_sla`](../backend/src/aerobim/tools/measure_package_sla.py) |
-| R12 | Expert remains accountable | Claim boundary + adjudication KPI | ✅ | TP/FP by customer engineer |
-| R13 | MVP + visualization + reports | API + HTML + JSON + BCF + browser shell + upload | ✅ | `POST /v1/uploads` |
-| R14 | Typical error catalog | ≥20 patterns + mapping tool (`map_typical_errors`) | ✅ partial scaffold | Customer confirmation still 0; MEP system clash gap explicit |
+| R12 | Expert remains accountable | Claim boundary + adjudication KPI | Yes | TP/FP by customer engineer |
+| R13 | MVP + visualization + reports | API + HTML + JSON + BCF + browser shell + upload | Yes | `POST /v1/uploads` |
+| R14 | Typical error catalog | ≥20 patterns + mapping tool (`map_typical_errors`) | Yes, partial scaffold | Customer confirmation still 0; MEP system clash gap explicit |
 | R15 | ≤ 30 min package SLA | Benchmark rail on agreed pack | 🚧 | Must run on **customer** package for contract |
 
 ## 4. Recommended pilot scope (repeatable scenario)

@@ -40,7 +40,7 @@ AeroBIM — открытый мультимодальный ассистент �
 
 **Novelty:** openBIM contracts (IFC/IDS/BCF) + cross-document checks + ε-tolerance algebra; ablation A0–A3; reproducibility per [`../REPRODUCIBILITY-2026.md`](../REPRODUCIBILITY-2026.md); honest CV/LLM boundary (advisory only).
 
-**Required competencies covered:** BIM/CAD (IFC/IDS) ✅ · OCR baseline ✅ · CV/AI-ML as advisory roadmap (not sign-off) — stated honestly. Public LETI text (30.04.2026) asks for **both** scientific and engineering (IT/ML/data) competencies; empty role matrix: [`K1_ROLE_MATRIX_TEMPLATE_2026_08.md`](K1_ROLE_MATRIX_TEMPLATE_2026_08.md). Person cells stay empty in git.
+**Required competencies covered:** BIM/CAD (IFC/IDS) Yes · OCR baseline Yes · CV/AI-ML as advisory roadmap (not sign-off) — stated honestly. Public LETI text (30.04.2026) asks for **both** scientific and engineering (IT/ML/data) competencies; empty role matrix: [`K1_ROLE_MATRIX_TEMPLATE_2026_08.md`](K1_ROLE_MATRIX_TEMPLATE_2026_08.md). Person cells stay empty in git.
 
 **Appendix 4 public table (LETI, 30.04.2026):** row **6** is this Partner task (paid pilot 2M ₽). Neighbouring row 7 is a different partner. Historical filename «07» is not that number. Map: [`../quality/MIK_CRITERION_EVIDENCE_MAP_2026_08.md`](../quality/MIK_CRITERION_EVIDENCE_MAP_2026_08.md).
 
