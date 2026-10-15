@@ -13,6 +13,7 @@
     "docs/architecture/ADR-005-customer-data-handling-2026.md",
     "docs/architecture/BCF_EVIDENCE_LADDER_T0_T4_2026_07.md",
     "docs/architecture/DETERMINISTIC_VS_ADVISORY_2026_09.md",
+    "docs/architecture/JOB_DELIVERY_AT_LEAST_ONCE_2026_10.md",
     "docs/architecture/TARGET_HYBRID_ARCHITECTURE_TZ_2026.md",
     "docs/benchmark-evidence-2026.md",
     "docs/dataset/MOSCOW_AGR_CITY_EXAMPLES_LOCAL_PIN_2026_08_24.md",

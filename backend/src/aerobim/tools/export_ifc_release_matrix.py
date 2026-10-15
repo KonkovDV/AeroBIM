@@ -106,9 +106,10 @@ def _product_entity_counts(ifc_path: Path | None) -> dict[str, int]:
         import ifcopenshell
     except ImportError:
         return {}
-    model = ifcopenshell.open(str(ifc_path))
+    # ifcopenshell stubs incomplete on some hosts; CI SSOT remains Python 3.12 + mypy --strict.
+    model = ifcopenshell.open(str(ifc_path))  # type: ignore[no-untyped-call]
     counts: Counter[str] = Counter()
-    for entity in model.by_type("IfcProduct"):
+    for entity in model.by_type("IfcProduct"):  # type: ignore[no-untyped-call]
         counts[entity.is_a()] += 1
     return dict(sorted(counts.items()))
 
