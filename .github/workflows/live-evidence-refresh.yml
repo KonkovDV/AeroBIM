@@ -8,6 +8,11 @@ name: Live evidence refresh (manual)
 
 on:
   workflow_dispatch:
+  # workflow_dispatch only works once this file is on main; until then the
+  # PR that edits it runs it too.
+  pull_request:
+    paths:
+      - .github/workflows/live-evidence-refresh.yml
 
 permissions:
   contents: read
