@@ -13,6 +13,16 @@ import { isTextEntryTarget, resolveTriageHotkey } from "../lib/triage-hotkeys";
  */
 export const TRIAGE_PAGE_SIZE = 10;
 
+/**
+ * Auto-next (K2A-P1-02): после решения эксперта — следующая позиция в
+ * текущем (отфильтрованном, упорядоченном по приоритету) списке. В конце
+ * очереди — null: фокус не прыгает назад на уже решённую находку.
+ */
+export function nextPosAfterDecision(length: number, pos: number): number | null {
+  const next = pos + 1;
+  return next < length ? next : null;
+}
+
 export function useTriageKeyboard({
   enabled,
   filteredIssues,
@@ -86,12 +96,20 @@ export function useTriageKeyboard({
       }
       if (hotkey === "accept") {
         event.preventDefault();
-        void decideRemark("accepted");
+        void decideRemark("accepted").then(() => {
+          const nextPos = nextPosAfterDecision(filteredIssues.length, pos);
+          const target = nextPos === null ? undefined : filteredIssues[nextPos];
+          if (target) selectIssue(target.index, target.issue);
+        }, () => undefined);
         return;
       }
       if (hotkey === "reject") {
         event.preventDefault();
-        void decideRemark("rejected");
+        void decideRemark("rejected").then(() => {
+          const nextPos = nextPosAfterDecision(filteredIssues.length, pos);
+          const target = nextPos === null ? undefined : filteredIssues[nextPos];
+          if (target) selectIssue(target.index, target.issue);
+        }, () => undefined);
         return;
       }
       if (hotkey === "edit") {
