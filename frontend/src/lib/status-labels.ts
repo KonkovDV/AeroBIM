@@ -87,3 +87,65 @@ export function divergenceResolutionLabel(value: string): string {
 export function intakeGateValueLabel(isTrue: boolean): string {
   return isTrue ? UI_COPY.blockersYes : UI_COPY.blockersNo;
 }
+
+
+/** Visual honesty class for findings/capabilities (K2A-P0-02a). Not a verdict. */
+export type HonestyVisualClass =
+	| "high"
+	| "mid"
+	| "abstain"
+	| "skipped"
+	| "failed"
+	| "ok";
+
+const CAPABILITY_TO_VISUAL: Record<string, HonestyVisualClass> = {
+	ok: "ok",
+	skipped: "skipped",
+	failed: "failed",
+	missing: "failed",
+	not_verified: "abstain",
+	not_implemented: "abstain",
+};
+
+/** One backend capability status → one UI class (NOT_VERIFIED ≠ FAILED). */
+export function capabilityVisualClass(status: string): HonestyVisualClass {
+	return CAPABILITY_TO_VISUAL[status.toLowerCase()] ?? "abstain";
+}
+
+/**
+ * Confidence → CVD-safe band. Thresholds are **uncalibrated** defaults
+ * (fixture/open only; not product accuracy). Hidden/customer must not tune them.
+ */
+export function confidenceVisualClass(
+	confidence: number | null | undefined,
+): HonestyVisualClass {
+	if (confidence == null || Number.isNaN(confidence)) {
+		return "abstain";
+	}
+	if (confidence < 0.6) {
+		return "abstain";
+	}
+	if (confidence < 0.85) {
+		return "mid";
+	}
+	return "high";
+}
+
+export function honestyVisualLabel(cls: HonestyVisualClass): string {
+	switch (cls) {
+		case "high":
+			return "высокая";
+		case "mid":
+			return "средняя";
+		case "abstain":
+			return "отказ / не проверено";
+		case "skipped":
+			return "пропущено";
+		case "failed":
+			return "не выполнено";
+		case "ok":
+			return "выполнено";
+		default:
+			return cls;
+	}
+}
