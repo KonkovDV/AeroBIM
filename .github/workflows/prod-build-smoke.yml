@@ -48,7 +48,8 @@ jobs:
         working-directory: backend
         run: |
           python -m pip install --upgrade "pip==25.2"
-          pip install --require-hashes -r requirements-lock.txt
+          # dev lock carries the pdf-agpl extra (PyMuPDF) the smoke seeder needs
+          pip install --require-hashes -r requirements-dev-lock.txt
           pip install -e . --no-deps
       - name: Seed fixture report and start backend
         working-directory: backend
