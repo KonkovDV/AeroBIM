@@ -11,6 +11,7 @@ from __future__ import annotations
 import gc
 import hashlib
 import json
+import re
 import threading
 from collections import OrderedDict
 from dataclasses import dataclass, field
@@ -19,6 +20,7 @@ from pathlib import Path
 from typing import Any
 
 from aerobim.domain.checkpoint import CHECKPOINT
+from aerobim.domain.ifc4x3_schema_compat import rewrite_header_schema
 from aerobim.domain.ifc_size_policy import (
     BAND_ANALYZE_DISK,
     SPF_RAM_MULTIPLIER_LITERATURE,
@@ -287,6 +289,76 @@ def _rdb_cache_dir(ifc_path: Path, mtime_ns: int, size: int) -> Path:
     return Path(root) / digest
 
 
+_HEADER_SCAN_BYTES = 64 * 1024
+
+
+def _pre_final_rewrite_copy(ifc_path: Path) -> Path | None:
+    """Temp copy whose FILE_SCHEMA says IFC4X3_ADD2, or None if not pre-final IFC4x3."""
+    import shutil
+    import tempfile
+
+    with ifc_path.open("rb") as src:
+        head = src.read(_HEADER_SCAN_BYTES)
+        cut = head.find(b"ENDSEC;")
+        header = head if cut < 0 else head[: cut + len(b"ENDSEC;")]
+        rewritten, original = rewrite_header_schema(header)
+        if original is None:
+            return None
+        fd, name = tempfile.mkstemp(prefix="aerobim-ifc4x3-", suffix=".ifc")
+        with open(fd, "wb") as dst:
+            dst.write(rewritten)
+            dst.write(head[len(header) :])
+            shutil.copyfileobj(src, dst, 1024 * 1024)
+    return Path(name)
+
+
+class IfcPreFinalSchemaError(ValueError):
+    """Pre-final IFC4x3 file did not read cleanly against IFC4X3_ADD2."""
+
+
+_SPF_INSTANCE_RE = re.compile(rb"^\s*#\d+\s*=", re.MULTILINE)
+
+
+def _count_spf_instances(path: Path) -> int:
+    count = 0
+    tail = b""
+    with path.open("rb") as handle:
+        while chunk := handle.read(1024 * 1024):
+            block = tail + chunk
+            cut = block.rfind(b"\n") + 1
+            count += len(_SPF_INSTANCE_RE.findall(block[:cut]))
+            tail = block[cut:]
+    return count + len(_SPF_INSTANCE_RE.findall(tail))
+
+
+def _open_spf_compat(ifc_path: Path, ifcopenshell: Any) -> Any:
+    """``ifcopenshell.open`` that maps pre-final IFC4x3 headers to IFC4X3_ADD2.
+
+    Only retried on the kernel's schema error. The kernel silently skips
+    instances whose entity is unknown to ADD2, so the retry is accepted only
+    if every SPF instance was read; otherwise it is a genuine rejection.
+    """
+    try:
+        return ifcopenshell.open(str(ifc_path))
+    except ifcopenshell.SchemaError:
+        copy = _pre_final_rewrite_copy(ifc_path)
+        if copy is None:
+            raise
+        try:
+            model = ifcopenshell.open(str(copy))
+            expected = _count_spf_instances(copy)
+        finally:
+            copy.unlink(missing_ok=True)
+        read = sum(1 for _ in model)
+        if read != expected:
+            close_ifc_model(model)
+            raise IfcPreFinalSchemaError(
+                f"pre-final IFC4x3 file read against IFC4X3_ADD2 lost instances: "
+                f"{read} of {expected} read; re-export as IFC4X3_ADD2"
+            ) from None
+        return model
+
+
 def _rdb_ready(path: Path) -> bool:
     return path.is_dir() and (path / "CURRENT").is_file()
 
@@ -301,13 +373,17 @@ def _open_rocksdb(ifc_path: Path, ifcopenshell: Any, mtime_ns: int, size: int) -
 
             shutil.rmtree(rdb, ignore_errors=True)
         rdb.parent.mkdir(parents=True, exist_ok=True)
+        copy = _pre_final_rewrite_copy(ifc_path)
         try:
-            ifcopenshell.convert_path_to_rocksdb(str(ifc_path), str(rdb))
+            ifcopenshell.convert_path_to_rocksdb(str(copy or ifc_path), str(rdb))
         except Exception as exc:
             import shutil
 
             shutil.rmtree(rdb, ignore_errors=True)
             raise IfcDiskBackendError() from exc
+        finally:
+            if copy is not None:
+                copy.unlink(missing_ok=True)
         with _lock:
             _stats["rocksdb_converts"] += 1
         if not _rdb_ready(rdb):
@@ -378,7 +454,7 @@ def open_ifc_model(ifc_path: Path, *, pin: bool = False) -> Any:
         if decision.band == BAND_ANALYZE_DISK:
             model = _open_rocksdb(resolved, ifcopenshell, int(stat.st_mtime_ns), int(stat.st_size))
         else:
-            model = ifcopenshell.open(str(resolved))
+            model = _open_spf_compat(resolved, ifcopenshell)
         with _lock:
             existing = _memory.get(key)
             if existing is not None:

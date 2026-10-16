@@ -25,7 +25,7 @@
 |---|---|
 | IFC2x3 file, rule references `Qto_WallBaseQuantities` | Quantity check falls back to `BaseQuantities` Pset matching; no false ERROR, emits INFO |
 | IFC4x3 file opened by IfcOpenShell < 0.7 | Parse fails; AeroBIM emits `IFC_PARSE_ERROR` finding with version hint |
-| Pre-final IFC4x3 `FILE_SCHEMA` (`IFC4X3`, `IFC4X3_ADD1`, `IFC4X3_TC1`) with IfcOpenShell 0.9 | Kernel ships only `IFC4X3_ADD2`; schema pre-gate emits `AEROBIM-IFC-SCHEMA-UNSUPPORTED` (ERROR) with a re-export-as-`IFC4X3_ADD2` hint. No silent header rewrite. |
+| Pre-final IFC4x3 `FILE_SCHEMA` (`IFC4X3`, `IFC4X3_ADD1`, `IFC4X3_TC1`) with IfcOpenShell 0.9 | Kernel ships only `IFC4X3_ADD2`. The file is opened against `IFC4X3_ADD2` (temporary header-rewritten copy; the original is untouched) and the schema pre-gate emits `AEROBIM-IFC-SCHEMA-PREFINAL-IFC4X3` (WARNING). If any SPF instance is not read under ADD2, open fails with `IfcPreFinalSchemaError` (genuine rejection). |
 | IFC release not detectable from `FILE_SCHEMA` | Treated as IFC4 (most permissive); issue count may be slightly higher |
 | `IfcRelAssociatesConstraint` rule on IFC2x3 file | Rule skipped; WARNING emitted: `"IfcRelAssociatesConstraint not available in IFC2x3"` |
 
