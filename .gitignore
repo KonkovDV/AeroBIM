@@ -252,3 +252,6 @@ aerobim-internal-data/
 /out/
 .nda/
 
+
+# Large real IFC models fetched by scripts/fetch_external_ifc.py (never committed)
+/.external-ifc/

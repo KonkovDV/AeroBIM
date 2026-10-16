@@ -1,7 +1,8 @@
 /**
  * Production-build smoke: opens the seeded IFC fixture in the `vite build`
  * output served by `vite preview`, then asserts the viewer canvas is not
- * blank, the console stayed free of errors and the bundled CSS applied.
+ * blank, the console stayed free of errors and the bundled CSS applied,
+ * then visits every main workplace screen (one screenshot each).
  *
  * Usage: node scripts/prod-build-smoke.mjs --base-url http://127.0.0.1:4173 --out <dir> --tag <label>
  */
@@ -65,6 +66,45 @@ async function canvasColourStats(page, pngBuffer) {
   }, dataUrl);
 }
 
+/** Main workplace screens: nav label → a locator that only that screen renders. */
+const SCREENS = [
+  { id: "projects", label: "Проекты", marker: '[data-testid="projects-index"]' },
+  { id: "upload", label: "Загрузка", marker: ".workspace-alt" },
+  { id: "run", label: "Прогон", marker: ".workspace-alt" },
+  { id: "review", label: "Эксперт", marker: '[data-testid="expert-findings-pane"]' },
+  { id: "remark", label: "Замечание", marker: '[data-testid="expert-remark-pane"]' },
+  { id: "export", label: "Экспорт", marker: '[data-testid="export-preview"]' },
+  { id: "diff", label: "Версии", marker: '[data-testid="version-diff-panel"]' },
+  { id: "user", label: "Эффект", marker: ".workspace-alt" },
+];
+
+async function visitScreens(page, options) {
+  const nav = page.getByTestId("workspace-nav");
+  const results = [];
+  for (const screen of SCREENS) {
+    const button = nav.getByRole("button", { name: screen.label, exact: true });
+    await button.click();
+    const marker = page.locator(screen.marker).first();
+    await marker.waitFor({ state: "visible", timeout: 15_000 });
+    const current = await button.getAttribute("aria-current");
+    if (current !== "page") {
+      throw new Error(`${screen.id}: nav button not marked current (aria-current=${current})`);
+    }
+    const textLength = (await marker.innerText()).trim().length;
+    if (textLength < 20) {
+      throw new Error(`${screen.id}: screen marker ${screen.marker} rendered almost no text`);
+    }
+    const boundaryErrors = await page.locator('.viewer-status-error, [data-testid="ifc-viewer-error-boundary"]').count();
+    if (boundaryErrors > 0) {
+      throw new Error(`${screen.id}: an error boundary rendered`);
+    }
+    await page.waitForTimeout(300);
+    await page.screenshot({ path: path.join(options.out, `${options.tag}-screen-${screen.id}.png`) });
+    results.push({ id: screen.id, textLength });
+  }
+  return results;
+}
+
 async function main() {
   const options = parseCli(process.argv.slice(2));
   await mkdir(options.out, { recursive: true });
@@ -110,6 +150,8 @@ async function main() {
 
     await page.screenshot({ path: path.join(options.out, `${options.tag}-viewer.png`), fullPage: false });
     await writeFile(path.join(options.out, `${options.tag}-canvas.png`), canvasPng);
+
+    checks.screens = await visitScreens(page, options);
 
     // Only the documented GET /v1/auth/bff = 501 default is tolerated
     // (shared filter used by the other review-shell smokes).

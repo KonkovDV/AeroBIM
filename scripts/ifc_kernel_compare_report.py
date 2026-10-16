@@ -51,6 +51,37 @@ def main() -> int:
         "",
         f"Identical entity count + schema: {same} fixtures. Sum of open times: {total_a:.1f} ms vs {total_b:.1f} ms.",
     ]
+    for name in sorted(set(old.get("external", {})) | set(new.get("external", {}))):
+        a = old.get("external", {}).get(name, {})
+        b = new.get("external", {}).get(name, {})
+        lines += [
+            "",
+            f"### Large real model `{name}`",
+            "",
+            f"| metric | {ko} | {kn} |",
+            "|---|---|---|",
+        ]
+        for key in (
+            "schema",
+            "entities",
+            "products",
+            "walls",
+            "open_s",
+            "peak_rss_kib",
+        ):
+            lines.append(
+                f"| open.{key} | {a.get('open', {}).get(key)} | {b.get('open', {}).get(key)} |"
+            )
+        for key in (
+            "issue_count",
+            "requirement_count",
+            "analyze_ms",
+            "process_wall_s",
+            "peak_rss_kib",
+        ):
+            lines.append(
+                f"| package.{key} | {a.get('package', {}).get(key)} | {b.get('package', {}).get(key)} |"
+            )
     print("\n".join(lines))
     return 0
 

@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0.0",
+  "purpose": "Large real-world IFC models for CI kernel comparison. Not committed: CI downloads each file and verifies the pinned SHA-256 before use.",
+  "source_repository": "https://github.com/buildingsmart-community/Community-Sample-Test-Files",
+  "source_commit": "7ddf57a201f88a0c213d5322b02ed15e94a60a40",
+  "license": "CC-BY-4.0",
+  "license_url": "https://github.com/buildingsmart-community/Community-Sample-Test-Files/blob/7ddf57a201f88a0c213d5322b02ed15e94a60a40/LICENSE",
+  "attribution": "Medical-Dental Clinic dataset, (C) original authors, via the buildingSMART Community Sample Test Files (CC BY 4.0). Provided to the US Construction Engineering Research Laboratory; formerly hosted by the US National Institute of Building Sciences.",
+  "files": [
+    {
+      "name": "Clinic_Architectural.ifc",
+      "path": "IFC 2.3.0.1 (IFC 2x3)/Medical-Dental Clinic/Clinic_Architectural.ifc",
+      "url": "https://media.githubusercontent.com/media/buildingsmart-community/Community-Sample-Test-Files/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%202.3.0.1%20(IFC%202x3)/Medical-Dental%20Clinic/Clinic_Architectural.ifc",
+      "sha256": "2ac970ce065ecac4e0c9e5f453a257169e90d0067f419b7e33533a64ef837880",
+      "size": 13003205,
+      "schema": "IFC2X3",
+      "authoring_tool": "Autodesk Revit Architecture 2011"
+    },
+    {
+      "name": "Clinic_HVAC.ifc",
+      "path": "IFC 2.3.0.1 (IFC 2x3)/Medical-Dental Clinic/Clinic_HVAC.ifc",
+      "url": "https://media.githubusercontent.com/media/buildingsmart-community/Community-Sample-Test-Files/7ddf57a201f88a0c213d5322b02ed15e94a60a40/IFC%202.3.0.1%20(IFC%202x3)/Medical-Dental%20Clinic/Clinic_HVAC.ifc",
+      "sha256": "39c88a79f48fbe56da86afb0fb3ebd188f8930df3df7dbfbd9ecaa535aaeab9b",
+      "size": 26914597,
+      "schema": "IFC2X3",
+      "authoring_tool": "Autodesk Revit MEP 2013"
+    }
+  ]
+}
