@@ -178,6 +178,29 @@ class IfcTesterIdsValidator:
             return message[6:].split(":", 1)[0].strip()
         return message
 
+    def _ifctester_version_flag_issue(
+        self,
+        spec_name: str,
+        ids_versions: tuple[str, ...],
+    ) -> ValidationIssue:
+        """IfcTester's flag is not a FILE_SCHEMA token; do not print it as one."""
+
+        allowed = ",".join(ids_versions) if ids_versions else "(none)"
+        return ValidationIssue(
+            rule_id=RULE_IFC_VERSION,
+            severity=Severity.ERROR,
+            message=(
+                f"[IDS] {spec_name}: IfcTester reported a version mismatch "
+                f"(is_ifc_version=false) for ifcVersion [{allowed}]; "
+                "AeroBIM fail-closed treats that as a failure. This reporter "
+                "field does not carry the FILE_SCHEMA token."
+            ),
+            category=FindingCategory.IDS_VALIDATION,
+            expected_value=allowed,
+            observed_value="is_ifc_version=false",
+            origin="deterministic",
+        )
+
     def _schema_mismatch_issue(
         self,
         spec_name: str,
@@ -220,13 +243,7 @@ class IfcTesterIdsValidator:
                         version_tuple = tuple(str(item) for item in versions)
                     else:
                         version_tuple = ()
-                    issues.append(
-                        self._schema_mismatch_issue(
-                            spec_name,
-                            "IfcTester.is_ifc_version=false",
-                            version_tuple,
-                        )
-                    )
+                    issues.append(self._ifctester_version_flag_issue(spec_name, version_tuple))
                 else:
                     issues.append(
                         ValidationIssue(

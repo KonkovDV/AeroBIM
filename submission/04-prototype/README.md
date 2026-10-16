@@ -27,7 +27,7 @@ Linux и macOS: `./run-jury.sh`. Либо `python3.12 -m venv .venv`, `source .v
 
 Отчёты пишутся в локальный `artifacts/` и в git не входят: JSON, HTML, `findings.bcfzip`.
 
-Оболочка ревью — из **корня клона**, не из `frontend/`: `.\start.bat` (в PowerShell нужен префикс `.\`) или `python scripts/run_review_shell.py`. Нужны Node 20+, npm и уже созданный `backend/.venv`. Оболочка живую команду не заменяет. Файла Excel на выходе нет. Вход через внешний IdP отвечает 501.
+Оболочка ревью — из **корня клона**, не из `frontend/`: `.\start.bat` (в PowerShell нужен префикс `.\`) или `python scripts/run_review_shell.py`. Нужны Node 22.12+, npm и уже созданный `backend/.venv`. Оболочка живую команду не заменяет. Файла Excel на выходе нет. Вход через внешний IdP отвечает 501.
 
 ## Что видно в находке
 
