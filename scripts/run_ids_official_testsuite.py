@@ -37,7 +37,7 @@ PROFILE = (
 def _engine_only(profile: dict[str, object]) -> dict[str, object]:
     import ifcopenshell
     import ifctester
-    from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_file
+    from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_model
     from ifctester import ids
 
     rows: list[dict[str, object]] = []
@@ -45,7 +45,7 @@ def _engine_only(profile: dict[str, object]) -> dict[str, object]:
         expected = bool(case["expected_passed"])
         try:
             spec = ids.open(str(REPO / case["ids_path"]))
-            spec.validate(open_ifc_file(REPO / case["ifc_path"]))
+            spec.validate(open_ifc_model(REPO / case["ifc_path"]))
             actual: bool | None = all(bool(s.status) for s in spec.specifications)
             error = None
         except Exception as exc:  # noqa: BLE001 - an engine crash counts as a mismatch
