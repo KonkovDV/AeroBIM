@@ -82,20 +82,20 @@
     {
       "name": "ifcopenshell",
       "scope": "core",
-      "installed_version": "0.8.5",
-      "license_metadata": "LGPLv3+ (classifier)",
+      "installed_version": "0.9.0.post1",
+      "license_metadata": "LGPL-3.0-or-later (License-Expression)",
       "spdx_guess": "LGPL-3.0-or-later",
       "risk_class": "weak_copyleft",
       "verified": true,
       "legal_review_required": true,
       "usage": "mandatory core; IFC validation kernel",
       "mitigation_options": "dynamic linking; keep unmodified; disclose",
-      "lock_version": "0.8.5"
+      "lock_version": "0.9.0.post1"
     },
     {
       "name": "ifctester",
       "scope": "core",
-      "installed_version": "0.8.5",
+      "installed_version": "0.9.0",
       "license_metadata": "LGPLv3+ (classifier)",
       "spdx_guess": "LGPL-3.0-or-later",
       "risk_class": "weak_copyleft",
@@ -103,7 +103,7 @@
       "legal_review_required": true,
       "usage": "mandatory core; IDS validation",
       "mitigation_options": "same as ifcopenshell",
-      "lock_version": "0.8.5"
+      "lock_version": "0.9.0"
     },
     {
       "name": "fastapi",

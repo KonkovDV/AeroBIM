@@ -2,7 +2,7 @@ ISO-10303-21;
 HEADER;
 FILE_DESCRIPTION(('ViewDefinition[Ifc4X3_ReferenceView]'),'2;1');
 FILE_NAME('/dev/null','2026-04-25T00:00:00+00:00',(''),(''),'IfcOpenShell','IfcOpenShell','Nobody');
-FILE_SCHEMA(('IFC4X3'));
+FILE_SCHEMA(('IFC4X3_ADD2'));
 ENDSEC;
 DATA;
 #1=IFCPROJECT('2XdeO9fdPB_wM4WEEnr4x3',$,'Wall IFC4x3 Fixture',$,$,$,$,$,#5);

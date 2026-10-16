@@ -110,7 +110,7 @@ def _product_entity_counts(ifc_path: Path | None) -> dict[str, int]:
     model = ifcopenshell.open(str(ifc_path))  # type: ignore[no-untyped-call,unused-ignore]
     counts: Counter[str] = Counter()
     for entity in model.by_type("IfcProduct"):  # type: ignore[no-untyped-call,unused-ignore]
-        counts[entity.is_a()] += 1
+        counts[entity.is_a()] += 1  # type: ignore[no-untyped-call,unused-ignore]
     return dict(sorted(counts.items()))
 
 

@@ -9,16 +9,11 @@ from aerobim.domain.ifc_globalid import iter_spf_entity_heads, spf_line_rooted_g
 from aerobim.domain.models import FindingCategory, Severity, ValidationIssue
 
 # Supported public IFC schema tokens for pilot honesty (SPF FILE_SCHEMA).
-_SUPPORTED_SCHEMAS = frozenset(
-    {
-        "IFC2X3",
-        "IFC4",
-        "IFC4X3",
-        "IFC4X3_ADD1",
-        "IFC4X3_ADD2",
-        "IFC4X3_TC1",
-    }
-)
+# Must match what the IfcOpenShell kernel can open: 0.9 ships IFC2X3, IFC4 and
+# IFC4X3_ADD2 only. Pre-final IFC4x3 tokens are rejected here so the pre-gate
+# never says "supported" for a file the kernel will refuse.
+_SUPPORTED_SCHEMAS = frozenset({"IFC2X3", "IFC4", "IFC4X3_ADD2"})
+_PRE_FINAL_IFC4X3 = frozenset({"IFC4X3", "IFC4X3_ADD1", "IFC4X3_TC1"})
 
 _MAX_DUPLICATE_REPORTS = 10
 
@@ -96,6 +91,12 @@ class BasicIfcSchemaValidator:
                         message=(
                             f"Unsupported or unrecognized IFC FILE_SCHEMA {schema_token!r}; "
                             f"supported={sorted(_SUPPORTED_SCHEMAS)}"
+                            + (
+                                "; pre-final IFC4x3 — re-export as IFC4X3_ADD2"
+                                if normalized in _PRE_FINAL_IFC4X3
+                                or schema_token in _PRE_FINAL_IFC4X3
+                                else ""
+                            )
                         ),
                         category=FindingCategory.IFC_VALIDATION,
                         origin="deterministic",
