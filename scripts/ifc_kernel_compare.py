@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
-import resource
+import os
 import subprocess
 import sys
 import tempfile
@@ -45,11 +45,60 @@ def _entity_counts() -> dict[str, dict[str, object]]:
     return rows
 
 
+def _run_child(cmd: list[str]) -> tuple[float, int]:
+    """Run one child; return (wall seconds, that child's own peak RSS in KiB)."""
+
+    started = time.perf_counter()
+    proc = subprocess.Popen(cmd, cwd=REPO, stdout=subprocess.DEVNULL)
+    _, status, usage = os.wait4(proc.pid, 0)
+    proc.returncode = os.waitstatus_to_exitcode(status)
+    wall = time.perf_counter() - started
+    if proc.returncode != 0:
+        raise subprocess.CalledProcessError(proc.returncode, cmd)
+    return wall, int(usage.ru_maxrss)
+
+
+_OPEN_PROBE = """
+import json, resource, sys, time
+from pathlib import Path
+from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_model
+started = time.perf_counter()
+model = open_ifc_model(Path(sys.argv[1]))
+opened = time.perf_counter() - started
+row = {
+    "schema": str(model.schema),
+    "entities": sum(1 for _ in model),
+    "products": len(model.by_type("IfcProduct")),
+    "walls": len(model.by_type("IfcWall")),
+    "open_s": round(opened, 3),
+    "peak_rss_kib": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
+}
+Path(sys.argv[2]).write_text(json.dumps(row), encoding="utf-8")
+"""
+
+
+def _external(path: Path, pack: str) -> dict[str, object]:
+    """Open probe + full package run on one large real model, each in its own child."""
+
+    with tempfile.TemporaryDirectory() as tmp:
+        probe_out = Path(tmp) / "probe.json"
+        _run_child([sys.executable, "-c", _OPEN_PROBE, str(path), str(probe_out)])
+        probe = json.loads(probe_out.read_text(encoding="utf-8"))
+        spec = json.loads((REPO / pack).read_text(encoding="utf-8"))
+        spec["pack_id"] = f"{spec['pack_id']}-external-{path.stem}"
+        # Pack paths must stay inside the repo (benchmark loader refuses escapes).
+        spec["request"]["ifc_path"] = path.resolve().relative_to(REPO).as_posix()
+        ext_pack = Path(tmp) / f"pack-{path.stem}.json"
+        ext_pack.write_text(json.dumps(spec), encoding="utf-8")
+        package = _package(str(ext_pack))
+    package["pack"] = f"{pack} with ifc_path={path.name}"
+    return {"open": probe, "package": package}
+
+
 def _package(pack: str) -> dict[str, object]:
     with tempfile.TemporaryDirectory() as tmp:
         out = Path(tmp) / "sla.json"
-        started = time.perf_counter()
-        subprocess.run(
+        wall, peak_rss = _run_child(
             [
                 sys.executable,
                 "-m",
@@ -64,12 +113,8 @@ def _package(pack: str) -> dict[str, object]:
                 "0",
                 "--output",
                 str(out),
-            ],
-            cwd=REPO,
-            check=True,
-            stdout=subprocess.DEVNULL,
+            ]
         )
-        wall = time.perf_counter() - started
         data = json.loads(out.read_text(encoding="utf-8"))
     run = data["cold_run"]["benchmark"]["measured_runs"][0]
     return {
@@ -78,7 +123,7 @@ def _package(pack: str) -> dict[str, object]:
         "requirement_count": run["requirement_count"],
         "analyze_ms": run["elapsed_ms"],
         "process_wall_s": round(wall, 3),
-        "peak_rss_kib": resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss,
+        "peak_rss_kib": peak_rss,
     }
 
 
@@ -86,8 +131,22 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--pack", required=True)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument(
+        "--external-dir",
+        type=Path,
+        default=None,
+        help="Directory of large real IFC models (scripts/fetch_external_ifc.py)",
+    )
     args = parser.parse_args()
-    result = {"package": _package(args.pack), "fixtures": _entity_counts()}
+    result: dict[str, object] = {
+        "package": _package(args.pack),
+        "fixtures": _entity_counts(),
+    }
+    if args.external_dir is not None:
+        result["external"] = {
+            path.name: _external(path, args.pack)
+            for path in sorted(args.external_dir.resolve().glob("*.ifc"))
+        }
     args.out.write_text(
         json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
