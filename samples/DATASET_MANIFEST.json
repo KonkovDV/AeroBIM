@@ -9872,8 +9872,8 @@
     },
     {
       "path": "ifc/wall-pset-ifc4x3.ifc",
-      "sha256": "d6b69bfa55c081d6d4edeaf976812670b00066d69f5336849a5c8184ceed0039",
-      "bytes": 1005,
+      "sha256": "9a0cb8590749a4308a881205313647160ad2e23b24d4d318adeebdd4f77eed22",
+      "bytes": 1010,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",
