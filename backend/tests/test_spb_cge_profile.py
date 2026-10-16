@@ -15,6 +15,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import pytest
+
 from aerobim.domain.official_ids_profile import (
     OfficialIdsProfileError,
     find_file_mismatches,
@@ -156,6 +158,7 @@ class SpbCgeProfileFileGateTests(unittest.TestCase):
         actual = collect_actual_files(profile, PACK_ROOT)
         self.assertEqual(find_file_mismatches(profile, actual), ())
 
+    @pytest.mark.network  # resolves W3C XSD imports of the IDS 1.0 schema
     def test_every_file_validates_against_ids_1_0_xsd(self) -> None:
         profile = load_manifest(MANIFEST_PATH)
         self.assertEqual(xsd_validate_files(profile, PACK_ROOT, XSD_PATH), {})
@@ -169,6 +172,7 @@ class SpbCgeProfileFileGateTests(unittest.TestCase):
 
 
 class SpbCgeProfileDeterminismTests(unittest.TestCase):
+    @pytest.mark.network  # resolves W3C XSD imports of the IDS 1.0 schema
     def test_full_profile_two_fixture_runs_identical(self) -> None:
         payload = validate_profile(REPO_ROOT, probe_runs=2)
         probe = payload["fixture_probe"]
@@ -359,6 +363,7 @@ class SpbCgeProfileNegativeTests(unittest.TestCase):
             load_manifest(self.tmp / "manifest.json")
         self.assertIn("0.9.6", str(ctx.exception))
 
+    @pytest.mark.network  # resolves W3C XSD imports of the IDS 1.0 schema
     def test_non_ids_1_0_document_fails_xsd_gate(self) -> None:
         entry = self._copy_smallest()
         target = self.pack / SMALLEST_IDS_REL
