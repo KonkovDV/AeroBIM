@@ -410,8 +410,74 @@ def open_ifc_file(ifc_path: Path | str) -> Any:
     return _open_spf_compat(Path(ifc_path), ifcopenshell)
 
 
+class IfcRocksDbReconcileError(IfcDiskBackendError):
+    """RocksDB store does not hold every SPF instance of the source file."""
+
+    def __init__(self, *, spf_instances: int, rocksdb_instances: int) -> None:
+        super().__init__()
+        self.spf_instances = spf_instances
+        self.rocksdb_instances = rocksdb_instances
+        self.args = (
+            f"RocksDB conversion lost instances: {rocksdb_instances} of "
+            f"{spf_instances} SPF instances present; store discarded",
+        )
+
+
+def _rdb_reconcile_marker(rdb: Path) -> Path:
+    return rdb.with_name(rdb.name + ".reconcile.json")
+
+
 def _rdb_ready(path: Path) -> bool:
-    return path.is_dir() and (path / "CURRENT").is_file()
+    """Store exists and was reconciled against its source when it was built."""
+
+    if not (path.is_dir() and (path / "CURRENT").is_file()):
+        return False
+    try:
+        marker = json.loads(_rdb_reconcile_marker(path).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    return bool(marker.get("reconciled")) and (
+        marker.get("spf_instances") == marker.get("rocksdb_instances")
+    )
+
+
+def _discard_rdb(rdb: Path) -> None:
+    import shutil
+
+    shutil.rmtree(rdb, ignore_errors=True)
+    _rdb_reconcile_marker(rdb).unlink(missing_ok=True)
+
+
+def _reconcile_rdb(rdb: Path, ifcopenshell: Any, spf_instances: int) -> None:
+    """Open the fresh store and compare its instance count with the SPF source.
+
+    The converter (like the SPF parser) can skip instances it cannot map; a
+    store that silently dropped entities must never be analysed.
+    """
+
+    model = ifcopenshell.open(str(rdb))
+    try:
+        rocksdb_instances = sum(1 for _ in model)
+    finally:
+        close_ifc_model(model)
+        del model
+        gc.collect()
+    if rocksdb_instances != spf_instances:
+        raise IfcRocksDbReconcileError(
+            spf_instances=spf_instances, rocksdb_instances=rocksdb_instances
+        )
+    _rdb_reconcile_marker(rdb).write_text(
+        json.dumps(
+            {
+                "reconciled": True,
+                "spf_instances": spf_instances,
+                "rocksdb_instances": rocksdb_instances,
+                "reconciled_at": datetime.now(UTC).isoformat(),
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
 
 
 def _open_rocksdb(ifc_path: Path, ifcopenshell: Any, mtime_ns: int, size: int) -> Any:
@@ -419,21 +485,22 @@ def _open_rocksdb(ifc_path: Path, ifcopenshell: Any, mtime_ns: int, size: int) -
         raise IfcDiskBackendError()
     rdb = _rdb_cache_dir(ifc_path, mtime_ns, size)
     if not _rdb_ready(rdb):
-        if rdb.exists():
-            import shutil
-
-            shutil.rmtree(rdb, ignore_errors=True)
+        _discard_rdb(rdb)
         rdb.parent.mkdir(parents=True, exist_ok=True)
         copy: Path | None = None
         try:
             copy = _pre_final_rewrite_copy(ifc_path)
-            ifcopenshell.convert_path_to_rocksdb(str(copy or ifc_path), str(rdb))
+            source = copy or ifc_path
+            spf_instances = _count_spf_instances(source)
+            ifcopenshell.convert_path_to_rocksdb(str(source), str(rdb))
+            _reconcile_rdb(rdb, ifcopenshell, spf_instances)
+        except IfcRocksDbReconcileError:
+            _discard_rdb(rdb)
+            raise
         except IfcTempSpaceError:
             raise
         except Exception as exc:
-            import shutil
-
-            shutil.rmtree(rdb, ignore_errors=True)
+            _discard_rdb(rdb)
             raise IfcDiskBackendError() from exc
         finally:
             if copy is not None:
