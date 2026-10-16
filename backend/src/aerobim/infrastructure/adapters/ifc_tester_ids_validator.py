@@ -7,10 +7,15 @@ from typing import Any
 
 from aerobim.domain.ids_schema_gate import (
     RULE_IFC_VERSION,
+    RULE_IFC_VERSION_PREFINAL,
     RULE_SKIPPED,
     RULE_STATUS_TYPE,
+    IdsPreFinalSchemaMapping,
+    collect_pre_final_mappings,
     collect_schema_mismatches,
     ids_reporter_status_is_bool,
+    ids_validation_schema,
+    normalize_ifc_schema_token,
     parse_ids_specification_versions,
     parse_ifc_file_schema,
     skipped_spec_fail_closed_rule_id,
@@ -94,10 +99,12 @@ class IfcTesterIdsValidator:
         ids_xml = ids_path.read_bytes().decode("utf-8-sig", errors="replace")
         header = ifc_path.read_bytes()[: 64 * 1024].decode("utf-8", errors="replace")
         model_schema = parse_ifc_file_schema(header)
+        spec_versions = parse_ids_specification_versions(ids_xml)
         our_mismatches = collect_schema_mismatches(
-            model_schema=model_schema,
-            specs=parse_ids_specification_versions(ids_xml),
+            model_schema=ids_validation_schema(model_schema),
+            specs=spec_versions,
         )
+        pre_final = collect_pre_final_mappings(model_schema=model_schema, specs=spec_versions)
 
         # One decoded document for both parsers (HD3-IDS-02): IfcTester must not
         # re-decode the on-disk bytes independently of our version gate.
@@ -133,14 +140,36 @@ class IfcTesterIdsValidator:
             )
         ]
         for mismatch in our_mismatches:
+            observed = mismatch.model_schema
+            if model_schema and observed != normalize_ifc_schema_token(model_schema):
+                observed = f"{normalize_ifc_schema_token(model_schema)} (read as {observed})"
             issues.append(
                 self._schema_mismatch_issue(
                     mismatch.spec_name,
-                    mismatch.model_schema,
+                    observed,
                     mismatch.ids_versions,
                 )
             )
+        for mapping in pre_final:
+            issues.append(self._pre_final_mapping_issue(mapping))
         return issues
+
+    @staticmethod
+    def _pre_final_mapping_issue(mapping: IdsPreFinalSchemaMapping) -> ValidationIssue:
+        return ValidationIssue(
+            rule_id=RULE_IFC_VERSION_PREFINAL,
+            severity=Severity.WARNING,
+            message=(
+                f"[IDS] {mapping.spec_name}: FILE_SCHEMA {mapping.header_schema} is a "
+                f"pre-final IFC4x3 token; the requirement was validated against "
+                f"{mapping.validated_schema}. Re-export as {mapping.validated_schema} "
+                "to remove this warning."
+            ),
+            category=FindingCategory.IDS_VALIDATION,
+            expected_value=mapping.validated_schema,
+            observed_value=mapping.header_schema,
+            origin="deterministic",
+        )
 
     @staticmethod
     def _spec_name_from_issue(issue: ValidationIssue) -> str:
