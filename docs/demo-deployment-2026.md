@@ -30,9 +30,9 @@ deploy\demo\setup-demo.bat
 | Режим | Что нужно | Что показывает | Команда |
 |---|---|---|---|
 | **A — CLI жюри** | Python 3.12 | Терминал: находки, BCF | `setup-demo.sh cli` |
-| **B — UI оболочка** | Python 3.12 + Node 22.12+ | Браузер: 3D, лист, HITL | `setup-demo.sh ui` |
+| **B — UI оболочка** | Python 3.12 + Node 22.22.2+ | Браузер: 3D, лист, HITL | `setup-demo.sh ui` |
 | **C — Docker API** | Docker ≥ 24 | API на 127.0.0.1 | `setup-demo.sh docker` |
-| **C+ — Docker+UI** | Docker + Node 22.12+ | Браузер полный стек | `setup-demo.sh docker-full` |
+| **C+ — Docker+UI** | Docker + Node 22.22.2+ | Браузер полный стек | `setup-demo.sh docker-full` |
 | **D — Air-gap** | Docker + бандл | API offline | `setup-demo.sh airgap` |
 
 ---
@@ -76,7 +76,7 @@ cd AeroBIM
 
 ### Требования
 - Python 3.12
-- Node 22.12+, npm
+- Node 22.22.2+, npm
 - venv уже создан (run-jury.bat/sh должен быть запущен хотя бы один раз)
 
 ### Windows

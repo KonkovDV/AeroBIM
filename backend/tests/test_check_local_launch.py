@@ -99,7 +99,9 @@ class CheckLocalLaunchTests(unittest.TestCase):
         payload = json.loads(
             (Path(repo_root()) / "frontend" / "package.json").read_text(encoding="utf-8")
         )
-        self.assertGreaterEqual(int(str(payload["engines"]["node"]).lstrip(">=").split(".")[0]), 20)
+        alternatives = str(payload["engines"]["node"]).split("||")
+        majors = [int(alt.strip().lstrip("^~>=").split(".")[0]) for alt in alternatives]
+        self.assertGreaterEqual(min(majors), 22)
 
     def test_uvloop_on_windows_from_linux_lock_is_fatal(self) -> None:
         checks = self._base(uvloop_present=True)
