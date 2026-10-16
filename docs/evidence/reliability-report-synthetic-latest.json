@@ -1,0 +1,103 @@
+{
+  "n": 200,
+  "corpus_kind": "synthetic",
+  "split": "dev",
+  "binning": "equal_mass",
+  "claim_boundary": "Internal reliability diagnostic. Not a customer accuracy claim (RT-001); thresholds are NOT calibrated unless status=calibrated and publishable=true.",
+  "min_n": 100,
+  "status": "diagnostic_only",
+  "bins": [
+    {
+      "lo": 0.0,
+      "hi": 0.095477,
+      "count": 20,
+      "mean_confidence": 0.047739,
+      "accuracy": 0.0,
+      "wilson_lower": 0.0,
+      "wilson_upper": 0.161125
+    },
+    {
+      "lo": 0.100503,
+      "hi": 0.19598,
+      "count": 20,
+      "mean_confidence": 0.148241,
+      "accuracy": 0.0,
+      "wilson_lower": 0.0,
+      "wilson_upper": 0.161125
+    },
+    {
+      "lo": 0.201005,
+      "hi": 0.296482,
+      "count": 20,
+      "mean_confidence": 0.248744,
+      "accuracy": 0.0,
+      "wilson_lower": 0.0,
+      "wilson_upper": 0.161125
+    },
+    {
+      "lo": 0.301508,
+      "hi": 0.396985,
+      "count": 20,
+      "mean_confidence": 0.349246,
+      "accuracy": 0.0,
+      "wilson_lower": 0.0,
+      "wilson_upper": 0.161125
+    },
+    {
+      "lo": 0.40201,
+      "hi": 0.497487,
+      "count": 20,
+      "mean_confidence": 0.449749,
+      "accuracy": 0.0,
+      "wilson_lower": 0.0,
+      "wilson_upper": 0.161125
+    },
+    {
+      "lo": 0.502513,
+      "hi": 0.59799,
+      "count": 20,
+      "mean_confidence": 0.550251,
+      "accuracy": 1.0,
+      "wilson_lower": 0.838875,
+      "wilson_upper": 1.0
+    },
+    {
+      "lo": 0.603015,
+      "hi": 0.698492,
+      "count": 20,
+      "mean_confidence": 0.650754,
+      "accuracy": 1.0,
+      "wilson_lower": 0.838875,
+      "wilson_upper": 1.0
+    },
+    {
+      "lo": 0.703518,
+      "hi": 0.798995,
+      "count": 20,
+      "mean_confidence": 0.751256,
+      "accuracy": 1.0,
+      "wilson_lower": 0.838875,
+      "wilson_upper": 1.0
+    },
+    {
+      "lo": 0.80402,
+      "hi": 0.899497,
+      "count": 20,
+      "mean_confidence": 0.851759,
+      "accuracy": 1.0,
+      "wilson_lower": 0.838875,
+      "wilson_upper": 1.0
+    },
+    {
+      "lo": 0.904523,
+      "hi": 1.0,
+      "count": 20,
+      "mean_confidence": 0.952261,
+      "accuracy": 1.0,
+      "wilson_lower": 0.838875,
+      "wilson_upper": 1.0
+    }
+  ],
+  "ece": 0.248744,
+  "publishable": false
+}
