@@ -67,7 +67,8 @@ export type SelectedReportState = {
   confirmPendingSelect: (mode: "save" | "discard") => Promise<void>;
   dismissPendingSelect: () => void;
   saveRemarkEdit: (issue: ValidationIssue | null) => Promise<boolean>;
-  decideRemark: (eventType: "accepted" | "rejected", issue: ValidationIssue | null) => Promise<void>;
+  /** Resolves true only when the decision was recorded and the reviewer is still on that finding. */
+  decideRemark: (eventType: "accepted" | "rejected", issue: ValidationIssue | null) => Promise<boolean>;
   openRemark: (issue: ValidationIssue | null) => Promise<void>;
   discardRemarkDraft: () => void;
   isDirty: boolean;
@@ -397,10 +398,10 @@ export function useSelectedReport(
   );
 
   const decideRemark = useCallback(
-    async (eventType: "accepted" | "rejected", issue: ValidationIssue | null) => {
+    async (eventType: "accepted" | "rejected", issue: ValidationIssue | null): Promise<boolean> => {
       const report = selectedReportRef.current;
       if (!report || !issue || reportLoading || historyPendingRef.current || hitlBusyRef.current) {
-        return;
+        return false;
       }
       const reportId = report.report_id;
       const draft = remarkDraftRef.current;
@@ -412,18 +413,18 @@ export function useSelectedReport(
         if (draft.trim() && draft !== original) {
           if (!canEditFinding(previous)) {
             setHitlRequestState("failed");
-            return;
+            return false;
           }
           await postHitlEvent(issue, "edited_remark", draft, reportId);
           if (remarkDraftRef.current !== draft) {
             setHitlRequestState("idle");
-            return;
+            return false;
           }
         }
         const afterEdit = latestHitlState(reviewEventsRef.current, issue);
         if (!canStartDecision(afterEdit)) {
           setHitlRequestState("failed");
-          return;
+          return false;
         }
         const note =
           eventType === "rejected"
@@ -431,19 +432,21 @@ export function useSelectedReport(
             : "";
         await postHitlEvent(issue, eventType, note, reportId);
         if (!stillOnFinding(reportId, issue)) {
-          return;
+          return false;
         }
         setHitlRequestState("idle");
         setConflictMessage(null);
+        return true;
       } catch (error: unknown) {
         if (!stillOnFinding(reportId, issue)) {
-          return;
+          return false;
         }
         setHitlRequestState("failed");
         if (error instanceof ApiHttpError && error.status === 409) {
           setConflictMessage(UI_COPY.hitlConflict);
           await reloadEventsKeepDraft(reportId);
         }
+        return false;
       } finally {
         hitlBusyRef.current = false;
       }

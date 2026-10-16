@@ -149,10 +149,26 @@ describe("idle finding auto-open", () => {
     });
     const hook = renderHook(() => useSelectedReport("report"));
     await waitFor(() => expect(hook.result.current.historyPending).toBe(false));
+    let recorded: boolean | undefined;
     await act(async () => {
-      await hook.result.current.decideRemark("accepted", issue);
+      recorded = await hook.result.current.decideRemark("accepted", issue);
     });
     expect(calls).toEqual(["opened", "accepted"]);
     expect(hook.result.current.persistedHitlState).toBe("accepted");
+    expect(recorded).toBe(true);
+  });
+});
+
+describe("K2A-P1-02 decide result gates auto-next", () => {
+  it("resolves false when the decision request fails", async () => {
+    api.fetchReviewEvents.mockResolvedValue({ events: [], count: 0 });
+    api.postReviewEvent.mockRejectedValue(new api.ApiHttpError(500, "boom"));
+    const hook = renderHook(() => useSelectedReport("report"));
+    await waitFor(() => expect(hook.result.current.historyPending).toBe(false));
+    let recorded: boolean | undefined;
+    await act(async () => {
+      recorded = await hook.result.current.decideRemark("accepted", issue);
+    });
+    expect(recorded).toBe(false);
   });
 });
