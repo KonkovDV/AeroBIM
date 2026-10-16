@@ -1,7 +1,8 @@
 name: IFC kernel compare (0.8.5 vs 0.9)
 
-# Same fixtures and package under both IfcOpenShell kernels on one runner
-# class. Fixture-only numbers for the 0.9 migration PR; not customer evidence.
+# Same fixtures, package and large real models under both IfcOpenShell kernels
+# on one runner class. The large models (scripts/large_real_ifc_manifest.json,
+# CC BY 4.0) are downloaded and SHA-256-verified, never committed.
 
 on:
   workflow_dispatch:
@@ -11,6 +12,8 @@ on:
       - backend/requirements*-lock.txt
       - backend/src/aerobim/infrastructure/adapters/ifc_file_open.py
       - scripts/ifc_kernel_compare*.py
+      - scripts/fetch_external_ifc.py
+      - scripts/large_real_ifc_manifest.json
       - .github/workflows/ifc-kernel-compare.yml
 
 permissions:
@@ -19,7 +22,7 @@ permissions:
 jobs:
   measure:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -41,12 +44,15 @@ jobs:
       - name: Pin the old kernel for the baseline leg
         if: matrix.kernel == '0.8.5'
         run: pip install --no-deps "ifcopenshell==0.8.5" "ifctester==0.8.5"
+      - name: Fetch large real models (pinned SHA-256)
+        run: python ../scripts/fetch_external_ifc.py --dest ../.external-ifc
       - name: Measure
         run: |
           set -euo pipefail
           python -c "import ifcopenshell; print(ifcopenshell.version)"
           python ../scripts/ifc_kernel_compare.py \
             --pack samples/benchmarks/project-package-sla-representative.json \
+            --external-dir ../.external-ifc \
             --out ../kernel-${{ matrix.kernel }}.json
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
