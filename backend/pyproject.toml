@@ -113,8 +113,12 @@ where = ["src"]
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
-# Fail a hung test instead of blocking the job; ifctester can wait on remote W3C XSD imports.
-timeout = 300
+# AER-03: fail a hung test instead of blocking the job (single source of truth for
+# local and CI runs); ifctester can wait on remote W3C XSD imports.
+timeout = 60
+markers = [
+  "network: needs outbound network or may wait on a remote resource; deselect with -m 'not network'",
+]
 
 [tool.ruff]
 line-length = 100
