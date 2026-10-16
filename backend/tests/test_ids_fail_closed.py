@@ -221,6 +221,28 @@ class IdsFailClosedMappingTests(unittest.TestCase):
         self.assertEqual(len(issues), 1)
         self.assertEqual(issues[0].rule_id, RULE_SKIPPED)
 
+    def test_map_results_version_flag_does_not_invent_a_file_schema(self) -> None:
+        validator = IfcTesterIdsValidator()
+        issues = validator._map_results(
+            {
+                "specifications": [
+                    {
+                        "name": "Wall fire",
+                        "status": True,
+                        "is_skipped": False,
+                        "is_ifc_version": False,
+                        "ifcVersion": ["IFC2X3"],
+                        "requirements": [],
+                    }
+                ]
+            }
+        )
+        self.assertEqual(len(issues), 1)
+        self.assertEqual(issues[0].rule_id, RULE_IFC_VERSION)
+        self.assertEqual(issues[0].observed_value, "is_ifc_version=false")
+        self.assertNotIn("FILE_SCHEMA IfcTester", issues[0].message)
+        self.assertIn("does not carry the FILE_SCHEMA token", issues[0].message)
+
     def test_map_results_missing_status_key_is_error(self) -> None:
         validator = IfcTesterIdsValidator()
         issues = validator._map_results(

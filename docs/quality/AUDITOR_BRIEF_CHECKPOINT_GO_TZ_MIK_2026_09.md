@@ -2,9 +2,9 @@
 ---
 title: "Самодостаточный аудиторский корпус — Checkpoint GO × ТЗ заказчика канала × Техлаб/МИК"
 date: "2026-09-04"
-last_updated: "2026-09-21"
+last_updated: "2026-10-16"
 status: active
-version: "2.1.0"
+version: "2.1.1"
 standalone: true
 repo_required: false
 distribution: internal_auditor_pack_channel_derivatives_minimized
@@ -418,7 +418,7 @@ AeroBIM ловит шов комплекта — площадь в ведомо�
 
 ### 6.7 Код и сборка (ТР-34…ТР-42)
 
-ТР-34: Python 3.12+, Node 20+, Vite. ТР-35: ruff format/check, mypy src, pytest. ТР-36: extraction gate `--min-macro-f1 0.70` на **fixture** corpus. ТР-37: detection harness порог пилота ≥0,6 interim; publishable только с agreement. ТР-38: vitest; не заявлять «всегда в CI», если не wired. ТР-39: docker-compose + live OpenAPI + semver. ТР-40: frozen tags, reproducibility. ТР-41: SECURITY.md; лицензии совместимы с MIT. ТР-42: anti-stub `@sota-stub` + KNOWN_BUGS. Статус кластера: **done** (локальный quality gate). Публикуемые числа тестов — только CI pin `runtime-baseline-latest.json` (`attested_by=ci`, `corpus_kind=fixture`). Локальный pytest ≠ CI pin. Не копировать `tests_passed` в речь.
+ТР-34: Python 3.12+, Node 22.22.2+, Vite. ТР-35: ruff format/check, mypy src, pytest. ТР-36: extraction gate `--min-macro-f1 0.70` на **fixture** corpus. ТР-37: detection harness порог пилота ≥0,6 interim; publishable только с agreement. ТР-38: vitest; не заявлять «всегда в CI», если не wired. ТР-39: docker-compose + live OpenAPI + semver. ТР-40: frozen tags, reproducibility. ТР-41: SECURITY.md; лицензии совместимы с MIT. ТР-42: anti-stub `@sota-stub` + KNOWN_BUGS. Статус кластера: **done** (локальный quality gate). Публикуемые числа тестов — только CI pin `runtime-baseline-latest.json` (`attested_by=ci`, `corpus_kind=fixture`). Локальный pytest ≠ CI pin. Не копировать `tests_passed` в речь.
 
 ### 6.8 Образ решения и презентация (ТР-43…ТР-47)
 

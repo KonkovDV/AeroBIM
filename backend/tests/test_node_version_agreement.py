@@ -35,7 +35,13 @@ def test_nvmrc_engines_ci_and_docs_agree_on_node_22_22_2() -> None:
         if "actions/setup-node" in text:
             assert "node-version-file: .nvmrc" in text, wf.name
             assert not re.search(r"node-version:\s", text), wf.name
-    for doc in ("README.md", "README.ru.md", "frontend/README.md"):
+    for doc in (
+        "README.md",
+        "README.ru.md",
+        "frontend/README.md",
+        "submission/04-prototype/README.md",
+        "docs/quality/AUDITOR_BRIEF_CHECKPOINT_GO_TZ_MIK_2026_09.md",
+    ):
         text = (_REPO / doc).read_text(encoding="utf-8")
         assert "Node 22.22.2+" in text, doc
         assert "Node 22.12+" not in text, doc
