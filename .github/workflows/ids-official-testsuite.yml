@@ -1,0 +1,62 @@
+name: IDS official test suite (buildingSMART IDS 1.0)
+
+# Runs all 290 pinned, unmodified buildingSMART IDS TestCases through the
+# AeroBIM product path and through bare IfcTester. Fails on any mismatch that
+# is not labelled in KNOWN_UPSTREAM_EDGES.json or
+# AEROBIM_FAIL_CLOSED_DIVERGENCES.json. Conformance regression, not product
+# accuracy.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - backend/pyproject.toml
+      - backend/requirements*-lock.txt
+      - backend/src/aerobim/domain/ids_*.py
+      - backend/src/aerobim/infrastructure/adapters/ifc_tester_ids_validator.py
+      - backend/src/aerobim/infrastructure/adapters/ifc_file_open.py
+      - backend/src/aerobim/tools/run_open_corpora_profiles.py
+      - samples/ids/buildingsmart-testcases/**
+      - samples/benchmarks/open-corpora/profiles/regression-bsi.json
+      - scripts/run_ids_official_testsuite.py
+      - .github/workflows/ids-official-testsuite.yml
+
+permissions:
+  contents: read
+
+jobs:
+  testsuite:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Install locked toolchain
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade "pip==25.2"
+          pip install --require-hashes -r requirements-dev-lock.txt
+          pip install -e . --no-deps
+      - name: Verify case pins
+        run: python -m aerobim.tools.run_open_corpora_profiles --mode smoke > /dev/null
+      - name: Run test suite
+        run: |
+          set -euo pipefail
+          python ../scripts/run_ids_official_testsuite.py \
+            --out-json ../ids-testsuite.json --out-md ../ids-testsuite.md
+      - name: Summary
+        if: always()
+        run: cat ../ids-testsuite.md >> "$GITHUB_STEP_SUMMARY" || true
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: ids-testsuite
+          path: |
+            ids-testsuite.json
+            ids-testsuite.md
+          if-no-files-found: warn
