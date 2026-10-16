@@ -1,10 +1,10 @@
 {
   "artifact_type": "aerobim_runtime_baseline",
   "schema_version": "1.4.0",
-  "commit_sha": "b92ecb012228d67e74b80cb3d1f34650c5c86707",
-  "tree_sha": "80c1f30916cdc91a98434d722124425a2887b88f",
+  "commit_sha": "6e4c9d03d40b87be4b92e29b999d389203907ce6",
+  "tree_sha": "3e1768798630f3ebaea92e72f8f3968f213d82f6",
   "working_tree_clean": true,
-  "generated_at": "2026-10-16T07:40:20.819852+00:00",
+  "generated_at": "2026-10-16T08:00:15.481925+00:00",
   "corpus_kind": "fixture",
   "claim_boundary": "Engineering build evidence only. Fixture macro_f1 != product accuracy. Checkpoint GO (regulatory_measurement_mvp; customer_go false) until RT-001/002/003.",
   "backend": {
@@ -59,7 +59,7 @@
     "backend_test_functions": 3494,
     "extraction_macro_f1": 0.8600000000000001
   },
-  "readme_snippet": "tests_passed: backend=3482, frontend=410; commit b92ecb012228; see docs/evidence/runtime-baseline-latest.json · src ~111885 LOC; tests ~72922 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
+  "readme_snippet": "tests_passed: backend=3482, frontend=410; commit 6e4c9d03d40b; see docs/evidence/runtime-baseline-latest.json · src ~111885 LOC; tests ~72922 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
   "documented_env_vars": [
     "AEROBIM_ALLOW_ANONYMOUS_DEV",
     "AEROBIM_ANONYMOUS_EXTERNAL_LOOPBACK",
@@ -288,10 +288,10 @@
   },
   "attestation": {
     "attested_by": "ci",
-    "run_id": "38866483902",
+    "run_id": "38869815680",
     "run_attempt": 1,
-    "workflow_ref": "KonkovDV/AeroBIM/.github/workflows/ci.yml@refs/pull/180/merge",
-    "github_sha": "b92ecb012228d67e74b80cb3d1f34650c5c86707",
+    "workflow_ref": "KonkovDV/AeroBIM/.github/workflows/ci.yml@refs/pull/172/merge",
+    "github_sha": "6e4c9d03d40b87be4b92e29b999d389203907ce6",
     "runner_os": "Linux",
     "runner_python": "3.12.15",
     "gates_attested": [
