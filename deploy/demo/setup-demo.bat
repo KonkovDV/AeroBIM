@@ -10,7 +10,7 @@ rem   PowerShell: .\deploy\demo\setup-demo.bat [cli|ui|docker|airgap]
 rem
 rem Режимы:
 rem   cli    -- Режим A: CLI жюри (только Python 3.12, без Node, без Docker)
-rem   ui     -- Режим B: UI оболочка (Python 3.12 + Node 20+)
+rem   ui     -- Режим B: UI оболочка (Python 3.12 + Node 22.12+)
 rem   docker -- Режим C: Docker demo (API, анонимный доступ)
 rem   airgap -- Режим D: air-gap Docker из tar-бандла
 rem   (не указан) -- авто-выбор
@@ -79,7 +79,7 @@ call run-jury.bat
 goto :end
 
 :: -----------------------------------------------------------------------
-:: Режим B: UI оболочка (Python 3.12 + Node 20+)
+:: Режим B: UI оболочка (Python 3.12 + Node 22.12+)
 :: -----------------------------------------------------------------------
 :mode_ui
 echo [Mode B] Review shell demo.

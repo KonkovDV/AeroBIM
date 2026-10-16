@@ -12,7 +12,7 @@ if (-not (Test-Path -LiteralPath $python)) {
     Write-Host "backend\.venv not found. Double-click run-jury.bat first, or from AeroBIM\backend:"
     Write-Host "  py -3.12 -m venv .venv"
     Write-Host "  .venv\Scripts\python.exe -m pip install -e `".[dev,raster]`""
-    Write-Host "Review shell needs Node 20+. Jury CLI does not. customer_go false."
+    Write-Host "Review shell needs Node 22.12+. Jury CLI does not. customer_go false."
     exit 1
 }
 & $python -m aerobim.tools.run_review_stand @args

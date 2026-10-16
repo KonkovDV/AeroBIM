@@ -65,7 +65,7 @@ if ($Mode -eq 'cli') {
 # Режим B: UI оболочка
 # ---------------------------------------------------------------------------
 if ($Mode -eq 'ui') {
-  Info "Mode B: Review shell demo (Python 3.12 + Node 20+)"
+  Info "Mode B: Review shell demo (Python 3.12 + Node 22.12+)"
 
   $py = Get-Command py -ErrorAction SilentlyContinue
   if (-not $py) { Die "py launcher not found. Install CPython 3.12 from python.org." }
@@ -131,9 +131,9 @@ if ($Mode -eq 'docker') {
 # ---------------------------------------------------------------------------
 if ($Mode -eq 'docker-full') {
   Info "Mode C+: Docker API + Vite UI on host"
-  if (-not (Get-Command node -ErrorAction SilentlyContinue)) { Die "node not found. Install Node 20+." }
+  if (-not (Get-Command node -ErrorAction SilentlyContinue)) { Die "node not found. Install Node 22.12+." }
   $nodeVer = [int]((node --version) -replace 'v','').Split('.')[0]
-  if ($nodeVer -lt 20) { Die "Node $nodeVer found, need 20+." }
+  if ($nodeVer -lt 22) { Die "Node $nodeVer found, need 22.12+." }
 
   # Запуск Docker backend
   & "$PSCommandPath" -Mode docker
