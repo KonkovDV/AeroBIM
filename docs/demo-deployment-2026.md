@@ -30,9 +30,9 @@ deploy\demo\setup-demo.bat
 | Режим | Что нужно | Что показывает | Команда |
 |---|---|---|---|
 | **A — CLI жюри** | Python 3.12 | Терминал: находки, BCF | `setup-demo.sh cli` |
-| **B — UI оболочка** | Python 3.12 + Node 20+ | Браузер: 3D, лист, HITL | `setup-demo.sh ui` |
+| **B — UI оболочка** | Python 3.12 + Node 22.12+ | Браузер: 3D, лист, HITL | `setup-demo.sh ui` |
 | **C — Docker API** | Docker ≥ 24 | API на 127.0.0.1 | `setup-demo.sh docker` |
-| **C+ — Docker+UI** | Docker + Node 20+ | Браузер полный стек | `setup-demo.sh docker-full` |
+| **C+ — Docker+UI** | Docker + Node 22.12+ | Браузер полный стек | `setup-demo.sh docker-full` |
 | **D — Air-gap** | Docker + бандл | API offline | `setup-demo.sh airgap` |
 
 ---
@@ -76,7 +76,7 @@ cd AeroBIM
 
 ### Требования
 - Python 3.12
-- Node 20+, npm
+- Node 22.12+, npm
 - venv уже создан (run-jury.bat/sh должен быть запущен хотя бы один раз)
 
 ### Windows
@@ -108,7 +108,7 @@ API: `http://127.0.0.1:8080` · UI: `http://127.0.0.1:5173`
 |---|---|
 | `backend/.venv not found` | Сначала запустите `run-jury.bat/sh` |
 | Порт 8080 занят | Остановите предыдущий `start.bat` / `aerobim-backend` Docker и запустите снова |
-| `npm` не найден | Установите [Node.js 20 LTS](https://nodejs.org/) |
+| `npm` не найден | Установите [Node.js 22 LTS](https://nodejs.org/) |
 | CORS-ошибки | `AEROBIM_CORS_ORIGINS` должен включать адрес Vite |
 
 ---
