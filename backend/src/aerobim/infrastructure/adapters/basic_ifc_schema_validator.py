@@ -5,20 +5,15 @@ from __future__ import annotations
 from pathlib import Path
 
 from aerobim.domain.ids_schema_gate import parse_ifc_file_schema
+from aerobim.domain.ifc4x3_schema_compat import IFC4X3_FINAL, is_pre_final_ifc4x3
 from aerobim.domain.ifc_globalid import iter_spf_entity_heads, spf_line_rooted_global_id
 from aerobim.domain.models import FindingCategory, Severity, ValidationIssue
 
 # Supported public IFC schema tokens for pilot honesty (SPF FILE_SCHEMA).
-_SUPPORTED_SCHEMAS = frozenset(
-    {
-        "IFC2X3",
-        "IFC4",
-        "IFC4X3",
-        "IFC4X3_ADD1",
-        "IFC4X3_ADD2",
-        "IFC4X3_TC1",
-    }
-)
+# Must match what the IfcOpenShell kernel can open: 0.9 ships IFC2X3, IFC4 and
+# IFC4X3_ADD2 only. Pre-final IFC4x3 tokens are opened as IFC4X3_ADD2 by
+# ifc_file_open and reported here as a WARNING (not silently accepted).
+_SUPPORTED_SCHEMAS = frozenset({"IFC2X3", "IFC4", IFC4X3_FINAL})
 
 _MAX_DUPLICATE_REPORTS = 10
 
@@ -88,7 +83,24 @@ class BasicIfcSchemaValidator:
             )
         else:
             normalized = schema_token.replace(" ", "").replace(".", "")
-            if normalized not in _SUPPORTED_SCHEMAS and schema_token not in _SUPPORTED_SCHEMAS:
+            if is_pre_final_ifc4x3(schema_token):
+                issues.append(
+                    ValidationIssue(
+                        rule_id="AEROBIM-IFC-SCHEMA-PREFINAL-IFC4X3",
+                        severity=Severity.WARNING,
+                        message=(
+                            f"FILE_SCHEMA {schema_token!r} is a pre-final IFC4x3 token; "
+                            f"the model is read against {IFC4X3_FINAL}. Entities that differ "
+                            "between drafts may be misread; re-export as IFC4X3_ADD2 to remove "
+                            "this warning."
+                        ),
+                        category=FindingCategory.IFC_VALIDATION,
+                        origin="deterministic",
+                        expected_value=IFC4X3_FINAL,
+                        observed_value=schema_token,
+                    )
+                )
+            elif normalized not in _SUPPORTED_SCHEMAS and schema_token not in _SUPPORTED_SCHEMAS:
                 issues.append(
                     ValidationIssue(
                         rule_id="AEROBIM-IFC-SCHEMA-UNSUPPORTED",

@@ -102,7 +102,8 @@ class RengaExportProbeTests(unittest.TestCase):
 
     def test_ifc4x3_fixture_fail_closes_moexp_and_is_not_renga(self) -> None:
         row = probe_ifc(IFC4X3, MOEXP_AR, repo=REPO)
-        self.assertEqual(row["model_schema"], "IFC4X3")
+        # Fixture header is IFC4X3_ADD2 since IfcOpenShell 0.9 (pre-final IFC4X3 dropped).
+        self.assertEqual(row["model_schema"], "IFC4X3_ADD2")
         self.assertGreater(row["schema_mismatch_count"], 0)
         self.assertTrue(row["schema_fail_closed"])
         self.assertFalse(row["is_renga_export"])
