@@ -723,6 +723,28 @@ def paired_scalar_bootstrap_diff_ci(
     )
 
 
+def brier_score(scores: Sequence[float], labels: Sequence[int]) -> float:
+    """Brier score (Brier 1950): mean squared error of a probability forecast.
+
+    ``BS = (1/n) Σ (f_i − o_i)²`` with ``f_i`` in [0, 1] and ``o_i`` in {0, 1}.
+    Lower is better; a constant forecast of 0.5 on balanced labels scores 0.25.
+    This is a proper scoring rule for calibration diagnostics. It is not a
+    product-accuracy claim and does not replace Wilson intervals on counts.
+    """
+
+    if len(scores) != len(labels):
+        raise ValueError("brier_score requires equal-length scores and labels")
+    if not scores:
+        raise ValueError("brier_score requires at least one item")
+    total = 0.0
+    for forecast, outcome in zip(scores, labels, strict=True):
+        if not 0.0 <= forecast <= 1.0 or outcome not in (0, 1):
+            raise ValueError("scores must be in [0, 1] and labels in {0, 1}")
+        error = forecast - outcome
+        total += error * error
+    return total / len(scores)
+
+
 def cohen_kappa(labels_a: Sequence[str], labels_b: Sequence[str]) -> float:
     """Cohen's kappa (1960) for two annotators over nominal labels."""
 
