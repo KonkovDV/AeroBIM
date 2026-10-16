@@ -292,8 +292,36 @@ def _rdb_cache_dir(ifc_path: Path, mtime_ns: int, size: int) -> Path:
 _HEADER_SCAN_BYTES = 64 * 1024
 
 
+# Headroom on top of the copy itself so the temp volume is not filled to 0.
+_TEMP_COPY_HEADROOM_BYTES = 64 * 1024 * 1024
+
+
+class IfcTempSpaceError(OSError):
+    """Not enough free space in the temp dir for the IFC4X3_ADD2 header copy."""
+
+
+def _ensure_temp_space(temp_dir: Path, needed: int) -> None:
+    import shutil
+
+    free = shutil.disk_usage(temp_dir).free
+    if free < needed:
+        mib = 1024 * 1024
+        raise IfcTempSpaceError(
+            f"not enough free disk space in {temp_dir} to open a pre-final IFC4x3 "
+            f"file as IFC4X3_ADD2: need {needed // mib} MiB (file + "
+            f"{_TEMP_COPY_HEADROOM_BYTES // mib} MiB headroom), free {free // mib} MiB. "
+            "Free space, point TMPDIR at a larger volume, or re-export the file "
+            "as IFC4X3_ADD2."
+        )
+
+
 def _pre_final_rewrite_copy(ifc_path: Path) -> Path | None:
-    """Temp copy whose FILE_SCHEMA says IFC4X3_ADD2, or None if not pre-final IFC4x3."""
+    """Temp copy whose FILE_SCHEMA says IFC4X3_ADD2, or None if not pre-final IFC4x3.
+
+    Checks free space first and never leaves a partial copy behind: any error
+    while writing removes the temp file before re-raising. Callers own the
+    returned file and must unlink it in ``finally``.
+    """
     import shutil
     import tempfile
 
@@ -304,12 +332,19 @@ def _pre_final_rewrite_copy(ifc_path: Path) -> Path | None:
         rewritten, original = rewrite_header_schema(header)
         if original is None:
             return None
-        fd, name = tempfile.mkstemp(prefix="aerobim-ifc4x3-", suffix=".ifc")
-        with open(fd, "wb") as dst:
-            dst.write(rewritten)
-            dst.write(head[len(header) :])
-            shutil.copyfileobj(src, dst, 1024 * 1024)
-    return Path(name)
+        temp_dir = Path(tempfile.gettempdir())
+        _ensure_temp_space(temp_dir, ifc_path.stat().st_size + _TEMP_COPY_HEADROOM_BYTES)
+        fd, name = tempfile.mkstemp(prefix="aerobim-ifc4x3-", suffix=".ifc", dir=temp_dir)
+        copy = Path(name)
+        try:
+            with open(fd, "wb") as dst:
+                dst.write(rewritten)
+                dst.write(head[len(header) :])
+                shutil.copyfileobj(src, dst, 1024 * 1024)
+        except BaseException:
+            copy.unlink(missing_ok=True)
+            raise
+    return copy
 
 
 class IfcPreFinalSchemaError(ValueError):
@@ -373,9 +408,12 @@ def _open_rocksdb(ifc_path: Path, ifcopenshell: Any, mtime_ns: int, size: int) -
 
             shutil.rmtree(rdb, ignore_errors=True)
         rdb.parent.mkdir(parents=True, exist_ok=True)
-        copy = _pre_final_rewrite_copy(ifc_path)
+        copy: Path | None = None
         try:
+            copy = _pre_final_rewrite_copy(ifc_path)
             ifcopenshell.convert_path_to_rocksdb(str(copy or ifc_path), str(rdb))
+        except IfcTempSpaceError:
+            raise
         except Exception as exc:
             import shutil
 
