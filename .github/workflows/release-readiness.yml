@@ -134,7 +134,7 @@ jobs:
             echo "- \`fixture_only: true\` — release-readiness benchmark packs are synthetic/fixture rails, not product metrics."
           } >> "$GITHUB_STEP_SUMMARY"
       - name: Upload benchmark artifacts
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: release-readiness-benchmark-artifacts
           path: |
@@ -182,7 +182,7 @@ jobs:
             --output-dir ../frontend/artifacts/browser-smoke-ci \
             > ../artifacts/release-readiness/live-review-smoke.json
       - name: Upload live smoke artifacts
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: release-readiness-live-smoke-artifacts
           path: |

@@ -54,7 +54,7 @@ jobs:
             --pack samples/benchmarks/project-package-sla-representative.json \
             --external-dir ../.external-ifc \
             --out ../kernel-${{ matrix.kernel }}.json
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: kernel-${{ matrix.kernel }}
           path: kernel-${{ matrix.kernel }}.json
@@ -70,7 +70,7 @@ jobs:
       - name: Report
         run: |
           python scripts/ifc_kernel_compare_report.py kernel-0.8.5.json kernel-0.9.json | tee -a "$GITHUB_STEP_SUMMARY" > kernel-compare.md
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: kernel-compare
           path: kernel-compare.md

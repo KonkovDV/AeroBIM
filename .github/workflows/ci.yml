@@ -241,14 +241,14 @@ jobs:
           --verify-committed-evidence
       - name: Upload coverage artifact
         if: success()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: backend-coverage
           path: artifacts/coverage/coverage.xml
           if-no-files-found: warn
       - name: Upload pytest JUnit artifact
         if: success()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: backend-pytest-junit
           path: artifacts/pytest/junit.xml
@@ -367,7 +367,7 @@ jobs:
           PY
           python -m aerobim.tools.export_runtime_baseline --check-readme --check-complete
       - name: Upload CI-generated runtime baseline
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: ci-runtime-baseline
@@ -465,7 +465,7 @@ jobs:
           mkdir -p var
           npm test -- --run --reporter=default --reporter=json --outputFile=var/vitest-results.json
       - name: Upload vitest JSON artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: frontend-vitest-json
@@ -629,7 +629,7 @@ jobs:
             --output ../artifacts/ci-benchmark-smoke/benchmark-threshold-enforced-evaluation.json
           cat ../artifacts/ci-benchmark-smoke/benchmark-threshold-enforced-summary.md >> "$GITHUB_STEP_SUMMARY"
       - name: Upload benchmark-smoke artifacts
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ci-benchmark-smoke-artifacts
           path: |
@@ -666,7 +666,7 @@ jobs:
             --warmup-iterations 0 \
             --output ../artifacts/fixture-sla-smoke/fixture-sla-pilot-moscow-ci.json
       - name: Upload the appointing party SLA artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: fixture-sla-smoke-artifacts
           path: artifacts/fixture-sla-smoke/*.json
@@ -694,7 +694,7 @@ jobs:
             --output ../artifacts/extraction-quality/russian-aec-extraction.json \
             --min-macro-f1 0.70
       - name: Upload extraction-quality artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: extraction-quality-artifacts
           path: artifacts/extraction-quality/*.json
@@ -732,7 +732,7 @@ jobs:
           print(f"Schema OK — {len(paths)} paths present")
           PY
       - name: Upload OpenAPI schema artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: openapi-schema
           path: artifacts/openapi.json
@@ -743,7 +743,7 @@ jobs:
             --test-run-id "${{ github.run_id }}-${{ github.run_attempt }}" \
             --out ../artifacts/release-attestation/release-attestation.json
       - name: Upload release attestation artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: release-attestation
           path: artifacts/release-attestation/release-attestation.json
@@ -787,7 +787,7 @@ jobs:
             --test-run-id "${{ github.run_id }}-${{ github.run_attempt }}" \
             --out ../artifacts/offline-bundle/release-attestation-complete.json
       - name: Upload offline-bundle manifest + complete attestation (image tar NOT uploaded, ~850 MiB)
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: offline-bundle-manifest
           path: |
@@ -845,7 +845,7 @@ jobs:
         run: pytest tests/test_llm_prompt_injection.py tests/test_llm_evidence_bounded.py -v --tb=short
       - name: Upload sprint-2-1 artifacts
         if: success()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: sprint-2-1-baseline
           path: artifacts/sprint-2-1/
@@ -926,7 +926,7 @@ jobs:
           PY
       - name: Upload security-rerun artifacts
         if: success()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: security-rerun
           path: artifacts/security-rerun/
