@@ -12,9 +12,12 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
+from aerobim.domain.ifc4x3_schema_compat import IFC4X3_FINAL, is_pre_final_ifc4x3
+
 RULE_IFC_VERSION = "AEROBIM-IDS-IFC-VERSION"
 RULE_SKIPPED = "AEROBIM-IDS-SKIPPED"
 RULE_STATUS_TYPE = "AEROBIM-IDS-STATUS-TYPE"
+RULE_IFC_VERSION_PREFINAL = "AEROBIM-IDS-IFC-VERSION-PREFINAL"
 
 # Same default list IfcTester uses when the attribute is omitted.
 DEFAULT_IDS_IFC_VERSIONS: frozenset[str] = frozenset({"IFC2X3", "IFC4", "IFC4X3_ADD2"})
@@ -257,3 +260,46 @@ def ids_reporter_status_is_bool(status: object) -> bool:
     """IfcTester Json reporter emits JSON booleans. Any other type is format drift."""
 
     return isinstance(status, bool)
+
+
+@dataclass(frozen=True)
+class IdsPreFinalSchemaMapping:
+    """A spec checked against IFC4X3_ADD2 for a pre-final IFC4x3 header."""
+
+    spec_name: str
+    header_schema: str
+    validated_schema: str
+
+
+def ids_validation_schema(model_schema: str | None) -> str | None:
+    """Schema the IDS version gate compares against.
+
+    Pre-final IFC4x3 headers (IFC4X3 / IFC4X3_ADD1 / IFC4X3_TC1) are opened
+    as IFC4X3_ADD2 by the IFC kernel, so the gate checks ADD2. The mapping is
+    never silent: ``collect_pre_final_mappings`` yields a warning per spec.
+    """
+
+    if model_schema and is_pre_final_ifc4x3(model_schema):
+        return IFC4X3_FINAL
+    return model_schema
+
+
+def collect_pre_final_mappings(
+    *,
+    model_schema: str | None,
+    specs: tuple[IdsSpecificationVersions, ...],
+) -> tuple[IdsPreFinalSchemaMapping, ...]:
+    """Specs that pass the version gate only through the pre-final → ADD2 map."""
+
+    if not model_schema or not is_pre_final_ifc4x3(model_schema):
+        return ()
+    header = normalize_ifc_schema_token(model_schema)
+    return tuple(
+        IdsPreFinalSchemaMapping(
+            spec_name=spec.name,
+            header_schema=header,
+            validated_schema=IFC4X3_FINAL,
+        )
+        for spec in specs
+        if model_schema_allowed(IFC4X3_FINAL, spec.versions)
+    )
