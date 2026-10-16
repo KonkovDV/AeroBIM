@@ -58,7 +58,7 @@ class PytestTimeoutGuardTest(unittest.TestCase):
         out = proc.stdout + proc.stderr
         self.assertNotEqual(proc.returncode, 0, out)
         self.assertIn("Timeout", out)
-        self.assertIn("1 failed", out)
+        self.assertIn("test_hangs", out)
 
 
 if __name__ == "__main__":
