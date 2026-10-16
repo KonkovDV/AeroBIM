@@ -28,7 +28,7 @@
     {
       "name": "pypdfium2",
       "scope": "core",
-      "installed_version": "5.12.1",
+      "installed_version": "5.14.0",
       "license_metadata": "Apache-2.0 OR BSD-3-Clause (plus PDFium dependency licenses shipped in wheel)",
       "spdx_guess": "Apache-2.0 OR BSD-3-Clause",
       "risk_class": "permissive",
@@ -36,7 +36,7 @@
       "legal_review_required": false,
       "usage": "core PDF render/crop (LIC-001 Option B)",
       "mitigation_options": "",
-      "lock_version": "5.12.1",
+      "lock_version": "5.14.0",
       "verification_note": "PyPI / upstream README 2026-07-31"
     },
     {
