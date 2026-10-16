@@ -3,7 +3,7 @@ import { cwd } from "node:process";
 import react from "@vitejs/plugin-react";
 import { loadEnv, type Plugin } from "vite";
 import { defineConfig } from "vitest/config";
-import { requestShouldSkipViteBearer } from "./src/lib/bff-cookie";
+import { requestShouldSkipViteBearer } from "./src/lib/bff-cookie.ts";
 
 const SHELL_SECURITY_HEADERS = {
   "X-Content-Type-Options": "nosniff",
@@ -58,16 +58,14 @@ export default defineConfig(({ mode }) => {
     define: defineEnv,
     build: {
       chunkSizeWarningLimit: 700,
-      rollupOptions: {
+      // Vite 8 bundles with Rolldown: rollupOptions/manualChunks are deprecated aliases.
+      rolldownOptions: {
         output: {
-          manualChunks(id: string) {
-            if (/[\\/]node_modules[\\/]web-ifc[\\/]/.test(id)) {
-              return "vendor-web-ifc";
-            }
-            if (/[\\/]node_modules[\\/]three[\\/]/.test(id)) {
-              return "vendor-three";
-            }
-            return undefined;
+          codeSplitting: {
+            groups: [
+              { name: "vendor-web-ifc", test: /[\\/]node_modules[\\/]web-ifc[\\/]/ },
+              { name: "vendor-three", test: /[\\/]node_modules[\\/]three[\\/]/ },
+            ],
           },
         },
       },
