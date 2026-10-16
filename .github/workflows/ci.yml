@@ -144,8 +144,8 @@ jobs:
         run: python ../scripts/lint_claims.py --claim-boundary-guard
       - name: Runtime baseline README drift check
         run: python -m aerobim.tools.export_runtime_baseline --check-readme --skip-artifact-drift
-      - run: ruff check src tests
-      - run: ruff format --check src tests
+      - run: ruff check src tests scripts
+      - run: ruff format --check src tests scripts
       - name: Ruff S-band inventory drift check
         run: python scripts/verify_ruff_s_band_inventory.py
 

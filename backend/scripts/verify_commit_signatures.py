@@ -22,10 +22,19 @@ import json
 import math
 import os
 import re
+import shutil
 import subprocess
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
+
+
+def _git_bin() -> str:
+    """Resolve git to an absolute path (S607); fail clearly when it is missing."""
+    git = shutil.which("git")
+    if git is None:
+        raise SystemExit("ERROR: git executable not found on PATH")
+    return git
 
 
 def _repo_root() -> Path:
@@ -38,7 +47,7 @@ def _gpg_bin() -> str:
         return env
     try:
         proc = subprocess.run(
-            ["git", "config", "--get", "gpg.program"],
+            [_git_bin(), "config", "--get", "gpg.program"],
             text=True,
             capture_output=True,
             check=False,
@@ -90,7 +99,7 @@ def _commit_sig_rows(depth: int) -> list[tuple[str, str, str, str]]:
     # NUL fields: unsigned commits have empty %GF, and whitespace split would
     # treat the short SHA as the fingerprint and the subject as the SHA.
     log = subprocess.check_output(
-        ["git", "log", f"-{depth}", "--pretty=format:%G?%x00%GF%x00%h%x00%s"],
+        [_git_bin(), "log", f"-{depth}", "--pretty=format:%G?%x00%GF%x00%h%x00%s"],
         text=True,
         encoding="utf-8",
         errors="replace",
@@ -192,7 +201,7 @@ def _head_trusted(author_trusted: set[str]) -> bool:
 def _on_release_tag() -> bool:
     try:
         describe = subprocess.check_output(
-            ["git", "describe", "--tags", "--exact-match"],
+            [_git_bin(), "describe", "--tags", "--exact-match"],
             text=True,
             stderr=subprocess.DEVNULL,
         ).strip()
@@ -222,7 +231,7 @@ def _is_author_trusted_sig(status: str, fpr: str, author_trusted: set[str]) -> b
 
 def _rev_parse_commit(rev: str) -> str | None:
     proc = subprocess.run(
-        ["git", "rev-parse", "--verify", f"{rev}^{{commit}}"],
+        [_git_bin(), "rev-parse", "--verify", f"{rev}^{{commit}}"],
         capture_output=True,
         text=True,
         check=False,
@@ -248,7 +257,7 @@ def _is_exclusive_descendant(cutoff: str, commit: str) -> bool | None:
     if cutoff_full == commit_full:
         return False
     proc = subprocess.run(
-        ["git", "merge-base", "--is-ancestor", cutoff_full, commit_full],
+        [_git_bin(), "merge-base", "--is-ancestor", cutoff_full, commit_full],
         capture_output=True,
         check=False,
     )
@@ -257,7 +266,7 @@ def _is_exclusive_descendant(cutoff: str, commit: str) -> bool | None:
 
 def _commit_paths(short_sha: str) -> list[str]:
     output = subprocess.check_output(
-        ["git", "diff-tree", "--no-commit-id", "--name-only", "-r", short_sha],
+        [_git_bin(), "diff-tree", "--no-commit-id", "--name-only", "-r", short_sha],
         text=True,
         encoding="utf-8",
         errors="replace",
@@ -298,7 +307,7 @@ def _history_includes_root() -> bool:
     """
 
     listed = subprocess.run(
-        ["git", "rev-list", "--max-parents=0", "HEAD"],
+        [_git_bin(), "rev-list", "--max-parents=0", "HEAD"],
         text=True,
         capture_output=True,
         check=False,
@@ -312,7 +321,7 @@ def _history_includes_root() -> bool:
         return False
     for sha in shas:
         meta = subprocess.run(
-            ["git", "cat-file", "-p", sha],
+            [_git_bin(), "cat-file", "-p", sha],
             text=True,
             capture_output=True,
             check=False,
@@ -396,7 +405,9 @@ def main() -> int:
         return 1
 
     author_files = sorted(keys_dir.glob("*.asc"))
-    platform_files = sorted((keys_dir / "platform").glob("*.asc")) if (keys_dir / "platform").is_dir() else []
+    platform_files = (
+        sorted((keys_dir / "platform").glob("*.asc")) if (keys_dir / "platform").is_dir() else []
+    )
     author_trusted = _fingerprints_from_asc_files(author_files)
     platform_trusted = _fingerprints_from_asc_files(platform_files)
     if not author_trusted:
@@ -417,10 +428,7 @@ def main() -> int:
         )
         return 3
     if window != depth:
-        print(
-            f"history_complete=true commits={window} "
-            f"inspect_depth={depth} window=full_history"
-        )
+        print(f"history_complete=true commits={window} inspect_depth={depth} window=full_history")
         depth = window
 
     signed, unverifiable, other_bad, total, named = _classify(
@@ -450,7 +458,8 @@ def main() -> int:
     if until_break is not None and needed > 0:
         print(
             f"commits_until_ratio_break={until_break} "
-            f"(break when author-trusted falls below {needed}/{depth} at planning_ratio={planning_ratio:.2f})"
+            f"(break when author-trusted falls below {needed}/{depth} "
+            f"at planning_ratio={planning_ratio:.2f})"
         )
 
     if signed == 0:
@@ -485,7 +494,8 @@ def main() -> int:
     if enforce and bool(policy.get("require_head_signed_on_release_tags")) and _on_release_tag():
         if not _head_trusted(author_trusted):
             print(
-                "ERROR: release tag HEAD must be signed by an author trusted_signing_keys fingerprint",
+                "ERROR: release tag HEAD must be signed by an author "
+                "trusted_signing_keys fingerprint",
                 file=sys.stderr,
             )
             return 1
@@ -507,8 +517,7 @@ def main() -> int:
         if n59_hits:
             print(
                 "ERROR: N-59: these commits change "
-                f"{keys_rel} without an author-trusted signature: "
-                + ", ".join(n59_hits),
+                f"{keys_rel} without an author-trusted signature: " + ", ".join(n59_hits),
                 file=sys.stderr,
             )
             return 1

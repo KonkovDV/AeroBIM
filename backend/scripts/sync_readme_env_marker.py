@@ -26,12 +26,7 @@ def _sync(path: Path) -> None:
     names = set(_documented_env_marker_names(text) or [])
     names.update(_code_env_names(_REPO))
     block = "\n".join(sorted(names)) + "\n"
-    updated = (
-        text[: begin + len(_ENV_DOC_MARKER_BEGIN)]
-        + "\n"
-        + block
-        + text[end:]
-    )
+    updated = text[: begin + len(_ENV_DOC_MARKER_BEGIN)] + "\n" + block + text[end:]
     path.write_text(updated, encoding="utf-8")
 
 

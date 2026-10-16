@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import re
+import shutil
 import subprocess
 import sys
 
@@ -16,8 +17,16 @@ _BLOCKED = re.compile(
 _ALLOW = re.compile(r"^docs/(quality|red-team|architecture|security|tz)/", re.I)
 
 
+def _git_bin() -> str:
+    """Resolve git to an absolute path (S607); fail clearly when it is missing."""
+    git = shutil.which("git")
+    if git is None:
+        raise SystemExit("ERROR: git executable not found on PATH")
+    return git
+
+
 def main() -> int:
-    listed = subprocess.check_output(["git", "ls-files"], text=True, encoding="utf-8")
+    listed = subprocess.check_output([_git_bin(), "ls-files"], text=True, encoding="utf-8")
     bad = []
     for path in listed.splitlines():
         p = path.strip().replace("\\", "/")

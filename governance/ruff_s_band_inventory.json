@@ -10,6 +10,11 @@
       "rationale": "Test fixtures use assert, dummy passwords, and non-crypto RNG by design."
     },
     {
+      "glob": "scripts/**",
+      "rules": ["S603"],
+      "rationale": "Maintenance scripts run fixed argv lists (git resolved via shutil.which, gpg from config); no shell, no untrusted input. S607 is fixed in code, not ignored."
+    },
+    {
       "glob": "src/aerobim/core/di/tokens.py",
       "rules": ["S105"],
       "rationale": "DI token string OIDC_TOKEN_VALIDATOR is not a credential."

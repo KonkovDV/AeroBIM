@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Fail CI when deferred controls expire — and when registry state disagrees with mechanism (N-58)."""
+"""Fail CI when deferred controls expire.
+
+Also fails when registry state disagrees with mechanism (N-58).
+"""
 
 from __future__ import annotations
 

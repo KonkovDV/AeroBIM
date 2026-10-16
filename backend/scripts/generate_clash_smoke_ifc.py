@@ -74,9 +74,7 @@ def _element_2pt(
 def _wall_2pt(
     model, *, body, storey, name: str, p1: tuple[float, float], p2: tuple[float, float]
 ) -> None:
-    _element_2pt(
-        model, body=body, storey=storey, ifc_class="IfcWall", name=name, p1=p1, p2=p2
-    )
+    _element_2pt(model, body=body, storey=storey, ifc_class="IfcWall", name=name, p1=p1, p2=p2)
 
 
 def main() -> None:
