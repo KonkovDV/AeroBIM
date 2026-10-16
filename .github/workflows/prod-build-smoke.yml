@@ -1,0 +1,121 @@
+name: prod-build-smoke
+
+# Production-build smoke for the bundler: builds the frontend with the
+# branch toolchain ("after") and with main's bundler toolchain ("before"),
+# serves each via `vite preview`, opens the seeded IFC fixture in Chromium
+# and asserts non-blank canvas, clean console and loaded CSS. Screenshots
+# and bundle sizes are uploaded as artifacts and compared.
+
+on:
+  pull_request:
+    paths:
+      - "frontend/**"
+      - ".github/workflows/prod-build-smoke.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: smoke (${{ matrix.leg }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        leg: [before, after]
+    env:
+      API_URL: http://127.0.0.1:8080
+      UI_URL: http://127.0.0.1:4173
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Use main's bundler toolchain (before leg)
+        if: matrix.leg == 'before'
+        run: |
+          git fetch origin main
+          git checkout origin/main -- frontend/package.json frontend/package-lock.json frontend/vite.config.ts frontend/tsconfig.node.json
+          git diff --cached --stat
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+      - name: Install backend
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade "pip==25.2"
+          # dev lock carries the pdf-agpl extra (PyMuPDF) the smoke seeder needs
+          pip install --require-hashes -r requirements-dev-lock.txt
+          pip install -e . --no-deps
+      - name: Seed fixture report and start backend
+        working-directory: backend
+        run: |
+          export AEROBIM_STORAGE_DIR="$RUNNER_TEMP/aerobim-storage"
+          # Geometry-bearing fixture (the default smoke IFC has no shape
+          # representations, so its canvas would only ever show the grid).
+          python -m aerobim.tools.seed_smoke_report --storage-dir "$AEROBIM_STORAGE_DIR" \
+            --ifc-fixture "$GITHUB_WORKSPACE/samples/ifc/clash-two-overlapping-boxes.ifc"
+          AEROBIM_HOST=127.0.0.1 AEROBIM_PORT=8080 AEROBIM_ENV=development \
+          AEROBIM_SIGNOFF_PROFILE=development AEROBIM_ALLOW_ANONYMOUS_DEV=true \
+          AEROBIM_API_TENANT_ID=lab-anonymous \
+            nohup python -m aerobim.main > "$RUNNER_TEMP/backend.log" 2>&1 &
+          for i in $(seq 1 60); do curl -fsS "$API_URL/health" >/dev/null && exit 0; sleep 2; done
+          cat "$RUNNER_TEMP/backend.log"; exit 1
+      - name: Build frontend (production)
+        working-directory: frontend
+        # No VITE_AEROBIM_API_BASE_URL: the production CSP is connect-src 'self',
+        # so the build calls same-origin /v1 and `vite preview` proxies it.
+        run: |
+          npm ci
+          npx vite --version | tee "$RUNNER_TEMP/vite-version.txt"
+          npm run build
+          mkdir -p ../prod-smoke
+          node scripts/bundle-size-report.mjs dist ../prod-smoke/${{ matrix.leg }}-bundle-size.json
+          cp "$RUNNER_TEMP/vite-version.txt" ../prod-smoke/${{ matrix.leg }}-vite-version.txt
+      - name: Preview + Playwright smoke
+        working-directory: frontend
+        run: |
+          npx playwright install --with-deps chromium
+          AEROBIM_PROXY_TARGET="$API_URL" nohup npx vite preview --host 127.0.0.1 --port 4173 --strictPort > "$RUNNER_TEMP/preview.log" 2>&1 &
+          for i in $(seq 1 30); do curl -fsS "$UI_URL" >/dev/null && break; sleep 1; done
+          node scripts/prod-build-smoke.mjs --base-url "$UI_URL" --out ../prod-smoke --tag ${{ matrix.leg }}
+      - name: Logs on failure
+        if: failure()
+        run: |
+          cat "$RUNNER_TEMP/backend.log" || true
+          cat "$RUNNER_TEMP/preview.log" || true
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: prod-smoke-${{ matrix.leg }}
+          path: prod-smoke/
+          if-no-files-found: warn
+
+  compare:
+    needs: smoke
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: prod-smoke-*
+          merge-multiple: true
+          path: prod-smoke
+      - name: Bundle-size comparison
+        run: |
+          python3 - <<'PY' | tee -a "$GITHUB_STEP_SUMMARY"
+          import json
+          b = json.load(open("prod-smoke/before-bundle-size.json"))["totals"]
+          a = json.load(open("prod-smoke/after-bundle-size.json"))["totals"]
+          vb = open("prod-smoke/before-vite-version.txt").read().strip()
+          va = open("prod-smoke/after-vite-version.txt").read().strip()
+          print(f"| metric | before ({vb}) | after ({va}) | delta |")
+          print("|---|---:|---:|---:|")
+          for k in ["js", "js_gzip", "css", "css_gzip", "wasm", "all", "count"]:
+              d = a[k] - b[k]
+              pct = f" ({d / b[k] * 100:+.1f}%)" if b[k] else ""
+              print(f"| {k} | {b[k]} | {a[k]} | {d:+d}{pct} |")
+          PY
