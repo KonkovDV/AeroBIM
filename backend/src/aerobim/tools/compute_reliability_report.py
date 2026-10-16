@@ -1,6 +1,7 @@
 """K2A-P1-03: reliability (calibration) report — unpublishable by default.
 
-Equal-mass bins, per-bin Wilson CI, ECE. Fail-closed: hidden/customer
+Equal-mass bins, per-bin Wilson CI, ECE, and the Brier score
+``(1/n) Σ (f_i − o_i)²``. Fail-closed: hidden/customer
 splits are rejected for a non-customer corpus; ``publishable`` is true only
 for ``corpus_kind == "customer"`` with sufficient n. Small n => status
 ``uncalibrated`` and no ECE/thresholds are declared.
@@ -17,6 +18,7 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
+from aerobim.domain.eval_statistics import brier_score
 from aerobim.domain.study_design import wilson_interval
 
 CLAIM_BOUNDARY = (
@@ -60,6 +62,7 @@ def build_reliability_report(
             "reason": "insufficient_data",
             "bins": [],
             "ece": None,
+            "brier": None,
             "publishable": False,
         }
     pairs = sorted(zip(scores, labels, strict=True))
@@ -92,6 +95,7 @@ def build_reliability_report(
         "status": "calibrated" if corpus_kind == "customer" else "diagnostic_only",
         "bins": out_bins,
         "ece": round(ece, 6),
+        "brier": round(brier_score(scores, labels), 6),
         "publishable": corpus_kind == "customer",
     }
 
