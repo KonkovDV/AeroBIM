@@ -145,7 +145,7 @@ def main() -> int:
     if args.external_dir is not None:
         result["external"] = {
             path.name: _external(path, args.pack)
-            for path in sorted(args.external_dir.glob("*.ifc"))
+            for path in sorted(args.external_dir.resolve().glob("*.ifc"))
         }
     args.out.write_text(
         json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
