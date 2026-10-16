@@ -26,6 +26,7 @@ from aerobim.infrastructure.adapters.filesystem_audit_store import FilesystemAud
 from aerobim.infrastructure.adapters.filesystem_review_event_store import (
     FilesystemReviewEventStore,
 )
+from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_file
 
 SMOKE_REPORT_ID = "9" * 32
 SMOKE_REQUEST_ID = "runtime-smoke-seed"
@@ -61,9 +62,8 @@ def _copy_ifc_fixture(storage_dir: Path, source_ifc_path: Path) -> Path:
 
 
 def _extract_product_guids(ifc_path: Path) -> list[str]:
-    import ifcopenshell
 
-    model = ifcopenshell.open(str(ifc_path))
+    model = open_ifc_file(ifc_path)
     guids = [getattr(entity, "GlobalId", "") for entity in model.by_type("IfcProduct")]
     materialized = [guid for guid in guids if guid]
     if len(materialized) < 2:
