@@ -15,6 +15,8 @@ from __future__ import annotations
 import unittest
 from pathlib import Path
 
+from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_file
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SAMPLES_DIR = REPO_ROOT / "samples"
 
@@ -50,7 +52,6 @@ class IfcReleaseCompatibilityTests(unittest.TestCase):
         """IDS rule should produce 0 ERROR findings on all three releases."""
         self._skip_if_no_ifctester()
 
-        import ifcopenshell
         import ifctester
 
         for release_label, ifc_path in IFC_FIXTURES:
@@ -59,7 +60,7 @@ class IfcReleaseCompatibilityTests(unittest.TestCase):
 
             with self.subTest(release=release_label):
                 ids_doc = ifctester.open(str(IDS_FIRE_RATING))
-                model = ifcopenshell.open(str(ifc_path))
+                model = open_ifc_file(ifc_path)
                 ids_doc.validate(model)
 
                 failed_specs = [s for s in ids_doc.specifications if not s.status]
@@ -76,15 +77,13 @@ class IfcReleaseCompatibilityTests(unittest.TestCase):
         """IfcOpenShell must open all three release fixtures without exception."""
         self._skip_if_no_ifcopenshell()
 
-        import ifcopenshell
-
         for release_label, ifc_path in IFC_FIXTURES:
             if not ifc_path.exists():
                 self.skipTest(f"Fixture missing: {ifc_path}")
 
             with self.subTest(release=release_label):
                 try:
-                    model = ifcopenshell.open(str(ifc_path))
+                    model = open_ifc_file(ifc_path)
                 except Exception as exc:
                     self.fail(f"ifcopenshell.open() raised on {release_label}: {exc}")
                 walls = model.by_type("IfcWall")
@@ -98,7 +97,6 @@ class IfcReleaseCompatibilityTests(unittest.TestCase):
         """Pset_WallCommon must be discoverable in all three release fixtures."""
         self._skip_if_no_ifcopenshell()
 
-        import ifcopenshell
         import ifcopenshell.util.element as ifc_util
 
         for release_label, ifc_path in IFC_FIXTURES:
@@ -106,7 +104,7 @@ class IfcReleaseCompatibilityTests(unittest.TestCase):
                 self.skipTest(f"Fixture missing: {ifc_path}")
 
             with self.subTest(release=release_label):
-                model = ifcopenshell.open(str(ifc_path))
+                model = open_ifc_file(ifc_path)
                 walls = model.by_type("IfcWall")
                 self.assertGreater(len(walls), 0)
 

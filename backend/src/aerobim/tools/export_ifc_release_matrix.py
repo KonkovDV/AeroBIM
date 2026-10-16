@@ -7,6 +7,7 @@ Tracker paste format for the 14.08.2026 meeting.
 from __future__ import annotations
 
 import hashlib
+import importlib.util
 import json
 from collections import Counter
 from dataclasses import fields
@@ -15,6 +16,7 @@ from pathlib import Path
 from typing import Any, cast
 
 from aerobim.domain.models import CapabilityState, ReportCapabilities, ValidationIssue
+from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_file
 from aerobim.tools.benchmark_project_package import (
     SCHEMA_SUITE_DEFAULT_ITERATIONS,
     SCHEMA_SUITE_DEFAULT_WARMUP_ITERATIONS,
@@ -102,12 +104,9 @@ def digest_rules_and_refusals(
 def _product_entity_counts(ifc_path: Path | None) -> dict[str, int]:
     if ifc_path is None or not ifc_path.is_file():
         return {}
-    try:
-        import ifcopenshell
-    except ImportError:
+    if importlib.util.find_spec("ifcopenshell") is None:
         return {}
-    # ifcopenshell stubs incomplete on some hosts; CI SSOT remains Python 3.12 + mypy --strict.
-    model = ifcopenshell.open(str(ifc_path))  # type: ignore[no-untyped-call,unused-ignore]
+    model = open_ifc_file(ifc_path)
     counts: Counter[str] = Counter()
     for entity in model.by_type("IfcProduct"):  # type: ignore[no-untyped-call,unused-ignore]
         counts[entity.is_a()] += 1  # type: ignore[no-untyped-call,unused-ignore]

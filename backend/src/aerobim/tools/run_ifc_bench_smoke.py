@@ -23,6 +23,7 @@ from pathlib import Path
 from typing import Any
 
 from aerobim.domain.copyleft_lane import GPLV3_IFC_BENCH_PROJECTS
+from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_file
 
 CLAIM_BOUNDARY = (
     "IFC-Bench open_bench_only: deterministic countable subset via "
@@ -210,9 +211,8 @@ def _numbers_close(a: float | int, b: float | int, *, tol: float = 0.01) -> bool
 
 
 def _open_ifc(path: Path) -> Any:
-    import ifcopenshell
 
-    return ifcopenshell.open(str(path))
+    return open_ifc_file(path)
 
 
 def _entity_count(model: Any, type_name: str) -> int:

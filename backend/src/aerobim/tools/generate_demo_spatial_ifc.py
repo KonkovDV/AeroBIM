@@ -12,13 +12,15 @@ from pathlib import Path
 import ifcopenshell
 import ifcopenshell.guid
 
+from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_file
+
 _REPO = Path(__file__).resolve().parents[4]
 _SRC = _REPO / "samples" / "ifc" / "walls-multi-entity.ifc"
 _DST = _REPO / "samples" / "ifc" / "walls-multi-entity-spatial.ifc"
 
 
 def write_spatial_demo_ifc(*, src: Path = _SRC, dst: Path = _DST) -> Path:
-    model = ifcopenshell.open(str(src))
+    model = open_ifc_file(src)
     project = model.by_type("IfcProject")[0]
     walls = list(model.by_type("IfcWall"))
     if not walls:
