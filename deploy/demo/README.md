@@ -9,7 +9,7 @@
 У заказчика есть Docker?
 ├── ДА  →  Режим C: docker        (setup-demo.sh docker)
 └── НЕТ
-    ├── Есть Python 3.12 + Node 20+?  →  Режим B: ui  (setup-demo.sh ui)
+    ├── Есть Python 3.12 + Node 22.12+?  →  Режим B: ui  (setup-demo.sh ui)
     └── Есть только Python 3.12?     →  Режим A: cli (setup-demo.sh cli)
 
 Закрытая сеть (аир-гэп)?
@@ -40,7 +40,7 @@ run-jury.bat
 
 ---
 
-## Режим B — UI оболочка (Python 3.12 + Node 20+)
+## Режим B — UI оболочка (Python 3.12 + Node 22.12+)
 
 **Требуется:** Python 3.12, Node ≥ 20, git.
 
@@ -64,7 +64,7 @@ rem PowerShell:
 
 ```bash
 ./deploy/demo/setup-demo.sh docker
-# С UI (Node 20+ на хосте):
+# С UI (Node 22.12+ на хосте):
 ./deploy/demo/setup-demo.sh docker-full
 ```
 
