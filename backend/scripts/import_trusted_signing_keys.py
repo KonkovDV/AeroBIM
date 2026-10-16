@@ -12,9 +12,18 @@ from __future__ import annotations
 import argparse
 import os
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
+
+
+def _git_bin() -> str:
+    """Resolve git to an absolute path (S607); fail clearly when it is missing."""
+    git = shutil.which("git")
+    if git is None:
+        raise SystemExit("ERROR: git executable not found on PATH")
+    return git
 
 
 def _repo_root() -> Path:
@@ -27,7 +36,7 @@ def _gpg_bin() -> str:
         return env
     try:
         proc = subprocess.run(
-            ["git", "config", "--get", "gpg.program"],
+            [_git_bin(), "config", "--get", "gpg.program"],
             text=True,
             capture_output=True,
             check=False,
@@ -40,7 +49,9 @@ def _gpg_bin() -> str:
     return "gpg"
 
 
-def _run(gpg: str, args: list[str], *, input_text: str | None = None) -> subprocess.CompletedProcess[str]:
+def _run(
+    gpg: str, args: list[str], *, input_text: str | None = None
+) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [gpg, *args],
         input=input_text,

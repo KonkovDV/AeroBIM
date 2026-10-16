@@ -40,8 +40,7 @@ def main() -> int:
     for glob in sorted(set(inv_map) & set(py_map)):
         if inv_map[glob] != py_map[glob]:
             errors.append(
-                f"{glob}: inventory={sorted(inv_map[glob])} "
-                f"pyproject={sorted(py_map[glob])}"
+                f"{glob}: inventory={sorted(inv_map[glob])} pyproject={sorted(py_map[glob])}"
             )
 
     if errors:

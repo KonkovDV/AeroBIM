@@ -21,7 +21,9 @@ import ifcopenshell.api.unit
 def write_extent_clash_fixture(out: Path) -> Path:
     out.parent.mkdir(parents=True, exist_ok=True)
     f = ifcopenshell.api.project.create_file(version="IFC4")
-    project = ifcopenshell.api.root.create_entity(f, ifc_class="IfcProject", name="ExtentClashFixture")
+    project = ifcopenshell.api.root.create_entity(
+        f, ifc_class="IfcProject", name="ExtentClashFixture"
+    )
     ifcopenshell.api.unit.assign_unit(f)
     context = ifcopenshell.api.context.add_context(f, context_type="Model")
     body = ifcopenshell.api.context.add_context(

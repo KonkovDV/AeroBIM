@@ -37,8 +37,6 @@ def export_openapi(output_path: Path) -> None:
 
 
 if __name__ == "__main__":
-    default_output = (
-        Path(__file__).parent.parent.parent / "docs" / "openapi.json"
-    )
+    default_output = Path(__file__).parent.parent.parent / "docs" / "openapi.json"
     target = Path(sys.argv[1]) if len(sys.argv) > 1 else default_output
     export_openapi(target)
