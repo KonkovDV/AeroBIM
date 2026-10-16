@@ -254,25 +254,25 @@ def check_review_shell(
                 False,
                 "fatal",
                 "Node.js / npm not on PATH. Jury CLI does not need Node. "
-                "Review shell needs Node 22.12+ (Windows: npm.cmd).",
+                "Review shell needs Node 22.22.2+ (Windows: npm.cmd).",
             )
         )
     else:
         checks.append(Check("npm", True, "info", f"npm={npm_path}"))
     if node_version:
-        digits = node_version.lstrip("v").split(".")
+        digits = (node_version.lstrip("v").split(".") + ["0", "0"])[:3]
         try:
-            major_minor = (int(digits[0]), int(digits[1]) if len(digits) > 1 else 0)
+            parsed = (int(digits[0]), int(digits[1]), int(digits[2]))
         except ValueError:
-            major_minor = (0, 0)
-        # Matches frontend/package.json engines (vitest 5 needs >=22.12).
-        if major_minor < (22, 12):
+            parsed = (0, 0, 0)
+        # Floor of frontend/package.json engines and .nvmrc (AER-10: jsdom deps need 22.22.2).
+        if parsed < (22, 22, 2):
             checks.append(
                 Check(
                     "node_version",
                     False,
                     "fatal",
-                    f"Node {node_version} is below 22.12. Review shell needs Node 22.12+.",
+                    f"Node {node_version} is below 22.22.2. Review shell needs Node 22.22.2+.",
                 )
             )
         else:
@@ -563,7 +563,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--review-shell",
         action="store_true",
-        help="Also check Node 22.12+, npm, and ports 8080/5173.",
+        help="Also check Node 22.22.2+, npm, and ports 8080/5173.",
     )
     args = parser.parse_args(argv)
     checks = live_checks(review_shell=args.review_shell)
