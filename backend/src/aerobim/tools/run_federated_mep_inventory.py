@@ -22,6 +22,7 @@ from aerobim.domain.copyleft_lane import (
     local_demo_copyleft_inputs_permitted,
 )
 from aerobim.domain.ids_schema_gate import parse_ifc_file_schema, parse_ifc_view_definition
+from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_file
 from aerobim.tools.benchmark_project_package import repo_root
 
 CLAIM_LEVEL = "federated_mep_inventory"
@@ -138,9 +139,7 @@ def _inventory(path: Path, *, label: str, repo: Path) -> dict[str, Any]:
         "error": None,
     }
     try:
-        import ifcopenshell
-
-        model = ifcopenshell.open(str(path))
+        model = open_ifc_file(path)
         row["counts"] = {name: len(model.by_type(name)) for name in MEP_TYPES}
         row["ifc_product_count"] = len(model.by_type("IfcProduct"))
     except Exception as exc:

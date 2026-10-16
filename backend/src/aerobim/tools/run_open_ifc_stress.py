@@ -18,6 +18,7 @@ from time import perf_counter
 from typing import Any
 
 from aerobim.domain.ids_schema_gate import parse_ifc_file_schema, parse_ifc_view_definition
+from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_file
 from aerobim.tools.benchmark_project_package import _machine_fingerprint, repo_root
 
 CLAIM_LEVEL = "open_ifc_stress"
@@ -103,9 +104,7 @@ def _try_ifcopenshell_open(path: Path, row: dict[str, Any], *, open_max_bytes: i
         return
     started = perf_counter()
     try:
-        import ifcopenshell
-
-        model = ifcopenshell.open(str(path))
+        model = open_ifc_file(path)
         row["ifc_product_count"] = len(model.by_type("IfcProduct"))
         row["ifc_open"] = "ok"
         row["ifc_open_ms"] = round((perf_counter() - started) * 1000.0, 3)

@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any
 
 from aerobim.domain.mep_aabb import AxisAlignedBox3d, aabb_overlap
+from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_file
 from aerobim.tools.evaluate_detection_precision import evaluate_detection_precision
 
 _CASE_ID = "EXTENT-CLASH-FIXTURE-001"
@@ -31,7 +32,7 @@ def _wall_aabbs(ifc_path: Path) -> dict[str, tuple[str, AxisAlignedBox3d]]:
     import ifcopenshell
     import ifcopenshell.geom
 
-    model = ifcopenshell.open(str(ifc_path))
+    model = open_ifc_file(ifc_path)
     geom_mod: Any = ifcopenshell.geom
     settings = geom_mod.settings()
     settings.set(settings.USE_WORLD_COORDS, True)

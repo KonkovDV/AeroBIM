@@ -23,6 +23,7 @@ from aerobim.domain.models import (
     SourceKind,
     ValidationRequest,
 )
+from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_file
 from aerobim.tools._cli_base import bootstrap_container
 
 # Schema-suite defaults: with n=5 nearest-rank p95 ≡ max, so one OS/MEP spike
@@ -380,9 +381,7 @@ def _ifc_file_metrics(ifc_path: Path | None) -> dict[str, object]:
         "schema_from_header": None,
     }
     try:
-        import ifcopenshell
-
-        model = ifcopenshell.open(str(ifc_path))
+        model = open_ifc_file(ifc_path)
         metrics["schema_from_header"] = model.schema
         metrics["entity_count"] = len(list(model))
     except Exception:

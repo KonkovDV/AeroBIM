@@ -359,6 +359,22 @@ def _open_spf_compat(ifc_path: Path, ifcopenshell: Any) -> Any:
         return model
 
 
+def open_ifc_file(ifc_path: Path | str) -> Any:
+    """The one sanctioned way to open an IFC file outside the cached hot path.
+
+    Uncached SPF open with the pre-final IFC4x3 → IFC4X3_ADD2 fallback and the
+    lost-instance check. Every other module must call this (or
+    ``open_ifc_model`` / ``open_ifc_session``) instead of ``ifcopenshell.open``;
+    ``tests/test_no_direct_ifcopenshell_open.py`` enforces it.
+    """
+
+    try:
+        import ifcopenshell
+    except ModuleNotFoundError as exc:
+        raise RuntimeError("ifcopenshell is required to open IFC models") from exc
+    return _open_spf_compat(Path(ifc_path), ifcopenshell)
+
+
 def _rdb_ready(path: Path) -> bool:
     return path.is_dir() and (path / "CURRENT").is_file()
 
