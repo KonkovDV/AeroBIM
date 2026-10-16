@@ -15,5 +15,5 @@ fi
 echo "backend/.venv not found. Run ./run-jury.sh first, or from AeroBIM/backend:"
 echo "  python3.12 -m venv .venv"
 echo "  python -m pip install -e \".[dev,raster]\""
-echo "Review shell needs Node 20+. Jury CLI does not. customer_go false."
+echo "Review shell needs Node 22.12+. Jury CLI does not. customer_go false."
 exit 1

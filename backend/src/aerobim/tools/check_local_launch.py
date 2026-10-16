@@ -254,7 +254,7 @@ def check_review_shell(
                 False,
                 "fatal",
                 "Node.js / npm not on PATH. Jury CLI does not need Node. "
-                "Review shell needs Node 20+ (Windows: npm.cmd).",
+                "Review shell needs Node 22.12+ (Windows: npm.cmd).",
             )
         )
     else:
@@ -262,16 +262,17 @@ def check_review_shell(
     if node_version:
         digits = node_version.lstrip("v").split(".")
         try:
-            major = int(digits[0])
+            major_minor = (int(digits[0]), int(digits[1]) if len(digits) > 1 else 0)
         except ValueError:
-            major = 0
-        if major < 20:
+            major_minor = (0, 0)
+        # Matches frontend/package.json engines (vitest 5 needs >=22.12).
+        if major_minor < (22, 12):
             checks.append(
                 Check(
                     "node_version",
                     False,
                     "fatal",
-                    f"Node {node_version} is below 20. Review shell needs Node 20+.",
+                    f"Node {node_version} is below 22.12. Review shell needs Node 22.12+.",
                 )
             )
         else:
@@ -562,7 +563,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--review-shell",
         action="store_true",
-        help="Also check Node 20+, npm, and ports 8080/5173.",
+        help="Also check Node 22.12+, npm, and ports 8080/5173.",
     )
     args = parser.parse_args(argv)
     checks = live_checks(review_shell=args.review_shell)

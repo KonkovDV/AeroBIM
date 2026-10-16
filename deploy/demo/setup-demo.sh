@@ -13,9 +13,9 @@
 #
 # Требования по режимам:
 #   cli         — Python 3.12, git clone
-#   ui          — Python 3.12, Node 20+, git clone
+#   ui          — Python 3.12, Node 22.12+, git clone
 #   docker      — Docker (Engine ≥ 24) + Docker Compose plugin
-#   docker-full — Docker + Node 20+ (Vite запускается на хосте)
+#   docker-full — Docker + Node 22.12+ (Vite запускается на хосте)
 #   airgap      — Docker + бандл artifacts/offline-bundle/
 # =============================================================================
 set -euo pipefail
@@ -62,14 +62,14 @@ if [[ "$MODE" == "cli" ]]; then
 fi
 
 # -----------------------------------------------------------------------
-# Режим B: UI оболочка (Python 3.12 + Node 20+)
+# Режим B: UI оболочка (Python 3.12 + Node 22.12+)
 # -----------------------------------------------------------------------
 if [[ "$MODE" == "ui" ]]; then
-  info "Mode B: Review shell demo (Python 3.12 + Node 20+)"
+  info "Mode B: Review shell demo (Python 3.12 + Node 22.12+)"
   command -v python3.12 &>/dev/null || die "python3.12 not found. Install CPython 3.12."
-  command -v node &>/dev/null      || die "node not found. Install Node 20+."
+  command -v node &>/dev/null      || die "node not found. Install Node 22.12+."
   NODE_VER=$(node --version | sed 's/v//' | cut -d. -f1)
-  [[ "$NODE_VER" -ge 20 ]] || die "Node $NODE_VER found, need 20+. Update Node."
+  [[ "$NODE_VER" -ge 22 ]] || die "Node $NODE_VER found, need 22.12+. Update Node."
 
   # Создаём venv, если нет
   if [[ ! -x backend/.venv/bin/python ]]; then
@@ -144,9 +144,9 @@ fi
 # -----------------------------------------------------------------------
 if [[ "$MODE" == "docker-full" ]]; then
   info "Mode C+: Docker API + Vite UI on host"
-  command -v node &>/dev/null || die "node not found. Install Node 20+ for frontend."
+  command -v node &>/dev/null || die "node not found. Install Node 22.12+ for frontend."
   NODE_VER=$(node --version | sed 's/v//' | cut -d. -f1)
-  [[ "$NODE_VER" -ge 20 ]] || die "Node $NODE_VER found, need 20+."
+  [[ "$NODE_VER" -ge 22 ]] || die "Node $NODE_VER found, need 22.12+."
 
   # Сначала запускаем backend через Docker
   "$0" docker

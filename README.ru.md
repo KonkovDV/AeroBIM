@@ -68,7 +68,7 @@
 
 ## Try it
 
-Python 3.12 и venv в `backend/.venv`. Для демо-прогона в командной строке Node не нужен. Оболочка ревью — Node 20+ и npm. Кавычки у `".[dev,raster]"` в PowerShell обязательны.
+Python 3.12 и venv в `backend/.venv`. Для демо-прогона в командной строке Node не нужен. Оболочка ревью — Node 22.12+ и npm. Кавычки у `".[dev,raster]"` в PowerShell обязательны.
 
 **Windows (PowerShell).** Если `Activate.ps1` режет ExecutionPolicy, venv не активируйте — зовите `python.exe` напрямую.
 
@@ -106,7 +106,7 @@ pytest tests -q
 python -m aerobim.main   # http://127.0.0.1:8080/health
 ```
 
-Оболочка ревью — из **корня клона** (не из `frontend/`). FastAPI `http://127.0.0.1:8080`, Vite/React `http://127.0.0.1:5173`. UI не пишет `summary.passed`. Нужны уже созданный `backend/.venv` и Node 20+.
+Оболочка ревью — из **корня клона** (не из `frontend/`). FastAPI `http://127.0.0.1:8080`, Vite/React `http://127.0.0.1:5173`. UI не пишет `summary.passed`. Нужны уже созданный `backend/.venv` и Node 22.12+.
 
 - Linux/macOS: `./start.sh`
 - Windows PowerShell: `.\start.bat` (префикс `.\` обязателен; `start` без префикса — это Start-Process и запросит FilePath)
