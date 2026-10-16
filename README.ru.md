@@ -68,7 +68,7 @@
 
 ## Try it
 
-Python 3.12 и venv в `backend/.venv`. Для демо-прогона в командной строке Node не нужен. Оболочка ревью — Node 22.12+ и npm. Кавычки у `".[dev,raster]"` в PowerShell обязательны.
+Python 3.12 и venv в `backend/.venv`. Для демо-прогона в командной строке Node не нужен. Оболочка ревью — Node 22.22.2+ и npm. Кавычки у `".[dev,raster]"` в PowerShell обязательны.
 
 **Windows (PowerShell).** Если `Activate.ps1` режет ExecutionPolicy, venv не активируйте — зовите `python.exe` напрямую.
 
@@ -106,7 +106,7 @@ pytest tests -q
 python -m aerobim.main   # http://127.0.0.1:8080/health
 ```
 
-Оболочка ревью — из **корня клона** (не из `frontend/`). FastAPI `http://127.0.0.1:8080`, Vite/React `http://127.0.0.1:5173`. UI не пишет `summary.passed`. Нужны уже созданный `backend/.venv` и Node 22.12+.
+Оболочка ревью — из **корня клона** (не из `frontend/`). FastAPI `http://127.0.0.1:8080`, Vite/React `http://127.0.0.1:5173`. UI не пишет `summary.passed`. Нужны уже созданный `backend/.venv` и Node 22.22.2+.
 
 - Linux/macOS: `./start.sh`
 - Windows PowerShell: `.\start.bat` (префикс `.\` обязателен; `start` без префикса — это Start-Process и запросит FilePath)
@@ -134,7 +134,7 @@ Hashed Windows-зависимости (онлайн, не air-gap): [`backend/re
 
 Закрытый контур без pip — Docker-образ: [`docs/offline-deployment-2026.md`](docs/offline-deployment-2026.md). `install_offline.ps1` грузит tar, не lock.
 
-Dev Container / Codespaces — окружение для разработки, не демо-прогон: [`.devcontainer/`](.devcontainer/). Python 3.12, Node 22, `.[dev,raster]`. Не `customer_pilot`.
+Dev Container / Codespaces — окружение для разработки, не демо-прогон: [`.devcontainer/`](.devcontainer/). Python 3.12, Node 22.22.2+, `.[dev,raster]`. Не `customer_pilot`.
 </details>
 
 ## Как устроен прогон

@@ -199,7 +199,7 @@ class ReviewShellLauncherTests(unittest.TestCase):
         self.assertIn("backend\\.venv\\Scripts\\python.exe", text)
         self.assertIn(".\\start.bat", text)
         self.assertIn("python.exe -m pip install", text)
-        self.assertIn("Node 22.12+", text)
+        self.assertIn("Node 22.22.2+", text)
         self.assertIn("run-jury.bat", text)
         self.assertNotIn("run_kt3_jury", text)
 
@@ -209,7 +209,7 @@ class ReviewShellLauncherTests(unittest.TestCase):
         self.assertIn("backend\\.venv\\Scripts\\python.exe", text)
         self.assertIn(".\\start.bat", text)
         self.assertIn("python.exe -m pip install", text)
-        self.assertIn("Node 22.12+", text)
+        self.assertIn("Node 22.22.2+", text)
         self.assertIn("run-jury.bat", text)
         self.assertNotIn("run_kt3_jury", text)
 
@@ -250,7 +250,7 @@ class ReviewShellLauncherTests(unittest.TestCase):
                 text,
                 msg=name,
             )
-            self.assertIn("Node 22.12+", text, msg=name)
+            self.assertIn("Node 22.22.2+", text, msg=name)
             self.assertIn("requirements-lock.txt", text, msg=name)
             self.assertIn("requirements-win-lock.txt", text, msg=name)
             self.assertIn("uv pip install -e", text, msg=name)

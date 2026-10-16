@@ -70,7 +70,7 @@ Not there yet:
 
 ## Try it
 
-Python 3.12 and a venv in `backend/.venv`. The command-line demo does **not** need Node. The review shell needs Node 22.12+ and npm. Keep the quotes around `".[dev,raster]"` in PowerShell.
+Python 3.12 and a venv in `backend/.venv`. The command-line demo does **not** need Node. The review shell needs Node 22.22.2+ and npm. Keep the quotes around `".[dev,raster]"` in PowerShell.
 
 **Windows (PowerShell).** If ExecutionPolicy blocks `Activate.ps1`, skip activation and call `python.exe` directly.
 
@@ -108,7 +108,7 @@ pytest tests -q
 python -m aerobim.main   # http://127.0.0.1:8080/health
 ```
 
-Start the review shell **from the clone root** (not from `frontend/`). FastAPI at `http://127.0.0.1:8080`, Vite/React at `http://127.0.0.1:5173`. The UI never writes `summary.passed`. You need `backend/.venv` already created and Node 22.12+.
+Start the review shell **from the clone root** (not from `frontend/`). FastAPI at `http://127.0.0.1:8080`, Vite/React at `http://127.0.0.1:5173`. The UI never writes `summary.passed`. You need `backend/.venv` already created and Node 22.22.2+.
 
 - Linux/macOS: `./start.sh`
 - Windows PowerShell: `.\start.bat` (the leading `.\` is required; bare `start` is Start-Process and will ask for FilePath)
@@ -136,7 +136,7 @@ Hashed Windows deps (online, not air-gap): [`backend/requirements-win-lock.txt`]
 
 Closed contour without pip is the Docker image: [`docs/offline-deployment-2026.md`](docs/offline-deployment-2026.md). `install_offline.ps1` loads the tar, not a lock.
 
-Dev Container / Codespaces is a contributor environment, not the demo run: [`.devcontainer/`](.devcontainer/). Python 3.12, Node 22, `.[dev,raster]`. Do not set `customer_pilot`.
+Dev Container / Codespaces is a contributor environment, not the demo run: [`.devcontainer/`](.devcontainer/). Python 3.12, Node 22.22.2+, `.[dev,raster]`. Do not set `customer_pilot`.
 </details>
 
 ## What a run does
