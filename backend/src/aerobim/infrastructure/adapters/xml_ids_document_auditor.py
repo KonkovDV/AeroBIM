@@ -133,7 +133,7 @@ def ensure_ifctester_offline_schema() -> None:
     """
 
     try:
-        import ifctester.ids as ids_module  # type: ignore[import-untyped]
+        import ifctester.ids as ids_module
     except ImportError:
         return
     current = getattr(ids_module, "schema", None)
