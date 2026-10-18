@@ -8,7 +8,8 @@ tens of thousands of walls. That is an engine artifact, not a customer defect.
 
 Empty / None target_ref is the same unrestricted ALL-rule (column omitted).
 IfcRoot.GlobalId is ISO 10303-21 compressed GUID: 22 characters, case-sensitive.
-Name / Tag / ObjectType / LongName / Description use ``str.casefold``.
+Name / Tag / ObjectType / LongName / Description use lookalike folding
+and ``str.casefold``. A short system-mark list matches one riser in that list.
 """
 
 from __future__ import annotations
@@ -16,6 +17,7 @@ from __future__ import annotations
 from typing import Final
 
 from aerobim.domain.ifc_globalid import is_valid_ifc_global_id
+from aerobim.domain.label_identity import fold_homoglyphs, mark_sets_overlap
 
 # Tokens that mean "do not filter by Name/Tag/GlobalId/Description".
 # An element whose Name is literally "ALL" cannot be selected via target_ref;
@@ -71,7 +73,11 @@ def target_ref_matches(requirement_ref: str | None, observed_ref: str) -> bool:
 
     if is_unrestricted_target_ref(requirement_ref):
         return True
-    return (requirement_ref or "").strip().casefold() == observed_ref.strip().casefold()
+    left = (requirement_ref or "").strip()
+    right = observed_ref.strip()
+    if _folded_key(left) == _folded_key(right):
+        return True
+    return mark_sets_overlap(left, right)
 
 
 def named_target_ref_cache_key(target_ref: str) -> str:
@@ -80,7 +86,7 @@ def named_target_ref_cache_key(target_ref: str) -> str:
     stripped = target_ref.strip()
     if is_valid_ifc_global_id(stripped):
         return stripped
-    return stripped.casefold()
+    return _folded_key(stripped)
 
 
 def element_matches_named_target_ref(element: object, target_ref: str | None) -> bool:
@@ -107,12 +113,20 @@ def element_matches_named_target_ref(element: object, target_ref: str | None) ->
     if is_valid_ifc_global_id(raw):
         return False
 
-    needle = raw.casefold()
     for attribute_name in ELEMENT_TARGET_REF_FOLD_ATTRIBUTES:
         value = getattr(element, attribute_name, None)
-        if value is not None and str(value).strip().casefold() == needle:
+        if value is None:
+            continue
+        observed = str(value).strip()
+        if _folded_key(observed) == _folded_key(raw) or mark_sets_overlap(raw, observed):
             return True
     return False
+
+
+def _folded_key(value: str) -> str:
+    """Casefold after lookalike folding. GUID bytes never reach this helper."""
+
+    return fold_homoglyphs(value).casefold()
 
 
 def unrestricted_mismatch_suppressor_message(

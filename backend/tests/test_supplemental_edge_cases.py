@@ -242,6 +242,15 @@ class CompareValuesTests(unittest.TestCase):
         uc = self._make_uc()
         self.assertTrue(self._cmp(uc, "REI60", "REI60", ComparisonOperator.EQUALS))
         self.assertFalse(self._cmp(uc, "REI90", "REI60", ComparisonOperator.EQUALS))
+        self.assertFalse(self._cmp(uc, "rei60", "REI60", ComparisonOperator.EQUALS))
+        self.assertTrue(self._cmp(uc, "С345", "C345", ComparisonOperator.EQUALS))
+
+    def test_equals_on_the_decimal_epsilon_boundary(self) -> None:
+        from aerobim.domain.models import ComparisonOperator, ToleranceConfig
+
+        uc = self._make_uc(ToleranceConfig(default_epsilon=0.1))
+        self.assertTrue(self._cmp(uc, "1.1", "1.0", ComparisonOperator.EQUALS))
+        self.assertFalse(self._cmp(uc, "1.2", "1.0", ComparisonOperator.EQUALS))
 
     def test_exists_operator(self) -> None:
         from aerobim.domain.models import ComparisonOperator

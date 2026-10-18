@@ -25,6 +25,7 @@ from aerobim.domain.quantity import (
     parse_localized_number,
     parse_quantity,
     si_compare,
+    spans_overlap,
 )
 
 _CROSS_DOC_UNIT_TO_SI_FACTOR: dict[str, tuple[str, float]] = {
@@ -332,7 +333,7 @@ class CrossDocumentContradictionDetector:
             else:
                 high = min(high, value)
         eps = self._tolerance.epsilon_for_quantities(q_left, q_right)
-        return low <= high + eps
+        return spans_overlap(low, high, eps)
 
     def resolve_quantity(
         self,

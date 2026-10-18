@@ -50,7 +50,7 @@ It operates on the **seam between files**.
 | | |
 |---|---|
 | Ingest | IFC 2x3 / 4 / 4x3, IDS 1.0, PDF vector/raster, specification text |
-| Cross-check | Deterministic IFC + IDS + cross-document compare (configured ε-band) |
+| Cross-check | Deterministic IFC + IDS + cross-document compare (configured ε-band, decimal difference) |
 | Workplace | Review shell (Vite): IFC model, saved sheet preview and zone from the report, RU/EN templates, HITL. Not a drawing editor |
 | Report | HTML + JSON + PDF + structural BCF 2.1 / 3.0 ZIP |
 | Verdict | `summary.passed` is a Shared-gate. LLM/VLM never write it ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)) |
@@ -153,7 +153,7 @@ flowchart LR
 
 1. **The model.** Properties and quantities are validated with IfcOpenShell. IFC2x3 (buildingSMART schema; no ISO publication), IFC4 ADD2 (ISO 16739-1:2018) and IFC4x3 (ISO 16739-1:2024) go through one kernel. ISO/PAS 16739:2005 is the IFC2x Platform, not IFC2x3. Where property-set names diverge between releases, the difference is a `ValidationIssue`, not a silent skip. Per-feature rules: [`docs/ifc-compatibility-matrix.md`](docs/ifc-compatibility-matrix.md).
 2. **The rules.** IDS 1.0 is validated with IfcTester. Official rule sets from Moscow Region State Expertise and SPb GAU CGE (CIM OKS ed. 3.1.0 + CIM RII ed. 1.1.0) ship in `samples/`; the CGE profile ([`samples/profiles/spb-cge/`](samples/profiles/spb-cge/)) is a published rule set, not a customer-signed acceptance profile. CI checks the committed profile. A requested rule set that cannot load fails the check.
-3. **The other documents.** The model is compared with drawing notes, specifications and calculation texts, with a configured ε-band and Russian/European grouped decimals. Sources are compared; the calculation is not recomputed.
+3. **The other documents.** The model is compared with drawing notes, specifications and calculation texts. Numbers use a configured ε-band: the difference is decimal, so a value on the boundary stays inside the band (`1.1` and `1.0` at ε `0.1`). Grouped Russian and European decimals are accepted. A steel grade matches across Cyrillic and Latin lookalikes (`С345` and `C345`); Latin `I` is not folded. A short system-mark list or range (`В2.7,8,9`, `В2.4–В2.6`) matches one mark in `target_ref`. A grille size with `*` is not a list. Sources are compared; the calculation is not recomputed. Mark identity is not a system-clash verdict.
 4. **The report.** Each finding carries `finding_id`, `source_id` and `evidence_refs` (persistence refuses a finding without them). People get HTML; machines get JSON; issue exchange gets a structural BCF 2.1 / 3.0 ZIP. The browser review shell (web-ifc + Three.js) shows the IFC and the saved sheet preview with the zone from the report. It is not a drawing editor. The fixture overlay CLI remains a separate run.
 
 `summary.passed` is assembled from deterministic errors and the capability table ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)). Advisory LLM/VLM text, if enabled, drafts remark wording only and never writes that flag; under customer sign-off profiles outbound advisory calls are forbidden. Every optional engine reports `ok`, `skipped` or `failed`; any `FAILED` forces `summary.passed=false`. The same boundary is served on `GET /v1/system/capabilities`. That flag is a Shared-gate under configured rules.
@@ -167,7 +167,7 @@ flowchart LR
 
 - IFC property and quantity validation; IDS 1.0 fails if the rule set cannot load
 - Cross-document contradictions and drawing notes vs IFC
-- Configured ε-band (SI-normalised); deterministic requirement extraction from narrative text; advisory LLM does not sign anything off
+- Configured ε-band in decimal space (SI-normalised); lookalike steel grades and short system-mark lists share an identity; deterministic requirement extraction from narrative text; advisory LLM does not sign anything off
 - Every check reports `ok` / `skipped` / `failed`; tenant/object ACL on artifacts under `customer_pilot` / `production` (off by default in development); HTML/JSON; PDF; structural BCF 2.1 / 3.0 ZIP
 - PDF via pypdfium2 + pdfminer; default `AEROBIM_PDF_BACKEND=pdfium`
 - Browser IFC viewer and the sheet preview with the zone stored on the report. Not a drawing editor

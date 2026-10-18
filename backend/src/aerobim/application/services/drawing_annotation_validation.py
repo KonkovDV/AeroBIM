@@ -9,6 +9,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 
 from aerobim.application.services.cross_document_contradictions import to_float
+from aerobim.domain.label_identity import labels_equivalent
 from aerobim.domain.models import (
     ComparisonOperator,
     DrawingAnnotation,
@@ -20,7 +21,13 @@ from aerobim.domain.models import (
     ValidationIssue,
     issue_from_requirement,
 )
-from aerobim.domain.quantity import parse_quantity, si_compare
+from aerobim.domain.quantity import (
+    greater_or_equal_within,
+    less_or_equal_within,
+    parse_quantity,
+    si_compare,
+    within_epsilon,
+)
 from aerobim.domain.target_ref import (
     UNRESTRICTED_ELEMENT_MISMATCH_CAP,
     is_unrestricted_target_ref,
@@ -177,20 +184,17 @@ class DrawingAnnotationValidator:
                 scale = abs(observed_q.si_value / observed_number) if observed_number else 1.0
                 eps_si = eps_native * scale
                 if operator is ComparisonOperator.GREATER_OR_EQUAL:
-                    return observed_q.si_value >= expected_q.si_value - eps_si
+                    return greater_or_equal_within(observed_q.si_value, expected_q.si_value, eps_si)
                 if operator is ComparisonOperator.LESS_OR_EQUAL:
-                    return observed_q.si_value <= expected_q.si_value + eps_si
+                    return less_or_equal_within(observed_q.si_value, expected_q.si_value, eps_si)
                 return si_compare(observed_q, expected_q, epsilon=eps_si)
 
             eps = self._tolerance.epsilon_for_unit(unit)
             if operator is ComparisonOperator.GREATER_OR_EQUAL:
-                return observed_number >= expected_number - eps
+                return greater_or_equal_within(observed_number, expected_number, eps)
             if operator is ComparisonOperator.LESS_OR_EQUAL:
-                return observed_number <= expected_number + eps
-            # EQUALS with tolerance band
-            return abs(observed_number - expected_number) <= eps
+                return less_or_equal_within(observed_number, expected_number, eps)
+            return within_epsilon(observed_number, expected_number, eps)
 
-        # Non-numeric fallback: exact string comparison
-        if operator in {ComparisonOperator.GREATER_OR_EQUAL, ComparisonOperator.LESS_OR_EQUAL}:
-            return observed_value == expected_value
-        return observed_value == expected_value
+        # Non-numeric fallback: lookalike letters are one grade; case stays.
+        return labels_equivalent(observed_value, expected_value)

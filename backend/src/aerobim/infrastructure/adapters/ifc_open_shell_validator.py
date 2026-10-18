@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from aerobim.domain.ifc_globalid import is_valid_ifc_global_id
+from aerobim.domain.label_identity import labels_equivalent
 from aerobim.domain.models import (
     ComparisonOperator,
     FindingCategory,
@@ -17,7 +18,13 @@ from aerobim.domain.models import (
     ValidationIssue,
     issue_from_requirement,
 )
-from aerobim.domain.quantity import normalize_unit_token, parse_localized_number
+from aerobim.domain.quantity import (
+    greater_or_equal_within,
+    less_or_equal_within,
+    normalize_unit_token,
+    parse_localized_number,
+    within_epsilon,
+)
 from aerobim.domain.target_ref import (
     UNRESTRICTED_ELEMENT_MISMATCH_CAP,
     element_matches_named_target_ref,
@@ -509,11 +516,10 @@ class IfcOpenShellValidator:
             )
             eps = self._tolerance.epsilon_for_unit(requirement.unit)
             if requirement.operator is ComparisonOperator.GREATER_OR_EQUAL:
-                return obs_si >= exp_si - eps
+                return greater_or_equal_within(obs_si, exp_si, eps)
             if requirement.operator is ComparisonOperator.LESS_OR_EQUAL:
-                return obs_si <= exp_si + eps
-            # EQUALS: tolerance band |obs - exp| <= ε
-            return abs(obs_si - exp_si) <= eps
+                return less_or_equal_within(obs_si, exp_si, eps)
+            return within_epsilon(obs_si, exp_si, eps)
 
         # Mixed parse (numeric expected vs unparsable observed, or the reverse)
         # is a mismatch — not a silent string pass. Both-unparsable keeps
@@ -521,7 +527,10 @@ class IfcOpenShellValidator:
         if (observed_number is None) != (expected_number is None):
             return False
 
-        return str(observed_value) == requirement.expected_value
+        expected = requirement.expected_value
+        if expected is None:
+            return False
+        return labels_equivalent(str(observed_value), expected)
 
     def _to_float(self, value: Any) -> float | None:
         if value is None or isinstance(value, bool):

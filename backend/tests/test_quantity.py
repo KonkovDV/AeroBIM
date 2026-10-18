@@ -94,6 +94,12 @@ class SiCompareTests(unittest.TestCase):
         b = parse_quantity(3.0, "bar")
         self.assertFalse(si_compare(a, b))
 
+    def test_decimal_band_keeps_a_tenth_inside_epsilon(self) -> None:
+        a = parse_quantity(1.1, "m")
+        b = parse_quantity(1.0, "m")
+        self.assertTrue(si_compare(a, b, epsilon=0.1))
+        self.assertFalse(si_compare(a, b, epsilon=0.01))
+
 
 class LocalizedNumberTests(unittest.TestCase):
     def test_ru_space_and_nbsp_grouping(self) -> None:

@@ -14,6 +14,7 @@ from __future__ import annotations
 import math
 import unicodedata
 from dataclasses import dataclass
+from decimal import Decimal
 
 _GROUPING_SPACES = (
     "\u00a0",  # NBSP
@@ -296,6 +297,51 @@ def parse_quantity(value: float, unit: str) -> QuantityValue:
     )
 
 
+def measured_delta(actual: float, expected: float) -> Decimal | None:
+    """Decimal difference of two measurements.
+
+    ``1.1 - 1.0`` is ``0.1``. A binary tail must not push a value across an
+    ε boundary. Non-finite inputs have no decimal difference.
+    """
+
+    if not (math.isfinite(actual) and math.isfinite(expected)):
+        return None
+    return Decimal(str(actual)) - Decimal(str(expected))
+
+
+def within_epsilon(actual: float, expected: float, epsilon: float) -> bool:
+    """True when ``|actual - expected| <= epsilon`` in decimal space."""
+
+    delta = measured_delta(actual, expected)
+    if delta is None or not math.isfinite(epsilon):
+        return False
+    return abs(delta) <= Decimal(str(epsilon))
+
+
+def greater_or_equal_within(actual: float, expected: float, epsilon: float) -> bool:
+    """True when ``actual >= expected - epsilon`` in decimal space."""
+
+    delta = measured_delta(actual, expected)
+    if delta is None or not math.isfinite(epsilon):
+        return actual >= expected - epsilon
+    return delta >= -Decimal(str(epsilon))
+
+
+def less_or_equal_within(actual: float, expected: float, epsilon: float) -> bool:
+    """True when ``actual <= expected + epsilon`` in decimal space."""
+
+    delta = measured_delta(actual, expected)
+    if delta is None or not math.isfinite(epsilon):
+        return actual <= expected + epsilon
+    return delta <= Decimal(str(epsilon))
+
+
+def spans_overlap(low: float, high: float, epsilon: float) -> bool:
+    """True when ``low <= high + epsilon`` in decimal space."""
+
+    return less_or_equal_within(low, high, epsilon)
+
+
 def si_compare(
     a: QuantityValue,
     b: QuantityValue,
@@ -304,11 +350,11 @@ def si_compare(
     """Compare two QuantityValues for approximate equality in SI space.
 
     Returns True if both have si_value, dimensions match, and the absolute
-    difference is <= epsilon. Returns False if either lacks si_value or
-    dimensions differ (incompatible or unknown units).
+    decimal difference is <= epsilon. Returns False if either lacks si_value
+    or dimensions differ (incompatible or unknown units).
     """
     if a.si_value is None or b.si_value is None:
         return False
     if a.dimension != b.dimension:
         return False
-    return abs(a.si_value - b.si_value) <= epsilon
+    return within_epsilon(a.si_value, b.si_value, epsilon)

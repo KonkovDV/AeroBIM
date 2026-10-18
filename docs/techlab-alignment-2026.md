@@ -2,8 +2,8 @@
 ---
 title: "TechLab Alignment 2026 (Academic)"
 status: active
-version: "1.2.4"
-last_updated: "2026-08-29"
+version: "1.2.5"
+last_updated: "2026-10-18"
 tags: [aerobim, customer, techlab, openBIM, academic, traceability]
 claim_boundary: "Checkpoint GO; customer_go false until RT-001/002/003. Fixture evidence ≠ product accuracy."
 ---
@@ -48,7 +48,7 @@ Single traceability document mapping **customer requirements** ([i.moscow/techla
 | Exchange requirements | **IDS 1.0** (buildingSMART final, 2024) | IfcTester + project IDS packs |
 | Issue handoff | **BCF 2.1** (default), **BCF 3.0** (opt-in) | ZIP export + CDE week-1 import |
 | Information management | **ISO 19650-1/-2** (lite: stage, revision, container) | Report/API optional fields — not full CDE |
-| Quantities | Configured ε-band + SI-normalised compare (not ISO 12006-3) | Cross-doc numeric compare |
+| Quantities | Configured ε-band in decimal space + SI-normalised compare (not ISO 12006-3). `1.1` and `1.0` at ε `0.1` stay inside the band | Cross-doc numeric compare |
 | Research software | FAIR + CODE ([`REPRODUCIBILITY-2026.md`](REPRODUCIBILITY-2026.md)) | Tag `pilot-2026-pre`, frozen corpus, CI gates |
 | Academic evaluation | Precision/recall on extraction; ablation A0–A3 | RU **fixture** ground truth; macro F1 ≈ 0.86 (fixture-only; RT-001 OPEN — not customer accuracy) |
 | Industry analogs | Solibri / Navisworks (rule+clash); open validators | Bounded claim: open pilot path, not global superiority |
