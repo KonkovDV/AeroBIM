@@ -125,14 +125,18 @@ def xsd_validate_files(
     """Validate each file against the vendored IDS 1.0 XSD; return path -> error."""
     if not xsd_path.is_file():
         raise OfficialIdsProfileError(f"IDS 1.0 XSD missing: {xsd_path}")
-    try:
-        import xmlschema
-    except ModuleNotFoundError as exc:
+    import importlib.util
+
+    if importlib.util.find_spec("xmlschema") is None:
         raise OfficialIdsProfileError(
             "xmlschema is required for IDS 1.0 XSD validation (ships with ifctester)"
-        ) from exc
+        )
     try:
-        schema = xmlschema.XMLSchema(str(xsd_path))
+        from aerobim.infrastructure.adapters.xml_ids_document_auditor import (
+            load_offline_ids_schema,
+        )
+
+        schema = load_offline_ids_schema(xsd_path)
     except Exception as exc:
         raise OfficialIdsProfileError(f"IDS 1.0 XSD failed to load: {exc}") from exc
     errors: dict[str, str] = {}
@@ -153,6 +157,11 @@ def parse_gate_files(profile: OfficialIdsProfile, pack_root: Path) -> dict[str, 
         from ifctester import ids
     except ModuleNotFoundError as exc:
         raise OfficialIdsProfileError("ifctester is required for the IDS parse gate") from exc
+    from aerobim.infrastructure.adapters.xml_ids_document_auditor import (
+        ensure_ifctester_offline_schema,
+    )
+
+    ensure_ifctester_offline_schema()
     counts: dict[str, int] = {}
     problems: list[str] = []
     for entry in profile.files:

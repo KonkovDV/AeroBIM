@@ -100,18 +100,48 @@ def _load_ids_schema(xsd_path: str) -> Any:
     import xmlschema
 
     bundled = Path(xmlschema.__file__).resolve().parent / "schemas"
+    xml_uri = (bundled / "XML" / "xml.xsd").as_uri()
+    xsd_uri = (bundled / "XSD_1.0" / "XMLSchema.xsd").as_uri()
+    xsi_uri = (bundled / "XSI" / "XMLSchema-instance.xsd").as_uri()
     w3c_local = {
-        "http://www.w3.org/2001/xml.xsd": (bundled / "XML" / "xml.xsd").as_uri(),
-        "http://www.w3.org/2001/XMLSchema.xsd": (bundled / "XSD_1.0" / "XMLSchema.xsd").as_uri(),
-        "http://www.w3.org/2001/XMLSchema-instance": (
-            bundled / "XSI" / "XMLSchema-instance.xsd"
-        ).as_uri(),
+        "http://www.w3.org/2001/xml.xsd": xml_uri,
+        "https://www.w3.org/2001/xml.xsd": xml_uri,
+        "http://www.w3.org/2001/XMLSchema.xsd": xsd_uri,
+        "https://www.w3.org/2001/XMLSchema.xsd": xsd_uri,
+        "http://www.w3.org/2001/XMLSchema-instance": xsi_uri,
+        "https://www.w3.org/2001/XMLSchema-instance": xsi_uri,
     }
 
     def _uri_mapper(uri: str) -> str:
         return w3c_local.get(uri, uri)
 
-    return xmlschema.XMLSchema10(xsd_path, uri_mapper=_uri_mapper)
+    return xmlschema.XMLSchema10(xsd_path, uri_mapper=_uri_mapper, allow="local")
+
+
+def load_offline_ids_schema(xsd_path: str | Path) -> Any:
+    """Build or return the cached offline IDS 1.0 XMLSchema10 (SOTA-A3)."""
+
+    return _load_ids_schema(str(Path(xsd_path).resolve()))
+
+
+def ensure_ifctester_offline_schema() -> None:
+    """Pre-install an offline XMLSchema10 on ``ifctester.ids.schema`` (SOTA-A3).
+
+    ``ifctester.ids.get_schema()`` otherwise builds ``XMLSchema(ids.xsd)``
+    without a ``uri_mapper``, causing an outbound HTTP fetch to ``www.w3.org``
+    on the first ``ids.open(...)`` call.
+    """
+
+    try:
+        import ifctester.ids as ids_module  # type: ignore[import-untyped]
+    except ImportError:
+        return
+    current = getattr(ids_module, "schema", None)
+    if current is not None and getattr(current, "allow", None) == "local":
+        return
+    xsd = Path(ids_module.cwd) / "ids.xsd"
+    if xsd.is_file():
+        ids_module.schema = load_offline_ids_schema(xsd)
 
 
 def _xsd_audit_issues(ids_path: Path, xsd_path: Path | None) -> list[ValidationIssue]:

@@ -1,8 +1,8 @@
 ---
 title: "Remediation plan P0-P2 — evidence before features"
 status: active
-version: "1.1.1"
-last_updated: "2026-09-10"
+version: "1.2.0"
+last_updated: "2026-10-18"
 claim_boundary: >
   Planning document only. Nothing here is customer acceptance, product
   accuracy, SLA evidence, CDE import, or a contractual commitment.
@@ -63,8 +63,11 @@ Misquoting our own evidence is the fastest way to lose a technical reviewer.
 - MEP system clash stays `NOT_VERIFIED`: the counts are axis-aligned bounding
   box overlaps, the ring is bounded and off by default, and geometric
   intersection is not claimed;
-- heavy jobs still run as in-process background tasks, so a crash loses
-  in-flight work; that is an open P1 gap, not a solved problem.
+- production HTTP is producer-only and `aerobim.worker` executes package jobs
+  over Redis `BLMOVE` with leases, heartbeats, fencing tokens and `DEAD_LETTER`
+  ([`JOB_DELIVERY_AT_LEAST_ONCE_2026_10.md`](../architecture/JOB_DELIVERY_AT_LEAST_ONCE_2026_10.md));
+  delivery is at-least-once, not physically exactly-once, and the long-lived
+  worker container is not a fresh per-job microVM sandbox.
 
 ## P1 — make the delivery defensible
 
@@ -73,13 +76,15 @@ Misquoting our own evidence is the fastest way to lose a technical reviewer.
    per artifact. Acceptance: a single request returns a bundle whose files
    agree on report id, revision and review history; PDF verification asserts
    extracted text, not raw bytes.
-2. **Durable worker and queue.** Replace background tasks as the only hard
-   profile executor. Acceptance: request payload is reconstructable after a
-   crash, leases and heartbeats are explicit, retries and a dead letter exist,
-   stage progress and mid-stage cancellation are observable.
-3. **Zero-egress on-prem package.** Acceptance: a rehearsal on a clean host
-   with no outbound network produces a full run and an export bundle, with the
-   network denial recorded.
+2. **Durable worker and queue (delivered at-least-once; per-job sandbox open).**
+   `aerobim.worker` with Redis `BLMOVE`, explicit leases/heartbeats, retries and
+   `DEAD_LETTER` replaced in-process `BackgroundTasks`. Remaining P1 hardening:
+   migrating from single-list `BLMOVE` to Redis Streams (`XAUTOCLAIM`) before
+   multi-worker scale-out and isolating each IFC job in a fresh child sandbox.
+3. **Zero-egress on-prem package.** IDS 1.0 XSD validation and `ifctester.ids.open`
+   now resolve W3C base schemas strictly from local `xmlschema` copies with
+   `allow="local"` (`SOTA-A3`). Remaining acceptance: full clean-host rehearsal
+   recording network denial and export bundle checksums.
 4. **Exchange contract.** Acceptance: a documented, versioned schema for
    findings, decisions and evidence references, with a contract test that fails
    on breaking change.

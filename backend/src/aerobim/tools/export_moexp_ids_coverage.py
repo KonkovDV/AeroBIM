@@ -202,6 +202,11 @@ def evaluate_ids_file(
             )
     else:
         try:
+            from aerobim.infrastructure.adapters.xml_ids_document_auditor import (
+                ensure_ifctester_offline_schema,
+            )
+
+            ensure_ifctester_offline_schema()
             specset = ids.open(str(ids_path))
             model = ifc_model if ifc_model is not None else open_ifc_model(ifc_path)
             specset.validate(model)

@@ -17,7 +17,9 @@ from unittest.mock import patch
 from aerobim.domain.models import Severity
 from aerobim.infrastructure.adapters.xml_ids_document_auditor import (
     XmlIdsDocumentAuditor,
+    _load_ids_schema,
     default_ids_xsd_path,
+    ensure_ifctester_offline_schema,
 )
 
 _SAMPLES = Path(__file__).resolve().parents[2] / "samples"
@@ -110,11 +112,19 @@ class IdsOfficialXsdAuditTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             ids_path = Path(tmp) / "valid.ids"
             ids_path.write_text(_VALID_IDS, encoding="utf-8")
+            _load_ids_schema.cache_clear()
             with (
                 patch.object(socket, "getaddrinfo", _blocked),
                 patch.object(socket, "create_connection", _blocked),
             ):
                 issues = XmlIdsDocumentAuditor().audit(ids_path)
+                import ifctester.ids as ids_mod
+
+                ids_mod.schema = None
+                ensure_ifctester_offline_schema()
+                self.assertEqual(getattr(ids_mod.schema, "allow", None), "local")
+                parsed = ids_mod.open(str(ids_path))
+                self.assertEqual(len(parsed.specifications), 1)
         self.assertEqual(
             [i for i in issues if i.rule_id.startswith("AEROBIM-IDS-XSD")],
             [],

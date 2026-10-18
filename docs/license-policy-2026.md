@@ -1,9 +1,9 @@
 ---
 title: "Лицензии AeroBIM, 2026"
 status: active
-version: "1.2.0"
+version: "1.2.1"
 date: "2026-08-14"
-last_updated: "2026-09-22"
+last_updated: "2026-10-18"
 claim_boundary: "Инженерная политика, не юридическое заключение. LIC-001 требует юриста."
 ---
 
@@ -22,9 +22,9 @@ claim_boundary: "Инженерная политика, не юридическ�
 | Компонент | Лицензия в реестре | Где живёт |
 |---|---|---|
 | Код AeroBIM | MIT | Этот репозиторий |
-| IfcOpenShell, IfcTester 0.8.5 | LGPL-3.0-or-later | Ядро разбора IFC и IDS. Импорт только из адаптеров и `tools`. Не модифицируем. Юридическая проверка рекомендована |
+| IfcOpenShell 0.9.0.post1, IfcTester 0.9.0 | LGPL-3.0-or-later | Ядро разбора IFC и IDS. Импорт только из адаптеров и `tools`. Не модифицируем. Юридическая проверка рекомендована |
 | web-ifc 0.0.77 | MPL-2.0 | Оболочка в браузере. Copyleft на файл: библиотеку не правим, в уведомлении называем |
-| pypdfium2 5.12.1 | Apache-2.0 OR BSD-3-Clause | Боевой PDF: отрисовка и кадр. Плюс лицензии PDFium внутри колеса |
+| pypdfium2 5.14.0 | Apache-2.0 OR BSD-3-Clause | Боевой PDF: отрисовка и кадр. Плюс лицензии PDFium внутри колеса |
 | pdfminer.six | MIT | Текст со слоя PDF |
 | Pillow | MIT-CMU | Картинки для кадра PDF |
 | ReportLab | BSD-3-Clause | PDF отчёта. Шрифт Liberation Sans — OFL, лежит у нас. Это не PyMuPDF |

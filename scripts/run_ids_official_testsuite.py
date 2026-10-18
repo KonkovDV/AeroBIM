@@ -38,7 +38,12 @@ def _engine_only(profile: dict[str, object]) -> dict[str, object]:
     import ifcopenshell
     import ifctester
     from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_model
+    from aerobim.infrastructure.adapters.xml_ids_document_auditor import (
+        ensure_ifctester_offline_schema,
+    )
     from ifctester import ids
+
+    ensure_ifctester_offline_schema()
 
     rows: list[dict[str, object]] = []
     for case in profile["cases"]:  # type: ignore[union-attr]

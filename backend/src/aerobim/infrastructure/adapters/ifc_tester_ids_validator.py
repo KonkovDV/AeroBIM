@@ -118,8 +118,13 @@ class IfcTesterIdsValidator:
             handle.write(ids_xml)
             decoded_ids_path = Path(handle.name)
         try:
-            specs = ids.open(str(decoded_ids_path))
             from aerobim.infrastructure.adapters.ifc_file_open import open_ifc_model
+            from aerobim.infrastructure.adapters.xml_ids_document_auditor import (
+                ensure_ifctester_offline_schema,
+            )
+
+            ensure_ifctester_offline_schema()
+            specs = ids.open(str(decoded_ids_path))
 
             ifc_file = open_ifc_model(ifc_path)
             specs.validate(ifc_file)

@@ -16,11 +16,22 @@
 ## Проверки перед PR
 ```bash
 cd backend && python -m venv .venv && . .venv/bin/activate && pip install -r requirements-dev-lock.txt && pip install -e . --no-deps
-ruff check . && pytest
+ruff check src tests scripts && ruff format --check src tests scripts && mypy src && pytest
+python ../scripts/check_node_versions.py
+python ../scripts/lint_claims.py --full-docs
+python ../scripts/check_docs_metadata_integrity.py
+python -m aerobim.tools.check_markdown_links --root ..
+python -m aerobim.tools.export_runtime_baseline --check-readme --skip-artifact-drift
 python ../scripts/lint_ai_trace.py
-cd ../frontend && npm ci && npm test
+cd ../frontend && npm ci && npm run lint && npm test && npm run build
 ```
 Протокол очереди описан в `docs/GH_AGENT_BUS.md`; проверяйте комментарии командой `python -m aerobim.tools.agent_bus check-comment`. Заявления о возможностях сверяйте с `docs/pilot-claim-boundary-2026.md`.
+
+## Приоритетный план и инварианты ИИ-исполнителя (SOTA 2026)
+- **Владение вердиктом (`ADR-001`):** `summary.passed` вычисляет только детерминированное ядро (`EvidenceAssembler` + `DeterminismGate`). Выходы LLM/VLM и OCR остаются в контуре `advisory` и не меняют вердикт (`OFF == ON`).
+- **Единые точки входа и нулевой сетевой выход:** модели IFC открываются только через `open_ifc_model` / `open_ifc_file` / `open_ifc_session` (`ifc_file_open.py`) со сверкой числа экземпляров SPF и `RocksDB`; схемы IDS 1.0 XSD загружаются только через `load_offline_ids_schema` / `ensure_ifctester_offline_schema` (`allow="local"`, без сетевых запросов к `www.w3.org`).
+- **Алгебра воздержания и калибровка:** при расхождении векторного слоя и OCR на штампах 2D (`stamp_dual_read.py`) возвращается `ABSTAIN` (`requires_hitl=True`); отчёты калибровки (`compute_reliability_report.py`) считают интервалы Уилсона, ECE и оценку Брайера при `publishable=false` вне корпуса заказчика.
+- **Очередь научных и инженерных задач:** автономные задачи фаз E/M/P (`AI-E3-SWEEP`, `AI-E6-CALC`, `AI-M1-EPROC`, `AI-P1-MANUSCRIPT`) ведутся по [`docs/quality/ACADEMIC_ROADMAP_2026_09.md`](docs/quality/ACADEMIC_ROADMAP_2026_09.md) и [`docs/plan/REMEDIATION_PLAN_P0_P2_2026_09.md`](docs/plan/REMEDIATION_PLAN_P0_P2_2026_09.md). Checkpoint `GO` (`regulatory_measurement_mvp`); `customer_go` всегда `false` до закрытия RT-001b/c, RT-002c, RT-003c.
 
 ## Мердж
 Мерджит merge queue после одобрения ревьюера и зелёных проверок. Свой PR не одобряйте. Красный main останавливает все задачи, кроме его починки.
