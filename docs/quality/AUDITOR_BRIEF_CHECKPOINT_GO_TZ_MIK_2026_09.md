@@ -274,7 +274,7 @@ AeroBIM ловит шов комплекта — площадь в ведомо�
 27. Поднять SPF cap IFC до 1,5 ГБ / «мы SPF-открываем 1,5 ГБ» / native DWG к КТ#3 / 8,3% как текущая доля КР (headline 16,7%). 1,5 ГБ — ingest + RocksDB; WASM и SPF остаются 256 МиБ.
 28. Fixture AABB precision/recall = 1,0 при n=6 — жюри не показывать: Wilson 95% lower ≈ 0,61. Вопрос о коллизиях — на протокол (двое людей, ~100 находок).
 29. «Неэффективное использование пространства реализовано» / «это не нужно заказчику». Заказчик назвал пункт 25.08 (норматив продаваемой площади, МОП, коридоры). Честная строка: advisory по внутреннему нормативу; решение «в скоупе / вне MVP» — владелец (OA-14).
-30. «ODA Sustaining 7 500 $ = native RVT/NWD» / «CADSoftTools от 1 660 $». Прайс 30.08: BimRv/BimNv — отдельные 6 250 $; CAD .NET — от 765 USD. ODA Sustaining ≠ BimRv.
+30. «ODA Sustaining 7 500 $ = native RVT/NWD» / «CADSoftTools от 1 660 USD». Прайс 30.08: BimRv/BimNv — отдельные 6 250 USD; CAD .NET — от 765 USD. ODA Sustaining ≠ BimRv.
 31. «Фронт сдан» / матрица ТЗ «Web UI done» / Vite как показ на чужом ноутбуке жюри / «две находки огнестойкости = точность». Review shell — не показ сидящего члена жюри. Показ жюри = CLI. Seed — git-фикстура.
 32. «Мы лучше Iversen» / их F1 как наша цифра / «LLM выбирает проверки на Shared-gate». Гибрид: черновик замечания и IDS — да; `call_tool` / `change_verdict` / generated checker на маршруте вердикта — нет без journal + hashed/`approval_ref` pack.
 

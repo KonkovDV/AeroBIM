@@ -177,20 +177,54 @@ flowchart LR
 
 ## Numbers, marks, stamps and calculations
 
-- **Decimal tolerance band.** Construction measurements are normalized to SI (`quantity.py`), and the difference is computed in `Decimal` (`measured_delta` / `within_epsilon`): $\delta(a, b) = \operatorname{Decimal}(\operatorname{str}(a)) - \operatorname{Decimal}(\operatorname{str}(b))$ and $\lvert\delta(a, b)\rvert \le \operatorname{Decimal}(\operatorname{str}(\varepsilon))$. A value on the boundary stays inside the band: `1.1` and `1.0` at a tolerance of `0.1` agree without a binary floating-point tail. Russian (`1 254,30`) and European (`1.254,30`) grouped numbers are parsed; an ambiguous token such as `1.254` (one digit before three digits) is rejected instead of guessed.
+- **Decimal tolerance band.** Construction measurements are normalized to SI (`quantity.py`), and the difference is computed in `Decimal` (`measured_delta` / `within_epsilon`): $\delta(a, b) = \operatorname{Decimal}(\operatorname{str}(a)) - \operatorname{Decimal}(\operatorname{str}(b))$, and the values agree when $\lvert\delta(a, b)\rvert \le \operatorname{Decimal}(\operatorname{str}(\varepsilon))$. A value on the boundary stays inside the band: `1.1` and `1.0` at a tolerance of `0.1` agree without a binary floating-point tail. Russian (`1 254,30`) and European (`1.254,30`) grouped numbers are parsed; an ambiguous token such as `1.254` (one digit before three digits) is rejected instead of guessed.
 - **Steel grades and system marks.** Cyrillic and Latin lookalike letters in a grade are folded (`С345` and `C345` are one steel grade in `label_identity.py`), while a Roman `I` stays `I`. A short riser list or range on a ventilation schedule (`В2.7,8,9`, `В2.4–В2.6`) matches any single riser inside it in `target_ref`. A grille dimension with `*` (`П300*300`) stays a dimension and is not expanded as a mark list. An `IfcRoot.GlobalId` (22 characters, ISO 10303-21) is matched character for character; `ALL`, `*`, `ANY` or an empty `target_ref` applies to all instances of the entity. Mark identity is not a system-clash verdict.
-- **Title blocks and drawing reads.** On 2D stamps (`stamp_dual_read.py`), the vector PDF text layer and OCR must agree after normalization $\nu(x) = \operatorname{casefold}\!\bigl(\operatorname{strip}(\operatorname{NFKC}(x))\bigr)$ (with Cyrillic `ё` mapped to `е`) and meet the confidence floor $c_{\text{ocr}} \ge \tau_{\min}$ ($\tau_{\min} = 0.5$ by default). Any disagreement or low confidence returns `ABSTAIN` (or `NOT_VERIFIED` when both are empty) and sets `requires_hitl=true`. For optional VLM drawing reads, verbalized confidence is treated only as an abstention floor (`abstention_sweep.py`, $\tau \in \{0.35, 0.45, 0.60, 0.75\}$): raising $\tau$ monotonically increases `hitl_required`, and without outcome labels ECE and Brier are left `null`.
-- **Declared calculation tables.** Office tables (`xlsx`, `docx` via `spreadsheet_load_evidence_adapter.py`) are compared against BIM/working-documentation tables by declared values inside the decimal tolerance band (`calculation_table_compare.py`, dimensionless $\varepsilon = 10^{-3}$). The citable observation unit is the triple $u(r) = (\text{element\_id},\, \text{section\_id},\, \text{parameter\_id})$: when both sides carry the same non-empty triple, `observation_status` is `COMPLETE`; any blank coordinate, missing side, duplicate `field_id` or disagreeing triple stays `NOT_VERIFIED`. `MATCH` means the printed numbers agree; the solver is not re-run.
+- **Title blocks and drawing reads.** On 2D stamps (`stamp_dual_read.py`), the vector PDF text layer and OCR must agree after normalization: Unicode NFKC, then `ё` and `Ё` map to `е` and `Е`, runs of whitespace collapse to one space, then strip and casefold. OCR confidence must be known and at least `0.5`. Disagreement, unknown confidence, or confidence below that floor returns `ABSTAIN` (or `NOT_VERIFIED` when both are empty) and sets `requires_hitl=true`. For optional VLM drawing reads, verbalized confidence is only an abstention floor (`abstention_sweep.py`, $\tau \in \lbrace 0.35, 0.45, 0.60, 0.75 \rbrace$). Raising the floor does not decrease the share of `hitl_required`. Without outcome labels, ECE and Brier stay `null`.
+- **Declared calculation tables.** Office tables (`xlsx`, `docx` via `spreadsheet_load_evidence_adapter.py`) are compared against BIM/working-documentation tables by declared values inside the decimal tolerance band (`calculation_table_compare.py`, dimensionless $\varepsilon = 10^{-3}$). The citable observation unit is the triple `element_id`, `section_id`, `parameter_id`. When both sides carry the same non-empty triple, `observation_status` is `COMPLETE`. A blank coordinate, a missing side, a duplicate `field_id` or two different triples stay `NOT_VERIFIED`. `MATCH` means the printed numbers agree; the solver is not re-run.
 
 ## Why the checker is built this way
 
 | Observation from 2025–2026 practice | Design choice in AeroBIM |
 |---|---|
-| Vision and language models miscount repeated symbols on floor plans and hallucinate on dense sheets (`AECV-Bench`, arXiv:2601.04819; Iversen & Huang, *Automation in Construction* 2025; Fuchs et al., EC3) | `summary.passed` is computed only by `EvidenceAssembler` + `DeterminismGate` ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)): $V(\mathcal{P}) = \mathbb{I}\!\left(\lvert E_{\text{det}}\rvert = 0 \land \forall c \in C_{\text{req}}:\, \operatorname{state}(c) = \text{OK}\right)$. LLM/VLM outputs carry `origin="advisory"` and satisfy `OFF == ON` for the pack verdict |
-| Self-reported VLM confidence is poorly calibrated (VL-Calibration, ACL 2026) | Verbalized confidence is used only as an abstention floor (`hitl_required`): $\operatorname{hitl}(c, \tau) = \mathbb{I}(c < \tau \lor \neg\,\text{calibrated})$. Uncalibrated region reads require reviewer confirmation regardless of the number |
-| Point estimates on small samples and naive $\kappa$ under class imbalance overstate quality | Proportions use Wilson 95% score intervals; labeling sample size uses exact one-sided binomial power and Wilson half-width (`study_design.py`, `plan_adjudication_corpus.py`, $\text{recommended\_n} = \max(62, 111) = 111$, `n_labeled=0`); rater agreement reports Cohen's $\kappa$, Krippendorff's $\alpha$ and Gwet's $\text{AC}_1 = \frac{p_o - p_e^{(\gamma)}}{1 - p_e^{(\gamma)}}$ (`eval_statistics.py`, `rt001_dual_rater_simulation.py`); calibration reports Equal-Mass $\text{ECE} = \sum_{m=1}^K \frac{\lvert B_m\rvert}{n}\lvert\operatorname{acc}(B_m) - \operatorname{conf}(B_m)\rvert$ and Brier score $\text{BS} = \frac{1}{n}\sum_{i=1}^n (f_i - o_i)^2$ (`compute_reliability_report.py`, `eval_statistics.py`, `publishable=false` outside a customer corpus) |
-| Running a fixed-$\alpha$ check on every CI commit inflates false alarms over time | Sequential regression monitoring (`sequential_inference.py`, `e_process_simulation.py`) maps permutation $p$-values to e-values via Vovk–Wang power $f_\kappa(p) = \kappa p^{\kappa - 1}$ and mixture $F(p) = \frac{1 - p + p\ln p}{p(\ln p)^2}$ calibrators or runs a truncated aGRAPA betting martingale $W_T = \prod_{t=1}^T (1 + \lambda_t(x_t - \tfrac{1}{2}))$, bounding the family-wise false-alarm rate via Ville's inequality $\mathbb{P}_0(\sup_{t \ge 1} E_t \ge 1/\alpha) \le \alpha$ |
+| Vision and language models miscount repeated symbols on floor plans and hallucinate on dense sheets (`AECV-Bench`, arXiv:2601.04819; Iversen & Huang, *Automation in Construction* 2025; Fuchs et al., EC3) | `summary.passed` is computed only by `EvidenceAssembler` + `DeterminismGate` ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)). A non-empty deterministic error set or a required capability that is not `OK` withholds a pass. So do a blocked intake, an unresolved drawing review, and a hard clash when that policy is on. Warnings alone can still pass. LLM/VLM outputs carry `origin="advisory"` and satisfy `OFF == ON` for the pack verdict |
+| Self-reported VLM confidence is poorly calibrated (VL-Calibration, ACL 2026) | Verbalized confidence is only an abstention floor (`hitl_required`). A region goes to review when its confidence is below the floor, or when that confidence was never calibrated. Uncalibrated region reads require reviewer confirmation regardless of the number |
+| Point estimates on small samples and naive $\kappa$ under class imbalance overstate quality | Proportions use Wilson 95% score intervals. Labeling sample size (`study_design.py`, `plan_adjudication_corpus.py`, `n_labeled=0`) is the larger of 62 and 111, so `recommended_n = 111`. Agreement reports Cohen's $\kappa$, Krippendorff's $\alpha$ and Gwet's $\mathrm{AC}_1$. Calibration reports equal-mass ECE and the Brier score (`compute_reliability_report.py`, `eval_statistics.py`). Outside a customer corpus, and when $n < 100$, `publishable` stays false. The expressions are below |
+| Running a check at fixed $\alpha$ on every CI commit inflates false alarms over time | Sequential monitoring (`sequential_inference.py`, `e_process_simulation.py`) maps permutation $p$-values to e-values with the Vovk–Wang calibrators, or runs a truncated aGRAPA martingale. Ville's inequality bounds the family-wise false-alarm rate. The expressions are below |
 | Copying numbers by hand into papers or reports causes drift from CI evidence | `manuscript_tables.py` prints a cell only when its JSON pin has `attested_by="ci"` and a non-empty `claim_level`; otherwise the cell stays `withheld` |
+
+### The expressions
+
+$$
+V(\mathcal{P}) = \mathbb{I}\bigl(\lvert E_{\mathrm{det}}\rvert = 0 \quad\land\quad \forall c \in C_{\mathrm{req}}: \operatorname{state}(c) = \mathrm{OK}\bigr)
+$$
+
+That indicator is the fatal-finding and required-capability part. A blocked intake, an unresolved drawing review, and a hard clash under an enabled policy also withhold a pass. Warnings alone can still pass.
+
+$$
+\operatorname{hitl}(c, \tau) = \mathbb{I}\bigl(c < \tau \quad\lor\quad \neg\mathrm{calibrated}\bigr)
+$$
+
+$$
+\mathrm{AC}_1 = \frac{p_o - p_e^{(\gamma)}}{1 - p_e^{(\gamma)}}
+$$
+
+$$
+\mathrm{ECE} = \sum_{m=1}^{K} \frac{\lvert B_m\rvert}{n}\bigl\lvert\operatorname{acc}(B_m) - \operatorname{conf}(B_m)\bigr\rvert, \qquad \mathrm{BS} = \frac{1}{n}\sum_{i=1}^{n}(f_i - o_i)^2
+$$
+
+$$
+f_\kappa(p) = \kappa p^{\kappa - 1}, \qquad F(p) = \frac{1 - p + p\ln p}{p(\ln p)^2}
+$$
+
+$$
+W_T = \prod_{t=1}^{T}\bigl(1 + \lambda_t(x_t - \tfrac{1}{2})\bigr)
+$$
+
+Here $x_t = (d_t + 1) / 2$, and $d_t$ is the step difference from $-1$ to $1$.
+
+$$
+\mathbb{P}_0\bigl(\sup_{t \ge 1} E_t \ge 1/\alpha\bigr) \le \alpha
+$$
 
 ## Capabilities
 
@@ -201,7 +235,7 @@ flowchart LR
 - PDF via pypdfium2 + pdfminer; default `AEROBIM_PDF_BACKEND=pdfium`
 - Browser IFC viewer and the sheet preview with the zone stored on the report. Not a drawing editor
 - Norm rule packs (a fixture pack is not a customer-signed profile) and an opt-in completeness inventory
-- Quality measurement protocol (Wilson intervals, exact binomial sample-size planner, Equal-Mass ECE, Brier score, Gwet $\text{AC}_1$, e-process regression monitor)
+- Quality measurement protocol (Wilson intervals, exact binomial sample-size planner, equal-mass ECE, Brier score, Gwet's $\mathrm{AC}_1$, e-process regression monitor)
 
 Optional: geometry clash `.[clash]`; OCR `.[raster]`; PyMuPDF `pdf-agpl`; advisory LLM/VLM drafts (never write `summary.passed`); OpenCDE BCF push (experimental; not CDE import proof); DXF via ezdxf.
 
