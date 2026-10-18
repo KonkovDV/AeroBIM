@@ -38,10 +38,11 @@ def simulate_null_trajectories(
     """Run mixture, power and truncated-aGRAPA monitors on one null stream.
 
     Draws come from a fixed 32-bit linear congruential generator, so the
-    ensemble does not depend on the language runtime. p-values are uniform
-    on ``[0, 1)``. Betting diffs are uniform on ``[-1, 1]`` (mean zero, the
-    boundary of ``H0: mean >= 0``). The naive rule alarms when any single
-    p-value is below alpha.
+    ensemble does not depend on the language runtime. p-values lie in
+    ``[0, 1]``: the divisor is ``2**32 - 1``, so a draw can be 1. Betting
+    diffs are uniform on ``[-1, 1]`` (mean zero, the boundary of
+    ``H0: mean >= 0``). The naive rule alarms when any single p-value is
+    below alpha.
     """
 
     if n_paths < 1 or n_steps < 1:
@@ -106,7 +107,7 @@ def simulate_null_trajectories(
 
 
 def _unit(state: int) -> tuple[float, int]:
-    """One uniform in ``[0, 1)`` from a fixed 32-bit LCG. Not a secret stream."""
+    """One draw in ``[0, 1]`` from a fixed 32-bit LCG. Not a secret stream."""
 
     nxt = (1664525 * state + 1013904223) & 0xFFFFFFFF
     return (nxt / 0xFFFFFFFF, nxt)

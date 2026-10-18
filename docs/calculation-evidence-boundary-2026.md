@@ -17,18 +17,13 @@ Never: «расчёт правильный».
 
 ## Observation
 
-A declared-field comparison (`DeclaredCalcRow` → `FieldCompare`) is one row of a table. The observation unit that can be cited is the non-empty triple `element_id`, `section_id`, `parameter_id`:
+A declared-field comparison (`DeclaredCalcRow` → `FieldCompare`) is one row of a table. The observation unit that can be cited is the non-empty triple `element_id`, `section_id`, `parameter_id`.
 
-$$
-\operatorname{observation}(r_{\mathrm{calc}}, r_{\mathrm{bim}}) = \begin{cases}
-\text{COMPLETE}, & u(r_{\mathrm{calc}}) = u(r_{\mathrm{bim}}) \ne \varnothing, \\
-\text{NOT_VERIFIED}, & u(r_{\mathrm{calc}}) = \varnothing \quad\lor\quad u(r_{\mathrm{bim}}) = \varnothing \quad\lor\quad u(r_{\mathrm{calc}}) \ne u(r_{\mathrm{bim}}).
-\end{cases}
-$$
+`observation_status` is `COMPLETE` when both sides carry the same non-empty triple. It stays `NOT_VERIFIED` when either triple is blank, the triples differ, or the `field_id` is duplicated.
 
 A blank coordinate, a missing side, a duplicate `field_id`, or two different triples leaves `observation_status = "NOT_VERIFIED"` (`TableCompareResult.observations_complete = False`).
 
-`MATCH` means the printed numbers agree inside the decimal tolerance band: $\lvert\delta(a, b)\rvert \le \operatorname{Decimal}(\operatorname{str}(\varepsilon))$ (`within_epsilon`, dimensionless $\varepsilon = 10^{-3}$), the same way as on the rest of the pack. `MATCH` does not say the calculation is correct, and it does not say the observation is complete.
+`MATCH` means the printed numbers agree inside the decimal tolerance band: the absolute `Decimal` difference is at most `Decimal(str(epsilon))` (`within_epsilon`, dimensionless epsilon `0.001`), the same way as on the rest of the pack. `MATCH` does not say the calculation is correct, and it does not say the observation is complete.
 
 ## Port
 
