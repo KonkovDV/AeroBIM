@@ -233,6 +233,11 @@ class PlanAdjudicationCorpusTests(unittest.TestCase):
         self.assertFalse(preview[0.6]["demonstrates_threshold"])
         # ...while the expected rate at the recommended n must.
         self.assertTrue(preview[0.75]["demonstrates_threshold"])
+        self.assertEqual(plan["claim_level"], "design_only")
+        self.assertEqual(plan["observation"]["n_labeled"], 0)
+        self.assertEqual(plan["observation"]["n_human_raters"], 0)
+        self.assertFalse(plan["observation"]["study_executed"])
+        self.assertFalse(plan["observation"]["preview_is_observation"])
         self.assertIn("RT-001", plan["claim_boundary"])
 
     def test_expected_below_threshold_rejected(self) -> None:

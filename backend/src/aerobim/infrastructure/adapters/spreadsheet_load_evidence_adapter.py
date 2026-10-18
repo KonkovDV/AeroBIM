@@ -349,6 +349,9 @@ _VALUE_HEADERS = frozenset({"value", "declared", "amount"})
 _EXPECTED_HEADERS = frozenset({"expected"})
 _OBSERVED_HEADERS = frozenset({"observed"})
 _UNIT_HEADERS = frozenset({"unit", "ед", "ед."})
+_ELEMENT_HEADERS = frozenset({"element", "element_id", "элемент"})
+_SECTION_HEADERS = frozenset({"section", "section_id", "сечение"})
+_PARAMETER_HEADERS = frozenset({"parameter", "parameter_id", "параметр"})
 
 
 @dataclass(frozen=True)
@@ -424,6 +427,12 @@ def _header_map(cells: list[str]) -> dict[str, int] | None:
             mapping["observed"] = index
         elif token in _UNIT_HEADERS:
             mapping["unit"] = index
+        elif token in _ELEMENT_HEADERS:
+            mapping["element"] = index
+        elif token in _SECTION_HEADERS:
+            mapping["section"] = index
+        elif token in _PARAMETER_HEADERS:
+            mapping["parameter"] = index
     if "id" not in mapping:
         return None
     if "value" not in mapping and "expected" not in mapping:
@@ -448,7 +457,21 @@ def _row_from_cells(cells: list[str], mapping: dict[str, int]) -> DeclaredCalcRo
         value = cells[mapping["expected"]].strip()
     if not value:
         return None
-    return DeclaredCalcRow(field_id=field_id, label=label, value=value, unit=unit)
+    return DeclaredCalcRow(
+        field_id=field_id,
+        label=label,
+        value=value,
+        unit=unit,
+        element_id=_mapped_cell(cells, mapping, "element"),
+        section_id=_mapped_cell(cells, mapping, "section"),
+        parameter_id=_mapped_cell(cells, mapping, "parameter"),
+    )
+
+
+def _mapped_cell(cells: list[str], mapping: dict[str, int], key: str) -> str:
+    if key not in mapping or mapping[key] >= len(cells):
+        return ""
+    return cells[mapping[key]].strip()
 
 
 def _extract_xlsx(path: Path, suffix: str) -> ExtractedTable:

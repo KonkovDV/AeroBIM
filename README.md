@@ -45,12 +45,30 @@ It operates on the **seam between files**.
 
 **What a finding looks like.** Demo case: cover 30 mm in the model, 40 mm on the sheet — 10 mm gap. The deterministic layer does the compare. The card traces to the requirement, GUID and sheet row. A person decides. Export is a BCF 2.1/3.0 file.
 
+## Contents
+
+- [What AeroBIM accepts](#what-aerobim-accepts)
+- [Stage](#stage)
+- [Try it](#try-it)
+- [What a run does](#what-a-run-does)
+- [Numbers, marks, stamps and calculations](#numbers-marks-stamps-and-calculations)
+- [Why the checker is built this way](#why-the-checker-is-built-this-way)
+- [Capabilities](#capabilities)
+- [HTTP API](#http-api)
+- [Architecture](#architecture)
+- [Configuration](#configuration)
+- [Repository](#repository)
+- [Documentation](#documentation)
+- [Cite](#cite)
+- [Stack](#stack)
+- [License](#license)
+
 ## What AeroBIM accepts
 
 | | |
 |---|---|
 | Ingest | IFC 2x3 / 4 / 4x3, IDS 1.0, PDF vector/raster, specification text |
-| Cross-check | Deterministic IFC + IDS + cross-document compare (configured ε-band, decimal difference) |
+| Cross-check | IFC, IDS and the other files in the pack. The tolerance on a number is decimal |
 | Workplace | Review shell (Vite): IFC model, saved sheet preview and zone from the report, RU/EN templates, HITL. Not a drawing editor |
 | Report | HTML + JSON + PDF + structural BCF 2.1 / 3.0 ZIP |
 | Verdict | `summary.passed` is a Shared-gate. LLM/VLM never write it ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)) |
@@ -148,40 +166,46 @@ flowchart LR
   report --> reviewer["Reviewer decides"]
 ```
 
-<details>
-<summary>Model, rules, documents, report</summary>
-
-1. **The model.** Properties and quantities are validated with IfcOpenShell. IFC2x3 (buildingSMART schema; no ISO publication), IFC4 ADD2 (ISO 16739-1:2018) and IFC4x3 (ISO 16739-1:2024) go through one kernel. ISO/PAS 16739:2005 is the IFC2x Platform, not IFC2x3. Where property-set names diverge between releases, the difference is a `ValidationIssue`, not a silent skip. Per-feature rules: [`docs/ifc-compatibility-matrix.md`](docs/ifc-compatibility-matrix.md).
-2. **The rules.** IDS 1.0 is validated with IfcTester. Official rule sets from Moscow Region State Expertise and SPb GAU CGE (CIM OKS ed. 3.1.0 + CIM RII ed. 1.1.0) ship in `samples/`; the CGE profile ([`samples/profiles/spb-cge/`](samples/profiles/spb-cge/)) is a published rule set, not a customer-signed acceptance profile. CI checks the committed profile. A requested rule set that cannot load fails the check.
-3. **The other documents.** The model is compared with drawing notes, specifications and calculation texts. Numbers use a configured ε-band: the difference is decimal, so a value on the boundary stays inside the band (`1.1` and `1.0` at ε `0.1`). Grouped Russian and European decimals are accepted. A steel grade matches across Cyrillic and Latin lookalikes (`С345` and `C345`); Latin `I` is not folded. A short system-mark list or range (`В2.7,8,9`, `В2.4–В2.6`) matches one mark in `target_ref`. A grille size with `*` is not a list. Sources are compared; the calculation is not recomputed. Mark identity is not a system-clash verdict.
-4. **The report.** Each finding carries `finding_id`, `source_id` and `evidence_refs` (persistence refuses a finding without them). People get HTML; machines get JSON; issue exchange gets a structural BCF 2.1 / 3.0 ZIP. The browser review shell (web-ifc + Three.js) shows the IFC and the saved sheet preview with the zone from the report. It is not a drawing editor. The fixture overlay CLI remains a separate run.
+| Step | What it does | Where to look |
+|---|---|---|
+| 1. Model | Validates properties and quantities with IfcOpenShell 0.9. `IFC2x3` (buildingSMART schema; no ISO publication), `IFC4 ADD2` (ISO 16739-1:2018) and `IFC4x3` (ISO 16739-1:2024) go through one entry point (`open_ifc_model` / `open_ifc_file` / `open_ifc_session`). `ISO/PAS 16739:2005` is the IFC2x Platform, not `IFC2x3`. Pre-final `IFC4x3` headers (`IFC4X3`, `ADD1`, `TC1`) are normalized to `IFC4X3_ADD2` in a temporary copy and checked against the SPF entity count; models above 256 MiB up to 1.5 GB open through RocksDB with entity count reconciliation against SPF. Where property-set names diverge between releases, the difference is a `ValidationIssue`, not a silent skip | [`docs/ifc-compatibility-matrix.md`](docs/ifc-compatibility-matrix.md) |
+| 2. Rules | Validates IDS 1.0 with IfcTester 0.9. Base W3C XSD schemas are mapped to local `xmlschema` copies (`allow="local"`), so `ifctester.ids.open` makes no network requests. CI runs 290 official buildingSMART IDS 1.0 test cases. Published rule sets from Moscow Region State Expertise and SPb GAU CGE (CIM OKS ed. 3.1.0 + CIM RII ed. 1.1.0) ship in `samples/`; the CGE profile ([`samples/profiles/spb-cge/`](samples/profiles/spb-cge/)) is a published rule set, not a customer-signed acceptance profile. A requested rule set that cannot load fails the check | [`samples/profiles/spb-cge/`](samples/profiles/spb-cge/) |
+| 3. Documents | Reads the model next to drawing notes, schedules, specifications and calculation tables. Numbers, steel grades, riser lists, title blocks and declared calculation rows follow the rules in the next section | [`docs/calculation-evidence-boundary-2026.md`](docs/calculation-evidence-boundary-2026.md) |
+| 4. Report and decision | Every finding carries `finding_id`, `source_id` and `evidence_refs`; a finding without them is refused. A reviewer can accept, reject, mark a false positive, or ask for clarification; a rejection, false positive or clarification requires a note and never flips `summary.passed`. People get HTML; machines get JSON; issue exchange gets a structural BCF 2.1 / 3.0 ZIP. The browser review shell (web-ifc + Three.js) shows the IFC and the saved sheet preview with the zone from the report; it is not a drawing editor. The fixture overlay CLI remains a separate run | [`docs/architecture/ADR-001-verdict-ownership-2026.md`](docs/architecture/ADR-001-verdict-ownership-2026.md) |
 
 `summary.passed` is assembled from deterministic errors and the capability table ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)). Advisory LLM/VLM text, if enabled, drafts remark wording only and never writes that flag; under customer sign-off profiles outbound advisory calls are forbidden. Every optional engine reports `ok`, `skipped` or `failed`; any `FAILED` forces `summary.passed=false`. The same boundary is served on `GET /v1/system/capabilities`. That flag is a Shared-gate under configured rules.
 
-</details>
+## Numbers, marks, stamps and calculations
+
+- **Decimal tolerance band.** Construction measurements are normalized to SI (`quantity.py`), and the difference is computed in `Decimal` (`measured_delta` / `within_epsilon`): $\delta(a, b) = \operatorname{Decimal}(\operatorname{str}(a)) - \operatorname{Decimal}(\operatorname{str}(b))$ and $\lvert\delta(a, b)\rvert \le \operatorname{Decimal}(\operatorname{str}(\varepsilon))$. A value on the boundary stays inside the band: `1.1` and `1.0` at a tolerance of `0.1` agree without a binary floating-point tail. Russian (`1 254,30`) and European (`1.254,30`) grouped numbers are parsed; an ambiguous token such as `1.254` (one digit before three digits) is rejected instead of guessed.
+- **Steel grades and system marks.** Cyrillic and Latin lookalike letters in a grade are folded (`С345` and `C345` are one steel grade in `label_identity.py`), while a Roman `I` stays `I`. A short riser list or range on a ventilation schedule (`В2.7,8,9`, `В2.4–В2.6`) matches any single riser inside it in `target_ref`. A grille dimension with `*` (`П300*300`) stays a dimension and is not expanded as a mark list. An `IfcRoot.GlobalId` (22 characters, ISO 10303-21) is matched character for character; `ALL`, `*`, `ANY` or an empty `target_ref` applies to all instances of the entity. Mark identity is not a system-clash verdict.
+- **Title blocks and drawing reads.** On 2D stamps (`stamp_dual_read.py`), the vector PDF text layer and OCR must agree after normalization $\nu(x) = \operatorname{casefold}\!\bigl(\operatorname{strip}(\operatorname{NFKC}(x))\bigr)$ (with Cyrillic `ё` mapped to `е`) and meet the confidence floor $c_{\text{ocr}} \ge \tau_{\min}$ ($\tau_{\min} = 0.5$ by default). Any disagreement or low confidence returns `ABSTAIN` (or `NOT_VERIFIED` when both are empty) and sets `requires_hitl=true`. For optional VLM drawing reads, verbalized confidence is treated only as an abstention floor (`abstention_sweep.py`, $\tau \in \{0.35, 0.45, 0.60, 0.75\}$): raising $\tau$ monotonically increases `hitl_required`, and without outcome labels ECE and Brier are left `null`.
+- **Declared calculation tables.** Office tables (`xlsx`, `docx` via `spreadsheet_load_evidence_adapter.py`) are compared against BIM/working-documentation tables by declared values inside the decimal tolerance band (`calculation_table_compare.py`, dimensionless $\varepsilon = 10^{-3}$). The citable observation unit is the triple $u(r) = (\text{element\_id},\, \text{section\_id},\, \text{parameter\_id})$: when both sides carry the same non-empty triple, `observation_status` is `COMPLETE`; any blank coordinate, missing side, duplicate `field_id` or disagreeing triple stays `NOT_VERIFIED`. `MATCH` means the printed numbers agree; the solver is not re-run.
+
+## Why the checker is built this way
+
+| Observation from 2025–2026 practice | Design choice in AeroBIM |
+|---|---|
+| Vision and language models miscount repeated symbols on floor plans and hallucinate on dense sheets (`AECV-Bench`, arXiv:2601.04819; Iversen & Huang, *Automation in Construction* 2025; Fuchs et al., EC3) | `summary.passed` is computed only by `EvidenceAssembler` + `DeterminismGate` ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)): $V(\mathcal{P}) = \mathbb{I}\!\left(\lvert E_{\text{det}}\rvert = 0 \land \forall c \in C_{\text{req}}:\, \operatorname{state}(c) = \text{OK}\right)$. LLM/VLM outputs carry `origin="advisory"` and satisfy `OFF == ON` for the pack verdict |
+| Self-reported VLM confidence is poorly calibrated (VL-Calibration, ACL 2026) | Verbalized confidence is used only as an abstention floor (`hitl_required`): $\operatorname{hitl}(c, \tau) = \mathbb{I}(c < \tau \lor \neg\,\text{calibrated})$. Uncalibrated region reads require reviewer confirmation regardless of the number |
+| Point estimates on small samples and naive $\kappa$ under class imbalance overstate quality | Proportions use Wilson 95% score intervals; labeling sample size uses exact one-sided binomial power and Wilson half-width (`study_design.py`, `plan_adjudication_corpus.py`, $\text{recommended\_n} = \max(62, 111) = 111$, `n_labeled=0`); rater agreement reports Cohen's $\kappa$, Krippendorff's $\alpha$ and Gwet's $\text{AC}_1 = \frac{p_o - p_e^{(\gamma)}}{1 - p_e^{(\gamma)}}$ (`eval_statistics.py`, `rt001_dual_rater_simulation.py`); calibration reports Equal-Mass $\text{ECE} = \sum_{m=1}^K \frac{\lvert B_m\rvert}{n}\lvert\operatorname{acc}(B_m) - \operatorname{conf}(B_m)\rvert$ and Brier score $\text{BS} = \frac{1}{n}\sum_{i=1}^n (f_i - o_i)^2$ (`compute_reliability_report.py`, `eval_statistics.py`, `publishable=false` outside a customer corpus) |
+| Running a fixed-$\alpha$ check on every CI commit inflates false alarms over time | Sequential regression monitoring (`sequential_inference.py`, `e_process_simulation.py`) maps permutation $p$-values to e-values via Vovk–Wang power $f_\kappa(p) = \kappa p^{\kappa - 1}$ and mixture $F(p) = \frac{1 - p + p\ln p}{p(\ln p)^2}$ calibrators or runs a truncated aGRAPA betting martingale $W_T = \prod_{t=1}^T (1 + \lambda_t(x_t - \tfrac{1}{2}))$, bounding the family-wise false-alarm rate via Ville's inequality $\mathbb{P}_0(\sup_{t \ge 1} E_t \ge 1/\alpha) \le \alpha$ |
+| Copying numbers by hand into papers or reports causes drift from CI evidence | `manuscript_tables.py` prints a cell only when its JSON pin has `attested_by="ci"` and a non-empty `claim_level`; otherwise the cell stays `withheld` |
 
 ## Capabilities
 
-<details>
-<summary>On fixture packs</summary>
-
-- IFC property and quantity validation; IDS 1.0 fails if the rule set cannot load
+- IFC property and quantity validation; IDS 1.0 fails closed if the rule set cannot load or a schema check fails
 - Cross-document contradictions and drawing notes vs IFC
-- Configured ε-band in decimal space (SI-normalised); lookalike steel grades and short system-mark lists share an identity; deterministic requirement extraction from narrative text; advisory LLM does not sign anything off
+- Decimal tolerance band (SI-normalised); lookalike steel grades and short system-mark lists share an identity; deterministic requirement extraction from narrative text; advisory LLM does not sign anything off
 - Every check reports `ok` / `skipped` / `failed`; tenant/object ACL on artifacts under `customer_pilot` / `production` (off by default in development); HTML/JSON; PDF; structural BCF 2.1 / 3.0 ZIP
 - PDF via pypdfium2 + pdfminer; default `AEROBIM_PDF_BACKEND=pdfium`
 - Browser IFC viewer and the sheet preview with the zone stored on the report. Not a drawing editor
 - Norm rule packs (a fixture pack is not a customer-signed profile) and an opt-in completeness inventory
-- Quality measurement protocol (Wilson intervals, sample-size planner)
+- Quality measurement protocol (Wilson intervals, exact binomial sample-size planner, Equal-Mass ECE, Brier score, Gwet $\text{AC}_1$, e-process regression monitor)
 
 Optional: geometry clash `.[clash]`; OCR `.[raster]`; PyMuPDF `pdf-agpl`; advisory LLM/VLM drafts (never write `summary.passed`); OpenCDE BCF push (experimental; not CDE import proof); DXF via ezdxf.
 
-</details>
-
 ## HTTP API
-
-<details>
-<summary>Local <code>python -m aerobim.main</code></summary>
 
 `GET /health` is unauthenticated. `/v1/*` requires `AEROBIM_API_BEARER_TOKEN` unless `AEROBIM_ALLOW_ANONYMOUS_DEV=true` (development only; loopback bind or `AEROBIM_ANONYMOUS_EXTERNAL_LOOPBACK=true`).
 
@@ -207,18 +231,13 @@ Optional: geometry clash `.[clash]`; OCR `.[raster]`; PyMuPDF `pdf-agpl`; adviso
 
 Package analysis optionally accepts an OpenRebar reinforcement report with a SHA-256 provenance digest. This compares declared sources; it does not recompute anything. OpenCDE `POST .../export/bcf-api/push` is an experimental hub push, not proof of import into the customer CDE.
 
-</details>
-
 ## Architecture
 
 **48 domain Protocol ports** wire to **77 infrastructure adapter modules** through **63 DI tokens** in `bootstrap_container()`. Counts: [`docs/evidence/runtime-baseline-latest.json`](docs/evidence/runtime-baseline-latest.json).
 
-<details>
-<summary>Layers and storage</summary>
-
 Five layers, dependencies pointing inward only:
 
-```
+```text
 core/            DI container, tokens, configuration
 domain/          Immutable models, Protocol ports, logging contract
 application/     Requirement assembly, contradiction detection
@@ -226,9 +245,7 @@ infrastructure/  IfcOpenShell, IfcTester, BCF, storage; IfcClash and Docling are
 presentation/    FastAPI
 ```
 
-Artifacts sit behind an `ObjectStore` port: a local disk or an S3-compatible bucket. That is one port and two adapters. Report summaries are indexed in Postgres when `AEROBIM_DB_URL` is set.
-
-</details>
+Artifacts sit behind an `ObjectStore` port: a local disk or an S3-compatible bucket. That is one port and two adapters. Report summaries are indexed in Postgres when `AEROBIM_DB_URL` is set. Heavy package jobs submitted through `/v1/analyze/project-package/submit` are queued in Redis and executed by `aerobim.worker` over `BLMOVE` with leases, heartbeats, fencing tokens and a dead-letter queue (at-least-once delivery).
 
 ## Configuration
 
@@ -458,21 +475,18 @@ tests_passed: backend=3489, frontend=410; commit b215e3abf2e5; see docs/evidence
 
 ## Documentation
 
-<details>
-<summary>Presentations, architecture, licensing</summary>
-
 | Topic | Document |
 |---|---|
 | Presentation | [PowerPoint, 7 slides](submission/03-presentation/AeroBIM.pptx) · [PDF](submission/03-presentation/AeroBIM.pdf) · [slide text](submission/03-presentation/demo_day_slides.md) |
 | Full deck | [PowerPoint, 43 slides](submission/03-presentation/AeroBIM-full.pptx) · [PDF](submission/03-presentation/AeroBIM-full.pdf) · [text](submission/03-presentation/AeroBIM-full.md) |
 | Slide numbers | [what was measured and what it is not](submission/05-additional/README.md) |
 | Verdict | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) |
+| Numbers in the pack | [calculation evidence](docs/calculation-evidence-boundary-2026.md) |
+| Academic roadmap | [SOTA 2026 math and protocols](docs/quality/ACADEMIC_ROADMAP_2026_09.md) |
 | IFC compatibility | [matrix](docs/ifc-compatibility-matrix.md) |
 | Closed contour | [offline deployment](docs/offline-deployment-2026.md) |
 | Review shell | [Frontend](frontend/README.md) |
 | Licensing | [License policy](docs/license-policy-2026.md) |
-
-</details>
 
 ## Cite
 
@@ -480,7 +494,7 @@ tests_passed: backend=3489, frontend=410; commit b215e3abf2e5; see docs/evidence
 
 ## Stack
 
-Python 3.12+, FastAPI, Uvicorn. IFC — IfcOpenShell, IfcTester; IfcClash optional. Review shell — Vite, React, web-ifc, Three.js. PDF — pypdfium2, pdfminer.six, reportlab; PyMuPDF, RapidOCR and Docling optional.
+Python 3.12+, FastAPI, Uvicorn. IFC — IfcOpenShell 0.9, IfcTester 0.9; IfcClash 0.9 optional. Review shell — Vite 8, React 19, web-ifc, Three.js, Vitest 5. PDF — pypdfium2, pdfminer.six, reportlab; PyMuPDF, RapidOCR and Docling optional.
 
 ## License
 

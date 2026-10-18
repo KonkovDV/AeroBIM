@@ -15,7 +15,7 @@ claim_boundary: >
 
 # VLM confidence — tuning protocol
 
-Re-Audit #8 observation: verbalized VLM confidence is **uncalibrated**.
+Verbalized VLM confidence is **uncalibrated**.
 The numbers below are **abstention floors**, not measured precision.
 
 This is **not** the quality-protocol interim 0.60 (TP/(TP+FP) on adjudicated

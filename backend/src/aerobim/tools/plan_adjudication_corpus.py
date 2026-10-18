@@ -76,7 +76,7 @@ def plan_adjudication_corpus(
 
     return {
         "artifact_type": "adjudication_corpus_plan",
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "inputs": {
             "threshold": threshold,
             "expected_precision": expected_precision,
@@ -92,6 +92,16 @@ def plan_adjudication_corpus(
             "sawtoothed in n — nearby n are equivalent design points"
         ),
         "decision_preview_at_recommended_n": preview,
+        "observation": {
+            "n_labeled": 0,
+            "n_human_raters": 0,
+            "study_executed": False,
+            "preview_is_observation": False,
+        },
+        "claim_level": "design_only",
+        "closes_rt001": False,
+        "closes_rt002": False,
+        "closes_rt003": False,
         "anchors": [
             "Wilson 1927 score interval",
             "Brown, Cai & DasGupta 2001 (Statistical Science) — Wilson recommended",

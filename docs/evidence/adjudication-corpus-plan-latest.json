@@ -1,6 +1,6 @@
 {
   "artifact_type": "adjudication_corpus_plan",
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "inputs": {
     "threshold": 0.6,
     "expected_precision": 0.75,
@@ -59,6 +59,16 @@
       "demonstrates_threshold": true
     }
   ],
+  "observation": {
+    "n_labeled": 0,
+    "n_human_raters": 0,
+    "study_executed": false,
+    "preview_is_observation": false
+  },
+  "claim_level": "design_only",
+  "closes_rt001": false,
+  "closes_rt002": false,
+  "closes_rt003": false,
   "anchors": [
     "Wilson 1927 score interval",
     "Brown, Cai & DasGupta 2001 (Statistical Science) — Wilson recommended",

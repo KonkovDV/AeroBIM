@@ -887,6 +887,11 @@ def completeness_errors(baseline: dict[str, Any]) -> list[str]:
         errors.append(
             f"schema_version must be {_SCHEMA_VERSION!r}, got {baseline.get('schema_version')!r}"
         )
+    claim_level = baseline.get("claim_level")
+    if claim_level is not None and claim_level != "fixture_engineering":
+        errors.append(
+            f"claim_level must be 'fixture_engineering' when present, got {claim_level!r}"
+        )
     commit = baseline.get("commit_sha")
     if not isinstance(commit, str) or not commit or commit == "unknown":
         errors.append("commit_sha missing or unknown")
@@ -1172,6 +1177,7 @@ def export_runtime_baseline(
         "working_tree_clean": _working_tree_clean(repo),
         "generated_at": datetime.now(tz=UTC).isoformat(),
         "corpus_kind": "fixture",
+        "claim_level": "fixture_engineering",
         "claim_boundary": (
             "Engineering build evidence only. Fixture macro_f1 != product accuracy. "
             "Checkpoint GO (regulatory_measurement_mvp; customer_go false) until RT-001/002/003."

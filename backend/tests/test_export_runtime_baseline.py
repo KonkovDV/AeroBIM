@@ -194,6 +194,7 @@ class ExportRuntimeBaselineSchemaTests(unittest.TestCase):
         self.assertIsNone(backend_block["tests_failed"])
         self.assertIn("environment", baseline)
         self.assertIn("claim_boundary", baseline)
+        self.assertEqual(baseline["claim_level"], "fixture_engineering")
         self.assertIn("documented_env_vars", baseline)
         self.assertIsInstance(baseline["documented_env_vars"], list)
         self.assertIn("architecture_inventory", baseline)

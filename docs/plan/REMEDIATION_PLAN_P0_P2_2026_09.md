@@ -1,7 +1,7 @@
 ---
 title: "Remediation plan P0-P2 — evidence before features"
 status: active
-version: "1.2.0"
+version: "1.2.2"
 last_updated: "2026-10-18"
 claim_boundary: >
   Planning document only. Nothing here is customer acceptance, product
@@ -60,6 +60,7 @@ Misquoting our own evidence is the fastest way to lose a technical reviewer.
 - the defect-injection experiment covered part of the planned mutation classes
   and produced a recall point estimate of 0.0 with a Wilson upper bound near
   0.39; it is an unfinished experiment, not a measured recall;
+- a calculation-table `MATCH` is agreement of declared values inside the decimal ε-band. The citable observation is `element_id × section_id × parameter_id`; an incomplete triple is `NOT_VERIFIED` and is not calculation correctness;
 - MEP system clash stays `NOT_VERIFIED`: the counts are axis-aligned bounding
   box overlaps, the ring is bounded and off by default, and geometric
   intersection is not claimed;
@@ -83,11 +84,14 @@ Misquoting our own evidence is the fastest way to lose a technical reviewer.
    multi-worker scale-out and isolating each IFC job in a fresh child sandbox.
 3. **Zero-egress on-prem package.** IDS 1.0 XSD validation and `ifctester.ids.open`
    now resolve W3C base schemas strictly from local `xmlschema` copies with
-   `allow="local"` (`SOTA-A3`). Remaining acceptance: full clean-host rehearsal
+   `allow="local"`. Remaining acceptance: full clean-host rehearsal
    recording network denial and export bundle checksums.
-4. **Exchange contract.** Acceptance: a documented, versioned schema for
-   findings, decisions and evidence references, with a contract test that fails
-   on breaking change.
+4. **Exchange contract (domain keys pinned; HTTP not yet bound).**
+   `exchange_contract.py` version `1.0.0` requires `finding_id`, `evidence_refs`,
+   and `writes_summary_passed=false` on a finding, and a note on reject /
+   false-positive / clarification. A contract test fails if a required key
+   disappears. Remaining acceptance: the HTTP report payload must equal this
+   projection. This is not a CDE import.
 5. **Signed acceptance profile.** Acceptance: thresholds, scope and sampling
    agreed in writing before the measurement run, not after.
 6. **Current demonstration set.** Acceptance: the deck and demo match the

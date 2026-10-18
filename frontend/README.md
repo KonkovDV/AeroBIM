@@ -4,7 +4,7 @@
 
 The browser workplace is a **review shell over persisted reports**. It is not a CDE, not a model authoring tool, and not a replacement for the expert. The UI never writes `summary.passed` ([ADR-001](../docs/architecture/ADR-001-verdict-ownership-2026.md)). Checkpoint **`GO`**; `customer_go` false.
 
-Sitting-member jury track remains the CLI (`python -m aerobim.tools.run_kt3_jury` from `backend/`). This shell is optional UI on the same clone.
+The command-line check (`python -m aerobim.tools.run_kt3_jury` from `backend/`) runs without a browser. This shell is the optional browser UI on the same clone.
 
 ## What you can open today
 
@@ -27,7 +27,7 @@ Filter presets are **browser storage** or **JSON file exchange**. Legacy `team` 
 
 ## Stack
 
-Fact, not a roadmap: React 19, TypeScript, **Vite 7** SPA (not Next.js), Three.js, web-ifc (lazy chunk), vitest 4 + Testing Library. Playwright is only `smoke:browser` and `smoke:decision`. TanStack / Storybook / Tailwind are not in this tree.
+Fact, not a roadmap: React 19, TypeScript, **Vite 8** SPA (not Next.js), Three.js, web-ifc (lazy chunk), Vitest 5 + Testing Library. Playwright is only `smoke:browser` and `smoke:decision`. TanStack / Storybook / Tailwind are not in this tree.
 
 Visible copy goes through `src/lib/i18n/ru.ts`. CDN fonts are not loaded.
 

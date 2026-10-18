@@ -88,6 +88,47 @@ class CalculationTableCompareTests(unittest.TestCase):
         self.assertIsInstance(compare, dict)
         self.assertEqual(compare["native_lir"], "not_implemented")
         self.assertFalse(compare["closes_rt002"])
+        self.assertEqual(
+            compare["observation_unit"],
+            "element_id × section_id × parameter_id",
+        )
+        self.assertEqual(compare["incomplete_observation"], "NOT_VERIFIED")
+
+    def test_dimensionless_band_uses_decimal_difference(self) -> None:
+        calc = (DeclaredCalcRow("A", "ratio", "10.001", ""),)
+        bim = (DeclaredCalcRow("A", "ratio", "10.000", ""),)
+        result = compare_declared_tables(calc, bim)
+        self.assertEqual(result.fields[0].outcome, "MATCH")
+        self.assertEqual(result.fields[0].observation_status, "NOT_VERIFIED")
+        self.assertFalse(result.observations_complete)
+
+    def test_observation_unit_is_the_triple(self) -> None:
+        complete = DeclaredCalcRow(
+            "L1",
+            "snow",
+            "10",
+            "kN",
+            element_id="B1",
+            section_id="S1",
+            parameter_id="N",
+        )
+        verified = compare_declared_tables((complete,), (complete,))
+        self.assertTrue(verified.all_match)
+        self.assertTrue(verified.observations_complete)
+        self.assertEqual(verified.fields[0].observation_status, "COMPLETE")
+        shifted = DeclaredCalcRow(
+            "L1",
+            "snow",
+            "10",
+            "kN",
+            element_id="B1",
+            section_id="S2",
+            parameter_id="N",
+        )
+        disagree = compare_declared_tables((complete,), (shifted,))
+        self.assertEqual(disagree.fields[0].outcome, "MATCH")
+        self.assertEqual(disagree.fields[0].observation_status, "NOT_VERIFIED")
+        self.assertFalse(disagree.observations_complete)
 
 
 class OfficeDeclaredTableAdapterTests(unittest.TestCase):
