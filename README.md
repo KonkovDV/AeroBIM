@@ -175,11 +175,11 @@ The program builds `summary.passed` from its own errors and the capability table
 
 | Observation from 2025–2026 practice | Design choice in AeroBIM |
 |---|---|
-| Vision and language models miscount repeated symbols on floor plans and hallucinate on dense sheets (`AECV-Bench`, arXiv:2601.04819; Iversen & Huang, *Automation in Construction* 2025; Fuchs et al., EC3) | `summary.passed` is computed only by `EvidenceAssembler` + `DeterminismGate` ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)). A non-empty deterministic error set or a required capability that is not `OK` withholds a pass. So do a blocked intake, an unresolved drawing review, and a hard clash when that policy is on. Warnings alone can still pass. LLM/VLM outputs carry `origin="advisory"` and satisfy `OFF == ON` for the pack verdict |
-| Self-reported VLM confidence is poorly calibrated (VL-Calibration, ACL 2026) | Verbalized confidence is only an abstention floor (`hitl_required`). A region goes to review when its confidence is below the floor, or when that confidence was never calibrated. Uncalibrated region reads require reviewer confirmation regardless of the number |
-| Point estimates on small samples and naive $\kappa$ under class imbalance overstate quality | Proportions use Wilson 95% score intervals. Labeling sample size (`study_design.py`, `plan_adjudication_corpus.py`, `n_labeled=0`) is the larger of 62 and 111, so `recommended_n = 111`. Agreement reports Cohen's $\kappa$, Krippendorff's $\alpha$ and Gwet's $\mathrm{AC}_1$. Calibration reports equal-mass ECE and the Brier score (`compute_reliability_report.py`, `eval_statistics.py`). Outside a customer corpus, and when $n < 100$, `publishable` stays false. The expressions are below |
-| Running a check at fixed $\alpha$ on every CI commit inflates false alarms over time | Sequential monitoring (`sequential_inference.py`, `e_process_simulation.py`) maps permutation $p$-values to e-values with the Vovk–Wang calibrators, or runs a truncated aGRAPA martingale. Ville's inequality bounds the family-wise false-alarm rate. The expressions are below |
-| Copying numbers by hand into papers or reports causes drift from CI evidence | `manuscript_tables.py` prints a cell only when its JSON pin has `attested_by="ci"` and a non-empty `claim_level`; otherwise the cell stays `withheld` |
+| A dense sheet can fool a model's eye (`AECV-Bench`, arXiv:2601.04819; Iversen & Huang, *Automation in Construction* 2025; Fuchs et al., EC3) | `EvidenceAssembler` and `DeterminismGate` light the verdict ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)). The wording draft carries `origin="advisory"`, and with the model off the verdict is the same: `OFF == ON` |
+| A VLM likes its own confidence more than the sheet deserves (VL-Calibration, ACL 2026) | Confidence walks the region to the expert: the `hitl_required` floor and a living calibration |
+| A small sample and a naive $\kappa$ on a skewed table paint too smooth a picture | Proportions live in a Wilson 95% interval. Labeling sample size (`study_design.py`, `plan_adjudication_corpus.py`, `n_labeled=0`) is the larger of 62 and 111, so `recommended_n = 111`. Agreement reports Cohen's $\kappa$, Krippendorff's $\alpha$ and Gwet's $\mathrm{AC}_1$. Calibration reports equal-mass ECE and the Brier score (`compute_reliability_report.py`, `eval_statistics.py`). It steps into the light on a customer corpus once $n \ge 100$. The expressions are below |
+| A fixed $\alpha$ on every commit slowly raises the noise | Sequential monitoring (`sequential_inference.py`, `e_process_simulation.py`) turns $p$ into $e$ with the Vovk–Wang calibrators, or runs a truncated aGRAPA martingale. Ville's inequality holds the share of trajectories. The expressions are below |
+| A number copied by hand drifts away from the run | `manuscript_tables.py` takes a cell from the pin when `attested_by="ci"` and `claim_level` is filled |
 
 ### The expressions
 
@@ -187,7 +187,7 @@ $$
 V(\mathcal{P}) = \mathbb{I}\bigl(\lvert E_{\mathrm{det}}\rvert = 0 \quad\land\quad \forall c \in C_{\mathrm{req}}: \mathrm{state}(c) = \mathrm{OK}\bigr)
 $$
 
-A pass lights up when the fatal findings are clear and every required capability stands at $\mathrm{OK}$. A closed intake, a drawing on the expert's table, and a hard clash hold the pack. Warnings leave the pass alive.
+A pass lights up when no fatal finding remains and every required capability stands at $\mathrm{OK}$. A closed intake, a drawing waiting for the expert, and a hard clash hold the pack. Warnings leave the pass alive.
 
 $$
 \mathrm{hitl}(c, \tau) = \mathbb{I}\bigl(c < \tau \quad\lor\quad \neg\mathrm{calibrated}\bigr)
