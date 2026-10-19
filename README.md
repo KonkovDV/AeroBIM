@@ -39,10 +39,15 @@ Three shelves. AeroBIM is the one where the files meet.
 | Model checker (Tangl, Solibri) | Model, attributes, clashes in the authoring environment | Looks inside the model |
 | **Pack gateway (AeroBIM)** | Cross-file check; the acceptance profile is IDS | Holds the seam: model, sheet, schedule, calculation |
 
+One pack, one flag. The wording model can be off or on. The verdict stays the same.
+
 **What a finding looks like.** Cover, 30 mm in the model and 40 mm on the sheet. Ten millimetres of seam on the fixture pack, and the program sees them. The card holds the requirement, the GUID and the sheet row. A person decides. Out goes a BCF 2.1/3.0 file.
 
 ## Contents
 
+- [Where to look](#where-to-look)
+- [Pack answers](#pack-answers)
+- [Alongside](#alongside)
 - [What AeroBIM accepts](#what-aerobim-accepts)
 - [Stage](#stage)
 - [Try it](#try-it)
@@ -58,6 +63,37 @@ Three shelves. AeroBIM is the one where the files meet.
 - [Cite](#cite)
 - [Stack](#stack)
 - [License](#license)
+
+## Where to look
+
+1. The finding — [try it](#try-it), one command on the fixture pack.
+2. The expert's table — `.\start.bat` from the clone root: model, sheet and decision together.
+3. The kernel — [numbers, marks, stamps and calculations](#numbers-marks-stamps-and-calculations). The expressions are [here](#the-expressions).
+4. Where the 2025–2026 moves come from — [the design table](#why-the-checker-is-built-this-way).
+
+## Pack answers
+
+A doubt does not become a pass. A required capability in `NOT_VERIFIED` holds the pack.
+
+| Answer | When |
+|---|---|
+| Passed | `pass`. No fatal finding remains, and every required capability stands at `OK` |
+| Passed, warnings alive | `pass_with_warnings`. They leave the flag lit |
+| To the expert | `review_required`. A drawing or a region is waiting |
+| Held | `blocked`. The intake is closed, or a mandatory check has not finished |
+| Failed | `failed`. A program error, or a hard clash while that policy is on |
+
+`summary.passed` lights on the first two.
+
+## Alongside
+
+Each repository does its own work.
+
+| | |
+|---|---|
+| [OpenRebar](https://github.com/KonkovDV/OpenRebar) | Lays the slab bars and writes a declared report. AeroBIM compares it with the pack by SHA-256 |
+| [Kontur](https://github.com/KonkovDV/Kontur) | Compares design, working and as-built volumes. The inspector confirms the card |
+| **AeroBIM** | Holds the seam of model, sheet, schedule and calculation. The program sets the flag |
 
 ## What AeroBIM accepts
 
@@ -172,6 +208,8 @@ The program builds `summary.passed` from its own errors and the capability table
 - **Declared calculation tables.** Office tables (`xlsx`, `docx` via `spreadsheet_load_evidence_adapter.py`) are compared against BIM/working-documentation tables by declared values inside the decimal tolerance band (`calculation_table_compare.py`, dimensionless $\varepsilon = 10^{-3}$). The citable observation unit is the triple `element_id`, `section_id`, `parameter_id`. When both sides carry the same non-empty triple, `observation_status` is `COMPLETE`. A blank coordinate, a missing side, a duplicate `field_id` or two different triples stay `NOT_VERIFIED`. `MATCH` means the printed numbers agree; the solver is not re-run.
 
 ## Why the checker is built this way
+
+The 2025–2026 practice sits in the kernel. The last word stays with the program.
 
 | Observation from 2025–2026 practice | Design choice in AeroBIM |
 |---|---|
