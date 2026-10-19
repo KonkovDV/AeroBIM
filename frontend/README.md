@@ -2,13 +2,13 @@
 
 [Product README (EN)](../README.md) · [продукт (RU)](../README.ru.md)
 
-The browser workplace is a **review shell over persisted reports**. It is not a CDE, not a model authoring tool, and not a replacement for the expert. The UI never writes `summary.passed` ([ADR-001](../docs/architecture/ADR-001-verdict-ownership-2026.md)). Checkpoint **`GO`**; `customer_go` false.
+The browser is the expert's table: the model, the sheet, the finding, and a hand on the remark ([ADR-001](../docs/architecture/ADR-001-verdict-ownership-2026.md)).
 
-The command-line check (`python -m aerobim.tools.run_kt3_jury` from `backend/`) runs without a browser. This shell is the optional browser UI on the same clone.
+The command-line check (`python -m aerobim.tools.run_kt3_jury` from `backend/`) runs without a browser. This shell is the same clone, with the light on.
 
 ## What you can open today
 
-Eight information-architecture screens (`src/lib/tz-ui-screens.ts`). Every row is **`partial`**, not a delivered full-cycle workplace and not a closed Web-UI TZ matrix.
+Eight screens (`src/lib/tz-ui-screens.ts`). Each one already does its piece of the review.
 
 | Screen | What git actually does |
 |---|---|

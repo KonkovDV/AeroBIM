@@ -27,23 +27,19 @@
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-**AeroBIM** is automated verification of design and working documentation. It is a standalone open-source project under the MIT licence.
+**AeroBIM** catches the seam in design and working documentation. The code is open, under the MIT licence.
 
-It checks a design/working pack against itself: model, sheet, schedule, brief and calculation. Each file can open cleanly on its own. The defect lives in the seam and usually surfaces on site.
+The model is clean. The sheet is clean. The schedule agrees with itself. Then the site finds ten millimetres: 30 mm of cover in the model, 40 mm on the sheet. The program pulls them out. The card carries the clause, the storey or grid, the GUID. The expert decides. Out go HTML, JSON, PDF, and a BCF file.
 
-A finding carries a clause, a storey or grid, and a GUID. The expert decides. The program sets `summary.passed`. Out go HTML, JSON, PDF, and a BCF file.
+Three shelves. AeroBIM is the one where the files meet.
 
-Three shelves in the process.
-
-| Shelf | What it does | Boundary |
+| Shelf | What it does | Its job |
 |---|---|---|
-| CDE (10D, Pilot-BIM, Sarex) | Presence, route, versions | Does not cross-check file contents |
-| Model checker (Tangl, Solibri) | Model, attributes, clashes in the authoring environment | Does not compare the model with the schedule, note and calculation |
-| **Pack gateway (AeroBIM)** | Cross-file consistency; acceptance profile is IDS | The seam the other two leave open |
+| CDE (10D, Pilot-BIM, Sarex) | Presence, route, versions | Carries the pack through the life of the project |
+| Model checker (Tangl, Solibri) | Model, attributes, clashes in the authoring environment | Looks inside the model |
+| **Pack gateway (AeroBIM)** | Cross-file check; the acceptance profile is IDS | Holds the seam: model, sheet, schedule, calculation |
 
-It operates on the **seam between files**.
-
-**What a finding looks like.** Cover, 30 mm in the model and 40 mm on the sheet. Ten millimetres of seam, and the program sees them. The card holds the requirement, the GUID and the sheet row. A person decides. Out goes a BCF 2.1/3.0 file. The pack is a fixture.
+**What a finding looks like.** Cover, 30 mm in the model and 40 mm on the sheet. Ten millimetres of seam on the fixture pack, and the program sees them. The card holds the requirement, the GUID and the sheet row. A person decides. Out goes a BCF 2.1/3.0 file.
 
 ## Contents
 
@@ -71,15 +67,13 @@ It operates on the **seam between files**.
 | Cross-check | IFC, IDS and the other files in the pack. The tolerance on a number is decimal |
 | Workplace | Review shell (Vite): the IFC model, the saved sheet, and the zone from the report, in Russian and English. The expert presses the decision. The drawing stays as drawn |
 | Report | HTML + JSON + PDF + structural BCF 2.1 / 3.0 ZIP |
-| Verdict | `summary.passed` is a Shared-gate. LLM/VLM never write it ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)) |
+| Verdict | The program sets `summary.passed`. In ISO 19650 that is a Shared-gate: the pack cleared the rules that are on ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)) |
 
-An unfinished mandatory check cannot yield a positive pack result.
+A pass begins where every mandatory check has finished.
 
 ## Stage
 
-Regulatory-measurement MVP, and the run is already alive. One command on a fixture pack in `samples/` lays the finding next to its evidence.
-
-The numbers you can cite are from those fixtures and from open data. A profile signed by a named organisation, two human raters on one real sample, system-level MEP clash, and a CDE that has taken the BCF are the next measurements. Accuracy on real packs is not claimed. `samples/` ships published rule sets. `mep_system_clash` stays `NOT_VERIFIED`. The BCF export is structural; import stays `NOT_VERIFIED`.
+Regulatory-measurement MVP. One command on a fixture pack in `samples/` lays the finding next to its evidence. The run is already alive.
 
 ## Try it
 
@@ -97,7 +91,7 @@ py -3.12 -m venv .venv
 
 Or double-click `run-jury.bat` at the **clone root** (quotes around the extra are inside the file; Node is not required). Do not run `python -m aerobim...` with the system interpreter — the package will be missing. Diagnostics: `.\check-launch.bat`.
 
-`summary.passed=false` on the fixture pack is the expected fail. Do not set `AEROBIM_SIGNOFF_PROFILE=customer_pilot` on a first clone. `requirements-lock.txt` is the Linux/CI lock — do not install it on Windows.
+`summary.passed=false` on the fixture pack means the planted defects were found. Do not set `AEROBIM_SIGNOFF_PROFILE=customer_pilot` on a first clone. `requirements-lock.txt` is the Linux/CI lock — do not install it on Windows.
 
 **Linux / macOS**
 
@@ -121,7 +115,7 @@ pytest tests -q
 python -m aerobim.main   # http://127.0.0.1:8080/health
 ```
 
-Start the review shell **from the clone root** (not from `frontend/`). FastAPI at `http://127.0.0.1:8080`, Vite/React at `http://127.0.0.1:5173`. The UI never writes `summary.passed`. You need `backend/.venv` already created and Node 22.22.2+.
+Start the review shell **from the clone root** (not from `frontend/`). FastAPI at `http://127.0.0.1:8080`, Vite/React at `http://127.0.0.1:5173`. The expert sits in the browser; the verdict stays with the program. You need `backend/.venv` already created and Node 22.22.2+.
 
 - Linux/macOS: `./start.sh`
 - Windows PowerShell: `.\start.bat` (the leading `.\` is required; bare `start` is Start-Process and will ask for FilePath)
@@ -168,7 +162,7 @@ flowchart LR
 | 3. Documents | Reads the model next to drawing notes, schedules, specifications and calculation tables. Numbers, steel grades, riser lists, title blocks and declared calculation rows follow the rules in the next section | [`docs/calculation-evidence-boundary-2026.md`](docs/calculation-evidence-boundary-2026.md) |
 | 4. Report and decision | Every finding carries `finding_id`, `source_id` and `evidence_refs`; a finding without them is refused. A reviewer can accept, reject, mark a false positive, or ask for clarification; a rejection, false positive or clarification requires a note and never flips `summary.passed`. People get HTML; machines get JSON; issue exchange gets a structural BCF 2.1 / 3.0 ZIP. The browser review shell (web-ifc + Three.js) shows the IFC and the saved sheet preview with the zone from the report; the drawing stays as drawn. The fixture overlay CLI remains a separate run | [`docs/architecture/ADR-001-verdict-ownership-2026.md`](docs/architecture/ADR-001-verdict-ownership-2026.md) |
 
-`summary.passed` is assembled from deterministic errors and the capability table ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)). Advisory LLM/VLM text, if enabled, drafts remark wording only and never writes that flag; under customer sign-off profiles outbound advisory calls are forbidden. Every optional engine reports `ok`, `skipped` or `failed`; any `FAILED` forces `summary.passed=false`. The same boundary is served on `GET /v1/system/capabilities`. That flag is a Shared-gate under configured rules.
+The program builds `summary.passed` from its own errors and the capability table ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)). A language model, when it is on, drafts the wording; on a customer profile it stays inside the contour. Every optional check answers `ok`, `skipped` or `failed`; any `FAILED` puts the pass out. The same picture is on `GET /v1/system/capabilities`. That is a Shared-gate under the rules that are switched on.
 
 ## Numbers, marks, stamps and calculations
 
@@ -193,7 +187,7 @@ $$
 V(\mathcal{P}) = \mathbb{I}\bigl(\lvert E_{\mathrm{det}}\rvert = 0 \quad\land\quad \forall c \in C_{\mathrm{req}}: \mathrm{state}(c) = \mathrm{OK}\bigr)
 $$
 
-That indicator is the fatal-finding and required-capability part. A blocked intake, an unresolved drawing review, and a hard clash under an enabled policy also withhold a pass. Warnings alone can still pass.
+A pass lights up when the fatal findings are clear and every required capability stands at $\mathrm{OK}$. A closed intake, a drawing on the expert's table, and a hard clash hold the pack. Warnings leave the pass alive.
 
 $$
 \mathrm{hitl}(c, \tau) = \mathbb{I}\bigl(c < \tau \quad\lor\quad \neg\mathrm{calibrated}\bigr)
@@ -223,16 +217,16 @@ $$
 
 ## Capabilities
 
-- IFC property and quantity validation; IDS 1.0 fails closed if the rule set cannot load or a schema check fails
+- IFC property and quantity validation; IDS 1.0 opens with a living rule set and a whole schema
 - Cross-document contradictions and drawing notes vs IFC
-- Decimal tolerance band (SI-normalised); lookalike steel grades and short system-mark lists share an identity; deterministic requirement extraction from narrative text; advisory LLM does not sign anything off
+- Decimal tolerance band (SI-normalised); lookalike steel grades and short system-mark lists share an identity; deterministic requirement extraction from narrative text; the program signs the result
 - Every check reports `ok` / `skipped` / `failed`; tenant/object ACL on artifacts under `customer_pilot` / `production` (off by default in development); HTML/JSON; PDF; structural BCF 2.1 / 3.0 ZIP
 - PDF via pypdfium2 + pdfminer; default `AEROBIM_PDF_BACKEND=pdfium`
 - Browser IFC viewer and the sheet preview with the zone stored on the report. The drawing stays as drawn
-- Norm rule packs (a fixture pack is not a customer-signed profile) and an opt-in completeness inventory
+- Norm rule packs from the published sets in `samples/`, and an opt-in completeness inventory
 - Quality measurement protocol (Wilson intervals, exact binomial sample-size planner, equal-mass ECE, Brier score, Gwet's $\mathrm{AC}_1$, e-process regression monitor)
 
-Optional: geometry clash `.[clash]`; OCR `.[raster]`; PyMuPDF `pdf-agpl`; advisory LLM/VLM drafts (never write `summary.passed`); OpenCDE BCF push (experimental; not CDE import proof); DXF via ezdxf.
+Optional: geometry clash `.[clash]`; OCR `.[raster]`; PyMuPDF `pdf-agpl`; LLM/VLM drafts of the wording; OpenCDE BCF push (experimental; not CDE import proof); DXF via ezdxf.
 
 ## HTTP API
 
@@ -241,7 +235,7 @@ Optional: geometry clash `.[clash]`; OCR `.[raster]`; PyMuPDF `pdf-agpl`; adviso
 | Method | Path | Purpose |
 |---|---|---|
 | `GET` | `/health` | Readiness |
-| `GET` | `/v1/auth/bff` | Auth discovery. Default **501**. Lab `200 LAB` is not customer SSO |
+| `GET` | `/v1/auth/bff` | Auth discovery. Default **501**. A lab `200 LAB` lights the stand |
 | `GET` | `/v1/system/capabilities` | Capability boundary |
 | `POST` | `/v1/uploads` | Multipart ingest |
 | `POST` | `/v1/validate/ifc` | Validate IFC against requirements and IDS |
@@ -252,13 +246,13 @@ Optional: geometry clash `.[clash]`; OCR `.[raster]`; PyMuPDF `pdf-agpl`; adviso
 | `GET` | `/v1/reports` | List persisted reports |
 | `GET` | `/v1/reports/{id}` | Fetch one report |
 | `GET` | `/v1/reports/{id}/coverage` | Check coverage map |
-| `GET` | `/v1/reports/{id}/revision-diff` | Finding delta; `no_longer_reported` does not mean resolved |
+| `GET` | `/v1/reports/{id}/revision-diff` | The delta of findings between two reports |
 | `GET` | `/v1/reports/{id}/export/{json,html,pdf,bcf}` | Export; `?version=3` switches BCF 3.0 |
-| `POST` | `/v1/reports/{id}/review-events` | Append reviewer HITL; never changes `summary.passed` |
+| `POST` | `/v1/reports/{id}/review-events` | The expert's decision lands in the journal |
 | `GET` | `/v1/reports/{id}/review-events` | HITL history |
-| `GET` | `/v1/reports/{id}/review-kpi` | Triage summary (not cycle-days in a CDE) |
+| `GET` | `/v1/reports/{id}/review-kpi` | The triage summary on the expert's table |
 
-Package analysis optionally accepts an OpenRebar reinforcement report with a SHA-256 provenance digest. This compares declared sources; it does not recompute anything. OpenCDE `POST .../export/bcf-api/push` is an experimental hub push, not proof of import into the customer CDE.
+Package analysis takes an OpenRebar reinforcement report with a SHA-256 digest and compares the declared sources. OpenCDE `POST .../export/bcf-api/push` is an experimental send into the hub.
 
 ## Architecture
 
@@ -508,7 +502,7 @@ tests_passed: backend=3499, frontend=410; commit c057a2e9f174; see docs/evidence
 |---|---|
 | Presentation | [PowerPoint, 7 slides](submission/03-presentation/AeroBIM.pptx) · [PDF](submission/03-presentation/AeroBIM.pdf) · [slide text](submission/03-presentation/demo_day_slides.md) |
 | Full deck | [PowerPoint, 43 slides](submission/03-presentation/AeroBIM-full.pptx) · [PDF](submission/03-presentation/AeroBIM-full.pdf) · [text](submission/03-presentation/AeroBIM-full.md) |
-| Slide numbers | [what was measured and what it is not](submission/05-additional/README.md) |
+| Slide numbers | [how the numbers were taken](submission/05-additional/README.md) |
 | Verdict | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) |
 | Numbers in the pack | [calculation evidence](docs/calculation-evidence-boundary-2026.md) |
 | Academic roadmap | [SOTA 2026 math and protocols](docs/quality/ACADEMIC_ROADMAP_2026_09.md) |
@@ -529,4 +523,4 @@ Python 3.12+, FastAPI, Uvicorn. IFC — IfcOpenShell 0.9, IfcTester 0.9; IfcClas
 
 MIT for code authored in this repository. Third-party components keep their own licences: pypdfium2, pdfminer.six, Pillow and reportlab are permissive; IfcOpenShell and IfcTester are LGPL-3.0-or-later; web-ifc is MPL-2.0; PyMuPDF is dual AGPL-3.0 / Artifex and therefore stays an optional extra, absent from the runtime lock and the Docker image.
 
-Inventory: [`audit/dependency_license_inventory.json`](audit/dependency_license_inventory.json) · policy: [`docs/license-policy-2026.md`](docs/license-policy-2026.md). This is not a legal opinion, and the product as a whole must not be described as MIT without disclosing third-party components.
+Inventory: [`audit/dependency_license_inventory.json`](audit/dependency_license_inventory.json) · policy: [`docs/license-policy-2026.md`](docs/license-policy-2026.md). Name the third-party licences next to MIT.

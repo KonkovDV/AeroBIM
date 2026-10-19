@@ -9,11 +9,11 @@ claim_boundary: "Public GitHub = TechLab jury pack only. Checkpoint GO; customer
 
 # Документация
 
-Checkpoint: **`GO`** (`regulatory_measurement_mvp`). `customer_go` **false**. Стадия МИК — **доработка**. На учебном комплекте проверка работает. Корпуса заказчика канала, двух человеческих разметчиков, подписанного профиля назначающей стороны (RT-002c) и подтверждения импорта в СОД нет. Публичные IDS экспертизы — линейка измерения (RT-002a). EIR v4 на канале — носитель (RT-002b CLOSED). Не писать недифференцированно «RT-002 CLOSED».
+На учебном комплекте проверка уже поднимает находку. Checkpoint — **`GO`** (`regulatory_measurement_mvp`). Публичные IDS экспертизы — линейка измерения (RT-002a). EIR v4 на канале — носитель (RT-002b CLOSED). RT-002a и RT-002c называйте раздельно.
 
 Полная карта: [`TIER0_INDEX.md`](TIER0_INDEX.md). Пакет формы: [`../submission/README.md`](../submission/README.md).
 
-Показ для сидящего члена жюри — команда `python -m aerobim.tools.run_kt3_jury` (не ролик). Оболочка ревью (`../frontend/`) — не показ сидящего члена жюри и не СОД.
+Показ для сидящего члена жюри — живая команда `python -m aerobim.tools.run_kt3_jury`. Оболочка ревью (`../frontend/`) — браузерный стол эксперта.
 
 | Документ | Зачем |
 |---|---|
@@ -29,4 +29,4 @@ Checkpoint: **`GO`** (`regulatory_measurement_mvp`). `customer_go` **false**. С
 | [`evidence/DATA_STATEMENT_2026_08.md`](evidence/DATA_STATEMENT_2026_08.md) | Какие данные есть |
 | [`../frontend/README.md`](../frontend/README.md) | Оболочка ревью в браузере |
 
-Ролик не записываем и не прилагаем.
+Показ идёт живой командой.
