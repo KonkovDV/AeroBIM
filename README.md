@@ -31,7 +31,7 @@
 
 It checks a design/working pack against itself: model, sheet, schedule, brief and calculation. Each file can open cleanly on its own. The defect lives in the seam and usually surfaces on site.
 
-A finding carries a clause, a storey or grid, and a GUID. An expert records the decision on a finding. The `summary.passed` flag is set by the deterministic gate: a person does not write it, and a language model does not write it. Output is HTML, JSON, PDF, and a BCF file.
+A finding carries a clause, a storey or grid, and a GUID. The expert decides. The program sets `summary.passed`. Out go HTML, JSON, PDF, and a BCF file.
 
 Three shelves in the process.
 
@@ -39,11 +39,11 @@ Three shelves in the process.
 |---|---|---|
 | CDE (10D, Pilot-BIM, Sarex) | Presence, route, versions | Does not cross-check file contents |
 | Model checker (Tangl, Solibri) | Model, attributes, clashes in the authoring environment | Does not compare the model with the schedule, note and calculation |
-| **Pack gateway (AeroBIM)** | Cross-file consistency; acceptance profile is IDS | Does not replace the two shelves above |
+| **Pack gateway (AeroBIM)** | Cross-file consistency; acceptance profile is IDS | The seam the other two leave open |
 
 It operates on the **seam between files**.
 
-**What a finding looks like.** Demo case: cover 30 mm in the model, 40 mm on the sheet — 10 mm gap. The deterministic layer does the compare. The card traces to the requirement, GUID and sheet row. A person decides. Export is a BCF 2.1/3.0 file.
+**What a finding looks like.** Cover, 30 mm in the model and 40 mm on the sheet. Ten millimetres of seam, and the program sees them. The card holds the requirement, the GUID and the sheet row. A person decides. Out goes a BCF 2.1/3.0 file. The pack is a fixture.
 
 ## Contents
 
@@ -69,7 +69,7 @@ It operates on the **seam between files**.
 |---|---|
 | Ingest | IFC 2x3 / 4 / 4x3, IDS 1.0, PDF vector/raster, specification text |
 | Cross-check | IFC, IDS and the other files in the pack. The tolerance on a number is decimal |
-| Workplace | Review shell (Vite): IFC model, saved sheet preview and zone from the report, RU/EN templates, HITL. Not a drawing editor |
+| Workplace | Review shell (Vite): the IFC model, the saved sheet, and the zone from the report, in Russian and English. The expert presses the decision. The drawing stays as drawn |
 | Report | HTML + JSON + PDF + structural BCF 2.1 / 3.0 ZIP |
 | Verdict | `summary.passed` is a Shared-gate. LLM/VLM never write it ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)) |
 
@@ -77,14 +77,9 @@ An unfinished mandatory check cannot yield a positive pack result.
 
 ## Stage
 
-Regulatory-measurement MVP. The code and the fixture packs in `samples/` run: one command shows a finding with evidence on a fixture pack. Every measurement so far uses fixture or open data.
+Regulatory-measurement MVP, and the run is already alive. One command on a fixture pack in `samples/` lays the finding next to its evidence.
 
-Not there yet:
-
-- a labelled corpus of real projects with two human raters on the same sample. Accuracy on real packs is not claimed;
-- an acceptance profile signed by a specific organisation. `samples/` ships published rule sets;
-- system-aware clash detection on the MEP system graph: `mep_system_clash` stays `NOT_VERIFIED`;
-- proof that a CDE imports the exported BCF. Export is structural; import is `NOT_VERIFIED`.
+The numbers you can cite are from those fixtures and from open data. A profile signed by a named organisation, two human raters on one real sample, system-level MEP clash, and a CDE that has taken the BCF are the next measurements. Accuracy on real packs is not claimed. `samples/` ships published rule sets. `mep_system_clash` stays `NOT_VERIFIED`. The BCF export is structural; import stays `NOT_VERIFIED`.
 
 ## Try it
 
@@ -171,7 +166,7 @@ flowchart LR
 | 1. Model | Validates properties and quantities with IfcOpenShell 0.9. `IFC2x3` (buildingSMART schema; no ISO publication), `IFC4 ADD2` (ISO 16739-1:2018) and `IFC4x3` (ISO 16739-1:2024) go through one entry point (`open_ifc_model` / `open_ifc_file` / `open_ifc_session`). `ISO/PAS 16739:2005` is the IFC2x Platform, not `IFC2x3`. Pre-final `IFC4x3` headers (`IFC4X3`, `ADD1`, `TC1`) are normalized to `IFC4X3_ADD2` in a temporary copy and checked against the SPF entity count; models above 256 MiB up to 1.5 GB open through RocksDB with entity count reconciliation against SPF. Where property-set names diverge between releases, the difference is a `ValidationIssue`, not a silent skip | [`docs/ifc-compatibility-matrix.md`](docs/ifc-compatibility-matrix.md) |
 | 2. Rules | Validates IDS 1.0 with IfcTester 0.9. Base W3C XSD schemas are mapped to local `xmlschema` copies (`allow="local"`), so `ifctester.ids.open` makes no network requests. CI runs 290 official buildingSMART IDS 1.0 test cases. Published rule sets from Moscow Region State Expertise and SPb GAU CGE (CIM OKS ed. 3.1.0 + CIM RII ed. 1.1.0) ship in `samples/`; the CGE profile ([`samples/profiles/spb-cge/`](samples/profiles/spb-cge/)) is a published rule set, not a customer-signed acceptance profile. A requested rule set that cannot load fails the check | [`samples/profiles/spb-cge/`](samples/profiles/spb-cge/) |
 | 3. Documents | Reads the model next to drawing notes, schedules, specifications and calculation tables. Numbers, steel grades, riser lists, title blocks and declared calculation rows follow the rules in the next section | [`docs/calculation-evidence-boundary-2026.md`](docs/calculation-evidence-boundary-2026.md) |
-| 4. Report and decision | Every finding carries `finding_id`, `source_id` and `evidence_refs`; a finding without them is refused. A reviewer can accept, reject, mark a false positive, or ask for clarification; a rejection, false positive or clarification requires a note and never flips `summary.passed`. People get HTML; machines get JSON; issue exchange gets a structural BCF 2.1 / 3.0 ZIP. The browser review shell (web-ifc + Three.js) shows the IFC and the saved sheet preview with the zone from the report; it is not a drawing editor. The fixture overlay CLI remains a separate run | [`docs/architecture/ADR-001-verdict-ownership-2026.md`](docs/architecture/ADR-001-verdict-ownership-2026.md) |
+| 4. Report and decision | Every finding carries `finding_id`, `source_id` and `evidence_refs`; a finding without them is refused. A reviewer can accept, reject, mark a false positive, or ask for clarification; a rejection, false positive or clarification requires a note and never flips `summary.passed`. People get HTML; machines get JSON; issue exchange gets a structural BCF 2.1 / 3.0 ZIP. The browser review shell (web-ifc + Three.js) shows the IFC and the saved sheet preview with the zone from the report; the drawing stays as drawn. The fixture overlay CLI remains a separate run | [`docs/architecture/ADR-001-verdict-ownership-2026.md`](docs/architecture/ADR-001-verdict-ownership-2026.md) |
 
 `summary.passed` is assembled from deterministic errors and the capability table ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)). Advisory LLM/VLM text, if enabled, drafts remark wording only and never writes that flag; under customer sign-off profiles outbound advisory calls are forbidden. Every optional engine reports `ok`, `skipped` or `failed`; any `FAILED` forces `summary.passed=false`. The same boundary is served on `GET /v1/system/capabilities`. That flag is a Shared-gate under configured rules.
 
@@ -233,7 +228,7 @@ $$
 - Decimal tolerance band (SI-normalised); lookalike steel grades and short system-mark lists share an identity; deterministic requirement extraction from narrative text; advisory LLM does not sign anything off
 - Every check reports `ok` / `skipped` / `failed`; tenant/object ACL on artifacts under `customer_pilot` / `production` (off by default in development); HTML/JSON; PDF; structural BCF 2.1 / 3.0 ZIP
 - PDF via pypdfium2 + pdfminer; default `AEROBIM_PDF_BACKEND=pdfium`
-- Browser IFC viewer and the sheet preview with the zone stored on the report. Not a drawing editor
+- Browser IFC viewer and the sheet preview with the zone stored on the report. The drawing stays as drawn
 - Norm rule packs (a fixture pack is not a customer-signed profile) and an opt-in completeness inventory
 - Quality measurement protocol (Wilson intervals, exact binomial sample-size planner, equal-mass ECE, Brier score, Gwet's $\mathrm{AC}_1$, e-process regression monitor)
 

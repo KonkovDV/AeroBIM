@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "aerobim-backend"
 version = "0.1.0"
-description = "AeroBIM backend for cross-modal IFC, IDS, drawing, and specification validation"
+description = "AeroBIM checks a design pack against itself: IFC, sheets, schedules, text and IDS"
 requires-python = ">=3.12"
 # MIT covers AeroBIM's OWN code only; third-party components keep their own
 # licenses. Core PDF path is permissive (pypdfium2 / pdfminer.six); optional
