@@ -640,8 +640,8 @@
     },
     {
       "path": "benchmarks/open-corpora/README.md",
-      "sha256": "1dca8219f39a9176142f00dc77b0d84a5d3b7f14bc90ab115c09e86bc672e161",
-      "bytes": 1965,
+      "sha256": "a70d95f2622cb7f51b8a20ce5948ccf7417b3ee0c6bc432075a7d33337d85f7a",
+      "bytes": 2202,
       "provenance": "project_authored_fixture",
       "source": "authored for AeroBIM tests/benchmarks; synthetic content",
       "license_status": "repo_mit",

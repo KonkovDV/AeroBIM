@@ -20,8 +20,11 @@ Import / refresh BSI suite:
 
 ```bash
 cd backend
-python -m aerobim.tools.import_buildingsmart_ids_testcases --write-profile --update-manifest
+python -m aerobim.tools.import_buildingsmart_ids_testcases --commit 016bbadce0d227d8eabbbc3e8b2b3788590b8a97
+python -m aerobim.tools.export_samples_manifest --merge-missing
 ```
+
+The commit is the upstream pin in `profiles/regression-bsi.json`. The import rewrites that profile and registers it in `manifest.json`; `--source-dir` reads a local clone of buildingSMART/IDS instead of downloading.
 
 ## Claim boundary (every artifact)
 
@@ -35,7 +38,7 @@ cd backend
 python -m aerobim.tools.run_ifc_bench_smoke --also-docs-evidence
 ```
 
-Decision: [`docs/quality/OPEN_BENCH_VS_RT001_DECISION_2026_08_04.md`](../../../docs/evidence/DATA_STATEMENT_2026_08.md).
+Data statement: [`docs/evidence/DATA_STATEMENT_2026_08.md`](../../../docs/evidence/DATA_STATEMENT_2026_08.md).
 
 ## Run
 
