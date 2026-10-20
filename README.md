@@ -24,8 +24,10 @@
 [Русская версия](README.ru.md)
 
 [![CI](https://img.shields.io/github/actions/workflow/status/KonkovDV/AeroBIM/ci.yml?branch=main&event=push&label=CI)](https://github.com/KonkovDV/AeroBIM/actions/workflows/ci.yml?query=branch%3Amain)
+[![CodeQL](https://img.shields.io/github/actions/workflow/status/KonkovDV/AeroBIM/codeql.yml?branch=main&label=CodeQL)](https://github.com/KonkovDV/AeroBIM/actions/workflows/codeql.yml?query=branch%3Amain)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Cite: CITATION.cff](https://img.shields.io/badge/cite-CITATION.cff-orange.svg)](CITATION.cff)
 
 **AeroBIM** catches the seam in design and working documentation. The code is open, under the MIT licence.
 
@@ -41,7 +43,7 @@ Three shelves. AeroBIM is the one where the files meet.
 
 One pack, one flag. The wording model can be off or on. The verdict stays the same.
 
-**What a finding looks like.** Cover, 30 mm in the model and 40 mm on the sheet. Ten millimetres of seam on the fixture pack, and the program sees them. The card holds the requirement, the GUID and the sheet row. A person decides. Out goes a BCF 2.1/3.0 file.
+**What a finding looks like.** The ten millimetres above are the scheme from the slides. The fixture pack in git carries its own planted defect, and one command finds it: requirement `REQ-FIRE-001` asks for a REI60 fire wall, and the wall `1XYVUKGoDDbREfVxRKsHkl` carries REI30 in the model. The card holds the requirement, the GUID, and the value on each side. A person decides. Out goes a BCF 2.1/3.0 file.
 
 ## Contents
 
@@ -62,6 +64,7 @@ One pack, one flag. The wording model can be off or on. The verdict stays the sa
 - [Documentation](#documentation)
 - [Cite](#cite)
 - [Stack](#stack)
+- [Contributing and security](#contributing-and-security)
 - [License](#license)
 
 ## Where to look
@@ -70,20 +73,21 @@ One pack, one flag. The wording model can be off or on. The verdict stays the sa
 2. The expert's table — `.\start.bat` from the clone root: model, sheet and decision together.
 3. The kernel — [numbers, marks, stamps and calculations](#numbers-marks-stamps-and-calculations). The expressions are [here](#the-expressions).
 4. Where the 2025–2026 moves come from — [the design table](#why-the-checker-is-built-this-way).
+5. How to join in — [contributing and security](#contributing-and-security).
 
 ## Pack answers
 
-A doubt does not become a pass. A required capability in `NOT_VERIFIED` holds the pack.
+A doubt does not become a pass. A required capability in `NOT_VERIFIED` holds the pack. The rows are checked top to bottom, and the first match wins (`package_outcome.py`).
 
 | Answer | When |
 |---|---|
+| Failed | `failed`. An error-level finding, or a hard clash while that policy is on |
+| Held | `blocked`. The intake is closed, or a required capability is not `OK` |
+| To the expert | `review_required`. A drawing read, a missing source or a low confidence waits for the expert |
+| Passed, warnings alive | `pass_with_warnings`. Warnings leave the flag lit |
 | Passed | `pass`. No fatal finding remains, and every required capability stands at `OK` |
-| Passed, warnings alive | `pass_with_warnings`. They leave the flag lit |
-| To the expert | `review_required`. A drawing or a region is waiting |
-| Held | `blocked`. The intake is closed, or a mandatory check has not finished |
-| Failed | `failed`. A program error, or a hard clash while that policy is on |
 
-`summary.passed` lights on the first two.
+`summary.passed` lights on the last two.
 
 ## Alongside
 
@@ -127,7 +131,7 @@ py -3.12 -m venv .venv
 
 Or double-click `run-jury.bat` at the **clone root** (quotes around the extra are inside the file; Node is not required). Do not run `python -m aerobim...` with the system interpreter — the package will be missing. Diagnostics: `.\check-launch.bat`.
 
-`summary.passed=false` on the fixture pack means the planted defects were found. Do not set `AEROBIM_SIGNOFF_PROFILE=customer_pilot` on a first clone. `requirements-lock.txt` is the Linux/CI lock — do not install it on Windows.
+`summary.passed=false` on the fixture pack means the planted defects were found. The last line of the output is JSON with `"passed": false`, `"jury_rule_id": "REQ-FIRE-001"` and `"jury_ifc_guid": "1XYVUKGoDDbREfVxRKsHkl"`. Do not set `AEROBIM_SIGNOFF_PROFILE=customer_pilot` on a first clone. `requirements-lock.txt` is the Linux/CI lock — do not install it on Windows.
 
 **Linux / macOS**
 
@@ -268,29 +272,40 @@ Optional: geometry clash `.[clash]`; OCR `.[raster]`; PyMuPDF `pdf-agpl`; LLM/VL
 
 ## HTTP API
 
-`GET /health` is unauthenticated. `/v1/*` requires `AEROBIM_API_BEARER_TOKEN` unless `AEROBIM_ALLOW_ANONYMOUS_DEV=true` (development only; loopback bind or `AEROBIM_ANONYMOUS_EXTERNAL_LOOPBACK=true`).
+`GET /health` and `GET /ready` need no token. `/v1/*` requires `AEROBIM_API_BEARER_TOKEN` unless `AEROBIM_ALLOW_ANONYMOUS_DEV=true` (development only; loopback bind or `AEROBIM_ANONYMOUS_EXTERNAL_LOOPBACK=true`).
 
 | Method | Path | Purpose |
 |---|---|---|
-| `GET` | `/health` | Readiness |
-| `GET` | `/v1/auth/bff` | Auth discovery. Default **501**. A lab `200 LAB` lights the stand |
+| `GET` | `/health` | Liveness |
+| `GET` | `/ready` | Readiness: storage, plus Redis outside development. A `503` names what is missing |
 | `GET` | `/v1/system/capabilities` | Capability boundary |
 | `POST` | `/v1/uploads` | Multipart ingest |
 | `POST` | `/v1/validate/ifc` | Validate IFC against requirements and IDS |
 | `POST` | `/v1/analyze/project-package` | Full package analysis |
+| `POST` | `/v1/analyze/project-package/reinforcement-digest` | SHA-256 provenance digest of an OpenRebar report |
 | `POST` | `/v1/analyze/project-package/submit` | Queue a larger package in Redis for the dedicated `aerobim.worker` |
 | `GET` | `/v1/analyze/project-package/jobs/{job_id}` | Poll a background job |
 | `POST` | `/v1/analyze/project-package/jobs/{job_id}/cancel` | Cancel |
 | `GET` | `/v1/reports` | List persisted reports |
 | `GET` | `/v1/reports/{id}` | Fetch one report |
 | `GET` | `/v1/reports/{id}/coverage` | Check coverage map |
+| `GET` | `/v1/reports/{id}/source/ifc` | The IFC behind the report, for the viewer |
+| `GET` | `/v1/reports/{id}/drawing-assets/{asset_id}/preview` | The saved sheet preview |
 | `GET` | `/v1/reports/{id}/revision-diff` | The delta of findings between two reports |
 | `GET` | `/v1/reports/{id}/export/{json,html,pdf,bcf}` | Export; `?version=3` switches BCF 3.0 |
+| `POST` | `/v1/reports/{id}/export/bcf-api/push` | Experimental send into an OpenCDE BCF API hub |
 | `POST` | `/v1/reports/{id}/review-events` | The expert's decision lands in the journal |
 | `GET` | `/v1/reports/{id}/review-events` | HITL history |
 | `GET` | `/v1/reports/{id}/review-kpi` | The triage summary on the expert's table |
+| `POST` | `/v1/norm-packs/{pack_id}/rule-events` | A rule edit becomes a new norm pack version. `customer_approved` needs a person signed in through OIDC |
+| `GET` | `/v1/norm-packs/{pack_id}/versions` | Norm pack versions |
+| `GET` | `/v1/auth/bff` | Auth discovery. Default **501**. A lab `200 LAB` lights the stand |
+| `GET` | `/v1/auth/login` · `/v1/auth/callback` · `/v1/auth/session` | Lab OIDC sign-in with an HttpOnly session cookie. **501** until the lab is configured |
+| `POST` | `/v1/auth/logout` | Ends the lab session |
 
-Package analysis takes an OpenRebar reinforcement report with a SHA-256 digest and compares the declared sources. OpenCDE `POST .../export/bcf-api/push` is an experimental send into the hub.
+In development, `POST /v1/demo/seed-fixture` loads the git fixture pack for a rehearsal. OpenAPI does not list it, and other environments do not mount it.
+
+Package analysis takes an OpenRebar reinforcement report with a SHA-256 digest and compares the declared sources.
 
 ## Architecture
 
@@ -544,6 +559,8 @@ tests_passed: backend=3499, frontend=410; commit c057a2e9f174; see docs/evidence
 | Verdict | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) |
 | Numbers in the pack | [calculation evidence](docs/calculation-evidence-boundary-2026.md) |
 | Academic roadmap | [SOTA 2026 math and protocols](docs/quality/ACADEMIC_ROADMAP_2026_09.md) |
+| Reproducibility | [reference commit and FAIR check](docs/REPRODUCIBILITY-2026.md) |
+| Claim boundary | [what is measured, and on which data](docs/pilot-claim-boundary-2026.md) |
 | IFC compatibility | [matrix](docs/ifc-compatibility-matrix.md) |
 | Closed contour | [offline deployment](docs/offline-deployment-2026.md) |
 | Review shell | [Frontend](frontend/README.md) |
@@ -551,11 +568,15 @@ tests_passed: backend=3499, frontend=410; commit c057a2e9f174; see docs/evidence
 
 ## Cite
 
-[`CITATION.cff`](CITATION.cff) or [`docs/CITATION.bib`](docs/CITATION.bib). Cite the Git tag or commit SHA, not a floating `latest`.
+[`CITATION.cff`](CITATION.cff) or [`docs/CITATION.bib`](docs/CITATION.bib). Cite a commit SHA. The CI-attested commit sits in [`docs/evidence/runtime-baseline-latest.json`](docs/evidence/runtime-baseline-latest.json).
 
 ## Stack
 
-Python 3.12+, FastAPI, Uvicorn. IFC — IfcOpenShell 0.9, IfcTester 0.9; IfcClash 0.9 optional. Review shell — Vite 8, React 19, web-ifc, Three.js, Vitest 5. PDF — pypdfium2, pdfminer.six, reportlab; PyMuPDF, RapidOCR and Docling optional.
+Python 3.12+, FastAPI, Uvicorn. IFC — IfcOpenShell 0.9, IfcTester 0.9; IfcClash 0.9 optional. Review shell — Vite 8, React 19, web-ifc, Three.js, Vitest 5. PDF — pypdfium2, pdfminer.six, reportlab; PyMuPDF, RapidOCR and Docling optional. DXF — ezdxf, optional.
+
+## Contributing and security
+
+Start with [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md). [`AGENTS.md`](AGENTS.md) carries the same rules for automated contributors, with the checks to run before a pull request. A vulnerability goes to private reporting, described in [`.github/SECURITY.md`](.github/SECURITY.md). Questions: [`.github/SUPPORT.md`](.github/SUPPORT.md). Conduct: [`.github/CODE_OF_CONDUCT.md`](.github/CODE_OF_CONDUCT.md). Releases: [`governance/RELEASE_POLICY.md`](governance/RELEASE_POLICY.md).
 
 ## License
 

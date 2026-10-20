@@ -24,8 +24,10 @@
 [English version](README.md)
 
 [![CI](https://img.shields.io/github/actions/workflow/status/KonkovDV/AeroBIM/ci.yml?branch=main&event=push&label=CI)](https://github.com/KonkovDV/AeroBIM/actions/workflows/ci.yml?query=branch%3Amain)
+[![CodeQL](https://img.shields.io/github/actions/workflow/status/KonkovDV/AeroBIM/codeql.yml?branch=main&label=CodeQL)](https://github.com/KonkovDV/AeroBIM/actions/workflows/codeql.yml?query=branch%3Amain)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Cite: CITATION.cff](https://img.shields.io/badge/cite-CITATION.cff-orange.svg)](CITATION.cff)
 
 **AeroBIM** — автоматическая проверка проектной и рабочей документации. Ловит шов между файлами. Код открытый, лицензия MIT.
 
@@ -41,7 +43,7 @@
 
 Один комплект — один флаг. Модель формулировок выключена или включена, вердикт тот же.
 
-**Как выглядит находка.** Защитный слой: 30 мм в модели, 40 мм на листе. Десять миллиметров шва на учебном комплекте, и программа их видит. В карточке — требование, GUID и строка листа. Человек решает. Наружу уходит BCF 2.1 или 3.0.
+**Как выглядит находка.** Десять миллиметров выше — схема со слайда. В учебном комплекте из git посажен свой дефект, и одна команда его находит: требование `REQ-FIRE-001` ждёт противопожарную стену REI60, а у стены `1XYVUKGoDDbREfVxRKsHkl` в модели REI30. В карточке — требование, GUID и значение с каждой стороны. Человек решает. Наружу уходит BCF 2.1 или 3.0.
 
 ## Содержание
 
@@ -62,6 +64,7 @@
 - [Цитирование](#цитирование)
 - [Структура репозитория](#структура-репозитория)
 - [Стек](#стек)
+- [Участие и безопасность](#участие-и-безопасность)
 - [Лицензия](#лицензия)
 
 ## Куда смотреть
@@ -70,20 +73,21 @@
 2. Стол эксперта — `.\start.bat` из корня клона: модель, лист и решение рядом.
 3. Ядро — [числа, марки, штампы и расчёты](#числа-марки-штампы-и-расчёты). Выражения — [здесь](#выражения).
 4. Откуда приёмы 2025–2026 — [таблица решений](#откуда-взяты-решения).
+5. Как присоединиться — [участие и безопасность](#участие-и-безопасность).
 
 ## Ответы комплекта
 
-Сомнение не становится прохождением. Обязательная возможность в `NOT_VERIFIED` держит комплект.
+Сомнение не становится прохождением. Обязательная возможность в `NOT_VERIFIED` держит комплект. Строки проверяются сверху вниз, побеждает первая подошедшая (`package_outcome.py`).
 
 | Ответ | Когда |
 |---|---|
+| Не прошёл | `failed`. Находка уровня ошибки или жёсткая коллизия при включённой политике |
+| Стоит | `blocked`. Вход закрыт или обязательная возможность не в `OK` |
+| На разбор | `review_required`. Чтение листа, пропавший источник или низкая уверенность ждут эксперта |
+| Прошёл, предупреждения живы | `pass_with_warnings`. Предупреждения флаг не гасят |
 | Прошёл | `pass`. Фатальных находок нет, обязательные возможности в `OK` |
-| Прошёл, предупреждения живы | `pass_with_warnings`. Они флаг не гасят |
-| На разбор | `review_required`. Чертёж или зона ждут эксперта |
-| Стоит | `blocked`. Вход закрыт или обязательная проверка не дошла до конца |
-| Не прошёл | `failed`. Ошибка программы или жёсткая коллизия при включённой политике |
 
-`summary.passed` горит на первых двух.
+`summary.passed` горит на двух последних.
 
 ## Рядом
 
@@ -127,7 +131,7 @@ py -3.12 -m venv .venv
 
 Либо из **корня клона** двойной щелчок `run-jury.bat` (кавычки extras уже внутри файла; Node не нужен). Не `python -m aerobim...` системным Python — не найдёт пакет. Диагностика: `.\check-launch.bat`.
 
-`summary.passed=false` на учебном комплекте — программа нашла посаженные дефекты. Не задавайте `AEROBIM_SIGNOFF_PROFILE=customer_pilot` на первом клоне. `requirements-lock.txt` — lock Linux/CI, на Windows его не ставить.
+`summary.passed=false` на учебном комплекте — программа нашла посаженные дефекты. Последняя строка вывода — JSON с `"passed": false`, `"jury_rule_id": "REQ-FIRE-001"` и `"jury_ifc_guid": "1XYVUKGoDDbREfVxRKsHkl"`. Не задавайте `AEROBIM_SIGNOFF_PROFILE=customer_pilot` на первом клоне. `requirements-lock.txt` — lock Linux/CI, на Windows его не ставить.
 
 **Linux / macOS**
 
@@ -268,29 +272,40 @@ $$
 
 ## HTTP API
 
-`GET /health` без аутентификации. `/v1/*` требует `AEROBIM_API_BEARER_TOKEN`, если не задано `AEROBIM_ALLOW_ANONYMOUS_DEV=true` (только development; loopback или `AEROBIM_ANONYMOUS_EXTERNAL_LOOPBACK=true`).
+`GET /health` и `GET /ready` работают без токена. `/v1/*` требует `AEROBIM_API_BEARER_TOKEN`, если не задано `AEROBIM_ALLOW_ANONYMOUS_DEV=true` (только development; loopback или `AEROBIM_ANONYMOUS_EXTERNAL_LOOPBACK=true`).
 
 | Метод | Путь | Назначение |
 |---|---|---|
-| `GET` | `/health` | Готовность |
-| `GET` | `/v1/auth/bff` | Обнаружение входа. По умолчанию **501**. Лабораторный `200 LAB` зажигает стенд |
+| `GET` | `/health` | Процесс жив |
+| `GET` | `/ready` | Готовность: хранилище, вне development ещё Redis. Ответ `503` называет, чего не хватает |
 | `GET` | `/v1/system/capabilities` | Граница возможностей |
 | `POST` | `/v1/uploads` | Приём файлов |
 | `POST` | `/v1/validate/ifc` | IFC против требований и IDS |
 | `POST` | `/v1/analyze/project-package` | Полный анализ комплекта |
+| `POST` | `/v1/analyze/project-package/reinforcement-digest` | Дайджест SHA-256 отчёта OpenRebar |
 | `POST` | `/v1/analyze/project-package/submit` | Постановка крупного комплекта в Redis; выполнение отдельным `aerobim.worker` |
 | `GET` | `/v1/analyze/project-package/jobs/{job_id}` | Статус задания |
 | `POST` | `/v1/analyze/project-package/jobs/{job_id}/cancel` | Отмена |
 | `GET` | `/v1/reports` | Список отчётов |
 | `GET` | `/v1/reports/{id}` | Один отчёт |
 | `GET` | `/v1/reports/{id}/coverage` | Карта покрытия |
+| `GET` | `/v1/reports/{id}/source/ifc` | IFC отчёта для вьюера |
+| `GET` | `/v1/reports/{id}/drawing-assets/{asset_id}/preview` | Сохранённое превью листа |
 | `GET` | `/v1/reports/{id}/revision-diff` | Дельта находок между двумя отчётами |
 | `GET` | `/v1/reports/{id}/export/{json,html,pdf,bcf}` | Выгрузка; `?version=3` — BCF 3.0 |
+| `POST` | `/v1/reports/{id}/export/bcf-api/push` | Экспериментальная отправка в хаб OpenCDE BCF API |
 | `POST` | `/v1/reports/{id}/review-events` | Решение эксперта ложится в журнал |
 | `GET` | `/v1/reports/{id}/review-events` | История HITL |
 | `GET` | `/v1/reports/{id}/review-kpi` | Сводка разбора на столе эксперта |
+| `POST` | `/v1/norm-packs/{pack_id}/rule-events` | Правка правила становится новой версией пака норм. `customer_approved` ставит только человек, вошедший через OIDC |
+| `GET` | `/v1/norm-packs/{pack_id}/versions` | Версии пака норм |
+| `GET` | `/v1/auth/bff` | Обнаружение входа. По умолчанию **501**. Лабораторный `200 LAB` зажигает стенд |
+| `GET` | `/v1/auth/login` · `/v1/auth/callback` · `/v1/auth/session` | Лабораторный вход OIDC с сессионной cookie HttpOnly. **501**, пока лаборатория не настроена |
+| `POST` | `/v1/auth/logout` | Закрывает лабораторную сессию |
 
-Анализ комплекта принимает отчёт OpenRebar с дайджестом SHA-256 и сверяет объявленные источники. OpenCDE `POST .../export/bcf-api/push` — экспериментальная отправка в хаб.
+В development `POST /v1/demo/seed-fixture` загружает учебный комплект из git для репетиции. В OpenAPI его нет, другие окружения его не поднимают.
+
+Анализ комплекта принимает отчёт OpenRebar с дайджестом SHA-256 и сверяет объявленные источники.
 
 ## Архитектура
 
@@ -425,6 +440,8 @@ presentation/    FastAPI
 | Вердикт | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) |
 | Числа в комплекте | [граница расчётных доказательств](docs/calculation-evidence-boundary-2026.md) |
 | Математический аппарат | [дорожная карта и формулы](docs/quality/ACADEMIC_ROADMAP_2026_09.md) |
+| Воспроизводимость | [опорный коммит и проверка FAIR](docs/REPRODUCIBILITY-2026.md) |
+| Граница заявлений | [что измерено и на каких данных](docs/pilot-claim-boundary-2026.md) |
 | Совместимость IFC | [матрица](docs/ifc-compatibility-matrix.md) |
 | Закрытый контур | [офлайн-развёртывание](docs/offline-deployment-2026.md) |
 | Оболочка ревью | [фронтенд](frontend/README.md) |
@@ -432,7 +449,7 @@ presentation/    FastAPI
 
 ## Цитирование
 
-[`CITATION.cff`](CITATION.cff) или [`docs/CITATION.bib`](docs/CITATION.bib). Цитируйте тег или SHA, не `latest`.
+[`CITATION.cff`](CITATION.cff) или [`docs/CITATION.bib`](docs/CITATION.bib). Цитируйте SHA коммита. Коммит с аттестацией CI лежит в [`docs/evidence/runtime-baseline-latest.json`](docs/evidence/runtime-baseline-latest.json).
 
 <!-- AEROBIM_DOCUMENTED_ENV:BEGIN -->
 <!-- machine-checked parity list (export_runtime_baseline --check-readme)
@@ -555,7 +572,11 @@ tests_passed: backend=3499, frontend=410; commit c057a2e9f174; see docs/evidence
 
 ## Стек
 
-Python 3.12+, FastAPI, Uvicorn. IFC — IfcOpenShell 0.9, IfcTester 0.9; IfcClash 0.9 опционален. Оболочка ревью — Vite 8, React 19, web-ifc, Three.js, Vitest 5. PDF — pypdfium2, pdfminer.six, reportlab; PyMuPDF, RapidOCR и Docling опциональны.
+Python 3.12+, FastAPI, Uvicorn. IFC — IfcOpenShell 0.9, IfcTester 0.9; IfcClash 0.9 опционален. Оболочка ревью — Vite 8, React 19, web-ifc, Three.js, Vitest 5. PDF — pypdfium2, pdfminer.six, reportlab; PyMuPDF, RapidOCR и Docling опциональны. DXF — ezdxf, опционально.
+
+## Участие и безопасность
+
+Начните с [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md). [`AGENTS.md`](AGENTS.md) держит те же правила для автоматических исполнителей и список проверок перед PR. Уязвимость уходит в закрытый канал из [`.github/SECURITY.md`](.github/SECURITY.md). Вопросы — [`.github/SUPPORT.md`](.github/SUPPORT.md). Правила общения — [`.github/CODE_OF_CONDUCT.md`](.github/CODE_OF_CONDUCT.md). Выпуски — [`governance/RELEASE_POLICY.md`](governance/RELEASE_POLICY.md).
 
 ## Лицензия
 
