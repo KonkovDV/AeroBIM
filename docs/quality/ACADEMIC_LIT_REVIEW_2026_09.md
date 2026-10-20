@@ -104,7 +104,7 @@ Jury/preprint extract (tracked): [`../RELATED_WORK_PREPRINT_2026_09.md`](../RELA
 
 ## 5. Статус команд (02.09.2026)
 
-1. **матрица + позиционирование** — этот файл v1.1.4 + tracked extract; пять Crossref-строк 02.09.2026.
+1. **матрица + позиционирование** — этот файл v1.1.5; пять Crossref-строк 02.09.2026 и три строки сверки 20.10 (Mushkani, AECV-Bench, VL-Calibration). Английский контраст — [`../RELATED_WORK_PREPRINT_2026_09.md`](../RELATED_WORK_PREPRINT_2026_09.md).
 2. Related-work preprint — девять исходных позиций сверены; Springer ML переклассифицирован; Fuchs = EC3, не тезис; Ishigaki smoke EXECUTED.
 3. Кейс-слайд — CORENET **исправлен** (не «все проекты»). CBIMS 20k — UNVERIFIED.
 4. Вклад draft — без «первый в мире»; n≥30 по-прежнему впереди (`t_manual_s` лабораторного журнала пуст).

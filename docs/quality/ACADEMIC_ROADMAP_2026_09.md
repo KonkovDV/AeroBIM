@@ -1,8 +1,8 @@
 ---
 title: "Academic Roadmap — что доделать на академическом уровне"
 status: active
-version: "1.3.1"
-last_updated: "2026-10-18"
+version: "1.3.2"
+last_updated: "2026-10-20"
 claim_boundary: "Дорожная карта научного слоя. Checkpoint GO; customer_go false; RT-001/002/003 OPEN. Все числа — из артефактов; forbidden_wording действует и для статьи."
 ---
 
@@ -44,7 +44,7 @@ claim_boundary: "Дорожная карта научного слоя. Checkpoi
 | # | Раздел | Источник (готово) | Что дописать |
 |---|---|---|---|
 | P1 | Вклад (contributions) | novelty-окна (verdict-neutrality доказуема, fail-closed к дрейфу, evidence-контракт, RU-контур) | заморозить 4 формулировки + границы |
-| P2 | Related Work | ACADEMIC_LIT_REVIEW матрица (14 позиций вериф.) | секция EN + контраст с Iversen&Huang/Fuchs |
+| P2 | Related Work | ACADEMIC_LIT_REVIEW матрица плюс сверка 20.10 (AECV-Bench, VL-Calibration, Mushkani) | секция EN записана в [`../RELATED_WORK_PREPRINT_2026_09.md`](../RELATED_WORK_PREPRINT_2026_09.md): контраст с Iversen & Huang, Fuchs и редьюсером Mushkani |
 | P3 | Architecture | ADR-001/002, DeterminismGate, hybrid gate, state machine | систем-раздел с инвариантами |
 | P4 | Evaluation | E1–E3 артефакты + AECV 0.43 (расхождение с авторами ≤0.02) + IFC-Bench 27/1026 + ПНСТ 18/22 | числа после прогонов |
 | P5 | Limitations | honesty-серия как источник | «ограничения» как сила: NO_GO-механика |

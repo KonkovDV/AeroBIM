@@ -2,9 +2,9 @@
 ---
 title: "Related work for preprint — September 2026"
 date: "2026-09-02"
-last_updated: "2026-09-02"
+last_updated: "2026-10-20"
 status: active
-version: "1.1.3"
+version: "1.2.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -33,6 +33,9 @@ claim_boundary: >
 | [BIM-Edit](https://arxiv.org/abs/2606.20146) | arXiv:2606.20146 | NL-edit IFC. Смежный бенч, не проверка комплекта. |
 | [Simbola et al.](https://doi.org/10.1007/s10994-026-07038-6) | Mach Learn 115:116 (2026) | LLM-CC над **data-product** YAML, не строительные нормы. |
 | [Cheung et al.](https://doi.org/10.1080/09613218.2026.2686293) | BRI, e-pub Jun 2026 | Институционализация ACC; evidence–engine alignment. Рамка discussion, не закрытие finding-контракта. |
+| [AECV-Bench](https://arxiv.org/abs/2601.04819) | arXiv:2601.04819 (Jan 2026) | Счёт символов на планах и QA по чертежу. OCR силён, счёт дверей и окон не решён. Их accuracy — не наша. Основание воздержания чтения листа. |
+| [VL-Calibration](https://aclanthology.org/2026.acl-long.2074/) | ACL 2026; arXiv:2604.09529 | LVLM ошибается с высокой словесной уверенностью. Основание порога `hitl_required`, не калибровка AeroBIM. |
+| [Mushkani, Bérard, Koseki](https://arxiv.org/abs/2607.29058) | arXiv:2607.29058 | Четыре решения и fail-closed редьюсер: нарушение, затем нехватка данных, затем неопределённость. Тот же порядок в `package_outcome.py`. Их проценты сняты на страницах PDF и остаются их. |
 
 ## Смежный prior art (Crossref 02.09.2026; уже цитировались в репо)
 
@@ -63,7 +66,19 @@ CLI `python -m aerobim.tools.sequential_regression_monitor` — e-process по
 2. Мандат проверки уже существует: Сингапур CORENET X — с 01.10.2026 **новые проекты GFA ≥ 5 000 м²**, не все проекты ([URA dc26-08](https://www.ura.gov.sg/guidelines/circulars/dc26-08/)). Китай — гос-контур РД-ревью (объём «20k моделей» на 02.09.2026 **UNVERIFIED**). Эстония — разрешение как запись EHR.
 3. Геометрию не обещаем (Xiao = карта RT-003). Cheung: ACC объясним, когда evidence и движок совпадают.
 
-**EN skeleton:** We describe an open-source IFC-pack acceptance gate in which LLM/VLM outputs are excluded from `summary.passed` by construction, each finding is an evidence object, external engine format drift fail-closes, and advisory traces are origin-filtered under a reproducibility hash. Partner-pack accuracy remains unmeasured.
+## Related work (English)
+
+The 2026 literature puts a language model on the checking path. AeroBIM keeps that model off `summary.passed`.
+
+[Iversen and Huang](https://doi.org/10.1016/j.autcon.2025.106707) (*Automation in Construction* 182, 2026, art. 106707) read a clause, choose a tool, run the check and write the report. [Fuchs, Hellin and Borrmann](https://doi.org/10.35490/ec3.2026.318) (EC3, July 2026) generate reusable checking functions from requirements that IDS has already accepted, then refine them against a verifier. [Perov et al.](https://doi.org/10.1109/icdmw69685.2025.00203) (ICDMW 2025) and [Wang, Hwang, Han and Gupta](https://doi.org/10.1061/jcemd4.coeng-18122) (JCEM 2026) sit on the same side: the model drafts the rule or the judgement. Those papers close the translation of a clause into an executable check. They leave open who is allowed to say that a pack passed. Their scores stay theirs.
+
+AeroBIM draws that line in code ([ADR-001](architecture/ADR-001-verdict-ownership-2026.md)). A model may draft a remark or an IDS fragment. It does not select the check on the Shared-gate, and a generated function does not write `summary.passed` until a person has approved a hashed pack (`approval_ref`). Turning the model off leaves the flag unchanged.
+
+Three neighbours set the measurement, not the verdict. [AECV-Bench](https://arxiv.org/abs/2601.04819) (arXiv:2601.04819) finds OCR of a sheet comparatively strong and counting of doors and windows unsolved, which is why a drawing read here abstains into review. [VL-Calibration](https://aclanthology.org/2026.acl-long.2074/) (Xiao, Xu and Gan, ACL 2026) shows a vision-language model stating a high confidence on a wrong answer, which is why verbalized confidence is only a floor for `hitl_required`. [Mushkani, Bérard and Koseki](https://arxiv.org/abs/2607.29058) (arXiv:2607.29058) reduce a review to four states in a fixed order: a violation outranks missing evidence, and missing evidence outranks uncertainty. `package_outcome.py` follows that order and adds a warnings pass that still leaves `summary.passed` true. Their percentages were measured on PDF pages and are not an IFC result.
+
+Geometry-heavy rules stay open here. [Xiao, Koh, Ma and Cheng](https://doi.org/10.1016/j.autcon.2026.107038) (*Automation in Construction* 189, 2026) attack that class with a graph. In this repository it remains `NOT_VERIFIED` (RT-003).
+
+We describe an open-source IFC-pack acceptance gate in which LLM/VLM outputs are excluded from `summary.passed` by construction, each finding is an evidence object, external engine format drift fail-closes, and advisory traces are origin-filtered under a reproducibility hash. Accuracy on a partner pack is unmeasured, and `customer_go` stays false.
 
 ## Мировой прецедент (не наш объём)
 
