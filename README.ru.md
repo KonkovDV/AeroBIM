@@ -77,7 +77,7 @@
 
 ## Ответы комплекта
 
-Сомнение не становится прохождением. Обязательная возможность в `NOT_VERIFIED` держит комплект. Строки проверяются сверху вниз, побеждает первая подошедшая (`package_outcome.py`).
+Сомнение не становится прохождением. Обязательная возможность в `NOT_VERIFIED` держит комплект. Строки проверяются сверху вниз, побеждает первая подошедшая (`package_outcome.py`). Порядок — fail-closed редьюсер [Mushkani, Bérard, Koseki](https://arxiv.org/abs/2607.29058) (arXiv:2607.29058): нарушение старше нехватки данных, а неполные данные прохождением не становятся.
 
 | Ответ | Когда |
 |---|---|
@@ -217,8 +217,8 @@ flowchart LR
 
 | Наблюдение из практики 2025–2026 | Решение в AeroBIM |
 |---|---|
-| Плотный чертёж легко обманывает глаз модели (`AECV-Bench`, arXiv:2601.04819; Iversen & Huang, *Automation in Construction* 2025; Fuchs et al., EC3) | Вердикт зажигают `EvidenceAssembler` и `DeterminismGate` ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)). Черновик формулировки живёт с меткой `origin="advisory"`, и при выключенной модели вердикт тот же: `OFF == ON` |
-| Словесная уверенность VLM любит казаться точнее, чем она есть (VL-Calibration, ACL 2026) | Уверенность ведёт зону к эксперту: порог `hitl_required` и живая калибровка |
+| Плотный чертёж обманывает глаз модели ([AECV-Bench](https://arxiv.org/abs/2601.04819), arXiv:2601.04819), а работы 2026 года ставят модель на маршрут проверки ([Iversen & Huang](https://doi.org/10.1016/j.autcon.2025.106707), *Automation in Construction* 182; [Fuchs, Hellin, Borrmann](https://doi.org/10.35490/ec3.2026.318), EC3) | Вердикт зажигают `EvidenceAssembler` и `DeterminismGate` ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)). Черновик формулировки живёт с меткой `origin="advisory"`, и при выключенной модели вердикт тот же: `OFF == ON` |
+| Словесная уверенность VLM любит казаться точнее, чем она есть ([VL-Calibration](https://aclanthology.org/2026.acl-long.2074/), ACL 2026) | Уверенность ведёт зону к эксперту: порог `hitl_required` и живая калибровка |
 | Малая выборка и обычная $\kappa$ на перекосе классов рисуют слишком ровную картину | Доли живут в 95% интервале Уилсона. Объём разметки (`study_design.py`, `plan_adjudication_corpus.py`, `n_labeled=0`) — большее из 62 и 111, то есть `recommended_n = 111`. Согласие экспертов считает $\kappa$ Коэна, $\alpha$ Криппендорфа и $\mathrm{AC}_1$ Гвета. Калибровка считает equal-mass ECE и оценку Брайера (`compute_reliability_report.py`, `eval_statistics.py`). В свет она выходит на корпусе заказчика при $n \ge 100$. Выражения — ниже |
 | Фиксированное $\alpha$ на каждом коммите со временем поднимает шум | Последовательный мониторинг (`sequential_inference.py`, `e_process_simulation.py`) переводит $p$ в $e$ калибраторами Вовка–Ванга либо ведёт усечённый мартингал aGRAPA. Неравенство Вилля держит долю траекторий. Выражения — ниже |
 | Число, переписанное рукой, отрывается от прогона | `manuscript_tables.py` берёт ячейку из пина, когда `attested_by="ci"` и `claim_level` заполнен |
@@ -437,7 +437,7 @@ presentation/    FastAPI
 | Презентация | [PowerPoint, 7 слайдов](submission/03-presentation/AeroBIM.pptx) · [PDF](submission/03-presentation/AeroBIM.pdf) · [текст слайдов](submission/03-presentation/demo_day_slides.md) |
 | Полная версия | [PowerPoint, 43 слайда](submission/03-presentation/AeroBIM-full.pptx) · [PDF](submission/03-presentation/AeroBIM-full.pdf) · [текст](submission/03-presentation/AeroBIM-full.md) |
 | Цифры на слайдах | [как сняты цифры](submission/05-additional/README.md) |
-| Вердикт | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) |
+| Решения | [ADR-001 вердикт](docs/architecture/ADR-001-verdict-ownership-2026.md) · [ADR-005 данные заказчика](docs/architecture/ADR-005-customer-data-handling-2026.md) · [ADR-006 оценка](docs/architecture/ADR-006-evaluation-harness-benchmark.md) · [ADR-007 нормативная модель](docs/architecture/ADR-007-regulatory-information-model.md) · [все](docs/architecture/) |
 | Числа в комплекте | [граница расчётных доказательств](docs/calculation-evidence-boundary-2026.md) |
 | Математический аппарат | [дорожная карта и формулы](docs/quality/ACADEMIC_ROADMAP_2026_09.md) |
 | Воспроизводимость | [опорный коммит и проверка FAIR](docs/REPRODUCIBILITY-2026.md) |

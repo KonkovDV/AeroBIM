@@ -2,9 +2,9 @@
 ---
 title: "Самодостаточный аудиторский корпус — Checkpoint GO × ТЗ заказчика канала × Техлаб/МИК"
 date: "2026-09-04"
-last_updated: "2026-10-16"
+last_updated: "2026-10-20"
 status: active
-version: "2.1.1"
+version: "2.1.2"
 standalone: true
 repo_required: false
 distribution: internal_auditor_pack_channel_derivatives_minimized
@@ -733,7 +733,7 @@ Ask к назначающей стороне: один-ревизионный П
 
 Отличимы: ADR-001 (LLM не пишет passed); протокол классов + dual-rater + κ; слой шов файлов; ablation A0–A3 на фикстуре; CI pin `attested_by=ci`. Витрина сверстников: «>90%» без корпуса. Цифры сверстников не переносить. `peer_card_claims_externally_verified = false`. Заявленные «15 пилотов», «600+ норм», «живой прототип на данных заказчика», геометрический DWG — не проверены извне. Честный проигрыш: корпус норм и живой DWG у части сверстников сильнее **заявлены**. Не «лучше Solibri глобально». Четыре пункта сравнения у всех решений: (1) корпус цифры; (2) два оценщика; (3) согласие; (4) условие несостоятельности результата.
 
-Iversen & Huang: *Leveraging large language models for BIM-based automated compliance checking*, Automation in Construction **182** (2026) art. **106707**, DOI `10.1016/j.autcon.2025.106707` (PII S0926580525007472) — **VERIFIED** внутренним обзором (`ACADEMIC_LIT_REVIEW_2026_09`). Fuchs, Hellin & Borrmann: EC3 2026, mediaTUM **1854862** — **VERIFIED** тем же обзором. Они закрывают оцифровку нормы. AeroBIM закрывает **кто имеет право сказать pass**. Не говорить «мы лучше Iversen». Их F1 остаётся их. Перед слайдами К2: неверная библиография бьёт по К1/К2 сильнее, чем её отсутствие. EGCC / Mushkani et al. arXiv:2607.29058 — in-repo pin (четыре статуса + HITL); OSINT-проход 05.09 ID не подтвердил (UNVERIFIABLE внешне).
+Iversen & Huang: *Leveraging large language models for BIM-based automated compliance checking*, Automation in Construction **182** (2026) art. **106707**, DOI `10.1016/j.autcon.2025.106707` (PII S0926580525007472) — **VERIFIED** внутренним обзором (`ACADEMIC_LIT_REVIEW_2026_09`). Fuchs, Hellin & Borrmann: EC3 2026, mediaTUM **1854862** — **VERIFIED** тем же обзором. Они закрывают оцифровку нормы. AeroBIM закрывает **кто имеет право сказать pass**. Не говорить «мы лучше Iversen». Их F1 остаётся их. Перед слайдами К2: неверная библиография бьёт по К1/К2 сильнее, чем её отсутствие. EGCC / Mushkani, Bérard, Koseki: *Evidence-Grounded Constraint Checking in Construction Documents*, [arXiv:2607.29058](https://arxiv.org/abs/2607.29058) — **VERIFIED** 20.10 по странице arXiv (OSINT-проход 05.09 ID не нашёл). Четыре решения (Meets / Does Not Meet / Missing Information / Uncertain) и детерминированный редьюсер fail-closed: нарушение, затем нехватка данных, затем неопределённость, затем соответствие. Их проценты сняты на страницах PDF AEC-Bench и остаются их цифрами.
 
 ### 9.6 К4 коммерческий путь (контекст, не выручка)
 
@@ -892,7 +892,7 @@ Open benches (AEC-Bench, IFC-Bench, GNI) — **другой контур**, че
 
 Семантический владелец `summary.passed` = детерминированные выходы (ERROR count + blocking capabilities под активным sign-off профилем). Физический писатель = EvidenceAssembler — чистая функция. Advisory / AI / OCR никогда не поставляют входы, которые **одни** могут перевернуть `passed`.
 
-Precedence `summary.outcome` (EGCC / Mushkani et al., arXiv:2607.29058 — in-repo pin; OSINT 05.09 ID UNVERIFIABLE):
+Precedence `summary.outcome` (EGCC / Mushkani et al., [arXiv:2607.29058](https://arxiv.org/abs/2607.29058) — VERIFIED 20.10; тот же порядок в их уравнении 1):
 
 1. confirmed finding failures / hard clashes → `FAILED`
 2. intake blocked или required capability not OK → `BLOCKED`

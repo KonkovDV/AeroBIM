@@ -77,7 +77,7 @@ One pack, one flag. The wording model can be off or on. The verdict stays the sa
 
 ## Pack answers
 
-A doubt does not become a pass. A required capability in `NOT_VERIFIED` holds the pack. The rows are checked top to bottom, and the first match wins (`package_outcome.py`).
+A doubt does not become a pass. A required capability in `NOT_VERIFIED` holds the pack. The rows are checked top to bottom, and the first match wins (`package_outcome.py`). The order is the fail-closed reducer of [Mushkani, Bérard & Koseki](https://arxiv.org/abs/2607.29058) (arXiv:2607.29058): a violation outranks missing evidence, and incomplete evidence never becomes a pass.
 
 | Answer | When |
 |---|---|
@@ -217,8 +217,8 @@ The 2025–2026 practice sits in the kernel. The last word stays with the progra
 
 | Observation from 2025–2026 practice | Design choice in AeroBIM |
 |---|---|
-| A dense sheet can fool a model's eye (`AECV-Bench`, arXiv:2601.04819; Iversen & Huang, *Automation in Construction* 2025; Fuchs et al., EC3) | `EvidenceAssembler` and `DeterminismGate` light the verdict ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)). The wording draft carries `origin="advisory"`, and with the model off the verdict is the same: `OFF == ON` |
-| A VLM likes its own confidence more than the sheet deserves (VL-Calibration, ACL 2026) | Confidence walks the region to the expert: the `hitl_required` floor and a living calibration |
+| A dense sheet fools a model's eye ([AECV-Bench](https://arxiv.org/abs/2601.04819), arXiv:2601.04819), and 2026 work puts the model on the checking path ([Iversen & Huang](https://doi.org/10.1016/j.autcon.2025.106707), *Automation in Construction* 182; [Fuchs, Hellin & Borrmann](https://doi.org/10.35490/ec3.2026.318), EC3) | `EvidenceAssembler` and `DeterminismGate` light the verdict ([ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md)). The wording draft carries `origin="advisory"`, and with the model off the verdict is the same: `OFF == ON` |
+| A VLM likes its own confidence more than the sheet deserves ([VL-Calibration](https://aclanthology.org/2026.acl-long.2074/), ACL 2026) | Confidence walks the region to the expert: the `hitl_required` floor and a living calibration |
 | A small sample and a naive $\kappa$ on a skewed table paint too smooth a picture | Proportions live in a Wilson 95% interval. Labeling sample size (`study_design.py`, `plan_adjudication_corpus.py`, `n_labeled=0`) is the larger of 62 and 111, so `recommended_n = 111`. Agreement reports Cohen's $\kappa$, Krippendorff's $\alpha$ and Gwet's $\mathrm{AC}_1$. Calibration reports equal-mass ECE and the Brier score (`compute_reliability_report.py`, `eval_statistics.py`). It steps into the light on a customer corpus once $n \ge 100$. The expressions are below |
 | A fixed $\alpha$ on every commit slowly raises the noise | Sequential monitoring (`sequential_inference.py`, `e_process_simulation.py`) turns $p$ into $e$ with the Vovk–Wang calibrators, or runs a truncated aGRAPA martingale. Ville's inequality holds the share of trajectories. The expressions are below |
 | A number copied by hand drifts away from the run | `manuscript_tables.py` takes a cell from the pin when `attested_by="ci"` and `claim_level` is filled |
@@ -556,7 +556,7 @@ tests_passed: backend=3499, frontend=410; commit c057a2e9f174; see docs/evidence
 | Presentation | [PowerPoint, 7 slides](submission/03-presentation/AeroBIM.pptx) · [PDF](submission/03-presentation/AeroBIM.pdf) · [slide text](submission/03-presentation/demo_day_slides.md) |
 | Full deck | [PowerPoint, 43 slides](submission/03-presentation/AeroBIM-full.pptx) · [PDF](submission/03-presentation/AeroBIM-full.pdf) · [text](submission/03-presentation/AeroBIM-full.md) |
 | Slide numbers | [how the numbers were taken](submission/05-additional/README.md) |
-| Verdict | [ADR-001](docs/architecture/ADR-001-verdict-ownership-2026.md) |
+| Decisions | [ADR-001 verdict](docs/architecture/ADR-001-verdict-ownership-2026.md) · [ADR-005 customer data](docs/architecture/ADR-005-customer-data-handling-2026.md) · [ADR-006 evaluation](docs/architecture/ADR-006-evaluation-harness-benchmark.md) · [ADR-007 regulatory model](docs/architecture/ADR-007-regulatory-information-model.md) · [all](docs/architecture/) |
 | Numbers in the pack | [calculation evidence](docs/calculation-evidence-boundary-2026.md) |
 | Academic roadmap | [SOTA 2026 math and protocols](docs/quality/ACADEMIC_ROADMAP_2026_09.md) |
 | Reproducibility | [reference commit and FAIR check](docs/REPRODUCIBILITY-2026.md) |

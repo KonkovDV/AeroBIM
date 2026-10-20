@@ -2,8 +2,8 @@
 ---
 title: "Academic Literature Review & World-Practice Radar — September 2026"
 status: active
-version: "1.1.4"
-last_updated: "2026-09-02"
+version: "1.1.5"
+last_updated: "2026-10-20"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -24,7 +24,10 @@ Jury/preprint extract (tracked): [`../RELATED_WORK_PREPRINT_2026_09.md`](../RELA
 | ID | Статус | Что поправили |
 |---|---|---|
 | Iversen & Huang | VERIFIED | Заголовок *Leveraging large language models for BIM-based automated compliance checking*; AuC **182** (Feb 2026) art. **106707**; DOI `10.1016/j.autcon.2025.106707` (online 05.12.2025); PII `S0926580525007472`. DSR, LLM как reasoning engine. Их F1 на интерпретации/исполнении — **их** eval, не AeroBIM. |
-| Fuchs et al. | VERIFIED | Не тезис. EC3 2026 (Jul), Konferenzbeitrag: *Assessing the Viability of LLM Agents for Generating Reusable Compliance Checking Functions* (Fuchs, Hellin, Borrmann). [mediaTUM 1854862](https://mediatum.ub.tum.de/node?id=1854862). |
+| Fuchs et al. | VERIFIED | Не тезис. EC3 2026 (Jul), Konferenzbeitrag: *Assessing the Viability of LLM Agents for Generating Reusable Compliance Checking Functions* (Fuchs, Hellin, Borrmann). [mediaTUM 1854862](https://mediatum.ub.tum.de/node?id=1854862); DOI [`10.35490/ec3.2026.318`](https://doi.org/10.35490/ec3.2026.318) (сверка 20.10.2026). |
+| Mushkani, Bérard, Koseki (EGCC) | VERIFIED 20.10 arXiv | *Evidence-Grounded Constraint Checking in Construction Documents*; arXiv:[2607.29058](https://arxiv.org/abs/2607.29058). Четыре решения (Meets / Does Not Meet / Missing Information / Uncertain), детерминированный редьюсер fail-closed (уравнение 1): нарушение, затем нехватка данных, затем неопределённость, затем соответствие. Тот же порядок в `package_outcome.py`. Их false-pass и точность на страницах PDF AEC-Bench — **их** eval. |
+| AECV-Bench | VERIFIED 20.10 arXiv | *Benchmarking Multimodal Models on Architectural and Engineering Drawings Understanding* (Kondratenko et al.); arXiv:[2601.04819](https://arxiv.org/abs/2601.04819). OCR и текстовый QA сильнее всего; счёт дверей и окон на планах остаётся нерешённым. Их цифры — их eval. |
+| VL-Calibration | VERIFIED 20.10 ACL Anthology | Xiao, Xu, Gan, *Decoupled Confidence Calibration for Large Vision-Language Models Reasoning*; ACL 2026 Main, [2026.acl-long.2074](https://aclanthology.org/2026.acl-long.2074/), arXiv:[2604.09529](https://arxiv.org/abs/2604.09529). LVLM часто ошибаются с высокой уверенностью; основание для порога `hitl_required`. |
 | Xiao et al. | VERIFIED | *Automating geometry-intensive compliance checking in BIM…*; AuC **189** art. **107038**; DOI `10.1016/j.autcon.2026.107038`; e-pub 02.06.2026. PII `S0926580526002797`. SGR-BIM; пожарные нормы. Их цифры — их eval. |
 | Zentgraf et al. | VERIFIED | *A BIM-based framework for automated building code extraction and compliance checking*; AEI **74** 104735; DOI `10.1016/j.aei.2026.104735`; published 11.05.2026. STS/ISOProps → SHACL. |
 | Madireddy et al. | VERIFIED | *Large Language Model-Driven Code Compliance Checking in Building Information Modeling*; Electronics **14**(11) 2146; DOI `10.3390/electronics14112146`. LLM пишет Python под **Revit**, HITL. |
