@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM Reproducibility 2026"
 status: active
-version: "1.1.0"
-last_updated: "2026-08-03"
+version: "1.2.0"
+last_updated: "2026-10-20"
 tags: [aerobim, reproducibility, FAIR, openBIM, academic]
 ---
 
@@ -12,14 +12,16 @@ Single source of truth for reviewers, pilot operators, and supplementary materia
 
 **Repository layout:** public GitHub = product code + TechLab jury docs; operator/debug materials stay under `.local/` (gitignored). CI dumps use `artifacts/`.
 
-## Frozen vs rolling references
+## Reference commits
 
 | Line | Git ref | Use when |
 |---|---|---|
-| **Frozen pre-pilot baseline** | tag `pilot-2026-pre` → commit `1a5c03e` | Citing metrics locked at pilot kickoff; comparing pilot weeks |
+| **CI-attested pin** | commit `c057a2e9f174` from [`evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json) (`attested_by=ci`, `claim_level=fixture_engineering`, `publishable=true`) | Citing test counts, LOC and fixture extraction F1 |
 | **Rolling documentation** | branch `main` (latest jury pack) | Operator-local notes under `.local/`; citeable fixtures in [`evidence/README.md`](evidence/README.md) |
 
-Metrics in root README runtime baseline / [`evidence/runtime-baseline-latest.json`](evidence/runtime-baseline-latest.json) for extraction F1 and test counts refer to the **frozen** line unless a re-run is recorded on a newer SHA.
+The numbers in the root README come from that pin. A newer pin lands only from a CI artifact, never from a local run.
+
+The tag `pilot-2026-pre` and its commit `1a5c03e` did not survive the history rewrite of 2026-10-01, and the remote carries no tags today. Cite the pin commit instead ([`evidence/HISTORY_REWRITE_ORPHAN_SHA_2026_10.md`](evidence/HISTORY_REWRITE_ORPHAN_SHA_2026_10.md)).
 
 ## Standards alignment (May 2026)
 
@@ -35,37 +37,39 @@ Metrics in root README runtime baseline / [`evidence/runtime-baseline-latest.jso
 ```powershell
 git clone https://github.com/KonkovDV/AeroBIM.git
 cd AeroBIM
-git checkout pilot-2026-pre   # frozen baseline; or main for latest docs
+git checkout c057a2e9f174db7ed58a5975b7b576c7d6bd333f   # CI-attested pin; or stay on main
 
 cd backend
-python -m venv .venv-pilot
-.\.venv-pilot\Scripts\pip install -e ".[dev,raster]"
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -e ".[dev,raster]"
 
-.\.venv-pilot\Scripts\python.exe -m pytest tests -q
-.\.venv-pilot\Scripts\python.exe -m aerobim.tools.evaluate_extraction --min-macro-f1 0.70
-.\.venv-pilot\Scripts\python.exe -m aerobim.tools.generate_benchmark_report --output-dir ../docs/evidence
-.\.venv-pilot\Scripts\python.exe -m aerobim.tools.run_ablation_study --output ../docs/evidence/ablation-study-report.json
+.\.venv\Scripts\python.exe -m pytest tests -q
+.\.venv\Scripts\python.exe -m aerobim.tools.evaluate_extraction --min-macro-f1 0.70
+.\.venv\Scripts\python.exe -m aerobim.tools.generate_benchmark_report --output-dir ../artifacts/benchmark
+.\.venv\Scripts\python.exe -m aerobim.tools.run_ablation_study --output ../artifacts/ablation-study-report.json
 ```
+
+The outputs land in `artifacts/`, which git ignores, so the tracked evidence stays as pinned.
 
 ## Minimal reproduction (bash)
 
 ```bash
 git clone https://github.com/KonkovDV/AeroBIM.git
 cd AeroBIM
-git checkout pilot-2026-pre
+git checkout c057a2e9f174db7ed58a5975b7b576c7d6bd333f
 
 cd backend
-python3 -m venv .venv-pilot
-source .venv-pilot/bin/activate
+python3.12 -m venv .venv
+source .venv/bin/activate
 pip install -e ".[dev,raster]"
 
 python -m pytest tests -q
 python -m aerobim.tools.evaluate_extraction --min-macro-f1 0.70
-python -m aerobim.tools.generate_benchmark_report --output-dir ../docs/evidence
-python -m aerobim.tools.run_ablation_study --output ../docs/evidence/ablation-study-report.json
+python -m aerobim.tools.generate_benchmark_report --output-dir ../artifacts/benchmark
+python -m aerobim.tools.run_ablation_study --output ../artifacts/ablation-study-report.json
 ```
 
-Full publication rail: [`academic-publication-evidence-2026.md`](REPRODUCIBILITY-2026.md).
+Math, study design and the sample-size plan: [`quality/ACADEMIC_ROADMAP_2026_09.md`](quality/ACADEMIC_ROADMAP_2026_09.md).
 
 ## Evidence artifact manifest
 
@@ -87,7 +91,7 @@ Full publication rail: [`academic-publication-evidence-2026.md`](REPRODUCIBILITY
 
 | Principle | AeroBIM status | Notes |
 |---|---|---|
-| **Findable** | pass | Public repo, tag `pilot-2026-pre`, [`CITATION.cff`](../CITATION.cff), [`CITATION.bib`](CITATION.bib) |
+| **Findable** | pass | Public repo, CI-attested pin commit, [`CITATION.cff`](../CITATION.cff), [`CITATION.bib`](CITATION.bib) |
 | **Accessible** | pass | MIT license, documented install, no paywall on code |
 | **Interoperable** | pass | Open JSON, BCF, IDS, IFC; no proprietary-only export |
 | **Reusable** | pass | Frozen corpus, pip-freeze hash in benchmark report, deterministic path |
@@ -109,15 +113,15 @@ See the advisory contour [`ai/LLM_ADVISORY_CONTOUR.md`](ai/LLM_ADVISORY_CONTOUR.
 2. **Fixture corpus** — 10 RU narrative documents / 50 requirements; pilot Moscow pack may differ.
 3. **No customer data** in the public repository.
 4. **Decision-support** — not licensed engineering sign-off or full regulatory automation.
-5. Tag `pilot-2026-pre` must be cited for frozen metrics; rolling `main` may add docs without changing frozen code.
+5. Cite the CI-attested pin commit for numbers; rolling `main` may add docs without changing the pinned code.
 
 ## Citation
 
 Prefer:
 
 ```text
-Konkov, D. V. (2026). AeroBIM (version pilot-2026-pre) [Software].
+Konkov, D. V. (2026). AeroBIM (commit c057a2e9f174) [Software].
 https://github.com/KonkovDV/AeroBIM
 ```
 
-Or BibTeX from [`CITATION.bib`](CITATION.bib). Include commit SHA when publishing numerical results.
+Or BibTeX from [`CITATION.bib`](CITATION.bib). Name the commit SHA whenever a number is published.

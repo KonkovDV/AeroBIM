@@ -2,8 +2,8 @@
 ---
 title: "History rewrite — orphan evidence SHA"
 status: active
-version: "1.0.0"
-last_updated: "2026-10-15"
+version: "1.1.0"
+last_updated: "2026-10-20"
 ---
 
 # History rewrite (2026-10-01) — orphan evidence SHA
@@ -30,5 +30,6 @@ Checkpoint `GO` (`regulatory_measurement_mvp`); `customer_go` false.
 | `8f0a462d` | historical CI speech pin 15.09 | documentary on full deck; not HEAD |
 | `4742d56d` | older CI pin cited in speech lock | documentary |
 | `f2615e7` / `c0c4b2b` / `64c69b4` | freeze notes in audit reports | documentary after rewrite |
+| `1a5c03e` (tag `pilot-2026-pre`) | frozen pre-pilot baseline | gone — neither the tag nor the commit is on the remote; cite the CI pin |
 
 Evidence files that mention these SHAs stay in git; treat them as **historical**, not live attestation.
