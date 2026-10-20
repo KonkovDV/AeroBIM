@@ -4,7 +4,7 @@ title: "Related work for preprint — September 2026"
 date: "2026-09-02"
 last_updated: "2026-10-20"
 status: active
-version: "1.2.0"
+version: "1.3.0"
 closes_rt001: false
 closes_rt002: false
 closes_rt003: false
@@ -58,9 +58,30 @@ CLI `python -m aerobim.tools.sequential_regression_monitor` — e-process по
 [arXiv 2501.03982](https://arxiv.org/abs/2501.03982) / JRSS-B `qkag050`
 (anytime validity). Это не опубликованная статья AeroBIM и не «мы лучше Iversen».
 
-## Вклад (draft) и три тезиса жюри
+## Вклад (формулировки заморожены 20.10.2026)
 
-**Draft (не «первый в мире», не метрика партнёра):** open-source IFC-pack acceptance gate, где (а) нейтральность вердикта к LLM доказуема кодом, (б) замечание — evidence-объект, (в) дрейф форматов движков fail-closes, (г) advisory под reproducibility-hash. После adjudication n≥30 добавить «и измерено на названном корпусе». Partner n = 0.
+Четыре предложения можно цитировать. К каждому приписана граница. После разметки n≥30 на независимом корпусе к (а)–(г) добавляется «и измерено на названном корпусе (интервал Уилсона)». Сейчас n размеченных партнёрских точек = 0. «Первый в мире» не говорим.
+
+| # | Формулировка | Где в коде | Граница |
+|---|---|---|---|
+| (а) | Нейтральность вердикта к языковой модели доказуема кодом: `summary.passed` не зависит от того, включена модель или нет | `EvidenceAssembler`, `DeterminismGate`, `FORBIDDEN_LLM_ACTIONS`, `LLM_SELECTS_CHECK_ON_VERDICT_PATH = False` | Это свойство кода. Это не точность на комплекте заказчика |
+| (б) | Замечание — доказательный объект: без `finding_id` и `evidence_refs` оно не выпускается, а `writes_summary_passed` ложно | `exchange_contract.py` 1.0.0 | Контракт обмена. Это не импорт в СОД |
+| (в) | Дрейф формата внешнего движка закрывает проверку, а не молчит: пропуск IDS (`is_skipped`) становится ошибкой | `ids_schema_gate.py`, `RULE_SKIPPED` | Контур IDS. Это не полнота норм |
+| (г) | Хеш воспроизводимости считается по детерминированным находкам: выходы с `origin="advisory"` в него не входят | `run_manifest.py` | Хеш прогона на фикстуре. Это не публикация точности |
+
+## Architecture invariants
+
+Five invariants hold on `main`. Each one is a property of the code.
+
+1. **The flag has one writer.** `summary.passed` is computed by `EvidenceAssembler` and `DeterminismGate`. A language model may draft a remark. `OFF == ON` for the pack flag.
+2. **The first matching row wins.** `package_outcome.py` checks `failed`, then `blocked`, then `review_required`, then `pass_with_warnings`, then `pass`. A violation is not rewritten into a pass. `summary.passed` is true only for the last two.
+3. **A finding carries its evidence.** `exchange_contract.py` refuses a finding without `finding_id` and `evidence_refs`. `writes_summary_passed` is false.
+4. **A skipped IDS specification fails closed.** `is_skipped` becomes `RULE_SKIPPED` and counts as a failure of that check.
+5. **The reproducibility hash ignores advisory output.** `run_manifest.py` folds deterministic findings only.
+
+Decimal comparison, the observation triple `element_id × section_id × parameter_id`, and stamp abstention sit beside these five. They do not write `summary.passed` on their own. Geometry-heavy clash stays `NOT_VERIFIED` (RT-003). `customer_go` stays false.
+
+## Три тезиса
 
 1. Поле ставит LLM на маршрут (Iversen — выбрать tool; Fuchs — сгенерировать функцию). Мы оставляем LLM вне `summary.passed`. Для заказчика канала/экспертизы это не «мы лучше Iversen»: черновик замечания и IDS — да; выбор проверки и generated checker на Shared-gate — нет, пока pack не hashed/`approval_ref`. Они закрывают оцифровку нормы моделью; мы — кто имеет право сказать pass.
 2. Мандат проверки уже существует: Сингапур CORENET X — с 01.10.2026 **новые проекты GFA ≥ 5 000 м²**, не все проекты ([URA dc26-08](https://www.ura.gov.sg/guidelines/circulars/dc26-08/)). Китай — гос-контур РД-ревью (объём «20k моделей» на 02.09.2026 **UNVERIFIED**). Эстония — разрешение как запись EHR.
