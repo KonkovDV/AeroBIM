@@ -42,7 +42,7 @@ run-jury.bat
 
 ## Режим B — UI оболочка (Python 3.12 + Node 22.22.2+)
 
-**Требуется:** Python 3.12, Node ≥ 20, git.
+**Требуется:** Python 3.12, Node 22.22.2+, git.
 
 ```bash
 ./deploy/demo/setup-demo.sh ui
