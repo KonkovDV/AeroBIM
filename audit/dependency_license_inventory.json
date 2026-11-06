@@ -55,7 +55,7 @@
     {
       "name": "pillow",
       "scope": "core",
-      "installed_version": "12.3.0",
+      "installed_version": "13.0.0",
       "license_metadata": "HPND-style / MIT-like (Pillow)",
       "spdx_guess": "MIT-CMU",
       "risk_class": "permissive",
@@ -63,7 +63,7 @@
       "legal_review_required": false,
       "usage": "core PNG encode for PDF crop/preview",
       "mitigation_options": "",
-      "lock_version": "12.3.0"
+      "lock_version": "13.0.0"
     },
     {
       "name": "reportlab",

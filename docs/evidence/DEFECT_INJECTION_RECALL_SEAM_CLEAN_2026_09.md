@@ -1,8 +1,8 @@
 <!-- claims-lint: allow-file reason="Injection recall run; synthetic mutation test; GO; customer_go false" -->
 ---
 title: "Defect-injection recall run — mutation-kill, synthetic-only"
-date: "2026-10-15"
-last_updated: "2026-10-15"
+date: "2026-11-06"
+last_updated: "2026-11-06"
 status: active
 version: "1.0.0"
 closes_rt001: false
@@ -17,8 +17,8 @@ claim_boundary: >
 # Recall на инъекциях — прогон E2 (синтетика, не партнёр)
 
 - Источник: `wall_fire_rating_rei60_seam_clean`.
-- Seed: **20260915** · коммит: `83c2e286afb3dfe529210b233d3100ce11a6c2f8`
-- Манифест sha256: `fd3342c7f9cccf7ab14cc58dffdf158bcad09567627379118f1eea391b154f81`
+- Seed: **20260915** · коммит: `16f994713c42f1e80bae72c689ce3d179c3210da`
+- Манифест sha256: `6d939992c28977d6386920af11cd229004cda4ebe2f0d2d0bfad37451a86ef3c`
 - Детерминизм (source ≡ CONTROL): **pass**
 
 ## Отклонение от плана 2026-08-30

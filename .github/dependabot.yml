@@ -7,6 +7,10 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      # pyproject pins mypy<2. The 2.4 lock does not install beside librt.
+      - dependency-name: mypy
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: npm
     directory: "/frontend"
     schedule:
