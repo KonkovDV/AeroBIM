@@ -1,29 +1,29 @@
 {
   "artifact_type": "aerobim_runtime_baseline",
   "schema_version": "1.4.0",
-  "commit_sha": "c057a2e9f174db7ed58a5975b7b576c7d6bd333f",
-  "tree_sha": "7f3946dea6092bf790e0a37de9cad34c3dfd4340",
+  "commit_sha": "ec6e0684a99869b07dd661ab40770d3aeea2e3bc",
+  "tree_sha": "3a70b4b5e3220d161547fbd06ae8fe19b6cbe27e",
   "working_tree_clean": true,
-  "generated_at": "2026-10-18T14:39:54.646258+00:00",
+  "generated_at": "2026-11-06T10:12:08.362129+00:00",
   "corpus_kind": "fixture",
   "claim_level": "fixture_engineering",
   "claim_boundary": "Engineering build evidence only. Fixture macro_f1 != product accuracy. Checkpoint GO (regulatory_measurement_mvp; customer_go false) until RT-001/002/003.",
   "backend": {
-    "tests_collected": 3520,
-    "tests_passed": 3499,
+    "tests_collected": 3525,
+    "tests_passed": 3504,
     "tests_skipped": 21,
     "tests_failed": 0,
     "tests_unaccounted": 0,
     "tests_unaccounted_note": "collected − passed − skipped − failed; remainder is typically deselected/xfail vs the CI JUnit pin (HD-DOC-02)",
-    "source_loc": 112860,
-    "test_loc": 73316,
-    "test_functions": 3511,
+    "source_loc": 112983,
+    "test_loc": 73362,
+    "test_functions": 3516,
     "test_functions_source": "ast_test_defs",
     "tests_collected_source": "pytest_collect_only",
     "uncollected": []
   },
   "frontend": {
-    "tests_passed": 410,
+    "tests_passed": 411,
     "tests_failed": 0,
     "vitest_artifact": "../frontend/var/vitest-results.json",
     "note": "Recorded from vitest JSON artifact when provided; manual --frontend-tests-passed without artifact is not publishable"
@@ -46,21 +46,21 @@
     }
   },
   "environment": {
-    "python_version": "3.12.15",
+    "python_version": "3.12.16",
     "python_implementation": "CPython",
-    "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+    "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
     "system": "Linux",
     "machine": "x86_64",
-    "lockfile_sha256": "769bbf60e7ea5cbc2317a98810d1d95966b0b335237b3c66e0be9dfaf1d86de5",
+    "lockfile_sha256": "44268ef495d2abb92a20d8049f5967ac8da1a418f0ab57f4690fe208a2211167",
     "lockfile_path": "backend/requirements-lock.txt"
   },
   "metrics": {
-    "backend_src_loc": 112860,
-    "backend_test_loc": 73316,
-    "backend_test_functions": 3511,
+    "backend_src_loc": 112983,
+    "backend_test_loc": 73362,
+    "backend_test_functions": 3516,
     "extraction_macro_f1": 0.8600000000000001
   },
-  "readme_snippet": "tests_passed: backend=3499, frontend=410; commit c057a2e9f174; see docs/evidence/runtime-baseline-latest.json · src ~112860 LOC; tests ~73316 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
+  "readme_snippet": "tests_passed: backend=3504, frontend=411; commit ec6e0684a998; see docs/evidence/runtime-baseline-latest.json · src ~112983 LOC; tests ~73362 LOC; extraction macro_f1=0.8600000000000001 (fixture corpus; not product accuracy)",
   "documented_env_vars": [
     "AEROBIM_ALLOW_ANONYMOUS_DEV",
     "AEROBIM_ANONYMOUS_EXTERNAL_LOOPBACK",
@@ -289,12 +289,12 @@
   },
   "attestation": {
     "attested_by": "ci",
-    "run_id": "39136351922",
+    "run_id": "42199751515",
     "run_attempt": 1,
     "workflow_ref": "KonkovDV/AeroBIM/.github/workflows/ci.yml@refs/heads/main",
-    "github_sha": "c057a2e9f174db7ed58a5975b7b576c7d6bd333f",
+    "github_sha": "ec6e0684a99869b07dd661ab40770d3aeea2e3bc",
     "runner_os": "Linux",
-    "runner_python": "3.12.15",
+    "runner_python": "3.12.16",
     "gates_attested": [
       "frontend",
       "offline-bundle-smoke",
