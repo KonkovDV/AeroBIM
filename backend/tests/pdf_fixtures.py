@@ -41,6 +41,7 @@ def _wrap_single_page(
     page_w: int,
     page_h: int,
     with_font: bool = False,
+    rotate: int = 0,
 ) -> bytes:
     objects: list[bytes] = []
     objects.append(b"1 0 obj<< /Type /Catalog /Pages 2 0 R >>endobj\n")
@@ -49,6 +50,7 @@ def _wrap_single_page(
     objects.append(
         (
             f"3 0 obj<< /Type /Page /Parent 2 0 R /MediaBox [0 0 {page_w} {page_h}]"
+            f"{'' if rotate == 0 else f' /Rotate {rotate}'}"
             f"{resources} /Contents 4 0 R >>endobj\n"
         ).encode("ascii")
     )

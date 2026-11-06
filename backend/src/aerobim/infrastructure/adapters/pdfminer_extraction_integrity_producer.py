@@ -16,6 +16,8 @@ from aerobim.domain.extraction_integrity import (
     dominant_letter_script,
     extract_digit_runs,
 )
+from aerobim.domain.pdf_page_frame import upright_char_box
+from aerobim.infrastructure.adapters.pdfium_page_view import viewed_pdfium_page
 
 # pdfminer treats a font size at or below this as invisible. PDFium exposes the
 # same size, so the cutoff stays here rather than on the tight glyph box: a
@@ -48,7 +50,7 @@ class PdfMinerExtractionIntegrityProducer:
             for index in range(page_count):
                 page = document[index]
                 try:
-                    page_w, page_h = page.get_size()
+                    rotation, media_box, page_w, page_h = viewed_pdfium_page(page)
                     textpage = page.get_textpage()
                     try:
                         chars: list[str] = []
@@ -65,13 +67,23 @@ class PdfMinerExtractionIntegrityProducer:
                             if font_size <= _HIDDEN_FONT_SIZE_PT:
                                 hidden += len(char)
                                 continue
-                            left, bottom, right, top = textpage.get_charbox(char_index)
-                            outside = (
-                                float(right) < 0.0
-                                or float(left) > float(page_w)
-                                or float(top) < 0.0
-                                or float(bottom) > float(page_h)
+                            raw_left, raw_bottom, raw_right, raw_top = textpage.get_charbox(
+                                char_index
                             )
+                            if float(raw_top) < float(raw_bottom):
+                                continue
+                            left, bottom, right, top = upright_char_box(
+                                float(raw_left),
+                                float(raw_bottom),
+                                float(raw_right),
+                                float(raw_top),
+                                rotation=rotation,
+                                media_x0=media_box[0],
+                                media_y0=media_box[1],
+                                media_x1=media_box[2],
+                                media_y1=media_box[3],
+                            )
+                            outside = right < 0.0 or left > page_w or top < 0.0 or bottom > page_h
                             if outside:
                                 offpage += len(char)
                                 continue

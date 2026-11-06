@@ -47,7 +47,7 @@ $$
 b_i \le t + \sigma \quad\land\quad t_i \ge b - \sigma, \qquad \sigma = 1.
 $$
 
-Otherwise the line closes. A newline closes it immediately. The stored zone uses the top-left frame $y = H - t_{\mathrm{line}}$. The one-point slack exists because a hyphen's box lies inside the letter band while its bottom does not. Comparing bottoms alone splits `WALL-01`. The open line grows by at most that one point, so a tall glyph that merely overlaps the band does not pull the next line into it. This is stream-order assembly, not a proof that the line matches the typeset line.
+Otherwise the line closes. A newline closes it immediately. The stored zone uses the top-left frame $y = H - t_{\mathrm{line}}$. The one-point slack exists because a hyphen's box lies inside the letter band while its bottom does not. Comparing bottoms alone splits `WALL-01`. The open line grows by at most that one point, so a tall glyph that merely overlaps the band does not pull the next line into it. This is stream-order assembly, not a proof that the line matches the typeset line. The band is measured on the viewed sheet. `/Rotate` of 90, 180 or 270 is applied to each character box first, with the same matrix pdfminer uses, because a PDFium box stays in the stored user space while the page size is already upright. The title-block corner and the off-page rectangle are that viewed sheet.
 
 A hidden character is a non-empty, non-whitespace character whose font size $s \le 0.05$ pt. The size is `FPDFText_GetFontSize`. Tight glyph-box height is not a font size: a period in a normal font is short and is not hidden text. Off-page text is a tight box that lies entirely outside the page rectangle $[0, W] \times [0, H]$. Whitespace is not counted as hidden.
 

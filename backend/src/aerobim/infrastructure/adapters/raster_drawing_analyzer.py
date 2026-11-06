@@ -14,6 +14,7 @@ from typing import Any
 
 from aerobim.domain.models import DrawingAnnotation, ProblemZone
 from aerobim.domain.paired_dimension import is_paired_dimension
+from aerobim.domain.pdf_page_frame import upright_char_box, upright_page_size
 from aerobim.domain.stamp_caption_above import (
     STAMP_CAPTION_SOURCE,
     PlacedLine,
@@ -26,6 +27,7 @@ from aerobim.infrastructure.adapters.drawing_annotation_identity import (
     drawing_annotation_digest,
     drawing_annotation_id,
 )
+from aerobim.infrastructure.adapters.pdfium_page_view import viewed_pdfium_page
 from aerobim.infrastructure.adapters.pdfminer_extract_isolate import (
     run_pdfminer_extract_isolated,
 )
@@ -120,14 +122,19 @@ def _extend_line_band(
 
 def _pdfium_text_lines(
     textpage: Any,
-    page_h: float,
+    *,
+    rotation: int,
+    media_box: tuple[float, float, float, float],
 ) -> list[tuple[str, float, float, float, float]]:
-    """Group PDFium character boxes into lines.
+    """Group PDFium character boxes into lines on the upright page.
 
     Returns ``(text, x, y, width, height)`` in top-left page space, the same
-    frame the pdfminer path uses. PDFium's origin is the bottom-left corner.
+    frame the pdfminer path uses. Stored boxes are turned by ``/Rotate``
+    before the line test: the page size is already the viewed sheet.
     """
 
+    media_x0, media_y0, media_x1, media_y1 = media_box
+    _page_w, page_h = upright_page_size(rotation, media_x0, media_y0, media_x1, media_y1)
     count = int(textpage.count_chars())
     lines: list[tuple[str, float, float, float, float]] = []
     buffer: list[tuple[str, float, float, float, float]] = []
@@ -164,11 +171,22 @@ def _pdfium_text_lines(
         if char == "\n":
             flush()
             continue
-        left, bottom, right, top = textpage.get_charbox(index)
+        raw_left, raw_bottom, raw_right, raw_top = textpage.get_charbox(index)
+        if float(raw_top) < float(raw_bottom):
+            continue
+        left, bottom, right, top = upright_char_box(
+            float(raw_left),
+            float(raw_bottom),
+            float(raw_right),
+            float(raw_top),
+            rotation=rotation,
+            media_x0=media_x0,
+            media_y0=media_y0,
+            media_x1=media_x1,
+            media_y1=media_y1,
+        )
         bottom_f = float(bottom)
         top_f = float(top)
-        if top_f < bottom_f:
-            continue
         if (
             line_bottom is not None
             and line_top is not None
@@ -264,12 +282,14 @@ class RasterDrawingAnalyzer:
             for index in range(page_total):
                 page = document[index]
                 try:
-                    page_w, page_h = page.get_size()
+                    rotation, media_box, page_w, page_h = viewed_pdfium_page(page)
                     textpage = page.get_textpage()
                     try:
                         page_lines: list[PlacedLine] = []
                         for text, x, y, width, height in _pdfium_text_lines(
-                            textpage, float(page_h)
+                            textpage,
+                            rotation=rotation,
+                            media_box=media_box,
                         ):
                             region = _TextRegion(
                                 text=text,

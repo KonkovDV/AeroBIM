@@ -61,6 +61,17 @@ class ExtractionIntegrityProducerTests(unittest.TestCase):
             self.assertEqual(signals.hidden_text_char_count, 0)
             self.assertGreater(signals.extracted_char_count or 0, 0)
 
+    def test_a_rotated_page_is_not_off_the_viewed_sheet(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            pdf_path = Path(tmp) / "turned.pdf"
+            content = b"BT /F1 12 Tf 10 10 Td (STAMP) Tj ET\n"
+            pdf_path.write_bytes(
+                _wrap_single_page(content, page_w=200, page_h=400, with_font=True, rotate=90)
+            )
+            signals = PdfMinerExtractionIntegrityProducer().produce(pdf_path)
+        self.assertEqual(signals.offpage_text_char_count, 0)
+        self.assertGreater(signals.extracted_char_count or 0, 0)
+
     def test_a_period_in_a_normal_font_is_not_hidden_text(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             pdf_path = Path(tmp) / "period.pdf"

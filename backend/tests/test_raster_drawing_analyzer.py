@@ -7,12 +7,14 @@ from unittest.mock import patch
 
 from pdf_fixtures import _wrap_single_page, write_text_pdf
 
+from aerobim.domain.pdf_page_frame import upright_char_box, upright_page_size
 from aerobim.domain.simple_text_pdf import write_simple_text_pdf
-from aerobim.domain.stamp_caption_above import PlacedLine
+from aerobim.domain.stamp_caption_above import PlacedLine, line_center_in_title_block
 from aerobim.infrastructure.adapters.raster_drawing_analyzer import (
     RasterDrawingAnalyzer,
     _char_continues_line,
     _extend_line_band,
+    _pdfium_text_lines,
     _TextRegion,
 )
 
@@ -128,6 +130,85 @@ class RasterDrawingAnalyzerTests(unittest.TestCase):
             ),
             [],
         )
+
+    def test_a_rotated_sheet_is_read_upright(self) -> None:
+        box = upright_char_box(
+            10.0,
+            10.0,
+            20.0,
+            20.0,
+            rotation=90,
+            media_x0=0.0,
+            media_y0=0.0,
+            media_x1=595.0,
+            media_y1=842.0,
+        )
+        self.assertEqual(box, (10.0, 575.0, 20.0, 585.0))
+        self.assertEqual(upright_page_size(90, 0.0, 0.0, 595.0, 842.0), (842.0, 595.0))
+        self.assertEqual(
+            upright_char_box(
+                15.0,
+                25.0,
+                16.0,
+                26.0,
+                rotation=0,
+                media_x0=10.0,
+                media_y0=20.0,
+                media_x1=100.0,
+                media_y1=200.0,
+            ),
+            (5.0, 5.0, 6.0, 6.0),
+        )
+        turned = upright_char_box(
+            580.0,
+            820.0,
+            590.0,
+            830.0,
+            rotation=90,
+            media_x0=0.0,
+            media_y0=0.0,
+            media_x1=595.0,
+            media_y1=842.0,
+        )
+        page_w, page_h = upright_page_size(90, 0.0, 0.0, 595.0, 842.0)
+        line = PlacedLine(
+            "Шифр",
+            x=turned[0],
+            y=page_h - turned[3],
+            width=turned[2] - turned[0],
+            height=turned[3] - turned[1],
+        )
+        self.assertTrue(line_center_in_title_block(line, page_width=page_w, page_height=page_h))
+        stored = PlacedLine("Шифр", x=box[0], y=page_h - box[3], width=10.0, height=10.0)
+        self.assertFalse(line_center_in_title_block(stored, page_width=page_w, page_height=page_h))
+
+    def test_pdfium_turns_a_rotated_page_before_the_line(self) -> None:
+        import pypdfium2 as pdfium
+
+        with tempfile.TemporaryDirectory() as tmp:
+            pdf_path = Path(tmp) / "turned.pdf"
+            content = b"BT /F1 12 Tf 10 10 Td (STAMP) Tj ET\n"
+            pdf_path.write_bytes(
+                _wrap_single_page(content, page_w=200, page_h=400, with_font=True, rotate=90)
+            )
+            document = pdfium.PdfDocument(str(pdf_path))
+            try:
+                page = document[0]
+                textpage = page.get_textpage()
+                try:
+                    media = page.get_mediabox()
+                    lines = _pdfium_text_lines(
+                        textpage,
+                        rotation=int(page.get_rotation()),
+                        media_box=tuple(float(value) for value in media),
+                    )
+                finally:
+                    textpage.close()
+                    page.close()
+            finally:
+                document.close()
+        self.assertEqual("".join(line[0] for line in lines), "STAMP")
+        self.assertTrue(all(line[2] < 80.0 for line in lines))
 
     def test_hyphen_box_overlaps_the_letter_band(self) -> None:
         self.assertTrue(_char_continues_line(723.01, 724.24, 720.0, 730.02))
