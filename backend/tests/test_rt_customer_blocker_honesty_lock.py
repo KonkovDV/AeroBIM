@@ -593,10 +593,15 @@ def _git_ls_files(*args: str) -> str:
     git = shutil.which("git")
     if not git:
         raise unittest.SkipTest("git executable not found")
+    # Windows consoles decode subprocess text as cp1251. git ls-files can emit a
+    # path byte outside that page; the scan is for ASCII tokens, so a bad byte
+    # must not abort the check.
     return subprocess.check_output(
         [git, "ls-files", *args],
         cwd=Path(__file__).resolve().parents[2],
         text=True,
+        encoding="utf-8",
+        errors="replace",
     )
 
 
@@ -647,6 +652,7 @@ def _tracked_channel_brand_hits() -> list[str]:
         cwd=repo,
         text=True,
         encoding="utf-8",
+        errors="replace",
     )
     for rel in listed.splitlines():
         norm = rel.strip().replace("\\", "/")
