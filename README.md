@@ -89,6 +89,8 @@ A doubt does not become a pass. A required capability in `NOT_VERIFIED` holds th
 
 `summary.passed` lights on the last two.
 
+Five heuristic layout bands on one sheet become one note. They are not measurements and do not fail the pack by themselves.
+
 ## Alongside
 
 Each repository does its own work.
