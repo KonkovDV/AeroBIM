@@ -275,11 +275,13 @@ export default function DrawingEvidencePanel({
           key: "problem-zone",
           className: "drawing-evidence-rect",
           label: UI_COPY.problemZoneLabel,
+          // Percent of the rendered image. The preview is width:100% of the stage,
+          // so a frame in natural pixels leaves the sheet as soon as an A3 page is scaled down.
           style: {
-            left: `${(normalizedZone.x / coordinateWidth) * imageMetrics.width}px`,
-            top: `${(normalizedZone.y / coordinateHeight) * imageMetrics.height}px`,
-            width: `${(normalizedZone.width / coordinateWidth) * imageMetrics.width}px`,
-            height: `${(normalizedZone.height / coordinateHeight) * imageMetrics.height}px`,
+            left: `${(normalizedZone.x / coordinateWidth) * 100}%`,
+            top: `${(normalizedZone.y / coordinateHeight) * 100}%`,
+            width: `${(normalizedZone.width / coordinateWidth) * 100}%`,
+            height: `${(normalizedZone.height / coordinateHeight) * 100}%`,
           },
         }
       : null;
@@ -317,10 +319,10 @@ export default function DrawingEvidencePanel({
         region,
         clickable: isHitlClickableRegion(region),
         style: {
-          left: `${box.left}px`,
-          top: `${box.top}px`,
-          width: `${box.width}px`,
-          height: `${box.height}px`,
+          left: `${(box.left / imageMetrics.width) * 100}%`,
+          top: `${(box.top / imageMetrics.height) * 100}%`,
+          width: `${(box.width / imageMetrics.width) * 100}%`,
+          height: `${(box.height / imageMetrics.height) * 100}%`,
         },
       });
     });

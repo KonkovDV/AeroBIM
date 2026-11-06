@@ -110,6 +110,46 @@ describe("DrawingEvidencePanel", () => {
     });
   });
 
+  it("keeps the problem-zone overlay on the zone when the preview is downscaled", async () => {
+    // A3 sheets render at about 2382 px and the panel shows them near 640 px.
+    // The frame has to follow the rendered image, not the natural pixel size.
+    const report = buildReport();
+    report.drawing_assets[1] = buildDrawingAsset({
+      asset_id: "asset-a102",
+      sheet_id: "A-102",
+      page_number: 2,
+      stored_filename: "asset-a102.png",
+      coordinate_width: 1000,
+      coordinate_height: 500,
+    });
+    const issue = buildIssue({
+      problem_zone: {
+        sheet_id: "A-102",
+        page_number: 2,
+        x: 250,
+        y: 100,
+        width: 100,
+        height: 50,
+        element_guid: null,
+      },
+    });
+    const { container } = render(<DrawingEvidencePanel report={report} activeIssue={issue} />);
+    const image = screen.getByRole("img", { name: /Превью чертежа a-102/i });
+
+    Object.defineProperty(image, "naturalWidth", { configurable: true, value: 4000 });
+    Object.defineProperty(image, "naturalHeight", { configurable: true, value: 2000 });
+    fireEvent.load(image);
+
+    await waitFor(() => {
+      const overlay = container.querySelector(".drawing-evidence-rect") as HTMLElement | null;
+      expect(overlay).toBeTruthy();
+      expect(overlay?.style.left).toBe("25%");
+      expect(overlay?.style.top).toBe("20%");
+      expect(overlay?.style.width).toBe("10%");
+      expect(overlay?.style.height).toBe("10%");
+    });
+  });
+
   it("explains missing overlay payload when problem zone lacks rectangle fields", () => {
     render(
       <DrawingEvidencePanel

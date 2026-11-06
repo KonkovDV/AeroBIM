@@ -24,6 +24,11 @@ class ValidateIfcRequest(BaseModel):
 
 BoundedStoragePath = Annotated[str, Field(max_length=2048)]
 
+# One interior album is a few hundred sheets. 64 forced the caller to merge
+# pages before the request. 512 covers that album and leaves room for the
+# schedules that travel with it. Each drawing text is still capped at 50_000.
+MAX_PACKAGE_DRAWINGS = 512
+
 _MAX_RULE_DIFF_KEYS = 64
 _MAX_RULE_DIFF_JSON_CHARS = 32_768
 
@@ -52,7 +57,10 @@ class AnalyzeProjectPackageRequest(BaseModel):
     technical_spec_path: str | None = Field(default=None, max_length=2048)
     calculation_text: str = Field(default="", max_length=50_000)
     calculation_path: str | None = Field(default=None, max_length=2048)
-    drawings: list[DrawingPayload] = Field(default_factory=list, max_length=64)
+    drawings: list[DrawingPayload] = Field(
+        default_factory=list,
+        max_length=MAX_PACKAGE_DRAWINGS,
+    )
     norm_rule_pack_paths: list[BoundedStoragePath] = Field(default_factory=list, max_length=16)
     pd_section_path: str | None = Field(default=None, max_length=2048)
     rd_section_path: str | None = Field(default=None, max_length=2048)

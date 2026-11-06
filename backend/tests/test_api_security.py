@@ -1409,12 +1409,24 @@ class ApiMalformedInputTests(unittest.TestCase):
         response = self.client.post("/v1/analyze/project-package", json={})
         self.assertEqual(response.status_code, 400)
 
+    def test_analyze_album_sized_drawing_list_is_not_rejected_for_length(self) -> None:
+        # An interior album is a few hundred sheets. Length 373 must pass the
+        # schema bound; a missing file may still fail later, but not as 422.
+        response = self.client.post(
+            "/v1/analyze/project-package",
+            json={
+                "ifc_path": "model.ifc",
+                "drawings": [{"text": "sheet"} for _ in range(373)],
+            },
+        )
+        self.assertNotEqual(response.status_code, 422)
+
     def test_analyze_too_many_drawings_rejected(self) -> None:
         response = self.client.post(
             "/v1/analyze/project-package",
             json={
                 "ifc_path": "model.ifc",
-                "drawings": [{"text": ""} for _ in range(65)],
+                "drawings": [{"text": ""} for _ in range(513)],
             },
         )
         self.assertEqual(response.status_code, 422)

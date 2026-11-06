@@ -54,7 +54,7 @@
             "items": {
               "$ref": "#/components/schemas/DrawingPayload"
             },
-            "maxItems": 64,
+            "maxItems": 512,
             "title": "Drawings",
             "type": "array"
           },
