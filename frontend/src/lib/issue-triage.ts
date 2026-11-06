@@ -370,7 +370,10 @@ export function collapseDuplicateHitl(rows: IndexedIssue[]): IndexedIssue[] {
       out.push(row);
       continue;
     }
-    const sheet = row.issue.problem_zone?.sheet_id?.trim() || row.issue.message;
+    const sheet =
+      row.issue.problem_zone?.sheet_id?.trim()
+      || row.issue.source_id?.trim()
+      || row.issue.message;
     if (seen.has(sheet)) {
       continue;
     }

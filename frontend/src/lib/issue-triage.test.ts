@@ -285,6 +285,16 @@ describe("issue-triage", () => {
       { issue: issue({ rule_id: "ADV-1", origin: "advisory" as const }), index: 4 },
     ];
     const documentRows = collapseDuplicateHitl(rows.filter((row) => isDocumentFinding(row.issue)));
+    const sameSheet = {
+      issue: issue({
+        rule_id: HITL_RULE_ID,
+        source_id: "A-101",
+        message: "second prior on the same sheet",
+      }),
+      index: 5,
+    };
+    const collapsedBySource = collapseDuplicateHitl([...documentRows, sameSheet]);
+    expect(collapsedBySource.map((row) => row.issue.rule_id)).toEqual(["REQ-FIRE-001", HITL_RULE_ID]);
     expect(documentRows.map((row) => row.issue.rule_id)).toEqual(["REQ-FIRE-001", HITL_RULE_ID]);
     expect(documentRows[1]?.index).toBe(2);
     expect(isAdvisoryIssue(rows[4]!.issue)).toBe(true);

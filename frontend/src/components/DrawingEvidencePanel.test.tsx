@@ -257,6 +257,8 @@ describe("DrawingEvidencePanel", () => {
       },
     ];
     render(<DrawingEvidencePanel report={report} activeIssue={null} />);
+    expect(screen.queryByLabelText(UI_COPY.hitlRegionsAria)).toBeNull();
+    fireEvent.click(screen.getByText(UI_COPY.hitlRegions(1)));
     expect(screen.getByLabelText(UI_COPY.hitlRegionsAria)).toBeTruthy();
     expect(screen.getByText(UI_COPY.hitlRequiredLabel)).toBeTruthy();
     expect(screen.getByText(UI_COPY.regionConfidence("0.41"))).toBeTruthy();

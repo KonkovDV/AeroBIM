@@ -161,6 +161,7 @@ export default function DrawingEvidencePanel({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [view, setView] = useState<DrawingViewTransform>(IDENTITY_DRAWING_VIEW);
   const [regionNote, setRegionNote] = useState<string | null>(null);
+  const [hitlListOpen, setHitlListOpen] = useState(false);
   const panningRef = useRef(false);
   const lastPointRef = useRef<{ x: number; y: number } | null>(null);
   const pointersRef = useRef(new Map<number, DrawingPointer>());
@@ -366,22 +367,31 @@ export default function DrawingEvidencePanel({
             {regionOverlays.length > 0 ? (
               <span className="selection-badge">{UI_COPY.regionOverlays(regionOverlays.length)}</span>
             ) : null}
-            {hitlRegions.length > 0 ? (
-              <span className="selection-badge">{UI_COPY.hitlRegions(hitlRegions.length)}</span>
-            ) : null}
           </div>
 
           {hitlRegions.length > 0 && (
-            <ul className="drawing-hitl-list" aria-label={UI_COPY.hitlRegionsAria}>
-              {hitlRegions.map((region, index) => (
-                <li key={`${region.sheet_id}-${index}`}>
-                  <strong>{region.sheet_id}</strong>
-                  <span>{region.modality}</span>
-                  <span>{UI_COPY.hitlRequiredLabel}</span>
-                  <span>{UI_COPY.regionConfidence(region.confidence.toFixed(2))}</span>
-                </li>
-              ))}
-            </ul>
+            <div className="drawing-hitl-details">
+              <button
+                type="button"
+                className="selection-badge"
+                aria-expanded={hitlListOpen}
+                onClick={() => setHitlListOpen((open) => !open)}
+              >
+                {UI_COPY.hitlRegions(hitlRegions.length)}
+              </button>
+              {hitlListOpen ? (
+                <ul className="drawing-hitl-list" aria-label={UI_COPY.hitlRegionsAria}>
+                  {hitlRegions.map((region, index) => (
+                    <li key={`${region.sheet_id}-${index}`}>
+                      <strong>{region.sheet_id}</strong>
+                      <span>{region.modality}</span>
+                      <span>{UI_COPY.hitlRequiredLabel}</span>
+                      <span>{UI_COPY.regionConfidence(region.confidence.toFixed(2))}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
           )}
 
           {drawingAssets.length > 1 && (

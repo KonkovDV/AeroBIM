@@ -17,6 +17,7 @@ from aerobim.domain.models import (
     DrawingAnnotation,
     DrawingRegionRef,
     FindingCategory,
+    ProblemZone,
     ReviewEvent,
     Severity,
     ValidationIssue,
@@ -184,6 +185,7 @@ def issues_for_hitl_regions(
                 ),
                 category=FindingCategory.CROSS_DOCUMENT,
                 source_id=region.sheet_id,
+                problem_zone=ProblemZone(sheet_id=region.sheet_id),
                 evidence_modality=region.modality,
                 confidence=region.confidence,
                 evidence_refs=(

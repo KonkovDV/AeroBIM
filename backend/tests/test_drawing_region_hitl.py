@@ -32,6 +32,8 @@ class DrawingRegionHitlTests(unittest.TestCase):
         self.assertEqual(len(issues), 1)
         self.assertEqual(issues[0].rule_id, "AEROBIM-DRAWING-REGION-HITL")
         self.assertEqual(issues[0].severity.value, "info")
+        self.assertIsNotNone(issues[0].problem_zone)
+        self.assertEqual(issues[0].problem_zone.sheet_id, "AR-01")
 
     def test_ocr_regions_not_escalated(self) -> None:
         regions = (
