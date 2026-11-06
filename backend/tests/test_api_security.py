@@ -1421,6 +1421,18 @@ class ApiMalformedInputTests(unittest.TestCase):
         )
         self.assertNotEqual(response.status_code, 422)
 
+    def test_analyze_drawing_text_budget_rejected(self) -> None:
+        # Count may be an album. The old text budget stays: 64 full sheets.
+        page = "x" * 50_000
+        response = self.client.post(
+            "/v1/analyze/project-package",
+            json={
+                "ifc_path": "model.ifc",
+                "drawings": [{"text": page} for _ in range(65)],
+            },
+        )
+        self.assertEqual(response.status_code, 422)
+
     def test_analyze_too_many_drawings_rejected(self) -> None:
         response = self.client.post(
             "/v1/analyze/project-package",

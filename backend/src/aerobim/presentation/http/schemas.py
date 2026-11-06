@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class ValidateIfcRequest(BaseModel):
@@ -27,7 +27,10 @@ BoundedStoragePath = Annotated[str, Field(max_length=2048)]
 # One interior album is a few hundred sheets. 64 forced the caller to merge
 # pages before the request. 512 covers that album and leaves room for the
 # schedules that travel with it. Each drawing text is still capped at 50_000.
+# The sum stays at the old 64×50_000 budget, so a long list of sheet paths
+# is allowed and a wall of pasted text is not.
 MAX_PACKAGE_DRAWINGS = 512
+MAX_PACKAGE_DRAWING_TEXT_CHARS = 64 * 50_000
 
 _MAX_RULE_DIFF_KEYS = 64
 _MAX_RULE_DIFF_JSON_CHARS = 32_768
@@ -81,6 +84,13 @@ class AnalyzeProjectPackageRequest(BaseModel):
     doc_status: Literal["WIP", "Shared", "Published", "Archived"] | None = None
     tenant_id: str | None = Field(default=None, max_length=128)
     project_id: str | None = Field(default=None, max_length=256)
+
+    @model_validator(mode="after")
+    def _bound_drawing_text(self) -> AnalyzeProjectPackageRequest:
+        total = sum(len(item.text) for item in self.drawings)
+        if total > MAX_PACKAGE_DRAWING_TEXT_CHARS:
+            raise ValueError("drawings text exceeds the album budget")
+        return self
 
 
 class OpenRebarDigestRequest(BaseModel):

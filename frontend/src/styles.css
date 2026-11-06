@@ -706,6 +706,7 @@ input:focus-visible,
 
 .drawing-evidence-rect {
   position: absolute;
+  box-sizing: border-box;
   border: 2px solid #c2410c;
   background: rgba(194, 65, 12, 0.16);
   box-shadow: 0 0 0 9999px rgba(24, 33, 46, 0.08);

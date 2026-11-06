@@ -29,6 +29,7 @@ class InteriorPhaseGate:
     code: str
     compares: str
     needs_partner_export: bool
+    rules_signed: bool = False
 
 
 # Didactic pairs from the collaboration note. Not a customer album.

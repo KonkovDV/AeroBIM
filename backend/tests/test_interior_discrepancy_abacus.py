@@ -27,6 +27,8 @@ class InteriorDiscrepancyAbacusTests(unittest.TestCase):
 
     def test_catalog_does_not_write_the_pack_flag(self) -> None:
         self.assertFalse(writes_summary_passed())
+        self.assertTrue(INTERIOR_PHASE_GATES)
+        self.assertFalse(any(gate.rules_signed for gate in INTERIOR_PHASE_GATES))
 
     def test_examples_carry_no_customer_album(self) -> None:
         blob = " ".join(row.didactic_example for row in INTERIOR_DISCREPANCY_CLASSES)
