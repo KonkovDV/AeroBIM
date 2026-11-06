@@ -95,6 +95,26 @@ def _char_continues_line(
     return bottom <= line_top + slack and top >= line_bottom - slack
 
 
+def _extend_line_band(
+    line_bottom: float,
+    line_top: float,
+    bottom: float,
+    top: float,
+) -> tuple[float, float]:
+    """Grow the open line by at most the slack.
+
+    A glyph that merely overlaps the band must not drag the band down to its
+    own full height. Otherwise one tall box joins every later line on the page.
+    """
+
+    slack = _PDF_LINE_OVERLAP_SLACK_PT
+    low = max(bottom, line_bottom - slack)
+    high = min(top, line_top + slack)
+    if high < low:
+        return line_bottom, line_top
+    return min(line_bottom, low), max(line_top, high)
+
+
 def _pdfium_text_lines(
     textpage: Any,
     page_h: float,
@@ -144,6 +164,8 @@ def _pdfium_text_lines(
         left, bottom, right, top = textpage.get_charbox(index)
         bottom_f = float(bottom)
         top_f = float(top)
+        if top_f < bottom_f:
+            continue
         if (
             line_bottom is not None
             and line_top is not None
@@ -155,8 +177,7 @@ def _pdfium_text_lines(
             line_bottom = bottom_f
             line_top = top_f
         else:
-            line_bottom = min(line_bottom, bottom_f)
-            line_top = max(line_top, top_f)
+            line_bottom, line_top = _extend_line_band(line_bottom, line_top, bottom_f, top_f)
     flush()
     return lines
 

@@ -76,6 +76,8 @@ class PackageStampFieldTests(unittest.TestCase):
         self.assertEqual(len(issues), 1)
         self.assertEqual(issues[0].rule_id, STAMP_FIELD_DISAGREE)
         self.assertIs(issues[0].severity, Severity.WARNING)
+        self.assertIn("A-101", issues[0].message)
+        self.assertIn("A-102", issues[0].message)
         self.assertGreaterEqual(len(issues[0].evidence_refs), 2)
         self.assertFalse(writes_summary_passed())
 

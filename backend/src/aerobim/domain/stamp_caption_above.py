@@ -101,7 +101,7 @@ def disagreeing_package_stamp_fields(
         if len(by_norm) < 2:
             continue
         chosen = [by_norm[key] for key in sorted(by_norm)]
-        shown = [(item.observed_value or "").strip() for item in chosen]
+        shown = [f"{(item.observed_value or '').strip()} ({item.sheet_id})" for item in chosen]
         refs = tuple(f"stamp:{code}@{item.sheet_id}#{item.annotation_id}" for item in chosen)
         issues.append(
             ValidationIssue(

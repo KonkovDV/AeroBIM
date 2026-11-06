@@ -11,6 +11,7 @@ from aerobim.domain.simple_text_pdf import write_simple_text_pdf
 from aerobim.infrastructure.adapters.raster_drawing_analyzer import (
     RasterDrawingAnalyzer,
     _char_continues_line,
+    _extend_line_band,
     _TextRegion,
 )
 
@@ -74,6 +75,11 @@ class RasterDrawingAnalyzerTests(unittest.TestCase):
     def test_hyphen_box_overlaps_the_letter_band(self) -> None:
         self.assertTrue(_char_continues_line(723.01, 724.24, 720.0, 730.02))
         self.assertFalse(_char_continues_line(400.0, 410.0, 720.0, 730.0))
+
+    def test_a_tall_overlap_does_not_swallow_the_next_line(self) -> None:
+        bottom, top = _extend_line_band(720.0, 730.0, 0.0, 800.0)
+        self.assertEqual((bottom, top), (719.0, 731.0))
+        self.assertFalse(_char_continues_line(700.0, 710.0, bottom, top))
 
     def test_two_baselines_stay_two_measures(self) -> None:
         content = (
