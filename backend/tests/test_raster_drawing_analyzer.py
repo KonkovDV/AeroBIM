@@ -3,6 +3,7 @@ from __future__ import annotations
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from pdf_fixtures import write_text_pdf
 
@@ -46,6 +47,15 @@ class RasterDrawingAnalyzerTests(unittest.TestCase):
             self.assertEqual(annotation.problem_zone.page_number, 1)
             self.assertGreater(annotation.problem_zone.width, 0)
             self.assertGreater(annotation.problem_zone.height, 0)
+
+    def test_pdfium_failure_falls_back_to_pdfminer_inside_worker(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            pdf_path = write_text_pdf(Path(tmp) / "wall.pdf", "WALL-01 thickness 250 mm")
+            analyzer = RasterDrawingAnalyzer()
+            with patch.object(analyzer, "_extract_pdf_pdfium", side_effect=OSError("pdfium")):
+                annotations = analyzer.extract_pdf_in_process(pdf_path, "A-101")
+        self.assertEqual(len(annotations), 1)
+        self.assertEqual(annotations[0].target_ref, "WALL-01")
 
     def test_raster_ocr_result_is_converted_into_drawing_annotations(self) -> None:
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:

@@ -66,6 +66,64 @@ class _TextRegion:
     height: float
 
 
+# Same baseline still belongs to one line. A larger jump starts the next line.
+_PDF_LINE_BASELINE_PT = 3.0
+
+
+def _pdfium_text_lines(
+    textpage: Any,
+    page_h: float,
+) -> list[tuple[str, float, float, float, float]]:
+    """Group PDFium character boxes into lines.
+
+    Returns ``(text, x, y, width, height)`` in top-left page space, the same
+    frame the pdfminer path uses. PDFium's origin is the bottom-left corner.
+    """
+
+    count = int(textpage.count_chars())
+    lines: list[tuple[str, float, float, float, float]] = []
+    buffer: list[tuple[str, float, float, float, float]] = []
+    previous_bottom: float | None = None
+
+    def flush() -> None:
+        nonlocal buffer
+        if not buffer:
+            return
+        text = "".join(item[0] for item in buffer).strip()
+        if text:
+            x0 = min(item[1] for item in buffer)
+            y0 = min(item[2] for item in buffer)
+            x1 = max(item[3] for item in buffer)
+            y1 = max(item[4] for item in buffer)
+            lines.append(
+                (
+                    text,
+                    x0,
+                    page_h - y1,
+                    max(x1 - x0, 0.0),
+                    max(y1 - y0, 0.0),
+                )
+            )
+        buffer = []
+
+    for index in range(count):
+        char = textpage.get_text_range(index, 1) or ""
+        if char == "\r":
+            continue
+        if char == "\n":
+            flush()
+            previous_bottom = None
+            continue
+        left, bottom, right, top = textpage.get_charbox(index)
+        bottom_f = float(bottom)
+        if previous_bottom is not None and abs(bottom_f - previous_bottom) > _PDF_LINE_BASELINE_PT:
+            flush()
+        buffer.append((char, float(left), bottom_f, float(right), float(top)))
+        previous_bottom = bottom_f
+    flush()
+    return lines
+
+
 class RasterDrawingAnalyzer:
     """Infrastructure adapter implementing ``RasterDrawingAnalyzer`` port."""
 
@@ -114,8 +172,69 @@ class RasterDrawingAnalyzer:
         *,
         max_pages: int | None = None,
     ) -> list[DrawingAnnotation]:
-        """Parse PDF text in the calling process. Used only by the isolate worker."""
+        """Parse PDF text in the calling process. Used only by the isolate worker.
 
+        PDFium reads the text layer. pdfminer remains the fallback when PDFium
+        cannot open the file. The parent process still does not parse the PDF.
+        """
+
+        try:
+            return self._extract_pdf_pdfium(pdf_path, sheet_id, max_pages=max_pages)
+        except RuntimeError:
+            raise
+        except Exception:
+            return self._extract_pdf_pdfminer(pdf_path, sheet_id, max_pages=max_pages)
+
+    def _extract_pdf_pdfium(
+        self,
+        pdf_path: Path,
+        sheet_id: str,
+        *,
+        max_pages: int | None,
+    ) -> list[DrawingAnnotation]:
+        import pypdfium2 as pdfium
+
+        document = pdfium.PdfDocument(str(pdf_path))
+        try:
+            page_total = len(document)
+            if max_pages is not None and page_total > max_pages:
+                raise RuntimeError("PDF drawing rejected: too many pages")
+            extracted: list[DrawingAnnotation] = []
+            for index in range(page_total):
+                page = document[index]
+                try:
+                    _width, page_h = page.get_size()
+                    textpage = page.get_textpage()
+                    try:
+                        for text, x, y, width, height in _pdfium_text_lines(
+                            textpage, float(page_h)
+                        ):
+                            region = _TextRegion(
+                                text=text,
+                                page_number=index + 1,
+                                x=x,
+                                y=y,
+                                width=width,
+                                height=height,
+                            )
+                            extracted.extend(
+                                self._extract_annotations_from_region(region, sheet_id)
+                            )
+                    finally:
+                        textpage.close()
+                finally:
+                    page.close()
+        finally:
+            document.close()
+        return self._deduplicate_annotations(extracted)
+
+    def _extract_pdf_pdfminer(
+        self,
+        pdf_path: Path,
+        sheet_id: str,
+        *,
+        max_pages: int | None,
+    ) -> list[DrawingAnnotation]:
         try:
             from pdfminer.high_level import extract_pages
             from pdfminer.layout import LTPage

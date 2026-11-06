@@ -1,7 +1,10 @@
-"""pdfminer.six signal producer for extraction-integrity (LIC-001 Option B).
+"""Text-layer signal producer for extraction-integrity (LIC-001 Option B).
 
-Honest scope: inspects the PDF *text layer* for near-zero font size and
-off-page characters. This is NOT a full render-vs-extract / OCR product.
+PDFium reads font size and character boxes. pdfminer.six remains the fallback
+when PDFium cannot open the file. Honest scope: near-zero font size and
+off-page characters in the text layer. This is not a render-vs-extract product.
+Digit runs follow the PDFium text layer, so a sheet can show numbers pdfminer
+never returned. Hidden-text and off-page counts stay on the same cutoff.
 """
 
 from __future__ import annotations
@@ -14,11 +17,88 @@ from aerobim.domain.extraction_integrity import (
     extract_digit_runs,
 )
 
+# pdfminer treats a font size at or below this as invisible. PDFium exposes the
+# same size, so the cutoff stays here rather than on the tight glyph box: a
+# period in a normal font is short, but it is not hidden text.
+_HIDDEN_FONT_SIZE_PT = 0.05
+_MAX_PAGES = 200
+
 
 class PdfMinerExtractionIntegrityProducer:
     """Infrastructure adapter — permissive MIT text-layer probe."""
 
     def produce(self, path: Path) -> ExtractionIntegritySignals:
+        try:
+            return self._produce_pdfium(path)
+        except Exception:
+            return self._produce_pdfminer(path)
+
+    def _produce_pdfium(self, path: Path) -> ExtractionIntegritySignals:
+        import pypdfium2 as pdfium
+        import pypdfium2.raw as pdfium_c
+
+        extracted = 0
+        hidden = 0
+        offpage = 0
+        visible_glyphs = False
+        page_texts: list[str] = []
+        document = pdfium.PdfDocument(str(path))
+        try:
+            page_count = min(len(document), _MAX_PAGES)
+            for index in range(page_count):
+                page = document[index]
+                try:
+                    page_w, page_h = page.get_size()
+                    textpage = page.get_textpage()
+                    try:
+                        chars: list[str] = []
+                        for char_index in range(int(textpage.count_chars())):
+                            char = textpage.get_text_range(char_index, 1) or ""
+                            if not char:
+                                continue
+                            chars.append(char)
+                            if not char.strip():
+                                continue
+                            font_size = float(
+                                pdfium_c.FPDFText_GetFontSize(textpage.raw, char_index)
+                            )
+                            if font_size <= _HIDDEN_FONT_SIZE_PT:
+                                hidden += len(char)
+                                continue
+                            left, bottom, right, top = textpage.get_charbox(char_index)
+                            outside = (
+                                float(right) < 0.0
+                                or float(left) > float(page_w)
+                                or float(top) < 0.0
+                                or float(bottom) > float(page_h)
+                            )
+                            if outside:
+                                offpage += len(char)
+                                continue
+                            visible_glyphs = True
+                        page_texts.append("".join(chars))
+                    finally:
+                        textpage.close()
+                finally:
+                    page.close()
+        finally:
+            document.close()
+
+        plain = "\n".join(page_texts)
+        extracted = len(plain.strip())
+        return ExtractionIntegritySignals(
+            extracted_char_count=extracted,
+            rendered_text_present=visible_glyphs if (extracted > 0 or visible_glyphs) else None,
+            hidden_text_char_count=hidden,
+            offpage_text_char_count=offpage,
+            duplicated_layer_count=0,
+            ocr_char_count=None,
+            extracted_digit_runs=extract_digit_runs(plain),
+            ocr_digit_runs=None,
+            dominant_script=dominant_letter_script(plain),
+        )
+
+    def _produce_pdfminer(self, path: Path) -> ExtractionIntegritySignals:
         try:
             from pdfminer.high_level import extract_pages
             from pdfminer.layout import LTChar, LTPage, LTTextContainer
@@ -32,10 +112,9 @@ class PdfMinerExtractionIntegrityProducer:
         offpage = 0
         visible_glyphs = False
         all_plain: list[str] = []
-        max_pages = 200
 
         for page_index, page in enumerate(extract_pages(str(path))):
-            if page_index >= max_pages:
+            if page_index >= _MAX_PAGES:
                 break
             if not isinstance(page, LTPage):
                 continue
@@ -56,7 +135,7 @@ class PdfMinerExtractionIntegrityProducer:
                         return
                     size = float(getattr(obj, "size", 0.0) or 0.0)
                     x0, y0, x1, y1 = obj.bbox
-                    if size <= 0.05:
+                    if size <= _HIDDEN_FONT_SIZE_PT:
                         hidden += len(text)
                         return
                     bx0, by0, bx1, by1 = box

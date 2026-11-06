@@ -5,6 +5,7 @@ from __future__ import annotations
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from pdf_fixtures import _wrap_single_page, write_text_pdf
 
@@ -49,6 +50,16 @@ class ExtractionIntegrityProducerTests(unittest.TestCase):
             )
             self.assertEqual(status.status, CapabilityState.NOT_VERIFIED)
             self.assertIn("hidden", (status.reason or "").lower())
+
+    def test_pdfium_failure_uses_pdfminer_text_layer(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            pdf_path = write_text_pdf(Path(tmp) / "clean.pdf", "Wall thickness 200 mm")
+            producer = PdfMinerExtractionIntegrityProducer()
+            with patch.object(producer, "_produce_pdfium", side_effect=OSError("pdfium")):
+                signals = producer.produce(pdf_path)
+            self.assertEqual(signals.extracted_digit_runs, ("200",))
+            self.assertEqual(signals.hidden_text_char_count, 0)
+            self.assertGreater(signals.extracted_char_count or 0, 0)
 
     def test_no_pdf_sources_skipped(self) -> None:
         status = probe_extraction_integrity(
