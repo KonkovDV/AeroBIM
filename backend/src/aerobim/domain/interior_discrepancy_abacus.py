@@ -1,8 +1,11 @@
 """Interior discrepancy vocabulary for a design-studio pilot.
 
 Twelve classes an architect and AeroBIM fill together. The catalog does not
-run a check and does not write ``summary.passed``. A customer album stays
-out of git. Didactic examples are not a measured result.
+write ``summary.passed``. A customer album stays out of git. Didactic
+examples are not a measured result. Cipher and stage disagreement across
+sheets is the one unsigned check that already runs
+(``disagreeing_package_stamp_fields``); it warns and does not fail the pack.
+The other eleven classes stay vocabulary until the rules are signed.
 """
 
 from __future__ import annotations

@@ -28,6 +28,7 @@ from aerobim.domain.quantity import (
     si_compare,
     within_epsilon,
 )
+from aerobim.domain.stamp_caption_above import STAMP_CAPTION_SOURCE
 from aerobim.domain.target_ref import (
     UNRESTRICTED_ELEMENT_MISMATCH_CAP,
     is_unrestricted_target_ref,
@@ -50,7 +51,7 @@ def annotation_is_stamp_caption(annotation: DrawingAnnotation) -> bool:
     the rule's error.
     """
 
-    return (annotation.source or "") == "stamp-caption-above"
+    return (annotation.source or "") == STAMP_CAPTION_SOURCE
 
 
 class DrawingAnnotationValidator:

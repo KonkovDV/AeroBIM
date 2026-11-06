@@ -67,6 +67,7 @@ from aerobim.domain.norm_assist import IdsCompileDraft
 from aerobim.domain.package_manifest import PackageFileEntry
 from aerobim.domain.package_outcome import summary_passed_from_outcome
 from aerobim.domain.ports import IfcSpatialIndexProvider
+from aerobim.domain.stamp_caption_above import disagreeing_package_stamp_fields
 from aerobim.domain.system_capabilities import enforce_honesty_capabilities
 
 if TYPE_CHECKING:
@@ -274,6 +275,7 @@ class DeterministicValidationOrchestrator:
                     request.drawing_sources,
                     ingested.drawing_annotations,
                 ),
+                *disagreeing_package_stamp_fields(ingested.drawing_annotations),
             ]
         )
         drawing_ms = max(0, int((perf_counter() - t2) * 1000))
@@ -451,6 +453,7 @@ class DeterministicValidationOrchestrator:
                     request.drawing_sources,
                     ingested.drawing_annotations,
                 ),
+                *disagreeing_package_stamp_fields(ingested.drawing_annotations),
             ]
         )
         cross_document_issues = tuple(self._host._cross_doc_detector().detect(requirements))

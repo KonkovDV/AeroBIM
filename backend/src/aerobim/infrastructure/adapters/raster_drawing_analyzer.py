@@ -13,7 +13,11 @@ from pathlib import Path
 from typing import Any
 
 from aerobim.domain.models import DrawingAnnotation, ProblemZone
-from aerobim.domain.stamp_caption_above import PlacedLine, pair_captions_above_values
+from aerobim.domain.stamp_caption_above import (
+    STAMP_CAPTION_SOURCE,
+    PlacedLine,
+    pair_captions_above_values,
+)
 from aerobim.infrastructure.adapters.drawing_annotation_identity import (
     canonical_coord,
     drawing_annotation_digest,
@@ -483,7 +487,7 @@ class RasterDrawingAnalyzer:
                         width=canonical_coord(pair.width),
                         height=canonical_coord(pair.height),
                     ),
-                    source="stamp-caption-above",
+                    source=STAMP_CAPTION_SOURCE,
                 )
             )
         return annotations

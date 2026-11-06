@@ -4,8 +4,12 @@ from __future__ import annotations
 
 import unittest
 
+from aerobim.domain.models import DrawingAnnotation, Severity
 from aerobim.domain.stamp_caption_above import (
+    STAMP_CAPTION_SOURCE,
+    STAMP_FIELD_DISAGREE,
     PlacedLine,
+    disagreeing_package_stamp_fields,
     pair_captions_above_values,
     writes_summary_passed,
 )
@@ -50,6 +54,41 @@ class StampCaptionAboveTests(unittest.TestCase):
             )
         )
         self.assertEqual(pairs, ())
+
+
+def _stamp(code: str, value: str, sheet: str) -> DrawingAnnotation:
+    return DrawingAnnotation(
+        annotation_id=f"{sheet}-{code}",
+        sheet_id=sheet,
+        target_ref=f"STAMP-{code.upper()}",
+        measure_name=code,
+        observed_value=value,
+        unit=None,
+        source=STAMP_CAPTION_SOURCE,
+    )
+
+
+class PackageStampFieldTests(unittest.TestCase):
+    def test_two_ciphers_are_a_warning(self) -> None:
+        issues = disagreeing_package_stamp_fields(
+            (_stamp("cipher", "АР-1", "A-101"), _stamp("cipher", "АР-2", "A-102"))
+        )
+        self.assertEqual(len(issues), 1)
+        self.assertEqual(issues[0].rule_id, STAMP_FIELD_DISAGREE)
+        self.assertIs(issues[0].severity, Severity.WARNING)
+        self.assertGreaterEqual(len(issues[0].evidence_refs), 2)
+        self.assertFalse(writes_summary_passed())
+
+    def test_same_cipher_and_different_sheet_numbers_are_quiet(self) -> None:
+        issues = disagreeing_package_stamp_fields(
+            (
+                _stamp("cipher", "ар-1", "A-101"),
+                _stamp("cipher", "АР-1", "A-102"),
+                _stamp("sheet", "1", "A-101"),
+                _stamp("sheet", "2", "A-102"),
+            )
+        )
+        self.assertEqual(issues, [])
 
     def test_a_measure_line_is_not_a_stamp_caption(self) -> None:
         pairs = pair_captions_above_values(
