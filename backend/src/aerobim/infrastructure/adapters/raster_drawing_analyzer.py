@@ -66,8 +66,9 @@ class _TextRegion:
     height: float
 
 
-# Same baseline still belongs to one line. A larger jump starts the next line.
-_PDF_LINE_BASELINE_PT = 3.0
+# A hyphen or comma sits a few points off the letter baseline. Group by overlap
+# of the character boxes, with a small slack, instead of comparing bottoms.
+_PDF_LINE_OVERLAP_SLACK_PT = 1.0
 
 
 def _pdfium_text_lines(
@@ -83,10 +84,11 @@ def _pdfium_text_lines(
     count = int(textpage.count_chars())
     lines: list[tuple[str, float, float, float, float]] = []
     buffer: list[tuple[str, float, float, float, float]] = []
-    previous_bottom: float | None = None
+    line_bottom: float | None = None
+    line_top: float | None = None
 
     def flush() -> None:
-        nonlocal buffer
+        nonlocal buffer, line_bottom, line_top
         if not buffer:
             return
         text = "".join(item[0] for item in buffer).strip()
@@ -105,6 +107,8 @@ def _pdfium_text_lines(
                 )
             )
         buffer = []
+        line_bottom = None
+        line_top = None
 
     for index in range(count):
         char = textpage.get_text_range(index, 1) or ""
@@ -112,14 +116,26 @@ def _pdfium_text_lines(
             continue
         if char == "\n":
             flush()
-            previous_bottom = None
             continue
         left, bottom, right, top = textpage.get_charbox(index)
         bottom_f = float(bottom)
-        if previous_bottom is not None and abs(bottom_f - previous_bottom) > _PDF_LINE_BASELINE_PT:
+        top_f = float(top)
+        if (
+            line_bottom is not None
+            and line_top is not None
+            and (
+                bottom_f > line_top + _PDF_LINE_OVERLAP_SLACK_PT
+                or top_f < line_bottom - _PDF_LINE_OVERLAP_SLACK_PT
+            )
+        ):
             flush()
-        buffer.append((char, float(left), bottom_f, float(right), float(top)))
-        previous_bottom = bottom_f
+        buffer.append((char, float(left), bottom_f, float(right), top_f))
+        if line_bottom is None or line_top is None:
+            line_bottom = bottom_f
+            line_top = top_f
+        else:
+            line_bottom = min(line_bottom, bottom_f)
+            line_top = max(line_top, top_f)
     flush()
     return lines
 

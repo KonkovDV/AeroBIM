@@ -7,6 +7,7 @@ from unittest.mock import patch
 
 from pdf_fixtures import write_text_pdf
 
+from aerobim.domain.simple_text_pdf import write_simple_text_pdf
 from aerobim.infrastructure.adapters.raster_drawing_analyzer import (
     RasterDrawingAnalyzer,
     _TextRegion,
@@ -56,6 +57,18 @@ class RasterDrawingAnalyzerTests(unittest.TestCase):
                 annotations = analyzer.extract_pdf_in_process(pdf_path, "A-101")
         self.assertEqual(len(annotations), 1)
         self.assertEqual(annotations[0].target_ref, "WALL-01")
+
+    def test_hyphen_on_its_own_baseline_stays_on_the_measure_line(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            pdf_path = write_simple_text_pdf(
+                Path(tmp) / "wall.pdf",
+                "A-101  WALL-01 thickness 150 mm",
+            )
+            annotations = RasterDrawingAnalyzer().extract_pdf_in_process(pdf_path, "A-101")
+        self.assertEqual(len(annotations), 1)
+        self.assertEqual(annotations[0].target_ref, "WALL-01")
+        self.assertEqual(annotations[0].observed_value, "150")
+        self.assertEqual(annotations[0].unit, "mm")
 
     def test_raster_ocr_result_is_converted_into_drawing_annotations(self) -> None:
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
