@@ -253,8 +253,12 @@ export default function DrawingEvidencePanel({
   const canDrawOverlay =
     isOverlayTarget &&
     imageMetrics !== null &&
+    imageMetrics.width > 0 &&
+    imageMetrics.height > 0 &&
     coordinateWidth !== null &&
     coordinateHeight !== null &&
+    coordinateWidth > 0 &&
+    coordinateHeight > 0 &&
     problemZone?.x !== null &&
     problemZone?.y !== null &&
     problemZone?.width !== null &&
@@ -303,7 +307,13 @@ export default function DrawingEvidencePanel({
   }, [report, selectedAsset]);
 
   const regionOverlays = useMemo(() => {
-    if (!imageMetrics || coordinateWidth === null || coordinateHeight === null) {
+    if (
+      !imageMetrics ||
+      imageMetrics.width <= 0 ||
+      imageMetrics.height <= 0 ||
+      coordinateWidth === null ||
+      coordinateHeight === null
+    ) {
       return [] as OverlayRect[];
     }
     const overlays: OverlayRect[] = [];
