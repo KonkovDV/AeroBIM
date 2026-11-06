@@ -166,32 +166,63 @@ def mark_regions_for_hitl(
     return tuple(enriched)
 
 
+def _is_layout_prior(region: DrawingRegionRef) -> bool:
+    """Synthetic sheet bands, not a detected object."""
+
+    if region.coordinate_system != "normalized-0-1" or not region.layout_role:
+        return False
+    reason = region.hitl_reason or ""
+    return reason.startswith(("low_confidence", "heuristic_", "hybrid_low_confidence"))
+
+
+def _hitl_issue(region: DrawingRegionRef, *, message: str | None = None) -> ValidationIssue:
+    return ValidationIssue(
+        rule_id="AEROBIM-DRAWING-REGION-HITL",
+        severity=Severity.INFO,
+        message=message
+        or (
+            f"Drawing region on {region.sheet_id} requires expert review "
+            f"({region.hitl_reason or 'unmatched'}); modality={region.modality}"
+        ),
+        category=FindingCategory.CROSS_DOCUMENT,
+        source_id=region.sheet_id,
+        problem_zone=ProblemZone(sheet_id=region.sheet_id),
+        evidence_modality=region.modality,
+        confidence=region.confidence,
+        evidence_refs=(
+            f"region@{region.sheet_id}#"
+            f"{region.bbox_xyxy[0]:.3f},{region.bbox_xyxy[1]:.3f},"
+            f"{region.bbox_xyxy[2]:.3f},{region.bbox_xyxy[3]:.3f}",
+        ),
+    )
+
+
 def issues_for_hitl_regions(
     regions: tuple[DrawingRegionRef, ...] | list[DrawingRegionRef],
 ) -> list[ValidationIssue]:
-    """INFO issues for triage panel — never ERROR (does not block pass alone)."""
+    """INFO issues for triage panel — never ERROR (does not block pass alone).
+
+    The five heuristic layout bands on one sheet become one note. A real
+    unmatched detection stays its own row.
+    """
 
     issues: list[ValidationIssue] = []
+    priors: dict[str, list[DrawingRegionRef]] = {}
     for region in regions:
         if not region.hitl_required:
             continue
+        if _is_layout_prior(region):
+            priors.setdefault(region.sheet_id, []).append(region)
+            continue
+        issues.append(_hitl_issue(region))
+    for sheet_id, group in priors.items():
+        first = group[0]
         issues.append(
-            ValidationIssue(
-                rule_id="AEROBIM-DRAWING-REGION-HITL",
-                severity=Severity.INFO,
+            _hitl_issue(
+                first,
                 message=(
-                    f"Drawing region on {region.sheet_id} requires expert review "
-                    f"({region.hitl_reason or 'unmatched'}); modality={region.modality}"
-                ),
-                category=FindingCategory.CROSS_DOCUMENT,
-                source_id=region.sheet_id,
-                problem_zone=ProblemZone(sheet_id=region.sheet_id),
-                evidence_modality=region.modality,
-                confidence=region.confidence,
-                evidence_refs=(
-                    f"region@{region.sheet_id}#"
-                    f"{region.bbox_xyxy[0]:.3f},{region.bbox_xyxy[1]:.3f},"
-                    f"{region.bbox_xyxy[2]:.3f},{region.bbox_xyxy[3]:.3f}",
+                    f"Layout priors on {sheet_id}: {len(group)} bands are not "
+                    f"measurements ({first.hitl_reason or 'heuristic'})"
                 ),
             )
         )

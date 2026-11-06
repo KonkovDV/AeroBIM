@@ -106,6 +106,8 @@ def collapse_hitl_with_multiplicity(
         sheet = ""
         if isinstance(zone, dict):
             sheet = str(zone.get("sheet_id") or "").strip()
+        if not sheet:
+            sheet = str(issue.get("source_id") or "").strip()
         key = sheet or str(issue.get("message") or "")
         seen = index_by_key.get(key)
         if seen is not None:

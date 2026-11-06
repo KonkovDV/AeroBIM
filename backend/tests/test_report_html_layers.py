@@ -110,6 +110,14 @@ class ReportHtmlLayerTests(unittest.TestCase):
         collapsed = collapse_hitl_with_multiplicity(issues)
         self.assertEqual(len(collapsed), 1)
         self.assertEqual(collapsed[0][1], 3)
+        by_source = collapse_hitl_with_multiplicity(
+            [
+                {**_hitl("A-200", "s1"), "problem_zone": None, "source_id": "A-200"},
+                {**_hitl("A-200", "s2"), "problem_zone": None, "source_id": "A-200"},
+            ]
+        )
+        self.assertEqual(len(by_source), 1)
+        self.assertEqual(by_source[0][1], 2)
 
     def test_row_count_conserved_across_layers_and_appendix(self) -> None:
         issues = [_pack(), _advisory(), _hitl("A-101", "h1"), _hitl("A-101", "h2")]

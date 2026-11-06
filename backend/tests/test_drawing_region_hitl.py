@@ -35,6 +35,25 @@ class DrawingRegionHitlTests(unittest.TestCase):
         self.assertIsNotNone(issues[0].problem_zone)
         self.assertEqual(issues[0].problem_zone.sheet_id, "AR-01")
 
+    def test_layout_priors_on_one_sheet_are_one_note(self) -> None:
+        regions = tuple(
+            DrawingRegionRef(
+                sheet_id="ЭК",
+                bbox_xyxy=(0.0, 0.0, 1.0, 0.5),
+                confidence=0.3,
+                modality="detector",
+                coordinate_system="normalized-0-1",
+                layout_role=role,
+                hitl_required=True,
+                hitl_reason="low_confidence<0.45",
+            )
+            for role in ("content", "stamp", "title_block", "specification", "dimension_chain")
+        )
+        issues = issues_for_hitl_regions(regions)
+        self.assertEqual(len(issues), 1)
+        self.assertIn("5 bands", issues[0].message)
+        self.assertEqual(issues[0].problem_zone.sheet_id, "ЭК")
+
     def test_ocr_regions_not_escalated(self) -> None:
         regions = (
             DrawingRegionRef(
