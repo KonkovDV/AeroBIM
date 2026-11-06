@@ -1,7 +1,7 @@
 """Interior discrepancy vocabulary for a design-studio pilot.
 
-Twelve classes an architect and AeroBIM fill together. The catalog does not
-write ``summary.passed``. A customer album stays out of git. Didactic
+Twelve classes for an interior method. The catalog does not write
+``summary.passed``. Measured customer documents stay out of git. Didactic
 examples are not a measured result. Cipher and stage disagreement across
 sheets is the one unsigned check that already runs
 (``disagreeing_package_stamp_fields``); it warns and does not fail the pack.
@@ -35,7 +35,7 @@ class InteriorPhaseGate:
     rules_signed: bool = False
 
 
-# Didactic pairs from the collaboration note. Not a customer album.
+# Didactic pairs. Not a measured corpus.
 INTERIOR_DISCREPANCY_CLASSES: tuple[InteriorDiscrepancyClass, ...] = (
     InteriorDiscrepancyClass(
         "D01",

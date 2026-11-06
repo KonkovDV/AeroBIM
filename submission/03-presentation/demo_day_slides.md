@@ -121,8 +121,8 @@ Checkpoint `GO` — регуляторно-измерительный MVP реп
 
 Команда AeroBIM.
 
-Коньков Дмитрий, капитан · konkov-dmitrij@yandex.ru  
-Конькова Елена, инженерия · konkovaelena@yandex.ru  
+Капитан · github.com/KonkovDV/AeroBIM  
+Инженерия · github.com/KonkovDV/AeroBIM  
 Репозиторий: https://github.com/KonkovDV/AeroBIM · MIT · офлайн-сборка · QR на кадре.
 
 **В git.** Почта — в этом файле. Телефон капитана только на кадре 7 PPTX.
