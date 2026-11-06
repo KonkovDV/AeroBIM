@@ -27,7 +27,7 @@ from aerobim.infrastructure.adapters.drawing_annotation_identity import (
     drawing_annotation_digest,
     drawing_annotation_id,
 )
-from aerobim.infrastructure.adapters.pdfium_page_view import viewed_pdfium_page
+from aerobim.infrastructure.adapters.pdf_page_orientation import viewed_pdfium_page
 from aerobim.infrastructure.adapters.pdfminer_extract_isolate import (
     run_pdfminer_extract_isolated,
 )

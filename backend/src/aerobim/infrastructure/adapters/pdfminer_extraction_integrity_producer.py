@@ -17,7 +17,7 @@ from aerobim.domain.extraction_integrity import (
     extract_digit_runs,
 )
 from aerobim.domain.pdf_page_frame import upright_char_box
-from aerobim.infrastructure.adapters.pdfium_page_view import viewed_pdfium_page
+from aerobim.infrastructure.adapters.pdf_page_orientation import viewed_pdfium_page
 
 # pdfminer treats a font size at or below this as invisible. PDFium exposes the
 # same size, so the cutoff stays here rather than on the tight glyph box: a
