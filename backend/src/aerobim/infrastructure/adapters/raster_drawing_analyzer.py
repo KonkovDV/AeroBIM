@@ -66,9 +66,28 @@ class _TextRegion:
     height: float
 
 
-# A hyphen or comma sits a few points off the letter baseline. Group by overlap
-# of the character boxes, with a small slack, instead of comparing bottoms.
+# A hyphen's box sits inside the letter band, but its bottom is not the
+# letter bottom. Expand the open line by this slack before the overlap test.
 _PDF_LINE_OVERLAP_SLACK_PT = 1.0
+
+
+def _char_continues_line(
+    bottom: float,
+    top: float,
+    line_bottom: float,
+    line_top: float,
+) -> bool:
+    """Whether a character box belongs to the open line.
+
+    Boxes are closed intervals in PDF points, origin at the bottom-left.
+    The open line is expanded by ``_PDF_LINE_OVERLAP_SLACK_PT`` on both
+    sides. A hyphen whose bottom sits above the letter baseline still
+    overlaps the letter band and stays on the line. A box that clears
+    the band starts the next line. Stream order is the only order.
+    """
+
+    slack = _PDF_LINE_OVERLAP_SLACK_PT
+    return bottom <= line_top + slack and top >= line_bottom - slack
 
 
 def _pdfium_text_lines(
@@ -123,10 +142,7 @@ def _pdfium_text_lines(
         if (
             line_bottom is not None
             and line_top is not None
-            and (
-                bottom_f > line_top + _PDF_LINE_OVERLAP_SLACK_PT
-                or top_f < line_bottom - _PDF_LINE_OVERLAP_SLACK_PT
-            )
+            and not _char_continues_line(bottom_f, top_f, line_bottom, line_top)
         ):
             flush()
         buffer.append((char, float(left), bottom_f, float(right), top_f))

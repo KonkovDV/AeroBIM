@@ -5,11 +5,12 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from pdf_fixtures import write_text_pdf
+from pdf_fixtures import _wrap_single_page, write_text_pdf
 
 from aerobim.domain.simple_text_pdf import write_simple_text_pdf
 from aerobim.infrastructure.adapters.raster_drawing_analyzer import (
     RasterDrawingAnalyzer,
+    _char_continues_line,
     _TextRegion,
 )
 
@@ -69,6 +70,28 @@ class RasterDrawingAnalyzerTests(unittest.TestCase):
         self.assertEqual(annotations[0].target_ref, "WALL-01")
         self.assertEqual(annotations[0].observed_value, "150")
         self.assertEqual(annotations[0].unit, "mm")
+
+    def test_hyphen_box_overlaps_the_letter_band(self) -> None:
+        self.assertTrue(_char_continues_line(723.01, 724.24, 720.0, 730.02))
+        self.assertFalse(_char_continues_line(400.0, 410.0, 720.0, 730.0))
+
+    def test_two_baselines_stay_two_measures(self) -> None:
+        content = (
+            b"BT /F1 12 Tf 72 720 Td (WALL-01 thickness 250 mm) Tj ET\n"
+            b"BT /F1 12 Tf 72 400 Td (BEAM-02 thickness 100 mm) Tj ET\n"
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            pdf_path = Path(tmp) / "two.pdf"
+            pdf_path.write_bytes(_wrap_single_page(content, page_w=612, page_h=792, with_font=True))
+            annotations = RasterDrawingAnalyzer().extract_pdf_in_process(pdf_path, "A-101")
+        by_target = {item.target_ref: item for item in annotations}
+        self.assertEqual(set(by_target), {"WALL-01", "BEAM-02"})
+        wall_zone = by_target["WALL-01"].problem_zone
+        beam_zone = by_target["BEAM-02"].problem_zone
+        self.assertIsNotNone(wall_zone)
+        self.assertIsNotNone(beam_zone)
+        assert wall_zone is not None and beam_zone is not None
+        self.assertGreater(abs((wall_zone.y or 0.0) - (beam_zone.y or 0.0)), 100.0)
 
     def test_raster_ocr_result_is_converted_into_drawing_annotations(self) -> None:
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:

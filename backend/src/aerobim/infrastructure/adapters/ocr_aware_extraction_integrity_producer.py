@@ -30,7 +30,12 @@ from aerobim.infrastructure.adapters.pdfminer_extraction_integrity_producer impo
 
 
 class OcrAwareExtractionIntegrityProducer:
-    """Compose pdfminer text-layer signals with optional OCR on rendered pages."""
+    """Compose text-layer signals with optional OCR on rendered pages.
+
+    The text layer is read by PDFium, with pdfminer.six only when PDFium
+    cannot open the file. OCR stays an advisory channel and does not write
+    ``summary.passed``.
+    """
 
     def __init__(
         self,

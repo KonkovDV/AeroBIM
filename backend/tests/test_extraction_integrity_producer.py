@@ -61,6 +61,18 @@ class ExtractionIntegrityProducerTests(unittest.TestCase):
             self.assertEqual(signals.hidden_text_char_count, 0)
             self.assertGreater(signals.extracted_char_count or 0, 0)
 
+    def test_a_period_in_a_normal_font_is_not_hidden_text(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            pdf_path = Path(tmp) / "period.pdf"
+            content = b"BT /F1 12 Tf 72 720 Td (NOTE.) Tj ET\n"
+            pdf_path.write_bytes(_wrap_single_page(content, page_w=612, page_h=792, with_font=True))
+            signals = PdfMinerExtractionIntegrityProducer().produce(pdf_path)
+        self.assertEqual(signals.hidden_text_char_count, 0)
+        self.assertEqual(signals.offpage_text_char_count, 0)
+        self.assertGreater(signals.extracted_char_count or 0, 0)
+        status = assess_extraction_integrity(signals)
+        self.assertEqual(status.status.value, "ok")
+
     def test_no_pdf_sources_skipped(self) -> None:
         status = probe_extraction_integrity(
             PdfMinerExtractionIntegrityProducer(),

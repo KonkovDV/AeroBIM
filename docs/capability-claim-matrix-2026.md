@@ -1,8 +1,8 @@
 ---
 title: "AeroBIM Capability Claim Matrix 2026"
 status: active
-version: "1.4.8"
-last_updated: "2026-10-01"
+version: "1.4.9"
+last_updated: "2026-11-06"
 claim_boundary: "Sync with CLAIMS_LOCK. Checkpoint GO; customer_go false until RT-001/002/003. Eng readiness ≠ customer GO."
 ---
 
@@ -19,7 +19,7 @@ API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_
 | Native DWG | MISSING (`Ezdxf` fail-closed; ODA stub off analyze) | — | — | never `dwg_dxf=ok`; exchange IFC+PDF/A ([`quality/FORMAT_INGEST_TRIAGE_2026_09.md`](quality/FORMAT_INGEST_TRIAGE_2026_09.md)) |
 | DXF | PARTIAL optional `[cad]` | fixture TEXT/MTEXT | not claimed | never = DWG support |
 | DWG→PDF/IFC route | derived provenance helper | unit | external prep | `available_as_derived_input` ≠ `dwg_supported` |
-| Core PDF | `pypdfium2`+`pdfminer` (LIC-001 Option B) | unit+integration | — | PyMuPDF = optional `pdf-agpl` only |
+| Core PDF | PDFium text layer and crop; pdfminer.six fallback (LIC-001 Option B) | unit+integration | — | not render-vs-extract; PyMuPDF = optional `pdf-agpl` only |
 | Annotation↔IFC GUID | P2-04 presence via spatial index | wall-guid demo pin | not adjudicated | never invent GUID |
 | Geometric hard clash | when ifcclash configured | fixture | — | ≠ full MEP |
 | MEP system graph | `edge_kinds` + optional AABB | ENG_FIXTURE | BLOCKED | RT-003 OPEN; always `geometry_verified=False` |
@@ -91,7 +91,7 @@ API honesty surface: `GET /v1/system/capabilities` schema **1.3.0** (`direction_
 | BCF T2 checklist verifier | `--checklist` dry-run; STATUS stays NOT_VERIFIED until real CDE evidence |
 | VLM kimi smoke PUBLIC egress gate | `vlm_smoke_gate` before client; blocked → zero bytes |
 | Quality measurement protocol (WP-07) | [`pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md`](pilot/QUALITY_MEASUREMENT_PROTOCOL_2026_08.md); interim 0.60; never >90% |
-| Core PDF via pypdfium2/pdfminer (LIC-001 Option B) | `test_dependency_license_gate.py` + `test_pdfium_region_cropper.py`; inventory + [`license-policy-2026.md`](license-policy-2026.md) |
+| Core PDF via PDFium, pdfminer.six fallback (LIC-001 Option B) | `test_raster_drawing_analyzer.py` + `test_extraction_integrity_producer.py` + `test_dependency_license_gate.py` + `test_pdfium_region_cropper.py`; [`extraction-integrity-2026.md`](extraction-integrity-2026.md) + [`license-policy-2026.md`](license-policy-2026.md) |
 | Annotation claimed-GUID presence (P2-04) | spatial-index lookup; wall-guid demo pin [`evidence/checkpoint2-evidence-bundle-latest.json`](evidence/checkpoint2-evidence-bundle-latest.json) |
 | MEP edge provenance + AABB broadphase (eng) | `edge_kinds` + `AEROBIM_MEP_AABB_FILTER`; always `geometry_verified=False` — [`roadmap/MEP_SYSTEM_CLASH_GAP_2026_07.md`](capability-claim-matrix-2026.md) |
 | Per-source check-coverage map (four presentation states) | `domain/check_coverage.py` + Hypothesis I-8; `tz_gaps`; HTML+PDF export coverage first page; frontend `CoverageMapPanel`; `GET /v1/reports/{id}/coverage` + `/export/pdf` |

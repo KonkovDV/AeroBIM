@@ -995,7 +995,7 @@ ACL: cross-tenant → **404** (не 403). Object enumeration избегаетс�
 
 **Attestation:** нельзя подделать локально `--attested-by ci` (N-18 CLOSED 09.08; attestation только из `GITHUB_ACTIONS`).
 
-**PDF лицензии:** production path pypdfium2 + pdfminer.six. PyMuPDF optional `pdf-agpl` only, отсутствует в runtime lock/Docker. Не судебное мнение.
+**PDF лицензии:** production path — pypdfium2 (кадр и текстовый слой) и pdfminer.six (запасной разбор слоя). PyMuPDF optional `pdf-agpl` only, отсутствует в runtime lock/Docker. Не сверка отрисовки со слоем и не судебное мнение.
 
 **Detached signature (WP-03):** presence/hash/roles; `qualified_signature` ENG_PARTIAL; trust_chain always NOT_VERIFIED.
 

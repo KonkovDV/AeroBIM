@@ -15,6 +15,7 @@ from aerobim.domain.extraction_integrity import (
     ExtractionIntegritySignals,
     ExtractionIntegrityStatus,
     assess_extraction_integrity,
+    dominant_letter_script,
 )
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -111,6 +112,14 @@ def test_same_length_digit_spoof_is_failed() -> None:
 def test_no_signals_is_review_required_never_silent_ok() -> None:
     result = assess_extraction_integrity(ExtractionIntegritySignals())
     assert result.status is ExtractionIntegrityStatus.REVIEW_REQUIRED
+
+
+def test_script_label_needs_forty_letters_and_a_two_to_one_majority() -> None:
+    assert dominant_letter_script("я" * 39) is None
+    assert dominant_letter_script("я" * 40) == "cyrillic"
+    assert dominant_letter_script(("я" * 40) + ("a" * 20)) is None
+    assert dominant_letter_script(("я" * 41) + ("a" * 20)) == "cyrillic"
+    assert dominant_letter_script("a" * 40) == "latin"
 
 
 def test_verdict_neutral_serialization_has_no_passed_key() -> None:

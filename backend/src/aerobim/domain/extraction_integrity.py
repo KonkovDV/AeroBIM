@@ -30,6 +30,10 @@ if TYPE_CHECKING:
 # Numeric spoof class (visual «3000» vs text-layer «3300»): char-count ratios miss
 # same-length substitutions. Collide digit runs of this length across channels.
 _DIGIT_RUN_RE = re.compile(r"\d{3,}")
+# A short or mixed layer is not a script measurement. The bundled OCR model
+# is skipped only when Cyrillic letters clear both bounds.
+_SCRIPT_MIN_LETTERS = 40
+_SCRIPT_DOMINANCE_RATIO = 2
 
 
 def dominant_letter_script(text: str) -> str | None:
@@ -46,11 +50,11 @@ def dominant_letter_script(text: str) -> str | None:
             cyrillic += 1
         elif ("A" <= char <= "Z") or ("a" <= char <= "z"):
             latin += 1
-    if cyrillic < 40 and latin < 40:
+    if cyrillic < _SCRIPT_MIN_LETTERS and latin < _SCRIPT_MIN_LETTERS:
         return None
-    if cyrillic > latin * 2:
+    if cyrillic > latin * _SCRIPT_DOMINANCE_RATIO:
         return "cyrillic"
-    if latin > cyrillic * 2:
+    if latin > cyrillic * _SCRIPT_DOMINANCE_RATIO:
         return "latin"
     return None
 
@@ -58,8 +62,9 @@ def dominant_letter_script(text: str) -> str | None:
 def extract_digit_runs(text: str) -> tuple[str, ...]:
     """Sorted unique digit runs (≥3 digits) for deterministic channel collision.
 
-    Uniqueness avoids false FAILED from pdfminer/OCR duplicate spans of the same
-    number; the spoof class is different values (visual «3000» vs text «3300»).
+    Uniqueness avoids a false FAILED when one extractor repeats the same
+    number. The spoof class is different values (visual «3000» vs text «3300»).
+    Equality with another text extractor is not claimed.
     """
 
     return tuple(sorted(set(_DIGIT_RUN_RE.findall(text or ""))))
