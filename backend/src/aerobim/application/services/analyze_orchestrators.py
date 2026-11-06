@@ -32,6 +32,8 @@ from aerobim.application.services.package_file_entries import collect_file_entri
 from aerobim.application.services.package_outcome import compute_package_outcome
 from aerobim.domain.advisory_remark_compose import finding_payload_from_issue
 from aerobim.domain.annotation_ifc_matching import AnnotationIfcLink, match_annotations_to_regions
+from aerobim.domain.detail_callout import missing_detail_callouts
+from aerobim.domain.drawing_measure_disagree import disagreeing_drawing_measures
 from aerobim.domain.drawing_region_hitl import (
     issues_for_hitl_regions,
     mark_regions_for_hitl,
@@ -54,6 +56,7 @@ from aerobim.domain.models import (
     DrawingAnnotation,
     DrawingAsset,
     DrawingRegionRef,
+    DrawingSource,
     FindingCategory,
     ParsedRequirement,
     Severity,
@@ -67,8 +70,62 @@ from aerobim.domain.norm_assist import IdsCompileDraft
 from aerobim.domain.package_manifest import PackageFileEntry
 from aerobim.domain.package_outcome import summary_passed_from_outcome
 from aerobim.domain.ports import IfcSpatialIndexProvider
-from aerobim.domain.stamp_caption_above import disagreeing_package_stamp_fields
+from aerobim.domain.stamp_caption_above import (
+    colliding_stamp_sheet_numbers,
+    disagreeing_package_stamp_fields,
+    disagreeing_stamp_and_body_titles,
+    unmarked_stamp_revisions,
+)
 from aerobim.domain.system_capabilities import enforce_honesty_capabilities
+
+
+def drawing_seam_issues(
+    drawing_sources: Sequence[DrawingSource],
+    annotations: Sequence[DrawingAnnotation],
+) -> tuple[ValidationIssue, ...]:
+    """Every sheet seam, in one order, for both analyze paths.
+
+    A page of one file is not a second document. A stamp reading is not a
+    measure. None of these warnings writes ``summary.passed`` by itself.
+    """
+
+    return (
+        *detect_missing_drawing_sheet_identity(drawing_sources),
+        *detect_annotation_sheet_identity_drift(drawing_sources, annotations),
+        *disagreeing_package_stamp_fields(annotations),
+        *colliding_stamp_sheet_numbers(annotations),
+        *disagreeing_stamp_and_body_titles(annotations),
+        *unmarked_stamp_revisions(annotations),
+        *disagreeing_drawing_measures(annotations),
+        *missing_detail_callouts(annotations),
+    )
+
+
+@dataclass(frozen=True)
+class DrawingFindings:
+    """Rule match and sheet seams. The same pair runs with or without a model."""
+
+    drawing_issues: tuple[ValidationIssue, ...]
+    sheet_identity_issues: tuple[ValidationIssue, ...]
+
+
+@dataclass(frozen=True)
+class PackageDocumentFindings:
+    """Checks that read the package, not the IFC model."""
+
+    cross_document_issues: tuple[ValidationIssue, ...]
+    revision_merge_issues: tuple[ValidationIssue, ...]
+    section_pairing_issues: tuple[ValidationIssue, ...]
+    section_pairing_capability: CapabilityStatus
+    reinforcement_provenance_issues: tuple[ValidationIssue, ...]
+    load_issues: tuple[ValidationIssue, ...]
+    calculation_match: CapabilityStatus
+    logic_issues: tuple[ValidationIssue, ...]
+    signature_capability: CapabilityStatus | None
+    signature_issues: tuple[ValidationIssue, ...]
+    package_completeness_capability: CapabilityStatus | None
+    package_completeness_issues: tuple[ValidationIssue, ...]
+
 
 if TYPE_CHECKING:
     from aerobim.application.use_cases.analyze_project_package import AnalyzeProjectPackageUseCase
@@ -265,40 +322,17 @@ class DeterministicValidationOrchestrator:
         )
         ifc_ms = max(0, int((perf_counter() - t1) * 1000))
         t2 = perf_counter()
-        drawing_issues = tuple(
-            self._host._annotation_validator().validate(requirements, ingested.drawing_annotations)
-        )
-        sheet_identity_issues = tuple(
-            [
-                *detect_missing_drawing_sheet_identity(request.drawing_sources),
-                *detect_annotation_sheet_identity_drift(
-                    request.drawing_sources,
-                    ingested.drawing_annotations,
-                ),
-                *disagreeing_package_stamp_fields(ingested.drawing_annotations),
-            ]
-        )
+        drawing = self._drawing_findings(request, ingested)
+        drawing_issues = drawing.drawing_issues
+        sheet_identity_issues = drawing.sheet_identity_issues
         drawing_ms = max(0, int((perf_counter() - t2) * 1000))
         t3 = perf_counter()
-        cross_document_issues = tuple(self._host._cross_doc_detector().detect(requirements))
-        revision_merge_issues = tuple(
-            detect_revision_merge_conflicts(
-                self._host._ingestion_service().collect_identity_sources(request)
-            )
-        )
-        section_pairing_issues, section_pairing_capability = (
-            self._host._ids_runner().collect_section_pairing_issues(request)
-        )
-        reinforcement_mode = request.reinforcement_provenance_mode
-        # Hard profiles always enforce OpenRebar provenance (RTATOM-G07); soft stays advisory.
-        if getattr(self._host, "_hard_signoff_profile", False):
-            reinforcement_mode = "enforced"
-        reinforcement_provenance_issues = tuple(
-            self._host._ids_runner().apply_openrebar_provenance_policy(
-                self._host._external_evidence_verifier.verify(request),
-                reinforcement_mode,
-            )
-        )
+        package_docs = self._package_document_findings(request, ingested)
+        cross_document_issues = package_docs.cross_document_issues
+        revision_merge_issues = package_docs.revision_merge_issues
+        section_pairing_issues = package_docs.section_pairing_issues
+        section_pairing_capability = package_docs.section_pairing_capability
+        reinforcement_provenance_issues = package_docs.reinforcement_provenance_issues
         t4 = perf_counter()
         clash_results, clash_capability, clash_issues = (
             self._host._clash_runner().run_clash_detection(request.ifc_path)
@@ -318,14 +352,13 @@ class DeterministicValidationOrchestrator:
         quantity_issues = [*quantity_issues, *drawing_ifc_issues]
         quantity_capability = merge_quantity_capability(quantity_capability, drawing_ifc_capability)
         clash_ms = max(0, int((perf_counter() - t4) * 1000))
-        load_issues, calculation_match = self._host._clash_runner().run_load_evidence(request)
-        logic_issues = self._host._clash_runner().run_logic_consistency(request)
-        signature_capability, signature_issues = self._host._signature_runner().run_signature_audit(
-            request
-        )
-        package_completeness_capability, package_completeness_issues = (
-            self._host._signature_runner().run_package_completeness(request)
-        )
+        load_issues = package_docs.load_issues
+        calculation_match = package_docs.calculation_match
+        logic_issues = package_docs.logic_issues
+        signature_capability = package_docs.signature_capability
+        signature_issues = package_docs.signature_issues
+        package_completeness_capability = package_docs.package_completeness_capability
+        package_completeness_issues = package_docs.package_completeness_issues
         cross_ms = max(0, int((perf_counter() - t3) * 1000) - clash_ms)
         engine_issues = tuple(
             [
@@ -427,7 +460,6 @@ class DeterministicValidationOrchestrator:
                 CapabilityState.NOT_VERIFIED,
                 "ifc_path omitted — MEP system graph not evaluated (document-only)",
             )
-        requirements = ingested.requirements
         ids_audit_issues = tuple(self._host._ids_runner().collect_ids_audit_issues(request))
         # IDS against IFC cannot run without a model.
         ids_issues: tuple[ValidationIssue, ...]
@@ -443,45 +475,22 @@ class DeterministicValidationOrchestrator:
             )
         else:
             ids_issues = ()
-        drawing_issues = tuple(
-            self._host._annotation_validator().validate(requirements, ingested.drawing_annotations)
-        )
-        sheet_identity_issues = tuple(
-            [
-                *detect_missing_drawing_sheet_identity(request.drawing_sources),
-                *detect_annotation_sheet_identity_drift(
-                    request.drawing_sources,
-                    ingested.drawing_annotations,
-                ),
-                *disagreeing_package_stamp_fields(ingested.drawing_annotations),
-            ]
-        )
-        cross_document_issues = tuple(self._host._cross_doc_detector().detect(requirements))
-        revision_merge_issues = tuple(
-            detect_revision_merge_conflicts(
-                self._host._ingestion_service().collect_identity_sources(request)
-            )
-        )
-        section_pairing_issues, section_pairing_capability = (
-            self._host._ids_runner().collect_section_pairing_issues(request)
-        )
-        reinforcement_mode = request.reinforcement_provenance_mode
-        if getattr(self._host, "_hard_signoff_profile", False):
-            reinforcement_mode = "enforced"
-        reinforcement_provenance_issues = tuple(
-            self._host._ids_runner().apply_openrebar_provenance_policy(
-                self._host._external_evidence_verifier.verify(request),
-                reinforcement_mode,
-            )
-        )
-        load_issues, calculation_match = self._host._clash_runner().run_load_evidence(request)
-        logic_issues = self._host._clash_runner().run_logic_consistency(request)
-        signature_capability, signature_issues = self._host._signature_runner().run_signature_audit(
-            request
-        )
-        package_completeness_capability, package_completeness_issues = (
-            self._host._signature_runner().run_package_completeness(request)
-        )
+        drawing = self._drawing_findings(request, ingested)
+        drawing_issues = drawing.drawing_issues
+        sheet_identity_issues = drawing.sheet_identity_issues
+        package_docs = self._package_document_findings(request, ingested)
+        cross_document_issues = package_docs.cross_document_issues
+        revision_merge_issues = package_docs.revision_merge_issues
+        section_pairing_issues = package_docs.section_pairing_issues
+        section_pairing_capability = package_docs.section_pairing_capability
+        reinforcement_provenance_issues = package_docs.reinforcement_provenance_issues
+        load_issues = package_docs.load_issues
+        calculation_match = package_docs.calculation_match
+        logic_issues = package_docs.logic_issues
+        signature_capability = package_docs.signature_capability
+        signature_issues = package_docs.signature_issues
+        package_completeness_capability = package_docs.package_completeness_capability
+        package_completeness_issues = package_docs.package_completeness_issues
         engine_issues = tuple(
             [
                 *ids_audit_issues,
@@ -526,6 +535,76 @@ class DeterministicValidationOrchestrator:
             calculation_match=calculation_match,
             logic_issues=tuple(logic_issues),
             engine_issues=engine_issues,
+            signature_capability=signature_capability,
+            signature_issues=tuple(signature_issues),
+            package_completeness_capability=package_completeness_capability,
+            package_completeness_issues=tuple(package_completeness_issues),
+        )
+
+    def _drawing_findings(
+        self,
+        request: ValidationRequest,
+        ingested: IngestionBundle,
+    ) -> DrawingFindings:
+        return DrawingFindings(
+            drawing_issues=tuple(
+                self._host._annotation_validator().validate(
+                    ingested.requirements,
+                    ingested.drawing_annotations,
+                )
+            ),
+            sheet_identity_issues=drawing_seam_issues(
+                request.drawing_sources,
+                ingested.drawing_annotations,
+            ),
+        )
+
+    def _package_document_findings(
+        self,
+        request: ValidationRequest,
+        ingested: IngestionBundle,
+    ) -> PackageDocumentFindings:
+        """Package checks shared by the model path and the document-only path.
+
+        A hard profile forces reinforcement provenance. A soft profile stays
+        advisory. Neither path writes ``summary.passed`` from these issues
+        alone: the outcome rule still does that.
+        """
+
+        section_pairing_issues, section_pairing_capability = (
+            self._host._ids_runner().collect_section_pairing_issues(request)
+        )
+        reinforcement_mode = request.reinforcement_provenance_mode
+        if getattr(self._host, "_hard_signoff_profile", False):
+            reinforcement_mode = "enforced"
+        load_issues, calculation_match = self._host._clash_runner().run_load_evidence(request)
+        logic_issues = self._host._clash_runner().run_logic_consistency(request)
+        signature_capability, signature_issues = self._host._signature_runner().run_signature_audit(
+            request
+        )
+        package_completeness_capability, package_completeness_issues = (
+            self._host._signature_runner().run_package_completeness(request)
+        )
+        return PackageDocumentFindings(
+            cross_document_issues=tuple(
+                self._host._cross_doc_detector().detect(ingested.requirements)
+            ),
+            revision_merge_issues=tuple(
+                detect_revision_merge_conflicts(
+                    self._host._ingestion_service().collect_identity_sources(request)
+                )
+            ),
+            section_pairing_issues=tuple(section_pairing_issues),
+            section_pairing_capability=section_pairing_capability,
+            reinforcement_provenance_issues=tuple(
+                self._host._ids_runner().apply_openrebar_provenance_policy(
+                    self._host._external_evidence_verifier.verify(request),
+                    reinforcement_mode,
+                )
+            ),
+            load_issues=tuple(load_issues),
+            calculation_match=calculation_match,
+            logic_issues=tuple(logic_issues),
             signature_capability=signature_capability,
             signature_issues=tuple(signature_issues),
             package_completeness_capability=package_completeness_capability,

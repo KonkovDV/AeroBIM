@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from collections.abc import Mapping, Sequence
 
 from aerobim.domain.architecture import DocumentIdentity
@@ -14,6 +15,18 @@ from aerobim.domain.models import (
     Severity,
     ValidationIssue,
 )
+
+# A page locator is not a second document. ``pack.pdf#page=10`` and
+# ``pack.pdf#page=11`` are two pages of one file.
+_PAGE_LOCATOR = re.compile(r"(?i)(?:#|\?|&)(?:page|p)=\d+\s*$")
+
+
+def file_identity(source: str) -> str:
+    """Drop one trailing page locator. A bare locator is left unchanged."""
+
+    text = (source or "").strip()
+    stripped = _PAGE_LOCATOR.sub("", text).rstrip("#?&").strip()
+    return stripped or text
 
 
 def identity_from_requirement_source(source: RequirementSource) -> DocumentIdentity:
@@ -431,6 +444,7 @@ __all__ = [
     "PACKAGE_IDENTITY_CLAIM_BOUNDARY",
     "compare_package_document_identities",
     "detect_annotation_sheet_identity_drift",
+    "file_identity",
     "detect_missing_drawing_sheet_identity",
     "detect_revision_merge_conflicts",
     "drawing_sheet_identity",

@@ -224,6 +224,36 @@ describe("DrawingEvidencePanel", () => {
     expect(screen.queryByText(UI_COPY.overlayTarget)).toBeNull();
   });
 
+  it("does not paint a problem zone when the sheet frame is missing", async () => {
+    const report = buildReport();
+    const asset = report.drawing_assets[1];
+    asset.coordinate_width = null;
+    asset.coordinate_height = null;
+    const { container } = render(
+      <DrawingEvidencePanel
+        report={report}
+        activeIssue={buildIssue({
+          problem_zone: {
+            sheet_id: "A-102",
+            page_number: 2,
+            x: 400,
+            y: 200,
+            width: 80,
+            height: 40,
+            element_guid: null,
+          },
+        })}
+      />,
+    );
+    const image = screen.getByRole("img", { name: /Превью чертежа a-102/i });
+    Object.defineProperty(image, "naturalWidth", { configurable: true, value: 80 });
+    Object.defineProperty(image, "naturalHeight", { configurable: true, value: 40 });
+    fireEvent.load(image);
+
+    expect(await screen.findByText(UI_COPY.overlayUnsupportedCoords)).toBeTruthy();
+    expect(container.querySelector("[data-testid='problem-zone-overlay']")).toBeNull();
+  });
+
   it("refuses unsupported coordinate systems instead of guessing a box", async () => {
     const report = buildReport();
     report.drawing_regions = [

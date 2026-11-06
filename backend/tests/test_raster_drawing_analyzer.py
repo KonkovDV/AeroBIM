@@ -7,7 +7,11 @@ from unittest.mock import patch
 
 from pdf_fixtures import _wrap_single_page, write_text_pdf
 
-from aerobim.domain.pdf_page_frame import upright_char_box, upright_page_size
+from aerobim.domain.pdf_page_frame import (
+    media_box_from_viewed_size,
+    upright_char_box,
+    upright_page_size,
+)
 from aerobim.domain.simple_text_pdf import write_simple_text_pdf
 from aerobim.domain.stamp_caption_above import PlacedLine, line_center_in_title_block
 from aerobim.infrastructure.adapters.raster_drawing_analyzer import (
@@ -77,7 +81,7 @@ class RasterDrawingAnalyzerTests(unittest.TestCase):
 
     def test_a_paired_size_is_not_one_thickness(self) -> None:
         region = _TextRegion(
-            text="OPEN-01 width 500×300 mm",
+            text="OPEN-01 width 500 mm x 300 mm",
             page_number=1,
             x=10,
             y=10,
@@ -86,6 +90,45 @@ class RasterDrawingAnalyzerTests(unittest.TestCase):
         )
         annotations = RasterDrawingAnalyzer()._extract_annotations_from_region(region, "A-101")
         self.assertEqual(annotations, [])
+
+    def test_a_thickness_beside_a_paired_size_is_kept(self) -> None:
+        region = _TextRegion(
+            text="WALL-01 thickness 250 mm opening 500×300",
+            page_number=1,
+            x=10,
+            y=10,
+            width=80,
+            height=12,
+        )
+        annotations = RasterDrawingAnalyzer()._extract_annotations_from_region(region, "A-101")
+        self.assertEqual(
+            [(item.measure_name, item.observed_value) for item in annotations],
+            [("thickness", "250")],
+        )
+        same_side = _TextRegion(
+            text="WALL-01 thickness 500.0 mm opening 500x300",
+            page_number=1,
+            x=10,
+            y=10,
+            width=80,
+            height=12,
+        )
+        self.assertEqual(
+            RasterDrawingAnalyzer()._extract_annotations_from_region(same_side, "A-101"),
+            [],
+        )
+        word = _TextRegion(
+            text="WALL-01 thickness 2 mm, max 3 mm",
+            page_number=1,
+            x=10,
+            y=10,
+            width=80,
+            height=12,
+        )
+        kept = RasterDrawingAnalyzer()._extract_annotations_from_region(word, "A-101")
+        self.assertEqual(
+            [(item.measure_name, item.observed_value) for item in kept], [("thickness", "2")]
+        )
 
     def test_stamp_pairs_stay_in_the_title_block(self) -> None:
         page_w, page_h = 612.0, 792.0
@@ -145,6 +188,7 @@ class RasterDrawingAnalyzerTests(unittest.TestCase):
         )
         self.assertEqual(box, (10.0, 575.0, 20.0, 585.0))
         self.assertEqual(upright_page_size(90, 0.0, 0.0, 595.0, 842.0), (842.0, 595.0))
+        self.assertEqual(media_box_from_viewed_size(90, 400.0, 200.0), (0.0, 0.0, 200.0, 400.0))
         self.assertEqual(
             upright_char_box(
                 15.0,
@@ -428,6 +472,64 @@ class RasterDrawingAnalyzerTests(unittest.TestCase):
             ]
         )
         self.assertEqual(len(kept), 2)
+
+    def test_an_execution_token_is_a_measure(self) -> None:
+        analyzer = RasterDrawingAnalyzer()
+        region = _TextRegion(
+            text="ITEM-A исполнение T",
+            page_number=1,
+            x=10.0,
+            y=20.0,
+            width=80.0,
+            height=12.0,
+        )
+        annotation = analyzer._parse_regex_line("ITEM-A исполнение T", "A-101", region)
+        self.assertIsNotNone(annotation)
+        assert annotation is not None
+        self.assertEqual(annotation.measure_name, "execution")
+        self.assertEqual(annotation.observed_value, "T")
+        self.assertEqual(annotation.target_ref, "ITEM-A")
+        self.assertIsNone(analyzer._parse_regex_line("ITEM-A исполнение таблицы", "A-101", region))
+
+    def test_a_piece_count_is_one_count(self) -> None:
+        analyzer = RasterDrawingAnalyzer()
+        region = _TextRegion(
+            text="ITEM-A 28 шт",
+            page_number=1,
+            x=10.0,
+            y=20.0,
+            width=80.0,
+            height=12.0,
+        )
+        pieces = analyzer._parse_regex_line("ITEM-A 28 шт", "A-101", region)
+        english = analyzer._parse_regex_line("ITEM-A 27 pcs", "A-102", region)
+        self.assertIsNotNone(pieces)
+        self.assertIsNotNone(english)
+        assert pieces is not None and english is not None
+        self.assertEqual(pieces.measure_name, "count")
+        self.assertEqual(pieces.observed_value, "28")
+        self.assertEqual(pieces.unit, "шт")
+        self.assertEqual(english.unit, "шт")
+        self.assertEqual(english.observed_value, "27")
+        thickness = analyzer._parse_regex_line("WALL-01 thickness 250 mm", "A-101", region)
+        self.assertIsNotNone(thickness)
+        assert thickness is not None
+        self.assertEqual(thickness.measure_name, "thickness")
+
+    def test_a_detail_citation_is_not_a_count(self) -> None:
+        analyzer = RasterDrawingAnalyzer()
+        region = _TextRegion(
+            text="см. узел 1",
+            page_number=1,
+            x=10.0,
+            y=20.0,
+            width=80.0,
+            height=12.0,
+        )
+        found = analyzer._extract_annotations_from_region(region, "A-101")
+        self.assertEqual(len(found), 1)
+        self.assertEqual(found[0].source, "detail-callout")
+        self.assertEqual(found[0].observed_value, "1")
 
 
 if __name__ == "__main__":

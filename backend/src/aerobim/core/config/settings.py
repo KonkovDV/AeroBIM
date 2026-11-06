@@ -902,6 +902,8 @@ class Settings:
             raw_severity if raw_severity in {"error", "warning", "info"} else "warning"
         )
         raw_profile = (os.getenv("AEROBIM_PRIORITY_PROFILE") or "default").strip().lower()
+        if raw_profile == "customer":
+            raw_profile = "pilot"
         priority_profile = raw_profile if raw_profile in {"default", "pilot"} else "default"
 
         def _optional_bool(name: str) -> bool | None:

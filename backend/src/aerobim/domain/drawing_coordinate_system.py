@@ -13,7 +13,9 @@ class SheetCoordinateSystem:
     width: float
     height: float
     units: str = "page-pixel"
-    origin: str = "bottom-left"
+    # Same frame as the preview and ``problem_zone``: y grows downward.
+    # Dividing by height does not flip that axis.
+    origin: str = "top-left"
 
     def normalize_bbox(
         self,

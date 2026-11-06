@@ -6,7 +6,9 @@ import unittest
 
 from aerobim.application.services.drawing_annotation_validation import (
     DrawingAnnotationValidator,
+    annotation_is_detail,
     annotation_is_ocr,
+    annotation_is_sheet_title,
     annotation_is_stamp_caption,
 )
 from aerobim.domain.models import (
@@ -93,6 +95,24 @@ class OcrDoesNotClearDrawingErrorTests(unittest.TestCase):
         self.assertIs(issues[0].severity, Severity.ERROR)
         self.assertNotIn("OCR", issues[0].message)
         self.assertTrue(annotation_is_stamp_caption(_ann(source="stamp-caption-above")))
+
+    def test_a_body_title_does_not_clear_a_thickness_rule(self) -> None:
+        issues = self.validator.validate(
+            (_thickness_rule(),),
+            (_ann(source="sheet-body-title", value="220"),),
+        )
+        self.assertEqual(len(issues), 1)
+        self.assertIs(issues[0].severity, Severity.ERROR)
+        self.assertTrue(annotation_is_sheet_title(_ann(source="sheet-body-title")))
+
+    def test_a_detail_citation_does_not_clear_a_thickness_rule(self) -> None:
+        issues = self.validator.validate(
+            (_thickness_rule(),),
+            (_ann(source="detail-callout", value="220"),),
+        )
+        self.assertEqual(len(issues), 1)
+        self.assertIs(issues[0].severity, Severity.ERROR)
+        self.assertTrue(annotation_is_detail(_ann(source="detail-callout")))
 
     def test_text_layer_still_clears_when_a_stamp_reading_is_also_present(self) -> None:
         issues = self.validator.validate(

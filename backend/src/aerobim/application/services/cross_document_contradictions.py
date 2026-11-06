@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
+from aerobim.domain.ingestion import file_identity
 from aerobim.domain.models import (
     ComparisonOperator,
     ConflictKind,
@@ -96,108 +97,143 @@ class CrossDocumentContradictionDetector:
         for (entity, property_set, prop, _target), reqs in keyed.items():
             if len(reqs) < 2:
                 continue
-            seen: list[ParsedRequirement] = []
+            # Rows of one file are not pairs. Pages of that file share an
+            # identity, so the inner walk never starts.
+            groups: dict[str, list[ParsedRequirement]] = {}
+            group_order: list[str] = []
+            seen_values: dict[str, set[tuple[str, str]]] = {}
             for req in reqs:
                 if req.expected_value is None:
                     continue
-                for prev_req in seen:
-                    if self._same_document(prev_req, req):
+                identity = self._document_identity(req)
+                value_key = (
+                    (req.expected_value or "").strip(),
+                    (req.unit or "").strip().casefold(),
+                )
+                already = seen_values.setdefault(identity, set())
+                if value_key in already:
+                    continue
+                already.add(value_key)
+                for prev_identity in group_order:
+                    if prev_identity == identity:
                         continue
-                    interval = self._interval_compatibility(prev_req, req)
-                    if interval is True:
-                        continue
-                    soft = False
-                    hard = False
-                    if interval is False:
-                        hard = True
-                    else:
-                        soft = self.values_soft_conflict(
-                            prev_req.expected_value,
-                            prev_req.unit,
-                            req.expected_value,
-                            req.unit,
-                            quantity_a=prev_req.quantity,
-                            quantity_b=req.quantity,
+                    for prev_req in groups[prev_identity]:
+                        self._append_cross_document_pair(
+                            issues,
+                            entity=entity,
+                            property_set=property_set,
+                            prop=prop,
+                            prev_req=prev_req,
+                            req=req,
                         )
-                        hard = self.values_conflict(
-                            prev_req.expected_value,
-                            prev_req.unit,
-                            req.expected_value,
-                            req.unit,
-                            quantity_a=prev_req.quantity,
-                            quantity_b=req.quantity,
-                        )
-                    if not soft and not hard:
-                        continue
-                    prev_val = (prev_req.expected_value or "").strip()
-                    val = (req.expected_value or "").strip()
-                    property_label = (
-                        f"{entity}.{property_set}.{prop}" if property_set else f"{entity}.{prop}"
-                    )
-                    if soft and not hard:
-                        conflict_kind = ConflictKind.SOFT_CONFLICT_WITHIN_TOLERANCE
-                        severity = Severity.INFO
-                    else:
-                        conflict_kind = self.classify_conflict_kind(
-                            prev_req.expected_value,
-                            prev_req.unit,
-                            req.expected_value,
-                            req.unit,
-                            quantity_a=prev_req.quantity,
-                            quantity_b=req.quantity,
-                        )
-                        if interval is False and conflict_kind not in {
-                            ConflictKind.UNIT_MISMATCH,
-                            ConflictKind.UNPARSED_NUMERIC,
-                        }:
-                            conflict_kind = ConflictKind.HARD_CONFLICT
-                        severity = self._severity
-                    if conflict_kind is ConflictKind.UNPARSED_NUMERIC:
-                        message = (
-                            f"Unparsed numeric token in cross-document pair: {property_label} "
-                            f"'{prev_val}' (from {prev_req.source_kind.value}) vs "
-                            f"'{val}' (from {req.source_kind.value}). "
-                            "Not classified as mapping ambiguity."
-                        )
-                    else:
-                        message = (
-                            f"Cross-document contradiction: {property_label} "
-                            f"expects '{prev_val}' (from {prev_req.source_kind.value}) "
-                            f"but '{val}' (from {req.source_kind.value})"
-                        )
-                    match_method = "entity+pset+prop" if property_set else "entity+prop"
-                    if (req.target_ref or prev_req.target_ref or "").strip():
-                        match_method = f"{match_method}+target_ref"
-                    issues.append(
-                        ValidationIssue(
-                            rule_id=f"CROSS-DOC-{entity}-{prop}",
-                            severity=severity,
-                            message=message,
-                            ifc_entity=entity,
-                            category=FindingCategory.CROSS_DOCUMENT,
-                            property_set=prev_req.property_set or req.property_set,
-                            property_name=prop,
-                            expected_value=prev_val,
-                            observed_value=val,
-                            conflict_kind=conflict_kind,
-                            origin="deterministic",
-                            match_method=match_method,
-                            target_ref=(req.target_ref or prev_req.target_ref),
-                            source_id=(
-                                f"cross-doc:{self._document_identity(prev_req)}"
-                                f"|{self._document_identity(req)}"
-                            ),
-                            evidence_modality="cross-document",
-                            evidence_refs=(
-                                f"cross-doc@{prev_req.source_kind.value}#{property_label}",
-                                f"cross-doc@{req.source_kind.value}#{property_label}",
-                            ),
-                        )
-                    )
-                seen.append(req)
+                bucket = groups.get(identity)
+                if bucket is None:
+                    bucket = []
+                    groups[identity] = bucket
+                    group_order.append(identity)
+                bucket.append(req)
 
         issues.extend(self.detect_ambiguous_property_set_alignments(requirements))
         return issues
+
+    def _append_cross_document_pair(
+        self,
+        issues: list[ValidationIssue],
+        *,
+        entity: str,
+        property_set: str,
+        prop: str,
+        prev_req: ParsedRequirement,
+        req: ParsedRequirement,
+    ) -> None:
+        interval = self._interval_compatibility(prev_req, req)
+        if interval is True:
+            return
+        soft = False
+        hard = False
+        if interval is False:
+            hard = True
+        else:
+            soft = self.values_soft_conflict(
+                prev_req.expected_value,
+                prev_req.unit,
+                req.expected_value,
+                req.unit,
+                quantity_a=prev_req.quantity,
+                quantity_b=req.quantity,
+            )
+            hard = self.values_conflict(
+                prev_req.expected_value,
+                prev_req.unit,
+                req.expected_value,
+                req.unit,
+                quantity_a=prev_req.quantity,
+                quantity_b=req.quantity,
+            )
+        if not soft and not hard:
+            return
+        prev_val = (prev_req.expected_value or "").strip()
+        val = (req.expected_value or "").strip()
+        property_label = f"{entity}.{property_set}.{prop}" if property_set else f"{entity}.{prop}"
+        if soft and not hard:
+            conflict_kind = ConflictKind.SOFT_CONFLICT_WITHIN_TOLERANCE
+            severity = Severity.INFO
+        else:
+            conflict_kind = self.classify_conflict_kind(
+                prev_req.expected_value,
+                prev_req.unit,
+                req.expected_value,
+                req.unit,
+                quantity_a=prev_req.quantity,
+                quantity_b=req.quantity,
+            )
+            if interval is False and conflict_kind not in {
+                ConflictKind.UNIT_MISMATCH,
+                ConflictKind.UNPARSED_NUMERIC,
+            }:
+                conflict_kind = ConflictKind.HARD_CONFLICT
+            severity = self._severity
+        if conflict_kind is ConflictKind.UNPARSED_NUMERIC:
+            message = (
+                f"Unparsed numeric token in cross-document pair: {property_label} "
+                f"'{prev_val}' (from {prev_req.source_kind.value}) vs "
+                f"'{val}' (from {req.source_kind.value}). "
+                "Not classified as mapping ambiguity."
+            )
+        else:
+            message = (
+                f"Cross-document contradiction: {property_label} "
+                f"expects '{prev_val}' (from {prev_req.source_kind.value}) "
+                f"but '{val}' (from {req.source_kind.value})"
+            )
+        match_method = "entity+pset+prop" if property_set else "entity+prop"
+        if (req.target_ref or prev_req.target_ref or "").strip():
+            match_method = f"{match_method}+target_ref"
+        issues.append(
+            ValidationIssue(
+                rule_id=f"CROSS-DOC-{entity}-{prop}",
+                severity=severity,
+                message=message,
+                ifc_entity=entity,
+                category=FindingCategory.CROSS_DOCUMENT,
+                property_set=prev_req.property_set or req.property_set,
+                property_name=prop,
+                expected_value=prev_val,
+                observed_value=val,
+                conflict_kind=conflict_kind,
+                origin="deterministic",
+                match_method=match_method,
+                target_ref=(req.target_ref or prev_req.target_ref),
+                source_id=(
+                    f"cross-doc:{self._document_identity(prev_req)}|{self._document_identity(req)}"
+                ),
+                evidence_modality="cross-document",
+                evidence_refs=(
+                    f"cross-doc@{prev_req.source_kind.value}#{property_label}",
+                    f"cross-doc@{req.source_kind.value}#{property_label}",
+                ),
+            )
+        )
 
     def detect_ambiguous_property_set_alignments(
         self,
@@ -273,16 +309,14 @@ class CrossDocumentContradictionDetector:
     def _document_identity(req: ParsedRequirement) -> str:
         """Concrete document, not merely the source_kind class.
 
-        Empty ``source`` does not collapse two records of the same kind into one
+        A trailing page locator (``#page=10``) stays inside the file. Empty
+        ``source`` does not collapse two records of the same kind into one
         document — that would hide two drawings of one type.
         """
-        source = (req.source or "").strip()
+        source = file_identity(req.source or "")
         if source:
             return f"{req.source_kind.value}:{source}"
         return f"{req.source_kind.value}:anon:{req.rule_id}"
-
-    def _same_document(self, left: ParsedRequirement, right: ParsedRequirement) -> bool:
-        return self._document_identity(left) == self._document_identity(right)
 
     def _interval_compatibility(
         self,

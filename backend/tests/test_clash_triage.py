@@ -173,7 +173,7 @@ class ReviewPriorityTriageBoostTests(unittest.TestCase):
             category=FindingCategory.CROSS_DOCUMENT,
             evidence_refs=("triage:band=critical",),
         )
-        self.assertEqual(compute_issue_priority(issue), 35)
+        self.assertEqual(compute_issue_priority(issue), 75)
 
 
 class ClashTriageClaimBoundaryTests(unittest.TestCase):

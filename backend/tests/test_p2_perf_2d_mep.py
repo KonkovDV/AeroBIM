@@ -113,6 +113,7 @@ class DrawingCoordinateSystemTests(unittest.TestCase):
         self.assertAlmostEqual(norm[1], 0.1)
         self.assertAlmostEqual(norm[2], 0.3)
         self.assertAlmostEqual(norm[3], 0.5)
+        self.assertEqual(cs.origin, "top-left")
 
     def test_coordinate_system_from_region_fixture_pack(self) -> None:
         region = DrawingRegionRef(

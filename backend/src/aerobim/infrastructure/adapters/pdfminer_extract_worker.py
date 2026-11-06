@@ -69,17 +69,24 @@ def main(argv: list[str] | None = None) -> int:
     out_path = Path(args.output)
     try:
         spec = json.loads(spec_path.read_text(encoding="utf-8"))
-        annotations = extract_from_spec(spec)
-    except FileNotFoundError as exc:
-        print(type(exc).__name__, file=sys.stderr)
-        return 2
     except Exception as exc:
         print(type(exc).__name__, file=sys.stderr)
         return 1
-    out_path.write_text(
-        json.dumps({"schema": "pdfminer-extract-v1", "annotations": annotations}),
-        encoding="utf-8",
-    )
+    files = spec.get("files") if isinstance(spec, dict) else None
+    if not isinstance(files, list):
+        print("ValueError", file=sys.stderr)
+        return 1
+    with out_path.open("w", encoding="utf-8") as handle:
+        for index, item in enumerate(files):
+            record: dict[str, Any] = {"index": index}
+            try:
+                if not isinstance(item, dict):
+                    raise ValueError("bad item")
+                record["annotations"] = extract_from_spec(item)
+            except Exception as exc:
+                record["error"] = type(exc).__name__
+            handle.write(json.dumps(record) + "\n")
+            handle.flush()
     return 0
 
 

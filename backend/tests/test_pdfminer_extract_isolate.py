@@ -14,6 +14,7 @@ from pdf_fixtures import write_text_pdf
 from aerobim.infrastructure.adapters.pdfium_isolate.process_isolate import run_isolated_argv
 from aerobim.infrastructure.adapters.pdfminer_extract_isolate import (
     run_pdfminer_extract_isolated,
+    run_pdfminer_extract_isolated_many,
 )
 from aerobim.infrastructure.adapters.raster_drawing_analyzer import RasterDrawingAnalyzer
 
@@ -36,7 +37,7 @@ class PdfminerExtractIsolateTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             pdf_path = write_text_pdf(Path(tmp) / "wall.pdf", "WALL-01 thickness 250 mm")
             with patch(
-                "aerobim.infrastructure.adapters.raster_drawing_analyzer.run_pdfminer_extract_isolated",
+                "aerobim.infrastructure.adapters.raster_drawing_analyzer.run_pdfminer_extract_isolated_many",
                 side_effect=TimeoutError("PDF analysis timed out after 30s"),
             ):
                 with self.assertRaises(TimeoutError) as ctx:
@@ -95,13 +96,37 @@ class PdfminerExtractIsolateTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             pdf_path = write_text_pdf(Path(tmp) / "wall.pdf", "WALL-01 thickness 250 mm")
             with patch(
-                "aerobim.infrastructure.adapters.raster_drawing_analyzer.run_pdfminer_extract_isolated",
+                "aerobim.infrastructure.adapters.raster_drawing_analyzer.run_pdfminer_extract_isolated_many",
                 side_effect=TimeoutError("PDF analysis timed out after 30s"),
             ):
                 with self.assertRaises(TimeoutError):
                     RasterDrawingAnalyzer().analyze_image(pdf_path, sheet_id="A-101")
             leftovers = list(Path(tmp).glob("**/annotations.json"))
             self.assertEqual(leftovers, [])
+
+    def test_two_pdfs_share_one_worker(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            first = write_text_pdf(Path(tmp) / "one.pdf", "WALL-01 thickness 250 mm")
+            second = write_text_pdf(Path(tmp) / "two.pdf", "WALL-02 thickness 180 mm")
+            calls: list[int] = []
+            real = run_isolated_argv
+
+            def spy(argv: list[str], **kwargs: object) -> tuple[int, bytes]:
+                calls.append(1)
+                return real(argv, **kwargs)  # type: ignore[arg-type]
+
+            with patch(
+                "aerobim.infrastructure.adapters.pdfminer_extract_isolate.run_isolated_argv",
+                side_effect=spy,
+            ):
+                results = run_pdfminer_extract_isolated_many(((first, "A-101"), (second, "A-102")))
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(len(results), 2)
+        self.assertIsInstance(results[0], list)
+        self.assertIsInstance(results[1], list)
+        assert isinstance(results[0], list) and isinstance(results[1], list)
+        self.assertEqual(results[0][0]["target_ref"], "WALL-01")
+        self.assertEqual(results[1][0]["target_ref"], "WALL-02")
 
     def test_live_pdf_extract_still_finds_vector_text(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

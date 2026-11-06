@@ -2,8 +2,8 @@
 ---
 title: "customer pilot Protocol 2026"
 status: active
-version: "1.1.0"
-last_updated: "2026-07-24"
+version: "1.1.1"
+last_updated: "2026-11-06"
 claim_boundary: "Protocol only. Thresholds are parameters for customer agreement. Checkpoint GO; customer_go false until RT-001/002/003."
 ---
 
@@ -117,4 +117,6 @@ Stop or narrow if: expert distrust; critical misses above threshold; unstable ma
 
 Expand only if: mandatory checks stable; findings have source+evidence; quality measured on frozen set; critical classes meet agreed recall; time measured on real pack; effect vs baseline documented.
 
-Product checkpoint remains **NO_GO** until RT-001/002/003 close with evidence — engineering remediations do not flip checkpoint.
+Product checkpoint is **GO** (`regulatory_measurement_mvp`). `customer_go` stays **false** while RT-001b/c, RT-002c and RT-003c are open. Fixture engineering does not flip `customer_go`.
+
+The review shell draws a finding zone as a percentage of the preview stage on a fixture (`DrawingEvidencePanel`). That frame is not a highlight on the appointing party's sheet and not an import into their CDE. The eight-week exit (signed profile, one frozen revision, two human raters, agreed thresholds, BCF import evidence) is the intake gate in `audit/evidence/customer-intake-gate.json`. Those gates are false.

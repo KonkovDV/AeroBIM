@@ -495,12 +495,6 @@ class PackageIngestionService:
             synthesized.extend(self._narrative_rule_synthesizer.synthesize(source))
         return synthesized
 
-    def collect_drawing_annotations(
-        self, request: ValidationRequest
-    ) -> tuple[list[DrawingAnnotation], list[DrawingRegionRef], int]:
-        ingested = self.ingest_drawing_sources(request)
-        return ingested.annotations, ingested.regions, ingested.raster_yield
-
     def ingest_drawing_sources(self, request: ValidationRequest) -> DrawingIngestResult:
         from aerobim.domain.drawing_ifc_consistency import (
             RULE_UNSUPPORTED,
@@ -511,7 +505,17 @@ class PackageIngestionService:
         regions: list[DrawingRegionRef] = []
         issues: list[ValidationIssue] = []
         raster_yield = 0
-        for drawing_source in request.drawing_sources:
+        pdf_results = self._pdf_batch_results(request.drawing_sources)
+        for index, drawing_source in enumerate(request.drawing_sources):
+            if index in pdf_results:
+                before = len(annotations)
+                outcome = pdf_results[index]
+                if isinstance(outcome, BaseException):
+                    issues.append(parser_failure_issue(drawing_source, outcome))
+                else:
+                    annotations.extend(outcome)
+                raster_yield += len(annotations) - before
+                continue
             if drawing_source.path is not None:
                 suffix = drawing_source.path.suffix.lower()
                 if suffix and suffix not in _SUPPORTED_DRAWING_SUFFIXES:
@@ -559,6 +563,36 @@ class PackageIngestionService:
             issues=issues,
         )
 
+    def _pdf_batch_results(
+        self,
+        sources: Sequence[DrawingSource],
+    ) -> dict[int, list[DrawingAnnotation] | BaseException]:
+        """One worker for a run of PDFs. Images and other readers stay as they are."""
+
+        analyzer = self._raster_drawing_analyzer
+        if analyzer is None or self._multimodal_drawing_pipeline is not None:
+            return {}
+        batch = getattr(analyzer, "analyze_pdfs", None)
+        if not callable(batch):
+            return {}
+        chosen: list[tuple[int, Path, str]] = []
+        for index, source in enumerate(sources):
+            path = source.path
+            if path is None or path.suffix.lower() != ".pdf":
+                continue
+            if not self.is_raster_drawing_source(source):
+                continue
+            if self.has_structured_drawing_input(source):
+                continue
+            chosen.append((index, path, source.sheet_id or path.stem.upper()))
+        if not chosen:
+            return {}
+        outcomes = batch([(path, sheet_id) for _index, path, sheet_id in chosen])
+        return {
+            index: outcome
+            for (index, _path, _sheet_id), outcome in zip(chosen, outcomes, strict=True)
+        }
+
     def collect_drawing_assets(self, request: ValidationRequest) -> list[DrawingAsset]:
         assets: list[DrawingAsset] = []
         for index, drawing_source in enumerate(request.drawing_sources, start=1):
@@ -585,13 +619,6 @@ class PackageIngestionService:
                 )
             )
         return assets
-
-    def collect_raster_annotations(
-        self,
-        drawing_source: DrawingSource,
-    ) -> list[DrawingAnnotation]:
-        annotations, _issues = self.collect_raster_annotations_with_issues(drawing_source)
-        return annotations
 
     def collect_raster_annotations_with_issues(
         self,

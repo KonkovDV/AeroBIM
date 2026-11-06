@@ -17,7 +17,10 @@ from aerobim.domain.extraction_integrity import (
     extract_digit_runs,
 )
 from aerobim.domain.pdf_page_frame import upright_char_box
-from aerobim.infrastructure.adapters.pdf_page_orientation import viewed_pdfium_page
+from aerobim.infrastructure.adapters.pdf_page_orientation import (
+    iter_pdfium_chars,
+    viewed_pdfium_page,
+)
 
 # pdfminer treats a font size at or below this as invisible. PDFium exposes the
 # same size, so the cutoff stays here rather than on the tight glyph box: a
@@ -54,8 +57,14 @@ class PdfMinerExtractionIntegrityProducer:
                     textpage = page.get_textpage()
                     try:
                         chars: list[str] = []
-                        for char_index in range(int(textpage.count_chars())):
-                            char = textpage.get_text_range(char_index, 1) or ""
+                        for (
+                            char_index,
+                            char,
+                            raw_left,
+                            raw_bottom,
+                            raw_right,
+                            raw_top,
+                        ) in iter_pdfium_chars(textpage):
                             if not char:
                                 continue
                             chars.append(char)
@@ -67,10 +76,7 @@ class PdfMinerExtractionIntegrityProducer:
                             if font_size <= _HIDDEN_FONT_SIZE_PT:
                                 hidden += len(char)
                                 continue
-                            raw_left, raw_bottom, raw_right, raw_top = textpage.get_charbox(
-                                char_index
-                            )
-                            if float(raw_top) < float(raw_bottom):
+                            if raw_top < raw_bottom:
                                 continue
                             left, bottom, right, top = upright_char_box(
                                 float(raw_left),

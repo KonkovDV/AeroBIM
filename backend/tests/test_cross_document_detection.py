@@ -6,6 +6,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
+from aerobim.application.services.cross_document_contradictions import (
+    CrossDocumentContradictionDetector,
+)
 from aerobim.application.use_cases.analyze_project_package import AnalyzeProjectPackageUseCase
 from aerobim.domain.models import (
     ConflictKind,
@@ -16,6 +19,7 @@ from aerobim.domain.models import (
     RequirementSource,
     Severity,
     SourceKind,
+    ToleranceConfig,
     ValidationIssue,
     ValidationReport,
     ValidationRequest,
@@ -273,6 +277,59 @@ class CrossDocumentContradictionTests(unittest.TestCase):
         self.assertEqual(issue.severity, Severity.ERROR)
         self.assertIn("HITL", issue.message)
         self.assertFalse(report.summary.passed)
+
+
+class SameFilePagesTests(unittest.TestCase):
+    def _req(self, source: str, value: str) -> ParsedRequirement:
+        return ParsedRequirement(
+            rule_id="R-WIDTH",
+            ifc_entity="IFCWALL",
+            property_set="Pset_WallCommon",
+            property_name="Width",
+            expected_value=value,
+            unit="mm",
+            source=source,
+            source_kind=SourceKind.DRAWING,
+        )
+
+    def test_two_pages_of_one_file_are_not_two_documents(self) -> None:
+        detector = CrossDocumentContradictionDetector(ToleranceConfig(), Severity.ERROR)
+        issues = detector.detect(
+            [
+                self._req("pack.pdf#page=10", "200"),
+                self._req("pack.pdf#page=11", "250"),
+            ]
+        )
+        self.assertEqual(issues, [])
+
+    def test_a_repeated_value_is_one_contradiction(self) -> None:
+        detector = CrossDocumentContradictionDetector(ToleranceConfig(), Severity.ERROR)
+        issues = detector.detect(
+            [
+                self._req("plan.pdf", "200"),
+                self._req("plan.pdf", "200"),
+                self._req("schedule.pdf", "250"),
+            ]
+        )
+        self.assertEqual(len(issues), 1)
+
+    def test_many_rows_of_one_file_are_not_pairs(self) -> None:
+        detector = CrossDocumentContradictionDetector(ToleranceConfig(), Severity.ERROR)
+        issues = detector.detect(
+            [self._req(f"pack.pdf#page={index}", str(index)) for index in range(80)]
+        )
+        self.assertEqual(issues, [])
+
+    def test_two_files_still_contradict(self) -> None:
+        detector = CrossDocumentContradictionDetector(ToleranceConfig(), Severity.ERROR)
+        issues = detector.detect(
+            [
+                self._req("plan.pdf#page=1", "200"),
+                self._req("schedule.pdf#page=1", "250"),
+            ]
+        )
+        self.assertEqual(len(issues), 1)
+        self.assertEqual(issues[0].category, FindingCategory.CROSS_DOCUMENT)
 
 
 if __name__ == "__main__":

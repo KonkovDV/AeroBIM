@@ -5,15 +5,26 @@ from __future__ import annotations
 from aerobim.domain.models import ConflictKind, FindingCategory, ValidationIssue
 
 _VALID_PROFILES = frozenset({"default", "pilot"})
+# ``customer`` is the name in the environment and the live-review smoke.
+# It is the same weighting as ``pilot``.
+_PROFILE_ALIASES = {"customer": "pilot"}
+# Bases sit further apart than every category, conflict, clash-band and pilot
+# boost added together, so a warning cannot sort above an error and an info
+# cannot sort above a warning. The boost only orders issues of one severity.
+_SEVERITY_BASE = {"error": 120, "warning": 60, "info": 10}
 
 
 def compute_issue_priority(issue: ValidationIssue, profile: str = "default") -> int:
-    """Score issues for export sort order and BCF triage (higher = more urgent)."""
+    """Score issues for export sort order and BCF triage (higher = more urgent).
+
+    Severity dominates. The score does not write ``summary.passed``.
+    """
     normalized = profile.strip().lower() if profile else "default"
+    normalized = _PROFILE_ALIASES.get(normalized, normalized)
     if normalized not in _VALID_PROFILES:
         normalized = "default"
 
-    sev_score = {"error": 30, "warning": 20, "info": 10}.get(issue.severity.value, 0)
+    sev_score = _SEVERITY_BASE.get(issue.severity.value, 0)
     cat_score = {
         FindingCategory.CROSS_DOCUMENT: 15,
         FindingCategory.IDS_VALIDATION: 10,

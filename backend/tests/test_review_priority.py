@@ -22,7 +22,7 @@ class ReviewPriorityTests(unittest.TestCase):
             category=FindingCategory.CROSS_DOCUMENT,
             conflict_kind=ConflictKind.HARD_CONFLICT,
         )
-        self.assertEqual(compute_issue_priority(issue, profile="default"), 55)
+        self.assertEqual(compute_issue_priority(issue, profile="default"), 145)
 
     def test_unparsed_numeric_matches_hard_conflict_priority(self) -> None:
         issue = ValidationIssue(
@@ -32,7 +32,7 @@ class ReviewPriorityTests(unittest.TestCase):
             category=FindingCategory.CROSS_DOCUMENT,
             conflict_kind=ConflictKind.UNPARSED_NUMERIC,
         )
-        self.assertEqual(compute_issue_priority(issue, profile="default"), 55)
+        self.assertEqual(compute_issue_priority(issue, profile="default"), 145)
 
     def test_pilot_boosts_fire_rule(self) -> None:
         issue = ValidationIssue(
@@ -43,8 +43,8 @@ class ReviewPriorityTests(unittest.TestCase):
         )
         default_score = compute_issue_priority(issue, profile="default")
         pilot_score = compute_issue_priority(issue, profile="pilot")
-        self.assertEqual(default_score, 30)
-        self.assertEqual(pilot_score, 35)
+        self.assertEqual(default_score, 120)
+        self.assertEqual(pilot_score, 125)
 
     def test_pilot_boosts_cross_document(self) -> None:
         issue = ValidationIssue(
@@ -56,6 +56,44 @@ class ReviewPriorityTests(unittest.TestCase):
         default_score = compute_issue_priority(issue, profile="default")
         pilot_score = compute_issue_priority(issue, profile="pilot")
         self.assertGreater(pilot_score, default_score)
+        drawing_error = ValidationIssue(
+            rule_id="REQ-DRW-001",
+            severity=Severity.ERROR,
+            message="drawing",
+            category=FindingCategory.DRAWING_VALIDATION,
+        )
+        self.assertLess(pilot_score, compute_issue_priority(drawing_error, profile="pilot"))
+        self.assertEqual(
+            compute_issue_priority(issue, profile="customer"),
+            pilot_score,
+        )
+        info = ValidationIssue(
+            rule_id="REQ-FIRE-NOTE",
+            severity=Severity.INFO,
+            message="note",
+            category=FindingCategory.CROSS_DOCUMENT,
+            conflict_kind=ConflictKind.HARD_CONFLICT,
+        )
+        plain_warning = ValidationIssue(
+            rule_id="NOTE",
+            severity=Severity.WARNING,
+            message="warn",
+            category=FindingCategory.IFC_VALIDATION,
+        )
+        plain_error = ValidationIssue(
+            rule_id="ERR",
+            severity=Severity.ERROR,
+            message="err",
+            category=FindingCategory.IFC_VALIDATION,
+        )
+        self.assertLess(
+            compute_issue_priority(info, profile="pilot"),
+            compute_issue_priority(plain_warning, profile="pilot"),
+        )
+        self.assertLess(
+            compute_issue_priority(plain_warning, profile="pilot"),
+            compute_issue_priority(plain_error, profile="pilot"),
+        )
 
 
 if __name__ == "__main__":

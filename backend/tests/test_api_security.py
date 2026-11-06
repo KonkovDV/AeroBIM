@@ -1226,7 +1226,7 @@ class IssuePriorityScoringTests(unittest.TestCase):
             category=FindingCategory.CROSS_DOCUMENT,
             conflict_kind=ConflictKind.HARD_CONFLICT,
         )
-        self.assertEqual(compute_issue_priority(issue), 55)
+        self.assertEqual(compute_issue_priority(issue), 145)
 
     def test_warning_ids_validation_no_conflict_is_mid(self) -> None:
         issue = ValidationIssue(
@@ -1235,7 +1235,7 @@ class IssuePriorityScoringTests(unittest.TestCase):
             message="msg",
             category=FindingCategory.IDS_VALIDATION,
         )
-        self.assertEqual(compute_issue_priority(issue), 30)
+        self.assertEqual(compute_issue_priority(issue), 70)
 
     def test_info_ifc_validation_is_lowest(self) -> None:
         issue = ValidationIssue(

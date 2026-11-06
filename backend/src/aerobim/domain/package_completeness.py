@@ -98,6 +98,10 @@ class PackageArtifact:
     has_schedule: bool = False
     content_topics: tuple[str, ...] = ()
     has_justification: bool = False
+    # Set only when a contents line names this section and the page count is known.
+    # None means the count was not declared. 1 means a title page and no body.
+    declared_in_contents: bool = False
+    page_count: int | None = None
 
     @classmethod
     def from_mapping(cls, payload: Mapping[str, Any]) -> PackageArtifact:
@@ -137,6 +141,8 @@ class PackageArtifact:
             has_schedule=bool(payload.get("has_schedule", False)),
             content_topics=tuple(topics),
             has_justification=bool(payload.get("has_justification", False)),
+            declared_in_contents=bool(payload.get("declared_in_contents", False)),
+            page_count=_optional_page_count(payload.get("page_count")),
         )
 
 
@@ -434,6 +440,8 @@ def assess_package_completeness(inventory: PackageInventory) -> PackageCompleten
     if inventory.check_unjustified_pd_calculations:
         issues.extend(_unjustified_pd_calculation_issues(inventory.artifacts))
 
+    issues.extend(_title_only_declared_sections(inventory.artifacts))
+
     stale = warn_if_using_superseded_edition(
         edition=inventory.documentation_standard_edition,
         package_developed_on=inventory.package_developed_on,
@@ -574,6 +582,49 @@ def _section_disciplines(
             continue
         codes.add(canonicalize_discipline(raw).code)
     return codes
+
+
+def _title_only_declared_sections(
+    artifacts: Sequence[PackageArtifact],
+) -> list[ValidationIssue]:
+    """A contents line with only a title page is not the section body.
+
+    The count must be declared. An unknown count stays quiet. This is a
+    warning on a declared inventory, not a statutory completeness claim.
+    """
+
+    issues: list[ValidationIssue] = []
+    for artifact in artifacts:
+        if not artifact.declared_in_contents:
+            continue
+        if artifact.page_count is None or artifact.page_count > 1:
+            continue
+        issues.append(
+            _issue(
+                rule_id="AEROBIM-PACKAGE-SECTION-TITLE-ONLY",
+                severity=Severity.WARNING,
+                message=(
+                    f"Section {artifact.artifact_id} is named in the contents and has "
+                    f"{artifact.page_count} page. A title page is not the section body. "
+                    f"{CLAIM_BOUNDARY}"
+                ),
+                source_id=artifact.artifact_id,
+                target_ref=artifact.artifact_id,
+            )
+        )
+    return issues
+
+
+def _optional_page_count(value: Any) -> int | None:
+    if value is None or value == "":
+        return None
+    try:
+        count = int(value)
+    except (TypeError, ValueError):
+        return None
+    if count < 0:
+        return None
+    return count
 
 
 def _issue(

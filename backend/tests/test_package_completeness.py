@@ -21,6 +21,7 @@ from aerobim.domain.models import (
 from aerobim.domain.package_completeness import (
     CLAIM_BOUNDARY,
     INVENTORY_SCHEMA_V1,
+    PackageArtifact,
     PackageInventory,
     assess_package_completeness,
 )
@@ -357,6 +358,68 @@ class PackageCompletenessUseCaseWiringTests(unittest.TestCase):
                 "package_completeness",
                 policy.failed_capabilities_blocking_pass(caps),
             )
+
+
+class TitleOnlySectionTests(unittest.TestCase):
+    def _inventory(self, artifact: PackageArtifact) -> PackageInventory:
+        return PackageInventory(
+            schema=INVENTORY_SCHEMA_V1,
+            project_id="fixture",
+            artifacts=(artifact,),
+            mandatory_pd_sections=(),
+            require_pd_rd_pairing=False,
+            require_specifications=False,
+            require_schedules=False,
+            require_sheet_ciphers=False,
+            check_technical_spec_floor_partition_topics=False,
+            check_unjustified_pd_calculations=False,
+        )
+
+    def test_a_contents_line_with_only_a_title_page_is_a_warning(self) -> None:
+        report = assess_package_completeness(
+            self._inventory(
+                PackageArtifact(
+                    artifact_id="lighting-calc",
+                    role="calculation",
+                    declared_in_contents=True,
+                    page_count=1,
+                )
+            )
+        )
+        hits = [
+            item for item in report.issues if item.rule_id == "AEROBIM-PACKAGE-SECTION-TITLE-ONLY"
+        ]
+        self.assertEqual(len(hits), 1)
+        self.assertIs(hits[0].severity, Severity.WARNING)
+
+    def test_a_section_with_a_body_is_quiet(self) -> None:
+        report = assess_package_completeness(
+            self._inventory(
+                PackageArtifact(
+                    artifact_id="lighting-calc",
+                    role="calculation",
+                    declared_in_contents=True,
+                    page_count=4,
+                )
+            )
+        )
+        self.assertFalse(
+            any(item.rule_id == "AEROBIM-PACKAGE-SECTION-TITLE-ONLY" for item in report.issues)
+        )
+
+    def test_an_undeclared_single_page_is_quiet(self) -> None:
+        report = assess_package_completeness(
+            self._inventory(
+                PackageArtifact(
+                    artifact_id="cover",
+                    role="other",
+                    page_count=1,
+                )
+            )
+        )
+        self.assertFalse(
+            any(item.rule_id == "AEROBIM-PACKAGE-SECTION-TITLE-ONLY" for item in report.issues)
+        )
 
 
 class JsonPackageInventoryLoaderTests(unittest.TestCase):

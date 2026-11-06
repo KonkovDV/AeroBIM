@@ -249,8 +249,16 @@ export default function DrawingEvidencePanel({
     setRegionNote(null);
   }, [previewUrl]);
 
-  const coordinateWidth = selectedAsset?.coordinate_width ?? imageMetrics?.width ?? null;
-  const coordinateHeight = selectedAsset?.coordinate_height ?? imageMetrics?.height ?? null;
+  // The zone is in page units. The preview bitmap is a different size.
+  // Without the asset frame, dividing by natural pixels paints the box in the wrong place.
+  const coordinateWidth =
+    selectedAsset?.coordinate_width != null && selectedAsset.coordinate_width > 0
+      ? selectedAsset.coordinate_width
+      : null;
+  const coordinateHeight =
+    selectedAsset?.coordinate_height != null && selectedAsset.coordinate_height > 0
+      ? selectedAsset.coordinate_height
+      : null;
   const canDrawOverlay =
     isOverlayTarget &&
     imageMetrics !== null &&
@@ -615,7 +623,11 @@ export default function DrawingEvidencePanel({
               </p>
             )}
             {problemZone !== null && matchedAsset !== null && !canDrawOverlay && !imageError && (
-              <p>{UI_COPY.drawingIncompleteZone}</p>
+              <p>
+                {coordinateWidth === null || coordinateHeight === null
+                  ? UI_COPY.overlayUnsupportedCoords
+                  : UI_COPY.drawingIncompleteZone}
+              </p>
             )}
           </div>
         </>

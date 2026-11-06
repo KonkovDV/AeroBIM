@@ -21,6 +21,22 @@ def normalize_page_rotation(rotation: int) -> int:
     return 0
 
 
+def media_box_from_viewed_size(
+    rotation: int,
+    viewed_width: float,
+    viewed_height: float,
+) -> tuple[float, float, float, float]:
+    """Stored media box at the origin when only the viewed size is known.
+
+    A quarter turn swaps the sides. The origin stays at zero: this is the
+    fallback for a page whose media box could not be read, not a crop.
+    """
+
+    if normalize_page_rotation(rotation) in (90, 270):
+        return (0.0, 0.0, viewed_height, viewed_width)
+    return (0.0, 0.0, viewed_width, viewed_height)
+
+
 def upright_page_size(
     rotation: int,
     media_x0: float,
@@ -103,6 +119,7 @@ def writes_summary_passed() -> bool:
 
 
 __all__ = [
+    "media_box_from_viewed_size",
     "normalize_page_rotation",
     "upright_char_box",
     "upright_page_size",

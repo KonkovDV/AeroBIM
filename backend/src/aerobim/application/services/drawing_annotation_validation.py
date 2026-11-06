@@ -9,6 +9,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 
 from aerobim.application.services.cross_document_contradictions import to_float
+from aerobim.domain.detail_callout import DETAIL_CALLOUT_SOURCE, DETAIL_TITLE_SOURCE
 from aerobim.domain.label_identity import labels_equivalent
 from aerobim.domain.models import (
     ComparisonOperator,
@@ -28,7 +29,10 @@ from aerobim.domain.quantity import (
     si_compare,
     within_epsilon,
 )
-from aerobim.domain.stamp_caption_above import STAMP_CAPTION_SOURCE
+from aerobim.domain.stamp_caption_above import (
+    SHEET_BODY_TITLE_SOURCE,
+    STAMP_CAPTION_SOURCE,
+)
 from aerobim.domain.target_ref import (
     UNRESTRICTED_ELEMENT_MISMATCH_CAP,
     is_unrestricted_target_ref,
@@ -52,6 +56,18 @@ def annotation_is_stamp_caption(annotation: DrawingAnnotation) -> bool:
     """
 
     return (annotation.source or "") == STAMP_CAPTION_SOURCE
+
+
+def annotation_is_sheet_title(annotation: DrawingAnnotation) -> bool:
+    """A body title is a reading of the sheet, not a rule measurement."""
+
+    return (annotation.source or "") == SHEET_BODY_TITLE_SOURCE
+
+
+def annotation_is_detail(annotation: DrawingAnnotation) -> bool:
+    """A detail citation or title is not a rule measurement."""
+
+    return (annotation.source or "") in {DETAIL_CALLOUT_SOURCE, DETAIL_TITLE_SOURCE}
 
 
 class DrawingAnnotationValidator:
@@ -79,6 +95,8 @@ class DrawingAnnotationValidator:
                 if self.matches_annotation(requirement, annotation)
                 and not annotation_is_ocr(annotation)
                 and not annotation_is_stamp_caption(annotation)
+                and not annotation_is_sheet_title(annotation)
+                and not annotation_is_detail(annotation)
             ]
             if not matching_annotations:
                 ocr_only = any(

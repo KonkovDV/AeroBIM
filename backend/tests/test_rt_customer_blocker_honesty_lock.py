@@ -757,6 +757,19 @@ class SubmissionPackHonestyTests(unittest.TestCase):
         self.assertIn("## Запрещено в кадре и в голосе", text)
         self.assertIn("run_kt3_jury", text)
         self.assertNotIn("интегрированы с 10D", text.lower())
+        self.assertNotIn("телефон", text.lower())
+        self.assertIn("Промежуточный порог методики — 0,60", text)
+        coverage = (self._submission() / "TZ_REQUIREMENTS_COVERAGE_2026_08.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("подсветки на листе нет", coverage)
+        self.assertIn("DrawingEvidencePanel", coverage)
+        protocol = (
+            Path(__file__).resolve().parents[2] / "docs" / "pilot-protocol-customer-2026.md"
+        ).read_text(encoding="utf-8")
+        self.assertNotIn("checkpoint remains **NO_GO**", protocol)
+        self.assertIn("regulatory_measurement_mvp", protocol)
+        self.assertIn("customer_go` stays **false**", protocol)
 
     def test_presentation_pack_tracks_main_deck(self) -> None:
         root = self._submission() / "03-presentation"

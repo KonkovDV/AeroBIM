@@ -7,19 +7,27 @@ Implements the ``RasterDrawingAnalyzer`` port using OCR and layout heuristics on
 from __future__ import annotations
 
 import re
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from aerobim.domain.detail_callout import (
+    DETAIL_CALLOUT_SOURCE,
+    DETAIL_TITLE_SOURCE,
+    detail_callout_id,
+    detail_title_id,
+)
 from aerobim.domain.models import DrawingAnnotation, ProblemZone
-from aerobim.domain.paired_dimension import is_paired_dimension
+from aerobim.domain.paired_dimension import value_is_paired_side
 from aerobim.domain.pdf_page_frame import upright_char_box, upright_page_size
 from aerobim.domain.stamp_caption_above import (
+    SHEET_BODY_TITLE_SOURCE,
     STAMP_CAPTION_SOURCE,
     PlacedLine,
     line_center_in_title_block,
     pair_captions_above_values,
+    select_body_title,
     value_is_standard_citation,
 )
 from aerobim.infrastructure.adapters.drawing_annotation_identity import (
@@ -27,9 +35,12 @@ from aerobim.infrastructure.adapters.drawing_annotation_identity import (
     drawing_annotation_digest,
     drawing_annotation_id,
 )
-from aerobim.infrastructure.adapters.pdf_page_orientation import viewed_pdfium_page
+from aerobim.infrastructure.adapters.pdf_page_orientation import (
+    iter_pdfium_chars,
+    viewed_pdfium_page,
+)
 from aerobim.infrastructure.adapters.pdfminer_extract_isolate import (
-    run_pdfminer_extract_isolated,
+    run_pdfminer_extract_isolated_many,
 )
 
 _PDF_OPEN_TIMEOUT_S = 30.0
@@ -47,6 +58,16 @@ _MEASURE_ALIASES = {
 }
 _UNITS_PATTERN = r"mm|мм|cm|см|m|м|m2|м2|m²|м²"
 _TARGET_PATTERN = r"[A-ZА-Я][A-ZА-Я0-9_-]{1,}"
+_COUNT_PATTERN = re.compile(
+    rf"(?P<target>{_TARGET_PATTERN})\s+(?:count|количество|кол\.?)?\s*"
+    rf"(?P<value>\d+(?:[.,]\d+)?)\s*(?P<unit>шт\.?|pcs|pc)\b",
+    re.IGNORECASE,
+)
+_EXECUTION_PATTERN = re.compile(
+    rf"(?P<target>{_TARGET_PATTERN})\s+(?:исполнение|execution)\s+"
+    rf"(?P<value>[A-Za-zА-Яа-яЁё0-9]{{1,4}})\b",
+    re.IGNORECASE,
+)
 _TEXT_PATTERNS = (
     re.compile(
         rf"(?P<target>{_TARGET_PATTERN})\s+(?P<measure>thickness|width|height|length|area)"
@@ -135,7 +156,6 @@ def _pdfium_text_lines(
 
     media_x0, media_y0, media_x1, media_y1 = media_box
     _page_w, page_h = upright_page_size(rotation, media_x0, media_y0, media_x1, media_y1)
-    count = int(textpage.count_chars())
     lines: list[tuple[str, float, float, float, float]] = []
     buffer: list[tuple[str, float, float, float, float]] = []
     line_bottom: float | None = None
@@ -145,12 +165,20 @@ def _pdfium_text_lines(
         nonlocal buffer, line_bottom, line_top
         if not buffer:
             return
-        text = "".join(item[0] for item in buffer).strip()
+        parts: list[str] = []
+        x0, y0, x1, y1 = buffer[0][1], buffer[0][2], buffer[0][3], buffer[0][4]
+        for char, left, bottom, right, top in buffer:
+            parts.append(char)
+            if left < x0:
+                x0 = left
+            if bottom < y0:
+                y0 = bottom
+            if right > x1:
+                x1 = right
+            if top > y1:
+                y1 = top
+        text = "".join(parts).strip()
         if text:
-            x0 = min(item[1] for item in buffer)
-            y0 = min(item[2] for item in buffer)
-            x1 = max(item[3] for item in buffer)
-            y1 = max(item[4] for item in buffer)
             lines.append(
                 (
                     text,
@@ -164,21 +192,19 @@ def _pdfium_text_lines(
         line_bottom = None
         line_top = None
 
-    for index in range(count):
-        char = textpage.get_text_range(index, 1) or ""
+    for _index, char, raw_left, raw_bottom, raw_right, raw_top in iter_pdfium_chars(textpage):
         if char == "\r":
             continue
         if char == "\n":
             flush()
             continue
-        raw_left, raw_bottom, raw_right, raw_top = textpage.get_charbox(index)
-        if float(raw_top) < float(raw_bottom):
+        if raw_top < raw_bottom:
             continue
         left, bottom, right, top = upright_char_box(
-            float(raw_left),
-            float(raw_bottom),
-            float(raw_right),
-            float(raw_top),
+            raw_left,
+            raw_bottom,
+            raw_right,
+            raw_top,
             rotation=rotation,
             media_x0=media_x0,
             media_y0=media_y0,
@@ -233,16 +259,32 @@ class RasterDrawingAnalyzer:
         pdf_path: Path,
         sheet_id: str,
     ) -> list[DrawingAnnotation]:
-        try:
-            payloads = run_pdfminer_extract_isolated(
-                pdf_path,
-                sheet_id,
-                timeout_s=_PDF_OPEN_TIMEOUT_S,
-            )
-        except TimeoutError:
+        parsed = self.analyze_pdfs([(pdf_path, sheet_id)])
+        outcome = parsed[0]
+        if isinstance(outcome, TimeoutError):
             raise TimeoutError(f"PDF analysis timed out after {_PDF_OPEN_TIMEOUT_S:.0f}s") from None
-        annotations = [self._annotation_from_payload(item) for item in payloads]
-        return self._deduplicate_annotations(annotations)
+        if isinstance(outcome, BaseException):
+            raise outcome
+        return outcome
+
+    def analyze_pdfs(
+        self,
+        items: Sequence[tuple[Path, str]],
+    ) -> list[list[DrawingAnnotation] | BaseException]:
+        """Read many PDFs in one worker. One failure does not drop the others."""
+
+        raw = run_pdfminer_extract_isolated_many(items)
+        parsed: list[list[DrawingAnnotation] | BaseException] = []
+        for item in raw:
+            if isinstance(item, BaseException):
+                parsed.append(item)
+                continue
+            parsed.append(
+                self._deduplicate_annotations(
+                    [self._annotation_from_payload(payload) for payload in item]
+                )
+            )
+        return parsed
 
     def extract_pdf_in_process(
         self,
@@ -307,6 +349,15 @@ class RasterDrawingAnalyzer:
                             )
                         extracted.extend(
                             self._stamp_annotations(
+                                page_lines,
+                                sheet_id=sheet_id,
+                                page_number=index + 1,
+                                page_width=float(page_w),
+                                page_height=float(page_h),
+                            )
+                        )
+                        extracted.extend(
+                            self._body_title_annotations(
                                 page_lines,
                                 sheet_id=sheet_id,
                                 page_number=index + 1,
@@ -430,6 +481,15 @@ class RasterDrawingAnalyzer:
         _walk(page)
         extracted.extend(
             self._stamp_annotations(
+                page_lines,
+                sheet_id=sheet_id,
+                page_number=page_number,
+                page_width=page_w,
+                page_height=page_h,
+            )
+        )
+        extracted.extend(
+            self._body_title_annotations(
                 page_lines,
                 sheet_id=sheet_id,
                 page_number=page_number,
@@ -563,6 +623,52 @@ class RasterDrawingAnalyzer:
             )
         return annotations
 
+    def _body_title_annotations(
+        self,
+        lines: list[PlacedLine],
+        *,
+        sheet_id: str,
+        page_number: int,
+        page_width: float,
+        page_height: float,
+    ) -> list[DrawingAnnotation]:
+        """The body title is a reading, not a measurement against a rule."""
+
+        chosen = select_body_title(lines, page_width=page_width, page_height=page_height)
+        if chosen is None:
+            return []
+        value = chosen.text.strip()
+        return [
+            DrawingAnnotation(
+                annotation_id=drawing_annotation_id(
+                    sheet_id=sheet_id,
+                    page_number=page_number,
+                    target_ref="SHEET-TITLE",
+                    measure_name="name",
+                    observed_value=value,
+                    unit=None,
+                    x=chosen.x,
+                    y=chosen.y,
+                    width=chosen.width,
+                    height=chosen.height,
+                ),
+                sheet_id=sheet_id,
+                target_ref="SHEET-TITLE",
+                measure_name="name",
+                observed_value=value,
+                unit=None,
+                problem_zone=ProblemZone(
+                    sheet_id=sheet_id,
+                    page_number=page_number,
+                    x=canonical_coord(chosen.x),
+                    y=canonical_coord(chosen.y),
+                    width=canonical_coord(chosen.width),
+                    height=canonical_coord(chosen.height),
+                ),
+                source=SHEET_BODY_TITLE_SOURCE,
+            )
+        ]
+
     def _extract_annotations_from_region(
         self,
         region: _TextRegion,
@@ -579,6 +685,7 @@ class RasterDrawingAnalyzer:
             regex_match = self._parse_regex_line(line, sheet_id, region, source=source)
             if regex_match is not None:
                 annotations.append(regex_match)
+            annotations.extend(self._detail_annotations(line, sheet_id, region, source=source))
         return annotations
 
     def _candidate_lines(self, raw_text: str) -> list[str]:
@@ -617,6 +724,43 @@ class RasterDrawingAnalyzer:
             source=source,
         )
 
+    def _detail_annotations(
+        self,
+        line: str,
+        sheet_id: str,
+        region: _TextRegion,
+        *,
+        source: str,
+    ) -> list[DrawingAnnotation]:
+        """A detail citation or a detail title. Not a measurement."""
+
+        title_id = detail_title_id(line)
+        callout_id = None if title_id is not None else detail_callout_id(line)
+        detail_id = title_id or callout_id
+        if detail_id is None:
+            return []
+        detail_source = DETAIL_TITLE_SOURCE if title_id is not None else DETAIL_CALLOUT_SOURCE
+        target_ref = f"DETAIL-{detail_id}"
+        return [
+            DrawingAnnotation(
+                annotation_id=self._make_annotation_id(
+                    region,
+                    sheet_id=sheet_id,
+                    target_ref=target_ref,
+                    measure_name="detail",
+                    observed_value=detail_id,
+                    unit=None,
+                ),
+                sheet_id=sheet_id,
+                target_ref=target_ref,
+                measure_name="detail",
+                observed_value=detail_id,
+                unit=None,
+                problem_zone=self._make_problem_zone(sheet_id, region),
+                source=detail_source,
+            )
+        ]
+
     def _parse_regex_line(
         self,
         line: str,
@@ -625,8 +769,48 @@ class RasterDrawingAnalyzer:
         *,
         source: str = "raster-drawing-analyzer",
     ) -> DrawingAnnotation | None:
-        if is_paired_dimension(line):
-            return None
+        count = _COUNT_PATTERN.search(line)
+        if count is not None:
+            target_ref = count.group("target").upper()
+            observed_value = count.group("value").replace(",", ".")
+            return DrawingAnnotation(
+                annotation_id=self._make_annotation_id(
+                    region,
+                    sheet_id=sheet_id,
+                    target_ref=target_ref,
+                    measure_name="count",
+                    observed_value=observed_value,
+                    unit="шт",
+                ),
+                sheet_id=sheet_id,
+                target_ref=target_ref,
+                measure_name="count",
+                observed_value=observed_value,
+                unit="шт",
+                problem_zone=self._make_problem_zone(sheet_id, region),
+                source=source,
+            )
+        execution = _EXECUTION_PATTERN.search(line)
+        if execution is not None:
+            target_ref = execution.group("target").upper()
+            observed_value = execution.group("value")
+            return DrawingAnnotation(
+                annotation_id=self._make_annotation_id(
+                    region,
+                    sheet_id=sheet_id,
+                    target_ref=target_ref,
+                    measure_name="execution",
+                    observed_value=observed_value,
+                    unit=None,
+                ),
+                sheet_id=sheet_id,
+                target_ref=target_ref,
+                measure_name="execution",
+                observed_value=observed_value,
+                unit=None,
+                problem_zone=self._make_problem_zone(sheet_id, region),
+                source=source,
+            )
         for pattern in _TEXT_PATTERNS:
             match = pattern.search(line)
             if match is None:
@@ -634,6 +818,8 @@ class RasterDrawingAnalyzer:
             measure_name = self._normalize_measure_name(match.group("measure"))
             target_ref = match.group("target").upper()
             observed_value = match.group("value").replace(",", ".")
+            if value_is_paired_side(line, observed_value):
+                continue
             unit = match.group("unit")
             return DrawingAnnotation(
                 annotation_id=self._make_annotation_id(

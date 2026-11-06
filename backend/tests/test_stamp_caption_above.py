@@ -15,10 +15,14 @@ from aerobim.domain.review_priority import compute_issue_priority
 from aerobim.domain.stamp_caption_above import (
     STAMP_CAPTION_SOURCE,
     STAMP_FIELD_DISAGREE,
+    STAMP_REVISION_UNMARKED,
+    STAMP_SHEET_COLLISION,
     PlacedLine,
+    colliding_stamp_sheet_numbers,
     disagreeing_package_stamp_fields,
     line_center_in_title_block,
     pair_captions_above_values,
+    unmarked_stamp_revisions,
     value_is_standard_citation,
     writes_summary_passed,
 )
@@ -101,6 +105,43 @@ class PackageStampFieldTests(unittest.TestCase):
         self.assertIsNone(issues[0].expected_value)
         self.assertGreaterEqual(len(issues[0].evidence_refs), 2)
         self.assertFalse(writes_summary_passed())
+        repeated = disagreeing_package_stamp_fields(
+            (
+                _stamp("cipher", "АР-1", "A-101"),
+                _stamp("cipher", "АР-1", "A-103"),
+                _stamp("cipher", "АР-2", "A-102"),
+            )
+        )
+        self.assertEqual(len(repeated), 1)
+        self.assertIn("A-103", repeated[0].message)
+        self.assertEqual(len(repeated[0].evidence_refs), 3)
+        forward = disagreeing_package_stamp_fields(
+            (
+                _stamp("cipher", "АР-1", "A-103"),
+                _stamp("cipher", "АР-2", "A-102"),
+                _stamp("cipher", "АР-1", "A-101"),
+            )
+        )
+        backward = disagreeing_package_stamp_fields(
+            (
+                _stamp("cipher", "АР-1", "A-101"),
+                _stamp("cipher", "АР-2", "A-102"),
+                _stamp("cipher", "АР-1", "A-103"),
+            )
+        )
+        self.assertEqual(forward[0].message, backward[0].message)
+        self.assertEqual(forward[0].evidence_refs, backward[0].evidence_refs)
+        self.assertIn("A-101, A-103", forward[0].message)
+
+    def test_a_different_dash_is_one_cipher(self) -> None:
+        issues = disagreeing_package_stamp_fields(
+            (_stamp("cipher", "АР-1", "A-101"), _stamp("cipher", "АР–1", "A-102"))
+        )
+        self.assertEqual(issues, [])
+        spaced = disagreeing_package_stamp_fields(
+            (_stamp("cipher", "АР - 1", "A-101"), _stamp("cipher", "АР-1", "A-102"))
+        )
+        self.assertEqual(spaced, [])
 
     def test_lookalike_letters_are_one_cipher(self) -> None:
         issues = disagreeing_package_stamp_fields(
@@ -119,6 +160,25 @@ class PackageStampFieldTests(unittest.TestCase):
         )
         self.assertEqual(issues, [])
 
+    def test_the_same_sheet_number_on_two_sheets_is_a_warning(self) -> None:
+        issues = colliding_stamp_sheet_numbers(
+            (_stamp("sheet", "41", "A-244"), _stamp("sheet", "041", "A-245"))
+        )
+        self.assertEqual(len(issues), 1)
+        self.assertEqual(issues[0].rule_id, STAMP_SHEET_COLLISION)
+        self.assertIs(issues[0].severity, Severity.WARNING)
+        self.assertIn("A-244", issues[0].message)
+        self.assertIn("A-245", issues[0].message)
+        self.assertIsNone(issues[0].expected_value)
+        quiet = colliding_stamp_sheet_numbers(
+            (_stamp("sheet", "41", "A-244"), _stamp("sheet", "42", "A-245"))
+        )
+        self.assertEqual(quiet, [])
+        same_sheet = colliding_stamp_sheet_numbers(
+            (_stamp("sheet", "41", "A-244"), _stamp("sheet", "41", "A-244"))
+        )
+        self.assertEqual(same_sheet, [])
+
     def test_title_block_is_the_bottom_right_corner(self) -> None:
         page_w, page_h = 612.0, 792.0
         corner = _line("Шифр", x=page_w - 80, y=page_h - 40)
@@ -128,7 +188,13 @@ class PackageStampFieldTests(unittest.TestCase):
 
     def test_a_standard_citation_is_not_a_cipher(self) -> None:
         self.assertTrue(value_is_standard_citation("ГОСТ 21.101"))
+        self.assertTrue(value_is_standard_citation("ГОСТ21.101"))
+        self.assertTrue(value_is_standard_citation("СП 63.13330"))
+        self.assertTrue(value_is_standard_citation("СНиП 2.01.07"))
+        self.assertTrue(value_is_standard_citation("СНиП II-23-81"))
         self.assertFalse(value_is_standard_citation("АР-1"))
+        self.assertFalse(value_is_standard_citation("СП-1"))
+        self.assertFalse(value_is_standard_citation("СНиП I-beam"))
         self.assertTrue(is_paired_dimension("OPEN-01 width 500×300 mm"))
         self.assertFalse(is_paired_dimension("WALL-01 thickness 250 mm"))
 
@@ -137,6 +203,40 @@ class PackageStampFieldTests(unittest.TestCase):
             (_line("WALL-01 thickness 250 mm", x=10, y=10, width=140),)
         )
         self.assertEqual(pairs, ())
+
+
+class UnmarkedStampRevisionTests(unittest.TestCase):
+    def test_sheet_numbers_without_cipher_or_change_are_one_warning(self) -> None:
+        issues = unmarked_stamp_revisions(
+            (_stamp("sheet", "1", "A-101"), _stamp("sheet", "2", "A-102"))
+        )
+        self.assertEqual(len(issues), 1)
+        self.assertEqual(issues[0].rule_id, STAMP_REVISION_UNMARKED)
+        self.assertIs(issues[0].severity, Severity.WARNING)
+        self.assertIsNone(issues[0].expected_value)
+        self.assertIn("2 sheets", issues[0].message)
+        self.assertFalse(writes_summary_passed())
+
+    def test_one_cipher_keeps_the_pack_quiet(self) -> None:
+        issues = unmarked_stamp_revisions(
+            (
+                _stamp("sheet", "1", "A-101"),
+                _stamp("cipher", "АР-1", "A-101"),
+            )
+        )
+        self.assertEqual(issues, [])
+
+    def test_one_change_number_keeps_the_pack_quiet(self) -> None:
+        issues = unmarked_stamp_revisions(
+            (
+                _stamp("sheet", "1", "A-101"),
+                _stamp("change", "0", "A-102"),
+            )
+        )
+        self.assertEqual(issues, [])
+
+    def test_no_stamp_reading_is_quiet(self) -> None:
+        self.assertEqual(unmarked_stamp_revisions(()), [])
 
 
 if __name__ == "__main__":
