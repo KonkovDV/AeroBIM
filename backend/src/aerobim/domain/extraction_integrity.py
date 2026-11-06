@@ -32,6 +32,29 @@ if TYPE_CHECKING:
 _DIGIT_RUN_RE = re.compile(r"\d{3,}")
 
 
+def dominant_letter_script(text: str) -> str | None:
+    """``cyrillic`` or ``latin`` when one script clearly dominates the letters.
+
+    Short or mixed strings return None. Used so a Latin/Chinese OCR model is
+    not treated as a measurement of a Cyrillic text layer.
+    """
+
+    cyrillic = 0
+    latin = 0
+    for char in text or "":
+        if "\u0400" <= char <= "\u04ff":
+            cyrillic += 1
+        elif ("A" <= char <= "Z") or ("a" <= char <= "z"):
+            latin += 1
+    if cyrillic < 40 and latin < 40:
+        return None
+    if cyrillic > latin * 2:
+        return "cyrillic"
+    if latin > cyrillic * 2:
+        return "latin"
+    return None
+
+
 def extract_digit_runs(text: str) -> tuple[str, ...]:
     """Sorted unique digit runs (≥3 digits) for deterministic channel collision.
 
@@ -69,6 +92,8 @@ class ExtractionIntegritySignals:
     """Digit runs (≥3) from text-layer; None = channel not measured."""
     ocr_digit_runs: tuple[str, ...] | None = None
     """Digit runs (≥3) from OCR on rendered pages; None = OCR not measured."""
+    dominant_script: str | None = None
+    """``cyrillic`` or ``latin`` when the text layer is clearly one script."""
 
 
 @dataclass(frozen=True)

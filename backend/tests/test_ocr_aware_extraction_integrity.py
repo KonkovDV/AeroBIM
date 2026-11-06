@@ -83,6 +83,31 @@ class OcrAwareExtractionIntegrityTests(unittest.TestCase):
             self.assertEqual(signals.extracted_digit_runs, ("3300",))
             self.assertEqual(signals.ocr_digit_runs, ("3000",))
 
+    def test_cyrillic_text_layer_does_not_call_ocr(self) -> None:
+        class _CyrillicText:
+            def produce(self, _path: Path) -> ExtractionIntegritySignals:
+                return ExtractionIntegritySignals(
+                    extracted_char_count=80,
+                    rendered_text_present=True,
+                    extracted_digit_runs=("3492194",),
+                    dominant_script="cyrillic",
+                )
+
+        class _MustNotRun:
+            def __call__(self, _path: Path) -> _FakeOcrResult:
+                raise AssertionError("OCR must not measure a Cyrillic text layer")
+
+        producer = OcrAwareExtractionIntegrityProducer(
+            text_producer=_CyrillicText(),
+            ocr_engine_factory=lambda: _MustNotRun(),
+        )
+        signals = producer.produce(Path("album.pdf"))
+        self.assertIsNone(signals.ocr_digit_runs)
+        self.assertIsNone(signals.ocr_char_count)
+        self.assertEqual(signals.extracted_digit_runs, ("3492194",))
+        status = assess_extraction_integrity(signals)
+        self.assertNotEqual(status.status.value, "failed")
+
     def test_fake_ocr_enriches_probe(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             pdf = write_text_pdf(Path(tmp) / "t.pdf", "WALL-01 thickness 200 mm")

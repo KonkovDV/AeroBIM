@@ -9,6 +9,8 @@ Honest scope:
 - NOT a full product-grade render-vs-extract claim (OCR noise, limited pages).
 - If RapidOCR is missing, returns the base text-layer signals unchanged
   (``ocr_char_count=None``, ``ocr_digit_runs=None``).
+- A Cyrillic text layer is not sent to the bundled model. That model does not
+  read Cyrillic, so its digits are not a measurement and must not fail the page.
 """
 
 from __future__ import annotations
@@ -46,6 +48,10 @@ class OcrAwareExtractionIntegrityProducer:
 
     def produce(self, path: Path) -> ExtractionIntegritySignals:
         base = self._text.produce(path)
+        # Bundled RapidOCR does not read Cyrillic. Comparing its digits with a
+        # Russian text layer marks a true page as a numeric spoof.
+        if base.dominant_script == "cyrillic":
+            return base
         ocr = self._try_ocr(path)
         if ocr is None:
             return base

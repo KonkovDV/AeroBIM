@@ -10,6 +10,7 @@ from pathlib import Path
 
 from aerobim.domain.extraction_integrity import (
     ExtractionIntegritySignals,
+    dominant_letter_script,
     extract_digit_runs,
 )
 
@@ -92,6 +93,7 @@ class PdfMinerExtractionIntegrityProducer:
             ocr_char_count=None,
             extracted_digit_runs=extract_digit_runs(plain),
             ocr_digit_runs=None,
+            dominant_script=dominant_letter_script(plain),
         )
 
 
