@@ -4,7 +4,13 @@ from __future__ import annotations
 
 import unittest
 
-from aerobim.domain.models import DrawingAnnotation, Severity
+from aerobim.domain.models import (
+    DrawingAnnotation,
+    FindingCategory,
+    Severity,
+    ValidationIssue,
+)
+from aerobim.domain.review_priority import compute_issue_priority
 from aerobim.domain.stamp_caption_above import (
     STAMP_CAPTION_SOURCE,
     STAMP_FIELD_DISAGREE,
@@ -76,6 +82,17 @@ class PackageStampFieldTests(unittest.TestCase):
         self.assertEqual(len(issues), 1)
         self.assertEqual(issues[0].rule_id, STAMP_FIELD_DISAGREE)
         self.assertIs(issues[0].severity, Severity.WARNING)
+        self.assertEqual(issues[0].category.value, "drawing-validation")
+        drawing_error = ValidationIssue(
+            rule_id="REQ-DRW-001",
+            severity=Severity.ERROR,
+            message="drawing mismatch",
+            category=FindingCategory.DRAWING_VALIDATION,
+        )
+        self.assertLess(
+            compute_issue_priority(issues[0]),
+            compute_issue_priority(drawing_error),
+        )
         self.assertIn("A-101", issues[0].message)
         self.assertIn("A-102", issues[0].message)
         self.assertIsNone(issues[0].expected_value)

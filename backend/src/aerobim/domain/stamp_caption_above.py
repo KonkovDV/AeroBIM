@@ -78,8 +78,9 @@ def disagreeing_package_stamp_fields(
     """Warn when a package-stable stamp field has two values.
 
     Cipher and stage are read from the caption above the cell. Sheet numbers
-    are not compared. The rule is unsigned, so the finding is a warning: it
-    is visible and it does not by itself fail the pack.
+    are not compared. The rule is unsigned, so the finding is a drawing
+    warning: it is visible, it is not filed as a cross-document contradiction,
+    and it does not by itself fail the pack.
     """
 
     grouped: dict[str, list[DrawingAnnotation]] = {}
@@ -112,7 +113,7 @@ def disagreeing_package_stamp_fields(
                     f"Stamp field {code} differs across sheets: {', '.join(shown)}. "
                     "Unsigned title-block reading; it does not by itself fail the pack."
                 ),
-                category=FindingCategory.CROSS_DOCUMENT,
+                category=FindingCategory.DRAWING_VALIDATION,
                 property_name=code,
                 expected_value=None,
                 observed_value="; ".join(shown),
