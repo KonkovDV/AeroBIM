@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any
 
 from aerobim.domain.models import DrawingAnnotation, ProblemZone
+from aerobim.domain.stamp_caption_above import PlacedLine, pair_captions_above_values
 from aerobim.infrastructure.adapters.drawing_annotation_identity import (
     canonical_coord,
     drawing_annotation_digest,
@@ -238,6 +239,7 @@ class RasterDrawingAnalyzer:
                     _width, page_h = page.get_size()
                     textpage = page.get_textpage()
                     try:
+                        page_lines: list[PlacedLine] = []
                         for text, x, y, width, height in _pdfium_text_lines(
                             textpage, float(page_h)
                         ):
@@ -252,6 +254,14 @@ class RasterDrawingAnalyzer:
                             extracted.extend(
                                 self._extract_annotations_from_region(region, sheet_id)
                             )
+                            page_lines.append(
+                                PlacedLine(text=text, x=x, y=y, width=width, height=height)
+                            )
+                        extracted.extend(
+                            self._stamp_annotations(
+                                page_lines, sheet_id=sheet_id, page_number=index + 1
+                            )
+                        )
                     finally:
                         textpage.close()
                 finally:
@@ -326,6 +336,7 @@ class RasterDrawingAnalyzer:
         from pdfminer.layout import LTTextContainer
 
         extracted: list[DrawingAnnotation] = []
+        page_lines: list[PlacedLine] = []
 
         def _walk(obj: object) -> None:
             if isinstance(obj, LTTextContainer):
@@ -344,6 +355,15 @@ class RasterDrawingAnalyzer:
                         height=max(float(y1) - float(y0), 0.0),
                     )
                     extracted.extend(self._extract_annotations_from_region(region, sheet_id))
+                    page_lines.append(
+                        PlacedLine(
+                            text=text,
+                            x=float(x0),
+                            y=top,
+                            width=max(float(x1) - float(x0), 0.0),
+                            height=max(float(y1) - float(y0), 0.0),
+                        )
+                    )
                 return
             if hasattr(obj, "__iter__") and not isinstance(obj, (str, bytes)):
                 try:
@@ -353,6 +373,9 @@ class RasterDrawingAnalyzer:
                     return
 
         _walk(page)
+        extracted.extend(
+            self._stamp_annotations(page_lines, sheet_id=sheet_id, page_number=page_number)
+        )
         return extracted
 
     def _analyze_raster(
@@ -420,6 +443,50 @@ class RasterDrawingAnalyzer:
             ) from exc
         self._ocr_engine = RapidOCR()
         return self._ocr_engine
+
+    def _stamp_annotations(
+        self,
+        lines: list[PlacedLine],
+        *,
+        sheet_id: str,
+        page_number: int,
+    ) -> list[DrawingAnnotation]:
+        """Read a caption that sits above its cell. Not a rule measurement."""
+
+        annotations: list[DrawingAnnotation] = []
+        for pair in pair_captions_above_values(lines):
+            target_ref = f"STAMP-{pair.code.upper()}"
+            annotations.append(
+                DrawingAnnotation(
+                    annotation_id=drawing_annotation_id(
+                        sheet_id=sheet_id,
+                        page_number=page_number,
+                        target_ref=target_ref,
+                        measure_name=pair.code,
+                        observed_value=pair.value,
+                        unit=None,
+                        x=pair.x,
+                        y=pair.y,
+                        width=pair.width,
+                        height=pair.height,
+                    ),
+                    sheet_id=sheet_id,
+                    target_ref=target_ref,
+                    measure_name=pair.code,
+                    observed_value=pair.value,
+                    unit=None,
+                    problem_zone=ProblemZone(
+                        sheet_id=sheet_id,
+                        page_number=page_number,
+                        x=canonical_coord(pair.x),
+                        y=canonical_coord(pair.y),
+                        width=canonical_coord(pair.width),
+                        height=canonical_coord(pair.height),
+                    ),
+                    source="stamp-caption-above",
+                )
+            )
+        return annotations
 
     def _extract_annotations_from_region(
         self,

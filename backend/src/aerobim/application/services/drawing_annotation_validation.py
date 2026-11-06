@@ -42,6 +42,17 @@ def annotation_is_ocr(annotation: DrawingAnnotation) -> bool:
     return "ocr" in (annotation.source or "").lower()
 
 
+def annotation_is_stamp_caption(annotation: DrawingAnnotation) -> bool:
+    """A caption above its cell is a stamp reading, not a rule measurement.
+
+    An unrestricted drawing rule would otherwise compare that cell with a
+    thickness. The reading stays on the report and does not clear or create
+    the rule's error.
+    """
+
+    return (annotation.source or "") == "stamp-caption-above"
+
+
 class DrawingAnnotationValidator:
     """Validate drawing annotations against DRAWING_ANNOTATION scoped rules."""
 
@@ -66,6 +77,7 @@ class DrawingAnnotationValidator:
                 for annotation in drawing_annotations
                 if self.matches_annotation(requirement, annotation)
                 and not annotation_is_ocr(annotation)
+                and not annotation_is_stamp_caption(annotation)
             ]
             if not matching_annotations:
                 ocr_only = any(

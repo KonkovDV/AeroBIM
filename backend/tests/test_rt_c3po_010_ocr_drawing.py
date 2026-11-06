@@ -7,6 +7,7 @@ import unittest
 from aerobim.application.services.drawing_annotation_validation import (
     DrawingAnnotationValidator,
     annotation_is_ocr,
+    annotation_is_stamp_caption,
 )
 from aerobim.domain.models import (
     ComparisonOperator,
@@ -82,6 +83,26 @@ class OcrDoesNotClearDrawingErrorTests(unittest.TestCase):
         self.assertTrue(
             any("does not match the normalized rule" in issue.message for issue in issues)
         )
+
+    def test_stamp_caption_does_not_clear_or_satisfy_a_thickness_rule(self) -> None:
+        issues = self.validator.validate(
+            (_thickness_rule(),),
+            (_ann(source="stamp-caption-above", value="220"),),
+        )
+        self.assertEqual(len(issues), 1)
+        self.assertIs(issues[0].severity, Severity.ERROR)
+        self.assertNotIn("OCR", issues[0].message)
+        self.assertTrue(annotation_is_stamp_caption(_ann(source="stamp-caption-above")))
+
+    def test_text_layer_still_clears_when_a_stamp_reading_is_also_present(self) -> None:
+        issues = self.validator.validate(
+            (_thickness_rule(),),
+            (
+                _ann(source="raster-drawing-analyzer", value="220"),
+                _ann(source="stamp-caption-above", value="41"),
+            ),
+        )
+        self.assertEqual(issues, [])
 
     def test_annotation_is_ocr_helper(self) -> None:
         self.assertTrue(annotation_is_ocr(_ann(source="raster-drawing-analyzer-ocr")))
