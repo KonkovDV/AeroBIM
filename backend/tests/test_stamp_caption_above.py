@@ -10,13 +10,16 @@ from aerobim.domain.models import (
     Severity,
     ValidationIssue,
 )
+from aerobim.domain.paired_dimension import is_paired_dimension
 from aerobim.domain.review_priority import compute_issue_priority
 from aerobim.domain.stamp_caption_above import (
     STAMP_CAPTION_SOURCE,
     STAMP_FIELD_DISAGREE,
     PlacedLine,
     disagreeing_package_stamp_fields,
+    line_center_in_title_block,
     pair_captions_above_values,
+    value_is_standard_citation,
     writes_summary_passed,
 )
 
@@ -115,6 +118,19 @@ class PackageStampFieldTests(unittest.TestCase):
             )
         )
         self.assertEqual(issues, [])
+
+    def test_title_block_is_the_bottom_right_corner(self) -> None:
+        page_w, page_h = 612.0, 792.0
+        corner = _line("Шифр", x=page_w - 80, y=page_h - 40)
+        body = _line("Шифр", x=40, y=40)
+        self.assertTrue(line_center_in_title_block(corner, page_width=page_w, page_height=page_h))
+        self.assertFalse(line_center_in_title_block(body, page_width=page_w, page_height=page_h))
+
+    def test_a_standard_citation_is_not_a_cipher(self) -> None:
+        self.assertTrue(value_is_standard_citation("ГОСТ 21.101"))
+        self.assertFalse(value_is_standard_citation("АР-1"))
+        self.assertTrue(is_paired_dimension("OPEN-01 width 500×300 mm"))
+        self.assertFalse(is_paired_dimension("WALL-01 thickness 250 mm"))
 
     def test_a_measure_line_is_not_a_stamp_caption(self) -> None:
         pairs = pair_captions_above_values(

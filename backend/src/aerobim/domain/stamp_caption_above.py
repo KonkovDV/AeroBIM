@@ -8,6 +8,7 @@ pattern. The pair is a reading of the stamp. It does not write
 
 from __future__ import annotations
 
+import re
 from collections.abc import Sequence
 from dataclasses import dataclass
 
@@ -46,6 +47,12 @@ _MIN_X_OVERLAP = 0.5
 _PACKAGE_STABLE_CODES = frozenset({"cipher", "stage"})
 STAMP_CAPTION_SOURCE = "stamp-caption-above"
 STAMP_FIELD_DISAGREE = "AEROBIM-STAMP-FIELD-DISAGREE"
+# Visible title block: bottom-right 190 mm by 70 mm. A word in the body of
+# the sheet is not the package cipher.
+_MM_TO_PT = 72.0 / 25.4
+TITLE_BLOCK_WIDTH_PT = 190.0 * _MM_TO_PT
+TITLE_BLOCK_HEIGHT_PT = 70.0 * _MM_TO_PT
+_STANDARD_CITATION = re.compile(r"(?i)(?:^|[\s№])(?:гост|gost|сп)(?:\s|$)")
 
 
 @dataclass(frozen=True, slots=True)
@@ -127,6 +134,33 @@ def disagreeing_package_stamp_fields(
             )
         )
     return issues
+
+
+def line_center_in_title_block(
+    line: PlacedLine,
+    *,
+    page_width: float,
+    page_height: float,
+) -> bool:
+    """True when the line centre sits in the bottom-right title block.
+
+    Coordinates are top-left. A page smaller than the block still keeps the
+    corner that exists.
+    """
+
+    if page_width <= 0.0 or page_height <= 0.0:
+        return False
+    center_x = line.x + (line.width / 2.0)
+    center_y = line.y + (line.height / 2.0)
+    return center_x >= page_width - TITLE_BLOCK_WIDTH_PT and center_y >= (
+        page_height - TITLE_BLOCK_HEIGHT_PT
+    )
+
+
+def value_is_standard_citation(value: str) -> bool:
+    """A GOST or SP citation is not a package cipher."""
+
+    return _STANDARD_CITATION.search(value or "") is not None
 
 
 def writes_summary_passed() -> bool:
@@ -216,7 +250,11 @@ __all__ = [
     "PlacedLine",
     "STAMP_CAPTION_SOURCE",
     "STAMP_FIELD_DISAGREE",
+    "TITLE_BLOCK_HEIGHT_PT",
+    "TITLE_BLOCK_WIDTH_PT",
     "disagreeing_package_stamp_fields",
+    "line_center_in_title_block",
     "pair_captions_above_values",
+    "value_is_standard_citation",
     "writes_summary_passed",
 ]

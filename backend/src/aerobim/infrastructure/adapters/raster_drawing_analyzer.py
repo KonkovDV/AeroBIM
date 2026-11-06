@@ -13,10 +13,13 @@ from pathlib import Path
 from typing import Any
 
 from aerobim.domain.models import DrawingAnnotation, ProblemZone
+from aerobim.domain.paired_dimension import is_paired_dimension
 from aerobim.domain.stamp_caption_above import (
     STAMP_CAPTION_SOURCE,
     PlacedLine,
+    line_center_in_title_block,
     pair_captions_above_values,
+    value_is_standard_citation,
 )
 from aerobim.infrastructure.adapters.drawing_annotation_identity import (
     canonical_coord,
@@ -261,7 +264,7 @@ class RasterDrawingAnalyzer:
             for index in range(page_total):
                 page = document[index]
                 try:
-                    _width, page_h = page.get_size()
+                    page_w, page_h = page.get_size()
                     textpage = page.get_textpage()
                     try:
                         page_lines: list[PlacedLine] = []
@@ -284,7 +287,11 @@ class RasterDrawingAnalyzer:
                             )
                         extracted.extend(
                             self._stamp_annotations(
-                                page_lines, sheet_id=sheet_id, page_number=index + 1
+                                page_lines,
+                                sheet_id=sheet_id,
+                                page_number=index + 1,
+                                page_width=float(page_w),
+                                page_height=float(page_h),
                             )
                         )
                     finally:
@@ -317,12 +324,14 @@ class RasterDrawingAnalyzer:
             if not isinstance(page, LTPage):
                 continue
             page_h = float(page.bbox[3] - page.bbox[1])
+            page_w = float(page.bbox[2] - page.bbox[0])
             extracted.extend(
                 self._annotations_from_pdfminer_page(
                     page,
                     sheet_id=sheet_id,
                     page_number=page_number,
                     page_h=page_h,
+                    page_w=page_w,
                 )
             )
         return extracted
@@ -357,6 +366,7 @@ class RasterDrawingAnalyzer:
         sheet_id: str,
         page_number: int,
         page_h: float,
+        page_w: float = 0.0,
     ) -> list[DrawingAnnotation]:
         from pdfminer.layout import LTTextContainer
 
@@ -399,7 +409,13 @@ class RasterDrawingAnalyzer:
 
         _walk(page)
         extracted.extend(
-            self._stamp_annotations(page_lines, sheet_id=sheet_id, page_number=page_number)
+            self._stamp_annotations(
+                page_lines,
+                sheet_id=sheet_id,
+                page_number=page_number,
+                page_width=page_w,
+                page_height=page_h,
+            )
         )
         return extracted
 
@@ -475,11 +491,25 @@ class RasterDrawingAnalyzer:
         *,
         sheet_id: str,
         page_number: int,
+        page_width: float = 0.0,
+        page_height: float = 0.0,
     ) -> list[DrawingAnnotation]:
-        """Read a caption that sits above its cell. Not a rule measurement."""
+        """Read a caption that sits above its cell inside the title block.
 
+        Not a rule measurement. A citation of a standard is not a cipher.
+        """
+
+        visible = lines
+        if page_width > 0.0 and page_height > 0.0:
+            visible = [
+                line
+                for line in lines
+                if line_center_in_title_block(line, page_width=page_width, page_height=page_height)
+            ]
         annotations: list[DrawingAnnotation] = []
-        for pair in pair_captions_above_values(lines):
+        for pair in pair_captions_above_values(visible):
+            if pair.code == "cipher" and value_is_standard_citation(pair.value):
+                continue
             target_ref = f"STAMP-{pair.code.upper()}"
             annotations.append(
                 DrawingAnnotation(
@@ -575,6 +605,8 @@ class RasterDrawingAnalyzer:
         *,
         source: str = "raster-drawing-analyzer",
     ) -> DrawingAnnotation | None:
+        if is_paired_dimension(line):
+            return None
         for pattern in _TEXT_PATTERNS:
             match = pattern.search(line)
             if match is None:

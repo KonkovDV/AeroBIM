@@ -8,6 +8,7 @@ from unittest.mock import patch
 from pdf_fixtures import _wrap_single_page, write_text_pdf
 
 from aerobim.domain.simple_text_pdf import write_simple_text_pdf
+from aerobim.domain.stamp_caption_above import PlacedLine
 from aerobim.infrastructure.adapters.raster_drawing_analyzer import (
     RasterDrawingAnalyzer,
     _char_continues_line,
@@ -71,6 +72,62 @@ class RasterDrawingAnalyzerTests(unittest.TestCase):
         self.assertEqual(annotations[0].target_ref, "WALL-01")
         self.assertEqual(annotations[0].observed_value, "150")
         self.assertEqual(annotations[0].unit, "mm")
+
+    def test_a_paired_size_is_not_one_thickness(self) -> None:
+        region = _TextRegion(
+            text="OPEN-01 width 500×300 mm",
+            page_number=1,
+            x=10,
+            y=10,
+            width=80,
+            height=12,
+        )
+        annotations = RasterDrawingAnalyzer()._extract_annotations_from_region(region, "A-101")
+        self.assertEqual(annotations, [])
+
+    def test_stamp_pairs_stay_in_the_title_block(self) -> None:
+        page_w, page_h = 612.0, 792.0
+        analyzer = RasterDrawingAnalyzer()
+        body = [
+            PlacedLine("Шифр", 40.0, 40.0, 40.0, 10.0),
+            PlacedLine("АР-1", 40.0, 52.0, 40.0, 10.0),
+        ]
+        self.assertEqual(
+            analyzer._stamp_annotations(
+                body,
+                sheet_id="A-101",
+                page_number=1,
+                page_width=page_w,
+                page_height=page_h,
+            ),
+            [],
+        )
+        corner = [
+            PlacedLine("Шифр", page_w - 120.0, page_h - 50.0, 40.0, 10.0),
+            PlacedLine("АР-1", page_w - 120.0, page_h - 36.0, 40.0, 10.0),
+        ]
+        kept = analyzer._stamp_annotations(
+            corner,
+            sheet_id="A-101",
+            page_number=1,
+            page_width=page_w,
+            page_height=page_h,
+        )
+        self.assertEqual([item.observed_value for item in kept], ["АР-1"])
+        standard = [
+            PlacedLine("Шифр", page_w - 120.0, page_h - 50.0, 40.0, 10.0),
+            PlacedLine("ГОСТ 21.101", page_w - 120.0, page_h - 36.0, 80.0, 10.0),
+        ]
+        self.assertEqual(
+            analyzer._stamp_annotations(
+                standard,
+                sheet_id="A-101",
+                page_number=1,
+                page_width=page_w,
+                page_height=page_h,
+            ),
+            [],
+        )
 
     def test_hyphen_box_overlaps_the_letter_band(self) -> None:
         self.assertTrue(_char_continues_line(723.01, 724.24, 720.0, 730.02))
