@@ -78,8 +78,15 @@ class PackageStampFieldTests(unittest.TestCase):
         self.assertIs(issues[0].severity, Severity.WARNING)
         self.assertIn("A-101", issues[0].message)
         self.assertIn("A-102", issues[0].message)
+        self.assertIsNone(issues[0].expected_value)
         self.assertGreaterEqual(len(issues[0].evidence_refs), 2)
         self.assertFalse(writes_summary_passed())
+
+    def test_lookalike_letters_are_one_cipher(self) -> None:
+        issues = disagreeing_package_stamp_fields(
+            (_stamp("cipher", "С-1", "A-101"), _stamp("cipher", "C-1", "A-102"))
+        )
+        self.assertEqual(issues, [])
 
     def test_same_cipher_and_different_sheet_numbers_are_quiet(self) -> None:
         issues = disagreeing_package_stamp_fields(

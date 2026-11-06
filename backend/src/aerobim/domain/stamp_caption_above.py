@@ -11,6 +11,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass
 
+from aerobim.domain.label_identity import fold_homoglyphs
 from aerobim.domain.models import (
     DrawingAnnotation,
     FindingCategory,
@@ -96,7 +97,7 @@ def disagreeing_package_stamp_fields(
     for code in sorted(grouped):
         by_norm: dict[str, DrawingAnnotation] = {}
         for annotation in grouped[code]:
-            key = normalize_stamp_text(annotation.observed_value or "")
+            key = fold_homoglyphs(normalize_stamp_text(annotation.observed_value or ""))
             by_norm.setdefault(key, annotation)
         if len(by_norm) < 2:
             continue
@@ -113,8 +114,8 @@ def disagreeing_package_stamp_fields(
                 ),
                 category=FindingCategory.CROSS_DOCUMENT,
                 property_name=code,
-                expected_value=shown[0],
-                observed_value=shown[1],
+                expected_value=None,
+                observed_value="; ".join(shown),
                 problem_zone=chosen[1].problem_zone,
                 source_id=chosen[1].sheet_id,
                 evidence_modality="drawing",
