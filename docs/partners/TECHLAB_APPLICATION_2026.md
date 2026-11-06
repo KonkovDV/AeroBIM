@@ -69,8 +69,8 @@ briefing of Fund order П-01-ОД-52-1/26 adds a Partner information-modelling
 seat the catalog still omits. Prepare to the signed order. The sponsor quote
 below is **not** attested as commission chair.
 
-| Name | Role |
+| Seat | Role |
 |------|------|
-| Artsrun Gevorkyan | Head of Moscow-region development block (sponsor quote) |
-| Alexander Gorelik | Director, technological customer directorate |
-| Artur Khasanov | Head of project office |
+| Development block | Sponsor quote; not attested as commission chair |
+| Technological customer directorate | Director |
+| Project office | Head |

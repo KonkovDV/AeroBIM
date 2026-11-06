@@ -120,7 +120,7 @@ See the advisory contour [`ai/LLM_ADVISORY_CONTOUR.md`](ai/LLM_ADVISORY_CONTOUR.
 Prefer:
 
 ```text
-Konkov, D. V. (2026). AeroBIM (commit c057a2e9f174) [Software].
+AeroBIM contributors (2026). AeroBIM (commit c057a2e9f174) [Software].
 https://github.com/KonkovDV/AeroBIM
 ```
 

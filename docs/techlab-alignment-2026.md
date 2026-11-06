@@ -33,12 +33,12 @@ Single traceability document mapping **customer requirements** ([i.moscow/techla
 6. Targets **≤ 30 minutes** analysis time on an **agreed document package** (not arbitrary production scale).
 7. Keeps the **human expert in the loop** — automation reduces manual volume, not accountability.
 
-**Sponsor quote (Artsrun Gevorkyan):** automatic checking is not about replacing the engineer — it is about ensuring no obvious error reaches the construction site. Sponsor quote ≠ attested commission chair.
+**Sponsor quote (development block, not a named person):** automatic checking is not about replacing the engineer — it is about ensuring no obvious error reaches the construction site. Sponsor quote ≠ attested commission chair.
 
 **Resources named on task page:** PD/RD, BIM models, TZ and standards, typical-error set.  
 **Final product:** MVP of a documentation analysis system with error visualization and reports.
 
-**Program context:** Moscow Innovation Cluster TechLab; paid pilot fund **2 000 000 ₽**; experts: A. Gorelik, A. Khasanov (technological customer / project office).
+**Program context:** Moscow Innovation Cluster TechLab; paid pilot fund **2 000 000 ₽**; seats: technological customer directorate and project office.
 
 ## 2. World practice anchor (2026)
 

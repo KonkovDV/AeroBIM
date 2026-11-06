@@ -3,8 +3,7 @@ message: "If you use AeroBIM in research or compliance validation, cite this rep
 title: "AeroBIM"
 type: software
 authors:
-  - family-names: Konkov
-    given-names: D. V.
+  - name: AeroBIM contributors
 license: MIT
 repository-code: "https://github.com/KonkovDV/AeroBIM"
 url: "https://github.com/KonkovDV/AeroBIM"

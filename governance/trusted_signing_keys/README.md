@@ -7,7 +7,7 @@ Count toward `signed_trusted` / ratio. Only these fingerprints are authorship.
 | File | Short id | Role |
 | --- | --- | --- |
 | `B5690EEEBB952194.asc` | `B5690EEEBB952194` | Legacy author key |
-| `24D8BC0C78AAABA6.asc` | `24D8BC0C78AAABA6` | Author key (`KonkovDV@users.noreply.github.com`) |
+| `24D8BC0C78AAABA6.asc` | `24D8BC0C78AAABA6` | Maintainer signing key |
 
 **Safe signing recipe (N-56):** sign with a key already listed here, **or** add the new `.asc` in the **same** commit that first uses it (that commit must still be signed by an *already* trusted author key — see N-59). A brand-new key alone yields local `G` and CI numerator **zero**; with `fail_on_unverifiable_signature` it is exit **2** (worse than unsigned).
 

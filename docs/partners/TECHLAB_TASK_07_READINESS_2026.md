@@ -13,7 +13,7 @@ tags: [aerobim, techlab, customer, task-07, readiness]
 # PD/RD verification task readiness — automated verification of PD/RD
 
 **Official task:** Система автоматизированной верификации проектной и рабочей документации — **задаче заказчика канала по верификации ПД/РД**  
-**Sponsor quote (Artsrun Gevorkyan):** automatic checking is not about replacing the engineer — it is about ensuring no obvious error reaches the construction site. Sponsor quote ≠ attested commission chair.  
+**Sponsor quote (development block, not a named person):** automatic checking is not about replacing the engineer — it is about ensuring no obvious error reaches the construction site. Sponsor quote ≠ attested commission chair.  
 **Prize:** paid pilot testing **2 000 000 ₽** (Partner↔Fund agreement; not a 449-PP entry grant)  
 **Task page:** https://i.moscow/techlab  
 **Eligibility (official FAQ, 26.08.2026):** individuals or a team of **1–10**, age 18+. **ИП/ООО is not an entry requirement.** Captain files the application on i.moscow.  
@@ -138,9 +138,9 @@ Primary handoff document: [`CUSTOMER_WHAT_WE_NEED_2026_07-ru.md`](CUSTOMER_ACCEP
 
 | Name | Role |
 |------|------|
-| Artsrun Gevorkyan | Head of Moscow-region development block (sponsor quote) |
-| Alexander Gorelik | Director, technological customer directorate |
-| Artur Khasanov | Head of project office |
+| Development block | Sponsor quote; not attested as commission chair |
+| Technological customer directorate | Director |
+| Project office | Head |
 
 ## 7. Do not claim on application form
 
