@@ -184,7 +184,8 @@ def _hitl_issue(region: DrawingRegionRef, *, message: str | None = None) -> Vali
             f"Drawing region on {region.sheet_id} requires expert review "
             f"({region.hitl_reason or 'unmatched'}); modality={region.modality}"
         ),
-        category=FindingCategory.CROSS_DOCUMENT,
+        category=FindingCategory.DRAWING_VALIDATION,
+        origin="advisory",
         source_id=region.sheet_id,
         problem_zone=ProblemZone(sheet_id=region.sheet_id),
         evidence_modality=region.modality,
@@ -201,6 +202,8 @@ def issues_for_hitl_regions(
     regions: tuple[DrawingRegionRef, ...] | list[DrawingRegionRef],
 ) -> list[ValidationIssue]:
     """INFO issues for triage panel — never ERROR (does not block pass alone).
+
+    The note is a drawing-region record. It is not a cross-document contradiction.
 
     The five heuristic layout bands on one sheet become one note. A real
     unmatched detection stays its own row.

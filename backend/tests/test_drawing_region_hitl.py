@@ -32,6 +32,8 @@ class DrawingRegionHitlTests(unittest.TestCase):
         self.assertEqual(len(issues), 1)
         self.assertEqual(issues[0].rule_id, "AEROBIM-DRAWING-REGION-HITL")
         self.assertEqual(issues[0].severity.value, "info")
+        self.assertEqual(issues[0].category.value, "drawing-validation")
+        self.assertEqual(issues[0].origin, "advisory")
         self.assertIsNotNone(issues[0].problem_zone)
         self.assertEqual(issues[0].problem_zone.sheet_id, "AR-01")
 
@@ -52,6 +54,7 @@ class DrawingRegionHitlTests(unittest.TestCase):
         issues = issues_for_hitl_regions(regions)
         self.assertEqual(len(issues), 1)
         self.assertIn("5 bands", issues[0].message)
+        self.assertEqual(issues[0].category.value, "drawing-validation")
         self.assertEqual(issues[0].problem_zone.sheet_id, "ЭК")
 
     def test_ocr_regions_not_escalated(self) -> None:
