@@ -14,8 +14,8 @@ anyio==4.14.2 \
     # via
     #   starlette
     #   watchfiles
-bcf-client==0.8.5 \
-    --hash=sha256:6f7b2aee2985f06de2f6d90a56fa1db76f394010bea30810a3572cb7eece05f3
+bcf-client==0.9.0 \
+    --hash=sha256:68915ee2633e9b683ed122a90a7f3fbeca1e4af8a0bf3e0623499d16c616c3f5
     # via ifctester
 blinker==1.9.0 \
     --hash=sha256:b4ce2265a7abece45e7cc896e98dbebe6cead56bcf805a3d23136d145f5445bf \
