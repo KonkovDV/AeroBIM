@@ -94,7 +94,7 @@ vision = [
 pdf-agpl = [
   # Optional AGPL/Artifex dual path for legacy tools / fixture generators only.
   # Not required for the production PDF pipeline (LIC-001 Option B).
-  "pymupdf>=1.27,<2.0",
+  "pymupdf>=1.27,<3.0",
 ]
 enterprise = [
   "boto3>=1.42,<2.0",
